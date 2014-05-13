@@ -25,9 +25,9 @@
 
 package mitiv.deconv;
 
-import devel.eric.trash.DoubleVector2D;
 import mitiv.exception.IllegalLinearOperationException;
 import mitiv.exception.IncorrectSpaceException;
+import mitiv.linalg.DoubleVector;
 import mitiv.linalg.LinearOperator;
 import mitiv.linalg.Vector;
 
@@ -55,9 +55,9 @@ public class WeightingOperator extends LinearOperator {
 	protected void privApply(Vector src, Vector dst, int job)
 			throws IncorrectSpaceException {
 		int n = inputSpace.getSize();
-		DoubleVector2D vectSrc = (DoubleVector2D)src; // FIXME: should be more general
-		DoubleVector2D vectDst = (DoubleVector2D)dst;
-		DoubleVector2D vectW = (DoubleVector2D)weight;
+		DoubleVector vectSrc = (DoubleVector)src; // FIXME: should be more general
+		DoubleVector vectDst = (DoubleVector)dst;
+		DoubleVector vectW = (DoubleVector)weight;
 		if (job == INVERSE) {
 			for (int i = 0; i < n; i++) {
 				vectDst.set(i, vectSrc.get(i)/vectW.get(i));
