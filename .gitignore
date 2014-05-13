@@ -5,6 +5,8 @@
 .project
 bin
 lib
+src/devel
+src/edu
 
 # Automatic backups #
 #####################
