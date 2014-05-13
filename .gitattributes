@@ -1,0 +1,7 @@
+*.[hc]     filter=cleanup-code
+*.[java]   filter=cleanup-code
+README     filter=cleanup-text
+TODO       filter=cleanup-text
+AUTHORS    filter=cleanup-text
+NEWS       filter=cleanup-text
+LICENSE    filter=cleanup-text
