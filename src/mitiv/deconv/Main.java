@@ -25,16 +25,10 @@
 
 package mitiv.deconv;
 
-import java.awt.BorderLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-
-import devel.light.NavigableImagePanel;
-
+import mitiv.utils.DeconvUtils;
 /**
  * @author Leger Jonathan
  * 
@@ -49,35 +43,17 @@ public class Main {
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void main(String[] args) throws Exception{
-
-	    
-	    JFrame frame = new JFrame("Navigable Image Panel");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        NavigableImagePanel panel = new NavigableImagePanel();
-        try {
-            final BufferedImage image = ImageIO.read(new File("saturn.png"));
-            panel.setImage(image);                              
-        } catch (IOException e) {
-            System.err.println(e);
-            System.exit(1);
-        }
+	public static void main(String[] args) throws Exception{   
         
-        frame.getContentPane().add(panel, BorderLayout.CENTER);
-        frame.setSize(640,480);
-        frame.setVisible(true);     
-        
-	    /*
-		Random rand = new Random(System.nanoTime());
 	
-		Deconvolution test = new Deconvolution("saturn2.png", "saturn_psf2.png");
+		Deconvolution test = new Deconvolution("saturn2.png", "saturn_psf2.png",DeconvUtils.SCALE);
 		long time1 = System.nanoTime();
 		BufferedImage a =test.FirstDeconvolution(0);
 		long time2 = System.nanoTime();
 		ImageIO.write(a,"png",new File("TESSST.png"));
 		long time3 = System.nanoTime();
 		System.out.println("Time: "+(time3-time2)/1000000+" ms (écriture), Time: "+(time2-time1)/1000000+" ms (calcul)");
-		*/
+		
 		
 		//Thread.sleep(40000);
 		/*
