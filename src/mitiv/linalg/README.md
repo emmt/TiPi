@@ -1,3 +1,5 @@
+Introduction
+============
 The idea is to have a Java interface (or abstract class)
 to represent a vector space and its functionalities.
 

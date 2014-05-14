@@ -15,9 +15,7 @@ import mitiv.utils.DeconvUtils;
 import plugins.adufour.ezplug.*;
 
 /**
- * EzPlug interface to get the choices of the user:
- * This interface has 2 mode, if the user already opened two images we will 
- * assume that it is the PSF and the image 
+ * EzPlug interface to get the choices of the user
  * 
  * Full CODE see EzPlugTutorial
  * 
@@ -26,7 +24,7 @@ import plugins.adufour.ezplug.*;
  */
 public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceListener
 {
-    
+
     /**
      * Job to compute with the wiener filter
      */
@@ -39,7 +37,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
      * Job to compute with Conjugate gradients
      */
     public static final int JOB_CG = 3;
-    
+
     //Mydata
     EzVarText	varText;
     EzVarText  options;
@@ -50,11 +48,11 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     EzVarSequence sequencePSF;
     EzVarSequence sequenceImage;
     JSlider slider;
-    
+
     String wiener = "Wiener";
     String quad = "Quadratic";
     String cg = "CG";
-    
+
     String normal = "Normal";
     String corrected = "Corrected";
     String colormap = "Colormap";
@@ -66,7 +64,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     int job;
     int correct;
     Deconvolution deconvolution;
-    
+
     private int chooseCorrection(){
         if (correction.getValue() == normal) {
             return DeconvUtils.SCALE;
@@ -108,7 +106,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             throw new IllegalArgumentException("Invalid Job");
         }
     }
-    
+
     private void updateLabel(double val){
         label.setText( "Actual Value : "+val);
     }
@@ -117,7 +115,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     private final static double muMax = 1e1;
     private final static double muAlpha = Math.log(muMin);
     private final static double muBeta = Math.log(muMax/muMin)/1e2;
-    
+
     private static double sliderToRegularizationWeight(int slidervalue) {
         return Math.exp(muAlpha + muBeta*slidervalue);
     }
@@ -189,7 +187,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
 
                 //OMEXMLMetadataImpl metaData = new OMEXMLMetadataImpl();
                 //myseq.setMetaData(metaData);
-                myseq.setName(options.getValue()+ " "+correction.getValue()+" "+tmp);
+                myseq.setName(options.getValue()+" "+correction.getValue()+" "+tmp);
                 myseq.setImage(0, 0, buffered);           
             }
         });  
@@ -213,7 +211,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
 
     @Override
     public void sequenceChanged(SequenceEvent sequenceEvent) {
-        
+
     }
 
     @Override

@@ -52,7 +52,7 @@ public class Main {
 		long time1 = System.nanoTime();
 		BufferedImage a =test.FirstDeconvolution(0);
 		long time2 = System.nanoTime();
-		ImageIO.write(a,"png",new File("TESSST.png"));
+		ImageIO.write(a,"png",new File("TEST.png"));
 		long time3 = System.nanoTime();
 		System.out.println("Time: "+(time3-time2)/1000000+" ms (écriture), Time: "+(time2-time1)/1000000+" ms (calcul)");
 		
