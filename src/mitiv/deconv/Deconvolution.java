@@ -81,7 +81,6 @@ public class Deconvolution{
 		utils.FFT(psf);
 		double[][] out = wiener.Wiener(alpha, psf, image);
 		utils.IFFT(out);
-		//return(utils.ArrayToImageWithScaleCorrected(out));
 		return(utils.ArrayToImage(out, correction));
 	}
 
@@ -95,7 +94,6 @@ public class Deconvolution{
 	public BufferedImage NextDeconvolution(double alpha){
 		double[][] out = wiener.Wiener(alpha);
 		utils.IFFT(out);
-		//return(utils.ArrayToImageWithScaleCorrected(out));
 		return(utils.ArrayToImage(out, correction));
 	}
 
@@ -112,7 +110,6 @@ public class Deconvolution{
 		utils.FFT(psf);
 		double[][] out = wiener.WienerQuad(alpha, psf, image);
 		utils.IFFT(out);
-		//return(utils.ArrayToImageWithScaleCorrected(out));
         return(utils.ArrayToImage(out, correction));
 	}
 
@@ -126,11 +123,8 @@ public class Deconvolution{
 	public BufferedImage NextDeconvolutionQuad(double alpha){
 		double[][] out = wiener.WienerQuad(alpha);
 		utils.IFFT(out);
-		//return(utils.ArrayToImageWithScaleCorrected(out));
 		return(utils.ArrayToImage(out, correction));
 	}
-
-	//1D
 
 	/**
 	 * First deconvolution with quadratic option and use in internal only 1D arrays
@@ -145,7 +139,6 @@ public class Deconvolution{
 		utils.FFT1D(psf1D);
 		double[] out = wiener.WienerQuad1D(alpha, psf1D, image1D,utils.height,utils.width);
 		utils.IFFT1D(out);
-		//return(utils.ArrayToImageWithScale1D(out,true));
 		return(utils.ArrayToImage1D(out, correction,true));
 	}
 
@@ -159,7 +152,6 @@ public class Deconvolution{
 	public BufferedImage NextDeconvolutionQuad1D(double alpha){
 		double[] out = wiener.WienerQuad1D(alpha);
 		utils.IFFT1D(out);
-		//return(utils.ArrayToImageWithScale1D(out,true));
         return(utils.ArrayToImage1D(out, correction, true));
 	}
 	
@@ -194,7 +186,6 @@ public class Deconvolution{
                 System.err.println("Pas fini normalement");
             }
         }
-        //return utils.ArrayToImageWithScale1D(x.getData(), false);
         return(utils.ArrayToImage1D(x.getData(), correction, false));
     }
 	

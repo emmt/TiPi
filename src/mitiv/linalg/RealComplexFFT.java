@@ -123,13 +123,13 @@ public class RealComplexFFT extends LinearOperator {
                 }
                 if (rank == 1) {
                     if (xform == null) xform = new FloatFFT_1D(shape[0]);
-                    ((FloatFFT_1D)xform).complexForward(w);
+                    ((FloatFFT_1D)xform).complexForward(y);
                 } else if (rank == 2) {
                     if (xform == null) xform = new FloatFFT_2D(shape[0], shape[1]);
-                    ((FloatFFT_2D)xform).complexForward(w);
+                    ((FloatFFT_2D)xform).complexForward(y);
                 } else {
                     if (xform == null) xform = new FloatFFT_3D(shape[0], shape[1], shape[2]);
-                    ((FloatFFT_3D)xform).complexForward(w);
+                    ((FloatFFT_3D)xform).complexForward(y);
                 }
             }
         } else {

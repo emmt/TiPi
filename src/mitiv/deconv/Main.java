@@ -48,7 +48,7 @@ public class Main {
 	    
 		//Random rand = new Random(System.nanoTime());
 	
-		Deconvolution test = new Deconvolution("saturn2.png", "saturn_psf2.png",DeconvUtils.SCALE);
+		Deconvolution test = new Deconvolution("../FATRAS/saturn2.png", "../FATRAS/saturn_psf2.png",DeconvUtils.SCALE);
 		long time1 = System.nanoTime();
 		BufferedImage a =test.FirstDeconvolution(0);
 		long time2 = System.nanoTime();
