@@ -111,7 +111,6 @@ public class Filter implements FilterInterface{
         double[][]out = new double[X][2*Y];
 
         tabcc = new double[X][Y];
-
         for(int i = 0; i<X; i++){
             for(int j=0;j<Y;j++){
                 //a=re(fft.psf), b=im(fft.psf), c=re(fft.image), d=im(fft.tableau)
@@ -149,7 +148,7 @@ public class Filter implements FilterInterface{
         double a,b,c,d,q;
         double[][]out = new double[X][2*Y];
         for(int i = 0; i<X; i++){
-            for(int j=0;j<Y;j++){
+            for(int j=0; j<Y; j++){
                 a = FFT_PSF[i][2*j];
                 b = FFT_PSF[i][2*j+1];
                 c = FFT_Image[i][2*j];
@@ -159,7 +158,6 @@ public class Filter implements FilterInterface{
                 out[i][2*j+1] = (a*d - b*c)*q;
             }
         }
-
         return out;
     }
 
@@ -177,10 +175,10 @@ public class Filter implements FilterInterface{
 
         for(int i = 0; i<X; i++){
             for(int j=0;j<Y;j++){
-                a = FFT_PSF1D[2*j+i*Y*2];
-                b = FFT_PSF1D[(2*j+1)+i*Y*2];
-                c = FFT_Image1D[2*j+i*Y*2];
-                d = FFT_Image1D[(2*j+1)+i*Y*2];
+                a = FFT_PSF1D[2*(j+i*Y)];
+                b = FFT_PSF1D[2*((j+1)+i*Y)];
+                c = FFT_Image1D[2*(j+i*Y)];
+                d = FFT_Image1D[2*((j+1)+i*Y)];
                 if(i<=X/2){
                     e = ((double)i/X);
                 }else{
@@ -194,8 +192,8 @@ public class Filter implements FilterInterface{
                 tabcc1D[j+i*Y] = 4*Math.PI*Math.PI*(e*e+f*f);
                 q = 1.0/(a*a + b*b + alpha*tabcc1D[j+i*Y]);
                 //out = up/down
-                out[2*j+i*Y*2] = (a*c + b*d)*q;
-                out[(2*j+1)+i*Y*2] = (a*d - b*c)*q;
+                out[2*(j+i*Y)] = (a*c + b*d)*q;
+                out[2*((j+1)+i*Y)] = (a*d - b*c)*q;
             }
         }
         return out;
@@ -207,19 +205,17 @@ public class Filter implements FilterInterface{
         double[]out = new double[X*2*Y];
         for(int i = 0; i<X; i++){
             for(int j=0;j<Y;j++){
-                a = FFT_PSF1D[2*j+i*Y*2];
-                b = FFT_PSF1D[2*j+1+i*Y*2];
-                c = FFT_Image1D[2*j+i*Y*2];
-                d = FFT_Image1D[2*j+1+i*Y*2];
+                a = FFT_PSF1D[2*(j+i*Y)];
+                b = FFT_PSF1D[2*((j+1)+i*Y)];
+                c = FFT_Image1D[2*(j+i*Y)];
+                d = FFT_Image1D[2*((j+1)+i*Y)];
                 q = 1.0/(a*a + b*b + tabcc1D[j+i*Y]*alpha);
-                out[2*j+i*Y*2] = (a*c + b*d)*q;
-                out[2*j+1+i*Y*2] = (a*d - b*c)*q;
+                out[2*(j+i*Y)] = (a*c + b*d)*q;
+                out[2*((j+1)+i*Y)] = (a*d - b*c)*q;
             }
         }
         return out;
     }
-
-
 }
 
 /*
