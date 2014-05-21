@@ -116,7 +116,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
     {
         return (int)(0.2126*r+0.7152*g+0.0722*b);
     }
-    
+
     /**
      * Convert a RGB value to an int grey value (float version)
      * 
@@ -137,9 +137,8 @@ public class DeconvUtils implements DeconvUtilsInterface {
     private void setValue(){
         width = image.getWidth();
         height = image.getHeight();
-        if (image_psf.getWidth() >= image.getWidth() || image_psf.getHeight() >= image.getHeight()) {
-            System.err.println("You may have mistook the image and the PSF");
-            throw new IllegalArgumentException();
+        if (image_psf.getWidth() > image.getWidth() || image_psf.getHeight() > image.getHeight()) {
+            throw new IllegalArgumentException("You may have mistook the image and the PSF");
         }
     }
 
@@ -163,7 +162,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         }
         return new double[]{min,max};
     }
-    
+
     /**
      * Will scan the tab and return the highest and smallest value (float version)
      * @param tab Array to parse
@@ -210,7 +209,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         } 
         return new double[]{min,max};
     }
-    
+
     /**
      * Will scan the tab and return the highest and smallest value (float version)
      * @param tab Array to parse
@@ -256,7 +255,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         }
         return new double[]{alpha,beta};
     }
-    
+
     /**
      * Will scan the tab and return the highest and smallest value
      * @param tab Array to parse
@@ -291,7 +290,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         }
         return new double[]{alpha,beta};
     }
-    
+
     private float[] computeAlphaBeta1D(float[] tab, boolean isComplex){
         float [] out = computeMinMax1D(tab, isComplex);
         float min = out[0];
@@ -367,7 +366,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         //printTab(out);
         return out;
     }
-    
+
     /**
      * Convert image to float array
      * 
@@ -429,7 +428,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         }
         return out;
     }
-    
+
     /**
      * Convert image to float 1D array
      * @param isComplex
@@ -535,7 +534,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
             }
         }
     }
-    
+
     /**
      * Scale a float array by doing in place operations
      * @param array
@@ -572,7 +571,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
             }
         }
     }
-    
+
     /**
      * Scale a float 1Darray by doing in place operations
      * @param array
@@ -637,7 +636,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
             }
         }
     }
-    
+
     /**
      * Scale a float array by doing in place operations
      * @param array
@@ -732,11 +731,10 @@ public class DeconvUtils implements DeconvUtilsInterface {
                     grey = greyToColor(array[(i+j*image.getHeight())],alpha,beta);
                     array[(i+j*image.getHeight())] = grey;
                 }
-
             }
         }
     }
-    
+
     /**
      * Scale a float 1D array by doing in place operations
      * @param array
@@ -787,7 +785,6 @@ public class DeconvUtils implements DeconvUtilsInterface {
                     grey = greyToColor(array[(i+j*image.getHeight())],alpha,beta);
                     array[(i+j*image.getHeight())] = grey;
                 }
-
             }
         }
     }
@@ -810,7 +807,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         }
         return imageout;
     }
-    
+
     /**
      * Create a buffered image and use a colormap with the grey value in input
      * @param array
@@ -852,7 +849,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         }
         return imageout;
     }
-    
+
     /**
      * Create a buffered image and use a colormap with the grey value in input
      * @param array
@@ -893,7 +890,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         }
         return imageout;
     }
-    
+
     /**
      * Create a buffered image, simply copy array to buffered image
      * @param array
@@ -933,7 +930,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         }
         return imageout;
     }
-    
+
     /**
      * Create a buffered image, simply copy array to buffered image
      * @param array
@@ -985,7 +982,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         }
         return out;
     }
-    
+
     /**
      * Front function that will apply different job on the given array of size 
      * height,witdh*2
@@ -1030,10 +1027,10 @@ public class DeconvUtils implements DeconvUtilsInterface {
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-        
+
         //First we scale in any case
         scaleArray1D(array, isComplex);
-        
+
         //If necessary we correct
         if (job == SCALE_CORRECTED || job == SCALE_CORRECTED_COLORMAP) {
             correctArray1D(array, isComplex);
@@ -1062,10 +1059,10 @@ public class DeconvUtils implements DeconvUtilsInterface {
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-        
+
         //First we scale in any case
         scaleArray1D(array, isComplex);
-        
+
         //If necessary we correct
         if (job == SCALE_CORRECTED || job == SCALE_CORRECTED_COLORMAP) {
             correctArray1D(array, isComplex);
@@ -1080,7 +1077,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         return out;
     }
 
-    
+
     /**
      * This function will scale the raw data into 0-255 grey value but will also
      * check that there is no single value that may have make an incorrect min/max
@@ -1288,6 +1285,38 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
     /********************************** FFT PART **********************************/
 
+    private void scale(double[] array){
+        double scale = 1.0/(width*height);
+        for (int i = 0; i < array.length; i++) {
+            array[i]*=scale;
+        }
+    }
+
+    private void scale(double[][] array){
+        double scale = 1.0/(width*height);
+        for (int i = 0; i < array[0].length; i++) {
+            for (int j = 0; j < array.length; j++) {
+                array[j][i]*=scale;
+            }
+        }
+    }
+
+    private void scale(float[] array){
+        double scale = 1.0/(width*height);
+        for (int i = 0; i < array.length; i++) {
+            array[i]*=scale;
+        }
+    }
+
+    private void scale(float[][] array){
+        double scale = 1.0/(width*height);
+        for (int i = 0; i < array[0].length; i++) {
+            for (int j = 0; j < array.length; j++) {
+                array[j][i]*=scale;
+            }
+        }
+    }
+
     @Override
     public void FFT(double[][] array) {
         if(fft == null){
@@ -1295,7 +1324,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         }
         fft.realForwardFull(array);
     }
-    
+
     /**
      * FFT using float with 2D float array
      * 
@@ -1311,8 +1340,9 @@ public class DeconvUtils implements DeconvUtilsInterface {
     @Override
     public void IFFT(double[][] array) {
         fft.complexInverse(array, false);
+        scale(array);
     }
-    
+
     /**
      * inverse FFT using float with 2D float array
      * 
@@ -1320,6 +1350,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
      */
     public void IFFT(float[][] array) {
         fftFloat.complexInverse(array, false);
+        scale(array);
     }
 
     @Override
@@ -1329,7 +1360,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         }
         fft1D.realForwardFull(array);
     }
-    
+
     /**
      * inverse FFT using float with 1D float array
      * 
@@ -1345,8 +1376,9 @@ public class DeconvUtils implements DeconvUtilsInterface {
     @Override
     public void IFFT1D(double[] array) {
         fft1D.complexInverse(array, false);
+        scale(array);
     }
-    
+
     /**
      * inverse FFT using float with 1D non complex float array
      * 
@@ -1354,6 +1386,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
      */
     public void IFFT1D(float[] array) {
         fft1DFloat.complexInverse(array, false);
+        scale(array);
     }
 
     /********************************** PSF PADDING **********************************/
@@ -1417,7 +1450,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         int psfW = image_psf.getWidth();
         int demiPsfW = psfW/2;int demiPsfH = psfH/2;
         int[]test = PSFToArray1D();
-        
+
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
         //   A | B     -> 
@@ -1429,7 +1462,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         //   D | C     -> 
         //   -----     -> Image
         //   B | A     ->
-        
+
         if (isComplex) {
             //Here we are writing at 2*(i+j*hght)
             //Bloc haut à gauche: D
@@ -1485,7 +1518,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         }
         return tableau_psf;
     }
-    
+
     /**
      * float PSF shift + padding
      * 
@@ -1505,7 +1538,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         int psfW = image_psf.getWidth();
         int demiPsfW = psfW/2;int demiPsfH = psfH/2;
         int[]test = PSFToArray1D();
-        
+
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
         //   A | B     -> 
@@ -1517,7 +1550,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
         //   D | C     -> 
         //   -----     -> Image
         //   B | A     ->
-        
+
         if (isComplex) {
             //Here we are writing at 2*(i+j*hght)
             //UP, Left Bloc: D
@@ -1585,7 +1618,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
             System.out.println("");
         }
     }
-    
+
     /**
      * util function
      * @param tab
@@ -1621,7 +1654,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
             }
         }
     }
-    
+
     /**
      * 
      * @param tab

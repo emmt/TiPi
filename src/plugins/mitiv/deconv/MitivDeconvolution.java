@@ -1,6 +1,7 @@
 package plugins.mitiv.deconv;
 
 import java.awt.image.BufferedImage;
+import java.text.DecimalFormat;
 
 import javax.swing.JLabel;
 import javax.swing.JSlider;
@@ -64,7 +65,27 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     int job;
     int correct;
     Deconvolution deconvolution;
+    
+    ThreadCG thread;
+    
+    private final static double muMin = 1e-12;
+    private final static double muMax = 1e1;
+    private final static double muAlpha = Math.log(muMin);
+    private final static double muBeta = Math.log(muMax/muMin)/1e2;
 
+    private void updateLabel(double val){
+    	DecimalFormat df = new DecimalFormat("#.####");
+        label.setText( "Actual Value : "+df.format(val));
+    }
+    
+    public void updateProgressBarMessage(String msg){
+        getUI().setProgressBarMessage(msg);
+    }
+
+    private static double sliderToRegularizationWeight(int slidervalue) {
+        return Math.exp(muAlpha + muBeta*slidervalue);
+    }
+    
     private int chooseCorrection(){
         if (correction.getValue() == normal) {
             return DeconvUtils.SCALE;
@@ -87,55 +108,43 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         } else if (options.getValue().equals(cg)) {
             return JOB_CG;
         }else{
-            System.err.println("ICY: Job does not exist");
             throw new IllegalArgumentException("Invalid Job");
         }
     }
 
-    private BufferedImage firstJob(int job, Deconvolution deconvolution){
+    private BufferedImage firstJob(int job){
+    	thread = new ThreadCG(this);
+        thread.start();
         switch (job) {
         //First value correspond to next job with alpha = 0, not all are equal to 1
         case JOB_WIENER: 
-            return (deconvolution.FirstDeconvolution(10));
+            return (deconvolution.FirstDeconvolution(muMin));
         case JOB_QUAD:
-            return (deconvolution.FirstDeconvolutionQuad(1));
+            return (deconvolution.FirstDeconvolutionQuad(muMin));
         case JOB_CG:
-            return (deconvolution.FirstDeconvolutionCG(1));
+            return (deconvolution.FirstDeconvolutionCG(muMin));
         default:
-            System.err.println("Window: This job does not exist");
             throw new IllegalArgumentException("Invalid Job");
         }
     }
-
-    private void updateLabel(double val){
-        label.setText( "Actual Value : "+val);
-    }
-
-    private final static double muMin = 1e-12;
-    private final static double muMax = 1e1;
-    private final static double muAlpha = Math.log(muMin);
-    private final static double muBeta = Math.log(muMax/muMin)/1e2;
-
-    private static double sliderToRegularizationWeight(int slidervalue) {
-        return Math.exp(muAlpha + muBeta*slidervalue);
-    }
-    private BufferedImage nextJob(int slidervalue, int job, Deconvolution deconvolution){
+    
+    public BufferedImage nextJob(int slidervalue, int job){
         double mu = sliderToRegularizationWeight(slidervalue);
         updateLabel(mu);
+        double mult = 1E9; //HACK While the data uniformization is not done...
         switch (job) {
         case JOB_WIENER:
             return (deconvolution.NextDeconvolution(mu));
 
         case JOB_QUAD:
-            return (deconvolution.NextDeconvolutionQuad(mu));
+            return (deconvolution.NextDeconvolutionQuad(mu*mult));
 
         case JOB_CG:
-            return (deconvolution.NextDeconvolutionCG(mu));
+            return (deconvolution.NextDeconvolutionCG(mu*mult));
+            
         default:
-            System.err.println("Windows,Compute: This job does not exist");
             throw new IllegalArgumentException("Invalid Job");
         }
-
     }
 
     @Override
@@ -156,6 +165,12 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         super.addComponent(slider);
         super.addComponent(label);
     }
+    
+    public void updateImage(BufferedImage buffered, int value){
+    	myseq.setName(options.getValue()+" "+correction.getValue()+" "+value);
+        myseq.setImage(0, 0, buffered); 
+    }
+    
     @Override
     protected void execute()
     {
@@ -172,7 +187,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
                 sequencePSF.getValue().getFirstNonNullImage(),correct);
 
         myseq = new Sequence();
-        myseq.addImage(0,firstJob(job, deconvolution));
+        myseq.addImage(0,firstJob(job));
         myseq.addListener(this); 
         addSequence(myseq);
         myseq.setName("");
@@ -182,13 +197,14 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             public void stateChanged(ChangeEvent event){
                 //getUI().setProgressBarMessage("Computation in progress");
                 int tmp =(((JSlider)event.getSource()).getValue());
-                BufferedImage buffered = nextJob(tmp, job, deconvolution);
-                getUI().setProgressBarMessage("Done");
-
+                updateProgressBarMessage("Computing");
+                thread.prepareNextJob(tmp, job);
+                //BufferedImage buffered = nextJob(tmp, job);
+                
+                
                 //OMEXMLMetadataImpl metaData = new OMEXMLMetadataImpl();
                 //myseq.setMetaData(metaData);
-                myseq.setName(options.getValue()+" "+correction.getValue()+" "+tmp);
-                myseq.setImage(0, 0, buffered);           
+                //updateImage(buffered, tmp);
             }
         });  
         //Beware, need to be called at the END
@@ -200,6 +216,14 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     {
         if(myseq != null){
             myseq.close();
+        }
+        if(thread != null){
+            thread.cancel();
+            try {
+				thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
         }
     }
 
