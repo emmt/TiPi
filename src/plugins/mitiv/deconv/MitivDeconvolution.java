@@ -196,9 +196,9 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         slider.addChangeListener(new ChangeListener(){
             public void stateChanged(ChangeEvent event){
                 //getUI().setProgressBarMessage("Computation in progress");
-                int tmp =(((JSlider)event.getSource()).getValue());
+                int sliderValue =(((JSlider)event.getSource()).getValue());
                 updateProgressBarMessage("Computing");
-                thread.prepareNextJob(tmp, job);
+                thread.prepareNextJob(sliderValue, job);
                 //BufferedImage buffered = nextJob(tmp, job);
                 
                 
@@ -241,5 +241,9 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     @Override
     public void sequenceClosed(Sequence sequence) {
         slider.setEnabled(false);   
+    }
+    
+    public int getOutputValue(){
+    	return deconvolution.getOuputValue();
     }
 }

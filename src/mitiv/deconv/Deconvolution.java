@@ -47,10 +47,16 @@ public class Deconvolution{
 	double[] image1D;
 	double[] psf1D;
 	DoubleVector vector_y;
-    DoubleVector vector_psf;
-    int correction;
-    
-    boolean verbose = false;
+	DoubleVector vector_psf;
+	int correction;
+	
+	//CG needs
+	DoubleVectorSpaceWithRank space;
+	DoubleVector x;
+	LinearDeconvolver deconv;
+	int outputValue;
+
+	boolean verbose = false;
 	/**
 	 * Initial constructor that take the image and the PSF as parameters
 	 * 
@@ -83,6 +89,7 @@ public class Deconvolution{
 		utils.FFT(psf);
 		double[][] out = wiener.Wiener(alpha, psf, image);
 		utils.IFFT(out);
+		outputValue = LinearConjugateGradient.CONVERGED;
 		return(utils.ArrayToImage(out, correction));
 	}
 
@@ -96,6 +103,7 @@ public class Deconvolution{
 	public BufferedImage NextDeconvolution(double alpha){
 		double[][] out = wiener.Wiener(alpha);
 		utils.IFFT(out);
+		outputValue = LinearConjugateGradient.CONVERGED;
 		return(utils.ArrayToImage(out, correction));
 	}
 
@@ -112,19 +120,21 @@ public class Deconvolution{
 		utils.FFT(psf);
 		double[][] out = wiener.WienerQuad(alpha, psf, image);
 		utils.IFFT(out);
-        return(utils.ArrayToImage(out, correction));
+		outputValue = LinearConjugateGradient.CONVERGED;
+		return(utils.ArrayToImage(out, correction));
 	}
 
 	/**
 	 * Will compute less than firstDeconvolutionQuad: 1FTT inverse instead
-     * of 2FFT + 1 inverse FFT
-     * 
+	 * of 2FFT + 1 inverse FFT
+	 * 
 	 * @param alpha
 	 * @return deconvoluated image
 	 */
 	public BufferedImage NextDeconvolutionQuad(double alpha){
 		double[][] out = wiener.WienerQuad(alpha);
 		utils.IFFT(out);
+		outputValue = LinearConjugateGradient.CONVERGED;
 		return(utils.ArrayToImage(out, correction));
 	}
 
@@ -146,15 +156,28 @@ public class Deconvolution{
 
 	/**
 	 * Will compute less than firstDeconvolutionQuad: 1FTT inverse instead
-     * of 2FFT + 1 inverse FFT, with 1D arrays optimization
-     * 
+	 * of 2FFT + 1 inverse FFT, with 1D arrays optimization
+	 * 
 	 * @param alpha
 	 * @return deconvoluated image
 	 */
 	public BufferedImage NextDeconvolutionQuad1D(double alpha){
 		double[] out = wiener.WienerQuad1D(alpha);
 		utils.IFFT1D(out);
-        return(utils.ArrayToImage1D(out, correction, true));
+		return(utils.ArrayToImage1D(out, correction, true));
+	}
+
+	private void parseOuputCG(int output){
+		//If we are on verbose mode and it does not ended normally
+		if ( output != LinearConjugateGradient.CONVERGED && output != LinearConjugateGradient.IN_PROGRESS && verbose) {
+			if (output == LinearConjugateGradient.A_IS_NOT_POSITIVE_DEFINITE) {
+				System.err.println("A_IS_NOT_POSITIVE_DEFINITE");
+			}else if (output == LinearConjugateGradient.TOO_MANY_ITERATIONS) {
+				System.err.println("TOO_MANY_ITERATIONS");
+			}else{
+				System.err.println("Not ended normally "+output);
+			}
+		}
 	}
 	
 	/**
@@ -164,40 +187,41 @@ public class Deconvolution{
 	 * @return deconvoluated image
 	 */
 	public BufferedImage FirstDeconvolutionCG(double alpha){
-        DoubleVectorSpaceWithRank space = new DoubleVectorSpaceWithRank(utils.width, utils.height);
-        if (vector_psf == null) {
-            vector_psf = space.wrap(utils.PSF_Padding1D(false));
-        }
-        if (vector_y == null) {
-            vector_y = space.wrap(utils.ImageToArray1D(false));
-        }
-        
-        DoubleVector x = space.create(0);
-        DoubleVector w = space.create(1);
+		space = new DoubleVectorSpaceWithRank(utils.width, utils.height);
+		if (vector_psf == null) {
+			vector_psf = space.wrap(utils.PSF_Padding1D(false));
+		}
+		if (vector_y == null) {
+			vector_y = space.wrap(utils.ImageToArray1D(false));
+		}
 
-        LinearDeconvolver deconv = new LinearDeconvolver(
-                space.getShape(), vector_y.getData(), vector_psf.getData(), w.getData(), alpha);
-        int value = deconv.solve(x.getData(), 20, false);
+		x = space.create(0);
+		DoubleVector w = space.create(1);
 
-        if ( value != LinearConjugateGradient.CONVERGED && verbose) {
-            if (value == LinearConjugateGradient.A_IS_NOT_POSITIVE_DEFINITE) {
-                System.err.println("A_IS_NOT_POSITIVE_DEFINITE");
-            }else if (value == LinearConjugateGradient.TOO_MANY_ITERATIONS) {
-                System.err.println("TOO_MANY_ITERATIONS");
-            }else{
-                System.err.println("Not ended normally");
-            }
-        }
-        return(utils.ArrayToImage1D(x.getData(), correction, false));
-    }
-	
+		deconv = new LinearDeconvolver(
+				space.getShape(), vector_y.getData(), vector_psf.getData(), w.getData(), alpha);
+		outputValue = deconv.solve(x.getData(), 20, false);
+		parseOuputCG(outputValue);
+		return(utils.ArrayToImage1D(x.getData(), correction, false));
+	}
+
 	/**
 	 * @param alpha
 	 * @return deconvoluated image
 	 */
 	public BufferedImage NextDeconvolutionCG(double alpha){
-        return FirstDeconvolutionCG(alpha);
-    }
+		if (outputValue != LinearConjugateGradient.IN_PROGRESS) {
+			x = space.create(0);
+		}
+		deconv.setMu(alpha);
+		outputValue = deconv.solve(x.getData(), 50, false);
+		parseOuputCG(outputValue);
+		return(utils.ArrayToImage1D(x.getData(), correction, false));
+	}
+	
+	public int getOuputValue(){
+		return outputValue;
+	}
 }
 
 /*
