@@ -1,8 +1,8 @@
 package plugins.mitiv.microscopy;
 
 import icy.gui.frame.IcyFrame;
-import icy.main.Icy;
-import icy.sequence.Sequence;
+//import icy.main.Icy;
+//import icy.sequence.Sequence;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
@@ -61,7 +61,7 @@ public class ZernikeWindow implements  Runnable {
         }else{
             tmp = Utils.Array2BufferedImageColor(psf[0]);
         }
-        Icy.getMainInterface().addSequence(new Sequence(tmp));
+        //Icy.getMainInterface().addSequence(new Sequence(tmp));
         image.setIcon(new ImageIcon(tmp));
         //slider
         JSlider slide = new JSlider();

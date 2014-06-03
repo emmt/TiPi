@@ -33,193 +33,189 @@ package mitiv.deconv;
  */
 public class Filter implements FilterInterface{
 
-	double[][] FFT_PSF;
-	double[][] FFT_Image;
-	int X;
-	int Y;
-	double cc;
-	double [][]tabcc;
+    double[][] FFT_PSF;
+    double[][] FFT_Image;
+    int X;
+    int Y;
+    double cc;
+    double [][]tabcc;
 
-	//1D
-	double[] FFT_PSF1D;
-	double[] FFT_Image1D;
-	double[] tabcc1D;
+    //1D
+    double[] FFT_PSF1D;
+    double[] FFT_Image1D;
+    double[] tabcc1D;
 
-	@Override
-	public double[][] Wiener(double alpha, double[][] FFT_PSF, double[][] FFTImage) {
-		this.FFT_PSF = FFT_PSF;
-		this.FFT_Image = FFTImage;
-		X = FFTImage.length;
-		Y = FFTImage[0].length/2;
-		double a,b,c,d,q;
-		double[][]out = new double[X][2*Y];
-		cc = FFT_PSF[0][0]*FFT_PSF[0][0]+FFT_PSF[0][1]*FFT_PSF[0][1];
-		for(int i = 0; i<X; i++){
-			for(int j=0;j<Y;j++){
-				/*
+    @Override
+    public double[][] Wiener(double alpha, double[][] FFT_PSF, double[][] FFTImage) {
+        this.FFT_PSF = FFT_PSF;
+        this.FFT_Image = FFTImage;
+        X = FFTImage.length;
+        Y = FFTImage[0].length/2;
+        double a,b,c,d,q;
+        double[][]out = new double[X][2*Y];
+        cc = FFT_PSF[0][0]*FFT_PSF[0][0]+FFT_PSF[0][1]*FFT_PSF[0][1];
+        for(int i = 0; i<X; i++){
+            for(int j=0;j<Y;j++){
+                /*
 				a=re(fft.psf), b=im(fft.psf), c=re(fft.image), d=im(fft.tableau)
 				up = conjuguate(fft_psf)*fft_image
 				upRe = a*c + b*d;
 				upIm = a*d - b*c;
 				down = abs2(fft_psf)+alpha*abs2(fft_psf(0,0));
 				out = up/down
-				 */
-				a = FFT_PSF[i][2*j];
-				b = FFT_PSF[i][2*j+1];
-				c = FFTImage[i][2*j];
-				d = FFTImage[i][2*j+1];
+                 */
+                a = FFT_PSF[i][2*j];
+                b = FFT_PSF[i][2*j+1];
+                c = FFTImage[i][2*j];
+                d = FFTImage[i][2*j+1];
 
-				q = 1.0/(a*a + b*b + cc*alpha);
+                q = 1.0/(a*a + b*b + cc*alpha);
 
-				out[i][2*j] = (a*c + b*d)*q;
-				out[i][2*j+1] = (a*d - b*c)*q;
-			}
-		}
-		return out;
-	}
+                out[i][2*j] = (a*c + b*d)*q;
+                out[i][2*j+1] = (a*d - b*c)*q;
+            }
+        }
+        return out;
+    }
 
-	@Override
-	public double[][] Wiener(double alpha) {
-		double a,b,c,d,q;
-		double[][]out = new double[X][2*Y];
-		for(int i = 0; i<X; i++){
-			for(int j=0;j<Y;j++){
-				a = FFT_PSF[i][2*j];
-				b = FFT_PSF[i][2*j+1];
-				c = FFT_Image[i][2*j];
-				d = FFT_Image[i][2*j+1];
-				//up = conjuguate(fft_psf)*fft_image
-				//upRe = a*c + b*d;
-				//upIm = a*d - b*c;
-				//down = abs2(fft_psf)+alpha*abs2(fft_psf(0,0));
-				q = 1.0/(a*a + b*b + cc*alpha);
-				//out = up/down
-				out[i][2*j] = (a*c + b*d)*q;
-				out[i][2*j+1] = (a*d - b*c)*q;
-			}
-		}
-		return out;
-	}
+    @Override
+    public double[][] Wiener(double alpha) {
+        double a,b,c,d,q;
+        double[][]out = new double[X][2*Y];
+        for(int i = 0; i<X; i++){
+            for(int j=0;j<Y;j++){
+                a = FFT_PSF[i][2*j];
+                b = FFT_PSF[i][2*j+1];
+                c = FFT_Image[i][2*j];
+                d = FFT_Image[i][2*j+1];
+                //up = conjuguate(fft_psf)*fft_image
+                //upRe = a*c + b*d;
+                //upIm = a*d - b*c;
+                //down = abs2(fft_psf)+alpha*abs2(fft_psf(0,0));
+                q = 1.0/(a*a + b*b + cc*alpha);
+                //out = up/down
+                out[i][2*j] = (a*c + b*d)*q;
+                out[i][2*j+1] = (a*d - b*c)*q;
+            }
+        }
+        return out;
+    }
 
-	@Override
-	public double[][] WienerQuad(double alpha, double[][] FFT_PSF,double[][] FFTImage) {
-		this.FFT_PSF = FFT_PSF;
-		this.FFT_Image = FFTImage;
-		X = FFTImage.length;
-		Y = FFTImage[0].length/2;
-		double a,b,c,d,e,f,q;
-		double[][]out = new double[X][2*Y];
+    @Override
+    public double[][] WienerQuad(double alpha, double[][] FFT_PSF,double[][] FFTImage) {
+        this.FFT_PSF = FFT_PSF;
+        this.FFT_Image = FFTImage;
+        X = FFTImage.length;
+        Y = FFTImage[0].length/2;
+        double a,b,c,d,e,f,q;
+        double[][]out = new double[X][2*Y];
 
-		tabcc = new double[X][Y];
+        tabcc = new double[X][Y];
+        for(int i = 0; i<X; i++){
+            for(int j=0;j<Y;j++){
+                //a=re(fft.psf), b=im(fft.psf), c=re(fft.image), d=im(fft.tableau)
+                a = FFT_PSF[i][2*j];
+                b = FFT_PSF[i][2*j+1];
+                c = FFTImage[i][2*j];
+                d = FFTImage[i][2*j+1];
+                //up = conjuguate(fft_psf)*fft_image
+                //upRe = a*c + b*d;
+                //upIm = a*d - b*c;
+                //down = abs2(fft_psf)+alpha*abs2(fft_psf(0,0));
+                if(i<=X/2){
+                    e = ((double)i/X);
+                }else{
+                    e = ((double)(i-X)/X);
+                }
+                if(j<=Y/2){
+                    f = ((double)j/Y);
+                }else{
+                    f = ((double)(j-Y)/Y);
+                }
 
-		for(int i = 0; i<X; i++){
-			for(int j=0;j<Y;j++){
-				//a=re(fft.psf), b=im(fft.psf), c=re(fft.image), d=im(fft.tableau)
-				a = FFT_PSF[i][2*j];
-				b = FFT_PSF[i][2*j+1];
-				c = FFTImage[i][2*j];
-				d = FFTImage[i][2*j+1];
-				//up = conjuguate(fft_psf)*fft_image
-				//upRe = a*c + b*d;
-				//upIm = a*d - b*c;
-				//down = abs2(fft_psf)+alpha*abs2(fft_psf(0,0));
-				if(i<=X/2){
-					e = ((double)i/X);
-				}else{
-					e = ((double)(i-X)/X);
-				}
-				if(j<=Y/2){
-					f = ((double)j/Y);
-				}else{
-					f = ((double)(j-Y)/Y);
-				}
+                tabcc[i][j] = 4*Math.PI*Math.PI*(e*e+f*f);
+                q = 1.0/(a*a + b*b + alpha*tabcc[i][j]);
+                //out = up/down
+                out[i][2*j] = (a*c + b*d)*q;
+                out[i][2*j+1] = (a*d - b*c)*q;
+            }
+        }
+        return out;
+    }
 
-				tabcc[i][j] = 4*Math.PI*Math.PI*(e*e+f*f);
-				q = 1.0/(a*a + b*b + alpha*tabcc[i][j]);
-				//out = up/down
-						out[i][2*j] = (a*c + b*d)*q;
-						out[i][2*j+1] = (a*d - b*c)*q;
-			}
-		}
-		return out;
-	}
+    @Override
+    public double[][] WienerQuad(double alpha) {
+        double a,b,c,d,q;
+        double[][]out = new double[X][2*Y];
+        for(int i = 0; i<X; i++){
+            for(int j=0; j<Y; j++){
+                a = FFT_PSF[i][2*j];
+                b = FFT_PSF[i][2*j+1];
+                c = FFT_Image[i][2*j];
+                d = FFT_Image[i][2*j+1];
+                q = 1.0/(a*a + b*b + tabcc[i][j]*alpha);
+                out[i][2*j] = (a*c + b*d)*q;
+                out[i][2*j+1] = (a*d - b*c)*q;
+            }
+        }
+        return out;
+    }
 
-	@Override
-	public double[][] WienerQuad(double alpha) {
-		double a,b,c,d,q;
-		double[][]out = new double[X][2*Y];
-		for(int i = 0; i<X; i++){
-			for(int j=0;j<Y;j++){
-				a = FFT_PSF[i][2*j];
-				b = FFT_PSF[i][2*j+1];
-				c = FFT_Image[i][2*j];
-				d = FFT_Image[i][2*j+1];
-				q = 1.0/(a*a + b*b + tabcc[i][j]*alpha);
-				out[i][2*j] = (a*c + b*d)*q;
-				out[i][2*j+1] = (a*d - b*c)*q;
-			}
-		}
+    /************************************** 1D TESTING *************************************************/
 
-		return out;
-	}
+    @Override
+    public double[] WienerQuad1D(double alpha, double[] FFT_PSF,double[] FFTImage, int XX, int YY) {
+        this.FFT_PSF1D = FFT_PSF;
+        this.FFT_Image1D = FFTImage;
+        this.X = XX;
+        this.Y = YY;
+        double a,b,c,d,e,f,q;
+        double[]out = new double[X*2*Y];
+        tabcc1D = new double[X*Y];
 
-	/************************************** 1D TESTING *************************************************/
+        for(int i = 0; i<X; i++){
+            for(int j=0;j<Y;j++){
+                a = FFT_PSF1D[2*(j+i*Y)];
+                b = FFT_PSF1D[2*((j+1)+i*Y)];
+                c = FFT_Image1D[2*(j+i*Y)];
+                d = FFT_Image1D[2*((j+1)+i*Y)];
+                if(i<=X/2){
+                    e = ((double)i/X);
+                }else{
+                    e = ((double)(i-X)/X);
+                }
+                if(j<=Y/2){
+                    f = ((double)j/Y);
+                }else{
+                    f = ((double)(j-Y)/Y);
+                }
+                tabcc1D[j+i*Y] = 4*Math.PI*Math.PI*(e*e+f*f);
+                q = 1.0/(a*a + b*b + alpha*tabcc1D[j+i*Y]);
+                //out = up/down
+                out[2*(j+i*Y)] = (a*c + b*d)*q;
+                out[2*((j+1)+i*Y)] = (a*d - b*c)*q;
+            }
+        }
+        return out;
+    }
 
-	@Override
-	public double[] WienerQuad1D(double alpha, double[] FFT_PSF,double[] FFTImage, int XX, int YY) {
-		this.FFT_PSF1D = FFT_PSF;
-		this.FFT_Image1D = FFTImage;
-		this.X = XX;
-		this.Y = YY;
-		double a,b,c,d,e,f,q;
-		double[]out = new double[X*2*Y];
-		tabcc1D = new double[X*Y];
-
-		for(int i = 0; i<X; i++){
-			for(int j=0;j<Y;j++){
-				a = FFT_PSF1D[2*j+i*Y*2];
-				b = FFT_PSF1D[(2*j+1)+i*Y*2];
-				c = FFT_Image1D[2*j+i*Y*2];
-				d = FFT_Image1D[(2*j+1)+i*Y*2];
-				if(i<=X/2){
-					e = ((double)i/X);
-				}else{
-					e = ((double)(i-X)/X);
-				}
-				if(j<=Y/2){
-					f = ((double)j/Y);
-				}else{
-					f = ((double)(j-Y)/Y);
-				}
-				tabcc1D[j+i*Y] = 4*Math.PI*Math.PI*(e*e+f*f);
-				q = 1.0/(a*a + b*b + alpha*tabcc1D[j+i*Y]);
-				//out = up/down
-						out[2*j+i*Y*2] = (a*c + b*d)*q;
-				out[(2*j+1)+i*Y*2] = (a*d - b*c)*q;
-			}
-		}
-		return out;
-	}
-
-	@Override
-	public double[] WienerQuad1D(double alpha) {
-		double a,b,c,d,q;
-		double[]out = new double[X*2*Y];
-		for(int i = 0; i<X; i++){
-			for(int j=0;j<Y;j++){
-				a = FFT_PSF1D[2*j+i*Y*2];
-				b = FFT_PSF1D[2*j+1+i*Y*2];
-				c = FFT_Image1D[2*j+i*Y*2];
-				d = FFT_Image1D[2*j+1+i*Y*2];
-				q = 1.0/(a*a + b*b + tabcc1D[j+i*Y]*alpha);
-				out[2*j+i*Y*2] = (a*c + b*d)*q;
-				out[2*j+1+i*Y*2] = (a*d - b*c)*q;
-			}
-		}
-		return out;
-	}
-
-
+    @Override
+    public double[] WienerQuad1D(double alpha) {
+        double a,b,c,d,q;
+        double[]out = new double[X*2*Y];
+        for(int i = 0; i<X; i++){
+            for(int j=0;j<Y;j++){
+                a = FFT_PSF1D[2*(j+i*Y)];
+                b = FFT_PSF1D[2*((j+1)+i*Y)];
+                c = FFT_Image1D[2*(j+i*Y)];
+                d = FFT_Image1D[2*((j+1)+i*Y)];
+                q = 1.0/(a*a + b*b + tabcc1D[j+i*Y]*alpha);
+                out[2*(j+i*Y)] = (a*c + b*d)*q;
+                out[2*((j+1)+i*Y)] = (a*d - b*c)*q;
+            }
+        }
+        return out;
+    }
 }
 
 /*
