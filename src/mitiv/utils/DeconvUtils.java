@@ -58,7 +58,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
     public static int SCALE = 0;
 
     /**
-     * If we want the computed image to be corrected: a second scale to remove 
+     * If we want the computed image to be corrected: a second scale to remove
      * potential errors.
      */
     public static int SCALE_CORRECTED = 1;
@@ -84,7 +84,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
     /********************************** SOME PRIVATE FUNCTIONS **********************************/
     /**
      * Will convert a value to another
-     * 
+     *
      * @param g
      * @param alpha
      * @param beta
@@ -106,7 +106,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
     /**
      * Convert a RGB value to an int grey value
-     * 
+     *
      * @param r
      * @param g
      * @param b
@@ -119,7 +119,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
     /**
      * Convert a RGB value to an int grey value (float version)
-     * 
+     *
      * @param r
      * @param g
      * @param b
@@ -131,14 +131,14 @@ public class DeconvUtils implements DeconvUtilsInterface {
     }
 
     /**
-     * Kind of setter that will be called after we have open the image, whatever 
+     * Kind of setter that will be called after we have open the image, whatever
      * the input image cf ReadImage
      */
     private void setValue(){
         width = image.getWidth();
         height = image.getHeight();
         if (image_psf.getWidth() > image.getWidth() || image_psf.getHeight() > image.getHeight()) {
-            throw new IllegalArgumentException("You may have mistook the image and the PSF");
+            throw new IllegalArgumentException("PSF is too large");
         }
     }
 
@@ -149,7 +149,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
      */
     private double[] computeMinMax(double[][] tab){
         //trouver min max du tableau
-        double min = tab[0][0],max = tab[0][0]; 
+        double min = tab[0][0],max = tab[0][0];
         for(int i = 0; i<tab.length; i++){
             for(int j = 0; j<tab[0].length; j+=2){
                 if(tab[i][j] < min ){
@@ -170,7 +170,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
      */
     private float[] computeMinMax(float[][] tab){
         //trouver min max du tableau
-        float min = tab[0][0],max = tab[0][0]; 
+        float min = tab[0][0],max = tab[0][0];
         for(int i = 0; i<tab.length; i++){
             for(int j = 0; j<tab[0].length; j+=2){
                 if(tab[i][j] < min ){
@@ -190,7 +190,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
      * @return an array of 2 value: {min,max}
      */
     private double[] computeMinMax1D(double[] tab, boolean isComplex){
-        double min = tab[0],max = tab[0]; 
+        double min = tab[0],max = tab[0];
         int current = 0;
         for(int i = 0; i<height; i++){
             for(int j = 0; j<width; j++){
@@ -206,7 +206,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
                     max = tab[current];
                 }
             }
-        } 
+        }
         return new double[]{min,max};
     }
 
@@ -216,7 +216,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
      * @return an array of 2 value: {min,max}
      */
     private float[] computeMinMax1D(float[] tab, boolean isComplex){
-        float min = tab[0],max = tab[0]; 
+        float min = tab[0],max = tab[0];
         int current = 0;
         for(int i = 0; i<height; i++){
             for(int j = 0; j<width; j++){
@@ -232,7 +232,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
                     max = tab[current];
                 }
             }
-        } 
+        }
         return new float[]{min,max};
     }
 
@@ -360,7 +360,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
                     out[i][j] = colorToGrey(tmp[0], tmp[0], tmp[0]);
                 } else {
                     out[i][j] = colorToGrey(tmp[0], tmp[1], tmp[2]);
-                }            
+                }
             }
         }
         //printTab(out);
@@ -369,7 +369,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
     /**
      * Convert image to float array
-     * 
+     *
      * @param isComplex
      * @return
      */
@@ -388,7 +388,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
                     out[i][j] = colorToGrey(tmp[0], tmp[0], tmp[0]);
                 } else {
                     out[i][j] = colorToGrey(tmp[0], tmp[1], tmp[2]);
-                }            
+                }
             }
         }
         return out;
@@ -504,7 +504,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
     /********************************** ARRAY TO IMAGE **********************************/
     /*
      * Memo: even if y = y*2, we store the image in a array x*y !!
-     * 
+     *
      * */
 
 
@@ -567,7 +567,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
                 } else {
                     grey = greyToColor(array[(i+j*image.getHeight())],alphta[0], alphta[1]);
                     array[(i+j*image.getHeight())]= grey;
-                } 
+                }
             }
         }
     }
@@ -588,7 +588,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
                 } else {
                     grey = greyToColor(array[(i+j*image.getHeight())],alphta[0], alphta[1]);
                     array[(i+j*image.getHeight())]= grey;
-                } 
+                }
             }
         }
     }
@@ -954,9 +954,9 @@ public class DeconvUtils implements DeconvUtilsInterface {
     }
 
     /**
-     * Front function that will apply different job on the given array of size 
+     * Front function that will apply different job on the given array of size
      * height,witdh*2
-     * 
+     *
      * @param array a complex array
      * @param job
      * @return
@@ -984,9 +984,9 @@ public class DeconvUtils implements DeconvUtilsInterface {
     }
 
     /**
-     * Front function that will apply different job on the given array of size 
+     * Front function that will apply different job on the given array of size
      * height,witdh*2
-     * 
+     *
      * @param array a complex array
      * @param job
      * @return
@@ -1014,9 +1014,9 @@ public class DeconvUtils implements DeconvUtilsInterface {
     }
 
     /**
-     * Front function that will apply different job on the given array of size 
+     * Front function that will apply different job on the given array of size
      * height,witdh*2
-     * 
+     *
      * @param array a complex array
      * @param job
      * @return
@@ -1046,9 +1046,9 @@ public class DeconvUtils implements DeconvUtilsInterface {
     }
 
     /**
-     * Front function that will apply different job on the given array of size 
+     * Front function that will apply different job on the given array of size
      * height,witdh*2
-     * 
+     *
      * @param array a complex array
      * @param job
      * @return
@@ -1081,9 +1081,9 @@ public class DeconvUtils implements DeconvUtilsInterface {
     /**
      * This function will scale the raw data into 0-255 grey value but will also
      * check that there is no single value that may have make an incorrect min/max
-     * value, by checking when we have for the first time at least 2-3 pixels 
+     * value, by checking when we have for the first time at least 2-3 pixels
      * that have this color, and take this pixel as new min/max.
-     * 
+     *
      * @param array
      * @return
      * @deprecated  replaced by {@link #ArrayToImage(double[][], int)}
@@ -1205,7 +1205,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
     /**
      * Convert 1D array to bufferedImage and add a double correction
-     * 
+     *
      * @param array
      * @param isComplex
      * @return
@@ -1327,7 +1327,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
     /**
      * FFT using float with 2D float array
-     * 
+     *
      * @param array
      */
     public void FFT(float[][] array) {
@@ -1345,7 +1345,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
     /**
      * inverse FFT using float with 2D float array
-     * 
+     *
      * @param array
      */
     public void IFFT(float[][] array) {
@@ -1363,7 +1363,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
     /**
      * inverse FFT using float with 1D float array
-     * 
+     *
      * @param array
      */
     public void FFT1D(float[] array) {
@@ -1381,7 +1381,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
     /**
      * inverse FFT using float with 1D non complex float array
-     * 
+     *
      * @param array
      */
     public void IFFT1D(float[] array) {
@@ -1392,7 +1392,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
     /********************************** PSF PADDING **********************************/
     /*
      * Memo: even if y = y*2, we store the psf in a array x*y !!
-     * 
+     *
      * */
 
     @Override
@@ -1416,19 +1416,19 @@ public class DeconvUtils implements DeconvUtilsInterface {
         //bloc haut a droite: B
         for(int j = demiPsfW; j<image_psf.getWidth(); j++){
             for(int i=0;i<demiPsfH;i++){
-                tableau_psf[(height-demiPsfH)+i][j-demiPsfW] = test[i][j]; 
+                tableau_psf[(height-demiPsfH)+i][j-demiPsfW] = test[i][j];
             }
         }
         //bloc bas a gauche: C
         for(int j = 0; j<demiPsfW; j++){
             for(int i=demiPsfH;i<image_psf.getHeight();i++){
-                tableau_psf[i-demiPsfH][width-demiPsfW+j] = test[i][j]; 
+                tableau_psf[i-demiPsfH][width-demiPsfW+j] = test[i][j];
             }
         }
         //bloc bas a droite: D
         for(int j = demiPsfW; j<image_psf.getWidth(); j++){
             for(int i=demiPsfH;i<image_psf.getHeight();i++){
-                tableau_psf[i-demiPsfH][j-demiPsfW] = test[i][j]; 
+                tableau_psf[i-demiPsfH][j-demiPsfW] = test[i][j];
             }
         }
         //printTab(tableau_psf);
@@ -1453,13 +1453,13 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
-        //   A | B     -> 
+        //   A | B     ->
         //   -----     -> PSF
         //   C | D     ->
         //
-        // And we want will send them to the other side in the image 
+        // And we want will send them to the other side in the image
         //
-        //   D | C     -> 
+        //   D | C     ->
         //   -----     -> Image
         //   B | A     ->
 
@@ -1468,25 +1468,25 @@ public class DeconvUtils implements DeconvUtilsInterface {
             //Bloc haut à gauche: D
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH+i)+(demiPsfW+j)*psfH]; 
+                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH+i)+(demiPsfW+j)*psfH];
                 }
             }
             //bloc haut a droite: C
             for(int j = width-demiPsfW; j < width; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH+i)+(demiPsfW-width+j)*psfH]; 
+                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH+i)+(demiPsfW-width+j)*psfH];
                 }
             }
             //bloc bas a gauche: B
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH-height+i)+(demiPsfW+j)*psfH]; 
+                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH-height+i)+(demiPsfW+j)*psfH];
                 }
             }
             //bloc bas a droite: A
             for(int j = width-demiPsfW; j < width; j++){
                 for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH-height+i)+(demiPsfW-width+j)*psfH]; 
+                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH-height+i)+(demiPsfW-width+j)*psfH];
                 }
             }
         }else{
@@ -1494,25 +1494,25 @@ public class DeconvUtils implements DeconvUtilsInterface {
             //Bloc haut à gauche: D
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH+i)+(demiPsfW+j)*psfH]; 
+                    tableau_psf[i+j*hght] = test[(demiPsfH+i)+(demiPsfW+j)*psfH];
                 }
             }
             //bloc haut a droite: C
             for(int j = width-demiPsfW; j < width; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH+i)+(demiPsfW-width+j)*psfH]; 
+                    tableau_psf[i+j*hght] = test[(demiPsfH+i)+(demiPsfW-width+j)*psfH];
                 }
             }
             //bloc bas a gauche: B
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH-height+i)+(demiPsfW+j)*psfH]; 
+                    tableau_psf[i+j*hght] = test[(demiPsfH-height+i)+(demiPsfW+j)*psfH];
                 }
             }
             //bloc bas a droite: A
             for(int j = width-demiPsfW; j < width; j++){
                 for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH-height+i)+(demiPsfW-width+j)*psfH]; 
+                    tableau_psf[i+j*hght] = test[(demiPsfH-height+i)+(demiPsfW-width+j)*psfH];
                 }
             }
         }
@@ -1521,7 +1521,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
     /**
      * float PSF shift + padding
-     * 
+     *
      * @param isComplex
      * @return
      */
@@ -1541,13 +1541,13 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
-        //   A | B     -> 
+        //   A | B     ->
         //   -----     -> PSF
         //   C | D     ->
         //
-        // And we want will send them to the other side in the image 
+        // And we want will send them to the other side in the image
         //
-        //   D | C     -> 
+        //   D | C     ->
         //   -----     -> Image
         //   B | A     ->
 
@@ -1556,25 +1556,25 @@ public class DeconvUtils implements DeconvUtilsInterface {
             //UP, Left Bloc: D
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH+i)+(demiPsfW+j)*psfH]; 
+                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH+i)+(demiPsfW+j)*psfH];
                 }
             }
             //UP, right, bloc: C
             for(int j = width-demiPsfW; j < width; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH+i)+(demiPsfW-width+j)*psfH]; 
+                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH+i)+(demiPsfW-width+j)*psfH];
                 }
             }
             //Bottom, Left bloc: B
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH-height+i)+(demiPsfW+j)*psfH]; 
+                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH-height+i)+(demiPsfW+j)*psfH];
                 }
             }
             //Bottom, right bloc: A
             for(int j = width-demiPsfW; j < width; j++){
                 for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH-height+i)+(demiPsfW-width+j)*psfH]; 
+                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH-height+i)+(demiPsfW-width+j)*psfH];
                 }
             }
         }else{
@@ -1582,25 +1582,25 @@ public class DeconvUtils implements DeconvUtilsInterface {
             //UP, Left Bloc: D
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH+i)+(demiPsfW+j)*psfH]; 
+                    tableau_psf[i+j*hght] = test[(demiPsfH+i)+(demiPsfW+j)*psfH];
                 }
             }
             //UP, right, bloc: C
             for(int j = width-demiPsfW; j < width; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH+i)+(demiPsfW-width+j)*psfH]; 
+                    tableau_psf[i+j*hght] = test[(demiPsfH+i)+(demiPsfW-width+j)*psfH];
                 }
             }
             //Bottom, Left bloc: B
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH-height+i)+(demiPsfW+j)*psfH]; 
+                    tableau_psf[i+j*hght] = test[(demiPsfH-height+i)+(demiPsfW+j)*psfH];
                 }
             }
             //Bottom, right bloc: A
             for(int j = width-demiPsfW; j < width; j++){
                 for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH-height+i)+(demiPsfW-width+j)*psfH]; 
+                    tableau_psf[i+j*hght] = test[(demiPsfH-height+i)+(demiPsfW-width+j)*psfH];
                 }
             }
         }
@@ -1656,7 +1656,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
     }
 
     /**
-     * 
+     *
      * @param tab
      * @param isComplex
      */
@@ -1683,7 +1683,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
     /**
      * Purely debug function
-     * 
+     *
      * @param tab
      * @param isComplex
      */
@@ -1702,7 +1702,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
 
     /**
      * Purely debug function
-     * 
+     *
      * @param tab
      * @param isComplex
      */

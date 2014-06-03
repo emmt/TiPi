@@ -37,8 +37,7 @@ import mitiv.exception.NonconformingArrayException;
  * TODO: The code for most static methods should be automatically written from
  *       template code (easier maintenance and less bugs).
  * 
- * @author eric
- *
+ * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 public class ArrayOps {
     /**
@@ -144,6 +143,24 @@ public class ArrayOps {
             final double[] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
+            throw new NonconformingArrayException(1);
+        }
+        return n;
+    }
+
+    public static final int getLength(final double[] w, final double[] x,
+            final double[] y, final double[] z) {
+        int n = getLength(w);
+        if (getLength(x) != n || getLength(y) != n || getLength(z) != n) {
+            throw new NonconformingArrayException(1);
+        }
+        return n;
+    }
+
+    public static final int getLength(final float[] w, final float[] x,
+            final float[] y, final float[] z) {
+        int n = getLength(w);
+        if (getLength(x) != n || getLength(y) != n || getLength(z) != n) {
             throw new NonconformingArrayException(1);
         }
         return n;
@@ -578,6 +595,114 @@ public class ArrayOps {
         return s;
     }
 
+    /*-----------------------------------------------------------------------*/
+    /* NORMS */
+
+    /**
+     * Compute the Euclidean (L2) norm of an array.
+     *
+     * @param x   An array of double's.
+     *
+     * @return The square root of the sum of squared elements of x.
+     */
+    public static double norm2(final double[] x) {
+        double s = 0.0;
+        int n = x.length;
+        for (int i = 0; i < n; ++i) {
+            s += x[i]*x[i];
+        }
+        return Math.sqrt(s);
+    }
+
+    /**
+     * Compute the L1 norm of an array.
+     *
+     * @param x   An array of double's.
+     *
+     * @return The sum of absolute values of x.
+     */
+    public static double norm1(final double[] x) {
+        double s = 0.0;
+        int n = x.length;
+        for (int i = 0; i < n; ++i) {
+            s += Math.abs(x[i]);
+        }
+        return s;
+    }
+
+    /**
+     * Compute the infinite norm of an array.
+     *
+     * @param x   An array of double's.
+     *
+     * @return The maximum absolute value of x.
+     */
+    public static double normInf(final double[] x) {
+        double s = 0.0;
+        int n = x.length;
+        for (int i = 0; i < n; ++i) {
+            double r = Math.abs(x[i]);
+            if (r > s) {
+                s = r;
+            }
+        }
+        return s;
+    }
+
+    /**
+     * Compute the Euclidean (L2) norm of an array.
+     *
+     * @param x   An array of float's.
+     *
+     * @return The square root of the sum of squared elements of x.
+     */
+    public static float norm2(final float[] x) {
+        float s = 0.0F;
+        int n = x.length;
+        for (int i = 0; i < n; ++i) {
+            s += x[i]*x[i];
+        }
+        return (float)Math.sqrt(s);
+    }
+
+    /**
+     * Compute the L1 norm of an array.
+     *
+     * @param x   An array of float's.
+     *
+     * @return The sum of absolute values of x.
+     */
+    public static double norm1(final float[] x) {
+        float s = 0.0F;
+        int n = x.length;
+        for (int i = 0; i < n; ++i) {
+            s += Math.abs(x[i]);
+        }
+        return s;
+    }
+
+    /**
+     * Compute the infinite norm of an array.
+     *
+     * @param x   An array of float's.
+     *
+     * @return The maximum absolute value of x.
+     */
+    public static float normInf(final float[] x) {
+        float s = 0.0F;
+        int n = x.length;
+        for (int i = 0; i < n; ++i) {
+            float r = Math.abs(x[i]);
+            if (r > s) {
+                s = r;
+            }
+        }
+        return s;
+    }
+
+    /*-----------------------------------------------------------------------*/
+    /* ZERO */
+
     public static void zero(int n, double[] x) {
         fill(n, x, 0.0);
     }
@@ -755,9 +880,87 @@ public class ArrayOps {
         }
     }
 
+    public static void axpby(int n, double alpha, final double[] x,
+            double beta, final double[] y, double[] dst) {
+        if (beta == 1.0) {
+            if (alpha == 1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = y[i] + x[i];
+                }
+            } else if (alpha == -1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = y[i] - x[i];
+                }
+            } else if (alpha == 0.0) {
+                for (int i = 0; i < n; ++i) {
+                    copy(n, y, dst);
+                }
+            } else {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = alpha*x[i] + y[i];
+                }
+            }
+        } else if (beta == -1.0) {
+            if (alpha == 1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = x[i] - y[i];
+                }
+            } else if (alpha == -1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = -x[i] - y[i];
+                }
+            } else if (alpha == 0.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = -y[i];
+                }
+            } else {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = alpha*x[i] - y[i];
+                }
+            }
+        } else if (beta == 0.0) {
+            if (alpha == 1.0) {
+                copy(n, x, dst);
+            } else if (alpha == -1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = -x[i];
+                }
+            } else if (alpha == 0.0) {
+                zero(n, dst);
+            } else {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = alpha*x[i];
+                }
+            }
+        } else {
+            if (alpha == 1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = x[i] + beta*y[i];
+                }
+            } else if (alpha == -1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = beta*y[i] - x[i];
+                }
+            } else if (alpha == 0.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = beta*y[i];
+                }
+            } else {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = alpha*x[i] + beta*y[i];
+                }
+            }
+        }
+    }
+
     public static void axpby(double alpha, final double[] x, double beta,
             double[] y) {
         axpby(getLength(x, y), alpha, x, beta, y);
+    }
+
+    public static void axpby(double alpha, final double[] x, double beta,
+            final double[] y, double dst[]) {
+        axpby(getLength(x, y, dst), alpha, x, beta, y, dst);
     }
 
     public static void axpby(int n, double alpha, final float[] x,
@@ -845,10 +1048,148 @@ public class ArrayOps {
         }
     }
 
-    public static void axpby(double alpha, final float[] x, double beta,
-            float[] y) {
+    public static void axpby(int n, double alpha, final float[] x,
+            double beta, final float[] y, float[] dst) {
+        if (beta == 1.0) {
+            if (alpha == 1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = y[i] + x[i];
+                }
+            } else if (alpha == -1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = y[i] - x[i];
+                }
+            } else if (alpha == 0.0) {
+                for (int i = 0; i < n; ++i) {
+                    copy(n, y, dst);
+                }
+            } else {
+                float a = (float)alpha;
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = a*x[i] + y[i];
+                }
+            }
+        } else if (beta == -1.0) {
+            if (alpha == 1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = x[i] - y[i];
+                }
+            } else if (alpha == -1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = -x[i] - y[i];
+                }
+            } else if (alpha == 0.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = -y[i];
+                }
+            } else {
+                float a = (float)alpha;
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = a*x[i] - y[i];
+                }
+            }
+        } else if (beta == 0.0) {
+            if (alpha == 1.0) {
+                copy(n, x, dst);
+            } else if (alpha == -1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = -x[i];
+                }
+            } else if (alpha == 0.0) {
+                zero(n, dst);
+            } else {
+                float a = (float)alpha;
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = a*x[i];
+                }
+            }
+        } else {
+            float b = (float)beta;
+            if (alpha == 1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = x[i] + b*y[i];
+                }
+            } else if (alpha == -1.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = b*y[i] - x[i];
+                }
+            } else if (alpha == 0.0) {
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = b*y[i];
+                }
+            } else {
+                float a = (float)alpha;
+                for (int i = 0; i < n; ++i) {
+                    dst[i] = a*x[i] + b*y[i];
+                }
+            }
+        }
+    }
+
+    public static void axpby(double alpha, final float[] x, double beta, float[] y) {
         axpby(getLength(x, y), alpha, x, beta, y);
     }
+
+    public static void axpby(double alpha, final float[] x, double beta, final float[] y, float dst[]) {
+        axpby(getLength(x, y, dst), alpha, x, beta, y, dst);
+    }
+
+    /*-----------------------------------------------------------------------*/
+    /* ALPHA*X + BETA*Y + GAMMA*Z */
+
+    public static void axpbypcz(int n,
+            double alpha, final double[] x,
+            double beta,  final double[] y,
+            double gamma, final double[] z,
+            double[] dst)
+    {
+        if (alpha == 0.0) {
+            axpby(beta, y, gamma, z, dst);
+        } else if (beta == 0.0) {
+            axpby(alpha, x, gamma, z, dst);
+        } else if (gamma == 0.0) {
+            axpby(alpha, x, beta, y, dst);
+        } else {
+            for (int i = 0; i < n; ++i) {
+                dst[i] = alpha*x[i] + beta*y[i] + gamma*z[i];
+            }
+        }
+    }
+
+    public static void axpbypcz(double alpha, final double[] x, double beta,
+            final double[] y, double gamma, final double[] z, double[] dst) {
+        axpbypcz(getLength(x, y, z, dst), alpha, x, beta, y, gamma, z, dst);
+    }
+
+    public static void axpbypcz(int n,
+            double alpha, final float[] x,
+            double beta,  final float[] y,
+            double gamma, final float[] z,
+            float[] dst)
+    {
+        if (alpha == 0.0) {
+            axpby(beta, y, gamma, z, dst);
+        } else if (beta == 0.0) {
+            axpby(alpha, x, gamma, z, dst);
+        } else if (gamma == 0.0) {
+            axpby(alpha, x, beta, y, dst);
+        } else {
+            float a = (float)alpha;
+            float b = (float)beta;
+            float c = (float)gamma;
+            for (int i = 0; i < n; ++i) {
+                dst[i] = a*x[i] + b*y[i] + c*z[i];
+            }
+        }
+    }
+
+    public static void axpbypcz(float alpha, final float[] x, float beta,
+            final float[] y, float gamma, final float[] z, float[] dst) {
+        axpbypcz(getLength(x, y, z, dst), alpha, x, beta, y, gamma, z, dst);
+    }
+
+    /*-----------------------------------------------------------------------*/
+    /* DOT PRODUCT */
 
     /**
      * Compute the dot product of two "vectors".
