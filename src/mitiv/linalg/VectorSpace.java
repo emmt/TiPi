@@ -129,6 +129,48 @@ public abstract class VectorSpace {
             throws IncorrectSpaceException;
 
     /**
+     * Compute the Euclidean (L2) norm of a vector.
+     *
+     * This basic implementation calls dot() method and is expected to be
+     * overwritten with a more efficient version by the descendants of this
+     * class.
+     *
+     * @param x   A vector.
+     *
+     * @return The square root of the sum of squared elements of x.
+     * 
+     * @throws IncorrectSpaceException x must belong to this vector space.
+     */
+    public double norm2(Vector x)
+            throws IncorrectSpaceException {
+        return Math.sqrt(dot(x, x));
+    }
+
+    /**
+     * Compute the L1 norm of a vector.
+     *
+     * @param x   A vector.
+     * 
+     * @return The sum of absolute values of x.
+     *
+     * @throws IncorrectSpaceException x must belong to this vector space.
+     */
+    public abstract double norm1(Vector x)
+            throws IncorrectSpaceException;
+
+    /**
+     * Compute the infinite norm of a vector.
+     *
+     * @param x   A vector.
+     * 
+     * @return The maximum absolute value of x.
+     *
+     * @throws IncorrectSpaceException x must belong to this vector space.
+     */
+    public abstract double normInf(Vector x)
+            throws IncorrectSpaceException;
+
+    /**
      * Compute a linear combination of two vectors.
      *
      * In pseudo-code, this method does:
@@ -140,7 +182,8 @@ public abstract class VectorSpace {
      * This abstract method must be overwritten by its descendants. As this
      * method can be used to emulate other operations (as copy, zero, etc.),
      * actual code should be optimized for specific factors alpha and/or beta
-     * equal to +/-1 or 0.
+     * equal to +/-1 or 0.  In particular when ALPHA is zero, then X must not
+     * be referenced.
      *
      * @param alpha
      *            scalar factor for vector X
@@ -152,8 +195,76 @@ public abstract class VectorSpace {
      *            the vector Y (also used to store the result)
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
      */
-    public abstract void axpby(double alpha, final Vector x, double beta,
-            final Vector y) throws IncorrectSpaceException;
+    public abstract void axpby(double alpha, final Vector x,
+                               double beta,        Vector y) throws IncorrectSpaceException;
+
+
+    /**
+     * Compute a linear combination of two vectors.
+     *
+     * In pseudo-code, this method does:
+     *
+     * dst[i] = alpha*x[i] + beta*y[i];
+     *
+     * for all indices i.
+     *
+     * This abstract method must be overwritten by its descendants. As this
+     * method can be used to emulate other operations (as copy, zero, etc.),
+     * actual code should be optimized for specific factors alpha and/or beta
+     * equal to +/-1 or 0.  In particular when ALPHA (or BETA) is zero, then X
+     * (or Y) must not be referenced.
+     *
+     * @param alpha
+     *            scalar factor for vector X
+     * @param x
+     *            the vector X
+     * @param beta
+     *            scalar factor for vector Y
+     * @param y
+     *            the vector Y
+     *            
+     * @param dst
+     *            the destination vector
+     *
+     * @throws IncorrectSpaceException X and Y must belong to this vector space.
+     */
+    public abstract void axpby(double alpha, final Vector x,
+                               double beta,  final Vector y,
+                               Vector dst) throws IncorrectSpaceException;
+
+    /**
+     * Compute a linear combination of three vectors.
+     *
+     * In pseudo-code, this method does:
+     *
+     * dst[i] = alpha*x[i] + beta*y[i] + gamma*z[i];
+     *
+     * for all indices i.
+     *
+     * This abstract method must be overwritten by its descendants.
+     *
+     * @param alpha
+     *            scalar factor for vector X
+     * @param x
+     *            the vector X
+     * @param beta
+     *            scalar factor for vector Y
+     * @param y
+     *            the vector Y
+     *            
+     * @param gamma
+     *            scalar factor for vector Z
+     * @param z
+     *            the vector Z
+     * @param dst
+     *            the destination vector
+     *
+     * @throws IncorrectSpaceException X and Y must belong to this vector space.
+     */
+    public abstract void axpbypcz(double alpha, final Vector x,
+                                  double beta,  final Vector y,
+                                  double gamma, final Vector z,
+                                  Vector dst) throws IncorrectSpaceException;
 
     /**
      * Copy the contents of a vector into another one.

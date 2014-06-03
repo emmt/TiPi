@@ -85,11 +85,51 @@ public class FloatVectorSpace extends VectorSpace {
                 ((FloatVector) y).getData());
     }
 
-    public void axpby(double alpha, final Vector x, double beta, Vector y) {
+    public double norm2(Vector x) {
+        check(x);
+        return ArrayOps.norm2(((FloatVector) x).getData());
+    }
+
+    public double norm1(Vector x) {
+        check(x);
+        return ArrayOps.norm1(((FloatVector) x).getData());
+    }
+    
+    public double normInf(Vector x) {
+        check(x);
+        return ArrayOps.normInf(((FloatVector) x).getData());
+    }
+
+    public void axpby(double alpha, final Vector x,
+                      double beta,        Vector y) {
         check(x);
         check(y);
-        ArrayOps.axpby(size, alpha, ((FloatVector) x).getData(), beta,
-                ((FloatVector) y).getData());
+        ArrayOps.axpby(size,
+                       alpha, ((FloatVector) x).getData(),
+                       beta,  ((FloatVector) y).getData());
+    }
+
+    public void axpby(double alpha, final Vector x,
+                       double beta, final Vector y, Vector dst) {
+        check(x);
+        check(y);
+        check(dst);
+        ArrayOps.axpby(size,
+                       alpha, ((FloatVector) x).getData(),
+                       beta,  ((FloatVector) y).getData(), ((FloatVector) dst).getData());
+    }
+
+    public void axpbypcz(double alpha, final Vector x,
+                         double beta,  final Vector y,
+                         double gamma, final Vector z, Vector dst) {
+        check(x);
+        check(y);
+        check(z);
+        check(dst);
+        ArrayOps.axpbypcz(size,
+                          alpha, ((FloatVector) x).getData(),
+                          beta,  ((FloatVector) y).getData(),
+                          gamma, ((FloatVector) z).getData(), ((FloatVector) dst).getData());
     }
 }
 
