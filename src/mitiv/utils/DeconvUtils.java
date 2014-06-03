@@ -137,7 +137,7 @@ public class DeconvUtils implements DeconvUtilsInterface {
     private void setValue(){
         width = image.getWidth();
         height = image.getHeight();
-        if (image_psf.getWidth() >= image.getWidth() || image_psf.getHeight() >= image.getHeight()) {
+        if (image_psf.getWidth() > image.getWidth() || image_psf.getHeight() > image.getHeight()) {
             System.err.println("You may have mistook the image and the PSF");
             throw new IllegalArgumentException();
         }
