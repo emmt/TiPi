@@ -29,38 +29,38 @@ import java.awt.image.BufferedImage;
 import mitiv.linalg.LinearConjugateGradient;
 
 public class ThreadCG extends Thread {
-    
+
     MitivDeconvolution deconv;
-    
+
     boolean stop = false;
     boolean hasjob = false;
-    
+
     int nextJobValue;
     int nextJobJob;
-    
+
     public ThreadCG(MitivDeconvolution deconv){
         this.deconv = deconv;
     }
-    
+
     public void prepareNextJob(int tmp, int job){
         this.nextJobValue = tmp;
         this.nextJobJob = job;
         hasjob = true;
     }
-    
+
     public void run() {
         while (!stop) {
             if (hasjob) {
-            	hasjob = false; //first because if while computing a new job appear, we will not miss it
+                hasjob = false; //first because if while computing a new job appear, we will not miss it
                 BufferedImage buffered = deconv.nextJob(nextJobValue, nextJobJob);
                 deconv.updateImage(buffered, nextJobValue);
-                
+
                 //If we have not finish the computation we will continue it later
                 if (deconv.getOutputValue() == LinearConjugateGradient.IN_PROGRESS) {
-					hasjob = true;
-				}else{
-					deconv.updateProgressBarMessage("Done");
-				}
+                    hasjob = true;
+                }else{
+                    deconv.updateProgressBarMessage("Done");
+                }
             }
             try {
                 sleep(50);
@@ -69,11 +69,11 @@ public class ThreadCG extends Thread {
             }
         }
     }
-    
+
     public void cancel(){
         stop = true;
     }
-  }
+}
 
 /*
  * Local Variables:

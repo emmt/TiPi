@@ -318,12 +318,12 @@ public class LinearDeconvolver {
     public double getMu() {
         return A.getMu()/muFactor;
     }
-    
+
     /**
      * 
      */
     public void setMu(double mu) {
-        A.setMu(mu*muFactor);
+        A.setMu(mu*muFactor*1e9);
     }
 
     /**

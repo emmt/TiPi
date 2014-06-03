@@ -40,188 +40,189 @@ import mitiv.utils.DeconvUtils;
  *
  */
 public class Deconvolution{
-	DeconvUtils utils;
-	Filter wiener;
-	double[][] image;
-	double[][] psf;
-	double[] image1D;
-	double[] psf1D;
-	DoubleVector vector_y;
-	DoubleVector vector_psf;
-	int correction;
-	
-	//CG needs
-	DoubleVectorSpaceWithRank space;
-	DoubleVector x;
-	LinearDeconvolver deconv;
-	int outputValue;
+    DeconvUtils utils;
+    Filter wiener;
+    double[][] image;
+    double[][] psf;
+    double[] image1D;
+    double[] psf1D;
+    DoubleVector vector_y;
+    DoubleVector vector_psf;
+    int correction;
 
-	boolean verbose = false;
-	/**
-	 * Initial constructor that take the image and the PSF as parameters
-	 * 
-	 * @param image can be path, bufferedImage or IcyBufferedImage
-	 * @param PSF can be path, bufferedImage or IcyBufferedImage
-	 */
-	public Deconvolution(Object image, Object PSF, int correction){
-		utils = new DeconvUtils();
-		wiener = new Filter();
-		this.correction = correction;
-		if(image instanceof String){
-			utils.ReadImage((String)image, (String)PSF);
-		}else if(image instanceof BufferedImage){
-			utils.ReadImage((BufferedImage)image, (BufferedImage)PSF);
-		}else if(image instanceof IcyBufferedImage){
-			utils.ReadImage((IcyBufferedImage)image, (IcyBufferedImage)PSF);
-		}
-	}
+    //CG needs
+    DoubleVectorSpaceWithRank space;
+    DoubleVector x;
+    LinearDeconvolver linDeconv;
+    int outputValue;
 
-	/**
-	 * First deconvolution for the wiener filter
-	 * 
-	 * @param alpha
-	 * @return deconvoluated image
-	 */
-	public BufferedImage FirstDeconvolution(double alpha){
-		image = utils.ImageToArray(true);
-		psf = utils.PSF_Padding(true);
-		utils.FFT(image);
-		utils.FFT(psf);
-		double[][] out = wiener.Wiener(alpha, psf, image);
-		utils.IFFT(out);
-		outputValue = LinearConjugateGradient.CONVERGED;
-		return(utils.ArrayToImage(out, correction));
-	}
+    boolean verbose = false;
+    /**
+     * Initial constructor that take the image and the PSF as parameters
+     * 
+     * @param image can be path, bufferedImage or IcyBufferedImage
+     * @param PSF can be path, bufferedImage or IcyBufferedImage
+     */
+    public Deconvolution(Object image, Object PSF, int correction){
+        utils = new DeconvUtils();
+        wiener = new Filter();
+        this.correction = correction;
+        if(image instanceof String){
+            utils.ReadImage((String)image, (String)PSF);
+        }else if(image instanceof BufferedImage){
+            utils.ReadImage((BufferedImage)image, (BufferedImage)PSF);
+        }else if(image instanceof IcyBufferedImage){
+            utils.ReadImage((IcyBufferedImage)image, (IcyBufferedImage)PSF);
+        }
+    }
 
-	/**
-	 * Will compute less than firstDeconvolution: 1FTT inverse instead
-	 * of 2FFT + 1 inverse FFT
-	 * 
-	 * @param alpha
-	 * @return deconvoluated image
-	 */
-	public BufferedImage NextDeconvolution(double alpha){
-		double[][] out = wiener.Wiener(alpha);
-		utils.IFFT(out);
-		outputValue = LinearConjugateGradient.CONVERGED;
-		return(utils.ArrayToImage(out, correction));
-	}
+    /**
+     * First deconvolution for the wiener filter
+     * 
+     * @param alpha
+     * @return deconvoluated image
+     */
+    public BufferedImage FirstDeconvolution(double alpha){
+        image = utils.ImageToArray(true);
+        psf = utils.PSF_Padding(true);
+        utils.FFT(image);
+        utils.FFT(psf);
+        double[][] out = wiener.Wiener(alpha, psf, image);
+        utils.IFFT(out);
+        outputValue = LinearConjugateGradient.CONVERGED;
+        return(utils.ArrayToImage(out, correction));
+    }
 
-	/**
-	 * First deconvolution with quadratic option
-	 * 
-	 * @param alpha
-	 * @return deconvoluated image
-	 */
-	public BufferedImage FirstDeconvolutionQuad(double alpha){
-		image = utils.ImageToArray(true);
-		psf = utils.PSF_Padding(true);
-		utils.FFT(image);
-		utils.FFT(psf);
-		double[][] out = wiener.WienerQuad(alpha, psf, image);
-		utils.IFFT(out);
-		outputValue = LinearConjugateGradient.CONVERGED;
-		return(utils.ArrayToImage(out, correction));
-	}
+    /**
+     * Will compute less than firstDeconvolution: 1FTT inverse instead
+     * of 2FFT + 1 inverse FFT
+     * 
+     * @param alpha
+     * @return deconvoluated image
+     */
+    public BufferedImage NextDeconvolution(double alpha){
+        double[][] out = wiener.Wiener(alpha);
+        utils.IFFT(out);
+        outputValue = LinearConjugateGradient.CONVERGED;
+        return(utils.ArrayToImage(out, correction));
+    }
 
-	/**
-	 * Will compute less than firstDeconvolutionQuad: 1FTT inverse instead
-	 * of 2FFT + 1 inverse FFT
-	 * 
-	 * @param alpha
-	 * @return deconvoluated image
-	 */
-	public BufferedImage NextDeconvolutionQuad(double alpha){
-		double[][] out = wiener.WienerQuad(alpha);
-		utils.IFFT(out);
-		outputValue = LinearConjugateGradient.CONVERGED;
-		return(utils.ArrayToImage(out, correction));
-	}
+    /**
+     * First deconvolution with quadratic option
+     * 
+     * @param alpha
+     * @return deconvoluated image
+     */
+    public BufferedImage FirstDeconvolutionQuad(double alpha){
+        image = utils.ImageToArray(true);
+        psf = utils.PSF_Padding(true);
+        utils.FFT(image);
+        utils.FFT(psf);
+        double[][] out = wiener.WienerQuad(alpha, psf, image);
+        utils.IFFT(out);
+        outputValue = LinearConjugateGradient.CONVERGED;
+        return(utils.ArrayToImage(out, correction));
+    }
 
-	/**
-	 * First deconvolution with quadratic option and use in internal only 1D arrays
-	 * 
-	 * @param alpha
-	 * @return deconvoluated image
-	 */
-	public BufferedImage FirstDeconvolutionQuad1D(double alpha){
-		image1D = utils.ImageToArray1D(true);
-		psf1D = utils.PSF_Padding1D(true);
-		utils.FFT1D(image1D);
-		utils.FFT1D(psf1D);
-		double[] out = wiener.WienerQuad1D(alpha, psf1D, image1D,utils.height,utils.width);
-		utils.IFFT1D(out);
-		return(utils.ArrayToImage1D(out, correction,true));
-	}
+    /**
+     * Will compute less than firstDeconvolutionQuad: 1FTT inverse instead
+     * of 2FFT + 1 inverse FFT
+     * 
+     * @param alpha
+     * @return deconvoluated image
+     */
+    public BufferedImage NextDeconvolutionQuad(double alpha){
+        double[][] out = wiener.WienerQuad(alpha);
+        utils.IFFT(out);
+        outputValue = LinearConjugateGradient.CONVERGED;
+        return(utils.ArrayToImage(out, correction));
+    }
 
-	/**
-	 * Will compute less than firstDeconvolutionQuad: 1FTT inverse instead
-	 * of 2FFT + 1 inverse FFT, with 1D arrays optimization
-	 * 
-	 * @param alpha
-	 * @return deconvoluated image
-	 */
-	public BufferedImage NextDeconvolutionQuad1D(double alpha){
-		double[] out = wiener.WienerQuad1D(alpha);
-		utils.IFFT1D(out);
-		return(utils.ArrayToImage1D(out, correction, true));
-	}
+    /**
+     * First deconvolution with quadratic option and use in internal only 1D arrays
+     * 
+     * @param alpha
+     * @return deconvoluated image
+     */
+    public BufferedImage FirstDeconvolutionQuad1D(double alpha){
+        image1D = utils.ImageToArray1D(true);
+        psf1D = utils.PSF_Padding1D(true);
+        utils.FFT1D(image1D);
+        utils.FFT1D(psf1D);
+        double[] out = wiener.WienerQuad1D(alpha, psf1D, image1D,utils.height,utils.width);
+        utils.IFFT1D(out);
+        return(utils.ArrayToImage1D(out, correction,true));
+    }
 
-	private void parseOuputCG(int output){
-		//If we are on verbose mode and it does not ended normally
-		if ( output != LinearConjugateGradient.CONVERGED && output != LinearConjugateGradient.IN_PROGRESS && verbose) {
-			if (output == LinearConjugateGradient.A_IS_NOT_POSITIVE_DEFINITE) {
-				System.err.println("A_IS_NOT_POSITIVE_DEFINITE");
-			}else if (output == LinearConjugateGradient.TOO_MANY_ITERATIONS) {
-				System.err.println("TOO_MANY_ITERATIONS");
-			}else{
-				System.err.println("Not ended normally "+output);
-			}
-		}
-	}
-	
-	/**
-	 * Use the conjugate gradients to deconvoluate the image
-	 * 
-	 * @param alpha
-	 * @return deconvoluated image
-	 */
-	public BufferedImage FirstDeconvolutionCG(double alpha){
-		space = new DoubleVectorSpaceWithRank(utils.width, utils.height);
-		if (vector_psf == null) {
-			vector_psf = space.wrap(utils.PSF_Padding1D(false));
-		}
-		if (vector_y == null) {
-			vector_y = space.wrap(utils.ImageToArray1D(false));
-		}
+    /**
+     * Will compute less than firstDeconvolutionQuad: 1FTT inverse instead
+     * of 2FFT + 1 inverse FFT, with 1D arrays optimization
+     * 
+     * @param alpha
+     * @return deconvoluated image
+     */
+    public BufferedImage NextDeconvolutionQuad1D(double alpha){
+        double[] out = wiener.WienerQuad1D(alpha);
+        utils.IFFT1D(out);
+        return(utils.ArrayToImage1D(out, correction, true));
+    }
 
-		x = space.create(0);
-		DoubleVector w = space.create(1);
+    private void parseOuputCG(int output){
+        //If we are on verbose mode and it does not ended normally
+        if ( output != LinearConjugateGradient.CONVERGED && output != LinearConjugateGradient.IN_PROGRESS && verbose) {
+            if (output == LinearConjugateGradient.A_IS_NOT_POSITIVE_DEFINITE) {
+                System.err.println("A_IS_NOT_POSITIVE_DEFINITE");
+            }else if (output == LinearConjugateGradient.TOO_MANY_ITERATIONS) {
+                System.err.println("TOO_MANY_ITERATIONS");
+            }else{
+                System.err.println("Not ended normally "+output);
+            }
+        }
+    }
 
-		deconv = new LinearDeconvolver(
-				space.getShape(), vector_y.getData(), vector_psf.getData(), w.getData(), alpha);
-		outputValue = deconv.solve(x.getData(), 20, false);
-		parseOuputCG(outputValue);
-		return(utils.ArrayToImage1D(x.getData(), correction, false));
-	}
+    /**
+     * Use the conjugate gradients to deconvoluate the image
+     * 
+     * @param alpha
+     * @return deconvoluated image
+     */
+    public BufferedImage FirstDeconvolutionCG(double alpha){
+        space = new DoubleVectorSpaceWithRank(utils.width, utils.height);
+        if (vector_psf == null) {
+            vector_psf = space.wrap(utils.PSF_Padding1D(false));
+        }
+        if (vector_y == null) {
+            vector_y = space.wrap(utils.ImageToArray1D(false));
+        }
 
-	/**
-	 * @param alpha
-	 * @return deconvoluated image
-	 */
-	public BufferedImage NextDeconvolutionCG(double alpha){
-		if (outputValue != LinearConjugateGradient.IN_PROGRESS) {
-			x = space.create(0);
-		}
-		deconv.setMu(alpha);
-		outputValue = deconv.solve(x.getData(), 50, false);
-		parseOuputCG(outputValue);
-		return(utils.ArrayToImage1D(x.getData(), correction, false));
-	}
-	
-	public int getOuputValue(){
-		return outputValue;
-	}
+        x = space.create(0);
+        DoubleVector w = space.create(1);
+
+        linDeconv = new LinearDeconvolver(
+                space.getShape(), vector_y.getData(), vector_psf.getData(), w.getData(), alpha);
+        outputValue = linDeconv.solve(x.getData(), 20, false);
+        parseOuputCG(outputValue);
+        return(utils.ArrayToImage1D(x.getData(), correction, false));
+    }
+
+    /**
+     * @param alpha
+     * @return deconvoluated image
+     */
+    public BufferedImage NextDeconvolutionCG(double alpha){
+        if (outputValue != LinearConjugateGradient.IN_PROGRESS) {
+            x = space.create(0);
+        }
+        linDeconv.setMu(alpha);
+        //System.out.println("New value "+alpha);
+        outputValue = linDeconv.solve(x.getData(), 100, true);
+        parseOuputCG(outputValue);
+        return(utils.ArrayToImage1D(x.getData(), correction, false));
+    }
+
+    public int getOuputValue(){
+        return outputValue;
+    }
 }
 
 /*
