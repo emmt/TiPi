@@ -53,25 +53,37 @@ public class DeconvUtils implements DeconvUtilsInterface {
     private FloatFFT_1D fft1DFloat;
 
     /**
+     * Job to compute with the wiener filter
+     */
+    public static final int JOB_WIENER = 1;
+    /**
+     * Job to compute using quadratic and circulant approximation
+     */
+    public static final int JOB_QUAD = 2;
+    /**
+     * Job to compute with Conjugate gradients
+     */
+    public static final int JOB_CG = 3;
+    /**
      * If we want the computed image to be scaled.
      */
-    public static int SCALE = 0;
+    public static int SCALE = 4;
 
     /**
      * If we want the computed image to be corrected: a second scale to remove 
      * potential errors.
      */
-    public static int SCALE_CORRECTED = 1;
+    public static int SCALE_CORRECTED = 5;
 
     /**
      * If we want virtual color for the computed image
      */
-    public static int SCALE_COLORMAP = 2;
+    public static int SCALE_COLORMAP = 6;
 
     /**
      * If we want a correction on the scale + color
      */
-    public static int SCALE_CORRECTED_COLORMAP = 3;
+    public static int SCALE_CORRECTED_COLORMAP = 7;
     /**
      * The width of the image given to ReadImage
      */

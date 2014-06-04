@@ -25,20 +25,6 @@ import plugins.adufour.ezplug.*;
  */
 public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceListener
 {
-
-    /**
-     * Job to compute with the wiener filter
-     */
-    public static final int JOB_WIENER = 1;
-    /**
-     * Job to compute using quadratic and circulant approximation
-     */
-    public static final int JOB_QUAD = 2;
-    /**
-     * Job to compute with Conjugate gradients
-     */
-    public static final int JOB_CG = 3;
-
     //Mydata
     EzVarText	varText;
     EzVarText  options;
@@ -102,11 +88,11 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
 
     private int chooseJob(){
         if (options.getValue().equals(wiener)) {
-            return JOB_WIENER;
+            return DeconvUtils.JOB_WIENER;
         } else if (options.getValue().equals(quad)) {
-            return JOB_QUAD;
+            return DeconvUtils.JOB_QUAD;
         } else if (options.getValue().equals(cg)) {
-            return JOB_CG;
+            return DeconvUtils.JOB_CG;
         }else{
             throw new IllegalArgumentException("Invalid Job");
         }
@@ -117,11 +103,11 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         thread.start();
         switch (job) {
         //First value correspond to next job with alpha = 0, not all are equal to 1
-        case JOB_WIENER: 
+        case DeconvUtils.JOB_WIENER: 
             return (deconvolution.FirstDeconvolution(muMin));
-        case JOB_QUAD:
+        case DeconvUtils.JOB_QUAD:
             return (deconvolution.FirstDeconvolutionQuad(muMin));
-        case JOB_CG:
+        case DeconvUtils.JOB_CG:
             return (deconvolution.FirstDeconvolutionCG(muMin));
         default:
             throw new IllegalArgumentException("Invalid Job");
@@ -133,13 +119,13 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         updateLabel(mu);
         double mult = 1; //HACK While the data uniformization is not done...
         switch (job) {
-        case JOB_WIENER:
+        case DeconvUtils.JOB_WIENER:
             return (deconvolution.NextDeconvolution(mu));
 
-        case JOB_QUAD:
+        case DeconvUtils.JOB_QUAD:
             return (deconvolution.NextDeconvolutionQuad(mu*mult));
 
-        case JOB_CG:
+        case DeconvUtils.JOB_CG:
             return (deconvolution.NextDeconvolutionCG(mu*mult));
 
         default:

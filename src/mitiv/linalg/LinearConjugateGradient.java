@@ -26,7 +26,6 @@
 package mitiv.linalg;
 
 import mitiv.exception.IncorrectSpaceException;
-import mitiv.invpb.LeftHandSideMatrix;
 
 public class LinearConjugateGradient {
     /* Codes returned by solve() method. */
