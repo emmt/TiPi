@@ -1,3 +1,33 @@
+/*
+ * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
+ * developed by the MitiV project.
+ *
+ * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+/**
+ * 
+ * @author Leger Jonathan
+ *
+ */
 package mitiv.utils;
 
 import java.awt.image.BufferedImage;
@@ -8,6 +38,16 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 import mitiv.deconv.Deconvolution;
 
+/**
+ * mitivCLI is a command line interface that let the user call the functions contains 
+ * in the library easily and with precise control of the parameters.
+ * 
+ * usage: mitivCLI PSF IMAGE
+ * options  -h help menu
+ *          -r regularization choice: wiener(default), quadratic, cg
+ *          -p post treatment: none(default), corrected, colormap, correted_colormap
+ *          -a alpha value 
+ */
 public class mitivCLI {
 
     static String regularization = "wiener";
@@ -19,7 +59,7 @@ public class mitivCLI {
     static String Image = "";
     static String OutputImage = "DeconvoluatedImage.png";
 
-    public static boolean isIn(String element, String[] tab){
+    private static boolean isIn(String element, String[] tab){
         boolean ispresent = false;
         for (int i = 0; i < tab.length; i++) {
             if (tab[i].compareTo(element) == 0) {
@@ -29,9 +69,10 @@ public class mitivCLI {
         return ispresent;
     }
 
-    public static void checkArgs(){
-        if (PSF == "" || Image == "") {
-            System.out.println("We need at least an image and a PSF");
+    private static void checkArgs(){
+        if (PSF.compareTo("") == 0 || Image.compareTo("") == 0) {
+            System.out.println("We need at least PSF and a image");
+            System.exit(1);
         }
         if (!isIn(regularization, regularizationChoice)) {
             System.out.println("The regularization chosen does not exist: "+regularization);
@@ -77,7 +118,7 @@ public class mitivCLI {
         }
     }
 
-    public static void printHelp(){
+    private static void printHelp(){
         System.out.println("Usage: mitivCLI psf image");
         System.out.println("      options: -o output image");
         System.out.println("      options: -r kind of regularization");
@@ -135,5 +176,17 @@ public class mitivCLI {
             System.err.println("Bad output path");
         }
     }
-
 }
+
+/*
+ * Local Variables:
+ * mode: Java
+ * tab-width: 8
+ * indent-tabs-mode: nil
+ * c-basic-offset: 4
+ * fill-column: 78
+ * coding: utf-8
+ * ispell-local-dictionary: "american"
+ * End:
+ */
+

@@ -446,12 +446,12 @@ public class NonLinearConjugateGradient {
         }
     }
 
-    double getFMin()
+    public double getFMin()
     {
         return fmin;
     }
 
-    void setFMin(double value)
+    public void setFMin(double value)
     {
         if (Double.isInfinite(value) || Double.isNaN(value)) {
             unsetFMin();            
@@ -461,13 +461,13 @@ public class NonLinearConjugateGradient {
         }
     }
 
-    void unsetFMin()
+    public void unsetFMin()
     {
         fmin = Double.NaN;
         fmin_given = false;            
     }
 
-    int start()
+    public int start()
     {
         iter = 0;
         nevals = 0;
@@ -476,7 +476,7 @@ public class NonLinearConjugateGradient {
         return (task = TASK_COMPUTE_FG);
     }
 
-    int iterate(Vector x1, double f1, Vector g1)
+    public int iterate(Vector x1, double f1, Vector g1)
     {
         /*
          * The new iterate is:

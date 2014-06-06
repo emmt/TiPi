@@ -86,6 +86,11 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         return Math.exp(muAlpha + muBeta*slidervalue);
     }
     
+    /*
+     * Yes I'm using == to compare 2 strings and yes this is what I want,
+     * and yes it's working because getValue() return a string object that I compare
+     * with himself
+     */
     private int chooseCorrection(){
         if (correction.getValue() == normal) {
             return DeconvUtils.SCALE;
@@ -131,7 +136,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     public BufferedImage nextJob(int slidervalue, int job){
         double mu = sliderToRegularizationWeight(slidervalue);
         updateLabel(mu);
-        double mult = 1E9; //HACK While the data uniformization is not done...
+        double mult = 1E9; //HACK While the data uniformization is not done... TODO
         switch (job) {
         case JOB_WIENER:
             return (deconvolution.NextDeconvolution(mu));
