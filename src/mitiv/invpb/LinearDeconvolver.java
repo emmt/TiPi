@@ -323,7 +323,7 @@ public class LinearDeconvolver {
      * 
      */
     public void setMu(double mu) {
-        A.setMu(mu*muFactor*1e9);
+        A.setMu(mu*muFactor);
     }
 
     /**

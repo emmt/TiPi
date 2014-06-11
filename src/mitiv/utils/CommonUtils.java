@@ -13,7 +13,7 @@ public class CommonUtils {
      * @param beta
      * @return
      */
-    public final int greyToColor(double g, double alpha, double beta)
+    public int greyToColor(double g, double alpha, double beta)
     {
         double x = alpha*g + beta;
         int i;
@@ -35,7 +35,7 @@ public class CommonUtils {
      * @param b
      * @return
      */
-    public final int colorToGrey(double r, double g, double b)
+    public int colorToGrey(double r, double g, double b)
     {
         return (int)(0.2126*r+0.7152*g+0.0722*b);
     }
@@ -48,26 +48,33 @@ public class CommonUtils {
      * @param b
      * @return
      */
-    public final int colorToGrey(float r, float g, float b)
+    public int colorToGrey(float r, float g, float b)
     {
         return (int)(0.2126*r+0.7152*g+0.0722*b);
     }
 
     /**
      * Will scan the tab and return the highest and smallest value
-     * @param tab Array to parse
+     * @param array Array to parse
      * @return an array of 2 value: {min,max}
      */
-    public double[] computeMinMax(double[][] tab){
+    public double[] computeMinMax(double[][] array, boolean isComplex){
         //trouver min max du tableau
-        double min = tab[0][0],max = tab[0][0];
-        for(int i = 0; i<tab.length; i++){
-            for(int j = 0; j<tab[0].length; j+=2){
-                if(tab[i][j] < min ){
-                    min = tab[i][j];
+        double min = array[0][0],max = array[0][0];
+        int sizeArray = isComplex ? array[0].length/2 : array[0].length;
+        for(int j = 0; j<sizeArray; j++){
+            for(int i = 0; i<array.length; i++){
+                double value;
+                if (isComplex) {
+                    value = array[i][2*j];
+                }else {
+                    value = array[i][j];
                 }
-                if(tab[i][j] > max ){
-                    max = tab[i][j];
+                if(value < min ){
+                    min = value;
+                }
+                if(value > max ){
+                    max = value;
                 }
             }
         }
@@ -76,19 +83,26 @@ public class CommonUtils {
 
     /**
      * Will scan the tab and return the highest and smallest value (float version)
-     * @param tab Array to parse
+     * @param array Array to parse
      * @return an array of 2 value: {min,max}
      */
-    public float[] computeMinMax(float[][] tab){
+    public float[] computeMinMax(float[][] array, boolean isComplex){
         //trouver min max du tableau
-        float min = tab[0][0],max = tab[0][0];
-        for(int i = 0; i<tab.length; i++){
-            for(int j = 0; j<tab[0].length; j+=2){
-                if(tab[i][j] < min ){
-                    min = tab[i][j];
+        float min = array[0][0],max = array[0][0];
+        int sizeArray = isComplex ? array[0].length/2 : array[0].length;
+        for(int j = 0; j<sizeArray; j++){
+            for(int i = 0; i<array.length; i++){
+                float value;
+                if (isComplex) {
+                    value = array[i][2*j];
+                }else {
+                    value = array[i][j];
                 }
-                if(tab[i][j] > max ){
-                    max = tab[i][j];
+                if(value < min ){
+                    min = value;
+                }
+                if(value > max ){
+                    max = value;
                 }
             }
         }
@@ -97,17 +111,18 @@ public class CommonUtils {
 
     /**
      * Will scan the tab and return the highest and smallest value
-     * @param tab Array to parse
+     * @param array Array to parse
      * @return an array of 2 value: {min,max}
      */
-    public double[] computeMinMax1D(double[] tab, boolean isComplex){
-        double min = tab[0],max = tab[0];
-        for(int i = 0; i<tab.length; i++){
+    public double[] computeMinMax1D(double[] array, boolean isComplex){
+        double min = array[0],max = array[0];
+        int sizeArray = isComplex ? array.length/2 : array.length;
+        for(int i = 0; i<sizeArray; i++){
             double value;
             if (isComplex) {
-                value = tab[2*i];
+                value = array[2*i];
             } else {
-                value = tab[i];
+                value = array[i];
             }
             if(value < min ){
                 min = value;
@@ -119,14 +134,15 @@ public class CommonUtils {
         return new double[]{min,max};
     }
 
-    public float[] computeMinMax1D(float[] tab, boolean isComplex){
-        float min = tab[0],max = tab[0];
-        for(int i = 0; i<tab.length; i++){
+    public float[] computeMinMax1D(float[] array, boolean isComplex){
+        float min = array[0],max = array[0];
+        int sizeArray = isComplex ? array.length/2 : array.length;
+        for(int i = 0; i<sizeArray; i++){
             float value;
             if (isComplex) {
-                value = tab[2*i];
+                value = array[2*i];
             } else {
-                value = tab[i];
+                value = array[i];
             }
             if(value < min ){
                 min = value;
@@ -140,45 +156,45 @@ public class CommonUtils {
 
     /**
      * Will scan the tab and return the highest and smallest value (float version)
-     * @param tab Array to parse
+     * @param array Array to parse
      * @return an array of 2 value: {min,max}
      */
-    public float[] computeMinMax1Das2D(float[] tab, int width,int height, boolean isComplex){
-        float min = tab[0],max = tab[0];
+    public float[] computeMinMax1Das2D(float[] array, int width,int height, boolean isComplex){
+        float min = array[0],max = array[0];
         int current = 0;
-        for(int i = 0; i<height; i++){
-            for(int j = 0; j<width; j++){
+        for(int j = 0; j<width; j++){
+            for(int i = 0; i<height; i++){
                 if (isComplex) {
-                    current = 2*(j+i*width);
+                    current = 2*(i+j*height);
                 } else {
-                    current = j+i*width;
+                    current = i+j*height;
                 }
-                if(tab[current] < min ){
-                    min = tab[current];
+                if(array[current] < min ){
+                    min = array[current];
                 }
-                if(tab[current] > max ){
-                    max = tab[current];
+                if(array[current] > max ){
+                    max = array[current];
                 }
             }
         }
         return new float[]{min,max};
     }
 
-    public double[] computeMinMax1Das2D(double[] tab, int width, int height,boolean isComplex){
-        double min = tab[0],max = tab[0];
+    public double[] computeMinMax1Das2D(double[] array, int width, int height,boolean isComplex){
+        double min = array[0],max = array[0];
         int current = 0;
-        for(int i = 0; i<height; i++){
-            for(int j = 0; j<width; j++){
+        for(int i = 0; i<width; i++){
+            for(int j = 0; j<height; j++){
                 if (isComplex) {
-                    current = 2*(j+i*width);
+                    current = 2*(i+j*height);
                 } else {
-                    current = j+i*width;
+                    current = i+j*height;
                 }
-                if(tab[current] < min ){
-                    min = tab[current];
+                if(array[current] < min ){
+                    min = array[current];
                 }
-                if(tab[current] > max ){
-                    max = tab[current];
+                if(array[current] > max ){
+                    max = array[current];
                 }
             }
         }
@@ -187,11 +203,11 @@ public class CommonUtils {
 
     /**
      * Will scan the tab and return the highest and smallest value
-     * @param tab Array to parse
+     * @param array Array to parse
      * @return an array of 2 value: {min,max}
      */
-    public double[] computeAlphaBeta(double[][] tab){
-        double [] out = computeMinMax(tab);
+    public double[] computeAlphaBeta(double[][] array, boolean isComplex){
+        double [] out = computeMinMax(array, isComplex);
         double min = out[0];
         double max = out[1];
         double alpha, beta;
@@ -207,11 +223,11 @@ public class CommonUtils {
 
     /**
      * Will scan the tab and return the highest and smallest value
-     * @param tab Array to parse
+     * @param array Array to parse
      * @return an array of 2 value: {min,max}
      */
-    public float[] computeAlphaBeta(float[][] tab){
-        float [] out = computeMinMax(tab);
+    public float[] computeAlphaBeta(float[][] array, boolean isComplex){
+        float [] out = computeMinMax(array,isComplex);
         float min = out[0];
         float max = out[1];
         float alpha, beta;
@@ -225,8 +241,8 @@ public class CommonUtils {
         return new float[]{alpha,beta};
     }
 
-    public double[] computeAlphaBeta1D(double[] tab, boolean isComplex){
-        double [] out = computeMinMax1D(tab, isComplex);
+    public double[] computeAlphaBeta1D(double[] array, boolean isComplex){
+        double [] out = computeMinMax1D(array, isComplex);
         double min = out[0];
         double max = out[1];
         double alpha, beta;
@@ -469,14 +485,20 @@ public class CommonUtils {
      * Scale an array by doing in place operations
      * @param array
      */
-    public void scaleArray(double[][] array){
+    public void scaleArray(double[][] array, boolean isComplex){
         //get max min for scaling
-        double[] alphta = computeAlphaBeta(array);
+        double[] alphta = computeAlphaBeta(array, isComplex);
         int grey;
-        for(int j = 0; j<array[0].length; j++){
+        int sizeArray = isComplex ? array[0].length/2 : array[0].length;
+        for(int j = 0; j<sizeArray; j++){
             for(int i = 0; i<array.length; i++){
-                grey = greyToColor(array[i][2*j],alphta[0], alphta[1]);
-                array[i][2*j]= grey;
+                if (isComplex) {
+                    grey = greyToColor(array[i][2*j],alphta[0], alphta[1]);
+                    array[i][2*j]= grey;
+                } else {
+                    grey = greyToColor(array[i][j],alphta[0], alphta[1]);
+                    array[i][j]= grey;
+                }
             }
         }
     }
@@ -485,14 +507,20 @@ public class CommonUtils {
      * Scale a float array by doing in place operations
      * @param array
      */
-    public void scaleArray(float[][] array){
+    public void scaleArray(float[][] array, boolean isComplex){
         //get max min for scaling
-        float[] alphta = computeAlphaBeta(array);
+        float[] alphta = computeAlphaBeta(array, isComplex);
         int grey;
-        for(int j = 0; j<array[0].length; j++){
+        int sizeArray = isComplex ? array[0].length/2 : array[0].length;
+        for(int j = 0; j<sizeArray; j++){
             for(int i = 0; i<array.length; i++){
-                grey = greyToColor(array[i][2*j],alphta[0], alphta[1]);
-                array[i][2*j]= grey;
+                if (isComplex) {
+                    grey = greyToColor(array[i][2*j],alphta[0], alphta[1]);
+                    array[i][2*j]= grey;
+                } else {
+                    grey = greyToColor(array[i][j],alphta[0], alphta[1]);
+                    array[i][j]= grey;
+                }
             }
         }
     }
@@ -522,7 +550,8 @@ public class CommonUtils {
         //get max min for scaling
         double[] alphta = computeAlphaBeta1D(array,isComplex);
         int grey;
-        for(int i = 0; i<array.length; i++){
+        int sizeArray = isComplex ? array.length/2 : array.length;
+        for(int i = 0; i<sizeArray; i++){
             if (isComplex) {
                 grey = greyToColor(array[2*i],alphta[0], alphta[1]);
                 array[2*i]= grey;
@@ -558,7 +587,8 @@ public class CommonUtils {
         //get max min for scaling
         float[] alphta = computeAlphaBeta1D(array,isComplex);
         int grey;
-        for(int i = 0; i<array.length; i++){
+        int sizeArray = isComplex ? array.length/2 : array.length;
+        for(int i = 0; i<sizeArray; i++){
             if (isComplex) {
                 grey = greyToColor(array[2*i],alphta[0], alphta[1]);
                 array[2*i]= grey;
@@ -577,7 +607,8 @@ public class CommonUtils {
         //We get the repartitions of the pixels
         int[] tmpOut = new int[256];
         int grey;
-        for(int j = 0; j<array[0].length; j++){
+        int sizeArray = isComplex ? array[0].length/2 : array[0].length;
+        for(int j = 0; j<sizeArray; j++){
             for(int i = 0;i<array.length; i++){
                 if (isComplex) {
                     grey = (int) array[i][2*j];
@@ -609,7 +640,7 @@ public class CommonUtils {
             beta = 0.0;
         }
         //We apply this min max on the input arrays
-        for(int j = 0; j<array[0].length; j++){
+        for(int j = 0; j<sizeArray; j++){
             for(int i = 0; i<array.length; i++){
                 if (isComplex) {
                     grey = greyToColor(array[i][2*j],alpha,beta);
@@ -630,7 +661,8 @@ public class CommonUtils {
         //We get the repartitions of the pixels
         int[] tmpOut = new int[256];
         int grey;
-        for(int j = 0; j<array[0].length; j++){
+        int sizeArray = isComplex ? array[0].length/2 : array[0].length;
+        for(int j = 0; j<sizeArray; j++){
             for(int i = 0;i<array.length; i++){
                 if (isComplex) {
                     grey = (int) array[i][2*j];
@@ -662,7 +694,7 @@ public class CommonUtils {
             beta = 0.0;
         }
         //We apply this min max on the input arrays
-        for(int j = 0; j<array[0].length; j++){
+        for(int j = 0; j<sizeArray; j++){
             for(int i = 0; i<array.length; i++){
                 if (isComplex) {
                     grey = greyToColor(array[i][2*j],alpha,beta);
@@ -783,7 +815,8 @@ public class CommonUtils {
         //We get the repartitions of the pixels
         int[] tmpOut = new int[256];
         int grey;
-        for(int i = 0; i<array.length; i++){
+        int sizeArray = isComplex ? array.length/2 : array.length;
+        for(int i = 0; i<sizeArray; i++){
             if (isComplex) {
                 grey = (int) array[2*i];
             } else {
@@ -813,7 +846,7 @@ public class CommonUtils {
             beta = 0.0;
         }
         //We apply this min max on the input arrays
-        for(int i = 0; i<array.length; i++){
+        for(int i = 0; i<sizeArray; i++){
             if (isComplex) {
                 grey = greyToColor(array[2*i],alpha,beta);
                 array[2*i] = grey;
@@ -832,7 +865,8 @@ public class CommonUtils {
         //We get the repartitions of the pixels
         int[] tmpOut = new int[256];
         int grey;
-        for(int i = 0; i<array.length; i++){
+        int sizeArray = isComplex ? array.length/2 : array.length;
+        for(int i = 0; i<sizeArray; i++){
             if (isComplex) {
                 grey = (int) array[2*i];
             } else {
@@ -862,7 +896,7 @@ public class CommonUtils {
             beta = 0.0;
         }
         //We apply this min max on the input arrays
-        for(int i = 0; i<array.length; i++){
+        for(int i = 0; i<sizeArray; i++){
             if (isComplex) {
                 grey = greyToColor(array[2*i],alpha,beta);
                 array[2*i] = grey;
@@ -883,7 +917,8 @@ public class CommonUtils {
         WritableRaster raster = imageout.getRaster();
         ColorMap map = ColorMap.getJet(256);
         int grey;
-        for(int j = 0; j<imageout.getWidth(); j++){
+        int sizeArray = isComplex ? array[0].length/2 : array[0].length;
+        for(int j = 0; j<sizeArray; j++){
             for(int i = 0; i<imageout.getHeight(); i++){
                 if (isComplex) {
                     grey = (int)array[i][2*j];
@@ -906,7 +941,8 @@ public class CommonUtils {
         WritableRaster raster = imageout.getRaster();
         ColorMap map = ColorMap.getJet(256);
         int grey;
-        for(int j = 0; j<imageout.getWidth(); j++){
+        int sizeArray = isComplex ? array[0].length/2 : array[0].length;
+        for(int j = 0; j<sizeArray; j++){
             for(int i = 0; i<imageout.getHeight(); i++){
                 if (isComplex) {
                     grey = (int)array[i][2*j];
@@ -1078,7 +1114,7 @@ public class CommonUtils {
         }
         BufferedImage out;
         //First we scale in any case
-        scaleArray(array);
+        scaleArray(array, isComplex);
         //If necessary we correct
         if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             correctArray(array, isComplex);
@@ -1108,7 +1144,7 @@ public class CommonUtils {
         }
         BufferedImage out;
         //First we scale in any case
-        scaleArray(array);
+        scaleArray(array, isComplex);
         //If necessary we correct
         if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             correctArray(array, isComplex);

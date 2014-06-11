@@ -117,7 +117,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     public BufferedImage nextJob(int slidervalue, int job){
         double mu = sliderToRegularizationWeight(slidervalue);
         updateLabel(mu);
-        double mult = 1; //HACK While the data uniformization is not done...
+        double mult = 1e9; //HACK While the data uniformization is not done...
         switch (job) {
         case DeconvUtils.JOB_WIENER:
             return (deconvolution.NextDeconvolution(mu));
