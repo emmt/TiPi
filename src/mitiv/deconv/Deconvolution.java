@@ -219,7 +219,7 @@ public class Deconvolution{
         parseOuputCG(outputValue);
         return(utils.ArrayToImage1D(x.getData(), correction, false));
     }
-    
+
     public BufferedImage FirstDeconvolutionCGNormal(double alpha){
         space = new DoubleVectorSpaceWithRank(utils.width, utils.height);
         if (vector_psf == null) {
@@ -238,7 +238,7 @@ public class Deconvolution{
         parseOuputCG(outputValue);
         return(utils.ArrayToImage1D(x.getData(), correction, false));
     }
-    
+
     public BufferedImage NextDeconvolutionCGNormal(double alpha){
         return FirstDeconvolutionCGNormal(alpha);
     }
