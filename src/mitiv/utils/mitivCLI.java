@@ -28,6 +28,7 @@
  * @author Leger Jonathan
  *
  */
+
 package mitiv.utils;
 
 import java.awt.image.BufferedImage;
@@ -189,4 +190,3 @@ public class mitivCLI {
  * ispell-local-dictionary: "american"
  * End:
  */
-
