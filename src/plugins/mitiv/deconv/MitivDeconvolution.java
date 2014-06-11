@@ -108,7 +108,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         case DeconvUtils.JOB_QUAD:
             return (deconvolution.FirstDeconvolutionQuad(muMin));
         case DeconvUtils.JOB_CG:
-            return (deconvolution.FirstDeconvolutionCG(muMin));
+            return (deconvolution.FirstDeconvolutionCGNormal(muMin));
         default:
             throw new IllegalArgumentException("Invalid Job");
         }
@@ -126,7 +126,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             return (deconvolution.NextDeconvolutionQuad(mu*mult));
 
         case DeconvUtils.JOB_CG:
-            return (deconvolution.NextDeconvolutionCG(mu*mult));
+            return (deconvolution.NextDeconvolutionCGNormal(mu*mult));
 
         default:
             throw new IllegalArgumentException("Invalid Job");

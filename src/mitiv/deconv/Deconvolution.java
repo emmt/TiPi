@@ -219,6 +219,29 @@ public class Deconvolution{
         parseOuputCG(outputValue);
         return(utils.ArrayToImage1D(x.getData(), correction, false));
     }
+    
+    public BufferedImage FirstDeconvolutionCGNormal(double alpha){
+        space = new DoubleVectorSpaceWithRank(utils.width, utils.height);
+        if (vector_psf == null) {
+            vector_psf = space.wrap(utils.PSF_Padding1D(false));
+        }
+        if (vector_y == null) {
+            vector_y = space.wrap(utils.ImageToArray1D(false));
+        }
+
+        x = space.create(0);
+        DoubleVector w = space.create(1);
+
+        linDeconv = new LinearDeconvolver(
+                space.getShape(), vector_y.getData(), vector_psf.getData(), w.getData(), alpha);
+        outputValue = linDeconv.solve2(x.getData(), 20, false);
+        parseOuputCG(outputValue);
+        return(utils.ArrayToImage1D(x.getData(), correction, false));
+    }
+    
+    public BufferedImage NextDeconvolutionCGNormal(double alpha){
+        return FirstDeconvolutionCGNormal(alpha);
+    }
 
     public int getOuputValue(){
         return outputValue;

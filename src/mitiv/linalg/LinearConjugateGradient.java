@@ -112,7 +112,6 @@ public class LinearConjugateGradient {
     }
 
     public int solve(Vector x, int maxiter, boolean reset) {
-
         /* Check that A.x = b makes sense. */
         if (! x.belongsTo(A.getInputSpace())) {
             throw new IncorrectSpaceException();
@@ -151,15 +150,10 @@ public class LinearConjugateGradient {
                 A.apply(x, r);
                 vsp.axpby(1.0, b, -1.0, r);
             }
-            
             rho = vsp.dot(z, r); //necessaire pour convergence
             rho_prev = 0.0;//only iter 0
             epsilon = Math.max(0.0, Math.max(atol, rtol * rho)); //necessaire pour convergence
-            
         }
-
-        
-
         for (;;) {
             /* Check for convergence. */
             if (rho <= epsilon) {
@@ -184,6 +178,89 @@ public class LinearConjugateGradient {
                 ++iter;
                 //System.out.println("MUprog "+((LeftHandSideMatrix)A).getMu());
                 return IN_PROGRESS;
+            }
+            /* Compute new search direction: p = z + beta*p */
+            if (iter == 0) {
+                vsp.copy(z, p);
+            } else {
+                double beta = rho / rho_prev;
+                vsp.axpby(1.0, z, beta, p);
+            }
+            /* Compute optimal step length and update unknown x and residuals r. */
+            A.apply(p, q);
+            double gamma = vsp.dot(p, q);
+            if (gamma <= 0.0) {
+                return A_IS_NOT_POSITIVE_DEFINITE;
+            }
+            double alpha = rho / gamma;
+            vsp.axpby(+alpha, p, 1.0, x);
+            vsp.axpby(-alpha, q, 1.0, r);
+            if (P != null) {
+                P.apply(r, z);
+            }
+            rho_prev = rho;
+            rho = vsp.dot(z, r);
+            ++iter;
+        }
+    }
+
+    public int solve2(Vector x, int maxiter, boolean reset) {
+        /* Check that A.x = b makes sense. */
+        if (! x.belongsTo(A.getInputSpace())) {
+            throw new IncorrectSpaceException();
+        }
+        VectorSpace vsp = b.getSpace();
+        if (p == null) {
+            p = vsp.create();
+        }
+        if (q == null) {
+            q = vsp.create();
+        }
+        if (r == null) {
+            r = vsp.create();
+        }
+        if (z == null) {
+            /* For the unpreconditioned version of the linear conjugate
+             * gradient, the vector z is always the same as the residuals r. */
+            z = (P == null ? r : vsp.create());
+        }
+        /*
+         * Initial solution x and initial residuals r (FIXME: slight
+         * optimization possible if x is known to be zero).
+         */
+        if (reset) {
+            /* x = 0 and r = b */
+            vsp.zero(x);
+            vsp.copy(b, r);
+        } else {
+            /* r = b - A.x */
+            A.apply(x, r);
+            vsp.axpby(1.0, b, -1.0, r);
+        }
+        if (P != null) {
+            P.apply(r, z);
+        }
+
+        /* Compute convergence threshold: EPSILON = max(0, ATOL, RTOL*RHO)) */
+        double rho = vsp.dot(z, r);
+        double rho_prev = 0.0;
+        double epsilon = Math.max(0.0, Math.max(atol, rtol * rho));
+        int iter = 0;
+        for (;;) {
+            /* Check for convergence. */
+            if (rho <= epsilon) {
+                if (rho < 0.0) {
+                    /* RHO must be greater or equal zero. */
+                    if (P != null) {
+                        return P_IS_NOT_POSITIVE_DEFINITE;
+                    } else {
+                        return BUG;
+                    }
+                }
+                return CONVERGED;
+            }
+            if (maxiter >= 0 && iter >= maxiter) {
+                return TOO_MANY_ITERATIONS;
             }
             /* Compute new search direction: p = z + beta*p */
             if (iter == 0) {
