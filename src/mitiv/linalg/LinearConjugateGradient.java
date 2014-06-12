@@ -29,27 +29,29 @@ import mitiv.exception.IncorrectSpaceException;
 
 public class LinearConjugateGradient {
     /* Codes returned by solve() method. */
-    public static final int IN_PROGRESS = 0; /* Algorithm is running. */
-    public static final int CONVERGED = 1; /*
-     * Algorithm has converged within
-     * tolerances.
-     */
-    public static final int TOO_MANY_ITERATIONS = 2; /* Too many iterations. */
-    public static final int A_IS_NOT_POSITIVE_DEFINITE = 3; /*
-     * RHS matrix A is
-     * not positive
-     * definite.
-     */
-    public static final int P_IS_NOT_POSITIVE_DEFINITE = 4; /*
-     * Preconditioner P
-     * is not positive
-     * definite.
-     */
-    public static final int BAD_ATOL = 5; /* Parameter ATOL is less than zero. */
-    public static final int BAD_RTOL = 6; /*
-     * Parameter RTOL is less than zero or
-     * greater or equal one.
-     */
+    
+    /** Algorithm is running. */
+    public static final int IN_PROGRESS = 0;
+
+    /** Algorithm has converged within tolerances. */
+    public static final int CONVERGED = 1; 
+    
+    /** Too many iterations. */
+    public static final int TOO_MANY_ITERATIONS = 2;
+    
+    /** RHS matrix A is not positive definite. */
+    public static final int A_IS_NOT_POSITIVE_DEFINITE = 3;
+    
+    /** Preconditioner P is not positive definite. */
+    public static final int P_IS_NOT_POSITIVE_DEFINITE = 4;
+
+    /** Parameter ATOL is less than zero. */
+    public static final int BAD_ATOL = 5;
+
+    /** Parameter RTOL is less than zero or greater or equal one. */
+    public static final int BAD_RTOL = 6;
+
+    /** Congratulations you have found a bug! */
     public static final int BUG = 7;
 
     public static final double DEFAULT_ATOL = 0.0;
