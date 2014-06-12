@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import mitiv.utils.ColorMap;
 
 public class Utils {
+    
 	public double r[][];
 	public double theta[][];
 	

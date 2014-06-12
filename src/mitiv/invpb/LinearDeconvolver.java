@@ -318,7 +318,7 @@ public class LinearDeconvolver {
     public double getMu() {
         return A.getMu()/muFactor;
     }
-    
+
     /**
      * 
      */
@@ -363,6 +363,22 @@ public class LinearDeconvolver {
     //FIXME should not be public, cause space of x will not be equal further
     public int solve(Vector x, int maxiter, boolean reset) {
         return cg.solve(x, maxiter, reset);
+    }
+    
+    public int solve2(double[] x, int maxiter, boolean reset) {
+        if (single) {
+            throw new IllegalArgumentException("Expecting a double precision floating point array.");
+        }
+        return solve2(((DoubleVectorSpace)A.getInputSpace()).wrap(x), maxiter, reset);
+    }
+
+    /**
+     * 
+     * Not sure if can really be used
+     */
+    //FIXME should not be public, cause space of x will not be equal further
+    public int solve2(Vector x, int maxiter, boolean reset) {
+        return cg.solve2(x, maxiter, reset);
     }
 }
 
