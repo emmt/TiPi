@@ -99,7 +99,7 @@ public class mitivCLI {
         else if (reg.compareTo(regularizationChoice[1]) == 0) {
             return deconv.FirstDeconvolutionQuad(alpha);
         }else if (reg.compareTo(regularizationChoice[2]) == 0) {
-            return deconv.FirstDeconvolutionCG(alpha);
+            return deconv.FirstDeconvolutionCGNormal(alpha);
         }else{
             throw new IllegalArgumentException("Invalid Job");
         }

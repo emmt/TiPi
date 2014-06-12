@@ -26,12 +26,11 @@ import plugins.adufour.ezplug.*;
 public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceListener
 {
     //Mydata
-    EzVarText	varText;
-    EzVarText  options;
-    EzVarText  correction;
+    EzVarText options;
+    EzVarText correction;
     //EzVarBoolean	varBoolean;
-    EzVarFile	varFilePSF;
-    EzVarFile	varFileIMAGE;
+    EzVarFile varFilePSF;
+    EzVarFile varFileIMAGE;
     EzVarSequence sequencePSF;
     EzVarSequence sequenceImage;
     JSlider slider;
@@ -71,7 +70,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     public static double sliderToRegularizationWeight(int slidervalue) {
         return Math.exp(muAlpha + muBeta*slidervalue);
     }
-    
+
     /*
      * Yes I'm using == to compare 2 strings and yes this is what I want,
      * and yes it's working because getValue() return a string object that I compare
@@ -148,7 +147,6 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         slider = new JSlider(0, 100, 0);
         slider.setEnabled(false);  
         label = new JLabel("                     ");
-
         super.addEzComponent(sequencePSF);
         super.addEzComponent(sequenceImage);
         super.addEzComponent(options);
@@ -210,7 +208,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             try {
                 thread.join();
             } catch (InterruptedException e) {
-               System.err.println("Erreur fin Thread "+e);
+                System.err.println("Erreur fin Thread "+e);
             }
         }
     }
