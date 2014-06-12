@@ -2,7 +2,6 @@
 ##################
 .classpath
 .settings
-.project
 bin
 lib
 src/devel

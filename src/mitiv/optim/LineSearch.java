@@ -157,6 +157,7 @@ package mitiv.optim;
  */
 public abstract class LineSearch {
 
+    public static final int ERROR_ILLEGAL_FX                         = -13; // FIXME: write message
     public static final int ERROR_ILLEGAL_ADDRESS                    = -12; // FIXME: unused
     public static final int ERROR_CORRUPTED_WORKSPACE                = -11; // FIXME: unused
     public static final int ERROR_BAD_WORKSPACE                      = -10; // FIXME: unused
