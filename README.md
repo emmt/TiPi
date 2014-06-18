@@ -31,6 +31,10 @@ To add the needed libraries to TiPi Eclipse project, move all the jars into a fo
 Right clic on TiPi project in package explorer -> Properties -> Java Build Path -> Libraries -> Add External jar and select all Library jar
 '''
 
+Icy in Eclipse
+==============
+
+There is a plugin to launch quickly and easily Icy from eclipse [here](http://icy.bioimageanalysis.org/index.php?display=startDevWithIcy).
 
 Setup for developping
 =====================
