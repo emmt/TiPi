@@ -25,6 +25,9 @@
 
 package mitiv.microscopy;
 
+import mitiv.linalg.DoubleVectorSpace;
+import mitiv.linalg.Vector;
+import mitiv.linalg.VectorSpace;
 import mitiv.utils.Utils;
 
 public class MicroscopyMain {
@@ -70,8 +73,8 @@ public class MicroscopyMain {
         Utils.printArray(Utils.indgen(7));
         Utils.printArray(Utils.indgen(4, 7));
         Utils.printArray(Utils.span1(2, 8, 2));
+        DoubleVectorSpace caca = new DoubleVectorSpace(4);
     }
-
 }
 
 

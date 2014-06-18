@@ -448,7 +448,7 @@ public class MicroscopyModelPSF
                     J[i][j] = J[i][j] + rho[i][j]*(AJ[z][i][2*j]*Math.sin(PHASE[z][i][j]) + AJ[z][i][2*j+1]*Math.cos(PHASE[z][i][j]));
                 }
             }
-        }
+        }   
         for (int k = 0; k < alpha.length; k++)
         {
             JPhi[k] = -2*PSFNorm*Utils.sum(Utils.hadamardProd(J, Z[k+3]));
