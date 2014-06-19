@@ -44,8 +44,6 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
 
     JSlider slider;
     JLabel label;
-
-    ZernikeWindow prev;
     //Zernike part
 
     double [][][] psf;
@@ -164,17 +162,11 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
         if (rpp[3]) {
             for (int i = 0; i < (int)args[6]-1; i++) {
                 myseq.setImage(i,0,Utils.Array2BufferedImageColor(PSFXZ[i]));
-                for (int j = 0; j < (int)args[6]-1; j++) {
-                    myseq.setImage(i,j,Utils.Array2BufferedImageColor(PSFXZ[j]));
-                }
             }
             
         }else{
             for (int i = 0; i < (int)args[7]-1; i++) {
                 myseq.setImage(i,0,Utils.Array2BufferedImageColor(psf[i]));
-                for (int j = 1; j < (int)args[7]-1; j++) {
-                    myseq.setImage(i,j,Utils.Array2BufferedImageColor(psf[j]));
-                }
             }
             
         }
