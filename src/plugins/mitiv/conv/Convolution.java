@@ -40,7 +40,6 @@ import icy.sequence.SequenceListener;
 import icy.image.IcyBufferedImage;
 import icy.type.DataType;
 import plugins.adufour.ezplug.*;
-import plugins.adufour.vars.lang.Var;
 
 /**
  * EzPlug interface to get the choices of the user
@@ -209,6 +208,12 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
         slider = new JSlider(0, 100, sliderValue);
         slider.setEnabled(false);  
         label = new JLabel("Value : " + sliderValue);
+        slider.addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent event){
+                sliderValue =(((JSlider)event.getSource()).getValue());
+                label.setText("Value : " + sliderValue);
+            }
+        });
 
         super.addEzComponent(sequenceImage);
         super.addEzComponent(kernel);
@@ -244,14 +249,6 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
         myseq2.addListener(this); 
         addSequence(myseq2);
         myseq2.setName("PSF");
-
-
-        slider.addChangeListener(new ChangeListener(){
-            public void stateChanged(ChangeEvent event){
-                sliderValue =(((JSlider)event.getSource()).getValue());
-                label.setText("valeur : " + sliderValue);
-            }
-        });
     }
 
     @Override
@@ -279,15 +276,8 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
     }
     @Override
     public void variableChanged(EzVar<String> source, String newValue) {
-        // TODO Auto-generated method stub
-        if (newValue.compareTo("average") == 0 || newValue.compareTo("disk") == 0)
-        {
-            slider.setEnabled(true);
-        }
-        else
-        {
-            slider.setEnabled(false);
-        }
+        boolean chosen = newValue.compareTo("average") == 0 || newValue.compareTo("disk") == 0;
+        slider.setEnabled(chosen);
     }
 
 }
