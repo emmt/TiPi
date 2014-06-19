@@ -26,6 +26,7 @@
 package mitiv.utils;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
 public class CommonUtils {
@@ -65,6 +66,14 @@ public class CommonUtils {
         return (int)(0.2126*r+0.7152*g+0.0722*b);
     }
 
+    public int colorToGrey(int[]rgb)
+    {
+        if (rgb.length == 3) {
+            return (int)(0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2]);
+        } else {
+            return rgb[0];
+        }
+    }
     /**
      * Convert a RGB value to an int grey value (float version)
      *
@@ -1248,6 +1257,68 @@ public class CommonUtils {
         return out;
     }
 
+    /********************************** Image PADDING **********************************/
+
+    /**
+     * PSF has a size that begin with pixels that are non zeros pixels.
+     * To find this size we assume the PSF to be centered and so we search for the two first non zero
+     * on width/2 and height/2.
+     * 
+     * @param PSF
+     * @return
+     */
+    public int estimatePsfSize(BufferedImage PSF){
+        int width = PSF.getWidth();
+        int height = PSF.getHeight();
+        WritableRaster raster = PSF.getRaster();
+        int min = -1, max = width, prev = 0;
+
+        for (int i = 0; i < width; i++){
+            int greyBegin = colorToGrey(raster.getPixel(i,height/2, (int[])null));
+            int greyEnd = colorToGrey(raster.getPixel(width-i-1,height/2, (int[])null));
+            if (greyBegin != 0 && min == -1) {
+                min = i;
+            }
+            if (greyEnd != 0 && max == width) {
+                max = width-i-1;
+            }
+        }
+        prev = max -min;
+        System.out.println("W: "+prev);
+        max = height;
+        min = -1;
+        for (int i = 0; i < height; i++){
+            int greyBegin = colorToGrey(raster.getPixel(width/2,i, (int[])null));
+            int greyEnd = colorToGrey(raster.getPixel(width/2,height-i-1, (int[])null));
+            if (greyBegin != 0 && min == -1) {
+                min = i;
+            }
+            if (greyEnd != 0 && max == height) {
+                max = height-i-1;
+            }
+        }
+        System.out.println("H: "+(max-min));
+        return (max-min) > prev ? (max-min) : prev;
+    }
+
+    public BufferedImage ImagePad(BufferedImage image, int sizePSF) {
+        BufferedImage pad = new BufferedImage(image.getWidth()+sizePSF, image.getHeight()+sizePSF, image.getType());
+        Raster rasterImage = image.getData();
+        WritableRaster rasterPad = pad.getRaster();
+        int hlf = sizePSF/2;
+        for (int j = 0; j < image.getWidth(); j++) {
+            for (int i = 0; i < image.getHeight(); i++) {
+                rasterPad.setPixel(j+hlf,i+hlf , rasterImage.getPixel(j,i, (int[])null));
+            }
+        }
+        return pad;
+    }
+
+    public BufferedImage ImageUnPad(BufferedImage image, int sizePSF) {
+        int hlf = sizePSF/2;
+        return image.getSubimage(hlf, hlf, image.getWidth()-sizePSF, image.getHeight()-sizePSF);
+    }
+
     /********************************** PSF PADDING **********************************/
     /*
      * Memo: even if y = y*2, we store the psf in a array x*y !!
@@ -1281,13 +1352,13 @@ public class CommonUtils {
         }
         //bloc bas a gauche: C
         for(int j = 0; j<demiPsfW; j++){
-            for(int i=demiPsfH;i<imagePsf.getHeight();i++){
+            for(int i=demiPsfH; i<imagePsf.getHeight(); i++){
                 tableau_psf[i-demiPsfH][width-demiPsfW+j] = test[i][j];
             }
         }
         //bloc bas a droite: D
         for(int j = demiPsfW; j<imagePsf.getWidth(); j++){
-            for(int i=demiPsfH;i<imagePsf.getHeight();i++){
+            for(int i=demiPsfH; i<imagePsf.getHeight(); i++){
                 tableau_psf[i-demiPsfH][j-demiPsfW] = test[i][j];
             }
         }
