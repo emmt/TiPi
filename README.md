@@ -68,3 +68,12 @@ look like:
 	clean = ./tools/code_cleanup
 	smudge = cat
 ```
+
+Known Bugs
+==========
+
+When adding the project to Eclipse if the project packages are named: src.mitiv.*, you will have to:
+
+```
+Right click on project -> Properties -> Java Build Path -> Source: Add Folder..., and choose TiPi-src
+```
