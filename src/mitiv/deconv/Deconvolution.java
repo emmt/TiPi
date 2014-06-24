@@ -54,7 +54,7 @@ public class Deconvolution{
     DoubleVectorSpaceWithRank space;
     DoubleVector x;
     LinearDeconvolver linDeconv;
-    int outputValue;
+    int outputValue = LinearConjugateGradient.CONVERGED;;
 
     boolean verbose = false;
     /**
@@ -89,7 +89,6 @@ public class Deconvolution{
         utils.FFT(psf);
         double[][] out = wiener.Wiener(alpha, psf, image);
         utils.IFFT(out);
-        outputValue = LinearConjugateGradient.CONVERGED;
         return(utils.ArrayToImage(out, correction));
     }
 
@@ -103,7 +102,6 @@ public class Deconvolution{
     public BufferedImage NextDeconvolution(double alpha){
         double[][] out = wiener.Wiener(alpha);
         utils.IFFT(out);
-        outputValue = LinearConjugateGradient.CONVERGED;
         return(utils.ArrayToImage(out, correction));
     }
 
@@ -120,7 +118,6 @@ public class Deconvolution{
         utils.FFT(psf);
         double[][] out = wiener.WienerQuad(alpha, psf, image);
         utils.IFFT(out);
-        outputValue = LinearConjugateGradient.CONVERGED;
         return(utils.ArrayToImage(out, correction));
     }
 
@@ -134,7 +131,6 @@ public class Deconvolution{
     public BufferedImage NextDeconvolutionQuad(double alpha){
         double[][] out = wiener.WienerQuad(alpha);
         utils.IFFT(out);
-        outputValue = LinearConjugateGradient.CONVERGED;
         return(utils.ArrayToImage(out, correction));
     }
 
