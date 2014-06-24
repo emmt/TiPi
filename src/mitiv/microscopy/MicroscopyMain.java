@@ -28,7 +28,7 @@ package mitiv.microscopy;
 import mitiv.linalg.DoubleVectorSpace;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
-import mitiv.utils.Utils;
+import mitiv.utils.MathUtils;
 
 public class MicroscopyMain {
     public static void main(String[] args) {
@@ -62,18 +62,18 @@ public class MicroscopyMain {
         Utils.fft_pli2(pupil.getPhi());
         
   */      System.out.println("Pupil");
-        Utils.stat(pupil.getMaskPupil());
+        MathUtils.stat(pupil.getMaskPupil());
         System.out.println("Psi");
-        Utils.stat(pupil.getPsi());
+        MathUtils.stat(pupil.getPsi());
         System.out.println("Rho");
-        Utils.stat(pupil.getRho());
+        MathUtils.stat(pupil.getRho());
         System.out.println("Phi");
-        Utils.stat(pupil.getPhi());
+        MathUtils.stat(pupil.getPhi());
         
-        Utils.printArray(Utils.indgen(7));
-        Utils.printArray(Utils.indgen(4, 7));
-        Utils.printArray(Utils.span1(2, 8, 2));
-        DoubleVectorSpace caca = new DoubleVectorSpace(4);
+        MathUtils.printArray(MathUtils.indgen(7));
+        MathUtils.printArray(MathUtils.indgen(4, 7));
+        MathUtils.printArray(MathUtils.span1(2, 8, 2));
+        DoubleVectorSpace tmp = new DoubleVectorSpace(4);
     }
 }
 

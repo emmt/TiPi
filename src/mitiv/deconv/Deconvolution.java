@@ -33,7 +33,6 @@ import mitiv.invpb.LinearDeconvolver;
 import mitiv.linalg.DoubleVector;
 import mitiv.linalg.DoubleVectorSpaceWithRank;
 import mitiv.linalg.LinearConjugateGradient;
-import mitiv.utils.DeconvUtils;
 
 /**
  * @author Leger Jonathan

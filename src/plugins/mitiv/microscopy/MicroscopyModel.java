@@ -3,11 +3,14 @@ package plugins.mitiv.microscopy;
 import icy.sequence.Sequence;
 
 import java.awt.EventQueue;
+
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import mitiv.utils.CommonUtils;
+import mitiv.utils.MathUtils;
 import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzStoppable;
 import plugins.adufour.ezplug.EzVarBoolean;
@@ -152,7 +155,7 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
         psf = new double[(int)args[7]][(int)args[6]][(int)args[5]];
         pupil2 = new MicroscopyModelPSF2D2(args[0], args[1], args[2], args[3], args[4], (int)args[5], (int)args[6], (int)args[7], (int)args[8], (int)(args[5]*args[6]));
         pupil2.computePSF(psf, new double[]{args[11]}, new double[]{args[12]}, args[9], args[10]);
-        PSFXZ = Utils.XY2XZ(psf);
+        PSFXZ = MathUtils.XY2XZ(psf);
 
         if (myseq != null) {
             myseq.close();
@@ -161,12 +164,12 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
         //If we show the xz visualization
         if (rpp[3]) {
             for (int i = 0; i < (int)args[6]-1; i++) {
-                myseq.setImage(i,0,Utils.Array2BufferedImageColor(PSFXZ[i]));
+                myseq.setImage(i,0,CommonUtils.array2BufferedImageColor(PSFXZ[i]));
             }
             
         }else{
             for (int i = 0; i < (int)args[7]-1; i++) {
-                myseq.setImage(i,0,Utils.Array2BufferedImageColor(psf[i]));
+                myseq.setImage(i,0,CommonUtils.array2BufferedImageColor(psf[i]));
             }
             
         }
@@ -177,9 +180,9 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
                 int tmp =(((JSlider)event.getSource()).getValue());
 
                 if (rpp[3]) {
-                    myseq.setImage(0,0,Utils.Array2BufferedImageColor(PSFXZ[tmp]));
+                    myseq.setImage(0,0,CommonUtils.array2BufferedImageColor(PSFXZ[tmp]));
                 }else{
-                    myseq.setImage(0,0,Utils.Array2BufferedImageColor(psf[tmp]));
+                    myseq.setImage(0,0,CommonUtils.array2BufferedImageColor(psf[tmp]));
                 }
 
                 label.setText( "Actual value : "+tmp);

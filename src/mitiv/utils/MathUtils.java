@@ -27,7 +27,6 @@ package mitiv.utils;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -35,22 +34,21 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 
-public class Utils {
-    //FIX changer le span1 en span et les span dans les autres fonction en indgen
+public class MathUtils {
+    //FIXME changer le span1 en span et les span dans les autres fonction en indgen
     /**
      * Check if the number is even. 
      *
      * @param  x  an integer value
      * @return return a boolean
      */
-    public static boolean Even(int x)
+    public static boolean even(int x)
     {
         return ( x % 2 == 0 );
     }
@@ -61,46 +59,12 @@ public class Utils {
      * @param  n  an integer value
      * @return the factorial of the number
      */
-    public static long Factorial(long n)
+    public static long factorial(long n)
     {
         if (n == 0)
             return 1;
         else
-            return n * Factorial(n-1);
-    }
-
-    /**
-     * Returns 1d array (column major) of a 2d array. 
-     *
-     * @param  In 2d array
-     * @return 1d array
-     */
-    public static double[] Array2DTo1D(double[][] In)
-    {
-        int H = In.length;
-        int W = In[0].length;
-        double[] Out = new double[H*W];
-        for (int j = 0; j < W; j++)
-            for (int i = 0; i < H; i++)
-                Out[i*W + j] = In[i][j];
-        return Out;
-    }
-
-    /**
-     * Returns 2d array (column major) of a 1d array. 
-     *
-     * @param In 1d array of double
-     * @param W Width of the 2d array In
-     * @return 2d array
-     */
-    public static double[][] Array1DTo2D(double[] In, int W)
-    {
-        int H = In.length;
-        double Out[][] = new double[H][W];
-        for (int j = 0; j < W; j++)
-            for (int i = 0; i < H; i++)
-                Out[i][j] = In[i*W + j];
-        return Out;
+            return n * factorial(n-1);
     }
 
     /**
@@ -112,7 +76,7 @@ public class Utils {
      * @param H height of the array
      * @return 2d array of cartesian distance
      */
-    public static double[][] CartesDist2D(int W, int H)
+    public static double[][] cartesDist2D(int W, int H)
     {
         double R[][] = new double[H][W];
         double[] x = span((-W+1)/2, W/2, 1);
@@ -122,8 +86,8 @@ public class Utils {
                 R[i][j] = Math.sqrt(x[i] * x[i] + y[j] * y[j]);
         return R;
     }
-    
-    public static double[] CartesDist1D(int W, int H)
+
+    public static double[] cartesDist1D(int W, int H)
     {
         double R[] = new double[H*W];
         double[] x = span((-W+1)/2, W/2, 1);
@@ -143,11 +107,11 @@ public class Utils {
      * @param H height of the array
      * @return 2d array of angle
      */
-    public static double[][] fft_angle(int W, int H)
+    public static double[][] fftAngle(int W, int H)
     {
         double THETA[][] = new double[H][W];
-        double[] x = fft_indgen(W);
-        double[] y = fft_indgen(H);
+        double[] x = fftIndgen(W);
+        double[] y = fftIndgen(H);
         for( int j = 0; j < W; j++)
             for( int i = 0; i < H; i++)
                 THETA[i][j] = Math.atan2( y[i], x[j]);
@@ -160,7 +124,7 @@ public class Utils {
      * @param L width of the array
      * @return FFT frequencies along a dimension of length LEN.
      */
-    public static double[] fft_indgen(int L)
+    public static double[] fftIndgen(int L)
     {   
 
         double[] k = new double[L];
@@ -178,17 +142,17 @@ public class Utils {
         }
         return k;
     }
-    
-    public static double[] fft_dist(int L)
+
+    public static double[] fftDist(int L)
     {
         double x[] = new double[L];
         double R[] = new double[L];
-        x = fft_indgen(L);
+        x = fftIndgen(L);
         for( int i = 0; i < L; i++)
-                R[i] = Math.sqrt(x[i] * x[i] + x[i] * x[i]);
+            R[i] = Math.sqrt(x[i] * x[i] + x[i] * x[i]);
         return R;
     }
-    
+
     /**
      * Compute length of FFT frequencies/coordinates.
      *
@@ -197,23 +161,21 @@ public class Utils {
      * @return Euclidian lenght of spatial frequencies in frequel units for a
      * FFT of dimensions [W,H].
      */
-    public static double[][] fft_dist(int W, int H)
+    public static double[][] fftDist(int W, int H)
     {
         double x[] = new double[W];
         double y[] = new double[H];
         double R[][] = new double[H][W];
 
-        x = fft_indgen(W);
-        y = fft_indgen(H);
+        x = fftIndgen(W);
+        y = fftIndgen(H);
         for( int j = 0; j < W; j++)
             for( int i = 0; i < H; i++)
                 R[i][j] = Math.sqrt(x[i] * x[i] + y[j] * y[j]);
         return R;
     }
 
-
-
-    public static double[] CartesAngle1D(int W, int H)
+    public static double[] cartesAngle1D(int W, int H)
     {
         double THETA[] = new double[H*W];
         double[] x = span((-W+1)/2, W/2, 1);
@@ -224,7 +186,7 @@ public class Utils {
         return THETA;
     }
 
-    public static double[][] CartesAngle2D(int W, int H)
+    public static double[][] cartesAngle2D(int W, int H)
     {
         double THETA[][] = new double[H][W];
         double[] x = span((-W+1)/2, W/2, 1);
@@ -280,7 +242,7 @@ public class Utils {
         }
         return out;
     }
-    
+
     /**
      * Returns "index generator" list -- an array of longs running from
      * START to STOP with a step of 1
@@ -303,10 +265,10 @@ public class Utils {
         {
             out[i] += start;
         }
-        */
+         */
         return out;
     }
-    
+
     /**
      * Returns "index generator" list -- an array of longs running from
      * START to STOP with a SCALE
@@ -361,7 +323,7 @@ public class Utils {
      * Scale array values into a 8bit (between 0 and 255).
      *
      */
-    public static double[] ScaleArrayTo8bit(double[] A)
+    public static double[] scaleArrayTo8bit(double[] A)
     {
         int L = A.length;
         double[] scaleA = new double[L];
@@ -378,7 +340,7 @@ public class Utils {
      * Scale array values into a 8bit (between 0 and 255).
      *
      */
-    public static double[][] ScaleArrayTo8bit(double[][] A)
+    public static double[][] scaleArrayTo8bit(double[][] A)
     {
         int H = A.length;
         int W = A[0].length;
@@ -408,7 +370,7 @@ public class Utils {
             for(int i = 0; i < H; i++)
                 A[i][j] = (A[i][j] - minScaleA)*255/deltaScaleA;
     }
-    
+
     /**
      * Returns the squared absolute value of a 2d array.
      *
@@ -436,11 +398,11 @@ public class Utils {
     public static double[] abs2(double[] IN)
     {
         int L = IN.length/2;
-        double[] OUT = new double[L];
+        double[] out = new double[L];
         for(int i = 0; i < L; i++)
-            OUT[i] = IN[2*i]*IN[2*i] + IN[2*i + 1]*IN[2*i + 1];
+            out[i] = IN[2*i]*IN[2*i] + IN[2*i + 1]*IN[2*i + 1];
 
-        return OUT;
+        return out;
     }
 
     /**
@@ -459,7 +421,7 @@ public class Utils {
         }
         return min;
     }
-    
+
     /**
      * Compute the minimum value of a 2d array.
      *
@@ -507,36 +469,13 @@ public class Utils {
         return max;
     }
 
-    public void saveBufferedImage(BufferedImage I, String name)
-    {
-        File output_zern = new File(name);
-        try
-        {
-            ImageIO.write(I, "PNG", output_zern);
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    public static void showBufferedImage(BufferedImage I)
-    {
-        JFrame caca = new JFrame();
-        JLabel label = new JLabel();
-        label.setIcon(new ImageIcon(I));
-        caca.add(label);
-        caca.pack();
-        caca.setVisible(true);
-        caca.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
     public static void showArrayI(double A[], int W)
     {	
         ColorMap map = ColorMap.getJet(256);
         int L = A.length;
         int H = L/W;
         double S[];
-        S = ScaleArrayTo8bit(A);
+        S = scaleArrayTo8bit(A);
         BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
 
         for(int j = 0; j < W; j++)
@@ -548,15 +487,15 @@ public class Utils {
             }
         }
 
-        JFrame caca = new JFrame();
+        JFrame frame = new JFrame();
         JLabel label = new JLabel();
         label.setIcon(new ImageIcon(bufferedI));
-        caca.add(label);
-        caca.pack();
-        caca.setVisible(true);
-        caca.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(label);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-    
+
     public static void printArray(double A[])
     {   
         System.out.println(Arrays.toString(A));
@@ -568,7 +507,7 @@ public class Utils {
         for(int i = 0; i < H; i++ )
             System.out.println(Arrays.toString(A[i]));
     }
-    
+
     /**
      * Display image of an 2d array
      * 
@@ -580,7 +519,7 @@ public class Utils {
         int H = A.length;
         int W = A[0].length;
         double S[][];
-        S = ScaleArrayTo8bit(A);
+        S = scaleArrayTo8bit(A);
         BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
         //ColorMap map = ColorMap.getJet(256);
 
@@ -607,13 +546,13 @@ public class Utils {
                 }
             }
         }
-        JFrame caca = new JFrame();
+        JFrame frame = new JFrame();
         JLabel label = new JLabel();
         label.setIcon(new ImageIcon(bufferedI));
-        caca.add(label);
-        caca.pack();
-        caca.setVisible(true);
-        caca.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(label);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     /**
@@ -627,7 +566,7 @@ public class Utils {
         int H = A.length;
         int W = A[0].length;
         double S[][];
-        S = ScaleArrayTo8bit(A);
+        S = scaleArrayTo8bit(A);
         BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
 
         for(int j = 0; j < W; j++)
@@ -641,35 +580,7 @@ public class Utils {
         NavigableImagePanel.afficher(bufferedI);
     }
 
-    /**
-     * Convertes an image into an 2d array.
-     * 
-     */
-    public static double[][] im2array(String imageName)
-    {
-        File fileI = new File(imageName);
-        BufferedImage I = null;
-        try {
-            I = ImageIO.read(fileI);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        int H = I.getHeight();
-        int W = I.getWidth();
-        double ImArray[][] = new double[H][W];
-        WritableRaster raster = I.getRaster();
-        for (int j = 0; j < W; j++) {
-            for (int i = 0; i < H; i++) {
-                int[] pixels = raster.getPixel(j, i, (int[]) null);
-                //System.out.println(Arrays.toString(pixels));
-                ImArray[i][j] = pixels[0];
-            }
-        }
-        return ImArray;
-    }
-    
-  //FIXME use at the the function "pli" to display..
+    //FIXME use at the the function "pli" to display..
     /**
      * Plot 2-D FFT array A as an image, taking care of "rolling" A and setting
      * correct world boundaries.  Keyword SCALE can be used to indicate the
@@ -678,14 +589,14 @@ public class Utils {
      * SCALE=[1.0, 1.0].
      * 
      */
-    public static void fft_pli2(double A[][])
+    public static void fftPli2(double A[][])
     {	
         ColorMap map = ColorMap.getJet(256);
         int H = A.length;
         int W = A[0].length;
         double S[][];
         double S_pad[][] = new double[H][W];
-        S = ScaleArrayTo8bit(A);
+        S = scaleArrayTo8bit(A);
         /**Pad PSF array H*W : PSFArrayPad**/
         //Essayer avec une matric simple..
         //Premier cadrant : haut gauche se retrouve en bas à droite
@@ -743,14 +654,14 @@ public class Utils {
      * SCALE=[1.0, 1.0].
      * 
      */
-    public static void fft_pli(double A[][])
+    public static void fftPli(double A[][])
     {	
         ColorMap map = ColorMap.getJet(256);
         int H = A.length;
         int W = A[0].length;
         double S[][];
         double S_pad[][] = new double[H][W];
-        S = ScaleArrayTo8bit(A);
+        S = scaleArrayTo8bit(A);
         /**Pad PSF array H*W : PSFArrayPad**/
         //Essayer avec une matric simple..
         //Premier cadrant : haut gauche se retrouve en bas à droite
@@ -797,58 +708,20 @@ public class Utils {
             }
         }
 
-        JFrame caca = new JFrame();
+        JFrame frame = new JFrame();
         JLabel label = new JLabel();
         label.setIcon(new ImageIcon(bufferedI));
-        caca.add(label);
-        caca.pack();
-        caca.setVisible(true);
-        caca.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-    /**
-     * Convert an 2d array into a BufferedImage
-     * 
-     */
-    public static BufferedImage Array2BufferedImage(double[][] A)
-    {
-        int H = A.length;
-        int W = A[0].length;
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-        for(int j = 0; j < W; j++)
-            for(int i = 0; i < H; i++)
-            {
-                Color b = new Color( (int) A[i][j], (int) A[i][j], (int) A[i][j] );
-                bufferedI.setRGB(j, i, b.getRGB());	// j, i inversé
-            }
-        return bufferedI;
-    }
-
-    /**
-     * Convert an 2d array into a BufferedImage
-     * 
-     */
-    public BufferedImage Array2BufferedImageColor(double[][] A)
-    {
-        ColorMap map = ColorMap.getJet(256);
-        int H = A.length;
-        int W = A[0].length;
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-
-        for(int i = 0; i < H; i++)
-            for(int j = 0; j < W; j++)
-            {
-                Color b = map.table[ (int)A[i][j] ];
-                bufferedI.setRGB(j, i, b.getRGB());	// j, i inversé
-            }
-        return bufferedI;
+        frame.add(label);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     /**
      * Shift zero-frequency component to center of spectrum
      * 
      */
-    public static double[][] fftshift(double A[][])
+    public static double[][] fftShift(double A[][])
     {	
         int H = A.length;
         int W = A[0].length;
@@ -890,184 +763,6 @@ public class Utils {
         return S_shift;
     }
 
-    /**
-     * Expand an image
-     * 
-     * Pad an image to another size of DIM1 and DIM2
-     * The justification is set by keyword JUST:
-     *  JUST =  0 -> lower-left (the default)
-     *          1 -> center
-     *         -1 -> at corners to preserve FFT indexing
-     */
-    public static double[][] img_pad(double img[][], int dim1, int dim2, int just)
-    {   
-        int old2 = img.length; // hauteur
-        int old1 = img[0].length; // largeur
-        double New[][] = new double[dim2][dim1];
-        switch (just)
-        {
-        case 0:
-            /* image will not be centered */
-            for(int i = 0; i < old2; i++)
-            {
-                for(int j = 0; j < old1; j++)
-                {
-                    New[i][j] = img[i][j];
-                }
-            }
-            break;
-        case 1:
-            /* image will be centered */
-            int i1 = (dim1 - old1)/2;
-            int i2 = (dim2 - old2)/2;
-            for(int i = 0; i < old2; i++)
-            {
-                for(int j = 0; j < old1; j++)
-                {
-                    New[i2 + i][j + i1] = img[i][j];
-                }
-            }
-            break;
-        case -1:
-            /* preserve FFT indexing */
-            int h1 = old1/2;
-            int h2 = old2/2;
-            if (h1 != 0 || h2 != 0) // haut gauche->bas droit
-            {
-                for(int i = 0; i < h2; i++)
-                {
-                    for(int j = 0; j < h1; j++)
-                    {
-                        New[dim2 - h2 + i][dim1 - h1 + j] = img[i][j];
-                    }
-                }
-            }
-            if(h1 != 0) // Haut droit->bas gauche
-            {
-                for(int i = 0; i < h2; i++)
-                {
-                    for(int j = 0; j < old1-h1; j++)
-                    {
-                        New[dim2 - h2 + i][j] = img[i][j + h1];
-                    }
-                }
-            }
-            if(h2 != 0) // bas gauche->haut droit
-            {
-                for(int i = 0; i < old2 - h2; i++)
-                {
-                    for(int j = 0; j < h1; j++)
-                    {
-                        New[i][dim1 - h1 + j] = img[i + h2][j];
-                    }
-                }
-            }
-
-            for(int i = 0; i < old2-h2; i++) // Bas droit->Haut gaucHe
-            {
-                for(int j = 0; j < old1-h1; j++)
-                {
-                    New[i][j] = img[i + h2][j + h1];
-                }
-            }
-            break;
-        default:
-            System.out.println("bad value for keyword JUST");            
-        }
-
-        return New;
-    }
-    
-    /**
-     * Expand an image
-     * 
-     * Pad an image to another size of DIM1 and DIM2
-     * The justification is set by keyword JUST:
-     *  JUST =  0 -> lower-left (the default)
-     *          1 -> center
-     *         -1 -> at corners to preserve FFT indexing
-     */
-    public static double[][] img_pad(double oldImg[][], double newImg[][] , String just)
-    {   
-        int oldH = oldImg.length; // hauteur
-        int oldW = oldImg[0].length; // largeur
-        int newH = newImg.length;
-        int newW = newImg[0].length;
-        double New[][] = new double[newH][newW];
-        switch (just)
-        {
-        case "0":
-            /* image will not be centered */
-            for(int i = 0; i < oldH; i++)
-            {
-                for(int j = 0; j < oldW; j++)
-                {
-                    New[i][j] = oldImg[i][j];
-                }
-            }
-            break;
-        case "1":
-            /* image will be centered */
-            int i1 = (newW - oldW)/2;
-            int i2 = (newH - oldH)/2;
-            for(int i = 0; i < oldH; i++)
-            {
-                for(int j = 0; j < oldW; j++)
-                {
-                    New[i2 + i][j + i1] = oldImg[i][j];
-                }
-            }
-            break;
-        case "-1":
-            /* preserve FFT indexing */
-            int oldW2 = oldW/2;
-            int oldH2 = oldH/2;
-            if (oldW2 != 0 || oldH2 != 0) // haut gauche->bas droit
-            {
-                for(int i = 0; i < oldH2; i++)
-                {
-                    for(int j = 0; j < oldW2; j++)
-                    {
-                        New[newH - oldH2 + i][newW - oldW2 + j] = oldImg[i][j];
-                    }
-                }
-            }
-            if(oldW2 != 0) // Haut droit->bas gauche
-            {
-                for(int i = 0; i < oldH2; i++)
-                {
-                    for(int j = 0; j < oldW-oldW2; j++)
-                    {
-                        New[newH - oldH2 + i][j] = oldImg[i][j + oldW2];
-                    }
-                }
-            }
-            if(oldH2 != 0) // bas gauche->haut droit
-            {
-                for(int i = 0; i < oldH - oldH2; i++)
-                {
-                    for(int j = 0; j < oldW2; j++)
-                    {
-                        New[i][newW - oldW2 + j] = oldImg[i + oldH2][j];
-                    }
-                }
-            }
-
-            for(int i = 0; i < oldH-oldH2; i++) // Bas droit->Haut gaucHe
-            {
-                for(int j = 0; j < oldW-oldW2; j++)
-                {
-                    New[i][j] = oldImg[i + oldH2][j + oldW2];
-                }
-            }
-            break;
-        default:
-            System.out.println("bad value for keyword JUST");            
-        }
-
-        return New;
-    }
-
     public static double[][] fftConv(double img[][], double h[][])
     {
         int H = img.length; // hauteur
@@ -1077,7 +772,7 @@ public class Utils {
         DoubleFFT_2D FFT2D = new DoubleFFT_2D(H, W);
         double[][] fft_img_h = new double[H][2*W];
         double[][] res = new double[H][W];
-        
+
         /* h complex */      
         for(int i = 0; i < H; i++)
         {
@@ -1119,58 +814,6 @@ public class Utils {
         return res;
     }
 
-    public static void saveArray2Image(double[] A, int W, String name)
-    {
-        ColorMap map = ColorMap.getJet(256);
-        int L = A.length;
-        int H = L/W;
-        double S[];
-        S = Utils.ScaleArrayTo8bit(A);
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-
-        for(int i = 0; i < H; i++)
-        {
-            for(int j = 0; j < W; j++)
-            {
-                Color b = map.table[ (int) S[i*W + j] ];
-                bufferedI.setRGB(j, i, b.getRGB());	// j, i inversé
-            }
-        }
-
-        try {
-            ImageIO.write(bufferedI, "png", new File(name));
-        } catch (IOException e) {
-            
-            e.printStackTrace();
-        }
-    }
-
-    public static void saveArray2Image(double[][] A,  String name)
-    {
-        ColorMap map = ColorMap.getJet(256);
-        int H = A.length;
-        int W = A[0].length;
-        double S[][];
-        S = Utils.ScaleArrayTo8bit(A);
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-
-        for(int i = 0; i < H; i++)
-        {
-            for(int j = 0; j < W; j++)
-            {
-                Color b = map.table[ (int) S[i][j] ];
-                bufferedI.setRGB(j, i, b.getRGB());	// j, i inversé
-            }
-        }
-
-        try {
-            ImageIO.write(bufferedI, "png", new File(name));
-        } catch (IOException e) {
-            
-            e.printStackTrace();
-        }
-    }
-    
     /**
      * Average or mean value of array
      */
@@ -1362,32 +1005,32 @@ public class Utils {
             uint8(imnoise);
             break;
         default:
-            System.out.println("pouet");
+            System.err.println("The type does not exist");
         }
         return imnoise;
     }
     /* FIX :
      *      [x,y] = meshgrid(-c2:c2, -r2:r2);
-    *radsqrd = x.^2 + y.^2;
-    *f = exp(-radsqrd/(2*sigma^2));
-    *f = f/sum(f(:));
+     *radsqrd = x.^2 + y.^2;
+     *f = exp(-radsqrd/(2*sigma^2));
+     *f = f/sum(f(:));
      */
     public static double[][] fspecialAverage(int[] arg1)
     { 
-            double[][] ha = new double[arg1[0]][arg1[1]];
-            double coef = 1./(arg1[0]*arg1[1]);
-            int H = arg1[0];
-            int W = arg1[1];
-            for (int k2 = 0; k2 < H; k2++)
+        double[][] ha = new double[arg1[0]][arg1[1]];
+        double coef = 1./(arg1[0]*arg1[1]);
+        int H = arg1[0];
+        int W = arg1[1];
+        for (int k2 = 0; k2 < H; k2++)
+        {
+            for (int k1 = 0; k1 < W; k1++)
             {
-                for (int k1 = 0; k1 < W; k1++)
-                {
-                    ha[k2][k1] = coef;
-                }
+                ha[k2][k1] = coef;
             }
-            return ha;
         }
-    
+        return ha;
+    }
+
     public static double[][] fspecial(String type, int arg1)
     { 
         switch (type)
@@ -1396,7 +1039,7 @@ public class Utils {
             double cd;
             int radius = arg1;
             int diameter = 2*radius;
-            double[][] r = Utils.CartesDist2D(diameter, diameter);
+            double[][] r = MathUtils.cartesDist2D(diameter, diameter);
             double[][] mask = new double[diameter][diameter];
             double[][] hd = new double[diameter][diameter];
             for (int j = 0; j < r.length; j++)
@@ -1409,7 +1052,7 @@ public class Utils {
                     }
                 }
             }
-            cd = Utils.sum(mask);
+            cd = MathUtils.sum(mask);
             for (int j = 0; j < r.length; j++)
             {
                 for (int i = 0; i < r.length; i++)
@@ -1422,11 +1065,10 @@ public class Utils {
             }
             return hd;
         default:
-            System.out.println("pouet");
             return new double[arg1][arg1];
         }
     }
-    
+
     public static double[][] fspecial(String type, int[] arg1, double arg2)
     { 
         switch (type)
@@ -1461,11 +1103,10 @@ public class Utils {
             }
             return hg;
         default:
-            System.out.println("pouet");
             return new double[arg1[0]][arg1[1]];
         }
     }
-    
+
     public static double[][] fspecial(String type)
     { 
         switch (type)
@@ -1478,7 +1119,7 @@ public class Utils {
             double cd;
             int radius = 5;
             int diameter = 2*radius;
-            double[][] r = Utils.CartesDist2D(diameter, diameter);
+            double[][] r = MathUtils.cartesDist2D(diameter, diameter);
             double[][] mask = new double[diameter][diameter];
             double[][] hd = new double[diameter][diameter];
             for (int j = 0; j < r.length; j++)
@@ -1491,7 +1132,7 @@ public class Utils {
                     }
                 }
             }
-            cd = Utils.sum(mask);
+            cd = MathUtils.sum(mask);
             for (int j = 0; j < r.length; j++)
             {
                 for (int i = 0; i < r.length; i++)
@@ -1513,17 +1154,15 @@ public class Utils {
             double[][] hk = {{3,3,3},{3,0,3},{-5,-5,-5}};
             return hk;
         default:
-            System.out.println("pouet");
             return new double[3][3];
         }
     }
-    
-    public static void WriteStat(double a[][], String name)
+
+    public static void writeStat(double a[][], String name)
     {
         BufferedWriter bw;
         try {
-            bw = new BufferedWriter(new FileWriter(new File("caca"), true));
-
+            bw = new BufferedWriter(new FileWriter(new File("temp"), true));
 
             StringBuffer sb = new StringBuffer();
 
@@ -1531,14 +1170,13 @@ public class Utils {
                 sb.append(name); 
             }
 
-
             sb.append("H " + a.length + " W " + a[0].length + "\n min " + min(a) + " max " + max(a) +
                     "\n avg " + avg(a) + " var " + var(a) + " std " + std(a));
             bw.write(sb.toString());
             bw.close();
         }
         catch (IOException e) {
-            
+
             e.printStackTrace();
         }
     }
@@ -1560,7 +1198,7 @@ public class Utils {
         return outXZ;
     }
 
-    public static double[] cumsum(double tab[])
+    public static double[] cumSum(double tab[])
     {
         int L = tab.length;
         double out[] = new double[L];
@@ -1570,37 +1208,6 @@ public class Utils {
             out[i] = out[i-1] + tab[i];
         }
         return out;
-    }
-    
-    public static double[][] buffI2array(BufferedImage I)
-    {
-        int H = I.getHeight();
-        int W = I.getWidth();
-        double ImArray[][] = new double[H][W];
-        WritableRaster raster = I.getRaster();
-        for (int j = 0; j < W; j++) {
-            for (int i = 0; i < H; i++) {
-                int[] pixels = raster.getPixel(j, i, (int[]) null);
-                //System.out.println(Arrays.toString(pixels));
-                ImArray[i][j] = pixels[0];
-            }
-        }
-        return ImArray;
-    }
-
-    public static BufferedImage Array2BuffI(double[][] A)
-    {
-        int H = A.length;
-        int W = A[0].length;
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-        uint8(A);
-        for(int j = 0; j < W; j++)
-            for(int i = 0; i < H; i++)
-            {
-                Color b = new Color( (int) A[i][j], (int) A[i][j], (int) A[i][j] );
-                bufferedI.setRGB(j, i, b.getRGB());
-            }
-        return bufferedI;
     }
 }
 

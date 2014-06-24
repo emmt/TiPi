@@ -33,7 +33,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import mitiv.utils.Utils;
+import mitiv.utils.CommonUtils;
+import mitiv.utils.MathUtils;
 import icy.sequence.Sequence;
 import icy.sequence.SequenceEvent;
 import icy.sequence.SequenceListener;
@@ -82,26 +83,26 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
         double[][] h;
         if (kernel.getValue().compareTo("average") == 0)
         {
-            h = Utils.fspecial(kernel.getValue(), new int[]{sliderValue, sliderValue}, 0);
+            h = MathUtils.fspecial(kernel.getValue(), new int[]{sliderValue, sliderValue}, 0);
         }
         else if (kernel.getValue().compareTo("disk") == 0)
         {
-            h = Utils.fspecial(kernel.getValue(), sliderValue);
+            h = MathUtils.fspecial(kernel.getValue(), sliderValue);
         }
         else
         {
-            h = Utils.fspecial(kernel.getValue());
+            h = MathUtils.fspecial(kernel.getValue());
         }
-        double[][] h_pad = Utils.img_pad(h, 100,100, 1);
-        return Utils.Array2BuffI(h_pad);
+        double[][] h_pad = CommonUtils.img_pad(h, 100,100, 1);
+        return CommonUtils.array2BuffI(h_pad);
     }
 
     private IcyBufferedImage createPSF2()
     {
         IcyBufferedImage image = new IcyBufferedImage(256, 256, 1, DataType.DOUBLE);
         double[] dataBuffer = image.getDataXYAsDouble(0);
-        double[][] h = Utils.fspecial(kernel.getValue());
-        double[][] h_pad = Utils.img_pad(h, 256,256, 1);
+        double[][] h = MathUtils.fspecial(kernel.getValue());
+        double[][] h_pad = CommonUtils.img_pad(h, 256,256, 1);
         for (int x = 0; x < 256; x++)
             for (int y = 0; y < 256; y++)
                 dataBuffer[x + y * 256] = h_pad[x][y];
@@ -113,35 +114,35 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
         double[][] h;
         if (kernel.getValue().compareTo("average") == 0)
         {
-            h = Utils.fspecial(kernel.getValue(), new int[]{sliderValue, sliderValue}, 0);
+            h = MathUtils.fspecial(kernel.getValue(), new int[]{sliderValue, sliderValue}, 0);
         }
         else if (kernel.getValue().compareTo("disk") == 0)
         {
-            h = Utils.fspecial(kernel.getValue(), sliderValue);
+            h = MathUtils.fspecial(kernel.getValue(), sliderValue);
         }
         else
         {
-            h = Utils.fspecial(kernel.getValue());
+            h = MathUtils.fspecial(kernel.getValue());
         }
         return h;
     }
-    
+
     private double[][] convolve(double[][] I, double[][] PSF)
     {
-        double[][] Iout = Utils.fftConv(I, PSF);
+        double[][] Iout = MathUtils.fftConv(I, PSF);
         return Iout;
     }
-    
+
     private BufferedImage convolve()
     {
         /* Convert buffered image to array */
-        double[][] I = Utils.buffI2array(sequenceImage.getValue().getFirstNonNullImage());
+        double[][] I = CommonUtils.buffI2array(sequenceImage.getValue().getFirstNonNullImage());
         /* Create the kernel filter and FFT padding */
 
         /* If no noise and no kernel --> return I */
         if (kernel.getValue().compareTo(filters[0]) == 0 & noise.getValue().compareTo(noNoise) == 0)
         {
-            return Utils.Array2BuffI(I);
+            return CommonUtils.array2BuffI(I);
         }
         /* If kernel and no noise --> return I_filtered_noNoise */
         else if (kernel.getValue().compareTo(filters[0]) != 0 & noise.getValue().compareTo(noNoise) == 0)
@@ -149,50 +150,50 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
             double[][] h;
             if (kernel.getValue().compareTo("average") == 0)
             {
-                h = Utils.fspecial(kernel.getValue(), new int[]{sliderValue, sliderValue}, 0);
+                h = MathUtils.fspecial(kernel.getValue(), new int[]{sliderValue, sliderValue}, 0);
             }
             else if (kernel.getValue().compareTo("disk") == 0)
             {
-                h = Utils.fspecial(kernel.getValue(), sliderValue);
+                h = MathUtils.fspecial(kernel.getValue(), sliderValue);
             }
             else
             {
-                h = Utils.fspecial(kernel.getValue());
+                h = MathUtils.fspecial(kernel.getValue());
             }
-            double[][] h_pad = Utils.img_pad(h, I, "-1");
-            double[][] I_filtered_noNoise = Utils.fftConv(I, h_pad);
-            return Utils.Array2BuffI(I_filtered_noNoise);
+            double[][] h_pad = CommonUtils.img_pad(h, I, "-1");
+            double[][] I_filtered_noNoise = MathUtils.fftConv(I, h_pad);
+            return CommonUtils.array2BuffI(I_filtered_noNoise);
         }
         /* If no kernel but noise --> return I */
         else if(kernel.getValue().compareTo(filters[0]) == 0 & noise.getValue().compareTo(noNoise) != 0)
         {
             double noiseMean = 0;
             double noiseVar = 0.01;
-            double[][] I_unfiltered_noise = Utils.imnoise(I, noise.getValue(), noiseVar, noiseMean);
-            return Utils.Array2BuffI(I_unfiltered_noise);
+            double[][] I_unfiltered_noise = MathUtils.imnoise(I, noise.getValue(), noiseVar, noiseMean);
+            return CommonUtils.array2BuffI(I_unfiltered_noise);
         }else
             /* Filtered with noise --> return I_filtered_noise */
         {
             double[][] h;
             if (kernel.getValue().compareTo("average") == 0)
             {
-                h = Utils.fspecial(kernel.getValue(), new int[]{sliderValue, sliderValue}, 0);
+                h = MathUtils.fspecial(kernel.getValue(), new int[]{sliderValue, sliderValue}, 0);
             }
             else if (kernel.getValue().compareTo("disk") == 0)
             {
-                h = Utils.fspecial(kernel.getValue(), sliderValue);
+                h = MathUtils.fspecial(kernel.getValue(), sliderValue);
             }
             else
             {
-                h = Utils.fspecial(kernel.getValue());
+                h = MathUtils.fspecial(kernel.getValue());
             }
-            double[][] h_pad = Utils.img_pad(h, I, "-1");
+            double[][] h_pad = CommonUtils.img_pad(h, I, "-1");
             /* Convolve using FFT */
-            double[][] I_filtered = Utils.fftConv(I, h_pad);
+            double[][] I_filtered = MathUtils.fftConv(I, h_pad);
             double noiseMean = 0;
             double noiseVar = 0.01;
-            double[][] I_filtered_noise = Utils.imnoise(I_filtered, noise.getValue(), noiseVar, noiseMean);
-            return Utils.Array2BuffI(I_filtered_noise);
+            double[][] I_filtered_noise = MathUtils.imnoise(I_filtered, noise.getValue(), noiseVar, noiseMean);
+            return CommonUtils.array2BuffI(I_filtered_noise);
         }
     }
 

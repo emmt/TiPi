@@ -115,7 +115,7 @@ public class MicroscopyModelPSF_Z
         for (int n = 0; n < Nzern; n++)
         {
             Zernike zer = new Zernike(n+1, Nx, Ny, radius);
-            NormZ = 1/Math.sqrt(Utils.sum(Utils.hadamardProd(zer.z, zer.z)));
+            NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.hadamardProd(zer.z, zer.z)));
             if (n == 1) {
                 NormZ1 = NormZ;
             }
@@ -132,7 +132,7 @@ public class MicroscopyModelPSF_Z
 
     private void setRho(double[] beta)
     {
-        double betaNorm = 1./(Math.sqrt(Utils.sum(Utils.innerProd(beta, beta))));
+        double betaNorm = 1./(Math.sqrt(MathUtils.sum(MathUtils.innerProd(beta, beta))));
         for (int j = 0; j < Nx; j++)
         {
             for (int i = 0; i < Ny; i++)
@@ -229,7 +229,7 @@ public class MicroscopyModelPSF_Z
 
         double A_2[][];
         double PSFnorm = 1.0/(Nx*Ny*Nz);
-        double defoc_scale[] = Utils.span((-Nz+1)/2, Nz/2, 1);
+        double defoc_scale[] = MathUtils.span((-Nz+1)/2, Nz/2, 1);
         double phasePupil;  
         double real_a;
         double image_a;
@@ -258,7 +258,7 @@ public class MicroscopyModelPSF_Z
                     A[z][i][2*j+1] = -A[z][i][2*j+1];
                 }
             }
-            A_2 = Utils.abs2(A[z]);
+            A_2 = MathUtils.abs2(A[z]);
             for (int i = 0; i < Ny; i++)
             {
                 for (int j = 0; j < Nx; j++)
@@ -278,7 +278,7 @@ public class MicroscopyModelPSF_Z
         double J[][] = new double[Ny][Nx];
         //double defoc_scale;
         //double phasePupil_k;
-        double betaNorm = 1/(Math.sqrt(Utils.sum(Utils.innerProd(beta, beta))));
+        double betaNorm = 1/(Math.sqrt(MathUtils.sum(MathUtils.innerProd(beta, beta))));
         //double defoc_scale[] = Utils.span((-Nz+1)/2, Nz/2, 1);
         for (int z = 0; z < Nz; z++)
         {
@@ -311,7 +311,7 @@ public class MicroscopyModelPSF_Z
 
         for (int k = 0; k < beta.length; k++)
         {
-            JRho[k] = 2*PSFNorm*Utils.sum(Utils.hadamardProd(J, Z[k]))*(1-beta[k]*beta[k]*betaNorm*betaNorm)*betaNorm;
+            JRho[k] = 2*PSFNorm*MathUtils.sum(MathUtils.hadamardProd(J, Z[k]))*(1-beta[k]*beta[k]*betaNorm*betaNorm)*betaNorm;
         }
         return JRho;
     }
@@ -355,7 +355,7 @@ public class MicroscopyModelPSF_Z
         }
         for (int k = 0; k < alpha.length; k++)
         {
-            JPhi[k] = -2*PSFNorm*Utils.sum(Utils.hadamardProd(J, Z[k+3]));
+            JPhi[k] = -2*PSFNorm*MathUtils.sum(MathUtils.hadamardProd(J, Z[k+3]));
         }
         return JPhi;
     }

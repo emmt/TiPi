@@ -59,8 +59,8 @@ public class Zernike
         this.m = nm[1];
         this.R_mn = coeffRadialZ(n, m);
         this.degR_mn = radialZDegree(n, m);
-        this.r = Utils.CartesDist2D(Width, Height);
-        this.theta = Utils.CartesAngle2D(Width, Height);
+        this.r = MathUtils.cartesDist2D(Width, Height);
+        this.theta = MathUtils.cartesAngle2D(Width, Height);
         //this.z = zernikePupil(J, r, theta, radius);
         this.z = zernikePupil(r, theta, radius);
     }
@@ -84,8 +84,8 @@ public class Zernike
         this.m = nm[1];
         this.R_mn = coeffRadialZCumSumLog(n,m);
         this.degR_mn = radialZDegree(n, m);
-        this.r = Utils.fft_dist(Width, Height);
-        this.theta = Utils.fft_angle(Width, Height);
+        this.r = MathUtils.fftDist(Width, Height);
+        this.theta = MathUtils.fftAngle(Width, Height);
         this.z = zernikePupil(r, theta, radius);
         //normalizeZ(z);
     }
@@ -103,8 +103,8 @@ public class Zernike
      */
     public Zernike(int Height, int Width)
     {
-        this.r = Utils.fft_dist(Width, Height);
-        this.theta = Utils.fft_angle(Width, Height);
+        this.r = MathUtils.fftDist(Width, Height);
+        this.theta = MathUtils.fftAngle(Width, Height);
     }
 
     public int[] zernumeroNoll(int J)
@@ -173,7 +173,7 @@ public class Zernike
             {
                 // J > 0 & J even & m != 0 --> azymuthal part is a cosinus
                 N = Math.sqrt( 2*(n + 1) );
-                if(Utils.Even(J))
+                if(MathUtils.even(J))
                 {
                     for (int i = 0; i < H; i++)
                     {
@@ -223,7 +223,7 @@ public class Zernike
     public void normalizeZ(double z[][])
     {
         double NormZ;
-        NormZ = 1/Math.sqrt(Utils.sum(Utils.hadamardProd(z, z)));
+        NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.hadamardProd(z, z)));
         for (int i = 0; i < z.length; i++)
         {
             for (int j = 0; j < z[0].length; j++) {
@@ -237,7 +237,7 @@ public class Zernike
     {
         double[][] out = new double[z.length][z[0].length];
         double NormZ;
-        NormZ = 1/Math.sqrt(Utils.sum(Utils.hadamardProd(z, z)));
+        NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.hadamardProd(z, z)));
         for (int i = 0; i < z.length; i++)
         {
             for (int j = 0; j < z[0].length; j++) {
@@ -256,8 +256,8 @@ public class Zernike
         for( int s = 0; s <= (n - m)/2; s++ )
         {
 
-            R_mn[s] = Math.pow(-1, s) * Utils.Factorial(n - s)/
-                    ( Utils.Factorial(s) * Utils.Factorial((n + m)/2 - s) * Utils.Factorial((n - m)/2 - s) );
+            R_mn[s] = Math.pow(-1, s) * MathUtils.factorial(n - s)/
+                    ( MathUtils.factorial(s) * MathUtils.factorial((n + m)/2 - s) * MathUtils.factorial((n - m)/2 - s) );
         }
         return R_mn;
     }
@@ -287,11 +287,11 @@ public class Zernike
         {
             lfact[i] = Math.log(i);
         }
-        lfact = Utils.cumsum(lfact);
+        lfact = MathUtils.cumSum(lfact);
         for( int s = 0; s <= (n - m)/2; s++ )
         {
             R_mn[s] = Math.exp(lfact[n-s] - lfact[s] - lfact[p - s] - lfact[q - s]);
-            if (!Utils.Even(s))
+            if (!MathUtils.even(s))
             {
                 R_mn[s] = -R_mn[s];
             }
@@ -343,7 +343,7 @@ public class Zernike
                 den3 += Math.log(x);
             }
             c = Math.exp(num1 - den1 - den2 - den3);
-            if (!Utils.Even(s))
+            if (!MathUtils.even(s))
             {
                 c = -c;
             }
@@ -483,7 +483,7 @@ public class Zernike
             else
             {
                 // J > 0 & J even & m != 0 --> azymuthal part is a cosinus
-                if(Utils.Even(nz + 1))
+                if(MathUtils.even(nz + 1))
                 {
                     for (int i = 0; i < H; i++)
                     {
@@ -737,7 +737,7 @@ public class Zernike
             else
             {
                 // J > 0 & J even & m != 0 --> azymuthal part is a cosinus
-                if(Utils.Even(nz + 1))
+                if(MathUtils.even(nz + 1))
                 {
                     for (int k = 0; k < Lxy; k++)
                     {
