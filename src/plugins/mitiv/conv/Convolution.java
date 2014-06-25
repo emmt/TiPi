@@ -93,7 +93,7 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
         {
             h = MathUtils.fspecial(kernel.getValue());
         }
-        double[][] h_pad = CommonUtils.img_pad(h, 100,100, 1);
+        double[][] h_pad = CommonUtils.imgPad(h, 100,100, 1);
         return CommonUtils.array2BuffI(h_pad);
     }
 
@@ -102,7 +102,7 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
         IcyBufferedImage image = new IcyBufferedImage(256, 256, 1, DataType.DOUBLE);
         double[] dataBuffer = image.getDataXYAsDouble(0);
         double[][] h = MathUtils.fspecial(kernel.getValue());
-        double[][] h_pad = CommonUtils.img_pad(h, 256,256, 1);
+        double[][] h_pad = CommonUtils.imgPad(h, 256,256, 1);
         for (int x = 0; x < 256; x++)
             for (int y = 0; y < 256; y++)
                 dataBuffer[x + y * 256] = h_pad[x][y];
@@ -160,7 +160,7 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
             {
                 h = MathUtils.fspecial(kernel.getValue());
             }
-            double[][] h_pad = CommonUtils.img_pad(h, I, "-1");
+            double[][] h_pad = CommonUtils.imgPad(h, I, "-1");
             double[][] I_filtered_noNoise = MathUtils.fftConv(I, h_pad);
             return CommonUtils.array2BuffI(I_filtered_noNoise);
         }
@@ -187,7 +187,7 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
             {
                 h = MathUtils.fspecial(kernel.getValue());
             }
-            double[][] h_pad = CommonUtils.img_pad(h, I, "-1");
+            double[][] h_pad = CommonUtils.imgPad(h, I, "-1");
             /* Convolve using FFT */
             double[][] I_filtered = MathUtils.fftConv(I, h_pad);
             double noiseMean = 0;

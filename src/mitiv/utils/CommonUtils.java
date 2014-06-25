@@ -486,13 +486,13 @@ public class CommonUtils {
      * */
 
 
-    public static BufferedImage createNewBufferedImage(BufferedImage image){
+    public static BufferedImage createNewBufferedImage(BufferedImage originalImage){
         BufferedImage imageout;
         //In certain cases we need a specific type
-        if(image.getType() == 0){
-            imageout = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        if(originalImage.getType() == 0){
+            imageout = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
         }else{
-            imageout = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+            imageout = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(), originalImage.getType());
         }
         return imageout;
     }
@@ -1348,6 +1348,18 @@ public class CommonUtils {
 
         int[][]test = psfToArray(imagePsf);
 
+        // IMAGE point of view:
+        // It means we have the PSF split in four blocks A,B,C,D
+        //   A | B     ->
+        //   -----     -> PSF
+        //   C | D     ->
+        //
+        // And we want will send them to the other side in the image
+        //
+        //   D | C     ->
+        //   -----     -> Image
+        //   B | A     ->
+
         //bloc haut à gauche: A
         for(int j = 0; j<demiPsfW; j++){
             for(int i=0;i<demiPsfH;i++){
@@ -1610,7 +1622,7 @@ public class CommonUtils {
     }
 
     /**
-     * Convertes an image into an 2d array.
+     * Convert an image into an 2d array.
      * 
      */
     public static double[][] im2array(String imageName)
@@ -1735,11 +1747,11 @@ public class CommonUtils {
      *          1 -> center
      *         -1 -> at corners to preserve FFT indexing
      */
-    public static double[][] img_pad(double img[][], int dim1, int dim2, int just)
+    public static double[][] imgPad(double img[][], int dim1, int dim2, int just)
     {
         int old2 = img.length; // hauteur
         int old1 = img[0].length; // largeur
-        double New[][] = new double[dim2][dim1];
+        double New[][] = new double[dim2][dim1];    //FIXME ici appeler imgPad(double[][], double[], int, int)
         switch (just)
         {
         case 0:
@@ -1818,11 +1830,11 @@ public class CommonUtils {
      *
      * Pad an image to another size of DIM1 and DIM2
      * The justification is set by keyword JUST:
-     *  JUST =  0 -> lower-left (the default)
+     *  JUST =  0 -> lower-left (the default) //FIXME instead of 0,1,2 define it globally+statically
      *          1 -> center
      *         -1 -> at corners to preserve FFT indexing
      */
-    public static double[][] img_pad(double oldImg[][], double newImg[][] , String just)
+    public static double[][] imgPad(double oldImg[][], double newImg[][] , String just)
     {   
         int oldH = oldImg.length; // hauteur
         int oldW = oldImg[0].length; // largeur
