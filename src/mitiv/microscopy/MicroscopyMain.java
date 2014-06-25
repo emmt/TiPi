@@ -24,10 +24,6 @@
  */
 
 package mitiv.microscopy;
-
-import mitiv.linalg.DoubleVectorSpace;
-import mitiv.linalg.Vector;
-import mitiv.linalg.VectorSpace;
 import mitiv.utils.MathUtils;
 
 public class MicroscopyMain {
@@ -73,7 +69,7 @@ public class MicroscopyMain {
         MathUtils.printArray(MathUtils.indgen(7));
         MathUtils.printArray(MathUtils.indgen(4, 7));
         MathUtils.printArray(MathUtils.span1(2, 8, 2));
-        DoubleVectorSpace tmp = new DoubleVectorSpace(4);
+        //DoubleVectorSpace tmp = new DoubleVectorSpace(4);
     }
 }
 

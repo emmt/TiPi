@@ -1578,7 +1578,7 @@ public class CommonUtils {
      */
     public static double[][] array1DTo2D(double[] In, int W)
     {
-        int H = In.length;
+        int H = In.length;                  //FIXME faux
         double Out[][] = new double[H][W];
         for (int j = 0; j < W; j++)
             for (int i = 0; i < H; i++)
@@ -1600,10 +1600,9 @@ public class CommonUtils {
 
     public static void saveBufferedImage(BufferedImage I, String name)
     {
-        File output_zern = new File(name);
         try
         {
-            ImageIO.write(I, "PNG", output_zern);
+            ImageIO.write(I, "PNG", new File(name));
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -1621,28 +1620,25 @@ public class CommonUtils {
         try {
             I = ImageIO.read(fileI);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return buffI2array(I);
     }
 
-    /**
-     * Convert an 2d array into a BufferedImage
-     * 
-     */
-    public static BufferedImage array2BufferedImage(double[][] A)
+    public static double[][] buffI2array(BufferedImage I) //FIXME remplacer par ma fonction
     {
-        int H = A.length;
-        int W = A[0].length;
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-        for(int j = 0; j < W; j++)
-            for(int i = 0; i < H; i++)
-            {
-                Color b = new Color( (int) A[i][j], (int) A[i][j], (int) A[i][j] );
-                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+        int H = I.getHeight();
+        int W = I.getWidth();
+        double ImArray[][] = new double[H][W];
+        WritableRaster raster = I.getRaster();
+        for (int j = 0; j < W; j++) {
+            for (int i = 0; i < H; i++) {
+                int[] pixels = raster.getPixel(j, i, (int[]) null);
+                //System.out.println(Arrays.toString(pixels));
+                ImArray[i][j] = pixels[0];
             }
-        return bufferedI;
+        }
+        return ImArray;
     }
 
     /**
@@ -1665,23 +1661,7 @@ public class CommonUtils {
         return bufferedI;
     }
 
-    public static double[][] buffI2array(BufferedImage I)
-    {
-        int H = I.getHeight();
-        int W = I.getWidth();
-        double ImArray[][] = new double[H][W];
-        WritableRaster raster = I.getRaster();
-        for (int j = 0; j < W; j++) {
-            for (int i = 0; i < H; i++) {
-                int[] pixels = raster.getPixel(j, i, (int[]) null);
-                //System.out.println(Arrays.toString(pixels));
-                ImArray[i][j] = pixels[0];
-            }
-        }
-        return ImArray;
-    }
-
-    public static BufferedImage array2BuffI(double[][] A)
+    public static BufferedImage array2BuffI(double[][] A)  //FIXME Scale sans prevenir + Color (lent) -> arrayToImage avec bon job
     {
         int H = A.length;
         int W = A[0].length;
@@ -1696,7 +1676,7 @@ public class CommonUtils {
         return bufferedI;
     }
 
-    public static void saveArray2Image(double[] A, int W, String name)
+    public static void saveArray2Image(double[] A, int W, String name) //FIXME Convert to actual norm (Column major)
     {
         ColorMap map = ColorMap.getJet(256);
         int L = A.length;
@@ -1721,7 +1701,7 @@ public class CommonUtils {
         }
     }
 
-    public static void saveArray2Image(double[][] A,  String name)
+    public static void saveArray2Image(double[][] A,  String name) //FIXME decomposer avec fonctions déjà existantes
     {
         ColorMap map = ColorMap.getJet(256);
         int H = A.length;
