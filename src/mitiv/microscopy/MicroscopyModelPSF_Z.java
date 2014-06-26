@@ -315,7 +315,12 @@ public class MicroscopyModelPSF_Z
         }
         return JRho;
     }
-
+    /* DOCUMENT P2P_apply_J_Phase(self, q)
+    *
+    * Apply the Jacobian Matrix to vector Q with respect to the alpha
+    * parameters.
+    *
+    */
     public double[] apply_J_phi(double[] alpha, double[][][] q)
     {
         DoubleFFT_2D FFT2D = new DoubleFFT_2D(Ny, Nx);

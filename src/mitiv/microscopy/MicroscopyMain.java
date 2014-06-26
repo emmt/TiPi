@@ -43,6 +43,7 @@ public class MicroscopyMain {
         int ny = 256;
         int nz = 64;
         int nzern = 10;
+        int use_depth_scaling = 0;
         //double psf[] = new double[nx*ny];
         double psf[][][] = new double[nz][ny][nx];
         //double[] alpha = {0.000001};
@@ -51,8 +52,8 @@ public class MicroscopyMain {
         double[] beta = {0.,0.,0.,0., 1.,1.};
         double deltaX = 0;
         double deltaY = 0;
-
-        MicroscopyModelPSF pupil = new MicroscopyModelPSF(NA, lambda, ni, ns, zdepth, dxy, dz, nx, ny, nz, nzern);
+        
+        MicroscopyModelPSF pupil = new MicroscopyModelPSF(NA, lambda, ni, ns, zdepth, dxy, dz, nx, ny, nz, nzern, use_depth_scaling);
         pupil.computePSF(psf, alpha, beta, deltaX, deltaY, zdepth);
 
 /*
@@ -69,11 +70,6 @@ public class MicroscopyMain {
         Utils.stat(pupil.getRho());
         System.out.println("Phi");
         Utils.stat(pupil.getPhi());
-        
-        Utils.printArray(Utils.indgen(7));
-        Utils.printArray(Utils.indgen(4, 7));
-        Utils.printArray(Utils.span1(2, 8, 2));
-        DoubleVectorSpace caca = new DoubleVectorSpace(4);
     }
 }
 

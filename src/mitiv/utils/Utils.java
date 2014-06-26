@@ -393,6 +393,30 @@ public class Utils {
         return scaleA;
     }
 
+    public static double[][] conj1(double[][] A)
+    {
+        int H = A.length;
+        int W = A[0].length;
+        double[][] conjA = new double[H][W];
+        for(int j = 0; j < W/2; j++)
+            for(int i = 0; i < H; i++)
+            {
+                conjA[i][2*j] = A[i][2*j];
+                conjA[i][2*j + 1] = -A[i][2*j + 1];
+            }
+        return conjA;
+    }
+    
+    public static void conj2(double[][] A)
+    {
+        int H = A.length;
+        int W = A[0].length;
+        double[][] conjA = new double[H][W];
+        for(int j = 0; j < W/2; j++)
+            for(int i = 0; i < H; i++)
+                conjA[i][2*j + 1] = -A[i][2*j + 1];
+    }
+    
     /**
      * Scale array values into a 8bit (between 0 and 255).
      *
