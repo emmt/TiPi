@@ -25,12 +25,26 @@
 
 package mitiv.utils;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+import mitiv.deconv.DeconvUtils;
 
 public class CommonUtils {
 
+    public static final int LOWER_LEFT = 0;
+    public static final int CENTERED = 1;
+    public static final int FFT_INDEXING = -1;
+    
     /**
      * Will convert a value to another
      *
@@ -39,7 +53,7 @@ public class CommonUtils {
      * @param beta
      * @return
      */
-    public int greyToColor(double g, double alpha, double beta)
+    public static int greyToColor(double g, double alpha, double beta)
     {
         double x = alpha*g + beta;
         int i;
@@ -61,12 +75,12 @@ public class CommonUtils {
      * @param b
      * @return
      */
-    public int colorToGrey(double r, double g, double b)
+    public static int colorToGrey(double r, double g, double b)
     {
         return (int)(0.2126*r+0.7152*g+0.0722*b);
     }
 
-    public int colorToGrey(int[]rgb)
+    public static int colorToGrey(int[]rgb)
     {
         if (rgb.length == 3) {
             return (int)(0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2]);
@@ -82,7 +96,7 @@ public class CommonUtils {
      * @param b
      * @return
      */
-    public int colorToGrey(float r, float g, float b)
+    public static int colorToGrey(float r, float g, float b)
     {
         return (int)(0.2126*r+0.7152*g+0.0722*b);
     }
@@ -92,7 +106,7 @@ public class CommonUtils {
      * @param array Array to parse
      * @return an array of 2 value: {min,max}
      */
-    public double[] computeMinMax(double[][] array, boolean isComplex){
+    public static double[] computeMinMax(double[][] array, boolean isComplex){
         //trouver min max du tableau
         double min = array[0][0],max = array[0][0];
         int sizeArray = isComplex ? array[0].length/2 : array[0].length;
@@ -120,7 +134,7 @@ public class CommonUtils {
      * @param array Array to parse
      * @return an array of 2 value: {min,max}
      */
-    public float[] computeMinMax(float[][] array, boolean isComplex){
+    public static float[] computeMinMax(float[][] array, boolean isComplex){
         //trouver min max du tableau
         float min = array[0][0],max = array[0][0];
         int sizeArray = isComplex ? array[0].length/2 : array[0].length;
@@ -148,7 +162,7 @@ public class CommonUtils {
      * @param array Array to parse
      * @return an array of 2 value: {min,max}
      */
-    public double[] computeMinMax1D(double[] array, boolean isComplex){
+    public static double[] computeMinMax1D(double[] array, boolean isComplex){
         double min = array[0],max = array[0];
         int sizeArray = isComplex ? array.length/2 : array.length;
         for(int i = 0; i<sizeArray; i++){
@@ -168,7 +182,7 @@ public class CommonUtils {
         return new double[]{min,max};
     }
 
-    public float[] computeMinMax1D(float[] array, boolean isComplex){
+    public static float[] computeMinMax1D(float[] array, boolean isComplex){
         float min = array[0],max = array[0];
         int sizeArray = isComplex ? array.length/2 : array.length;
         for(int i = 0; i<sizeArray; i++){
@@ -193,7 +207,7 @@ public class CommonUtils {
      * @param array Array to parse
      * @return an array of 2 value: {min,max}
      */
-    public float[] computeMinMax1Das2D(float[] array, int width,int height, boolean isComplex){
+    public static float[] computeMinMax1Das2D(float[] array, int width,int height, boolean isComplex){
         float min = array[0],max = array[0];
         int current = 0;
         for(int j = 0; j<width; j++){
@@ -214,7 +228,7 @@ public class CommonUtils {
         return new float[]{min,max};
     }
 
-    public double[] computeMinMax1Das2D(double[] array, int width, int height,boolean isComplex){
+    public static double[] computeMinMax1Das2D(double[] array, int width, int height,boolean isComplex){
         double min = array[0],max = array[0];
         int current = 0;
         for(int i = 0; i<width; i++){
@@ -240,7 +254,7 @@ public class CommonUtils {
      * @param array Array to parse
      * @return an array of 2 value: {min,max}
      */
-    public double[] computeAlphaBeta(double[][] array, boolean isComplex){
+    public static double[] computeAlphaBeta(double[][] array, boolean isComplex){
         double [] out = computeMinMax(array, isComplex);
         double min = out[0];
         double max = out[1];
@@ -260,7 +274,7 @@ public class CommonUtils {
      * @param array Array to parse
      * @return an array of 2 value: {min,max}
      */
-    public float[] computeAlphaBeta(float[][] array, boolean isComplex){
+    public static float[] computeAlphaBeta(float[][] array, boolean isComplex){
         float [] out = computeMinMax(array,isComplex);
         float min = out[0];
         float max = out[1];
@@ -275,7 +289,7 @@ public class CommonUtils {
         return new float[]{alpha,beta};
     }
 
-    public double[] computeAlphaBeta1D(double[] array, boolean isComplex){
+    public static double[] computeAlphaBeta1D(double[] array, boolean isComplex){
         double [] out = computeMinMax1D(array, isComplex);
         double min = out[0];
         double max = out[1];
@@ -290,7 +304,7 @@ public class CommonUtils {
         return new double[]{alpha,beta};
     }
 
-    public float[] computeAlphaBeta1D(float[] tab, boolean isComplex){
+    public static float[] computeAlphaBeta1D(float[] tab, boolean isComplex){
         float [] out = computeMinMax1D(tab, isComplex);
         float min = out[0];
         float max = out[1];
@@ -308,7 +322,7 @@ public class CommonUtils {
     /********************************** X TO ARRAY **********************************/
 
 
-    public double[][] ImageToArray(BufferedImage image, boolean isComplex) {
+    public static double[][] imageToArray(BufferedImage image, boolean isComplex) {
         int height = image.getHeight();
         int width = image.getWidth();
         WritableRaster raster = image.getRaster();
@@ -337,7 +351,7 @@ public class CommonUtils {
      * @param isComplex
      * @return
      */
-    public float[][] ImageToArrayFloat(BufferedImage image, boolean isComplex) {
+    public static float[][] imageToArrayFloat(BufferedImage image, boolean isComplex) {
         int height = image.getHeight();
         int width = image.getWidth();
         WritableRaster raster = image.getRaster();
@@ -360,7 +374,7 @@ public class CommonUtils {
         return out;
     }
 
-    public double[] ImageToArray1D(BufferedImage image, boolean isComplex) {
+    public static double[] imageToArray1D(BufferedImage image, boolean isComplex) {
         int height = image.getHeight();
         int width = image.getWidth();
         WritableRaster raster = image.getRaster();
@@ -401,7 +415,7 @@ public class CommonUtils {
      * @param isComplex
      * @return
      */
-    public float[] ImageToArray1DFloat(BufferedImage image, boolean isComplex) {
+    public static float[] imageToArray1DFloat(BufferedImage image, boolean isComplex) {
         int height = image.getHeight();
         int width = image.getWidth();
         WritableRaster raster = image.getRaster();
@@ -437,7 +451,7 @@ public class CommonUtils {
         return out;
     }
 
-    public int[][] PSFToArray(BufferedImage psf) {
+    public static int[][] psfToArray(BufferedImage psf) {
         WritableRaster raster = psf.getRaster();
         int [][]out = new int[psf.getHeight()][psf.getWidth()];
         for(int j=0;j<psf.getWidth();j++){
@@ -453,7 +467,7 @@ public class CommonUtils {
         return out;
     }
 
-    public int[] PSFToArray1D(BufferedImage psf) {
+    public static int[] psfToArray1D(BufferedImage psf) {
         WritableRaster raster = psf.getRaster();
         int []out = new int[psf.getWidth()*psf.getHeight()];
         for(int j=0;j<psf.getWidth();j++){
@@ -476,22 +490,22 @@ public class CommonUtils {
      * */
 
 
-    public BufferedImage CreateNewBufferedImage(BufferedImage image){
+    public static BufferedImage createNewBufferedImage(BufferedImage originalImage){
         BufferedImage imageout;
         //In certain cases we need a specific type
-        if(image.getType() == 0){
-            imageout = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        if(originalImage.getType() == 0){
+            imageout = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
         }else{
-            imageout = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+            imageout = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(), originalImage.getType());
         }
         return imageout;
     }
 
-    public BufferedImage CreateNewBufferedImage(int width, int height){
+    public static BufferedImage createNewBufferedImage(int width, int height){
         return new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
     }
 
-    public BufferedImage CreateNewBufferedImage(double[][] tab, boolean isComplex){
+    public static BufferedImage createNewBufferedImage(double[][] tab, boolean isComplex){
         int width, height;
         if (isComplex) {
             width = tab[0].length/2;
@@ -500,10 +514,10 @@ public class CommonUtils {
             width = tab[0].length;
             height = tab.length;
         }
-        return CreateNewBufferedImage(width, height);
+        return createNewBufferedImage(width, height);
     }
 
-    public BufferedImage CreateNewBufferedImage(float[][] tab, boolean isComplex){
+    public static BufferedImage createNewBufferedImage(float[][] tab, boolean isComplex){
         int width, height;
         if (isComplex) {
             width = tab[0].length/2;
@@ -512,14 +526,14 @@ public class CommonUtils {
             width = tab[0].length;
             height = tab.length;
         }
-        return CreateNewBufferedImage(width, height);
+        return createNewBufferedImage(width, height);
     }
 
     /**
      * Scale an array by doing in place operations
      * @param array
      */
-    public void scaleArray(double[][] array, boolean isComplex){
+    public static void scaleArray(double[][] array, boolean isComplex){
         //get max min for scaling
         double[] alphta = computeAlphaBeta(array, isComplex);
         int grey;
@@ -541,7 +555,7 @@ public class CommonUtils {
      * Scale a float array by doing in place operations
      * @param array
      */
-    public void scaleArray(float[][] array, boolean isComplex){
+    public static void scaleArray(float[][] array, boolean isComplex){
         //get max min for scaling
         float[] alphta = computeAlphaBeta(array, isComplex);
         int grey;
@@ -563,7 +577,7 @@ public class CommonUtils {
      * Scale an 1Darray by doing in place operations
      * @param array
      */
-    public void scaleArray1Das2D(double[] array, int width, int height, boolean isComplex){
+    public static void scaleArray1Das2D(double[] array, int width, int height, boolean isComplex){
         //get max min for scaling
         double[] alphta = computeAlphaBeta1D(array,isComplex);
         int grey;
@@ -580,7 +594,7 @@ public class CommonUtils {
         }
     }
 
-    public void scaleArray1D(double[] array, boolean isComplex){
+    public static void scaleArray1D(double[] array, boolean isComplex){
         //get max min for scaling
         double[] alphta = computeAlphaBeta1D(array,isComplex);
         int grey;
@@ -600,7 +614,7 @@ public class CommonUtils {
      * Scale a float 1Darray by doing in place operations
      * @param array
      */
-    public void scaleArray1Das2D(float[] array, int width, int height, boolean isComplex){
+    public static void scaleArray1Das2D(float[] array, int width, int height, boolean isComplex){
         //get max min for scaling
         float[] alphta = computeAlphaBeta1D(array,isComplex);
         int grey;
@@ -617,7 +631,7 @@ public class CommonUtils {
         }
     }
 
-    public void scaleArray1D(float[] array, boolean isComplex){
+    public static void scaleArray1D(float[] array, boolean isComplex){
         //get max min for scaling
         float[] alphta = computeAlphaBeta1D(array,isComplex);
         int grey;
@@ -637,7 +651,7 @@ public class CommonUtils {
      * Scale an array by doing in place operations
      * @param array
      */
-    public void correctArray(double[][] array, boolean isComplex){
+    public static void correctArray(double[][] array, boolean isComplex){
         //We get the repartitions of the pixels
         int[] tmpOut = new int[256];
         int grey;
@@ -691,7 +705,7 @@ public class CommonUtils {
      * Scale a float array by doing in place operations
      * @param array
      */
-    public void correctArray(float[][] array, boolean isComplex){
+    public static void correctArray(float[][] array, boolean isComplex){
         //We get the repartitions of the pixels
         int[] tmpOut = new int[256];
         int grey;
@@ -745,7 +759,7 @@ public class CommonUtils {
      * Scale an 1D array by doing in place operations
      * @param array
      */
-    public void correctArray1Das2D(double[] array, int width, int height, boolean isComplex){
+    public static void correctArray1Das2D(double[] array, int width, int height, boolean isComplex){
         //We get the repartitions of the pixels
         int[] tmpOut = new int[256];
         int grey;
@@ -795,7 +809,7 @@ public class CommonUtils {
         }
     }
 
-    public void correctArray1Das2D(float[] array, int width, int height, boolean isComplex){
+    public static void correctArray1Das2D(float[] array, int width, int height, boolean isComplex){
         //We get the repartitions of the pixels
         int[] tmpOut = new int[256];
         int grey;
@@ -845,7 +859,7 @@ public class CommonUtils {
         }
     }
 
-    public void correctArray1D(double[] array, boolean isComplex){
+    public static void correctArray1D(double[] array, boolean isComplex){
         //We get the repartitions of the pixels
         int[] tmpOut = new int[256];
         int grey;
@@ -895,7 +909,7 @@ public class CommonUtils {
      * Scale a float 1D array by doing in place operations
      * @param array
      */
-    public void correctArray1D(float[] array, boolean isComplex){
+    public static void correctArray1D(float[] array, boolean isComplex){
         //We get the repartitions of the pixels
         int[] tmpOut = new int[256];
         int grey;
@@ -946,8 +960,8 @@ public class CommonUtils {
      * @param array
      * @return
      */
-    public BufferedImage colorArray(double[][] array, boolean isComplex){
-        BufferedImage imageout = CreateNewBufferedImage(array, isComplex);
+    public static BufferedImage colorArray(double[][] array, boolean isComplex){
+        BufferedImage imageout = createNewBufferedImage(array, isComplex);
         WritableRaster raster = imageout.getRaster();
         ColorMap map = ColorMap.getJet(256);
         int grey;
@@ -970,8 +984,8 @@ public class CommonUtils {
      * @param array
      * @return
      */
-    public BufferedImage colorArray(float[][] array, boolean isComplex){
-        BufferedImage imageout = CreateNewBufferedImage(array, isComplex);
+    public static BufferedImage colorArray(float[][] array, boolean isComplex){
+        BufferedImage imageout = createNewBufferedImage(array, isComplex);
         WritableRaster raster = imageout.getRaster();
         ColorMap map = ColorMap.getJet(256);
         int grey;
@@ -994,8 +1008,8 @@ public class CommonUtils {
      * @param array
      * @return
      */
-    public BufferedImage colorArray1D(double[] array, int width, int height, boolean isComplex){
-        BufferedImage imageout = CreateNewBufferedImage(width, height);
+    public static BufferedImage colorArray1D(double[] array, int width, int height, boolean isComplex){
+        BufferedImage imageout = createNewBufferedImage(width, height);
         WritableRaster raster = imageout.getRaster();
         ColorMap map = ColorMap.getJet(256);
         int grey;
@@ -1017,8 +1031,8 @@ public class CommonUtils {
      * @param array
      * @return
      */
-    public BufferedImage colorArray1D(float[] array,  int width, int height, boolean isComplex){
-        BufferedImage imageout = CreateNewBufferedImage(width, height);
+    public static BufferedImage colorArray1D(float[] array,  int width, int height, boolean isComplex){
+        BufferedImage imageout = createNewBufferedImage(width, height);
         WritableRaster raster = imageout.getRaster();
         ColorMap map = ColorMap.getJet(256);
         int grey;
@@ -1040,12 +1054,12 @@ public class CommonUtils {
      * @param array
      * @return
      */
-    public BufferedImage arrayToImage(double[][] array, boolean isComplex){
+    public static BufferedImage arrayToImage(double[][] array, boolean isComplex){
         BufferedImage imageout;
         if (isComplex) {
-            imageout = CreateNewBufferedImage(array[0].length/2, array.length);
+            imageout = createNewBufferedImage(array[0].length/2, array.length);
         }else {
-            imageout = CreateNewBufferedImage(array[0].length, array.length);
+            imageout = createNewBufferedImage(array[0].length, array.length);
         }
         WritableRaster raster = imageout.getRaster();
         int grey;
@@ -1067,12 +1081,12 @@ public class CommonUtils {
      * @param array
      * @return
      */
-    public BufferedImage arrayToImage(float[][] array, boolean isComplex){
+    public static BufferedImage arrayToImage(float[][] array, boolean isComplex){
         BufferedImage imageout;
         if (isComplex) {
-            imageout = CreateNewBufferedImage(array[0].length/2, array.length);
+            imageout = createNewBufferedImage(array[0].length/2, array.length);
         }else {
-            imageout = CreateNewBufferedImage(array[0].length, array.length);
+            imageout = createNewBufferedImage(array[0].length, array.length);
         }
         WritableRaster raster = imageout.getRaster();
         int grey;
@@ -1094,8 +1108,8 @@ public class CommonUtils {
      * @param array
      * @return
      */
-    public BufferedImage arrayToImage1D(double[] array, int width, int height, boolean isComplex){
-        BufferedImage imageout = CreateNewBufferedImage(width,height);
+    public static BufferedImage arrayToImage1D(double[] array, int width, int height, boolean isComplex){
+        BufferedImage imageout = createNewBufferedImage(width,height);
         WritableRaster raster = imageout.getRaster();
         int grey;
         for(int j = 0; j<imageout.getWidth(); j++){
@@ -1116,8 +1130,8 @@ public class CommonUtils {
      * @param array
      * @return
      */
-    public BufferedImage arrayToImage1D(float[] array, int width, int height, boolean isComplex){
-        BufferedImage imageout = CreateNewBufferedImage(width, height);
+    public static BufferedImage arrayToImage1D(float[] array, int width, int height, boolean isComplex){
+        BufferedImage imageout = createNewBufferedImage(width, height);
         WritableRaster raster = imageout.getRaster();
         int grey;
         for(int j = 0; j<imageout.getWidth(); j++){
@@ -1141,7 +1155,7 @@ public class CommonUtils {
      * @param job
      * @return
      */
-    public BufferedImage ArrayToImage(double[][] array, int job, boolean isComplex){
+    public static BufferedImage arrayToImage(double[][] array, int job, boolean isComplex){
         if (job > DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             System.err.println("Wrong job");
             throw new IllegalArgumentException();
@@ -1171,7 +1185,7 @@ public class CommonUtils {
      * @param job
      * @return
      */
-    public BufferedImage ArrayToImage(float[][] array, int job, boolean isComplex){
+    public static BufferedImage arrayToImage(float[][] array, int job, boolean isComplex){
         if (job > DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             System.err.println("Wrong job");
             throw new IllegalArgumentException();
@@ -1201,7 +1215,7 @@ public class CommonUtils {
      * @param job
      * @return
      */
-    public BufferedImage ArrayToImage1D(double[] array, int job, int width, int height, boolean isComplex){
+    public static BufferedImage arrayToImage1D(double[] array, int job, int width, int height, boolean isComplex){
         if (job > DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             System.err.println("Wrong job");
             throw new IllegalArgumentException();
@@ -1233,7 +1247,7 @@ public class CommonUtils {
      * @param job
      * @return
      */
-    public BufferedImage ArrayToImage1D(float[] array, int job, int width, int height, boolean isComplex){
+    public static BufferedImage arrayToImage1D(float[] array, int job, int width, int height, boolean isComplex){
         if (job > DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             System.err.println("Wrong job");
             throw new IllegalArgumentException();
@@ -1267,7 +1281,7 @@ public class CommonUtils {
      * @param PSF
      * @return
      */
-    public int estimatePsfSize(BufferedImage PSF){
+    public static int estimatePsfSize(BufferedImage PSF){
         int width = PSF.getWidth();
         int height = PSF.getHeight();
         WritableRaster raster = PSF.getRaster();
@@ -1301,7 +1315,7 @@ public class CommonUtils {
         return (max-min) > prev ? (max-min) : prev;
     }
 
-    public BufferedImage ImagePad(BufferedImage image, int sizePSF) {
+    public static BufferedImage imagePad(BufferedImage image, int sizePSF) {
         BufferedImage pad = new BufferedImage(image.getWidth()+sizePSF, image.getHeight()+sizePSF, image.getType());
         Raster rasterImage = image.getData();
         WritableRaster rasterPad = pad.getRaster();
@@ -1314,7 +1328,7 @@ public class CommonUtils {
         return pad;
     }
 
-    public BufferedImage ImageUnPad(BufferedImage image, int sizePSF) {
+    public static BufferedImage imageUnPad(BufferedImage image, int sizePSF) {
         int hlf = sizePSF/2;
         return image.getSubimage(hlf, hlf, image.getWidth()-sizePSF, image.getHeight()-sizePSF);
     }
@@ -1325,7 +1339,7 @@ public class CommonUtils {
      *
      * */
 
-    public double[][] PSF_Padding(BufferedImage image, BufferedImage imagePsf, boolean isComplex) {
+    public static double[][] psfPadding(BufferedImage image, BufferedImage imagePsf, boolean isComplex) {
         double [][]tableau_psf;
         int width = image.getWidth();
         int height = image.getHeight();
@@ -1336,7 +1350,19 @@ public class CommonUtils {
         }
         int demiPsfW = imagePsf.getWidth()/2;int demiPsfH = imagePsf.getHeight()/2;
 
-        int[][]test = PSFToArray(imagePsf);
+        int[][]test = psfToArray(imagePsf);
+
+        // IMAGE point of view:
+        // It means we have the PSF split in four blocks A,B,C,D
+        //   A | B     ->
+        //   -----     -> PSF
+        //   C | D     ->
+        //
+        // And we want will send them to the other side in the image
+        //
+        //   D | C     ->
+        //   -----     -> Image
+        //   B | A     ->
 
         //bloc haut à gauche: A
         for(int j = 0; j<demiPsfW; j++){
@@ -1366,7 +1392,7 @@ public class CommonUtils {
         return tableau_psf;
     }
 
-    public double[] PSF_Padding1D(BufferedImage image, BufferedImage imagePsf, boolean isComplex) {
+    public static double[] psfPadding1D(BufferedImage image, BufferedImage imagePsf, boolean isComplex) {
         double []tableau_psf;
         int width = image.getWidth();
         int height = image.getHeight();
@@ -1380,7 +1406,7 @@ public class CommonUtils {
         int psfH = imagePsf.getHeight();
         int psfW = imagePsf.getWidth();
         int demiPsfW = psfW/2;int demiPsfH = psfH/2;
-        int[]test = PSFToArray1D(imagePsf);
+        int[]test = psfToArray1D(imagePsf);
 
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
@@ -1456,7 +1482,7 @@ public class CommonUtils {
      * @param isComplex
      * @return
      */
-    public float[] PSF_Padding1DFloat(BufferedImage image, BufferedImage imagePsf, boolean isComplex) {
+    public static float[] psfPadding1DFloat(BufferedImage image, BufferedImage imagePsf, boolean isComplex) {
         int width = image.getWidth();
         int height = image.getHeight();
         float []tableau_psf;
@@ -1470,7 +1496,7 @@ public class CommonUtils {
         int psfH = imagePsf.getHeight();
         int psfW = imagePsf.getWidth();
         int demiPsfW = psfW/2;int demiPsfH = psfH/2;
-        int[]test = PSFToArray1D(imagePsf);
+        int[]test = psfToArray1D(imagePsf);
 
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
@@ -1538,6 +1564,302 @@ public class CommonUtils {
             }
         }
         return tableau_psf;
+    }
+
+    //Ludo parts
+
+    /**
+     * Returns 1d array (column major) of a 2d array. 
+     *
+     * @param  In 2d array
+     * @return 1d array
+     */
+    public static double[] array2DTo1D(double[][] In)
+    {
+        int H = In.length;
+        int W = In[0].length;
+        double[] Out = new double[H*W];
+        for (int j = 0; j < W; j++)
+            for (int i = 0; i < H; i++)
+                Out[j*H + i] = In[i][j];
+        return Out;
+    }
+
+    /**
+     * Returns 2d array (column major) of a 1d array. 
+     *
+     * @param In 1d array of double
+     * @param W Width of the 2d array In
+     * @return 2d array
+     */
+    public static double[][] array1DTo2D(double[] In, int H)
+    {
+        int W = In.length/H;
+        double Out[][] = new double[H][W];
+        for (int j = 0; j < W; j++)
+            for (int i = 0; i < H; i++)
+                Out[i][j] = In[j*H + i];
+        return Out;
+    }
+
+
+    public static void showBufferedImage(BufferedImage I)
+    {
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel();
+        label.setIcon(new ImageIcon(I));
+        frame.add(label);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public static void saveBufferedImage(BufferedImage I, String name)
+    {
+        try
+        {
+            ImageIO.write(I, "PNG", new File(name));
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Convert an image into an 2d array.
+     * 
+     */
+    public static double[][] im2array(String imageName)
+    {
+        File fileI = new File(imageName);
+        BufferedImage I = null;
+        try {
+            I = ImageIO.read(fileI);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return buffI2array(I);
+    }
+
+    public static BufferedImage Array2BuffI(double[][] A)
+    {
+        int H = A.length;
+        int W = A[0].length;
+        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+        MathUtils.uint8(A);
+        for(int j = 0; j < W; j++)
+            for(int i = 0; i < H; i++)
+            {
+                Color b = new Color( (int) A[i][j], (int) A[i][j], (int) A[i][j] );
+                bufferedI.setRGB(j, i, b.getRGB());
+            }
+        return bufferedI;
+    }
+    
+    public static double[][] buffI2array(BufferedImage I) //FIXME remplacer par ma fonction
+    {
+        int H = I.getHeight();
+        int W = I.getWidth();
+        double ImArray[][] = new double[H][W];
+        WritableRaster raster = I.getRaster();
+        for (int j = 0; j < W; j++) {
+            for (int i = 0; i < H; i++) {
+                int[] pixels = raster.getPixel(j, i, (int[]) null);
+                ImArray[i][j] = pixels[0];
+            }
+        }
+        return ImArray;
+    }
+
+    public static BufferedImage array2BuffI(double[][] I) //FIXME remplacer par ma fonction
+    {
+        int H = I.length;
+        int W = I[0].length;
+        ColorMap map = ColorMap.getJet(256);
+
+        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+
+        for(int j = 0; j < W; j++)
+            for(int i = 0; i < H; i++)
+            {
+                Color b = map.table[ (int)I[i][j] ];
+                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+            }
+        return bufferedI;
+    }
+    /**
+     * Convert an 2d array into a BufferedImage
+     * 
+     */
+    public static BufferedImage array2BufferedImageColor(double[][] A)
+    {
+        ColorMap map = ColorMap.getJet(256);
+        int H = A.length;
+        int W = A[0].length;
+        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+
+        for(int j = 0; j < W; j++)
+            for(int i = 0; i < H; i++)
+            {
+                Color b = map.table[ (int)A[i][j] ];
+                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+            }
+        return bufferedI;
+    }
+
+
+    public static void saveArray2Image(double[] A, int W, String name)
+    {
+        ColorMap map = ColorMap.getJet(256);
+        int L = A.length;
+        int H = L/W;
+        double S[];
+        S = MathUtils.scaleArrayTo8bit(A);
+        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+
+        for(int j = 0; j < W; j++)
+        {
+            for(int i = 0; i < H; i++)
+            {
+                Color b = map.table[ (int) S[i*W + j] ];
+                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+            }
+        }
+
+        try {
+            ImageIO.write(bufferedI, "png", new File(name));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveArray2Image(double[][] A,  String name) //FIXME decomposer avec fonctions déjà existantes
+    {
+        ColorMap map = ColorMap.getJet(256);
+        int H = A.length;
+        int W = A[0].length;
+        double S[][];
+        S = MathUtils.scaleArrayTo8bit(A);
+        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+
+        for(int j = 0; j < W; j++)
+        {
+            for(int i = 0; i < H; i++)
+            {
+                Color b = map.table[ (int) S[i][j] ];
+                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+            }
+        }
+
+        try {
+            ImageIO.write(bufferedI, "png", new File(name));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Expand an image
+     *
+     * Pad an image to another size of DIM1 and DIM2
+     * The justification is set by keyword JUST:
+     *  JUST =  0 -> lower-left (the default)
+     *          1 -> center
+     *         -1 -> at corners to preserve FFT indexing
+     */
+    public static double[][] imgPad(double img[][], int dim1, int dim2, int just)
+    {
+        double New[][] = new double[dim2][dim1];
+        return imgPad(img, New, just);
+    }
+
+    /**
+     * Expand an image
+     *
+     * Pad an image to another size of DIM1 and DIM2
+     * The justification is set by keyword JUST:
+     *  JUST =  0 -> lower-left (the default)
+     *          1 -> center
+     *         -1 -> at corners to preserve FFT indexing
+     */
+    public static double[][] imgPad(double oldImg[][], double newImg[][] , int just)
+    {   
+        int oldH = oldImg.length; // hauteur
+        int oldW = oldImg[0].length; // largeur
+        int newH = newImg.length;
+        int newW = newImg[0].length;
+        double New[][] = new double[newH][newW];
+        switch (just)
+        {
+        case LOWER_LEFT:
+            /* image will not be centered */
+            for(int i = 0; i < oldH; i++)
+            {
+                for(int j = 0; j < oldW; j++)
+                {
+                    New[i][j] = oldImg[i][j];
+                }
+            }
+            break;
+        case CENTERED:
+            /* image will be centered */
+            int i1 = (newW - oldW)/2;
+            int i2 = (newH - oldH)/2;
+            for(int i = 0; i < oldH; i++)
+            {
+                for(int j = 0; j < oldW; j++)
+                {
+                    New[i2 + i][j + i1] = oldImg[i][j];
+                }
+            }
+            break;
+        case FFT_INDEXING:
+            /* preserve FFT indexing */
+            int oldW2 = oldW/2;
+            int oldH2 = oldH/2;
+            if (oldW2 != 0 || oldH2 != 0) // haut gauche->bas droit
+            {
+                for(int i = 0; i < oldH2; i++)
+                {
+                    for(int j = 0; j < oldW2; j++)
+                    {
+                        New[newH - oldH2 + i][newW - oldW2 + j] = oldImg[i][j];
+                    }
+                }
+            }
+            if(oldW2 != 0) // Haut droit->bas gauche
+            {
+                for(int i = 0; i < oldH2; i++)
+                {
+                    for(int j = 0; j < oldW-oldW2; j++)
+                    {
+                        New[newH - oldH2 + i][j] = oldImg[i][j + oldW2];
+                    }
+                }
+            }
+            if(oldH2 != 0) // bas gauche->haut droit
+            {
+                for(int i = 0; i < oldH - oldH2; i++)
+                {
+                    for(int j = 0; j < oldW2; j++)
+                    {
+                        New[i][newW - oldW2 + j] = oldImg[i + oldH2][j];
+                    }
+                }
+            }
+
+            for(int i = 0; i < oldH-oldH2; i++) // Bas droit->Haut gaucHe
+            {
+                for(int j = 0; j < oldW-oldW2; j++)
+                {
+                    New[i][j] = oldImg[i + oldH2][j + oldW2];
+                }
+            }
+            break;
+        default:
+            System.out.println("bad value for keyword JUST");
+        }
+        return New;
     }
 }
 

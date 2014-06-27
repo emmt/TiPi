@@ -1,0 +1,20 @@
+Ludo
+    Correct loops without opening and closing parenthesis (Non java style)
+    In switch case, the default should launch an exception not only a sysout
+    Verify that each file you'll keep have the licence
+    Clean plugins.mitiv.micro to use {Math,Common}Utils and update code
+    Be careful of your variable name/sysout -> Verify all your code
+    MicroscopyMain should not (IMO) have been pushed to git
+    -Need to verify depth aberation and jacobian with Fereol
+    -cross only the pupil, not the whole images?
+    -put an even zernike
+
+John
+    CG threaded function (halh functionnal only)
+
+Eric
+
+Discussion
+    Add .classpath file to solve the probleme of src package (not a perfect solution)
+    Should we create interface for regul/optim (ask many others questions)
+    (John) In functions 1D as 2D do we ask width, height or only one and we guess the other ?

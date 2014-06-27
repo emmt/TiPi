@@ -51,31 +51,8 @@ public class Filter implements FilterInterface{
         this.FFT_Image = FFTImage;
         X = FFTImage.length;
         Y = FFTImage[0].length/2;
-        double a,b,c,d,q;
-        double[][]out = new double[X][2*Y];
         cc = FFT_PSF[0][0]*FFT_PSF[0][0]+FFT_PSF[0][1]*FFT_PSF[0][1];
-        for(int i = 0; i<X; i++){
-            for(int j=0;j<Y;j++){
-                /*
-				a=re(fft.psf), b=im(fft.psf), c=re(fft.image), d=im(fft.tableau)
-				up = conjuguate(fft_psf)*fft_image
-				upRe = a*c + b*d;
-				upIm = a*d - b*c;
-				down = abs2(fft_psf)+alpha*abs2(fft_psf(0,0));
-				out = up/down
-                 */
-                a = FFT_PSF[i][2*j];
-                b = FFT_PSF[i][2*j+1];
-                c = FFTImage[i][2*j];
-                d = FFTImage[i][2*j+1];
-
-                q = 1.0/(a*a + b*b + cc*alpha);
-
-                out[i][2*j] = (a*c + b*d)*q;
-                out[i][2*j+1] = (a*d - b*c)*q;
-            }
-        }
-        return out;
+        return Wiener(alpha);
     }
 
     @Override
@@ -107,21 +84,10 @@ public class Filter implements FilterInterface{
         this.FFT_Image = FFTImage;
         X = FFTImage.length;
         Y = FFTImage[0].length/2;
-        double a,b,c,d,e,f,q;
-        double[][]out = new double[X][2*Y];
-
+        double e,f;
         tabcc = new double[X][Y];
         for(int i = 0; i<X; i++){
             for(int j=0;j<Y;j++){
-                //a=re(fft.psf), b=im(fft.psf), c=re(fft.image), d=im(fft.tableau)
-                a = FFT_PSF[i][2*j];
-                b = FFT_PSF[i][2*j+1];
-                c = FFTImage[i][2*j];
-                d = FFTImage[i][2*j+1];
-                //up = conjuguate(fft_psf)*fft_image
-                //upRe = a*c + b*d;
-                //upIm = a*d - b*c;
-                //down = abs2(fft_psf)+alpha*abs2(fft_psf(0,0));
                 if(i<=X/2){
                     e = ((double)i/X);
                 }else{
@@ -132,15 +98,10 @@ public class Filter implements FilterInterface{
                 }else{
                     f = ((double)(j-Y)/Y);
                 }
-
                 tabcc[i][j] = 4*Math.PI*Math.PI*(e*e+f*f);
-                q = 1.0/(a*a + b*b + alpha*tabcc[i][j]);
-                //out = up/down
-                out[i][2*j] = (a*c + b*d)*q;
-                out[i][2*j+1] = (a*d - b*c)*q;
             }
         }
-        return out;
+        return WienerQuad(alpha);
     }
 
     @Override
@@ -169,16 +130,11 @@ public class Filter implements FilterInterface{
         this.FFT_Image1D = FFTImage;
         this.X = XX;
         this.Y = YY;
-        double a,b,c,d,e,f,q;
-        double[]out = new double[X*2*Y];
+        double e,f;
         tabcc1D = new double[X*Y];
 
         for(int i = 0; i<X; i++){
             for(int j=0;j<Y;j++){
-                a = FFT_PSF1D[2*(j+i*Y)];
-                b = FFT_PSF1D[2*((j+1)+i*Y)];
-                c = FFT_Image1D[2*(j+i*Y)];
-                d = FFT_Image1D[2*((j+1)+i*Y)];
                 if(i<=X/2){
                     e = ((double)i/X);
                 }else{
@@ -190,13 +146,9 @@ public class Filter implements FilterInterface{
                     f = ((double)(j-Y)/Y);
                 }
                 tabcc1D[j+i*Y] = 4*Math.PI*Math.PI*(e*e+f*f);
-                q = 1.0/(a*a + b*b + alpha*tabcc1D[j+i*Y]);
-                //out = up/down
-                out[2*(j+i*Y)] = (a*c + b*d)*q;
-                out[2*((j+1)+i*Y)] = (a*d - b*c)*q;
             }
         }
-        return out;
+        return WienerQuad1D(alpha);
     }
 
     @Override

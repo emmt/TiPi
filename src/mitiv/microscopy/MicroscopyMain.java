@@ -24,11 +24,10 @@
  */
 
 package mitiv.microscopy;
+import java.util.Arrays;
 
-import mitiv.linalg.DoubleVectorSpace;
-import mitiv.linalg.Vector;
-import mitiv.linalg.VectorSpace;
-import mitiv.utils.Utils;
+import mitiv.utils.CommonUtils;
+import mitiv.utils.MathUtils;
 
 public class MicroscopyMain {
     public static void main(String[] args) {
@@ -52,24 +51,35 @@ public class MicroscopyMain {
         double[] beta = {0.,0.,0.,0., 1.,1.};
         double deltaX = 0;
         double deltaY = 0;
+        double tab[][] = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12} };
+        double tab2[] = { 1.0, 4.0, 7.0, 10.0, 2.0, 5.0, 8.0, 11.0, 3.0, 6.0, 9.0, 12.0};
         
         MicroscopyModelPSF pupil = new MicroscopyModelPSF(NA, lambda, ni, ns, zdepth, dxy, dz, nx, ny, nz, nzern, use_depth_scaling);
         pupil.computePSF(psf, alpha, beta, deltaX, deltaY, zdepth);
 
 /*
-        Utils.fft_pli2(pupil.getMaskPupil());
-        Utils.fft_pli2(pupil.getPsi());
-        Utils.fft_pli2(pupil.getRho());
-        Utils.fft_pli2(pupil.getPhi());
-        
-  */      System.out.println("Pupil");
-        Utils.stat(pupil.getMaskPupil());
+        MathUtils.fftPli2(pupil.getMaskPupil());
+        MathUtils.fftPli2(pupil.getPsi());
+        MathUtils.fftPli2(pupil.getRho());
+        MathUtils.fftPli2(pupil.getPhi());
+  */      
+
+       System.out.println("Pupil");
+        MathUtils.stat(pupil.getMaskPupil());
         System.out.println("Psi");
-        Utils.stat(pupil.getPsi());
+        MathUtils.stat(pupil.getPsi());
         System.out.println("Rho");
-        Utils.stat(pupil.getRho());
+        MathUtils.stat(pupil.getRho());
         System.out.println("Phi");
-        Utils.stat(pupil.getPhi());
+        MathUtils.stat(pupil.getPhi());
+        
+        MathUtils.printArray(MathUtils.indgen(7));
+        MathUtils.printArray(MathUtils.indgen(4, 7));
+        MathUtils.printArray(MathUtils.span1(2, 8, 2));
+        //DoubleVectorSpace tmp = new DoubleVectorSpace(4);
+        MathUtils.printArray(CommonUtils.array2DTo1D(tab));
+        MathUtils.printArray(CommonUtils.array1DTo2D(tab2, 4));
+
     }
 }
 

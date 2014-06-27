@@ -11,8 +11,8 @@ import javax.swing.event.ChangeListener;
 import icy.sequence.Sequence;
 import icy.sequence.SequenceEvent;
 import icy.sequence.SequenceListener;
+import mitiv.deconv.DeconvUtils;
 import mitiv.deconv.Deconvolution;
-import mitiv.utils.DeconvUtils;
 import plugins.adufour.ezplug.*;
 
 /**
