@@ -5,6 +5,9 @@ Ludo
     Clean plugins.mitiv.micro to use {Math,Common}Utils and update code
     Be careful of your variable name/sysout -> Verify all your code
     MicroscopyMain should not (IMO) have been pushed to git
+    -Need to verify depth aberation and jacobian with Fereol
+    -cross only the pupil, not the whole images?
+    -put an even zernike
 
 John
     CG threaded function (halh functionnal only)

@@ -24,6 +24,9 @@
  */
 
 package mitiv.microscopy;
+import java.util.Arrays;
+
+import mitiv.utils.CommonUtils;
 import mitiv.utils.MathUtils;
 
 public class MicroscopyMain {
@@ -39,6 +42,7 @@ public class MicroscopyMain {
         int ny = 256;
         int nz = 64;
         int nzern = 10;
+        int use_depth_scaling = 0;
         //double psf[] = new double[nx*ny];
         double psf[][][] = new double[nz][ny][nx];
         //double[] alpha = {0.000001};
@@ -47,17 +51,20 @@ public class MicroscopyMain {
         double[] beta = {0.,0.,0.,0., 1.,1.};
         double deltaX = 0;
         double deltaY = 0;
-
-        MicroscopyModelPSF pupil = new MicroscopyModelPSF(NA, lambda, ni, ns, zdepth, dxy, dz, nx, ny, nz, nzern);
+        double tab[][] = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12} };
+        double tab2[] = { 1.0, 4.0, 7.0, 10.0, 2.0, 5.0, 8.0, 11.0, 3.0, 6.0, 9.0, 12.0};
+        
+        MicroscopyModelPSF pupil = new MicroscopyModelPSF(NA, lambda, ni, ns, zdepth, dxy, dz, nx, ny, nz, nzern, use_depth_scaling);
         pupil.computePSF(psf, alpha, beta, deltaX, deltaY, zdepth);
 
 /*
-        Utils.fft_pli2(pupil.getMaskPupil());
-        Utils.fft_pli2(pupil.getPsi());
-        Utils.fft_pli2(pupil.getRho());
-        Utils.fft_pli2(pupil.getPhi());
-        
-  */      System.out.println("Pupil");
+        MathUtils.fftPli2(pupil.getMaskPupil());
+        MathUtils.fftPli2(pupil.getPsi());
+        MathUtils.fftPli2(pupil.getRho());
+        MathUtils.fftPli2(pupil.getPhi());
+  */      
+
+       System.out.println("Pupil");
         MathUtils.stat(pupil.getMaskPupil());
         System.out.println("Psi");
         MathUtils.stat(pupil.getPsi());
@@ -70,6 +77,9 @@ public class MicroscopyMain {
         MathUtils.printArray(MathUtils.indgen(4, 7));
         MathUtils.printArray(MathUtils.span1(2, 8, 2));
         //DoubleVectorSpace tmp = new DoubleVectorSpace(4);
+        MathUtils.printArray(CommonUtils.array2DTo1D(tab));
+        MathUtils.printArray(CommonUtils.array1DTo2D(tab2, 4));
+
     }
 }
 

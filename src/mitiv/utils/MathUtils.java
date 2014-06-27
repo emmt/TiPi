@@ -41,6 +41,15 @@ import javax.swing.JLabel;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 
 public class MathUtils {
+    
+    public static final int COLORMAP_GRAYSCALE = 0;
+    public static final int COLORMAP_JET = 1;
+    public static final int GAUSSIAN = 2;
+    public static final int AVERAGE = 3;
+    public static final int PREWITT = 4;
+    public static final int SOBEL = 5;
+    public static final int KIRSH = 6;
+    public static final int DISK = 7;
     //FIXME changer le span1 en span et les span dans les autres fonction en indgen
     /**
      * Check if the number is even. 
@@ -355,6 +364,30 @@ public class MathUtils {
         return scaleA;
     }
 
+    public static double[][] conj1(double[][] A)
+    {
+        int H = A.length;
+        int W = A[0].length;
+        double[][] conjA = new double[H][W];
+        for(int j = 0; j < W/2; j++)
+            for(int i = 0; i < H; i++)
+            {
+                conjA[i][2*j] = A[i][2*j];
+                conjA[i][2*j + 1] = -A[i][2*j + 1];
+            }
+        return conjA;
+    }
+    
+    public static void conj2(double[][] A)
+    {
+        int H = A.length;
+        int W = A[0].length;
+        double[][] conjA = new double[H][W];
+        for(int j = 0; j < W/2; j++)
+            for(int i = 0; i < H; i++)
+                conjA[i][2*j + 1] = -A[i][2*j + 1];
+    }
+    
     /**
      * Scale array values into a 8bit (between 0 and 255).
      *
@@ -514,8 +547,8 @@ public class MathUtils {
      * @param A array to display
      * @param colorMap 0 for a grayscale display and 1 with a colormap 
      */
-    public static void pli(double A[][], int colorMap)
-    {	
+  public static void pli(double A[][], int colorMap)
+    {   
         int H = A.length;
         int W = A[0].length;
         double S[][];
@@ -523,19 +556,19 @@ public class MathUtils {
         BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
         //ColorMap map = ColorMap.getJet(256);
 
-        if (colorMap == 1)
-        {
+        switch (colorMap) {
+        case COLORMAP_JET:
             ColorMap map = ColorMap.getJet(256);
             for(int j = 0; j < W; j++)
             {
                 for(int i = 0; i < H; i++)
                 {
                     Color b = map.table[ (int) S[i][j] ];
-                    bufferedI.setRGB(i, j, b.getRGB());	// j, i inversé
+                    bufferedI.setRGB(i, j, b.getRGB()); // j, i inversé
                 }
             }
-        }else
-        {
+            break;
+        case COLORMAP_GRAYSCALE:
             Color b;
             for(int j = 0; j < W; j++)
             {
@@ -545,7 +578,11 @@ public class MathUtils {
                     bufferedI.setRGB(i, j, b.getRGB()); // j, i inversé
                 }
             }
+        default:
+            System.out.println("Bad value for colorMap");
+            break;
         }
+
         JFrame frame = new JFrame();
         JLabel label = new JLabel();
         label.setIcon(new ImageIcon(bufferedI));
@@ -554,33 +591,49 @@ public class MathUtils {
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-
+    
     /**
      * Display image of an 2d array
      * 
      * Different from the "pli" function, uses "naviguablePanel" for a better displaying
      */
-    public static void pli2(double A[][])
+    public static void pli2(double A[][], int colorMap)
     {	
-        ColorMap map = ColorMap.getJet(256);
         int H = A.length;
         int W = A[0].length;
         double S[][];
         S = scaleArrayTo8bit(A);
         BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
 
-        for(int j = 0; j < W; j++)
-        {
-            for(int i = 0; i < H; i++)
+        switch (colorMap) {
+        case COLORMAP_JET:
+            ColorMap map = ColorMap.getJet(256);
+            for(int j = 0; j < W; j++)
             {
-                Color b = map.table[ (int) S[i][j] ];
-                bufferedI.setRGB(j, i, b.getRGB());	// j, i inversé
+                for(int i = 0; i < H; i++)
+                {
+                    Color b = map.table[ (int) S[i][j] ];
+                    bufferedI.setRGB(i, j, b.getRGB()); // j, i inversé
+                }
             }
+            break;
+        case COLORMAP_GRAYSCALE:
+            Color b;
+            for(int j = 0; j < W; j++)
+            {
+                for(int i = 0; i < H; i++)
+                {
+                    b = new Color( (int) S[i][j], (int) S[i][j], (int) S[i][j] );
+                    bufferedI.setRGB(i, j, b.getRGB()); // j, i inversé
+                }
+            }
+        default:
+            System.out.println("Bad value for colorMap");
+            break;
         }
         NavigableImagePanel.afficher(bufferedI);
     }
 
-    //FIXME use at the the function "pli" to display..
     /**
      * Plot 2-D FFT array A as an image, taking care of "rolling" A and setting
      * correct world boundaries.  Keyword SCALE can be used to indicate the
@@ -591,61 +644,12 @@ public class MathUtils {
      */
     public static void fftPli2(double A[][])
     {	
-        ColorMap map = ColorMap.getJet(256);
-        int H = A.length;
-        int W = A[0].length;
-        double S[][];
-        double S_pad[][] = new double[H][W];
-        S = scaleArrayTo8bit(A);
-        /**Pad PSF array H*W : PSFArrayPad**/
-        //Essayer avec une matric simple..
-        //Premier cadrant : haut gauche se retrouve en bas à droite
-        for(int i = 0; i < H/2; i++)
-        {
-            for(int j = 0; j < W/2; j++)
-            {
-                S_pad[H - H/2 + i][W - W/2 + j] = S[i][j];
-            }
-        }
-        //Haut droit en bas à gauche
-        for(int i = 0; i < H/2; i++)
-        {
-            for(int j = 0; j < W/2; j++)
-            {
-                S_pad[H - H/2 + i][j] = S[i][j + W/2];
-            }
-        }
-        //Bas gaucHe en Haut à droite
-        for(int i = 0; i < H/2; i++)
-        {
-            for(int j = 0; j < W/2; j++)
-            {
-                S_pad[i][W - W/2 + j] = S[i + H/2][j];
-            }
-        }
-        //Bas droit en Haut gaucHe
-        for(int i = 0; i < H/2; i++)
-        {
-            for(int j = 0; j < W/2; j++)
-            {
-                S_pad[i][j] = S[i + H/2][j + W/2];
-            }
-        }
-
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-
-        for(int i = 0; i < H; i++)
-        {
-            for(int j = 0; j < W; j++)
-            {
-                Color b = map.table[ (int) S_pad[i][j] ];
-                bufferedI.setRGB(j, i, b.getRGB());	// j, i inversé
-            }
-        }
-        NavigableImagePanel.afficher(bufferedI);
+        uint8(A);
+        double[][] A_padded = fftShift(A);
+        pli2(A_padded, COLORMAP_JET);
     }
 
-    //FIXME use at the the function "pli" to display..
+
     /**
      * Plot 2-D FFT array A as an image, taking care of "rolling" A and setting
      * correct world boundaries.  Keyword SCALE can be used to indicate the
@@ -656,67 +660,12 @@ public class MathUtils {
      */
     public static void fftPli(double A[][])
     {	
-        ColorMap map = ColorMap.getJet(256);
-        int H = A.length;
-        int W = A[0].length;
-        double S[][];
-        double S_pad[][] = new double[H][W];
-        S = scaleArrayTo8bit(A);
-        /**Pad PSF array H*W : PSFArrayPad**/
-        //Essayer avec une matric simple..
-        //Premier cadrant : haut gauche se retrouve en bas à droite
-        for(int j = 0; j < W/2; j++)
-        {
-            for(int i = 0; i < H/2; i++)
-            {
-                S_pad[H - H/2 + i][W - W/2 + j] = S[i][j];
-            }
-        }
-        //Haut droit en bas à gauche
-        for(int j = 0; j < W/2; j++)
-        {
-            for(int i = 0; i < H/2; i++)
-            {
-                S_pad[H - H/2 + i][j] = S[i][j + W/2];
-            }
-        }
-        //Bas gaucHe en Haut à droite
-        for(int j = 0; j < W/2; j++)
-        {
-            for(int i = 0; i < H/2; i++)
-            {
-                S_pad[i][W - W/2 + j] = S[i + H/2][j];
-            }
-        }
-        //Bas droit en Haut gaucHe
-        for(int j = 0; j < W/2; j++)
-        {
-            for(int i = 0; i < H/2; i++)
-            {
-                S_pad[i][j] = S[i + H/2][j + W/2];
-            }
-        }
-
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-
-        for(int i = 0; i < H; i++)
-        {
-            for(int j = 0; j < W; j++)
-            {
-                Color b = map.table[ (int) S_pad[i][j] ];
-                bufferedI.setRGB(j, i, b.getRGB());	// j, i inversé
-            }
-        }
-
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel();
-        label.setIcon(new ImageIcon(bufferedI));
-        frame.add(label);
-        frame.pack();
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        uint8(A);
+        double[][] A_padded = fftShift(A);
+        pli(A_padded, COLORMAP_JET);
     }
 
+    
     /**
      * Shift zero-frequency component to center of spectrum
      * 
@@ -725,42 +674,40 @@ public class MathUtils {
     {	
         int H = A.length;
         int W = A[0].length;
-        double S_shift[][] = new double[H][W];
-        /**Pad PSF array H*W : PSFArrayPad**/
-        //Essayer avec une matric simple..
-        //Premier cadrant : haut gauche se retrouve en bas à droite
-        for(int i = 0; i < H/2; i++)
+        double A_shift[][] = new double[H][W];
+        /* Higher-left to lower-right */
+        for(int j = 0; j < W/2; j++)
         {
-            for(int j = 0; j < W/2; j++)
+            for(int i = 0; i < H/2; i++)
             {
-                S_shift[H - H/2 + i][W - W/2 + j] = A[i][j];
+                A_shift[H - H/2 + i][W - W/2 + j] = A[i][j];
             }
         }
-        //Haut droit en bas à gauche
-        for(int i = 0; i < H/2; i++)
+        /* Higher-right to lower-left */
+        for(int j = 0; j < W/2; j++)
         {
-            for(int j = 0; j < W/2; j++)
+            for(int i = 0; i < H/2; i++)
             {
-                S_shift[H - H/2 + i][j] = A[i][j + W/2];
+                A_shift[H - H/2 + i][j] = A[i][j + W/2];
             }
         }
-        //Bas gaucHe en Haut à droite
-        for(int i = 0; i < H/2; i++)
+        /* Lower-left to higher-right */
+        for(int j = 0; j < W/2; j++)
         {
-            for(int j = 0; j < W/2; j++)
+            for(int i = 0; i < H/2; i++)
             {
-                S_shift[i][W - W/2 + j] = A[i + H/2][j];
+                A_shift[i][W - W/2 + j] = A[i + H/2][j];
             }
         }
-        //Bas droit en Haut gaucHe
-        for(int i = 0; i < H/2; i++)
+        /* Lower-right to higher-left*/
+        for(int j = 0; j < W/2; j++)
         {
-            for(int j = 0; j < W/2; j++)
+            for(int i = 0; i < H/2; i++)
             {
-                S_shift[i][j] = A[i + H/2][j + W/2];
+                A_shift[i][j] = A[i + H/2][j + W/2];
             }
         }
-        return S_shift;
+        return A_shift;
     }
 
     public static double[][] fftConv(double img[][], double h[][])
@@ -972,14 +919,14 @@ public class MathUtils {
         System.out.println("avg " + avg(a) + " var " + var(a) + " std " + std(a));
     }
 
-    public static double[][] imnoise(double[][] img, String type, double arg1, double arg2)
+    public static double[][] imnoise(double[][] img, int type, double arg1, double arg2)
     {
         int H = img.length;
         int W = img[0].length;
         double[][] imnoise = new double[H][W];
         switch (type)
         {
-        case "gaussian":
+        case GAUSSIAN:
             Random rand = new Random();
             double std = Math.sqrt(arg1);
             double mean = arg2;
@@ -1031,11 +978,11 @@ public class MathUtils {
         return ha;
     }
 
-    public static double[][] fspecial(String type, int arg1)
+    public static double[][] fspecial(int type, int arg1)
     { 
         switch (type)
         {
-        case "disk":
+        case DISK:
             double cd;
             int radius = arg1;
             int diameter = 2*radius;
@@ -1069,11 +1016,11 @@ public class MathUtils {
         }
     }
 
-    public static double[][] fspecial(String type, int[] arg1, double arg2)
+    public static double[][] fspecial(int type, int[] arg1, double arg2)
     { 
         switch (type)
         {
-        case "average":
+        case AVERAGE:
             double[][] ha = new double[arg1[0]][arg1[1]];
             double coef = 1./(arg1[0]*arg1[1]);
             int H = arg1[0];
@@ -1086,7 +1033,7 @@ public class MathUtils {
                 }
             }
             return ha;
-        case "gaussian":
+        case GAUSSIAN:
             double[][] hg = new double[arg1[0]][arg1[1]];
             double A = 2*arg2*arg2;
             double B = 1/Math.sqrt(Math.PI*A);
@@ -1107,15 +1054,15 @@ public class MathUtils {
         }
     }
 
-    public static double[][] fspecial(String type)
+    public static double[][] fspecial(int type)
     { 
         switch (type)
         {
-        case "average":
+        case AVERAGE:
             double ca = 1./9;
             double[][] ha = {{ca,ca,ca},{ca,ca,ca},{ca,ca,ca}};
             return ha;
-        case "disk":
+        case DISK:
             double cd;
             int radius = 5;
             int diameter = 2*radius;
@@ -1144,13 +1091,13 @@ public class MathUtils {
                 }
             }
             return hd;
-        case "sobel":
+        case SOBEL:
             double[][] hs = {{1,2,1},{0,0,0},{-1,-2,-1}};
             return hs;
-        case "prewitt":
+        case PREWITT:
             double[][] hp = {{1,1,1},{0,0,0},{-1,-1,-1}};
             return hp;
-        case "kirsh":
+        case KIRSH:
             double[][] hk = {{3,3,3},{3,0,3},{-5,-5,-5}};
             return hk;
         default:

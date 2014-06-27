@@ -41,6 +41,10 @@ import mitiv.deconv.DeconvUtils;
 
 public class CommonUtils {
 
+    public static final int LOWER_LEFT = 0;
+    public static final int CENTERED = 1;
+    public static final int FFT_INDEXING = -1;
+    
     /**
      * Will convert a value to another
      *
@@ -1597,7 +1601,7 @@ public class CommonUtils {
         double[] Out = new double[H*W];
         for (int j = 0; j < W; j++)
             for (int i = 0; i < H; i++)
-                Out[i*W + j] = In[i][j];
+                Out[j*H + i] = In[i][j];
         return Out;
     }
 
@@ -1608,13 +1612,13 @@ public class CommonUtils {
      * @param W Width of the 2d array In
      * @return 2d array
      */
-    public static double[][] array1DTo2D(double[] In, int W)
+    public static double[][] array1DTo2D(double[] In, int H)
     {
-        int H = In.length;                  //FIXME faux
+        int W = In.length/H;
         double Out[][] = new double[H][W];
         for (int j = 0; j < W; j++)
             for (int i = 0; i < H; i++)
-                Out[i][j] = In[i*W + j];
+                Out[i][j] = In[j*H + i];
         return Out;
     }
 
@@ -1657,43 +1661,7 @@ public class CommonUtils {
         return buffI2array(I);
     }
 
-    public static double[][] buffI2array(BufferedImage I) //FIXME remplacer par ma fonction
-    {
-        int H = I.getHeight();
-        int W = I.getWidth();
-        double ImArray[][] = new double[H][W];
-        WritableRaster raster = I.getRaster();
-        for (int j = 0; j < W; j++) {
-            for (int i = 0; i < H; i++) {
-                int[] pixels = raster.getPixel(j, i, (int[]) null);
-                //System.out.println(Arrays.toString(pixels));
-                ImArray[i][j] = pixels[0];
-            }
-        }
-        return ImArray;
-    }
-
-    /**
-     * Convert an 2d array into a BufferedImage
-     * 
-     */
-    public static BufferedImage array2BufferedImageColor(double[][] A)
-    {
-        ColorMap map = ColorMap.getJet(256);
-        int H = A.length;
-        int W = A[0].length;
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-
-        for(int i = 0; i < H; i++)
-            for(int j = 0; j < W; j++)
-            {
-                Color b = map.table[ (int)A[i][j] ];
-                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
-            }
-        return bufferedI;
-    }
-
-    public static BufferedImage array2BuffI(double[][] A)  //FIXME Scale sans prevenir + Color (lent) -> arrayToImage avec bon job
+    public static BufferedImage Array2BuffI(double[][] A)
     {
         int H = A.length;
         int W = A[0].length;
@@ -1707,8 +1675,60 @@ public class CommonUtils {
             }
         return bufferedI;
     }
+    
+    public static double[][] buffI2array(BufferedImage I) //FIXME remplacer par ma fonction
+    {
+        int H = I.getHeight();
+        int W = I.getWidth();
+        double ImArray[][] = new double[H][W];
+        WritableRaster raster = I.getRaster();
+        for (int j = 0; j < W; j++) {
+            for (int i = 0; i < H; i++) {
+                int[] pixels = raster.getPixel(j, i, (int[]) null);
+                ImArray[i][j] = pixels[0];
+            }
+        }
+        return ImArray;
+    }
 
-    public static void saveArray2Image(double[] A, int W, String name) //FIXME Convert to actual norm (Column major)
+    public static BufferedImage array2BuffI(double[][] I) //FIXME remplacer par ma fonction
+    {
+        int H = I.length;
+        int W = I[0].length;
+        ColorMap map = ColorMap.getJet(256);
+
+        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+
+        for(int j = 0; j < W; j++)
+            for(int i = 0; i < H; i++)
+            {
+                Color b = map.table[ (int)I[i][j] ];
+                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+            }
+        return bufferedI;
+    }
+    /**
+     * Convert an 2d array into a BufferedImage
+     * 
+     */
+    public static BufferedImage array2BufferedImageColor(double[][] A)
+    {
+        ColorMap map = ColorMap.getJet(256);
+        int H = A.length;
+        int W = A[0].length;
+        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+
+        for(int j = 0; j < W; j++)
+            for(int i = 0; i < H; i++)
+            {
+                Color b = map.table[ (int)A[i][j] ];
+                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+            }
+        return bufferedI;
+    }
+
+
+    public static void saveArray2Image(double[] A, int W, String name)
     {
         ColorMap map = ColorMap.getJet(256);
         int L = A.length;
@@ -1717,9 +1737,9 @@ public class CommonUtils {
         S = MathUtils.scaleArrayTo8bit(A);
         BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
 
-        for(int i = 0; i < H; i++)
+        for(int j = 0; j < W; j++)
         {
-            for(int j = 0; j < W; j++)
+            for(int i = 0; i < H; i++)
             {
                 Color b = map.table[ (int) S[i*W + j] ];
                 bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
@@ -1742,9 +1762,9 @@ public class CommonUtils {
         S = MathUtils.scaleArrayTo8bit(A);
         BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
 
-        for(int i = 0; i < H; i++)
+        for(int j = 0; j < W; j++)
         {
-            for(int j = 0; j < W; j++)
+            for(int i = 0; i < H; i++)
             {
                 Color b = map.table[ (int) S[i][j] ];
                 bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
@@ -1769,80 +1789,8 @@ public class CommonUtils {
      */
     public static double[][] imgPad(double img[][], int dim1, int dim2, int just)
     {
-        int old2 = img.length; // hauteur
-        int old1 = img[0].length; // largeur
-        double New[][] = new double[dim2][dim1];    //FIXME ici appeler imgPad(double[][], double[], int, int)
-        switch (just)
-        {
-        case 0:
-            /* image will not be centered */
-            for(int i = 0; i < old2; i++)
-            {
-                for(int j = 0; j < old1; j++)
-                {
-                    New[i][j] = img[i][j];
-                }
-            }
-            break;
-        case 1:
-            /* image will be centered */
-            int i1 = (dim1 - old1)/2;
-            int i2 = (dim2 - old2)/2;
-            for(int i = 0; i < old2; i++)
-            {
-                for(int j = 0; j < old1; j++)
-                {
-                    New[i2 + i][j + i1] = img[i][j];
-                }
-            }
-            break;
-        case -1:
-            /* preserve FFT indexing */
-            int h1 = old1/2;
-            int h2 = old2/2;
-            if (h1 != 0 || h2 != 0) // haut gauche->bas droit
-            {
-                for(int i = 0; i < h2; i++)
-                {
-                    for(int j = 0; j < h1; j++)
-                    {
-                        New[dim2 - h2 + i][dim1 - h1 + j] = img[i][j];
-                    }
-                }
-            }
-            if(h1 != 0) // Haut droit->bas gauche
-            {
-                for(int i = 0; i < h2; i++)
-                {
-                    for(int j = 0; j < old1-h1; j++)
-                    {
-                        New[dim2 - h2 + i][j] = img[i][j + h1];
-                    }
-                }
-            }
-            if(h2 != 0) // bas gauche->haut droit
-            {
-                for(int i = 0; i < old2 - h2; i++)
-                {
-                    for(int j = 0; j < h1; j++)
-                    {
-                        New[i][dim1 - h1 + j] = img[i + h2][j];
-                    }
-                }
-            }
-
-            for(int i = 0; i < old2-h2; i++) // Bas droit->Haut gaucHe
-            {
-                for(int j = 0; j < old1-h1; j++)
-                {
-                    New[i][j] = img[i + h2][j + h1];
-                }
-            }
-            break;
-        default:
-            System.out.println("bad value for keyword JUST");
-        }
-        return New;
+        double New[][] = new double[dim2][dim1];
+        return imgPad(img, New, just);
     }
 
     /**
@@ -1850,11 +1798,11 @@ public class CommonUtils {
      *
      * Pad an image to another size of DIM1 and DIM2
      * The justification is set by keyword JUST:
-     *  JUST =  0 -> lower-left (the default) //FIXME instead of 0,1,2 define it globally+statically
+     *  JUST =  0 -> lower-left (the default)
      *          1 -> center
      *         -1 -> at corners to preserve FFT indexing
      */
-    public static double[][] imgPad(double oldImg[][], double newImg[][] , String just)
+    public static double[][] imgPad(double oldImg[][], double newImg[][] , int just)
     {   
         int oldH = oldImg.length; // hauteur
         int oldW = oldImg[0].length; // largeur
@@ -1863,7 +1811,7 @@ public class CommonUtils {
         double New[][] = new double[newH][newW];
         switch (just)
         {
-        case "0":
+        case LOWER_LEFT:
             /* image will not be centered */
             for(int i = 0; i < oldH; i++)
             {
@@ -1873,7 +1821,7 @@ public class CommonUtils {
                 }
             }
             break;
-        case "1":
+        case CENTERED:
             /* image will be centered */
             int i1 = (newW - oldW)/2;
             int i2 = (newH - oldH)/2;
@@ -1885,7 +1833,7 @@ public class CommonUtils {
                 }
             }
             break;
-        case "-1":
+        case FFT_INDEXING:
             /* preserve FFT indexing */
             int oldW2 = oldW/2;
             int oldH2 = oldH/2;
