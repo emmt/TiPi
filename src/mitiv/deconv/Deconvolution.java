@@ -28,11 +28,14 @@ package mitiv.deconv;
 import icy.image.IcyBufferedImage;
 
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 import mitiv.invpb.LinearDeconvolver;
 import mitiv.linalg.DoubleVector;
 import mitiv.linalg.DoubleVectorSpaceWithRank;
 import mitiv.linalg.LinearConjugateGradient;
+import mitiv.utils.CommonUtils;
+import mitiv.utils.MathUtils;
 
 /**
  * @author Leger Jonathan
@@ -144,7 +147,7 @@ public class Deconvolution{
         psf1D = utils.PSF_Padding1D(true);
         utils.FFT1D(image1D);
         utils.FFT1D(psf1D);
-        double[] out = wiener.WienerQuad1D(alpha, psf1D, image1D,utils.height,utils.width);
+        double[] out = wiener.WienerQuad1D(alpha, psf1D, image1D, utils.width, utils.height);
         utils.IFFT1D(out);
         return(utils.ArrayToImage1D(out, correction,true));
     }
@@ -157,7 +160,7 @@ public class Deconvolution{
      * @return deconvoluated image
      */
     public BufferedImage NextDeconvolutionQuad1D(double alpha){
-        double[] out = wiener.WienerQuad1D(alpha);
+        double[] out = wiener.WienerQuad1D2(alpha);
         utils.IFFT1D(out);
         return(utils.ArrayToImage1D(out, correction, true));
     }
