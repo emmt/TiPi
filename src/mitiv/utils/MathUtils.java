@@ -44,6 +44,12 @@ public class MathUtils {
     
     public static final int COLORMAP_GRAYSCALE = 0;
     public static final int COLORMAP_JET = 1;
+    public static final int GAUSSIAN = 2;
+    public static final int AVERAGE = 3;
+    public static final int PREWITT = 4;
+    public static final int SOBEL = 5;
+    public static final int KIRSH = 6;
+    public static final int DISK = 7;
     //FIXME changer le span1 en span et les span dans les autres fonction en indgen
     /**
      * Check if the number is even. 
@@ -913,14 +919,14 @@ public class MathUtils {
         System.out.println("avg " + avg(a) + " var " + var(a) + " std " + std(a));
     }
 
-    public static double[][] imnoise(double[][] img, String type, double arg1, double arg2)
+    public static double[][] imnoise(double[][] img, int type, double arg1, double arg2)
     {
         int H = img.length;
         int W = img[0].length;
         double[][] imnoise = new double[H][W];
         switch (type)
         {
-        case "gaussian":
+        case GAUSSIAN:
             Random rand = new Random();
             double std = Math.sqrt(arg1);
             double mean = arg2;
@@ -972,11 +978,11 @@ public class MathUtils {
         return ha;
     }
 
-    public static double[][] fspecial(String type, int arg1)
+    public static double[][] fspecial(int type, int arg1)
     { 
         switch (type)
         {
-        case "disk":
+        case DISK:
             double cd;
             int radius = arg1;
             int diameter = 2*radius;
@@ -1010,11 +1016,11 @@ public class MathUtils {
         }
     }
 
-    public static double[][] fspecial(String type, int[] arg1, double arg2)
+    public static double[][] fspecial(int type, int[] arg1, double arg2)
     { 
         switch (type)
         {
-        case "average":
+        case AVERAGE:
             double[][] ha = new double[arg1[0]][arg1[1]];
             double coef = 1./(arg1[0]*arg1[1]);
             int H = arg1[0];
@@ -1027,7 +1033,7 @@ public class MathUtils {
                 }
             }
             return ha;
-        case "gaussian":
+        case GAUSSIAN:
             double[][] hg = new double[arg1[0]][arg1[1]];
             double A = 2*arg2*arg2;
             double B = 1/Math.sqrt(Math.PI*A);
@@ -1048,15 +1054,15 @@ public class MathUtils {
         }
     }
 
-    public static double[][] fspecial(String type)
+    public static double[][] fspecial(int type)
     { 
         switch (type)
         {
-        case "average":
+        case AVERAGE:
             double ca = 1./9;
             double[][] ha = {{ca,ca,ca},{ca,ca,ca},{ca,ca,ca}};
             return ha;
-        case "disk":
+        case DISK:
             double cd;
             int radius = 5;
             int diameter = 2*radius;
@@ -1085,13 +1091,13 @@ public class MathUtils {
                 }
             }
             return hd;
-        case "sobel":
+        case SOBEL:
             double[][] hs = {{1,2,1},{0,0,0},{-1,-2,-1}};
             return hs;
-        case "prewitt":
+        case PREWITT:
             double[][] hp = {{1,1,1},{0,0,0},{-1,-1,-1}};
             return hp;
-        case "kirsh":
+        case KIRSH:
             double[][] hk = {{3,3,3},{3,0,3},{-5,-5,-5}};
             return hk;
         default:

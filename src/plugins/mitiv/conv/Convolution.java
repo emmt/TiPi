@@ -78,20 +78,53 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
         getUI().setProgressBarMessage(msg);
     }
 
+    public static final int GAUSSIAN = 2;
+    public static final int AVERAGE = 3;
+    public static final int PREWITT = 4;
+    public static final int SOBEL = 5;
+    public static final int KIRSH = 6;
+    public static final int DISK = 7;
+    
+    private int getType(String type)
+    {
+        int out = 0;
+        if (type.compareTo("average") == 0)
+        {
+            out = AVERAGE;
+        }
+        else if (type.compareTo("disk") == 0)
+        {
+            out = DISK;
+        }
+        else if (type.compareTo("sobel") == 0)
+        {
+            out = SOBEL;
+        }
+        else if (type.compareTo("prewitt") == 0)
+        {
+            out = PREWITT;
+        }
+        else if (type.compareTo("kirsh") == 0)
+        {
+            out = KIRSH;
+        }
+        return out;
+    }
+   
     private BufferedImage createPSF()
     {
         double[][] h;
         if (kernel.getValue().compareTo("average") == 0)
         {
-            h = MathUtils.fspecial(kernel.getValue(), new int[]{sliderValue, sliderValue}, 0);
+            h = MathUtils.fspecial(AVERAGE, new int[]{sliderValue, sliderValue}, 0);
         }
         else if (kernel.getValue().compareTo("disk") == 0)
         {
-            h = MathUtils.fspecial(kernel.getValue(), sliderValue);
+            h = MathUtils.fspecial(DISK, sliderValue);
         }
         else
         {
-            h = MathUtils.fspecial(kernel.getValue());
+            h = MathUtils.fspecial(getType(kernel.getValue()));
         }
         double[][] h_pad = CommonUtils.imgPad(h, 100,100, 1);
         return CommonUtils.array2BuffI(h_pad);
@@ -101,7 +134,7 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
     {
         IcyBufferedImage image = new IcyBufferedImage(256, 256, 1, DataType.DOUBLE);
         double[] dataBuffer = image.getDataXYAsDouble(0);
-        double[][] h = MathUtils.fspecial(kernel.getValue());
+        double[][] h = MathUtils.fspecial(getType(kernel.getValue()));
         double[][] h_pad = CommonUtils.imgPad(h, 256,256, 1);
         for (int x = 0; x < 256; x++)
             for (int y = 0; y < 256; y++)
@@ -114,15 +147,15 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
         double[][] h;
         if (kernel.getValue().compareTo("average") == 0)
         {
-            h = MathUtils.fspecial(kernel.getValue(), new int[]{sliderValue, sliderValue}, 0);
+            h = MathUtils.fspecial(getType(kernel.getValue()), new int[]{sliderValue, sliderValue}, 0);
         }
         else if (kernel.getValue().compareTo("disk") == 0)
         {
-            h = MathUtils.fspecial(kernel.getValue(), sliderValue);
+            h = MathUtils.fspecial(getType(kernel.getValue()), sliderValue);
         }
         else
         {
-            h = MathUtils.fspecial(kernel.getValue());
+            h = MathUtils.fspecial(getType(kernel.getValue()));
         }
         return h;
     }
@@ -150,15 +183,15 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
             double[][] h;
             if (kernel.getValue().compareTo("average") == 0)
             {
-                h = MathUtils.fspecial(kernel.getValue(), new int[]{sliderValue, sliderValue}, 0);
+                h = MathUtils.fspecial(getType(kernel.getValue()), new int[]{sliderValue, sliderValue}, 0);
             }
             else if (kernel.getValue().compareTo("disk") == 0)
             {
-                h = MathUtils.fspecial(kernel.getValue(), sliderValue);
+                h = MathUtils.fspecial(getType(kernel.getValue()), sliderValue);
             }
             else
             {
-                h = MathUtils.fspecial(kernel.getValue());
+                h = MathUtils.fspecial(getType(kernel.getValue()));
             }
             double[][] h_pad = CommonUtils.imgPad(h, I, -1);
             double[][] I_filtered_noNoise = MathUtils.fftConv(I, h_pad);
@@ -169,7 +202,7 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
         {
             double noiseMean = 0;
             double noiseVar = 0.01;
-            double[][] I_unfiltered_noise = MathUtils.imnoise(I, noise.getValue(), noiseVar, noiseMean);
+            double[][] I_unfiltered_noise = MathUtils.imnoise(I, getType(noise.getValue()), noiseVar, noiseMean);
             return CommonUtils.array2BuffI(I_unfiltered_noise);
         }else
             /* Filtered with noise --> return I_filtered_noise */
@@ -177,22 +210,22 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
             double[][] h;
             if (kernel.getValue().compareTo("average") == 0)
             {
-                h = MathUtils.fspecial(kernel.getValue(), new int[]{sliderValue, sliderValue}, 0);
+                h = MathUtils.fspecial(getType(kernel.getValue()), new int[]{sliderValue, sliderValue}, 0);
             }
             else if (kernel.getValue().compareTo("disk") == 0)
             {
-                h = MathUtils.fspecial(kernel.getValue(), sliderValue);
+                h = MathUtils.fspecial(getType(kernel.getValue()), sliderValue);
             }
             else
             {
-                h = MathUtils.fspecial(kernel.getValue());
+                h = MathUtils.fspecial(getType(kernel.getValue()));
             }
             double[][] h_pad = CommonUtils.imgPad(h, I, -1);
             /* Convolve using FFT */
             double[][] I_filtered = MathUtils.fftConv(I, h_pad);
             double noiseMean = 0;
             double noiseVar = 0.01;
-            double[][] I_filtered_noise = MathUtils.imnoise(I_filtered, noise.getValue(), noiseVar, noiseMean);
+            double[][] I_filtered_noise = MathUtils.imnoise(I_filtered, getType(noise.getValue()), noiseVar, noiseMean);
             return CommonUtils.array2BuffI(I_filtered_noise);
         }
     }
