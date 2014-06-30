@@ -1196,7 +1196,9 @@ public class CommonUtils {
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-        //First we scale in any case
+        if (!(job == DeconvUtils.NO_SCALE)) {
+            scaleArray(array, isComplex);
+        }
         scaleArray(array, isComplex);
         //If necessary we correct
         if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
@@ -1226,8 +1228,9 @@ public class CommonUtils {
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-        //First we scale in any case
-        scaleArray(array, isComplex);
+        if (!(job == DeconvUtils.NO_SCALE)) {
+            scaleArray(array, isComplex);
+        }
         //If necessary we correct
         if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             correctArray(array, isComplex);
@@ -1256,10 +1259,10 @@ public class CommonUtils {
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-
-        //First we scale in any case
-        scaleArray1D(array, isComplex);
-
+        
+        if (!(job == DeconvUtils.NO_SCALE)) {
+            scaleArray1D(array, isComplex);
+        }
         //If necessary we correct
         if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             correctArray1D(array, isComplex);
@@ -1288,15 +1291,13 @@ public class CommonUtils {
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-
-        //First we scale in any case
-        scaleArray1D(array, isComplex);
-
+        if (!(job == DeconvUtils.NO_SCALE)) {
+            scaleArray1D(array, isComplex);
+        }
         //If necessary we correct
         if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             correctArray1D(array, isComplex);
         }
-
         //We apply lastly the colormap transformation
         if (job == DeconvUtils.SCALE_COLORMAP || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             out = colorArray1D(array, width, height, isComplex);

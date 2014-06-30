@@ -55,15 +55,20 @@ public class DeconvUtils {
     /**
      * Job to compute with the wiener filter
      */
-    public static final int JOB_WIENER = 1;
+    public static final int JOB_WIENER = 0;
     /**
      * Job to compute using quadratic and circulant approximation
      */
-    public static final int JOB_QUAD = 2;
+    public static final int JOB_QUAD = 1;
     /**
      * Job to compute with Conjugate gradients
      */
-    public static final int JOB_CG = 3;
+    public static final int JOB_CG = 2;
+    
+    /**
+     * If we want the computed image not to be scaled.
+     */
+    public static int NO_SCALE = 3;
     /**
      * If we want the computed image to be scaled.
      */
