@@ -87,13 +87,13 @@ public class Filter implements FilterInterface{
         double e,f;
         tabcc = new double[width][height];
         for(int i = 0; i<width; i++){
-            for(int j=0;j<height;j++){
-                if(i<=width/2){
+            for(int j = 0; j<height; j++){
+                if(i <= width/2){
                     e = ((double)i/width);
                 }else{
                     e = ((double)(i-width)/width);
                 }
-                if(j<=height/2){
+                if(j <= height/2){
                     f = ((double)j/height);
                 }else{
                     f = ((double)(j-height)/height);
@@ -134,7 +134,7 @@ public class Filter implements FilterInterface{
         tabcc1D = new double[width*height];
 
         for(int j = 0; j<width; j++){
-            for(int i=0;i<height;i++){
+            for(int i = 0; i<height; i++){
                 if(j<=width/2){
                     e = ((double)j/width);
                 }else{
@@ -148,39 +148,22 @@ public class Filter implements FilterInterface{
                 tabcc1D[i+j*height] = 4*Math.PI*Math.PI*(e*e+f*f);
             }
         }
-        return WienerQuad1D2(alpha);
+        return WienerQuad1D(alpha);
     }
 
     @Override
     public double[] WienerQuad1D(double alpha) {
         double a,b,c,d,q;
         double[]out = new double[width*2*height];
-        for(int i = 0; i < width; i++){
-            for(int j = 0;j < height; j++){
-                a = FFT_PSF1D[2*j+i*height*2];
-                b = FFT_PSF1D[(2*j+1)+i*height*2];
-                c = FFT_Image1D[2*j+i*height*2];
-                d = FFT_Image1D[(2*j+1)+i*height*2];
-                q = 1.0/(a*a + b*b + tabcc1D[j+i*height]*alpha);
-                out[2*j+i*height*2] = (a*c + b*d)*q;
-                out[(2*j+1)+i*height*2] = (a*d - b*c)*q;
-            }
-        }
-        return out;
-    }
-    
-    public double[] WienerQuad1D2(double alpha) {
-        double a,b,c,d,q;
-        double[]out = new double[width*2*height];
-        for(int j = 0; j<width; j++){
-            for(int i=0;i<height;i++){
-                a = FFT_PSF1D[2*i+ j*height];
-                b = FFT_PSF1D[2*i+1+j*height];
-                c = FFT_Image1D[2*i+ j*height];
-                d = FFT_Image1D[2*i+1+j*height];
+        for(int j = 0; j < width; j++){
+            for(int i = 0; i < height; i++){
+                a = FFT_PSF1D[2*i    +2*j*height];
+                b = FFT_PSF1D[2*i+1  +2*j*height];
+                c = FFT_Image1D[2*i  +2*j*height];
+                d = FFT_Image1D[2*i+1+2*j*height];
                 q = 1.0/(a*a + b*b + tabcc1D[i+j*height]*alpha);
-                out[2*i+j*height] = (a*c + b*d)*q;
-                out[2*i+1+j*height] = (a*d - b*c)*q;
+                out[2*i+   2*j*height] = (a*c + b*d)*q;
+                out[2*i+1 +2*j*height] = (a*d - b*c)*q;
             }
         }
         return out;

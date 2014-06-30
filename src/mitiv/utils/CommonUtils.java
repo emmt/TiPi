@@ -1471,25 +1471,25 @@ public class CommonUtils {
             //Bloc haut à gauche: D
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    imageout[2*(i+j*imageHeight)] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
+                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
                 }
             }
             //bloc haut a droite: C
             for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    imageout[2*(i+j*imageHeight)] = imagePsf[(demiPsfH+i)+(demiPsfW-imageWidth+j)*psfHeight];
+                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW-imageWidth+j)*psfHeight];
                 }
             }
             //bloc bas a gauche: B
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                    imageout[2*(i+j*imageHeight)] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW+j)*psfHeight];
+                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW+j)*psfHeight];
                 }
             }
             //bloc bas a droite: A
             for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
                 for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                    imageout[2*(i+j*imageHeight)] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW-imageWidth+j)*psfHeight];
+                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW-imageWidth+j)*psfHeight];
                 }
             }
         }else{
