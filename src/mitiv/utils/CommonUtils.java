@@ -44,7 +44,7 @@ public class CommonUtils {
     public static final int LOWER_LEFT = 0;
     public static final int CENTERED = 1;
     public static final int FFT_INDEXING = -1;
-    
+
     /**
      * Will convert a value to another
      *
@@ -321,7 +321,6 @@ public class CommonUtils {
 
     /********************************** X TO ARRAY **********************************/
 
-
     public static double[][] imageToArray(BufferedImage image, boolean isComplex) {
         int height = image.getHeight();
         int width = image.getWidth();
@@ -523,7 +522,6 @@ public class CommonUtils {
      * Memo: even if y = y*2, we store the image in a array x*y !!
      *
      * */
-
 
     public static BufferedImage createNewBufferedImage(BufferedImage originalImage){
         BufferedImage imageout;
@@ -1204,7 +1202,6 @@ public class CommonUtils {
         if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             correctArray(array, isComplex);
         }
-
         //We apply lastly the colormap transformation
         if (job == DeconvUtils.SCALE_COLORMAP || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             out = colorArray(array, isComplex);
@@ -1259,7 +1256,7 @@ public class CommonUtils {
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-        
+
         if (!(job == DeconvUtils.NO_SCALE)) {
             scaleArray1D(array, isComplex);
         }
@@ -1267,7 +1264,6 @@ public class CommonUtils {
         if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             correctArray1D(array, isComplex);
         }
-
         //We apply lastly the colormap transformation
         if (job == DeconvUtils.SCALE_COLORMAP || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             out = colorArray1D(array, width, height, isComplex);
@@ -1678,7 +1674,7 @@ public class CommonUtils {
         }
         return bufferedI;
     }
-    
+
     public static BufferedImage array2BuffI(double[][] I) //FIXME remplacer par ma fonction
     {
         int H = I.length;

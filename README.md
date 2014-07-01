@@ -19,18 +19,22 @@ Eclipse
 
 This project can be used in Eclipse, just copy/clone it into Eclipse workspace, then from Eclipse: 
 
-```
+'''
 File -> import -> Existing project in workspace and choose TiPi folder.
-```
+'''
 
 Then Eclipse should automatically accept it as a known project.
 
 To add the needed libraries to TiPi Eclipse project, move all the jars into a folder. Then in eclipse:
 
-```
+'''
 Right clic on TiPi project in package explorer -> Properties -> Java Build Path -> Libraries -> Add External jar and select all Library jar
-```
+'''
 
+Icy in Eclipse
+==============
+
+There is a plugin to launch quickly and easily Icy from eclipse [here](http://icy.bioimageanalysis.org/index.php?display=startDevWithIcy).
 
 Setup for developping
 =====================
@@ -63,4 +67,13 @@ look like:
 [filter "cleanup-text"]
 	clean = ./tools/code_cleanup
 	smudge = cat
+```
+
+Known Bugs
+==========
+
+When adding the project to Eclipse if the project packages are named: src.mitiv.*, you will have to:
+
+```
+Right click on project -> Properties -> Java Build Path -> Source: Add Folder..., and choose TiPi-src
 ```
