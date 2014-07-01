@@ -11,6 +11,7 @@ John
     Add image pad/unpad to deconvutils
 
 Eric
+    move linalg.Utils to linalg.LinalgUtils (idea: each Utils should be called ClassUtils except mitiv.utils)
 
 Discussion
     Add .classpath file to solve the probleme of src package (not a perfect solution)
