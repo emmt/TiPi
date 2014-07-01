@@ -223,7 +223,7 @@ public class Zernike
     public void normalizeZ(double z[][])
     {
         double NormZ;
-        NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.hadamardProd(z, z)));
+        NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.hadamardProd(z, z, 0)));
         for (int i = 0; i < z.length; i++)
         {
             for (int j = 0; j < z[0].length; j++) {
@@ -237,7 +237,7 @@ public class Zernike
     {
         double[][] out = new double[z.length][z[0].length];
         double NormZ;
-        NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.hadamardProd(z, z)));
+        NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.hadamardProd(z, z, 0)));
         for (int i = 0; i < z.length; i++)
         {
             for (int j = 0; j < z[0].length; j++) {

@@ -1,13 +1,7 @@
 Ludo
-    Correct loops without opening and closing parenthesis (Non java style)
-    In switch case, the default should launch an exception not only a sysout
-    Verify that each file you'll keep have the licence
-    Clean plugins.mitiv.micro to use {Math,Common}Utils and update code
-    Be careful of your variable name/sysout -> Verify all your code
-    MicroscopyMain should not (IMO) have been pushed to git
     -Need to verify depth aberation and jacobian with Fereol
     -cross only the pupil, not the whole images?
-    -put an even zernike
+    -add a choice for even zernike or not
 
 John
     CG threaded function (halh functionnal only)

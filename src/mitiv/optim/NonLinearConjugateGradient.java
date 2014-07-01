@@ -511,7 +511,7 @@ public class NonLinearConjugateGradient {
                 } else {
                     System.out.println("lnsrch status: " + lnsrch.getStatus());
                     if (lnsrch.hasWarnings()) {
-                        /* FIXME: some warnings can be safely considered as a convergence */
+                        /*   */
                         task = TASK_WARNING;
                     } else {
                         task = TASK_ERROR;

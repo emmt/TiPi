@@ -115,7 +115,7 @@ public class MicroscopyModelPSF_Z
         for (int n = 0; n < Nzern; n++)
         {
             Zernike zer = new Zernike(n+1, Nx, Ny, radius);
-            NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.hadamardProd(zer.z, zer.z)));
+            NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.hadamardProd(zer.z, zer.z, 0)));
             if (n == 1) {
                 NormZ1 = NormZ;
             }
@@ -311,7 +311,7 @@ public class MicroscopyModelPSF_Z
 
         for (int k = 0; k < beta.length; k++)
         {
-            JRho[k] = 2*PSFNorm*MathUtils.sum(MathUtils.hadamardProd(J, Z[k]))*(1-beta[k]*beta[k]*betaNorm*betaNorm)*betaNorm;
+            JRho[k] = 2*PSFNorm*MathUtils.sum(MathUtils.hadamardProd(J, Z[k], 0))*(1-beta[k]*beta[k]*betaNorm*betaNorm)*betaNorm;
         }
         return JRho;
     }
@@ -360,7 +360,7 @@ public class MicroscopyModelPSF_Z
         }
         for (int k = 0; k < alpha.length; k++)
         {
-            JPhi[k] = -2*PSFNorm*MathUtils.sum(MathUtils.hadamardProd(J, Z[k+3]));
+            JPhi[k] = -2*PSFNorm*MathUtils.sum(MathUtils.hadamardProd(J, Z[k+3], 0));
         }
         return JPhi;
     }

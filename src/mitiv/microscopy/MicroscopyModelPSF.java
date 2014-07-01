@@ -38,6 +38,12 @@ import mitiv.utils.*;
  * Both modulus ρ(i,j) and phase φ(i,j) of pupil function p are expressed on a basis
  * of Zernike polynomials Zn.
  * <p>
+ * A(z) = ρ.exp(iΦ(z)) with Φ(z) = φ + 2π(d.ω + z.ψ)
+ * φ 
+ * d depth within the system
+ * ω
+ * ψ the defocus aberration
+ * <p>
  * <p>
  * References:
  * [1] Yves Tourneur & Eric Thiébaut, Ferreol Soulez, Loïc Denis.
@@ -67,7 +73,7 @@ public class MicroscopyModelPSF
     protected double[][] phi; // part of the phase based on Zernike polynomials
     protected double[][] psi; // defocus
     protected double[][] phasePupil; // phase of the pupil
-    protected double[][] depth; // phase of the pupil
+    protected double[][] gamma; // phase of the pupil
     protected double[][][] a; // fourier transform of the pupil function
     protected double[][][] Z; // Zernike polynomials
     protected double PHASE[][][];
@@ -88,7 +94,7 @@ public class MicroscopyModelPSF
      *  @param Nx 256, number of samples along lateral X-dimension
      *  @param Ny 256, number of samples along lateral Y-dimension
      *  @param Nz 64, number of samples along axial Z-dimension
-     *
+     *  @param use_depth_scaling 0
      */
     public MicroscopyModelPSF()
     {
@@ -106,7 +112,7 @@ public class MicroscopyModelPSF
      *  @param Nx number of samples along lateral X-dimension
      *  @param Ny number of samples along lateral Y-dimension
      *  @param Nz number of samples along axial Z-dimension
-     *
+     *  @param use_depth_scaling use_depth_scaling = 1, PSF are centered on the plan with maximum strehl
      */
     public MicroscopyModelPSF(double NA, double lambda, double ni,double ns, double zdepth, double dxy, double dz, int Nx, int Ny, int Nz, int Nzern, int use_depth_scaling)
     {
@@ -127,7 +133,7 @@ public class MicroscopyModelPSF
         this.psi = new double[Ny][Nx];
         this.phasePupil = new double[Ny][Nx];
         this.PSF = new double[Ny][Nx][Nz];
-        this.depth = new double[Ny][Nx];
+        this.gamma = new double[Ny][Nx];
         this.a = new double[Nz][Ny][2*Nx];
         this.PHASE = new double [Nz][Ny][Nx];
         this.A = new double[Nz][Ny][2*Nx];
@@ -152,7 +158,9 @@ public class MicroscopyModelPSF
             for (int i = 0; i < Ny; i++)
             {
                 if(r[i][j] < radius)
+                {
                     maskPupil[i][j] = 1;
+                }
             }
         }
         return maskPupil;
@@ -173,7 +181,7 @@ public class MicroscopyModelPSF
         double NormZ;
         for (int n = 0; n < Nzern; n++)
         {
-            NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.hadamardProd(Z[n], Z[n])));
+            NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.hadamardProd(Z[n], Z[n], 0)));
             /* Pour le Z1 pour computePSI*/
             if (n == 1)
             {
@@ -257,10 +265,9 @@ public class MicroscopyModelPSF
     * 
     */
     /**
-     * Compute the defocus aberration ψ of the phase of the pupil
-     * (lateral shift between PSF and optic axis)
+     * Compute the defocus aberration ψ and depth aberration
+     * γ of the phase pupil
      * <p>
-     * φ = Σ_n α_n Z_{n+3}
      * @param alpha Zernike coefficients
      * @return Nzern Zernike polynomials 
      */
@@ -298,7 +305,7 @@ public class MicroscopyModelPSF
                             }
                             else
                             {
-                                depth[i][j] =  Math.sqrt(tmpdepth);
+                                gamma[i][j] =  Math.sqrt(tmpdepth);
                             }
                         }
                     }
@@ -318,10 +325,10 @@ public class MicroscopyModelPSF
                 {
                     if(maskPupil[i][j] == 1)
                     {
-                        depth_dot_defocus += depth[i][j]*psi[i][j];
+                        depth_dot_defocus += gamma[i][j]*psi[i][j];
                         defocus_L2 += psi[i][j]*psi[i][j];
-                        sum_depth_over_defocus += depth[i][j]/depth[i][j];
-                        sum_defocus_over_depth += psi[i][j]/depth[i][j];
+                        sum_depth_over_defocus += gamma[i][j]/gamma[i][j];
+                        sum_defocus_over_depth += psi[i][j]/gamma[i][j];
                     }
                 }
                 eta =(depth_dot_defocus/defocus_L2) - 1;
@@ -348,12 +355,8 @@ public class MicroscopyModelPSF
              
      */
     /**
-     * Compute the defocus aberration ψ of the phase of the pupil
-     * (lateral shift between PSF and optic axis)
+     * Compute the point spread function
      * <p>
-     * φ = Σ_n α_n Z_{n+3}
-     * @param alpha Zernike coefficients
-     * @return Nzern Zernike polynomials 
      */
     public void computePSF(double[][][] psf, final double[] alpha, final double[] beta, double deltaX, double deltaY, double zdepth)
     {
@@ -365,17 +368,18 @@ public class MicroscopyModelPSF
 
         double a_2[][];
         double PSFnorm = 1.0/(Nx*Ny*Nz);
-        double defoc_scale[] = MathUtils.span((-Nz+1)/2, Nz/2, 1);
+        double defoc_scale[] = MathUtils.indgen((-Nz+1)/2, Nz/2);
         double phasePupil;  
         double real_a;
         double image_a;
+        
         if (zdepth != 0)
         {
             for (int i = 0; i < Ny; i++)
             {
                 for (int j = 0; j < Nx; j++)
                 {
-                    phi[i][j] += 2*Math.PI*zdepth*(depth[i][j] - (1 - eta)*psi[i][j]);
+                    phi[i][j] += 2*Math.PI*zdepth*(gamma[i][j] - (1 - eta)*psi[i][j]);
                 }
             }
         }
@@ -398,7 +402,7 @@ public class MicroscopyModelPSF
             /* Fourier transform of the pupil function A(z) */
             FFT2D.complexForward(a[z]);
             /* Square modulus */
-            a_2 = MathUtils.abs2(A[z]);
+            a_2 = MathUtils.abs2(a[z]);
             for (int i = 0; i < Ny; i++)
             {
                 for (int j = 0; j < Nx; j++)
@@ -442,7 +446,7 @@ public class MicroscopyModelPSF
 
         for (int k = 0; k < beta.length; k++)
         {
-            JRho[k] = 2*PSFNorm*MathUtils.sum(MathUtils.hadamardProd(J, Z[k]))*(1-beta[k]*beta[k]*betaNorm*betaNorm)*betaNorm;
+            JRho[k] = 2*PSFNorm*MathUtils.sum(MathUtils.hadamardProd(J, Z[k], 0))*(1-beta[k]*beta[k]*betaNorm*betaNorm)*betaNorm;
         }
         return JRho;
     }
@@ -475,7 +479,7 @@ public class MicroscopyModelPSF
         }   
         for (int k = 0; k < alpha.length; k++)
         {
-            JPhi[k] = -2*PSFNorm*MathUtils.sum(MathUtils.hadamardProd(J, Z[k+3]));
+            JPhi[k] = -2*PSFNorm*MathUtils.sum(MathUtils.hadamardProd(J, Z[k+3], 0));
         }
         return JPhi;
     }

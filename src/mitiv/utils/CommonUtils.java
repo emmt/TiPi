@@ -1648,11 +1648,30 @@ public class CommonUtils {
         BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
         MathUtils.uint8(A);
         for(int j = 0; j < W; j++)
+        {
             for(int i = 0; i < H; i++)
             {
                 Color b = new Color( (int) A[i][j], (int) A[i][j], (int) A[i][j] );
                 bufferedI.setRGB(j, i, b.getRGB());
             }
+        }
+        return bufferedI;
+    }
+    
+    public static BufferedImage array2BuffI(double[][] I) //FIXME remplacer par ma fonction
+    {
+        int H = I.length;
+        int W = I[0].length;
+        ColorMap map = ColorMap.getJet(256);
+        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
+        for(int j = 0; j < W; j++)
+        {
+            for(int i = 0; i < H; i++)
+            {
+                Color b = map.table[ (int)I[i][j] ];
+                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+            }
+        }
         return bufferedI;
     }
     
@@ -1662,52 +1681,17 @@ public class CommonUtils {
         int W = I.getWidth();
         double ImArray[][] = new double[H][W];
         WritableRaster raster = I.getRaster();
-        for (int j = 0; j < W; j++) {
-            for (int i = 0; i < H; i++) {
+        for (int j = 0; j < W; j++)
+        {
+            for (int i = 0; i < H; i++)
+            {
                 int[] pixels = raster.getPixel(j, i, (int[]) null);
                 ImArray[i][j] = pixels[0];
             }
         }
         return ImArray;
     }
-
-    public static BufferedImage array2BuffI(double[][] I) //FIXME remplacer par ma fonction
-    {
-        int H = I.length;
-        int W = I[0].length;
-        ColorMap map = ColorMap.getJet(256);
-
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-
-        for(int j = 0; j < W; j++)
-            for(int i = 0; i < H; i++)
-            {
-                Color b = map.table[ (int)I[i][j] ];
-                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
-            }
-        return bufferedI;
-    }
-    /**
-     * Convert an 2d array into a BufferedImage
-     * 
-     */
-    public static BufferedImage array2BufferedImageColor(double[][] A)
-    {
-        ColorMap map = ColorMap.getJet(256);
-        int H = A.length;
-        int W = A[0].length;
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-
-        for(int j = 0; j < W; j++)
-            for(int i = 0; i < H; i++)
-            {
-                Color b = map.table[ (int)A[i][j] ];
-                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
-            }
-        return bufferedI;
-    }
-
-
+ 
     public static void saveArray2Image(double[] A, int W, String name)
     {
         ColorMap map = ColorMap.getJet(256);
@@ -1733,24 +1717,9 @@ public class CommonUtils {
         }
     }
 
-    public static void saveArray2Image(double[][] A,  String name) //FIXME decomposer avec fonctions déjà existantes
+    public static void saveArray2Image(double[][] A,  String name)
     {
-        ColorMap map = ColorMap.getJet(256);
-        int H = A.length;
-        int W = A[0].length;
-        double S[][];
-        S = MathUtils.scaleArrayTo8bit(A);
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-
-        for(int j = 0; j < W; j++)
-        {
-            for(int i = 0; i < H; i++)
-            {
-                Color b = map.table[ (int) S[i][j] ];
-                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
-            }
-        }
-
+        BufferedImage bufferedI = array2BuffI(A);
         try {
             ImageIO.write(bufferedI, "png", new File(name));
         } catch (IOException e) {
@@ -1857,7 +1826,8 @@ public class CommonUtils {
             }
             break;
         default:
-            System.out.println("bad value for keyword JUST");
+            throw new IllegalArgumentException("bad value for justification");
+
         }
         return New;
     }

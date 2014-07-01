@@ -50,7 +50,7 @@ public class MathUtils {
     public static final int SOBEL = 5;
     public static final int KIRSH = 6;
     public static final int DISK = 7;
-    //FIXME changer le span1 en span et les span dans les autres fonction en indgen
+    
     /**
      * Check if the number is even. 
      *
@@ -71,13 +71,17 @@ public class MathUtils {
     public static long factorial(long n)
     {
         if (n == 0)
+        {
             return 1;
+        }
         else
+        {
             return n * factorial(n-1);
+        }
     }
 
     /**
-     * Return an array of cartesian distance of
+     * Return an array(a meshgrid) of cartesian distance of
      * value x between [(-W+1)/2, W/2] and y
      * between [(-H+1)/2, H/2].
      *
@@ -88,23 +92,88 @@ public class MathUtils {
     public static double[][] cartesDist2D(int W, int H)
     {
         double R[][] = new double[H][W];
-        double[] x = span((-W+1)/2, W/2, 1);
-        double[] y = span((-H+1)/2, H/2, 1);
+        double[] x = indgen((-W+1)/2, W/2, 1);
+        double[] y = indgen((-H+1)/2, H/2, 1);
         for( int j = 0; j < W; j++)
+        {
             for( int i = 0; i < H; i++)
-                R[i][j] = Math.sqrt(x[i] * x[i] + y[j] * y[j]);
+            {
+                R[i][j] = Math.sqrt(x[i]*x[i] + y[j]*y[j]);
+            }
+        }
         return R;
     }
-
+    
+    /**
+     * Return an 1d array(a meshgrid) of cartesian distance of
+     * value x between [(-W+1)/2, W/2] and y
+     * between [(-H+1)/2, H/2].
+     *
+     * @param W width of the array
+     * @param H height of the array
+     * @return 1d array of cartesian distance
+     */
     public static double[] cartesDist1D(int W, int H)
     {
         double R[] = new double[H*W];
-        double[] x = span((-W+1)/2, W/2, 1);
-        double[] y = span((-H+1)/2, H/2, 1);
+        double[] x = indgen((-W+1)/2, W/2);
+        double[] y = indgen((-H+1)/2, H/2);
         for( int j = 0; j < W; j++)
-            for( int i = 0; i < W; i++)
-                R[i*W + j] = Math.sqrt(x[i] * x[i] + y[j] * y[j]);
+        {
+            for( int i = 0; i < H; i++)
+            {
+                R[j*H + i] = Math.sqrt(x[i]*x[i] + y[j]*y[j]);
+            }
+        }
         return R;
+    }
+    
+    /**
+     * Return an 1d array of polar angle of
+     * value x between [(-W+1)/2, W/2] and y
+     * between [(-H+1)/2, H/2] in FFT indexing.
+     *
+     * @param W width of the array
+     * @param H height of the array
+     * @return 2d array of angle
+     */
+    public static double[] cartesAngle1D(int W, int H)
+    {
+        double THETA[] = new double[H*W];
+        double[] x = indgen((-W+1)/2, W/2);
+        double[] y = indgen((-H+1)/2, H/2);
+        for( int j = 0; j < W; j++)
+        {
+            for( int i = 0; i < H; i++)
+            {
+                THETA[j*H + i] = Math.atan2( y[i], x[j]);
+            }
+        }
+        return THETA;
+    }
+
+    /**
+     * Return an 2d array of polar angle of
+     * value x between [(-W+1)/2, W/2] and y
+     * between [(-H+1)/2, H/2] in FFT indexing.
+     *
+     * @param W width of the array
+     * @param H height of the array
+     * @return 2d array of angle
+     */
+    public static double[][] cartesAngle2D(int W, int H)
+    {
+        double THETA[][] = new double[H][W];
+        double[] x = indgen((-W+1)/2, W/2);
+        double[] y = indgen((-H+1)/2, H/2);
+        for( int j = 0; j < W; j++)
+        {
+            for( int i = 0; i < H; i++)
+            {
+                THETA[i][j] = Math.atan2( y[i], x[j]);
+            }
+        }
+        return THETA;
     }
 
     /**
@@ -122,11 +191,16 @@ public class MathUtils {
         double[] x = fftIndgen(W);
         double[] y = fftIndgen(H);
         for( int j = 0; j < W; j++)
+        {
             for( int i = 0; i < H; i++)
+            {
                 THETA[i][j] = Math.atan2( y[i], x[j]);
+            }
+        }
         return THETA;
     }
 
+    //FIXME upgrade the function
     /**
      * Generate index of FFT frequencies/coordinates.
      *
@@ -135,9 +209,8 @@ public class MathUtils {
      */
     public static double[] fftIndgen(int L)
     {   
-
         double[] k = new double[L];
-        double u[] = span(0, L - 1, 1);
+        double u[] = indgen(0, L - 1);
         for (int i = 0; i < L; i++)
         {
             if (u[i] > L/2)
@@ -168,42 +241,23 @@ public class MathUtils {
      * @param W width
      * @param H height
      * @return Euclidian lenght of spatial frequencies in frequel units for a
-     * FFT of dimensions [W,H].
+     * FFT of dimensions [H,W].
      */
     public static double[][] fftDist(int W, int H)
     {
         double x[] = new double[W];
         double y[] = new double[H];
         double R[][] = new double[H][W];
-
         x = fftIndgen(W);
         y = fftIndgen(H);
         for( int j = 0; j < W; j++)
+        {
             for( int i = 0; i < H; i++)
+            {
                 R[i][j] = Math.sqrt(x[i] * x[i] + y[j] * y[j]);
+            }
+        }
         return R;
-    }
-
-    public static double[] cartesAngle1D(int W, int H)
-    {
-        double THETA[] = new double[H*W];
-        double[] x = span((-W+1)/2, W/2, 1);
-        double[] y = span((-H+1)/2, H/2, 1);
-        for( int j = 0; j < W; j++)
-            for( int i = 0; i < H; i++)
-                THETA[i*W + j] = Math.atan2( y[i], x[j]);
-        return THETA;
-    }
-
-    public static double[][] cartesAngle2D(int W, int H)
-    {
-        double THETA[][] = new double[H][W];
-        double[] x = span((-W+1)/2, W/2, 1);
-        double[] y = span((-H+1)/2, H/2, 1);
-        for( int j = 0; j < W; j++)
-            for( int i = 0; i < H; i++)
-                THETA[i][j] = Math.atan2( y[i], x[j]);
-        return THETA;
     }
 
     /**
@@ -315,7 +369,7 @@ public class MathUtils {
      * @param n number of element in the array
      * @return array of N doubles equally spaced from START to STOP.
      */
-    public static double[] span1(double start, double stop, int n)
+    public static double[] span(double start, double stop, int n)
     {
         double[] out = new double[n];
         double c1 = (stop - start)/(n - 1);
@@ -330,7 +384,8 @@ public class MathUtils {
 
     /**
      * Scale array values into a 8bit (between 0 and 255).
-     *
+     * @param A array of double to convert in 8bit
+     * @return scaleA
      */
     public static double[] scaleArrayTo8bit(double[] A)
     {
@@ -347,7 +402,7 @@ public class MathUtils {
 
     /**
      * Scale array values into a 8bit (between 0 and 255).
-     *
+     * @param A array of double to convert in 8bit
      */
     public static double[][] scaleArrayTo8bit(double[][] A)
     {
@@ -358,12 +413,53 @@ public class MathUtils {
         double maxScaleA = max(A);
         double deltaScaleA = maxScaleA - minScaleA;
         for(int j = 0; j < W; j++)
+        {
             for(int i = 0; i < H; i++)
+            {
                 scaleA[i][j] = (A[i][j] - minScaleA)*255/deltaScaleA;
+            }
+        }
 
         return scaleA;
     }
-
+    
+    /**
+     * Scale array values into a 8bit (between 0 and 255).
+     *
+     */
+    public static void uint8(double[][] A)
+    {
+        int H = A.length;
+        int W = A[0].length;
+        double minScaleA = min(A);
+        double maxScaleA = max(A);
+        double deltaScaleA = maxScaleA - minScaleA;
+        for(int j = 0; j < W; j++)
+        {
+            for(int i = 0; i < H; i++)
+            {
+                A[i][j] = (A[i][j] - minScaleA)*255/deltaScaleA;
+            }
+        }
+    }
+    
+    /* converts the image in range [0, 1] */
+    public static void im2double(double[][] a)
+    {
+        int H = a.length;
+        int W = a[0].length;
+        double minA = min(a);
+        double maxA = max(a);
+        double delta = maxA - minA;
+        for (int j = 0; j < W; j++)
+        {
+            for (int i = 0; i < H; i++)
+            {
+                a[i][j] = (a[i][j] - minA)/delta;
+            }
+        }
+    }
+    
     public static double[][] conj1(double[][] A)
     {
         int H = A.length;
@@ -384,28 +480,16 @@ public class MathUtils {
         int W = A[0].length;
         double[][] conjA = new double[H][W];
         for(int j = 0; j < W/2; j++)
+        {
             for(int i = 0; i < H; i++)
+            {
                 conjA[i][2*j + 1] = -A[i][2*j + 1];
+            }
+        }
     }
     
-    /**
-     * Scale array values into a 8bit (between 0 and 255).
-     *
-     */
-    public static void uint8(double[][] A)
-    {
-        int H = A.length;
-        int W = A[0].length;
-        double minScaleA = min(A);
-        double maxScaleA = max(A);
-        double deltaScaleA = maxScaleA - minScaleA;
-        for(int j = 0; j < W; j++)
-            for(int i = 0; i < H; i++)
-                A[i][j] = (A[i][j] - minScaleA)*255/deltaScaleA;
-    }
-
-    /**
-     * Returns the squared absolute value of a 2d array.
+  /**
+     * Returns the squared absolute value of a 2d array (complex).
      *
      * @param IN array
      * @return square absolute value.
@@ -415,34 +499,35 @@ public class MathUtils {
         int H = IN.length;
         int W = IN[0].length/2;
         double[][] OUT = new double[H][W];
-        for(int j = 0; j < W; j++)
             for(int i = 0; i < H; i++)
-                OUT[i][j] = IN[i][2*j]*IN[i][2*j] + IN[i][2*j + 1]*IN[i][2*j + 1];
-
+            {
+                OUT[i] = abs2(IN[i]);
+            }
         return OUT;
     }
-
+    
     /**
      * Returns the squared absolute value of 1d array.
      *
      * @param IN array
      * @return square absolute value.
      */
-    public static double[] abs2(double[] IN)
+    public static double[] abs2(double[] x)
     {
-        int L = IN.length/2;
-        double[] out = new double[L];
+        int L = x.length/2;
+        double[] y = new double[L];
         for(int i = 0; i < L; i++)
-            out[i] = IN[2*i]*IN[2*i] + IN[2*i + 1]*IN[2*i + 1];
-
-        return out;
+        {
+            y[i] = x[2*i]*x[2*i] + x[2*i + 1]*x[2*i + 1];
+        }
+        return y;
     }
 
     /**
      * Compute the minimum value of a 1d array.
      *
      * @param matrix array
-     * @return square absolute value.
+     * @return min
      */
     public static double min(double[] matrix)
     {
@@ -450,7 +535,9 @@ public class MathUtils {
         for (int i = 0; i < matrix.length; i++)
         {
             if (min > matrix[i])
+            {
                 min = matrix[i];
+            }
         }
         return min;
     }
@@ -459,13 +546,16 @@ public class MathUtils {
      * Compute the minimum value of a 2d array.
      *
      * @param matrix array
-     * @return square absolute value.
+     * @return min
      */
     public static double min(double[][] matrix) {
         double min = matrix[0][0];
-        for (int col = 0; col < matrix.length; col++) {
-            for (int row = 0; row < matrix[col].length; row++) {
-                if (min > matrix[col][row]) {
+        for (int col = 0; col < matrix.length; col++)
+        {
+            for (int row = 0; row < matrix[col].length; row++)
+            {
+                if (min > matrix[col][row])
+                {
                     min = matrix[col][row];
                 }
             }
@@ -482,7 +572,9 @@ public class MathUtils {
         for (int i = 0; i < matrix.length; i++)
         {
             if (max < matrix[i])
-                max = matrix[i];
+            {
+               max = matrix[i];
+            }
         }
         return max;
     }
@@ -500,33 +592,6 @@ public class MathUtils {
             }
         }
         return max;
-    }
-
-    public static void showArrayI(double A[], int W)
-    {	
-        ColorMap map = ColorMap.getJet(256);
-        int L = A.length;
-        int H = L/W;
-        double S[];
-        S = scaleArrayTo8bit(A);
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-
-        for(int j = 0; j < W; j++)
-        {
-            for(int i = 0; i < H; i++)
-            {
-                Color b = map.table[ (int) S[i*W + j] ];
-                bufferedI.setRGB(j, i, b.getRGB());	// j, i inversé
-            }
-        }
-
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel();
-        label.setIcon(new ImageIcon(bufferedI));
-        frame.add(label);
-        frame.pack();
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public static void printArray(double A[])
@@ -579,8 +644,7 @@ public class MathUtils {
                 }
             }
         default:
-            System.out.println("Bad value for colorMap");
-            break;
+            throw new IllegalArgumentException("bad value for colorMap");
         }
 
         JFrame frame = new JFrame();
@@ -628,8 +692,7 @@ public class MathUtils {
                 }
             }
         default:
-            System.out.println("Bad value for colorMap");
-            break;
+            throw new IllegalArgumentException("bad value for colorMap");
         }
         NavigableImagePanel.afficher(bufferedI);
     }
@@ -648,7 +711,6 @@ public class MathUtils {
         double[][] A_padded = fftShift(A);
         pli2(A_padded, COLORMAP_JET);
     }
-
 
     /**
      * Plot 2-D FFT array A as an image, taking care of "rolling" A and setting
@@ -710,50 +772,32 @@ public class MathUtils {
         return A_shift;
     }
 
+    /**
+     * Convolution using fast fourier transform
+     * @param img
+     * @param h 
+     * @return convolution between img and h
+     */
     public static double[][] fftConv(double img[][], double h[][])
     {
         int H = img.length; // hauteur
         int W = img[0].length; // largeur
-        double[][] hC = new double[H][2*W];
-        double[][] imgC = new double[H][2*W];
         DoubleFFT_2D FFT2D = new DoubleFFT_2D(H, W);
-        double[][] fft_img_h = new double[H][2*W];
         double[][] res = new double[H][W];
-
-        /* h complex */      
-        for(int i = 0; i < H; i++)
-        {
-            for (int j = 0; j < W; j++)
-            {
-                hC[i][2*j] = h[i][j];
-            }
-        }
-        /* complex image */      
-        for(int i = 0; i < H; i++)
-        {
-            for (int j = 0; j < W; j++)
-            {
-                imgC[i][2*j] = img[i][j];
-            }
-        }
+        /* convert to complex array */
+        double[][] hC = real2complex(h);    
+        double[][] imgC = real2complex(img);
         /* fft hC & img */
         FFT2D.complexForward(hC);
         FFT2D.complexForward(imgC);
-        /* Product H*IMG */
-        for(int i = 0; i < H; i++)
-        {
-            for (int j = 0; j < W; j++)
-            {
-                fft_img_h[i][2*j] = hC[i][2*j]*imgC[i][2*j] - hC[i][2*j + 1]*imgC[i][2*j + 1];
-                fft_img_h[i][2*j + 1] = hC[i][2*j]*imgC[i][2*j + 1] + hC[i][2*j + 1]*imgC[i][2*j];
-            }
-        }
+        /* "Product" H*IMG */
+        double[][] fft_img_h = hadamardProd(hC, imgC, 1);
         /* fft inverse of the product */
         FFT2D.complexInverse(fft_img_h, true);
         /* Real part of the inverse fft */
-        for(int i = 0; i < H; i++)
+        for(int j = 0; j < W; j++)
         {
-            for(int j = 0; j < W; j++)
+            for(int i = 0; i < H; i++)
             {
                 res[i][j] = fft_img_h[i][2*j];
             }
@@ -762,53 +806,60 @@ public class MathUtils {
     }
 
     /**
+     * Compute an array of real value in array of complex
+     * value thus the dimension will be [H,2*W]
+     */
+    public static double[][] real2complex(double[][] a)
+    {
+        int H = a.length; // high
+        int W = a[0].length; // weight
+        double[][] c = new double[H][2*W];
+        for(int j = 0; j < W; j++)
+        {
+            for (int i = 0; i < H; i++)
+            {
+                c[i][2*j] = a[i][j];
+            }
+        }
+        return c;
+    }
+    
+    /**
      * Average or mean value of array
      */
-    public static double avg(double[] array)
+    public static double avg(double[] a)
     {
-        int L = array.length;
-        double mean = 0;
-        for(int i = 0; i < L; i++)
-            mean = mean + array[i];
-        return mean/L;
+        return sum(a)/(a.length);
     }
 
     /**
      * Average or mean value of array
      */
-    public static double avg(long[] array)
+    public static double avg(long[] a)
     {
-        int L = array.length;
-        double mean = 0;
-        for(int i = 0; i < L; i++)
-            mean = mean + array[i];
-        return mean/L;
+        return sum(a)/(a.length);
     }
 
     /**
      * Average or mean value of array
      */
-    public static double avg(double[][] array)
+    public static double avg(double[][] a)
     {
-        int H = array.length;
-        int W = array[0].length;
-        double mean = 0;
-        for(int i = 0; i < H; i++)
-            for(int j = 0; j < W; j++)
-                mean = mean + array[i][j];
-
-        return mean/(H*W);
+        int H = a.length;
+        int W = a[0].length;
+        return sum(a)/(H*W);
     }
 
     /**
      * Sum of the values in the array
      */
-    public static double sum(double array[])
+    public static double sum(double a[])
     {
-        int size = array.length;
+        int size = a.length;
         double sum = 0;
-        for (int i = 0; i < size; i++) {
-            sum += array[i];
+        for (int i = 0; i < size; i++)
+        {
+            sum += a[i];
         }
         return sum;
     }
@@ -820,7 +871,8 @@ public class MathUtils {
     {
         int size = array.length;
         long sum = 0;
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++)
+        {
             sum += array[i];
         }
         return sum;
@@ -832,12 +884,10 @@ public class MathUtils {
     public static double sum(double array[][])
     {
         int H = array.length;
-        int W = array[0].length;
         double sum = 0;
-        for (int i = 0; i < H; i++) {
-            for (int j = 0; j < W; j++) {
-                sum += array[i][j];
-            }
+        for (int i = 0; i < H; i++)
+        {
+            sum += sum(array[i]);
         }
         return sum;
     }
@@ -849,30 +899,50 @@ public class MathUtils {
     {
         int L = a.length;
         double out[] = new double[L];
-        for (int i = 0; i < L; i++) {
+        for (int i = 0; i < L; i++)
+        {
             out[i] = a[i]*b[i];
         }
         return out;
     }
 
     /**
-     * Hadamard product
+     * Hadamard product between two matrices 
+     * Hadamard (also known as the element-wise product)
+     * product A ○ B is a matrix of the same dimensions,
+     * the i, j element of A is multiplied with the i, j element of B.
      */
-    public static double[][] hadamardProd(double a[][], double b[][])
+    public static double[][] hadamardProd(double a[][], double b[][], int isComplex)
     {
         int H = a.length;
         int W = a[0].length;
         double out[][] = new double[H][W];
-        for (int j = 0; j < W; j++)
+        if( isComplex == 0 )
         {
-            for (int i = 0; i < H; i++)
+            for (int j = 0; j < W; j++)
             {
-                out[i][j] = a[i][j]*b[i][j];
+                for (int i = 0; i < H; i++)
+                {
+                    out[i][j] = a[i][j]*b[i][j];
+
+                }
+            }
+        }
+        else
+        {
+            for (int j = 0; j < W; j++)
+            {
+                for (int i = 0; i < H; i++)
+                {
+                    out[i][2*j] = a[i][2*j]*b[i][2*j] - a[i][2*j + 1]*b[i][2*j + 1];
+                    out[i][2*j + 1] = a[i][2*j]*b[i][2*j + 1] + a[i][2*j + 1]*b[i][2*j];
+                }
             }
         }
         return out;
     }
 
+    //FIXME faire un ax + y
     /**
      * Sum of the values in the array
      */
@@ -898,20 +968,30 @@ public class MathUtils {
         return out;
     }
 
+    /**
+     * Standard deviation of the matrix σ
+     */
     public static double std(double a[][])
     {
         double V = var(a);
         return Math.sqrt(V);
     }
 
+    /**
+     * Variance of the matrix 
+     */
     public static double var(double a[][])
     {
         double mean = avg(a);
         double out;
-        out = avg(hadamardProd(a, a)) - mean*mean;
+        out = avg(hadamardProd(a, a, 0)) - mean*mean;
         return out;
     }
 
+    /**
+     * Some information about the matrix
+     * height, width, minimum, maximum, average, variance, standard deviation
+     */
     public static void stat(double a[][])
     {
         System.out.println("H " + a.length + " W " + a[0].length);
@@ -919,6 +999,15 @@ public class MathUtils {
         System.out.println("avg " + avg(a) + " var " + var(a) + " std " + std(a));
     }
 
+    //FIXME add poisson
+    /**
+     * Add noise to image
+     * @param img image
+     * @param type GAUSSIAN : for gaussian white noise, POISSON
+     * @param arg1 standard deviation of the gaussian noise
+     * @param arg2 mean of the gaussian noise
+     * @return 
+     */
     public static double[][] imnoise(double[][] img, int type, double arg1, double arg2)
     {
         int H = img.length;
@@ -930,17 +1019,8 @@ public class MathUtils {
             Random rand = new Random();
             double std = Math.sqrt(arg1);
             double mean = arg2;
-            double minImg = min(img);
-            double maxImg = max(img);
-            double delta = maxImg - minImg;
             /* converts the image in range [0, 1] */
-            for (int j = 0; j < W; j++)
-            {
-                for (int i = 0; i < H; i++)
-                {
-                    img[i][j] = (img[i][j] - minImg)/delta;
-                }
-            }
+            im2double(img);
             /* Add noise */
             for (int j = 0; j < W; j++)
             {
@@ -952,16 +1032,11 @@ public class MathUtils {
             uint8(imnoise);
             break;
         default:
-            System.err.println("The type does not exist");
+            throw new IllegalArgumentException("The type does not exist");
         }
         return imnoise;
     }
-    /* FIX :
-     *      [x,y] = meshgrid(-c2:c2, -r2:r2);
-     *radsqrd = x.^2 + y.^2;
-     *f = exp(-radsqrd/(2*sigma^2));
-     *f = f/sum(f(:));
-     */
+    
     public static double[][] fspecialAverage(int[] arg1)
     { 
         double[][] ha = new double[arg1[0]][arg1[1]];
@@ -978,6 +1053,12 @@ public class MathUtils {
         return ha;
     }
 
+    /**
+     * Create predefined 2-D filter
+     * @param type type of the filter
+     * @param arg1 
+     * @return 
+     */
     public static double[][] fspecial(int type, int arg1)
     { 
         switch (type)
@@ -986,7 +1067,7 @@ public class MathUtils {
             double cd;
             int radius = arg1;
             int diameter = 2*radius;
-            double[][] r = MathUtils.cartesDist2D(diameter, diameter);
+            double[][] r = cartesDist2D(diameter, diameter);
             double[][] mask = new double[diameter][diameter];
             double[][] hd = new double[diameter][diameter];
             for (int j = 0; j < r.length; j++)
@@ -999,7 +1080,7 @@ public class MathUtils {
                     }
                 }
             }
-            cd = MathUtils.sum(mask);
+            cd = sum(mask);
             for (int j = 0; j < r.length; j++)
             {
                 for (int i = 0; i < r.length; i++)
@@ -1012,10 +1093,17 @@ public class MathUtils {
             }
             return hd;
         default:
-            return new double[arg1][arg1];
+            throw new IllegalArgumentException("The type does not exist");
         }
     }
-
+    
+    /**
+     * Create predefined 2-D filter
+     * @param type type of the filter
+     * @param arg1 Height
+     * @param arg2 Width
+     * @return 
+     */
     public static double[][] fspecial(int type, int[] arg1, double arg2)
     { 
         switch (type)
@@ -1050,10 +1138,16 @@ public class MathUtils {
             }
             return hg;
         default:
-            return new double[arg1[0]][arg1[1]];
+            throw new IllegalArgumentException("The type does not exist");
         }
     }
 
+    /**
+     * Create predefined 3*3 filter kernel
+     * @param type type of the filter : AVERAGE, DISK,
+     * SOBEL, PREWITT, KIRSH
+     * @return 
+     */
     public static double[][] fspecial(int type)
     { 
         switch (type)
@@ -1066,7 +1160,7 @@ public class MathUtils {
             double cd;
             int radius = 5;
             int diameter = 2*radius;
-            double[][] r = MathUtils.cartesDist2D(diameter, diameter);
+            double[][] r = cartesDist2D(diameter, diameter);
             double[][] mask = new double[diameter][diameter];
             double[][] hd = new double[diameter][diameter];
             for (int j = 0; j < r.length; j++)
@@ -1079,7 +1173,7 @@ public class MathUtils {
                     }
                 }
             }
-            cd = MathUtils.sum(mask);
+            cd = sum(mask);
             for (int j = 0; j < r.length; j++)
             {
                 for (int i = 0; i < r.length; i++)
@@ -1101,7 +1195,8 @@ public class MathUtils {
             double[][] hk = {{3,3,3},{3,0,3},{-5,-5,-5}};
             return hk;
         default:
-            return new double[3][3];
+            throw new IllegalArgumentException("The type does not exist");
+
         }
     }
 
