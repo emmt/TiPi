@@ -38,7 +38,6 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
-import mitiv.deconv.DeconvUtils;
 import mitiv.deconv.Deconvolution;
 
 /**
@@ -108,13 +107,13 @@ public class mitivCLI {
 
     private static int choosePost(String post){
         if (post.compareTo(postTreatmentChoice[0]) == 0) {
-            return DeconvUtils.SCALE;
+            return CommonUtils.SCALE;
         }else if (post.compareTo(postTreatmentChoice[1]) == 0) {
-            return DeconvUtils.SCALE_CORRECTED;
+            return CommonUtils.SCALE_CORRECTED;
         }else if (post.compareTo(postTreatmentChoice[2]) == 0) {
-            return DeconvUtils.SCALE_COLORMAP;
+            return CommonUtils.SCALE_COLORMAP;
         }else if(post.compareTo(postTreatmentChoice[3]) == 0){
-            return DeconvUtils.SCALE_CORRECTED_COLORMAP;
+            return CommonUtils.SCALE_CORRECTED_COLORMAP;
         }else{
             throw new IllegalArgumentException("Invalid Job");
         }

@@ -64,31 +64,6 @@ public class DeconvUtils {
      * Job to compute with Conjugate gradients
      */
     public static final int JOB_CG = 2;
-    
-    /**
-     * If we want the computed image not to be scaled.
-     */
-    public static int NO_SCALE = 3;
-    /**
-     * If we want the computed image to be scaled.
-     */
-    public static int SCALE = 4;
-
-    /**
-     * If we want the computed image to be corrected: a second scale to remove
-     * potential errors.
-     */
-    public static int SCALE_CORRECTED = 5;
-
-    /**
-     * If we want virtual color for the computed image
-     */
-    public static int SCALE_COLORMAP = 6;
-
-    /**
-     * If we want a correction on the scale + color
-     */
-    public static int SCALE_CORRECTED_COLORMAP = 7;
     /**
      * The width of the image given to ReadImage
      */

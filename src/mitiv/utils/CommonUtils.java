@@ -37,13 +37,36 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import mitiv.deconv.DeconvUtils;
-
 public class CommonUtils {
 
     public static final int LOWER_LEFT = 0;
     public static final int CENTERED = 1;
     public static final int FFT_INDEXING = -1;
+
+    /**
+     * If we want the computed image not to be scaled.
+     */
+    public static int NO_SCALE = 3;
+    /**
+     * If we want the computed image to be scaled.
+     */
+    public static int SCALE = 4;
+
+    /**
+     * If we want the computed image to be corrected: a second scale to remove
+     * potential errors.
+     */
+    public static int SCALE_CORRECTED = 5;
+
+    /**
+     * If we want virtual color for the computed image
+     */
+    public static int SCALE_COLORMAP = 6;
+
+    /**
+     * If we want a correction on the scale + color
+     */
+    public static int SCALE_CORRECTED_COLORMAP = 7;
 
     /**
      * Will convert a value to another
@@ -1189,21 +1212,21 @@ public class CommonUtils {
      * @return
      */
     public static BufferedImage arrayToImage(double[][] array, int job, boolean isComplex){
-        if (job > DeconvUtils.SCALE_CORRECTED_COLORMAP) {
+        if (job > SCALE_CORRECTED_COLORMAP) {
             System.err.println("Wrong job");
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-        if (!(job == DeconvUtils.NO_SCALE)) {
+        if (!(job == NO_SCALE)) {
             scaleArray(array, isComplex);
         }
         scaleArray(array, isComplex);
         //If necessary we correct
-        if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
+        if (job == SCALE_CORRECTED || job == SCALE_CORRECTED_COLORMAP) {
             correctArray(array, isComplex);
         }
         //We apply lastly the colormap transformation
-        if (job == DeconvUtils.SCALE_COLORMAP || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
+        if (job == SCALE_COLORMAP || job == SCALE_CORRECTED_COLORMAP) {
             out = colorArray(array, isComplex);
         }else{
             out = arrayToImage(array, isComplex);
@@ -1220,21 +1243,21 @@ public class CommonUtils {
      * @return
      */
     public static BufferedImage arrayToImage(float[][] array, int job, boolean isComplex){
-        if (job > DeconvUtils.SCALE_CORRECTED_COLORMAP) {
+        if (job > SCALE_CORRECTED_COLORMAP) {
             System.err.println("Wrong job");
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-        if (!(job == DeconvUtils.NO_SCALE)) {
+        if (!(job == NO_SCALE)) {
             scaleArray(array, isComplex);
         }
         //If necessary we correct
-        if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
+        if (job == SCALE_CORRECTED || job == SCALE_CORRECTED_COLORMAP) {
             correctArray(array, isComplex);
         }
 
         //We apply lastly the colormap transformation
-        if (job == DeconvUtils.SCALE_COLORMAP || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
+        if (job == SCALE_COLORMAP || job == SCALE_CORRECTED_COLORMAP) {
             out = colorArray(array, isComplex);
         }else{
             out = arrayToImage(array, isComplex);
@@ -1251,21 +1274,21 @@ public class CommonUtils {
      * @return
      */
     public static BufferedImage arrayToImage1D(double[] array, int job, int width, int height, boolean isComplex){
-        if (job > DeconvUtils.SCALE_CORRECTED_COLORMAP) {
+        if (job > SCALE_CORRECTED_COLORMAP) {
             System.err.println("Wrong job");
             throw new IllegalArgumentException();
         }
         BufferedImage out;
 
-        if (!(job == DeconvUtils.NO_SCALE)) {
+        if (!(job == NO_SCALE)) {
             scaleArray1D(array, isComplex);
         }
         //If necessary we correct
-        if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
+        if (job == SCALE_CORRECTED || job == SCALE_CORRECTED_COLORMAP) {
             correctArray1D(array, isComplex);
         }
         //We apply lastly the colormap transformation
-        if (job == DeconvUtils.SCALE_COLORMAP || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
+        if (job == SCALE_COLORMAP || job == SCALE_CORRECTED_COLORMAP) {
             out = colorArray1D(array, width, height, isComplex);
         }else{
             out = arrayToImage1D(array, width, height, isComplex);
@@ -1282,20 +1305,20 @@ public class CommonUtils {
      * @return
      */
     public static BufferedImage arrayToImage1D(float[] array, int job, int width, int height, boolean isComplex){
-        if (job > DeconvUtils.SCALE_CORRECTED_COLORMAP) {
+        if (job > SCALE_CORRECTED_COLORMAP) {
             System.err.println("Wrong job");
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-        if (!(job == DeconvUtils.NO_SCALE)) {
+        if (!(job == NO_SCALE)) {
             scaleArray1D(array, isComplex);
         }
         //If necessary we correct
-        if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
+        if (job == SCALE_CORRECTED || job == SCALE_CORRECTED_COLORMAP) {
             correctArray1D(array, isComplex);
         }
         //We apply lastly the colormap transformation
-        if (job == DeconvUtils.SCALE_COLORMAP || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
+        if (job == SCALE_COLORMAP || job == SCALE_CORRECTED_COLORMAP) {
             out = colorArray1D(array, width, height, isComplex);
         }else{
             out = arrayToImage1D(array, width, height, isComplex);
@@ -1583,8 +1606,6 @@ public class CommonUtils {
         return imageout;
     }
 
-    //Ludo parts
-
     /**
      * Returns 1d array (column major) of a 2d array. 
      *
@@ -1642,41 +1663,28 @@ public class CommonUtils {
         }
     }
 
+    public static BufferedImage openAsBufferedImage(String path) {
+        BufferedImage I = null;
+        try {
+            I = ImageIO.read(new File(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return I;
+    }
+
     /**
      * Convert an image into an 2d array.
      * 
      */
-    public static double[][] im2array(String imageName)
+    public static double[][] imToArray(String imageName)
     {
-        File fileI = new File(imageName);
-        BufferedImage I = null;
-        try {
-            I = ImageIO.read(fileI);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return buffI2array(I);
+        return buffI2array(openAsBufferedImage(imageName));
     }
 
-    public static BufferedImage Array2BuffI(double[][] A)
+    public static BufferedImage array2BuffI(double[][] I) //TODO delete and use arrayToImage(array, false)
     {
-        int H = A.length;
-        int W = A[0].length;
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-        MathUtils.uint8(A);
-        for(int j = 0; j < W; j++)
-        {
-            for(int i = 0; i < H; i++)
-            {
-                Color b = new Color( (int) A[i][j], (int) A[i][j], (int) A[i][j] );
-                bufferedI.setRGB(j, i, b.getRGB());
-            }
-        }
-        return bufferedI;
-    }
 
-    public static BufferedImage array2BuffI(double[][] I) //FIXME remplacer par ma fonction
-    {
         int H = I.length;
         int W = I[0].length;
         ColorMap map = ColorMap.getJet(256);
@@ -1691,8 +1699,8 @@ public class CommonUtils {
         }
         return bufferedI;
     }
-    
-    public static double[][] buffI2array(BufferedImage I) //FIXME remplacer par ma fonction
+
+    public static double[][] buffI2array(BufferedImage I) //TODO delete and use imageToArray(I, false)
     {
         int H = I.getHeight();
         int W = I.getWidth();
@@ -1708,40 +1716,17 @@ public class CommonUtils {
         }
         return ImArray;
     }
- 
-    public static void saveArray2Image(double[] A, int W, String name)
+
+    public static void saveArrayToImage(double[] A, int W, String name)
     {
-        ColorMap map = ColorMap.getJet(256);
-        int L = A.length;
-        int H = L/W;
-        double S[];
-        S = MathUtils.scaleArrayTo8bit(A);
-        BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-
-        for(int j = 0; j < W; j++)
-        {
-            for(int i = 0; i < H; i++)
-            {
-                Color b = map.table[ (int) S[i*W + j] ];
-                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
-            }
-        }
-
-        try {
-            ImageIO.write(bufferedI, "png", new File(name));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        int H = A.length/W;
+        BufferedImage I = arrayToImage1D(A, W, H, false);
+        saveBufferedImage(I, name);
     }
 
-    public static void saveArray2Image(double[][] A,  String name)
+    public static void saveArrayToImage(double[][] A,  String name)
     {
-        BufferedImage bufferedI = array2BuffI(A);
-        try {
-            ImageIO.write(bufferedI, "png", new File(name));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        saveBufferedImage(arrayToImage(A, false), name);
     }
 
     /**

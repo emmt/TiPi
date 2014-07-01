@@ -31,6 +31,7 @@ import java.util.Random;
 
 import mitiv.deconv.DeconvUtils;
 import mitiv.deconv.Deconvolution;
+import mitiv.utils.CommonUtils;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 
@@ -380,7 +381,7 @@ public class Benchmark2D_1D {
     }
 
     public static void benchQuad2D1D(){
-        Deconvolution a = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png", DeconvUtils.SCALE);
+        Deconvolution a = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png", CommonUtils.SCALE);
         int deuxD = computeQuad2D(a);
         int unD = computeQuad1D(a);
         System.out.println("Beginnig of the bench on "+NB_BENCH+" rounds");
@@ -393,7 +394,7 @@ public class Benchmark2D_1D {
     }
 
     public static void benchQuad2D1DWithOptims(){
-        Deconvolution a = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png", DeconvUtils.SCALE);
+        Deconvolution a = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png", CommonUtils.SCALE);
         int deuxD = computeQuad2D(a);
         int unD = computeQuad1D(a);
         System.out.println("Beginnig of the bench on "+NB_BENCH+" rounds");

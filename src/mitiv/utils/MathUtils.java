@@ -41,7 +41,7 @@ import javax.swing.JLabel;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 
 public class MathUtils {
-    
+
     public static final int COLORMAP_GRAYSCALE = 0;
     public static final int COLORMAP_JET = 1;
     public static final int GAUSSIAN = 2;
@@ -50,7 +50,7 @@ public class MathUtils {
     public static final int SOBEL = 5;
     public static final int KIRSH = 6;
     public static final int DISK = 7;
-    
+
     /**
      * Check if the number is even. 
      *
@@ -103,7 +103,7 @@ public class MathUtils {
         }
         return R;
     }
-    
+
     /**
      * Return an 1d array(a meshgrid) of cartesian distance of
      * value x between [(-W+1)/2, W/2] and y
@@ -127,7 +127,7 @@ public class MathUtils {
         }
         return R;
     }
-    
+
     /**
      * Return an 1d array of polar angle of
      * value x between [(-W+1)/2, W/2] and y
@@ -230,8 +230,9 @@ public class MathUtils {
         double x[] = new double[L];
         double R[] = new double[L];
         x = fftIndgen(L);
-        for( int i = 0; i < L; i++)
+        for( int i = 0; i < L; i++){
             R[i] = Math.sqrt(x[i] * x[i] + x[i] * x[i]);
+        }
         return R;
     }
 
@@ -394,9 +395,9 @@ public class MathUtils {
         double minScaleA = min(A);
         double maxScaleA = max(A);
         double deltaScaleA = maxScaleA - minScaleA;
-        for(int i = 0; i < L; i++)
+        for(int i = 0; i < L; i++){
             scaleA[i] = (A[i] - minScaleA)*255/deltaScaleA;
-
+        }
         return scaleA;
     }
 
@@ -422,7 +423,7 @@ public class MathUtils {
 
         return scaleA;
     }
-    
+
     /**
      * Scale array values into a 8bit (between 0 and 255).
      *
@@ -442,7 +443,7 @@ public class MathUtils {
             }
         }
     }
-    
+
     /* converts the image in range [0, 1] */
     public static void im2double(double[][] a)
     {
@@ -459,21 +460,22 @@ public class MathUtils {
             }
         }
     }
-    
+
     public static double[][] conj1(double[][] A)
     {
         int H = A.length;
         int W = A[0].length;
         double[][] conjA = new double[H][W];
-        for(int j = 0; j < W/2; j++)
+        for(int j = 0; j < W/2; j++){
             for(int i = 0; i < H; i++)
             {
                 conjA[i][2*j] = A[i][2*j];
                 conjA[i][2*j + 1] = -A[i][2*j + 1];
             }
+        }
         return conjA;
     }
-    
+
     public static void conj2(double[][] A)
     {
         int H = A.length;
@@ -487,8 +489,8 @@ public class MathUtils {
             }
         }
     }
-    
-  /**
+
+    /**
      * Returns the squared absolute value of a 2d array (complex).
      *
      * @param IN array
@@ -499,13 +501,13 @@ public class MathUtils {
         int H = IN.length;
         int W = IN[0].length/2;
         double[][] OUT = new double[H][W];
-            for(int i = 0; i < H; i++)
-            {
-                OUT[i] = abs2(IN[i]);
-            }
+        for(int i = 0; i < H; i++)
+        {
+            OUT[i] = abs2(IN[i]);
+        }
         return OUT;
     }
-    
+
     /**
      * Returns the squared absolute value of 1d array.
      *
@@ -573,7 +575,7 @@ public class MathUtils {
         {
             if (max < matrix[i])
             {
-               max = matrix[i];
+                max = matrix[i];
             }
         }
         return max;
@@ -602,8 +604,9 @@ public class MathUtils {
     public static void printArray(double A[][])
     {	
         int H = A.length;
-        for(int i = 0; i < H; i++ )
+        for(int i = 0; i < H; i++ ){
             System.out.println(Arrays.toString(A[i]));
+        }
     }
 
     /**
@@ -612,7 +615,7 @@ public class MathUtils {
      * @param A array to display
      * @param colorMap 0 for a grayscale display and 1 with a colormap 
      */
-  public static void pli(double A[][], int colorMap)
+    public static void pli(double A[][], int colorMap)
     {   
         int H = A.length;
         int W = A[0].length;
@@ -655,7 +658,7 @@ public class MathUtils {
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-    
+
     /**
      * Display image of an 2d array
      * 
@@ -727,7 +730,7 @@ public class MathUtils {
         pli(A_padded, COLORMAP_JET);
     }
 
-    
+
     /**
      * Shift zero-frequency component to center of spectrum
      * 
@@ -823,7 +826,7 @@ public class MathUtils {
         }
         return c;
     }
-    
+
     /**
      * Average or mean value of array
      */
@@ -1036,7 +1039,7 @@ public class MathUtils {
         }
         return imnoise;
     }
-    
+
     public static double[][] fspecialAverage(int[] arg1)
     { 
         double[][] ha = new double[arg1[0]][arg1[1]];
@@ -1096,7 +1099,7 @@ public class MathUtils {
             throw new IllegalArgumentException("The type does not exist");
         }
     }
-    
+
     /**
      * Create predefined 2-D filter
      * @param type type of the filter
