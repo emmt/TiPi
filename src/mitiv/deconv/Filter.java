@@ -35,8 +35,8 @@ public class Filter implements FilterInterface{
 
     double[][] FFT_PSF;
     double[][] FFT_Image;
-    int X;
-    int Y;
+    int width;
+    int height;
     double cc;
     double [][]tabcc;
 
@@ -49,8 +49,8 @@ public class Filter implements FilterInterface{
     public double[][] Wiener(double alpha, double[][] FFT_PSF, double[][] FFTImage) {
         this.FFT_PSF = FFT_PSF;
         this.FFT_Image = FFTImage;
-        X = FFTImage.length;
-        Y = FFTImage[0].length/2;
+        width = FFTImage.length;
+        height = FFTImage[0].length/2;
         cc = FFT_PSF[0][0]*FFT_PSF[0][0]+FFT_PSF[0][1]*FFT_PSF[0][1];
         return Wiener(alpha);
     }
@@ -58,9 +58,9 @@ public class Filter implements FilterInterface{
     @Override
     public double[][] Wiener(double alpha) {
         double a,b,c,d,q;
-        double[][]out = new double[X][2*Y];
-        for(int i = 0; i<X; i++){
-            for(int j=0;j<Y;j++){
+        double[][]out = new double[width][2*height];
+        for(int i = 0; i<width; i++){
+            for(int j=0;j<height;j++){
                 a = FFT_PSF[i][2*j];
                 b = FFT_PSF[i][2*j+1];
                 c = FFT_Image[i][2*j];
@@ -82,21 +82,21 @@ public class Filter implements FilterInterface{
     public double[][] WienerQuad(double alpha, double[][] FFT_PSF,double[][] FFTImage) {
         this.FFT_PSF = FFT_PSF;
         this.FFT_Image = FFTImage;
-        X = FFTImage.length;
-        Y = FFTImage[0].length/2;
+        width = FFTImage.length;
+        height = FFTImage[0].length/2;
         double e,f;
-        tabcc = new double[X][Y];
-        for(int i = 0; i<X; i++){
-            for(int j=0;j<Y;j++){
-                if(i<=X/2){
-                    e = ((double)i/X);
+        tabcc = new double[width][height];
+        for(int i = 0; i<width; i++){
+            for(int j = 0; j<height; j++){
+                if(i <= width/2){
+                    e = ((double)i/width);
                 }else{
-                    e = ((double)(i-X)/X);
+                    e = ((double)(i-width)/width);
                 }
-                if(j<=Y/2){
-                    f = ((double)j/Y);
+                if(j <= height/2){
+                    f = ((double)j/height);
                 }else{
-                    f = ((double)(j-Y)/Y);
+                    f = ((double)(j-height)/height);
                 }
                 tabcc[i][j] = 4*Math.PI*Math.PI*(e*e+f*f);
             }
@@ -107,9 +107,9 @@ public class Filter implements FilterInterface{
     @Override
     public double[][] WienerQuad(double alpha) {
         double a,b,c,d,q;
-        double[][]out = new double[X][2*Y];
-        for(int i = 0; i<X; i++){
-            for(int j=0; j<Y; j++){
+        double[][]out = new double[width][2*height];
+        for(int i = 0; i<width; i++){
+            for(int j=0; j<height; j++){
                 a = FFT_PSF[i][2*j];
                 b = FFT_PSF[i][2*j+1];
                 c = FFT_Image[i][2*j];
@@ -125,27 +125,27 @@ public class Filter implements FilterInterface{
     /************************************** 1D TESTING *************************************************/
 
     @Override
-    public double[] WienerQuad1D(double alpha, double[] FFT_PSF,double[] FFTImage, int XX, int YY) {
+    public double[] WienerQuad1D(double alpha, double[] FFT_PSF,double[] FFTImage, int Width, int Height) {
         this.FFT_PSF1D = FFT_PSF;
         this.FFT_Image1D = FFTImage;
-        this.X = XX;
-        this.Y = YY;
+        width = Width;
+        height = Height;
         double e,f;
-        tabcc1D = new double[X*Y];
+        tabcc1D = new double[width*height];
 
-        for(int i = 0; i<X; i++){
-            for(int j=0;j<Y;j++){
-                if(i<=X/2){
-                    e = ((double)i/X);
+        for(int j = 0; j<width; j++){
+            for(int i = 0; i<height; i++){
+                if(j<=width/2){
+                    e = ((double)j/width);
                 }else{
-                    e = ((double)(i-X)/X);
+                    e = ((double)(j-width)/width);
                 }
-                if(j<=Y/2){
-                    f = ((double)j/Y);
+                if(i<=height/2){
+                    f = ((double)i/height);
                 }else{
-                    f = ((double)(j-Y)/Y);
+                    f = ((double)(i-height)/height);
                 }
-                tabcc1D[j+i*Y] = 4*Math.PI*Math.PI*(e*e+f*f);
+                tabcc1D[i+j*height] = 4*Math.PI*Math.PI*(e*e+f*f);
             }
         }
         return WienerQuad1D(alpha);
@@ -154,16 +154,16 @@ public class Filter implements FilterInterface{
     @Override
     public double[] WienerQuad1D(double alpha) {
         double a,b,c,d,q;
-        double[]out = new double[X*2*Y];
-        for(int i = 0; i<X; i++){
-            for(int j=0;j<Y;j++){
-                a = FFT_PSF1D[2*(j+i*Y)];
-                b = FFT_PSF1D[2*((j+1)+i*Y)];
-                c = FFT_Image1D[2*(j+i*Y)];
-                d = FFT_Image1D[2*((j+1)+i*Y)];
-                q = 1.0/(a*a + b*b + tabcc1D[j+i*Y]*alpha);
-                out[2*(j+i*Y)] = (a*c + b*d)*q;
-                out[2*((j+1)+i*Y)] = (a*d - b*c)*q;
+        double[]out = new double[width*2*height];
+        for(int j = 0; j < width; j++){
+            for(int i = 0; i < height; i++){
+                a = FFT_PSF1D[2*i    +2*j*height];
+                b = FFT_PSF1D[2*i+1  +2*j*height];
+                c = FFT_Image1D[2*i  +2*j*height];
+                d = FFT_Image1D[2*i+1+2*j*height];
+                q = 1.0/(a*a + b*b + tabcc1D[i+j*height]*alpha);
+                out[2*i+   2*j*height] = (a*c + b*d)*q;
+                out[2*i+1 +2*j*height] = (a*d - b*c)*q;
             }
         }
         return out;

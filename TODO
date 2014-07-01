@@ -12,3 +12,4 @@ Discussion
     Add .classpath file to solve the probleme of src package (not a perfect solution)
     Should we create interface for regul/optim (ask many others questions)
     (John) In functions 1D as 2D do we ask width, height or only one and we guess the other ?
+    Retro compatibility with java 6: ie no switch on string

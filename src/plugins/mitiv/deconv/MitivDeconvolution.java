@@ -110,7 +110,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         case DeconvUtils.JOB_WIENER: 
             return (deconvolution.FirstDeconvolution(muMin));
         case DeconvUtils.JOB_QUAD:
-            return (deconvolution.FirstDeconvolutionQuad(muMin));
+            return (deconvolution.FirstDeconvolutionQuad1D(muMin));
         case DeconvUtils.JOB_CG:
             return (deconvolution.FirstDeconvolutionCGNormal(muMin));
         default:
@@ -127,7 +127,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             return (deconvolution.NextDeconvolution(mu));
 
         case DeconvUtils.JOB_QUAD:
-            return (deconvolution.NextDeconvolutionQuad(mu*mult));
+            return (deconvolution.NextDeconvolutionQuad1D(mu*mult));
 
         case DeconvUtils.JOB_CG:
             return (deconvolution.NextDeconvolutionCGNormal(mu*mult));

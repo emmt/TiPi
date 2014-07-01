@@ -384,26 +384,13 @@ public class CommonUtils {
         } else {
             out = new double[width*height];
         }
-        if (isComplex) {
-            for(int j=0;j<width;j++){
-                for(int i=0;i<height;i++){
-                    int[] tmp = raster.getPixel(j, i, (int[])null);
-                    if (tmp.length == 1 || tmp.length == 2) {
-                        out[2*(i+j*height)] = colorToGrey(tmp[0], tmp[0], tmp[0]);
-                    } else {
-                        out[2*(i+j*height)] = colorToGrey(tmp[0], tmp[1], tmp[2]);
-                    }
-                }
-            }
-        } else {
-            for(int j=0;j<width;j++){
-                for(int i=0;i<height;i++){
-                    int[] tmp = raster.getPixel(j, i, (int[])null);
-                    if (tmp.length == 1 || tmp.length == 2) {
-                        out[(i+j*height)] = colorToGrey(tmp[0], tmp[0], tmp[0]);
-                    } else {
-                        out[(i+j*height)] = colorToGrey(tmp[0], tmp[1], tmp[2]);
-                    }
+        for(int j=0;j<width;j++){
+            for(int i=0;i<height;i++){
+                int[] tmp = raster.getPixel(j, i, (int[])null);
+                if (tmp.length == 1 || tmp.length == 2) {
+                    out[(i+j*height)] = colorToGrey(tmp[0], tmp[0], tmp[0]);
+                } else {
+                    out[(i+j*height)] = colorToGrey(tmp[0], tmp[1], tmp[2]);
                 }
             }
         }
@@ -451,7 +438,7 @@ public class CommonUtils {
         return out;
     }
 
-    public static int[][] psfToArray(BufferedImage psf) {
+    public static int[][] psfToArrayInt(BufferedImage psf) {
         WritableRaster raster = psf.getRaster();
         int [][]out = new int[psf.getHeight()][psf.getWidth()];
         for(int j=0;j<psf.getWidth();j++){
@@ -467,9 +454,57 @@ public class CommonUtils {
         return out;
     }
 
-    public static int[] psfToArray1D(BufferedImage psf) {
+    public static double[][] psfToArrayDouble(BufferedImage psf) {
+        WritableRaster raster = psf.getRaster();
+        double [][]out = new double[psf.getHeight()][psf.getWidth()];
+        for(int j=0;j<psf.getWidth();j++){
+            for(int i=0;i<psf.getHeight();i++){
+                int[] tmp = raster.getPixel(j, i, (int[])null);
+                if (tmp.length == 1 || tmp.length == 2) {
+                    out[i][j] = colorToGrey(tmp[0], tmp[0], tmp[0]);
+                } else {
+                    out[i][j] = colorToGrey(tmp[0], tmp[1], tmp[2]);
+                }
+            }
+        }
+        return out;
+    }
+
+    public static double[] psfToArray1DDouble(BufferedImage psf) {
+        WritableRaster raster = psf.getRaster();
+        double []out = new double[psf.getWidth()*psf.getHeight()];
+        for(int j=0;j<psf.getWidth();j++){
+            for(int i=0;i<psf.getHeight();i++){
+                int[] tmp = raster.getPixel(j, i, (int[])null);
+                if (tmp.length == 1 || tmp.length == 2) {
+                    out[i+j*psf.getHeight()] = colorToGrey(tmp[0], tmp[0], tmp[0]);
+                } else {
+                    out[i+j*psf.getHeight()] = colorToGrey(tmp[0], tmp[1], tmp[2]);
+                }
+            }
+        }
+        return out;
+    }
+
+    public static int[] psfToArray1DInt(BufferedImage psf) {
         WritableRaster raster = psf.getRaster();
         int []out = new int[psf.getWidth()*psf.getHeight()];
+        for(int j=0;j<psf.getWidth();j++){
+            for(int i=0;i<psf.getHeight();i++){
+                int[] tmp = raster.getPixel(j, i, (int[])null);
+                if (tmp.length == 1 || tmp.length == 2) {
+                    out[i+j*psf.getHeight()] = colorToGrey(tmp[0], tmp[0], tmp[0]);
+                } else {
+                    out[i+j*psf.getHeight()] = colorToGrey(tmp[0], tmp[1], tmp[2]);
+                }
+            }
+        }
+        return out;
+    }
+
+    public static float[] psfToArray1DFloat(BufferedImage psf) {
+        WritableRaster raster = psf.getRaster();
+        float []out = new float[psf.getWidth()*psf.getHeight()];
         for(int j=0;j<psf.getWidth();j++){
             for(int i=0;i<psf.getHeight();i++){
                 int[] tmp = raster.getPixel(j, i, (int[])null);
@@ -1161,7 +1196,9 @@ public class CommonUtils {
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-        //First we scale in any case
+        if (!(job == DeconvUtils.NO_SCALE)) {
+            scaleArray(array, isComplex);
+        }
         scaleArray(array, isComplex);
         //If necessary we correct
         if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
@@ -1191,8 +1228,9 @@ public class CommonUtils {
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-        //First we scale in any case
-        scaleArray(array, isComplex);
+        if (!(job == DeconvUtils.NO_SCALE)) {
+            scaleArray(array, isComplex);
+        }
         //If necessary we correct
         if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             correctArray(array, isComplex);
@@ -1221,10 +1259,10 @@ public class CommonUtils {
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-
-        //First we scale in any case
-        scaleArray1D(array, isComplex);
-
+        
+        if (!(job == DeconvUtils.NO_SCALE)) {
+            scaleArray1D(array, isComplex);
+        }
         //If necessary we correct
         if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             correctArray1D(array, isComplex);
@@ -1253,15 +1291,13 @@ public class CommonUtils {
             throw new IllegalArgumentException();
         }
         BufferedImage out;
-
-        //First we scale in any case
-        scaleArray1D(array, isComplex);
-
+        if (!(job == DeconvUtils.NO_SCALE)) {
+            scaleArray1D(array, isComplex);
+        }
         //If necessary we correct
         if (job == DeconvUtils.SCALE_CORRECTED || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             correctArray1D(array, isComplex);
         }
-
         //We apply lastly the colormap transformation
         if (job == DeconvUtils.SCALE_COLORMAP || job == DeconvUtils.SCALE_CORRECTED_COLORMAP) {
             out = colorArray1D(array, width, height, isComplex);
@@ -1348,10 +1384,19 @@ public class CommonUtils {
         } else {
             tableau_psf = new double[height][width];
         }
-        int demiPsfW = imagePsf.getWidth()/2;int demiPsfH = imagePsf.getHeight()/2;
+        double[][]test = psfToArrayDouble(imagePsf);
+        return psfPadding(tableau_psf, test, isComplex);
+    }
 
-        int[][]test = psfToArray(imagePsf);
-
+    public static double[][] psfPadding(double[][] imageOut, double[][] imagePsf, boolean isComplex) {
+        int width, height = imageOut.length;
+        if (isComplex) {
+            width = imageOut[0].length/2;
+        } else {
+            width = imageOut[0].length;
+        }
+        int psfW = imagePsf[0].length, psfH = imagePsf.length;
+        int demiPsfW = imagePsf[0].length/2, demiPsfH = imagePsf.length/2;
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
         //   A | B     ->
@@ -1367,46 +1412,48 @@ public class CommonUtils {
         //bloc haut à gauche: A
         for(int j = 0; j<demiPsfW; j++){
             for(int i=0;i<demiPsfH;i++){
-                tableau_psf[(height-demiPsfH)+i][width-demiPsfW+j] = test[i][j];
+                imageOut[(height-demiPsfH)+i][width-demiPsfW+j] = imagePsf[i][j];
             }
         }
         //bloc haut a droite: B
-        for(int j = demiPsfW; j<imagePsf.getWidth(); j++){
+        for(int j = demiPsfW; j<psfW; j++){
             for(int i=0;i<demiPsfH;i++){
-                tableau_psf[(height-demiPsfH)+i][j-demiPsfW] = test[i][j];
+                imageOut[(height-demiPsfH)+i][j-demiPsfW] = imagePsf[i][j];
             }
         }
         //bloc bas a gauche: C
         for(int j = 0; j<demiPsfW; j++){
-            for(int i=demiPsfH; i<imagePsf.getHeight(); i++){
-                tableau_psf[i-demiPsfH][width-demiPsfW+j] = test[i][j];
+            for(int i=demiPsfH; i<psfH; i++){
+                imageOut[i-demiPsfH][width-demiPsfW+j] = imagePsf[i][j];
             }
         }
         //bloc bas a droite: D
-        for(int j = demiPsfW; j<imagePsf.getWidth(); j++){
-            for(int i=demiPsfH; i<imagePsf.getHeight(); i++){
-                tableau_psf[i-demiPsfH][j-demiPsfW] = test[i][j];
+        for(int j = demiPsfW; j<psfW; j++){
+            for(int i=demiPsfH; i<psfH; i++){
+                imageOut[i-demiPsfH][j-demiPsfW] = imagePsf[i][j];
             }
         }
-        //printTab(tableau_psf);
-        return tableau_psf;
+        return imageOut;
     }
 
     public static double[] psfPadding1D(BufferedImage image, BufferedImage imagePsf, boolean isComplex) {
         double []tableau_psf;
         int width = image.getWidth();
         int height = image.getHeight();
-        int hght = 0;
         if (isComplex) {
             tableau_psf = new double[width*2*height];
         } else {
             tableau_psf = new double[width*height];
         }
-        hght = height;
         int psfH = imagePsf.getHeight();
         int psfW = imagePsf.getWidth();
-        int demiPsfW = psfW/2;int demiPsfH = psfH/2;
-        int[]test = psfToArray1D(imagePsf);
+        double[]test = psfToArray1DDouble(imagePsf);
+
+        return psfPadding1D(tableau_psf,width,height,test,psfH,psfW,isComplex);
+    }
+
+    public static double[] psfPadding1D(double[] imageout,int imageWidth, int imageHeight, double[] imagePsf, int psfWidth, int psfHeight, boolean isComplex) {
+        int demiPsfW = psfWidth/2;int demiPsfH = psfHeight/2;
 
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
@@ -1425,25 +1472,25 @@ public class CommonUtils {
             //Bloc haut à gauche: D
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH+i)+(demiPsfW+j)*psfH];
+                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
                 }
             }
             //bloc haut a droite: C
-            for(int j = width-demiPsfW; j < width; j++){
+            for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH+i)+(demiPsfW-width+j)*psfH];
+                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW-imageWidth+j)*psfHeight];
                 }
             }
             //bloc bas a gauche: B
             for(int j = 0; j < demiPsfW; j++){
-                for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH-height+i)+(demiPsfW+j)*psfH];
+                for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
+                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW+j)*psfHeight];
                 }
             }
             //bloc bas a droite: A
-            for(int j = width-demiPsfW; j < width; j++){
-                for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH-height+i)+(demiPsfW-width+j)*psfH];
+            for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
+                for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
+                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW-imageWidth+j)*psfHeight];
                 }
             }
         }else{
@@ -1451,29 +1498,29 @@ public class CommonUtils {
             //Bloc haut à gauche: D
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH+i)+(demiPsfW+j)*psfH];
+                    imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
                 }
             }
             //bloc haut a droite: C
-            for(int j = width-demiPsfW; j < width; j++){
+            for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
                 for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH+i)+(demiPsfW-width+j)*psfH];
+                    imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW-imageWidth+j)*psfHeight];
                 }
             }
             //bloc bas a gauche: B
             for(int j = 0; j < demiPsfW; j++){
-                for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH-height+i)+(demiPsfW+j)*psfH];
+                for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
+                    imageout[i+j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW+j)*psfHeight];
                 }
             }
             //bloc bas a droite: A
-            for(int j = width-demiPsfW; j < width; j++){
-                for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH-height+i)+(demiPsfW-width+j)*psfH];
+            for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
+                for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
+                    imageout[i+j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW-imageWidth+j)*psfHeight];
                 }
             }
         }
-        return tableau_psf;
+        return imageout;
     }
 
     /**
@@ -1483,20 +1530,23 @@ public class CommonUtils {
      * @return
      */
     public static float[] psfPadding1DFloat(BufferedImage image, BufferedImage imagePsf, boolean isComplex) {
+        float []tableau_psf;
         int width = image.getWidth();
         int height = image.getHeight();
-        float []tableau_psf;
-        int hght = 0;
         if (isComplex) {
             tableau_psf = new float[width*2*height];
         } else {
             tableau_psf = new float[width*height];
         }
-        hght = height;
         int psfH = imagePsf.getHeight();
         int psfW = imagePsf.getWidth();
-        int demiPsfW = psfW/2;int demiPsfH = psfH/2;
-        int[]test = psfToArray1D(imagePsf);
+        float[]test = psfToArray1DFloat(imagePsf);
+
+        return psfPadding1DFloat(tableau_psf,width,height,test,psfH,psfW,isComplex);
+    }
+
+    public static float[] psfPadding1DFloat(float[] imageout,int imageWidth, int imageHeight, float[] imagePsf, int psfWidth, int psfHeight, boolean isComplex) {
+        int demiPsfW = psfWidth/2;int demiPsfH = psfHeight/2;
 
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
@@ -1509,61 +1559,32 @@ public class CommonUtils {
         //   D | C     ->
         //   -----     -> Image
         //   B | A     ->
-
-        if (isComplex) {
-            //Here we are writing at 2*(i+j*hght)
-            //UP, Left Bloc: D
-            for(int j = 0; j < demiPsfW; j++){
-                for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH+i)+(demiPsfW+j)*psfH];
-                }
-            }
-            //UP, right, bloc: C
-            for(int j = width-demiPsfW; j < width; j++){
-                for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH+i)+(demiPsfW-width+j)*psfH];
-                }
-            }
-            //Bottom, Left bloc: B
-            for(int j = 0; j < demiPsfW; j++){
-                for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH-height+i)+(demiPsfW+j)*psfH];
-                }
-            }
-            //Bottom, right bloc: A
-            for(int j = width-demiPsfW; j < width; j++){
-                for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[2*(i+j*hght)] = test[(demiPsfH-height+i)+(demiPsfW-width+j)*psfH];
-                }
-            }
-        }else{
-            //Here we are writing at (i+j*hght)
-            //UP, Left Bloc: D
-            for(int j = 0; j < demiPsfW; j++){
-                for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH+i)+(demiPsfW+j)*psfH];
-                }
-            }
-            //UP, right, bloc: C
-            for(int j = width-demiPsfW; j < width; j++){
-                for(int i = 0; i < demiPsfH; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH+i)+(demiPsfW-width+j)*psfH];
-                }
-            }
-            //Bottom, Left bloc: B
-            for(int j = 0; j < demiPsfW; j++){
-                for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH-height+i)+(demiPsfW+j)*psfH];
-                }
-            }
-            //Bottom, right bloc: A
-            for(int j = width-demiPsfW; j < width; j++){
-                for(int i = height-demiPsfH; i < height; i++){
-                    tableau_psf[i+j*hght] = test[(demiPsfH-height+i)+(demiPsfW-width+j)*psfH];
-                }
+        //Here we are writing at (i+j*imageHeight)
+        //Bloc haut à gauche: D
+        for(int j = 0; j < demiPsfW; j++){
+            for(int i = 0; i < demiPsfH; i++){
+                imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
             }
         }
-        return tableau_psf;
+        //bloc haut a droite: C
+        for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
+            for(int i = 0; i < demiPsfH; i++){
+                imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW-imageWidth+j)*psfHeight];
+            }
+        }
+        //bloc bas a gauche: B
+        for(int j = 0; j < demiPsfW; j++){
+            for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
+                imageout[i+j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW+j)*psfHeight];
+            }
+        }
+        //bloc bas a droite: A
+        for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
+            for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
+                imageout[i+j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW-imageWidth+j)*psfHeight];
+            }
+        }
+        return imageout;
     }
 
     //Ludo parts
