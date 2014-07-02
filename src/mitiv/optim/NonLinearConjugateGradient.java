@@ -662,7 +662,7 @@ public class NonLinearConjugateGradient {
                     break;
                 } else {
                     System.err.println("error/warning: " + task);
-                    break;                    
+                    break;
                 }
                 //System.out.println("x  = " + x);
                 //System.out.println("|x| = " + space.norm2(x));
