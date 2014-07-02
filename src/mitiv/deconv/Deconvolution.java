@@ -28,10 +28,12 @@ package mitiv.deconv;
 import icy.image.IcyBufferedImage;
 
 import java.awt.image.BufferedImage;
+
 import mitiv.invpb.LinearDeconvolver;
 import mitiv.linalg.DoubleVector;
 import mitiv.linalg.DoubleVectorSpaceWithRank;
 import mitiv.linalg.LinearConjugateGradient;
+import mitiv.linalg.Vector;
 
 /**
  * @author Leger Jonathan
@@ -44,7 +46,7 @@ public class Deconvolution{
     double[][] psf;
     double[] image1D;
     double[] psf1D;
-    DoubleVector vector_y;
+    DoubleVector vector_image;
     DoubleVector vector_psf;
     int correction;
 
@@ -52,7 +54,10 @@ public class Deconvolution{
     DoubleVectorSpaceWithRank space;
     DoubleVector x;
     LinearDeconvolver linDeconv;
-    int outputValue = LinearConjugateGradient.CONVERGED;;
+    int outputValue = LinearConjugateGradient.CONVERGED;
+    
+    //Vectors
+    DeconvUtilsVector utilsVector;
 
     boolean verbose = false;
     /**
@@ -61,17 +66,28 @@ public class Deconvolution{
      * @param image can be path, bufferedImage or IcyBufferedImage
      * @param PSF can be path, bufferedImage or IcyBufferedImage
      */
-    public Deconvolution(Object image, Object PSF, int correction){
-        utils = new DeconvUtils();
-        wiener = new Filter();
-        this.correction = correction;
-        if(image instanceof String){
-            utils.ReadImage((String)image, (String)PSF);
-        }else if(image instanceof BufferedImage){
-            utils.ReadImage((BufferedImage)image, (BufferedImage)PSF);
-        }else if(image instanceof IcyBufferedImage){
-            utils.ReadImage((IcyBufferedImage)image, (IcyBufferedImage)PSF);
+    public Deconvolution(Object image, Object PSF, int correction, boolean useVectors){
+        if (useVectors) {
+            utilsVector = new DeconvUtilsVector();
+            if(image instanceof String){
+                utilsVector.ReadImage((String)image, (String)PSF, false);
+            }else if(image instanceof BufferedImage){
+                utilsVector.ReadImage((BufferedImage)image, (BufferedImage)PSF, false);
+            }else if(image instanceof IcyBufferedImage){
+                utilsVector.ReadImage((IcyBufferedImage)image, (IcyBufferedImage)PSF, false);
+            }
+        } else {
+            utils = new DeconvUtils();
+            if(image instanceof String){
+                utils.ReadImage((String)image, (String)PSF);
+            }else if(image instanceof BufferedImage){
+                utils.ReadImage((BufferedImage)image, (BufferedImage)PSF);
+            }else if(image instanceof IcyBufferedImage){
+                utils.ReadImage((IcyBufferedImage)image, (IcyBufferedImage)PSF);
+            }
         }
+        this.correction = correction;
+        wiener = new Filter();
     }
 
     /**
@@ -185,15 +201,15 @@ public class Deconvolution{
         if (vector_psf == null) {
             vector_psf = space.wrap(utils.PSF_Padding1D(false));
         }
-        if (vector_y == null) {
-            vector_y = space.wrap(utils.ImageToArray1D(false));
+        if (vector_image == null) {
+            vector_image = space.wrap(utils.ImageToArray1D(false));
         }
 
         x = space.create(0);
         DoubleVector w = space.create(1);
 
         linDeconv = new LinearDeconvolver(
-                space.getShape(), vector_y.getData(), vector_psf.getData(), w.getData(), alpha);
+                space.getShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
         outputValue = linDeconv.solve(x.getData(), 20, false);
         parseOuputCG(outputValue);
         return(utils.ArrayToImage1D(x.getData(), correction, false));
@@ -205,6 +221,24 @@ public class Deconvolution{
      */
     public BufferedImage NextDeconvolutionCGNormal(double alpha){
         return FirstDeconvolutionCGNormal(alpha);
+    }
+    
+    public BufferedImage FirstDeconvolutionQuadVector(double alpha){
+        vector_image = (DoubleVector) utilsVector.getImage();
+        vector_psf = (DoubleVector) utilsVector.getPsfPad();
+        utilsVector.FFT1D(vector_image);
+        utilsVector.FFT1D(vector_psf);
+        //Vector out = wiener.WienerQuad1DVect(alpha, vector_psf, vector_image);
+        Vector out = vector_image.getSpace().clone(vector_image);
+        utilsVector.IFFT1D(out);
+        return(utilsVector.ArrayToImage(out, correction,true));
+    }
+
+    public BufferedImage NextDeconvolutionQuadVector(double alpha){
+        //Vector out = wiener.WienerQuad1DVect(alpha);
+        Vector out = vector_image.getSpace().clone(vector_image);
+        utilsVector.IFFT1D(out);
+        return(utilsVector.ArrayToImage(out, correction,true));
     }
 
     public int getOuputValue(){

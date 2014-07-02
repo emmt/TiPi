@@ -167,7 +167,7 @@ public class mitivCLI {
         checkArgs();
         System.out.format("Regularization: %s, PostTreatment: %s, alpha: %s, Output: %s\n",regularization,postTreatment,alpha,OutputImage);
 
-        Deconvolution deconvolution = new Deconvolution(Image,PSF,choosePost(postTreatment));
+        Deconvolution deconvolution = new Deconvolution(Image,PSF,choosePost(postTreatment),true);
         BufferedImage img = chooseReg(regularization, deconvolution, Double.parseDouble(alpha));
         try {
             File outputfile = new File(OutputImage);

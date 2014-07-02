@@ -136,7 +136,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         case DeconvUtils.JOB_WIENER: 
             return (deconvolution.FirstDeconvolution(muMin));
         case DeconvUtils.JOB_QUAD:
-            return (deconvolution.FirstDeconvolutionQuad1D(muMin));
+            return (deconvolution.FirstDeconvolutionQuadVector(muMin));
         case DeconvUtils.JOB_CG:
             return (deconvolution.FirstDeconvolutionCGNormal(muMin));
         default:
@@ -153,7 +153,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             return (deconvolution.NextDeconvolution(mu));
 
         case DeconvUtils.JOB_QUAD:
-            return (deconvolution.NextDeconvolutionQuad1D(mu*mult));
+            return (deconvolution.NextDeconvolutionQuadVector(mu*mult));
 
         case DeconvUtils.JOB_CG:
             return (deconvolution.NextDeconvolutionCGNormal(mu*mult));
@@ -199,7 +199,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             throw new IllegalArgumentException("We need a PSF and/or an image");
         }
         deconvolution = new Deconvolution(sequenceImage.getValue().getFirstNonNullImage(),
-                sequencePSF.getValue().getFirstNonNullImage(),correct);
+                sequencePSF.getValue().getFirstNonNullImage(),correct,true);
 
         myseq = new Sequence();
         myseq.addImage(0,firstJob(job));

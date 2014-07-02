@@ -103,7 +103,7 @@ public class DeconvUtils {
      */
 
     public void ReadImage(IcyBufferedImage image, IcyBufferedImage PSF) {
-        ReadImage(IcyBufferedImage.createFrom(image), IcyBufferedImage.createFrom(PSF));
+        ReadImage(IcyBufferedImage.createFrom(image), IcyBufferedImage.createFrom(PSF)); //FIXME Does it really works ??
         setValue();
     }
 
