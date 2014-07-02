@@ -61,12 +61,34 @@ public class FloatVectorSpaceWithRank extends FloatVectorSpace {
     }
 
     /**
+     * Wrap an array of floats into a vector of this vector space.
+     * @return A new vector.
+     */
+    public FloatVectorWithRank wrap(float[] x) {
+        return new FloatVectorWithRank(this, x);
+    }
+
+    /**
      * Get the shape of the vectors of this vector space.
      * @return A copy (you can change the values) of the shape.
      */
     public int[] getShape() {
         return Arrays.copyOf(shape, shape.length);
     }
+
+    /**
+     * Get the length of a given dimension.
+     * @param i  - The index of the dimension.
+     * @return The length of ({@code i}+1)-th dimension, -1 if {@code i} is out of range.
+     */
+    public int getSize(int i) {
+        return (0 <= i && i < shape.length ? shape[i] : -1);
+    }
+
+    /**
+     * Get the rank of vectors of this space.
+     * @return The number of dimensions of vectors of this space.
+     */
     public int getRank() {
         return rank;
     }
