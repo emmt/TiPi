@@ -3,11 +3,15 @@ package plugins.mitiv.microscopy;
 import icy.sequence.Sequence;
 
 import java.awt.EventQueue;
+
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import mitiv.microscopy.*;
+import mitiv.utils.CommonUtils;
+import mitiv.utils.MathUtils;
 import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzStoppable;
 import plugins.adufour.ezplug.EzVarBoolean;
@@ -25,6 +29,8 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
     EzVarDouble na;
     EzVarDouble lambda;
     EzVarDouble ni;
+    EzVarDouble ns;
+    EzVarDouble nzdepth;
     EzVarDouble dxy;
     EzVarDouble dz;
     EzVarDouble nx;
@@ -35,7 +41,7 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
     EzVarDouble deltay;
     EzVarDouble alpha;
     EzVarDouble beta;
-
+    
     EzVarBoolean rho;
     EzVarBoolean phi;
     EzVarBoolean psi;
@@ -44,13 +50,11 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
 
     JSlider slider;
     JLabel label;
-
-    ZernikeWindow prev;
     //Zernike part
 
     double [][][] psf;
     double PSFXZ[][][];    
-    MicroscopyModelPSF2D2 pupil2;
+    MicroscopyModelPSF pupil;
     double[] args;
     boolean[] rpp;
     //icy part
@@ -62,6 +66,7 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
         na = new EzVarDouble("Numerical Aperture");
         lambda = new EzVarDouble("Wavelength (nm)");
         ni = new EzVarDouble("Immersion Index");
+        ns = new EzVarDouble("Immersion Index");
         dxy = new EzVarDouble("Lateral pixel size (nm)");
         dz = new EzVarDouble("Axial pixel size (um)");
         nx = new EzVarDouble("Number of samples along lateral X-dimension");
@@ -124,7 +129,7 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
     @Override
     protected void execute()
     {
-        args = new double[13];
+        args = new double[16];
         args[0] = na.getValue();
         args[1] = lambda.getValue()*1e-9;
         args[2] = ni.getValue();
@@ -138,7 +143,10 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
         args[10] = deltay.getValue();
         args[11] = alpha.getValue();
         args[12] = beta.getValue();
-
+        args[13] = beta.getValue();
+        args[14] = beta.getValue();
+        args[15] = beta.getValue();
+        
         rpp = new boolean[4];
         rpp[0] = rho.getValue();
         rpp[1] = phi.getValue();
@@ -152,9 +160,11 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
         prev = zern;*/
 
         psf = new double[(int)args[7]][(int)args[6]][(int)args[5]];
-        pupil2 = new MicroscopyModelPSF2D2(args[0], args[1], args[2], args[3], args[4], (int)args[5], (int)args[6], (int)args[7], (int)args[8], (int)(args[5]*args[6]));
-        pupil2.computePSF(psf, new double[]{args[11]}, new double[]{args[12]}, args[9], args[10]);
-        PSFXZ = Utils.XY2XZ(psf);
+        //MicroscopyModelPSF pupil = new MicroscopyModelPSF(NA, lambda, ni, ns, zdepth, dxy, dz, nx, ny, nz, nzern, use_depth_scaling);
+        //pupil.computePSF(psf, alpha, beta, deltaX, deltaY, zdepth);
+        pupil = new MicroscopyModelPSF(args[0], args[1], args[2], 0, 0, args[3], args[4], (int)args[5], (int)args[6], (int)args[7], (int)args[8], 0);
+        pupil.computePSF(psf, new double[]{args[11]}, new double[]{args[12]}, args[9], args[10], 0);
+        PSFXZ = MathUtils.XY2XZ(psf);
 
         if (myseq != null) {
             myseq.close();
@@ -163,18 +173,12 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
         //If we show the xz visualization
         if (rpp[3]) {
             for (int i = 0; i < (int)args[6]-1; i++) {
-                myseq.setImage(i,0,Utils.Array2BufferedImageColor(PSFXZ[i]));
-                for (int j = 0; j < (int)args[6]-1; j++) {
-                    myseq.setImage(i,j,Utils.Array2BufferedImageColor(PSFXZ[j]));
-                }
+                myseq.setImage(i,0,CommonUtils.array2BuffI(PSFXZ[i]));
             }
             
         }else{
             for (int i = 0; i < (int)args[7]-1; i++) {
-                myseq.setImage(i,0,Utils.Array2BufferedImageColor(psf[i]));
-                for (int j = 1; j < (int)args[7]-1; j++) {
-                    myseq.setImage(i,j,Utils.Array2BufferedImageColor(psf[j]));
-                }
+                myseq.setImage(i,0,CommonUtils.array2BuffI(psf[i]));
             }
             
         }
@@ -185,9 +189,9 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
                 int tmp =(((JSlider)event.getSource()).getValue());
 
                 if (rpp[3]) {
-                    myseq.setImage(0,0,Utils.Array2BufferedImageColor(PSFXZ[tmp]));
+                    myseq.setImage(0,0,CommonUtils.array2BuffI(PSFXZ[tmp]));
                 }else{
-                    myseq.setImage(0,0,Utils.Array2BufferedImageColor(psf[tmp]));
+                    myseq.setImage(0,0,CommonUtils.array2BuffI(psf[tmp]));
                 }
 
                 label.setText( "Actual value : "+tmp);
@@ -204,7 +208,7 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
             zernSlim.close();
         }
         if (rpp[0] || rpp[1] || rpp[2]) {
-            zernSlim = new ZernikeWindowSlim(pupil2, rpp);
+            zernSlim = new ZernikeWindowSlim(pupil, rpp);
             EventQueue.invokeLater(zernSlim); 
         }
         slider.setEnabled(true);

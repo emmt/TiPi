@@ -28,12 +28,10 @@ package mitiv.deconv;
 import icy.image.IcyBufferedImage;
 
 import java.awt.image.BufferedImage;
-
 import mitiv.invpb.LinearDeconvolver;
 import mitiv.linalg.DoubleVector;
 import mitiv.linalg.DoubleVectorSpaceWithRank;
 import mitiv.linalg.LinearConjugateGradient;
-import mitiv.utils.DeconvUtils;
 
 /**
  * @author Leger Jonathan
@@ -54,7 +52,7 @@ public class Deconvolution{
     DoubleVectorSpaceWithRank space;
     DoubleVector x;
     LinearDeconvolver linDeconv;
-    int outputValue;
+    int outputValue = LinearConjugateGradient.CONVERGED;;
 
     boolean verbose = false;
     /**
@@ -89,7 +87,6 @@ public class Deconvolution{
         utils.FFT(psf);
         double[][] out = wiener.Wiener(alpha, psf, image);
         utils.IFFT(out);
-        outputValue = LinearConjugateGradient.CONVERGED;
         return(utils.ArrayToImage(out, correction));
     }
 
@@ -103,7 +100,6 @@ public class Deconvolution{
     public BufferedImage NextDeconvolution(double alpha){
         double[][] out = wiener.Wiener(alpha);
         utils.IFFT(out);
-        outputValue = LinearConjugateGradient.CONVERGED;
         return(utils.ArrayToImage(out, correction));
     }
 
@@ -120,7 +116,6 @@ public class Deconvolution{
         utils.FFT(psf);
         double[][] out = wiener.WienerQuad(alpha, psf, image);
         utils.IFFT(out);
-        outputValue = LinearConjugateGradient.CONVERGED;
         return(utils.ArrayToImage(out, correction));
     }
 
@@ -134,7 +129,6 @@ public class Deconvolution{
     public BufferedImage NextDeconvolutionQuad(double alpha){
         double[][] out = wiener.WienerQuad(alpha);
         utils.IFFT(out);
-        outputValue = LinearConjugateGradient.CONVERGED;
         return(utils.ArrayToImage(out, correction));
     }
 
@@ -149,7 +143,7 @@ public class Deconvolution{
         psf1D = utils.PSF_Padding1D(true);
         utils.FFT1D(image1D);
         utils.FFT1D(psf1D);
-        double[] out = wiener.WienerQuad1D(alpha, psf1D, image1D,utils.height,utils.width);
+        double[] out = wiener.WienerQuad1D(alpha, psf1D, image1D, utils.width, utils.height);
         utils.IFFT1D(out);
         return(utils.ArrayToImage1D(out, correction,true));
     }
@@ -186,7 +180,7 @@ public class Deconvolution{
      * @param alpha
      * @return deconvoluated image
      */
-    public BufferedImage FirstDeconvolutionCG(double alpha){
+    public BufferedImage FirstDeconvolutionCGNormal(double alpha){
         space = new DoubleVectorSpaceWithRank(utils.width, utils.height);
         if (vector_psf == null) {
             vector_psf = space.wrap(utils.PSF_Padding1D(false));
@@ -209,36 +203,6 @@ public class Deconvolution{
      * @param alpha
      * @return deconvoluated image
      */
-    public BufferedImage NextDeconvolutionCG(double alpha){
-        if (outputValue != LinearConjugateGradient.IN_PROGRESS) {
-            x = space.create(0);
-        }
-        linDeconv.setMu(alpha);
-        //System.out.println("New value "+alpha);
-        outputValue = linDeconv.solve(x.getData(), 100, true);
-        parseOuputCG(outputValue);
-        return(utils.ArrayToImage1D(x.getData(), correction, false));
-    }
-    
-    public BufferedImage FirstDeconvolutionCGNormal(double alpha){
-        space = new DoubleVectorSpaceWithRank(utils.width, utils.height);
-        if (vector_psf == null) {
-            vector_psf = space.wrap(utils.PSF_Padding1D(false));
-        }
-        if (vector_y == null) {
-            vector_y = space.wrap(utils.ImageToArray1D(false));
-        }
-
-        x = space.create(0);
-        DoubleVector w = space.create(1);
-
-        linDeconv = new LinearDeconvolver(
-                space.getShape(), vector_y.getData(), vector_psf.getData(), w.getData(), alpha);
-        outputValue = linDeconv.solve2(x.getData(), 20, false);
-        parseOuputCG(outputValue);
-        return(utils.ArrayToImage1D(x.getData(), correction, false));
-    }
-    
     public BufferedImage NextDeconvolutionCGNormal(double alpha){
         return FirstDeconvolutionCGNormal(alpha);
     }

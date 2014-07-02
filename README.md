@@ -14,6 +14,22 @@ icy.jar		Icy dependency, In Icy
 
 jtranform.jar	Globaly needed, maybe in Icy/Lib
 
+Eclipse
+=======
+
+This project can be used in Eclipse, just copy/clone it into Eclipse workspace, then from Eclipse: 
+
+```
+File -> import -> Existing project in workspace and choose TiPi folder.
+```
+
+Then Eclipse should automatically accept it as a known project.
+
+To add the needed libraries to TiPi Eclipse project, move all the jars into a folder. Then in eclipse:
+
+```
+Right clic on TiPi project in package explorer -> Properties -> Java Build Path -> Libraries -> Add External jar and select all Library jar
+```
 
 
 Setup for developping

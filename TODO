@@ -1,0 +1,15 @@
+Ludo
+    -Need to verify depth aberation and jacobian with Fereol
+    -cross only the pupil, not the whole images?
+    -add a choice for even zernike or not
+
+John
+    CG threaded function (halh functionnal only)
+
+Eric
+
+Discussion
+    Add .classpath file to solve the probleme of src package (not a perfect solution)
+    Should we create interface for regul/optim (ask many others questions)
+    (John) In functions 1D as 2D do we ask width, height or only one and we guess the other ?
+    Retro compatibility with java 6: ie no switch on string

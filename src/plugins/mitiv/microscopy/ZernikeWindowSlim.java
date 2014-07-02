@@ -1,4 +1,6 @@
 package plugins.mitiv.microscopy;
+import mitiv.utils.*;
+import mitiv.microscopy.*;
 
 import icy.gui.frame.IcyFrame;
 import java.awt.BorderLayout;
@@ -20,7 +22,7 @@ public class ZernikeWindowSlim implements  Runnable {
     boolean[] rpp;
     
     IcyFrame test;
-    MicroscopyModelPSF2D2 pupil2;
+    MicroscopyModelPSF pupil;
     /**
      * Take a psf and a image, and give the method used to compute the solution
      * 
@@ -28,8 +30,8 @@ public class ZernikeWindowSlim implements  Runnable {
      * @param pathImage Can be a string, icyimage, bufferedImage
      * @param quadratic Boolean to enble the use quadatric computation method
      */
-    public ZernikeWindowSlim(MicroscopyModelPSF2D2 pupil2,  boolean[] rpp){
-        this.pupil2 = pupil2;
+    public ZernikeWindowSlim(MicroscopyModelPSF pupil,  boolean[] rpp){
+        this.pupil = pupil;
         this.rpp = rpp;
     }
 
@@ -41,19 +43,19 @@ public class ZernikeWindowSlim implements  Runnable {
         middle.setLayout(new FlowLayout());
         if (rpp[0]) {
             JLabel rholabel = new JLabel();
-            rholabel.setIcon(new ImageIcon(Utils.Array2BufferedImageColor(pupil2.rho)));
+            rholabel.setIcon(new ImageIcon(CommonUtils.array2BuffI(pupil.getRho())));
             middle.add("label",new JLabel("RHO"));
             middle.add("image",rholabel);
         }
         if (rpp[1]) {
             JLabel philabel = new JLabel();
-            philabel.setIcon(new ImageIcon(Utils.Array2BufferedImageColor(pupil2.phi)));
+            philabel.setIcon(new ImageIcon(CommonUtils.array2BuffI(pupil.getPhi())));
             middle.add("label",new JLabel("PHI"));
             middle.add("image",philabel);
         }
         if (rpp[2]) {
             JLabel psylabel = new JLabel();
-            psylabel.setIcon(new ImageIcon(Utils.Array2BufferedImageColor(pupil2.psi)));
+            psylabel.setIcon(new ImageIcon(CommonUtils.array2BuffI(pupil.getPsi())));
             middle.add("label",new JLabel("PSI"));
             middle.add("image",psylabel);
             

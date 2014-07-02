@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
+
+import mitiv.deconv.DeconvUtils;
 import mitiv.deconv.Deconvolution;
 
 /**
@@ -89,7 +91,6 @@ public class mitivCLI {
             System.out.println("The alpha chosen is not good: "+alpha);
             System.exit(1);
         }
-
     }
 
     private static BufferedImage chooseReg(String reg,Deconvolution deconv, double alpha){
@@ -99,12 +100,12 @@ public class mitivCLI {
         else if (reg.compareTo(regularizationChoice[1]) == 0) {
             return deconv.FirstDeconvolutionQuad(alpha);
         }else if (reg.compareTo(regularizationChoice[2]) == 0) {
-            return deconv.FirstDeconvolutionCG(alpha);
+            return deconv.FirstDeconvolutionCGNormal(alpha);
         }else{
             throw new IllegalArgumentException("Invalid Job");
         }
     }
-    
+
     private static int choosePost(String post){
         if (post.compareTo(postTreatmentChoice[0]) == 0) {
             return DeconvUtils.SCALE;
