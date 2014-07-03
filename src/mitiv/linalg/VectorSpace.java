@@ -334,8 +334,17 @@ public abstract class VectorSpace {
         axpby(0.0, v, 0.0, v);
     }
 
-    public void check(Vector v) throws IncorrectSpaceException {
-        if (! v.belongsTo(this)) {
+    /**
+     * Make sure a given vector belongs to the vector space.
+     *
+     * This method throws an {@code IncorrectSpaceException} exception
+     * if its argument does not belong to the vector space.
+     *
+     * @param v   A vector.
+     * @throws IncorrectSpaceException V must belong to this vector space.
+     */
+    public final void check(Vector v) throws IncorrectSpaceException {
+        if (v == null || ! v.belongsTo(this)) {
             throw new IncorrectSpaceException();
         }
     }
