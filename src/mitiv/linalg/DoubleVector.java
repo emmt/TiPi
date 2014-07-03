@@ -73,6 +73,7 @@ public class DoubleVector extends Vector {
      *            The index of the coefficient.
      * @return The value of the coefficient.
      */
+    @Override
     public final double get(int i) {
         return data[i];
     }
@@ -85,6 +86,7 @@ public class DoubleVector extends Vector {
      * @param value
      *            The value of the coefficient.
      */
+    @Override
     public final void set(int i, double value) {
         data[i] = value;
     }
@@ -102,16 +104,6 @@ public class DoubleVector extends Vector {
         ArrayOps.copy(arr, data);
     }
 
-
-    /**
-     * Get vector length.
-     * 
-     * @return The number of elements of the vector.
-     */
-    public final int length() {
-        return data.length;
-    }
-
     /**
      * Get the array of reals which store the coefficients of the vector.
      * 
@@ -122,17 +114,6 @@ public class DoubleVector extends Vector {
      */
     public double[] getData() {
         return data;
-    }
-
-    public String toString() {
-        int n = data.length;
-        StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < n; ++i) {
-            buf.append(i == 0 ? "{" : ", ");
-            buf.append(get(i));
-        }
-        buf.append("}");
-        return buf.toString();
     }
 }
 

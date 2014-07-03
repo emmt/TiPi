@@ -30,15 +30,24 @@ import mitiv.exception.IncorrectSpaceException;
 /**
  * A Vector is an element of a VectorSpace.
  * 
+ * An instance of this class is a collection of real values which can be addressed
+ * individually and for which it makes sense to apply the operations supported by
+ * the elements of a vector space (inner product, linear combination, etc.).
+ * <p>
+ * At this level of abstraction nothing more has to be known.  For instance, the
+ * restriction that indexed elements of a vector are reals is not an issue for
+ * complex valued vectors (a complex is just two reals).
+ * 
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  * 
  */
-public class Vector {
+public abstract class Vector {
 
     /**
      * Reference to the VectorSpace to which this vector belongs.
      */
     protected VectorSpace space;
+    protected int size;
 
     /**
      * Create a vector from a given vector space.
@@ -46,10 +55,27 @@ public class Vector {
      */
     protected Vector(VectorSpace owner) {
         this.space = owner;
+        this.size = owner.size;
     }
 
     /**
-     * Get the vector space of a vector.
+     * Get the size of the vector.
+     * @return The number of scalars collected in the vector.
+     */
+    public final int getSize() {
+        return size;
+    }
+
+    /**
+     * Get the size of the vector.
+     * @return The number of scalars collected in the vector.
+     */
+    public final int length() {
+        return size;
+    }
+
+    /**
+     * Get the vector space of the vector.
      * @return The vector space of the vector.
      */
     public VectorSpace getSpace() {
@@ -78,6 +104,47 @@ public class Vector {
             throw new IncorrectSpaceException();
         }
     }
+
+    /**
+     * Get one of the values gathered in the vector.
+     * 
+     * This method is not meant to be efficient, it is mainly provided for testing or
+     * debugging purposes.  To remain efficient, vectors should be managed at a more
+     * global level.
+     * 
+     * @param i  - The index of the value (runs from 0 to {@code n}-1, with {@code n}
+     *             the size of the vector).
+     * @return The value of the vector at the given index.
+     * @throws IndexOutOfBoundsException if index {@code i} is out of bounds;
+     */
+    public abstract double get(int i) throws IndexOutOfBoundsException;
+
+    /**
+     * Set one of the values gathered in the vector.
+     * 
+     * This method is not meant to be efficient, it is mainly provided for testing or
+     * debugging purposes.  To remain efficient, vectors should be managed at a more
+     * global level.
+     * 
+     * @param i - The index of the value (runs from 0 to {@code n}-1, with {@code n}
+     *            the size of the vector).
+     * @param value - The value to store at the index position.
+     * @throws IndexOutOfBoundsException if index {@code i} is out of bounds;
+     */
+   public abstract void set(int i, double value) throws IndexOutOfBoundsException;
+
+   /**
+    * Make a string representation of the vector contents.
+    */
+   public String toString() {
+       StringBuffer buf = new StringBuffer();
+       for (int i = 0; i < size; ++i) {
+           buf.append(i == 0 ? "{" : ", ");
+           buf.append(get(i));
+       }
+       buf.append("}");
+       return buf.toString();
+   }
 }
 
 /*

@@ -73,8 +73,22 @@ public class FloatVector extends Vector {
      *            The index of the coefficient.
      * @return The value of the coefficient.
      */
-    public final float get(int i) {
+    @Override
+    public final double get(int i) {
         return data[i];
+    }
+
+    /**
+     * Set the value of a given coefficient of a vector.
+     * 
+     * @param i
+     *            The index of the coefficient.
+     * @param value
+     *            The value of the coefficient.
+     */
+    @Override
+    public final void set(int i, double value) {
+        data[i] = (float)value;
     }
 
     /**
@@ -102,16 +116,6 @@ public class FloatVector extends Vector {
         ArrayOps.copy(arr, data);
     }
 
-
-    /**
-     * Get vector length.
-     * 
-     * @return The number of elements of the vector.
-     */
-    public final int length() {
-        return data.length;
-    }
-
     /**
      * Get the array of reals which store the coefficients of the vector.
      * 
@@ -122,17 +126,6 @@ public class FloatVector extends Vector {
      */
     public float[] getData() {
         return data;
-    }
-
-    public String toString() {
-        int n = data.length;
-        StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < n; ++i) {
-            buf.append(i == 0 ? "{" : ", ");
-            buf.append(get(i));
-        }
-        buf.append("}");
-        return buf.toString();
     }
 }
 
