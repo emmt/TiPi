@@ -1,0 +1,21 @@
+Ludo
+    -Need to verify depth aberation and jacobian with Fereol
+    -cross only the pupil, not the whole images?
+    -add a choice for even zernike or not
+
+John
+    CG threaded function (half functionnal only)
+    Raster GetPixel: array, give one instead of create it
+    imgpadding merge my functions and ludovic'
+    The alpha value from slider is not enough to change image, need eric
+    Add image pad/unpad to deconvutils
+
+Eric
+    move linalg.Utils to linalg.LinalgUtils (idea: each Utils should be called ClassUtils except mitiv.utils)
+
+Discussion
+    Add .classpath file to solve the probleme of src package (not a perfect solution)
+    Should we create interface for regul/optim (ask many others questions)
+    (John) In functions 1D as 2D do we ask width, height or only one and we guess the other ?
+    Retro compatibility with java 6: ie no switch on string
+    Should we update old functions with vectors
