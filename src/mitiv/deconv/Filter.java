@@ -162,7 +162,7 @@ public class Filter implements FilterInterface{
     public Vector WienerQuad1DVect(double alpha, Vector PSF, Vector image) {
         this.image = image;
         int[]shape = ((DoubleVectorSpaceWithRank)image.getSpace()).getShape();
-        double[] out = WienerQuad1D(alpha, ((DoubleVector)PSF).getData(), ((DoubleVector)PSF).getData(), shape[1]/2, shape[0]);
+        double[] out = WienerQuad1D(alpha, ((DoubleVector)PSF).getData(), ((DoubleVector)image).getData(), shape[1]/2, shape[0]);
         return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
     }
 

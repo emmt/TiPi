@@ -34,10 +34,8 @@ import javax.imageio.ImageIO;
 
 import mitiv.linalg.DoubleVector;
 import mitiv.linalg.DoubleVectorSpaceWithRank;
-import mitiv.linalg.DoubleVectorWithRank;
 import mitiv.linalg.FloatVector;
 import mitiv.linalg.FloatVectorSpaceWithRank;
-import mitiv.linalg.FloatVectorWithRank;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 import mitiv.utils.CommonUtils;
@@ -66,7 +64,6 @@ public class DeconvUtilsVector {
     }
 
     public void ReadImage(IcyBufferedImage image, IcyBufferedImage PSF, boolean singlePrecision) {
-        System.out.println("icy");
         ReadImage(IcyBufferedImage.createFrom(image), IcyBufferedImage.createFrom(PSF), singlePrecision); //
     }
 
@@ -85,18 +82,17 @@ public class DeconvUtilsVector {
             this.image_psf = CommonUtils.imageToVector(psfSpace, PSF, singlePrecision, isComplex);
         } else {
             imageSpace = new DoubleVectorSpaceWithRank(image.getHeight(), image.getWidth());
-            DoubleVectorSpaceWithRank psfSpace = new DoubleVectorSpaceWithRank(PSF.getWidth(), PSF.getHeight());
+            DoubleVectorSpaceWithRank psfSpace = new DoubleVectorSpaceWithRank(PSF.getHeight(), PSF.getWidth());
             imageSpaceComplex = new DoubleVectorSpaceWithRank(image.getHeight()*2, image.getWidth());
-
-            this.image = CommonUtils.imageToVector(imageSpaceComplex, image, singlePrecision , isComplex);
-            this.image_psf = CommonUtils.imageToVector(psfSpace, PSF, singlePrecision, false);
+            if (isComplex) {
+                this.image = CommonUtils.imageToVector(imageSpaceComplex, image, singlePrecision , isComplex);
+            } else {
+                this.image = CommonUtils.imageToVector(imageSpace, image, singlePrecision , isComplex);
+            }
+            this.image_psf = CommonUtils.imageToVector(psfSpace, PSF, singlePrecision, false); //we will not create a complex now (cf pad)
         }
         single = singlePrecision;
         this.isComplex = isComplex;
-    }
-
-    public Vector psfPadding(){
-        return CommonUtils.psfPadding1D(imageSpaceComplex, image, image_psf, single, isComplex);
     }
 
     public void FFT1D(Vector vector) {
@@ -132,11 +128,11 @@ public class DeconvUtilsVector {
     }
 
     public Vector getImage(){
-        return image;
+        return image.getSpace().clone(image);
     }
 
     public Vector getPsfPad(){
-        return psfPadding();
+        return CommonUtils.psfPadding1D(imageSpace,imageSpaceComplex, image_psf, single, isComplex);
     }
 
     public BufferedImage ArrayToImage(Vector vector, int correction,boolean isComplex){

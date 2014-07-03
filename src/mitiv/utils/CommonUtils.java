@@ -39,10 +39,8 @@ import javax.swing.JLabel;
 
 import mitiv.linalg.DoubleVector;
 import mitiv.linalg.DoubleVectorSpaceWithRank;
-import mitiv.linalg.DoubleVectorWithRank;
 import mitiv.linalg.FloatVector;
 import mitiv.linalg.FloatVectorSpaceWithRank;
-import mitiv.linalg.FloatVectorWithRank;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 
@@ -1511,48 +1509,36 @@ public class CommonUtils {
     }
     
     //is complex is not important as we give the output space
-    public static Vector psfPadding1D(VectorSpace outputSpace, Vector image, Vector imagePsf, boolean singlePrecision, boolean isComplex) {
+    public static Vector psfPadding1D(VectorSpace inputSpace, VectorSpace outputSpace, Vector imagePsf, boolean singlePrecision, boolean isComplex) {
         if (singlePrecision) {
             FloatVectorSpaceWithRank spaceFloat = (FloatVectorSpaceWithRank)outputSpace;
-            FloatVector vectorImage = (FloatVector)image;
             FloatVector vectorPsf = (FloatVector)imagePsf;
             if (!(spaceFloat.getRank() == 2)) {
                 throw new IllegalArgumentException("The rank of vector must be 2");
             }
             int[] shape = spaceFloat.getShape();
             int[] shapePsf = ((FloatVectorSpaceWithRank)imagePsf.getSpace()).getShape();
-            float[] psfPad = psfPadding1D(vectorImage.getData(),shape[1],shape[0],vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
+            float[] psfPad = psfPadding1D(spaceFloat.create().getData(),shape[1],
+                    shape[0],vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
             return spaceFloat.wrap(psfPad);
         } else {
-            DoubleVectorSpaceWithRank spaceDouble = (DoubleVectorSpaceWithRank)outputSpace;
-            DoubleVector vectorImage = (DoubleVector)image;
+            DoubleVectorSpaceWithRank spaceDoubleOut = (DoubleVectorSpaceWithRank)outputSpace;
+            DoubleVectorSpaceWithRank spaceDoubleIn = (DoubleVectorSpaceWithRank)inputSpace;
             DoubleVector vectorPsf = (DoubleVector)imagePsf;
-            if (!(spaceDouble.getRank() == 2)) {
+            if (!(spaceDoubleOut.getRank() == 2)) {
                 throw new IllegalArgumentException("The rank of vector must be 2");
             }
-            int[] shape = spaceDouble.getShape();
+            int[] shape = spaceDoubleIn.getShape();
             int[] shapePsf = ((DoubleVectorSpaceWithRank)imagePsf.getSpace()).getShape();
-            double[] psfPad = psfPadding1D(vectorImage.getData(),shape[1],shape[0],vectorPsf.getData(),shapePsf[1],shapePsf[0],false);
-            return spaceDouble.wrap(psfPad);
+            double[] psfPad = psfPadding1D(spaceDoubleOut.create().getData(),shape[1],
+                    shape[0], vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
+            return spaceDoubleOut.wrap(psfPad);
         }
-        /*double []tableau_psf;
-        int width = image.getWidth();
-        int height = image.getHeight();
-        if (isComplex) {
-            tableau_psf = new double[width*2*height];
-        } else {
-            tableau_psf = new double[width*height];
-        }
-        int psfH = imagePsf.getHeight();
-        int psfW = imagePsf.getWidth();
-        double[]test = psfToArray1DDouble(imagePsf);
-
-        return psfPadding1D(tableau_psf,width,height,test,psfH,psfW,isComplex);*/
     }
 
     public static double[] psfPadding1D(double[] imageout,int imageWidth, int imageHeight, double[] imagePsf, int psfWidth, int psfHeight, boolean isComplex) {
         int demiPsfW = psfWidth/2;int demiPsfH = psfHeight/2;
-
+        System.out.println(imageWidth+" "+imageHeight+" "+psfWidth+" "+psfHeight+" "+isComplex);
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
         //   A | B     ->
