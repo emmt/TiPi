@@ -25,8 +25,6 @@
 
 package mitiv.deconv;
 
-import icy.image.IcyBufferedImage;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -96,15 +94,6 @@ public class DeconvUtils {
             e.printStackTrace();
             System.err.println("Wrong path given");
         }
-    }
-
-    /**
-     * Open the image and store them
-     */
-
-    public void ReadImage(IcyBufferedImage image, IcyBufferedImage PSF) {
-        ReadImage(IcyBufferedImage.createFrom(image), IcyBufferedImage.createFrom(PSF)); //FIXME Does it really works ??
-        setValue();
     }
 
     /**

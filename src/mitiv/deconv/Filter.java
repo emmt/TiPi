@@ -28,7 +28,6 @@ package mitiv.deconv;
 import mitiv.linalg.DoubleVector;
 import mitiv.linalg.DoubleVectorSpaceWithRank;
 import mitiv.linalg.Vector;
-import mitiv.linalg.VectorSpace;
 
 /**
  * This class contain all the methods to compute the solutions

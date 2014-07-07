@@ -339,16 +339,18 @@ public class Benchmark2D_1D {
 
         for(int i=0;i<NB_BENCH;i++){
             System.out.println("Round "+i);
+            deconvVect.FirstDeconvolutionQuadVector(0);
             long begin = System.nanoTime();
             for (int j = 0; j < 100; j++) {
-                deconvVect.FirstDeconvolutionQuadVector(j);
+                deconvVect.NextDeconvolutionQuadVector(j);
             }
             long end = System.nanoTime();
             moy = (end-begin + moy)/2;
             computeStat();
+            deconv.FirstDeconvolutionQuad1D(0);
             begin = System.nanoTime();
             for (int j = 0; j < 100; j++) {
-                deconv.FirstDeconvolutionQuad1D(j);
+                deconv.NextDeconvolutionQuad1D(j);
             }
             end = System.nanoTime();
             moy = (end-begin + moy)/2;

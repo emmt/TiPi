@@ -25,8 +25,6 @@
 
 package mitiv.deconv;
 
-import icy.image.IcyBufferedImage;
-
 import java.awt.image.BufferedImage;
 
 import mitiv.invpb.LinearDeconvolver;
@@ -73,8 +71,8 @@ public class Deconvolution{
                 utilsVector.ReadImage((String)image, (String)PSF, false);
             }else if(image instanceof BufferedImage){
                 utilsVector.ReadImage((BufferedImage)image, (BufferedImage)PSF, false);
-            }else if(image instanceof IcyBufferedImage){
-                utilsVector.ReadImage((IcyBufferedImage)image, (IcyBufferedImage)PSF, false);
+            }else{
+                throw new IllegalArgumentException("Input should be a IcyBufferedImage, BufferedImage or a path");
             }
         } else {
             utils = new DeconvUtils();
@@ -82,8 +80,8 @@ public class Deconvolution{
                 utils.ReadImage((String)image, (String)PSF);
             }else if(image instanceof BufferedImage){
                 utils.ReadImage((BufferedImage)image, (BufferedImage)PSF);
-            }else if(image instanceof IcyBufferedImage){
-                utils.ReadImage((IcyBufferedImage)image, (IcyBufferedImage)PSF);
+            }else{
+                throw new IllegalArgumentException("Input should be a IcyBufferedImage, BufferedImage or a path");
             }
         }
         this.correction = correction;

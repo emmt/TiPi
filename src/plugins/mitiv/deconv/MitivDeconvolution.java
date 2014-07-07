@@ -39,6 +39,8 @@ import icy.sequence.SequenceListener;
 import mitiv.deconv.DeconvUtils;
 import mitiv.deconv.Deconvolution;
 import mitiv.utils.CommonUtils;
+import plugins.adufour.blocks.lang.Block;
+import plugins.adufour.blocks.util.VarList;
 import plugins.adufour.ezplug.*;
 
 /**
@@ -49,16 +51,9 @@ import plugins.adufour.ezplug.*;
  * @author Leger Jonathan
  *
  */
-public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceListener
+public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceListener,Block
 {
-    //Mydata
-    EzVarText options;
-    EzVarText correction;
-    //EzVarBoolean	varBoolean;
-    EzVarFile varFilePSF;
-    EzVarFile varFileIMAGE;
-    EzVarSequence sequencePSF;
-    EzVarSequence sequenceImage;
+
     JSlider slider;
 
     String wiener = "Wiener";
@@ -70,6 +65,13 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     String colormap = "Colormap";
     String correctColormap = "Corrected+Colormap";
 
+    //Mydata
+    EzVarText options = new EzVarText("Regularization", new String[] { wiener,quad,cg}, 0, false);
+    EzVarText correction = new EzVarText("Output", new String[] { normal,corrected,colormap,correctColormap}, 0, false);
+    //EzVarBoolean  varBoolean;
+    EzVarSequence sequencePSF = new EzVarSequence("PSF");
+    EzVarSequence sequenceImage = new EzVarSequence("Image");
+
     Sequence myseq;
     JLabel label;
 
@@ -79,6 +81,10 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
 
     ThreadCG thread;
 
+    //Block
+    private EzVarSequence output = new EzVarSequence("Output");
+    private EzVarInteger valueBlock = new EzVarInteger("Value");
+    //End block
     private final static double muMin = 1e-12;
     private final static double muMax = 1e1;
     private final static double muAlpha = Math.log(muMin);
@@ -90,7 +96,9 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     }
 
     public void updateProgressBarMessage(String msg){
-        getUI().setProgressBarMessage(msg);
+        if (!isHeadLess()) {
+            getUI().setProgressBarMessage(msg);
+        }
     }
 
     public static double sliderToRegularizationWeight(int slidervalue) {
@@ -146,8 +154,10 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
 
     public BufferedImage nextJob(int slidervalue, int job){
         double mu = sliderToRegularizationWeight(slidervalue);
-        updateLabel(mu);
-        double mult = 1E9; //HACK While the data uniformization is not done... TODO
+        if (!isHeadLess()) {
+            updateLabel(mu);
+        }
+        double mult = 1E9; //HACK While the data uniformization is not done...
         switch (job) {
         case DeconvUtils.JOB_WIENER:
             return (deconvolution.NextDeconvolution(mu));
@@ -166,10 +176,6 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     @Override
     protected void initialize()
     {
-        sequencePSF = new EzVarSequence("PSF");
-        sequenceImage = new EzVarSequence("Image");
-        options = new EzVarText("Regularization", new String[] { wiener,quad,cg}, 0, false);
-        correction = new EzVarText("Output", new String[] { normal,corrected,colormap,correctColormap}, 0, false);
         slider = new JSlider(0, 100, 0);
         slider.setEnabled(false);  
         label = new JLabel("                     ");
@@ -182,8 +188,14 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     }
 
     public void updateImage(BufferedImage buffered, int value){
-        myseq.setName(options.getValue()+" "+correction.getValue()+" "+value);
-        myseq.setImage(0, 0, buffered); 
+        if (isHeadLess()) {
+            myseq.setImage(0, 0, buffered); 
+            output.setValue(myseq);
+        } else {
+            myseq.setName(options.getValue()+" "+correction.getValue()+" "+value);
+            myseq.setImage(0, 0, buffered); 
+        }
+
     }
 
     @Override
@@ -199,28 +211,32 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             throw new IllegalArgumentException("We need a PSF and/or an image");
         }
         deconvolution = new Deconvolution(sequenceImage.getValue().getFirstNonNullImage(),
-                sequencePSF.getValue().getFirstNonNullImage(),correct,true);
+                sequencePSF.getValue().getFirstNonNullImage(),correct,false);
 
         myseq = new Sequence();
         myseq.addImage(0,firstJob(job));
         myseq.addListener(this); 
-        addSequence(myseq);
         myseq.setName("");
-        slider.setEnabled(true);
-
-        slider.addChangeListener(new ChangeListener(){
-            public void stateChanged(ChangeEvent event){
-                //getUI().setProgressBarMessage("Computation in progress");
-                int sliderValue =(((JSlider)event.getSource()).getValue());
-                updateProgressBarMessage("Computing");
-                thread.prepareNextJob(sliderValue, job);
-                //OMEXMLMetadataImpl metaData = new OMEXMLMetadataImpl();
-                //myseq.setMetaData(metaData);
-                //updateImage(buffered, tmp);
-            }
-        });  
-        //Beware, need to be called at the END
-        slider.setValue(0);
+        if (isHeadLess()) {
+            double value = valueBlock.getValue();
+            updateImage(nextJob((int)value, job), (int)value);
+        } else {
+            addSequence(myseq);
+            slider.setEnabled(true);
+            slider.addChangeListener(new ChangeListener(){
+                public void stateChanged(ChangeEvent event){
+                    //getUI().setProgressBarMessage("Computation in progress");
+                    int sliderValue =(((JSlider)event.getSource()).getValue());
+                    updateProgressBarMessage("Computing");
+                    thread.prepareNextJob(sliderValue, job);
+                    //OMEXMLMetadataImpl metaData = new OMEXMLMetadataImpl();
+                    //myseq.setMetaData(metaData);
+                    //updateImage(buffered, tmp);
+                }
+            });  
+            //Beware, need to be called at the END
+            slider.setValue(0);
+        }
     }
 
     @Override
@@ -252,11 +268,28 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
 
     @Override
     public void sequenceClosed(Sequence sequence) {
-        slider.setEnabled(false);   
+        if (!isHeadLess()) {
+            slider.setEnabled(false);
+        }
     }
 
     public int getOutputValue(){
         return deconvolution.getOuputValue();
+    }
+
+    @Override
+    public void declareInput(VarList inputMap) {
+        inputMap.add(sequencePSF.getVariable());
+        inputMap.add(sequenceImage.getVariable());
+        inputMap.add(options.getVariable());
+        inputMap.add(correction.getVariable());
+        inputMap.add(valueBlock.getVariable());
+    }
+
+    @Override
+    public void declareOutput(VarList outputMap) {
+        outputMap.add(output.getVariable());
+
     }
 }
 

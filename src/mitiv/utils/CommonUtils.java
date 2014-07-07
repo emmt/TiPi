@@ -1465,7 +1465,7 @@ public class CommonUtils {
         //   -----     -> Image
         //   B | A     ->
 
-        //bloc haut �� gauche: A
+        //bloc haut a gauche: A
         for(int j = 0; j<demiPsfW; j++){
             for(int i=0;i<demiPsfH;i++){
                 imageOut[(height-demiPsfH)+i][width-demiPsfW+j] = imagePsf[i][j];
@@ -1553,7 +1553,7 @@ public class CommonUtils {
 
         if (isComplex) {
             //Here we are writing at 2*(i+j*hght)
-            //Bloc haut �� gauche: D
+            //Bloc haut a gauche: D
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = 0; i < demiPsfH; i++){
                     imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
@@ -1579,7 +1579,7 @@ public class CommonUtils {
             }
         }else{
             //Here we are writing at (i+j*hght)
-            //Bloc haut �� gauche: D
+            //Bloc haut a gauche: D
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = 0; i < demiPsfH; i++){
                     imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
@@ -1644,7 +1644,7 @@ public class CommonUtils {
         //   -----     -> Image
         //   B | A     ->
         //Here we are writing at (i+j*imageHeight)
-        //Bloc haut �� gauche: D
+        //Bloc haut a gauche: D
         for(int j = 0; j < demiPsfW; j++){
             for(int i = 0; i < demiPsfH; i++){
                 imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
@@ -1759,7 +1759,7 @@ public class CommonUtils {
             for(int i = 0; i < H; i++)
             {
                 Color b = map.table[ (int)I[i][j] ];
-                bufferedI.setRGB(j, i, b.getRGB()); // j, i invers��
+                bufferedI.setRGB(j, i, b.getRGB()); // j, i inverse
             }
         }
         return bufferedI;
