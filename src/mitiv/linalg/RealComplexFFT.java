@@ -51,21 +51,21 @@ public class RealComplexFFT extends LinearOperator {
     }
 
     public RealComplexFFT(DoubleVectorSpaceWithRank space) {
-        this(space, complexSpace(space), space.getShape(), false);
+        this(space, complexSpace(space), space.cloneShape(), false);
     }
 
     public RealComplexFFT(FloatVectorSpaceWithRank space) {
-        this(space, complexSpace(space), space.getShape(), true);
+        this(space, complexSpace(space), space.cloneShape(), true);
     }
 
     static private DoubleVectorSpaceWithRank complexSpace(DoubleVectorSpaceWithRank realSpace) {
-        int[] complexShape = realSpace.getShape();
+        int[] complexShape = realSpace.cloneShape();
         complexShape[0] *= 2;
         return new DoubleVectorSpaceWithRank(complexShape);
     }
 
     static private FloatVectorSpaceWithRank complexSpace(FloatVectorSpaceWithRank realSpace) {
-        int[] complexShape = realSpace.getShape();
+        int[] complexShape = realSpace.cloneShape();
         complexShape[0] *= 2;
         return new FloatVectorSpaceWithRank(complexShape);
     }
