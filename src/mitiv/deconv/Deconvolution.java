@@ -193,7 +193,7 @@ public class Deconvolution{
         DoubleVector w = space.create(1);
 
         linDeconv = new LinearDeconvolver(
-                space.getShape(), vector_y.getData(), vector_psf.getData(), w.getData(), alpha);
+                space.cloneShape(), vector_y.getData(), vector_psf.getData(), w.getData(), alpha);
         outputValue = linDeconv.solve(x.getData(), 20, false);
         parseOuputCG(outputValue);
         return(utils.ArrayToImage1D(x.getData(), correction, false));
