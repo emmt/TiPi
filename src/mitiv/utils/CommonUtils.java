@@ -37,10 +37,44 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import mitiv.linalg.DoubleVector;
+import mitiv.linalg.DoubleVectorSpaceWithRank;
+import mitiv.linalg.FloatVector;
+import mitiv.linalg.FloatVectorSpaceWithRank;
+import mitiv.linalg.Vector;
+import mitiv.linalg.VectorSpace;
+
+/**
+ * Contains all usual methods to work on color, image, arrays and conversion from one to another.
+ * 
+ * @author light
+ *
+ */
 public class CommonUtils {
 
+    /**
+     * padding options: Nothing is done
+     * _______
+     * |      |
+     * |      |
+     * |#_____|
+     */
     public static final int LOWER_LEFT = 0;
+    /**
+     * padding options: Nothing is done
+     * _______
+     * |      |
+     * |  #   |
+     * |______|
+     */
     public static final int CENTERED = 1;
+    /**
+     * padding options: Nothing is done
+     * _______
+     * |#    #|
+     * |      |
+     * |#____#|
+     */
     public static final int FFT_INDEXING = -1;
 
     /**
@@ -69,7 +103,7 @@ public class CommonUtils {
     public static int SCALE_CORRECTED_COLORMAP = 7;
 
     /**
-     * Will convert a value to another
+     * Will convert a grey value to another
      *
      * @param g
      * @param alpha
@@ -460,6 +494,36 @@ public class CommonUtils {
         return out;
     }
 
+    public static Vector imageToVector(VectorSpace outputSpace, BufferedImage image, boolean singlePrecision ,boolean isComplex){
+        if (singlePrecision) {
+            FloatVectorSpaceWithRank space = (FloatVectorSpaceWithRank)outputSpace;
+            float[] tab = imageToArray1DFloat(image, isComplex);
+            return space.wrap(tab);
+        } else {
+            DoubleVectorSpaceWithRank space = (DoubleVectorSpaceWithRank)outputSpace;
+            double[] tab = imageToArray1D(image, isComplex);
+            return space.wrap(tab);
+        }
+    }
+
+    public static BufferedImage vectorToImage(VectorSpace outputSpace, Vector vector, int job, boolean singlePrecision ,boolean isComplex){
+        if (singlePrecision) {
+            FloatVectorSpaceWithRank space = (FloatVectorSpaceWithRank)outputSpace;
+            int[] shape = space.cloneShape();
+            if (!(space.getRank() == 2)) {
+                throw new IllegalArgumentException("The vector should be of rank 2 to create an image");
+            }
+            return arrayToImage1D(((DoubleVector)vector).getData(), job, shape[1], shape[0], isComplex);
+        } else {
+            DoubleVectorSpaceWithRank space = (DoubleVectorSpaceWithRank)outputSpace;
+            int[] shape = space.cloneShape();
+            if (!(space.getRank() == 2)) {
+                throw new IllegalArgumentException("The vector should be of rank 2 to create an image");
+            }
+            return arrayToImage1D(((DoubleVector)vector).getData(), job, shape[1], shape[0], isComplex);
+        }
+    }
+
     public static int[][] psfToArrayInt(BufferedImage psf) {
         WritableRaster raster = psf.getRaster();
         int [][]out = new int[psf.getHeight()][psf.getWidth()];
@@ -541,10 +605,6 @@ public class CommonUtils {
     }
 
     /********************************** ARRAY TO IMAGE **********************************/
-    /*
-     * Memo: even if y = y*2, we store the image in a array x*y !!
-     *
-     * */
 
     public static BufferedImage createNewBufferedImage(BufferedImage originalImage){
         BufferedImage imageout;
@@ -876,7 +936,6 @@ public class CommonUtils {
                 } else {
                     grey = (int) array[(i+j*height)];
                 }
-
                 tmpOut[grey]++;
             }
         }
@@ -1255,7 +1314,6 @@ public class CommonUtils {
         if (job == SCALE_CORRECTED || job == SCALE_CORRECTED_COLORMAP) {
             correctArray(array, isComplex);
         }
-
         //We apply lastly the colormap transformation
         if (job == SCALE_COLORMAP || job == SCALE_CORRECTED_COLORMAP) {
             out = colorArray(array, isComplex);
@@ -1428,7 +1486,7 @@ public class CommonUtils {
         //   -----     -> Image
         //   B | A     ->
 
-        //bloc haut à gauche: A
+        //bloc haut a gauche: A
         for(int j = 0; j<demiPsfW; j++){
             for(int i=0;i<demiPsfH;i++){
                 imageOut[(height-demiPsfH)+i][width-demiPsfW+j] = imagePsf[i][j];
@@ -1471,9 +1529,37 @@ public class CommonUtils {
         return psfPadding1D(tableau_psf,width,height,test,psfH,psfW,isComplex);
     }
 
+    //is complex is not important as we give the output space
+    public static Vector psfPadding1D(VectorSpace inputSpace, VectorSpace outputSpace, Vector imagePsf, boolean singlePrecision, boolean isComplex) {
+        if (singlePrecision) {
+            FloatVectorSpaceWithRank spaceFloat = (FloatVectorSpaceWithRank)outputSpace;
+            FloatVector vectorPsf = (FloatVector)imagePsf;
+            if (!(spaceFloat.getRank() == 2)) {
+                throw new IllegalArgumentException("The rank of vector must be 2");
+            }
+            int[] shape = spaceFloat.cloneShape();
+            int[] shapePsf = ((FloatVectorSpaceWithRank)imagePsf.getSpace()).cloneShape();
+            float[] psfPad = psfPadding1D(spaceFloat.create().getData(),shape[1],
+                    shape[0],vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
+            return spaceFloat.wrap(psfPad);
+        } else {
+            DoubleVectorSpaceWithRank spaceDoubleOut = (DoubleVectorSpaceWithRank)outputSpace;
+            DoubleVectorSpaceWithRank spaceDoubleIn = (DoubleVectorSpaceWithRank)inputSpace;
+            DoubleVector vectorPsf = (DoubleVector)imagePsf;
+            if (!(spaceDoubleOut.getRank() == 2)) {
+                throw new IllegalArgumentException("The rank of vector must be 2");
+            }
+            int[] shape = spaceDoubleIn.cloneShape();
+            int[] shapePsf = ((DoubleVectorSpaceWithRank)imagePsf.getSpace()).cloneShape();
+            double[] psfPad = psfPadding1D(spaceDoubleOut.create().getData(),shape[1],
+                    shape[0], vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
+            return spaceDoubleOut.wrap(psfPad);
+        }
+    }
+
     public static double[] psfPadding1D(double[] imageout,int imageWidth, int imageHeight, double[] imagePsf, int psfWidth, int psfHeight, boolean isComplex) {
         int demiPsfW = psfWidth/2;int demiPsfH = psfHeight/2;
-
+        //System.out.println(imageWidth+" "+imageHeight+" "+psfWidth+" "+psfHeight+" "+isComplex);
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
         //   A | B     ->
@@ -1488,7 +1574,7 @@ public class CommonUtils {
 
         if (isComplex) {
             //Here we are writing at 2*(i+j*hght)
-            //Bloc haut à gauche: D
+            //Bloc haut a gauche: D
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = 0; i < demiPsfH; i++){
                     imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
@@ -1514,7 +1600,7 @@ public class CommonUtils {
             }
         }else{
             //Here we are writing at (i+j*hght)
-            //Bloc haut à gauche: D
+            //Bloc haut a gauche: D
             for(int j = 0; j < demiPsfW; j++){
                 for(int i = 0; i < demiPsfH; i++){
                     imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
@@ -1561,10 +1647,10 @@ public class CommonUtils {
         int psfW = imagePsf.getWidth();
         float[]test = psfToArray1DFloat(imagePsf);
 
-        return psfPadding1DFloat(tableau_psf,width,height,test,psfH,psfW,isComplex);
+        return psfPadding1D(tableau_psf,width,height,test,psfH,psfW,isComplex);
     }
 
-    public static float[] psfPadding1DFloat(float[] imageout,int imageWidth, int imageHeight, float[] imagePsf, int psfWidth, int psfHeight, boolean isComplex) {
+    public static float[] psfPadding1D(float[] imageout,int imageWidth, int imageHeight, float[] imagePsf, int psfWidth, int psfHeight, boolean isComplex) {
         int demiPsfW = psfWidth/2;int demiPsfH = psfHeight/2;
 
         // IMAGE point of view:
@@ -1579,7 +1665,7 @@ public class CommonUtils {
         //   -----     -> Image
         //   B | A     ->
         //Here we are writing at (i+j*imageHeight)
-        //Bloc haut à gauche: D
+        //Bloc haut a gauche: D
         for(int j = 0; j < demiPsfW; j++){
             for(int i = 0; i < demiPsfH; i++){
                 imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
@@ -1694,7 +1780,7 @@ public class CommonUtils {
             for(int i = 0; i < H; i++)
             {
                 Color b = map.table[ (int)I[i][j] ];
-                bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+                bufferedI.setRGB(j, i, b.getRGB()); // j, i inverse
             }
         }
         return bufferedI;

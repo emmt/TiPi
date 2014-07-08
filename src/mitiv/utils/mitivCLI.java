@@ -94,12 +94,11 @@ public class mitivCLI {
 
     private static BufferedImage chooseReg(String reg,Deconvolution deconv, double alpha){
         if (reg.compareTo(regularizationChoice[0]) == 0) {
-            return deconv.FirstDeconvolution(alpha);
-        }
-        else if (reg.compareTo(regularizationChoice[1]) == 0) {
-            return deconv.FirstDeconvolutionQuad(alpha);
+            return deconv.firstDeconvolution(alpha);
+        }else if (reg.compareTo(regularizationChoice[1]) == 0) {
+            return deconv.firstDeconvolutionQuad(alpha);
         }else if (reg.compareTo(regularizationChoice[2]) == 0) {
-            return deconv.FirstDeconvolutionCGNormal(alpha);
+            return deconv.firstDeconvolutionCG(alpha);
         }else{
             throw new IllegalArgumentException("Invalid Job");
         }
@@ -167,7 +166,7 @@ public class mitivCLI {
         checkArgs();
         System.out.format("Regularization: %s, PostTreatment: %s, alpha: %s, Output: %s\n",regularization,postTreatment,alpha,OutputImage);
 
-        Deconvolution deconvolution = new Deconvolution(Image,PSF,choosePost(postTreatment));
+        Deconvolution deconvolution = new Deconvolution(Image,PSF,choosePost(postTreatment),true);
         BufferedImage img = chooseReg(regularization, deconvolution, Double.parseDouble(alpha));
         try {
             File outputfile = new File(OutputImage);
