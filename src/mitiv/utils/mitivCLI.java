@@ -98,7 +98,7 @@ public class mitivCLI {
         }else if (reg.compareTo(regularizationChoice[1]) == 0) {
             return deconv.firstDeconvolutionQuad(alpha);
         }else if (reg.compareTo(regularizationChoice[2]) == 0) {
-            return deconv.firstDeconvolutionCGNormal(alpha);
+            return deconv.firstDeconvolutionCG(alpha);
         }else{
             throw new IllegalArgumentException("Invalid Job");
         }

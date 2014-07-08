@@ -81,7 +81,7 @@ public class Deconvolution{
      * @param correction see static {@link CommonUtils}
      */
     public Deconvolution(Object image, Object PSF, int correction){
-        this(image,PSF,correction,true);
+        this(image,PSF,correction,false);
     }
 
     /**
@@ -128,7 +128,7 @@ public class Deconvolution{
      * @return
      */
     public BufferedImage firstDeconvolution(double alpha){
-        return firstDeconvolution(alpha, PROCESSING_VECTOR);
+        return firstDeconvolution(alpha, PROCESSING_1D);
     }
 
     /**
@@ -162,7 +162,7 @@ public class Deconvolution{
      * @return
      */
     public BufferedImage nextDeconvolution(double alpha){
-        return nextDeconvolution(alpha, PROCESSING_VECTOR);
+        return nextDeconvolution(alpha, PROCESSING_1D);
     }
 
     public BufferedImage nextDeconvolution(double alpha, int job){
@@ -376,13 +376,38 @@ public class Deconvolution{
         }
     }
 
+    public BufferedImage firstDeconvolutionCG(double alpha){
+        return firstDeconvolutionCG(alpha, PROCESSING_VECTOR);
+    }
+    
+    public BufferedImage firstDeconvolutionCG(double alpha, int job){
+        switch (job) {
+        case PROCESSING_VECTOR:
+            return firstDeconvolutionCGNormal(alpha);
+        default:
+            throw new IllegalArgumentException("The job given does not exist");
+        }
+    }
+    
+    public BufferedImage nextDeconvolutionCG(double alpha){
+        return firstDeconvolutionCG(alpha, PROCESSING_VECTOR);
+    }
+    
+    public BufferedImage nextDeconvolutionCG(double alpha, int job){
+        switch (job) {
+        case PROCESSING_VECTOR:
+            return nextDeconvolutionCGNormal(alpha);
+        default:
+            throw new IllegalArgumentException("The job given does not exist");
+        }
+    }
     /**
      * Use the conjugate gradients to deconvoluate the image
      * 
      * @param alpha
      * @return deconvoluated image
      */
-    public BufferedImage firstDeconvolutionCGNormal(double alpha){
+    private BufferedImage firstDeconvolutionCGNormal(double alpha){
         boolean verbose = false;
         space = new DoubleVectorSpaceWithRank(utils.width, utils.height);
         if (vector_psf == null) {
@@ -408,7 +433,7 @@ public class Deconvolution{
      * @param alpha
      * @return deconvoluated image
      */
-    public BufferedImage nextDeconvolutionCGNormal(double alpha){
+    private BufferedImage nextDeconvolutionCGNormal(double alpha){
         return firstDeconvolutionCGNormal(alpha);
     }
 
