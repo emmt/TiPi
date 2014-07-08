@@ -31,8 +31,8 @@ import mitiv.exception.IncorrectSpaceException;
 public abstract class LinearOperator {
     protected VectorSpace inputSpace;
     protected VectorSpace outputSpace;
-    
-    
+
+
     public static int DIRECT = 0;
     public static int ADJOINT = 1;
     public static int INVERSE = 2;
@@ -91,13 +91,13 @@ public abstract class LinearOperator {
     public boolean isEndomorphism() {
         return (outputSpace == inputSpace);
     }
-    
+
     /**
      * Apply a linear operator (or its adjoint) to a vector.
      * 
      * This protected method is called by the "apply" method after checking of the
      * arguments.
-     * @param src        the source vector 
+     * @param src        the source vector
      * @param dst        the destination vector
      * @param job        the type of operation to apply (DIRECT, ADJOINT, etc.)
      * @throws IncorrectSpaceException If adjoint is false (resp. tour), src (resp. dst) must belongs to the input vector space
@@ -106,17 +106,17 @@ public abstract class LinearOperator {
     protected abstract void privApply(final Vector src, Vector dst, int job)
             throws IncorrectSpaceException;
 
-   /**
-    * Apply a linear operator to a vector.
-    * 
-    * @param src        the source vector 
-    * @param dst        the destination vector
-    * @throws IncorrectSpaceException
-    */
-   public void apply(final Vector src, Vector dst)
-           throws IncorrectSpaceException {
-       apply(src, dst, DIRECT);
-   }
+    /**
+     * Apply a linear operator to a vector.
+     *
+     * @param src        the source vector
+     * @param dst        the destination vector
+     * @throws IncorrectSpaceException
+     */
+    public void apply(final Vector src, Vector dst)
+            throws IncorrectSpaceException {
+        apply(src, dst, DIRECT);
+    }
 
     /**
      * Apply linear operator with checking.
@@ -169,7 +169,26 @@ public abstract class LinearOperator {
             throw new IncorrectSpaceException();
         }
     }
-    
+
+    /**
+     * Check the adjoint of the operator.
+     * @param x  - A vector of the input space.
+     * @param y  - A vector of the output space.
+     * @return The relative difference between {@code <A.x|y>} and {@code <x|A'.y>}.
+     */
+    public double checkAdjoint(Vector x, Vector y) {
+        Vector Ax = outputSpace.create();
+        apply(x, Ax);
+        Vector Aty = inputSpace.create();
+        apply(y, Aty, ADJOINT);
+        double a = outputSpace.dot(y,  Ax);
+        double b = inputSpace.dot(Aty,  x);
+        if (a == b) {
+            return 0.0;
+        } else {
+            return Math.abs(a - b)/Math.max(Math.abs(a),  Math.abs(b));
+        }
+    }
 }
 
 /*
