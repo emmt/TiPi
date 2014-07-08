@@ -47,7 +47,8 @@ package mitiv.random;
  * @author Éric Thiébaut
  *
  */
-public class PressTeukolskyGenerator extends RandomEngine {
+public class PressTeukolskyGenerator extends RandomEngine
+implements DoubleGenerator, FloatGenerator {
     /* Choose two sets of linear congruential parameters -- the
        multiplier is IA, and the modulus is IM.  The IR and IQ are
        cunningly chosen so that (IA*x)%IM can be computed as

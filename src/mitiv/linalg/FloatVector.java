@@ -25,6 +25,8 @@
 
 package mitiv.linalg;
 
+import mitiv.random.FloatGenerator;
+
 
 /**
  * Class for vectors which belongs to an instance of the FloatVectorSpace
@@ -109,7 +111,7 @@ public class FloatVector extends Vector {
      * This method copies the values of the input array arr into the vector
      * (their sizes must match). Note that it may be more efficient to wrap
      * a vector around the Java array.
-     *  
+     * 
      * @param arr     The Java array to copy.
      */
     public void set(final float arr[]) {
@@ -126,6 +128,12 @@ public class FloatVector extends Vector {
      */
     public float[] getData() {
         return data;
+    }
+
+    public void fill(FloatGenerator generator) {
+        for (int k = 0; k < size; ++k) {
+            data[k] = generator.nextFloat();
+        }
     }
 }
 

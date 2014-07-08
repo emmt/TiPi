@@ -181,7 +181,8 @@ import java.util.Date;
  * @version 1.0, 09/24/99
  * @see java.util.Random
  */
-public class MersenneTwisterGenerator extends RandomEngine {
+public class MersenneTwisterGenerator extends RandomEngine
+implements DoubleGenerator, FloatGenerator {
 
     private int mti;
     private final int[] mt = new int[N]; /* set initial seeds: N = 624 words */
