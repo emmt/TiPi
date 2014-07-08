@@ -35,7 +35,7 @@ import mitiv.linalg.Vector;
  * @author Leger Jonathan
  *
  */
-public class Filter implements FilterInterface{
+public class Filter{
 
     double[][] FFT_PSF;
     double[][] FFT_Image;
@@ -48,22 +48,20 @@ public class Filter implements FilterInterface{
     double[] FFT_PSF1D;
     double[] FFT_Image1D;
     double[] tabcc1D;
-    
+
     //vector
     Vector image;
-    
-    @Override
-    public double[][] Wiener(double alpha, double[][] FFT_PSF, double[][] FFTImage) {
+
+    public double[][] wiener(double alpha, double[][] FFT_PSF, double[][] FFTImage) {
         this.FFT_PSF = FFT_PSF;
         this.FFT_Image = FFTImage;
         width = FFTImage.length;
         height = FFTImage[0].length/2;
         cc = FFT_PSF[0][0]*FFT_PSF[0][0]+FFT_PSF[0][1]*FFT_PSF[0][1];
-        return Wiener(alpha);
+        return wiener(alpha);
     }
 
-    @Override
-    public double[][] Wiener(double alpha) {
+    public double[][] wiener(double alpha) {
         double a,b,c,d,q;
         double[][]out = new double[width][2*height];
         for(int i = 0; i<width; i++){
@@ -85,8 +83,45 @@ public class Filter implements FilterInterface{
         return out;
     }
 
-    @Override
-    public double[][] WienerQuad(double alpha, double[][] FFT_PSF,double[][] FFTImage) {
+    public double[] wiener1D(double alpha, double[] FFT_PSF,double[] FFTImage, int Width, int Height) {
+        this.FFT_PSF1D = FFT_PSF;
+        this.FFT_Image1D = FFTImage;
+        width = Width;
+        height = Height;
+        cc = FFT_Image1D[0]*FFT_Image1D[0]+FFT_PSF1D[2*height]*FFT_PSF1D[2*height];
+        return wiener1D(alpha);
+    }
+
+    public double[] wiener1D(double alpha) {
+        double a,b,c,d,q;
+        double[]out = new double[width*2*height];
+        for(int j = 0; j < width; j++){
+            for(int i = 0; i < height; i++){
+                a = FFT_PSF1D[2*i    +2*j*height];
+                b = FFT_PSF1D[2*i+1  +2*j*height];
+                c = FFT_Image1D[2*i  +2*j*height];
+                d = FFT_Image1D[2*i+1+2*j*height];
+                q = 1.0/(a*a + b*b + cc*alpha);
+                out[2*i+   2*j*height] = (a*c + b*d)*q;
+                out[2*i+1 +2*j*height] = (a*d - b*c)*q;
+            }
+        }
+        return out;
+    }
+
+    public Vector wienerVect(double alpha, Vector PSF, Vector image) {
+        this.image = image;
+        int[]shape = ((DoubleVectorSpaceWithRank)image.getSpace()).getShape();
+        double[] out = wiener1D(alpha, ((DoubleVector)PSF).getData(), ((DoubleVector)image).getData(), shape[1], shape[0]/2);
+        return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
+    }
+
+    public Vector wienerVect(double alpha) {
+        double[] out = wiener1D(alpha);
+        return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
+    }
+
+    public double[][] wienerQuad(double alpha, double[][] FFT_PSF,double[][] FFTImage) {
         this.FFT_PSF = FFT_PSF;
         this.FFT_Image = FFTImage;
         width = FFTImage.length;
@@ -108,11 +143,10 @@ public class Filter implements FilterInterface{
                 tabcc[i][j] = 4*Math.PI*Math.PI*(e*e+f*f);
             }
         }
-        return WienerQuad(alpha);
+        return wienerQuad(alpha);
     }
 
-    @Override
-    public double[][] WienerQuad(double alpha) {
+    public double[][] wienerQuad(double alpha) {
         double a,b,c,d,q;
         double[][]out = new double[width][2*height];
         for(int i = 0; i<width; i++){
@@ -129,10 +163,7 @@ public class Filter implements FilterInterface{
         return out;
     }
 
-    /************************************** 1D TESTING *************************************************/
-
-    @Override
-    public double[] WienerQuad1D(double alpha, double[] FFT_PSF,double[] FFTImage, int Width, int Height) {
+    public double[] wienerQuad1D(double alpha, double[] FFT_PSF,double[] FFTImage, int Width, int Height) {
         this.FFT_PSF1D = FFT_PSF;
         this.FFT_Image1D = FFTImage;
         width = Width;
@@ -155,23 +186,10 @@ public class Filter implements FilterInterface{
                 tabcc1D[i+j*height] = 4*Math.PI*Math.PI*(e*e+f*f);
             }
         }
-        return WienerQuad1D(alpha);
-    }
-    
-    public Vector WienerQuad1DVect(double alpha, Vector PSF, Vector image) {
-        this.image = image;
-        int[]shape = ((DoubleVectorSpaceWithRank)image.getSpace()).getShape();
-        double[] out = WienerQuad1D(alpha, ((DoubleVector)PSF).getData(), ((DoubleVector)image).getData(), shape[1], shape[0]/2);
-        return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
+        return wienerQuad1D(alpha);
     }
 
-    public Vector WienerQuad1DVect(double alpha) {
-        double[] out = WienerQuad1D(alpha);
-        return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
-    }
-
-    @Override
-    public double[] WienerQuad1D(double alpha) {
+    public double[] wienerQuad1D(double alpha) {
         double a,b,c,d,q;
         double[]out = new double[width*2*height];
         for(int j = 0; j < width; j++){
@@ -187,6 +205,20 @@ public class Filter implements FilterInterface{
         }
         return out;
     }
+
+    public Vector wienerQuadVect(double alpha, Vector PSF, Vector image) {
+        this.image = image;
+        int[]shape = ((DoubleVectorSpaceWithRank)image.getSpace()).getShape();
+        double[] out = wienerQuad1D(alpha, ((DoubleVector)PSF).getData(), ((DoubleVector)image).getData(), shape[1], shape[0]/2);
+        return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
+    }
+
+    public Vector wienerQuadVect(double alpha) {
+        double[] out = wienerQuad1D(alpha);
+        return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
+    }
+
+
 }
 
 /*

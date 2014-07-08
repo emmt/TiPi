@@ -94,12 +94,11 @@ public class mitivCLI {
 
     private static BufferedImage chooseReg(String reg,Deconvolution deconv, double alpha){
         if (reg.compareTo(regularizationChoice[0]) == 0) {
-            return deconv.FirstDeconvolution(alpha);
-        }
-        else if (reg.compareTo(regularizationChoice[1]) == 0) {
-            return deconv.FirstDeconvolutionQuad(alpha);
+            return deconv.firstDeconvolution(alpha);
+        }else if (reg.compareTo(regularizationChoice[1]) == 0) {
+            return deconv.firstDeconvolutionQuad(alpha);
         }else if (reg.compareTo(regularizationChoice[2]) == 0) {
-            return deconv.FirstDeconvolutionCGNormal(alpha);
+            return deconv.firstDeconvolutionCGNormal(alpha);
         }else{
             throw new IllegalArgumentException("Invalid Job");
         }

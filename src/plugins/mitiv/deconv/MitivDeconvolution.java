@@ -142,11 +142,11 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         switch (job) {
         //First value correspond to next job with alpha = 0, not all are equal to 1
         case DeconvUtils.JOB_WIENER: 
-            return (deconvolution.FirstDeconvolution(muMin));
+            return (deconvolution.firstDeconvolution(muMin));
         case DeconvUtils.JOB_QUAD:
-            return (deconvolution.FirstDeconvolutionQuadVector(muMin));
+            return (deconvolution.firstDeconvolutionQuad(muMin));
         case DeconvUtils.JOB_CG:
-            return (deconvolution.FirstDeconvolutionCGNormal(muMin));
+            return (deconvolution.firstDeconvolutionCGNormal(muMin));
         default:
             throw new IllegalArgumentException("Invalid Job");
         }
@@ -160,13 +160,13 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         double mult = 1E9; //HACK While the data uniformization is not done...
         switch (job) {
         case DeconvUtils.JOB_WIENER:
-            return (deconvolution.NextDeconvolution(mu));
+            return (deconvolution.nextDeconvolution(mu));
 
         case DeconvUtils.JOB_QUAD:
-            return (deconvolution.NextDeconvolutionQuadVector(mu*mult));
+            return (deconvolution.nextDeconvolutionQuad(mu*mult));
 
         case DeconvUtils.JOB_CG:
-            return (deconvolution.NextDeconvolutionCGNormal(mu*mult));
+            return (deconvolution.nextDeconvolutionCGNormal(mu*mult));
 
         default:
             throw new IllegalArgumentException("Invalid Job");
@@ -211,7 +211,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             throw new IllegalArgumentException("We need a PSF and/or an image");
         }
         deconvolution = new Deconvolution(sequenceImage.getValue().getFirstNonNullImage(),
-                sequencePSF.getValue().getFirstNonNullImage(),correct,false);
+                sequencePSF.getValue().getFirstNonNullImage(),correct);
 
         myseq = new Sequence();
         myseq.addImage(0,firstJob(job));

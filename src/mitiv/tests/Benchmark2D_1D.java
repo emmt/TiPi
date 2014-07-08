@@ -339,18 +339,18 @@ public class Benchmark2D_1D {
 
         for(int i=0;i<NB_BENCH;i++){
             System.out.println("Round "+i);
-            deconvVect.FirstDeconvolutionQuadVector(0);
+            deconvVect.firstDeconvolutionQuad(0,Deconvolution.PROCESSING_VECTOR);
             long begin = System.nanoTime();
             for (int j = 0; j < 100; j++) {
-                deconvVect.NextDeconvolutionQuadVector(j);
+                deconvVect.nextDeconvolutionQuad(j,Deconvolution.PROCESSING_VECTOR);
             }
             long end = System.nanoTime();
             moy = (end-begin + moy)/2;
             computeStat();
-            deconv.FirstDeconvolutionQuad1D(0);
+            deconv.firstDeconvolutionQuad(0,Deconvolution.PROCESSING_1D);
             begin = System.nanoTime();
             for (int j = 0; j < 100; j++) {
-                deconv.NextDeconvolutionQuad1D(j);
+                deconv.nextDeconvolutionQuad(j,Deconvolution.PROCESSING_1D);
             }
             end = System.nanoTime();
             moy = (end-begin + moy)/2;
@@ -376,7 +376,7 @@ public class Benchmark2D_1D {
     private static int computeQuad1D(Deconvolution a){
         long begin,end;
         begin = System.nanoTime();
-        a.FirstDeconvolutionQuad1D(1);
+        a.firstDeconvolutionQuad(1.0,Deconvolution.PROCESSING_1D);
         end = System.nanoTime();
         return (int)((end-begin)/1e6);
     }
@@ -384,7 +384,7 @@ public class Benchmark2D_1D {
     private static int computeQuad2D(Deconvolution a){
         long begin,end;
         begin = System.nanoTime();
-        a.FirstDeconvolutionQuad(1);
+        a.firstDeconvolutionQuad(1,Deconvolution.PROCESSING_2D);
         end = System.nanoTime();
         return (int)((end-begin)/1e6);
     }
@@ -392,7 +392,7 @@ public class Benchmark2D_1D {
     private static int computeQuad1DNext(Deconvolution a){
         long begin,end;
         begin = System.nanoTime();
-        a.NextDeconvolutionQuad1D(1);
+        a.nextDeconvolutionQuad(1.0,Deconvolution.PROCESSING_1D);
         end = System.nanoTime();
         return (int)((end-begin)/1e6);
     }
@@ -400,7 +400,7 @@ public class Benchmark2D_1D {
     private static int computeQuad2DNext(Deconvolution a){
         long begin,end;
         begin = System.nanoTime();
-        a.NextDeconvolutionQuad(1);
+        a.nextDeconvolutionQuad(1,Deconvolution.PROCESSING_2D);
         end = System.nanoTime();
         return (int)((end-begin)/1e6);
     }

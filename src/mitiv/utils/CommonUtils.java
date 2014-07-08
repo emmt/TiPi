@@ -44,10 +44,37 @@ import mitiv.linalg.FloatVectorSpaceWithRank;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 
+/**
+ * Contains all usual methods to work on color, image, arrays and conversion from one to another.
+ * 
+ * @author light
+ *
+ */
 public class CommonUtils {
 
+    /**
+     * padding options: Nothing is done
+     * _______
+     * |      |
+     * |      |
+     * |#_____|
+     */
     public static final int LOWER_LEFT = 0;
+    /**
+     * padding options: Nothing is done
+     * _______
+     * |      |
+     * |  #   |
+     * |______|
+     */
     public static final int CENTERED = 1;
+    /**
+     * padding options: Nothing is done
+     * _______
+     * |#    #|
+     * |      |
+     * |#____#|
+     */
     public static final int FFT_INDEXING = -1;
 
     /**
@@ -76,7 +103,7 @@ public class CommonUtils {
     public static int SCALE_CORRECTED_COLORMAP = 7;
 
     /**
-     * Will convert a value to another
+     * Will convert a grey value to another
      *
      * @param g
      * @param alpha
@@ -578,10 +605,6 @@ public class CommonUtils {
     }
 
     /********************************** ARRAY TO IMAGE **********************************/
-    /*
-     * Memo: even if y = y*2, we store the image in a array x*y !!
-     *
-     * */
 
     public static BufferedImage createNewBufferedImage(BufferedImage originalImage){
         BufferedImage imageout;
@@ -913,7 +936,6 @@ public class CommonUtils {
                 } else {
                     grey = (int) array[(i+j*height)];
                 }
-
                 tmpOut[grey]++;
             }
         }
@@ -1292,7 +1314,6 @@ public class CommonUtils {
         if (job == SCALE_CORRECTED || job == SCALE_CORRECTED_COLORMAP) {
             correctArray(array, isComplex);
         }
-
         //We apply lastly the colormap transformation
         if (job == SCALE_COLORMAP || job == SCALE_CORRECTED_COLORMAP) {
             out = colorArray(array, isComplex);
@@ -1332,7 +1353,7 @@ public class CommonUtils {
         }
         return out;
     }
-    
+
     /**
      * Front function that will apply different job on the given array of size
      * height,witdh*2
@@ -1507,7 +1528,7 @@ public class CommonUtils {
 
         return psfPadding1D(tableau_psf,width,height,test,psfH,psfW,isComplex);
     }
-    
+
     //is complex is not important as we give the output space
     public static Vector psfPadding1D(VectorSpace inputSpace, VectorSpace outputSpace, Vector imagePsf, boolean singlePrecision, boolean isComplex) {
         if (singlePrecision) {
