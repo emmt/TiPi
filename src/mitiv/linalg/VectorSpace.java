@@ -95,37 +95,56 @@ public abstract class VectorSpace {
 
     /**
      * Create a new vector from this vector space with undefined contents.
-     *
-     * This abstract method must be overwritten by its descendants.
-     *
-     * @return a new vector of this space.
+     * @return A new vector of this space.
      */
     public abstract Vector create();
 
     /**
      * Create a new vector from this vector space filled with given value.
-     *
-     * This abstract method must be overwritten by its descendants.
-     *
-     * @param alpha
-     *            a scalar value.
-     * @return a new vector of this space.
+     * @param alpha - A scalar value.
+     * @return A new vector of this space.
      */
     public abstract Vector create(double alpha);
 
     /**
+     * Create a new vector from this vector space as a copy of another vector.
+     * @param u - A vector from this space.
+     * @return A new duplicate copy of the vector {@code u}.
+     */
+    public abstract Vector create(Vector u);
+
+    /**
      * Compute the inner product of two vectors.
      *
-     * This abstract method must be overwritten by its descendants.
+     * The inner product, also called dot or scalar product of two vectors, is
+     * the sum of the products of the corresponding elements of the two vectors.
+     * The inner product is defined on a vector space, the two vectors must belong
+     * to this vector space.
+     * 
+     * @param x - A vector of this vector space.
+     * @param y - Another vector of this vector space.
+     * @return The inner product of {@code x} and {@code y}.
+     * @throws IncorrectSpaceException {@code x} and {@code y} must belong to this vector space.
+     */
+    public double dot(Vector x, Vector y) {
+        check(x);
+        check(y);
+        return _dot(x, y);
+    }
+
+    /**
+     * Compute the inner product of two vectors.
      *
-     * @param x
-     *            a vector
-     * @param y
-     *            another vector
+     * This abstract method must be overwritten by its descendants to implement the
+     * inner product.  The passed arguments are guaranteed to belong to this vector
+     * space.
+     *
+     * @param x - A vector of this vector space.
+     * @param y - Another vector of this vector space.
      * @return the inner product of X and Y.
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
      */
-    public abstract double dot(final Vector x, final Vector y)
+    protected abstract double _dot(final Vector x, final Vector y)
             throws IncorrectSpaceException;
 
     /**
@@ -141,9 +160,13 @@ public abstract class VectorSpace {
      * 
      * @throws IncorrectSpaceException x must belong to this vector space.
      */
-    public double norm2(Vector x)
-            throws IncorrectSpaceException {
-        return Math.sqrt(dot(x, x));
+    public double norm2(Vector x) throws IncorrectSpaceException {
+        check(x);
+        return _norm2(x);
+    }
+
+    protected double _norm2(Vector x) {
+        return Math.sqrt(_dot(x, x));
     }
 
     /**
@@ -155,8 +178,11 @@ public abstract class VectorSpace {
      *
      * @throws IncorrectSpaceException x must belong to this vector space.
      */
-    public abstract double norm1(Vector x)
-            throws IncorrectSpaceException;
+    public double norm1(Vector x) throws IncorrectSpaceException {
+        check(x);
+        return _norm1(x);
+    }
+    protected abstract double _norm1(Vector x);
 
     /**
      * Compute the infinite norm of a vector.
@@ -167,8 +193,11 @@ public abstract class VectorSpace {
      *
      * @throws IncorrectSpaceException x must belong to this vector space.
      */
-    public abstract double normInf(Vector x)
-            throws IncorrectSpaceException;
+    public double normInf(Vector x) throws IncorrectSpaceException {
+        check(x);
+        return _normInf(x);
+    }
+    protected abstract double _normInf(Vector x);
 
     /**
      * Compute a linear combination of two vectors.
@@ -195,8 +224,17 @@ public abstract class VectorSpace {
      *            the vector Y (also used to store the result)
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
      */
-    public abstract void axpby(double alpha, final Vector x,
-                               double beta,        Vector y) throws IncorrectSpaceException;
+    public void axpby(double alpha, final Vector x,
+            double beta, Vector y) throws IncorrectSpaceException {
+        check(x);
+        check(y);
+        _axpby(alpha, x, beta, y);
+    }
+
+    protected void _axpby(double alpha, final Vector x,
+            double beta, Vector y){
+        _axpby(alpha, x, beta, y, y);
+    }
 
 
     /**
@@ -222,15 +260,22 @@ public abstract class VectorSpace {
      *            scalar factor for vector Y
      * @param y
      *            the vector Y
-     *            
+     * 
      * @param dst
      *            the destination vector
      *
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
      */
-    public abstract void axpby(double alpha, final Vector x,
-                               double beta,  final Vector y,
-                               Vector dst) throws IncorrectSpaceException;
+    public void axpby(double alpha, final Vector x,
+            double beta, Vector y, Vector dst) throws IncorrectSpaceException {
+        check(x);
+        check(y);
+        check(dst);
+        _axpby(alpha, x, beta, y, dst);
+    }
+
+    protected abstract void _axpby(double alpha, final Vector x,
+            double beta, Vector y, Vector dst);
 
     /**
      * Compute a linear combination of three vectors.
@@ -251,7 +296,7 @@ public abstract class VectorSpace {
      *            scalar factor for vector Y
      * @param y
      *            the vector Y
-     *            
+     * 
      * @param gamma
      *            scalar factor for vector Z
      * @param z
@@ -261,10 +306,19 @@ public abstract class VectorSpace {
      *
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
      */
-    public abstract void axpbypcz(double alpha, final Vector x,
-                                  double beta,  final Vector y,
-                                  double gamma, final Vector z,
-                                  Vector dst) throws IncorrectSpaceException;
+    public void axpbypcz(double alpha, final Vector x,
+            double beta,  final Vector y,
+            double gamma, final Vector z,
+            Vector dst) throws IncorrectSpaceException {
+        check(x);
+        check(y);
+        check(z);
+        check(dst);
+        _axpbypcz(alpha, x, beta, y, gamma, z, dst);
+    }
+    protected abstract void _axpbypcz(double alpha, final Vector x,
+            double beta,  final Vector y,
+            double gamma, final Vector z, Vector dst);
 
     /**
      * Copy the contents of a vector into another one.
@@ -281,7 +335,15 @@ public abstract class VectorSpace {
      */
     public void copy(final Vector src, Vector dst)
             throws IncorrectSpaceException {
-        axpby(1.0, src, 0.0, dst);
+        check(src);
+        if (dst != src) {
+            check(dst);
+            _copy(src, dst);
+        }
+    }
+    protected void _copy(Vector src, Vector dst)
+            throws IncorrectSpaceException {
+        _axpby(1.0, src, 0.0, dst);
     }
 
     /**
@@ -290,8 +352,7 @@ public abstract class VectorSpace {
      * As implemented in the base class, this method is not optimized but
      * provides the reference behavior.
      *
-     * @param v
-     *            the vector to clone (must belongs to this vector space).
+     * @param v - The vector to clone (must belongs to this vector space).
      * @return A clone of the input vector.
      * @throws IncorrectSpaceException V must belong to this vector space.
      */
@@ -299,9 +360,9 @@ public abstract class VectorSpace {
         if (!v.belongsTo(this)) {
             throw new IncorrectSpaceException();
         }
-        Vector u = create();
-        copy(v, u);
-        return u;
+        Vector vc = create();
+        copy(v, vc);
+        return vc;
     }
 
     /**
@@ -331,8 +392,18 @@ public abstract class VectorSpace {
      * @throws IncorrectSpaceException V must belong to this vector space.
      */
     public void zero(Vector v) {
-        axpby(0.0, v, 0.0, v);
+        check(v);
+        _zero(v);
     }
+    protected void _zero(Vector v) {
+        _fill(v, 0.0);
+    }
+
+    public void fill(Vector x, double alpha) {
+        check(x);
+        _fill(x, alpha);
+    }
+    protected abstract void _fill(Vector x, double alpha);
 
     /**
      * Make sure a given vector belongs to the vector space.

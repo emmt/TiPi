@@ -37,21 +37,24 @@ public class FloatVectorSpace extends VectorSpace {
         super(size, Utils.TYPE_FLOAT);
     }
 
+    @Override
     public FloatVector create() {
         return new FloatVector(this);
     }
 
+    @Override
     public FloatVector create(double value) {
         FloatVector v = new FloatVector(this);
         ArrayOps.fill(size, v.getData(), value);
         return v;
     }
 
-    public FloatVector create(final Vector u) {
-        check(u);
-        FloatVector v = new FloatVector(this);
-        copy(v, u);
-        return v;
+    @Override
+    public FloatVector create(Vector v) {
+        check(v);
+        FloatVector vc = new FloatVector(this);
+        _copy(v, vc);
+        return vc;
     }
 
     public FloatVector wrap(float[] x) {
@@ -63,73 +66,62 @@ public class FloatVectorSpace extends VectorSpace {
         ((FloatVector)dst).set(src);
     }
 
-    public void copy(final Vector src, Vector dst) {
-        check(src);
-        if (dst == src) {
-            return;
-        }
-        check(dst);
+    @Override
+    protected void _copy(Vector src, Vector dst) {
         ArrayOps.copy(size, ((FloatVector) src).getData(),
                 ((FloatVector) dst).getData());
     }
 
-    public void fill(Vector x, double alpha) {
-        check(x);
+    @Override
+    protected void _fill(Vector x, double alpha) {
         ArrayOps.fill(size, ((FloatVector) x).getData(), alpha);
     }
 
-    public double dot(final Vector x, final Vector y) {
-        check(x);
-        check(y);
+    @Override
+    protected double _dot(final Vector x, final Vector y) {
         return ArrayOps.dot(size, ((FloatVector) x).getData(),
                 ((FloatVector) y).getData());
     }
 
-    public double norm2(Vector x) {
-        check(x);
+    @Override
+    protected double _norm2(Vector x) {
         return ArrayOps.norm2(((FloatVector) x).getData());
     }
 
-    public double norm1(Vector x) {
-        check(x);
+    @Override
+    protected double _norm1(Vector x) {
         return ArrayOps.norm1(((FloatVector) x).getData());
     }
-    
-    public double normInf(Vector x) {
-        check(x);
+
+    @Override
+    protected double _normInf(Vector x) {
         return ArrayOps.normInf(((FloatVector) x).getData());
     }
 
-    public void axpby(double alpha, final Vector x,
-                      double beta,        Vector y) {
-        check(x);
-        check(y);
+    @Override
+    protected void _axpby(double alpha, final Vector x,
+            double beta, Vector y) {
         ArrayOps.axpby(size,
-                       alpha, ((FloatVector) x).getData(),
-                       beta,  ((FloatVector) y).getData());
+                alpha, ((FloatVector) x).getData(),
+                beta,  ((FloatVector) y).getData());
     }
 
-    public void axpby(double alpha, final Vector x,
-                       double beta, final Vector y, Vector dst) {
-        check(x);
-        check(y);
-        check(dst);
+    @Override
+    protected void _axpby(double alpha, final Vector x,
+            double beta, final Vector y, Vector dst) {
         ArrayOps.axpby(size,
-                       alpha, ((FloatVector) x).getData(),
-                       beta,  ((FloatVector) y).getData(), ((FloatVector) dst).getData());
+                alpha, ((FloatVector) x).getData(),
+                beta,  ((FloatVector) y).getData(), ((FloatVector) dst).getData());
     }
 
-    public void axpbypcz(double alpha, final Vector x,
-                         double beta,  final Vector y,
-                         double gamma, final Vector z, Vector dst) {
-        check(x);
-        check(y);
-        check(z);
-        check(dst);
+    @Override
+    protected void _axpbypcz(double alpha, final Vector x,
+            double beta,  final Vector y,
+            double gamma, final Vector z, Vector dst) {
         ArrayOps.axpbypcz(size,
-                          alpha, ((FloatVector) x).getData(),
-                          beta,  ((FloatVector) y).getData(),
-                          gamma, ((FloatVector) z).getData(), ((FloatVector) dst).getData());
+                alpha, ((FloatVector) x).getData(),
+                beta,  ((FloatVector) y).getData(),
+                gamma, ((FloatVector) z).getData(), ((FloatVector) dst).getData());
     }
 }
 
