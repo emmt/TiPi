@@ -379,7 +379,7 @@ public class Deconvolution{
     public BufferedImage firstDeconvolutionCG(double alpha){
         return firstDeconvolutionCG(alpha, PROCESSING_VECTOR);
     }
-    
+
     public BufferedImage firstDeconvolutionCG(double alpha, int job){
         switch (job) {
         case PROCESSING_VECTOR:
@@ -388,11 +388,11 @@ public class Deconvolution{
             throw new IllegalArgumentException("The job given does not exist");
         }
     }
-    
+
     public BufferedImage nextDeconvolutionCG(double alpha){
         return firstDeconvolutionCG(alpha, PROCESSING_VECTOR);
     }
-    
+
     public BufferedImage nextDeconvolutionCG(double alpha, int job){
         switch (job) {
         case PROCESSING_VECTOR:
@@ -421,7 +421,7 @@ public class Deconvolution{
         DoubleVector w = space.create(1);
 
         linDeconv = new LinearDeconvolver(
-                space.getShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
+                space.cloneShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
         outputValue = linDeconv.solve(x.getData(), 20, false);
         if (verbose) {
             parseOuputCG(outputValue); //print nothing if good, print in err else

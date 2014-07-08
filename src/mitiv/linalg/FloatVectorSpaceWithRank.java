@@ -60,19 +60,40 @@ public class FloatVectorSpaceWithRank extends FloatVectorSpace {
         this(new int[]{dim1, dim2, dim3}, false);
     }
 
+    @Override
+    public FloatVectorWithRank create() {
+        return new FloatVectorWithRank(this);
+    }
+
+    @Override
+    public FloatVectorWithRank create(double value) {
+        FloatVectorWithRank v = new FloatVectorWithRank(this);
+        ArrayOps.fill(size, v.getData(), value);
+        return v;
+    }
+
+    @Override
+    public FloatVectorWithRank create(final Vector u) {
+        check(u);
+        FloatVectorWithRank v = new FloatVectorWithRank(this);
+        copy(v, u);
+        return v;
+    }
+
     /**
      * Wrap an array of floats into a vector of this vector space.
      * @return A new vector.
      */
+    @Override
     public FloatVectorWithRank wrap(float[] x) {
         return new FloatVectorWithRank(this, x);
     }
 
     /**
-     * Get the shape of the vectors of this vector space.
+     * Get a copy of the shape of the vectors of this vector space.
      * @return A copy (you can change the values) of the shape.
      */
-    public int[] getShape() {
+    public int[] cloneShape() {
         return Arrays.copyOf(shape, shape.length);
     }
 
@@ -81,7 +102,7 @@ public class FloatVectorSpaceWithRank extends FloatVectorSpace {
      * @param i  - The index of the dimension.
      * @return The length of ({@code i}+1)-th dimension, -1 if {@code i} is out of range.
      */
-    public int getSize(int i) {
+    public int getDimension(int i) {
         return (0 <= i && i < shape.length ? shape[i] : -1);
     }
 

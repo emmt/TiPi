@@ -111,7 +111,7 @@ public class Filter{
 
     public Vector wienerVect(double alpha, Vector PSF, Vector image) {
         this.image = image;
-        int[]shape = ((DoubleVectorSpaceWithRank)image.getSpace()).getShape();
+        int[]shape = ((DoubleVectorSpaceWithRank)image.getSpace()).cloneShape();
         double[] out = wiener1D(alpha, ((DoubleVector)PSF).getData(), ((DoubleVector)image).getData(), shape[1], shape[0]/2);
         return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
     }
@@ -208,7 +208,7 @@ public class Filter{
 
     public Vector wienerQuadVect(double alpha, Vector PSF, Vector image) {
         this.image = image;
-        int[]shape = ((DoubleVectorSpaceWithRank)image.getSpace()).getShape();
+        int[]shape = ((DoubleVectorSpaceWithRank)image.getSpace()).cloneShape();
         double[] out = wienerQuad1D(alpha, ((DoubleVector)PSF).getData(), ((DoubleVector)image).getData(), shape[1], shape[0]/2);
         return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
     }

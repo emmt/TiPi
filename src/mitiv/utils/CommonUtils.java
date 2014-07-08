@@ -509,14 +509,14 @@ public class CommonUtils {
     public static BufferedImage vectorToImage(VectorSpace outputSpace, Vector vector, int job, boolean singlePrecision ,boolean isComplex){
         if (singlePrecision) {
             FloatVectorSpaceWithRank space = (FloatVectorSpaceWithRank)outputSpace;
-            int[] shape = space.getShape();
+            int[] shape = space.cloneShape();
             if (!(space.getRank() == 2)) {
                 throw new IllegalArgumentException("The vector should be of rank 2 to create an image");
             }
             return arrayToImage1D(((DoubleVector)vector).getData(), job, shape[1], shape[0], isComplex);
         } else {
             DoubleVectorSpaceWithRank space = (DoubleVectorSpaceWithRank)outputSpace;
-            int[] shape = space.getShape();
+            int[] shape = space.cloneShape();
             if (!(space.getRank() == 2)) {
                 throw new IllegalArgumentException("The vector should be of rank 2 to create an image");
             }
@@ -1537,8 +1537,8 @@ public class CommonUtils {
             if (!(spaceFloat.getRank() == 2)) {
                 throw new IllegalArgumentException("The rank of vector must be 2");
             }
-            int[] shape = spaceFloat.getShape();
-            int[] shapePsf = ((FloatVectorSpaceWithRank)imagePsf.getSpace()).getShape();
+            int[] shape = spaceFloat.cloneShape();
+            int[] shapePsf = ((FloatVectorSpaceWithRank)imagePsf.getSpace()).cloneShape();
             float[] psfPad = psfPadding1D(spaceFloat.create().getData(),shape[1],
                     shape[0],vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
             return spaceFloat.wrap(psfPad);
@@ -1549,8 +1549,8 @@ public class CommonUtils {
             if (!(spaceDoubleOut.getRank() == 2)) {
                 throw new IllegalArgumentException("The rank of vector must be 2");
             }
-            int[] shape = spaceDoubleIn.getShape();
-            int[] shapePsf = ((DoubleVectorSpaceWithRank)imagePsf.getSpace()).getShape();
+            int[] shape = spaceDoubleIn.cloneShape();
+            int[] shapePsf = ((DoubleVectorSpaceWithRank)imagePsf.getSpace()).cloneShape();
             double[] psfPad = psfPadding1D(spaceDoubleOut.create().getData(),shape[1],
                     shape[0], vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
             return spaceDoubleOut.wrap(psfPad);

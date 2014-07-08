@@ -60,19 +60,40 @@ public class DoubleVectorSpaceWithRank extends DoubleVectorSpace {
         this(new int[]{dim1, dim2, dim3}, false);
     }
 
+    @Override
+    public DoubleVectorWithRank create() {
+        return new DoubleVectorWithRank(this);
+    }
+
+    @Override
+    public DoubleVectorWithRank create(double value) {
+        DoubleVectorWithRank v = new DoubleVectorWithRank(this);
+        ArrayOps.fill(size, v.getData(), value);
+        return v;
+    }
+
+    @Override
+    public DoubleVectorWithRank create(final Vector u) {
+        check(u);
+        DoubleVectorWithRank v = new DoubleVectorWithRank(this);
+        copy(v, u);
+        return v;
+    }
+
     /**
      * Wrap an array of doubles into a vector of this vector space.
      * @return A new vector.
      */
+    @Override
     public DoubleVectorWithRank wrap(double[] x) {
         return new DoubleVectorWithRank(this, x);
     }
 
     /**
-     * Get the shape of the vectors of this vector space.
+     * Get a copy of the shape of the vectors of this vector space.
      * @return A copy (you can change the values) of the shape.
      */
-    public int[] getShape() {
+    public int[] cloneShape() {
         return Arrays.copyOf(shape, shape.length);
     }
 
@@ -81,7 +102,7 @@ public class DoubleVectorSpaceWithRank extends DoubleVectorSpace {
      * @param i  - The index of the dimension.
      * @return The length of ({@code i}+1)-th dimension, -1 if {@code i} is out of range.
      */
-    public int getSize(int i) {
+    public int getDimension(int i) {
         return (0 <= i && i < shape.length ? shape[i] : -1);
     }
 
