@@ -229,16 +229,14 @@ public class Deconvolution{
         utilsVector.FFT1D(vector_image);
         utilsVector.FFT1D(vector_psf);
         Vector out = wiener.WienerQuad1DVect(alpha, vector_psf, vector_image);
-        //Vector out = vector_psf.getSpace().clone(vector_psf);
         utilsVector.IFFT1D(out);
         return(utilsVector.ArrayToImage(out, correction,true));
     }
 
     public BufferedImage NextDeconvolutionQuadVector(double alpha){
         Vector out = wiener.WienerQuad1DVect(alpha);
-        //Vector out = vector_psf.getSpace().clone(vector_psf);
         utilsVector.IFFT1D(out);
-        return(utilsVector.ArrayToImage(out, correction,true)); //debug purpose
+        return(utilsVector.ArrayToImage(out, correction,true));
     }
 
     public int getOuputValue(){

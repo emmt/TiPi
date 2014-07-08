@@ -1538,7 +1538,7 @@ public class CommonUtils {
 
     public static double[] psfPadding1D(double[] imageout,int imageWidth, int imageHeight, double[] imagePsf, int psfWidth, int psfHeight, boolean isComplex) {
         int demiPsfW = psfWidth/2;int demiPsfH = psfHeight/2;
-        System.out.println(imageWidth+" "+imageHeight+" "+psfWidth+" "+psfHeight+" "+isComplex);
+        //System.out.println(imageWidth+" "+imageHeight+" "+psfWidth+" "+psfHeight+" "+isComplex);
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
         //   A | B     ->

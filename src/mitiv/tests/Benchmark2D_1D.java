@@ -29,7 +29,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Random;
 
-import mitiv.deconv.DeconvUtils;
 import mitiv.deconv.Deconvolution;
 import mitiv.utils.CommonUtils;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
@@ -334,6 +333,30 @@ public class Benchmark2D_1D {
         System.out.println("Moyenne1D: "+moy+"ms\n");
     }
 
+    public static void benchVectorDouble(){
+        Deconvolution deconvVect = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png",CommonUtils.SCALE,true);
+        Deconvolution deconv = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png",CommonUtils.SCALE,false);
+
+        for(int i=0;i<NB_BENCH;i++){
+            System.out.println("Round "+i);
+            long begin = System.nanoTime();
+            for (int j = 0; j < 100; j++) {
+                deconvVect.FirstDeconvolutionQuadVector(j);
+            }
+            long end = System.nanoTime();
+            moy = (end-begin + moy)/2;
+            computeStat();
+            begin = System.nanoTime();
+            for (int j = 0; j < 100; j++) {
+                deconv.FirstDeconvolutionQuad1D(j);
+            }
+            end = System.nanoTime();
+            moy = (end-begin + moy)/2;
+            computeStat();
+            moytmp = 0;
+        }
+    }
+
     private static void computeStat(){
         if(moytmp == 0){
             moytmp = moy;
@@ -381,7 +404,7 @@ public class Benchmark2D_1D {
     }
 
     public static void benchQuad2D1D(){
-        Deconvolution a = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png", CommonUtils.SCALE);
+        Deconvolution a = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png", CommonUtils.SCALE,false);
         int deuxD = computeQuad2D(a);
         int unD = computeQuad1D(a);
         System.out.println("Beginnig of the bench on "+NB_BENCH+" rounds");
@@ -394,7 +417,7 @@ public class Benchmark2D_1D {
     }
 
     public static void benchQuad2D1DWithOptims(){
-        Deconvolution a = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png", CommonUtils.SCALE);
+        Deconvolution a = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png", CommonUtils.SCALE,false);
         int deuxD = computeQuad2D(a);
         int unD = computeQuad1D(a);
         System.out.println("Beginnig of the bench on "+NB_BENCH+" rounds");
@@ -428,6 +451,9 @@ public class Benchmark2D_1D {
 
         benchQuad2D1D();
         benchQuad2D1DWithOptims();
+
+        benchVectorDouble();
+
         System.exit(0);
     }
 
