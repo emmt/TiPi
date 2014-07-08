@@ -131,20 +131,53 @@ public abstract class Vector {
      * @param value - The value to store at the index position.
      * @throws IndexOutOfBoundsException if index {@code i} is out of bounds;
      */
-   public abstract void set(int i, double value) throws IndexOutOfBoundsException;
+    public abstract void set(int i, double value) throws IndexOutOfBoundsException;
 
-   /**
-    * Make a string representation of the vector contents.
-    */
-   public String toString() {
-       StringBuffer buf = new StringBuffer();
-       for (int i = 0; i < size; ++i) {
-           buf.append(i == 0 ? "{" : ", ");
-           buf.append(get(i));
-       }
-       buf.append("}");
-       return buf.toString();
-   }
+    /**
+     * Compute the inner product of this vector with another vector.
+     *
+     * @param other - Another vector of this vector space.
+     * @return The inner product of {@code this} and {@code other}.
+     * @throws IncorrectSpaceException {@code other} must belong to the vector
+     *         space of {@code this} .
+     */
+    public double dot(Vector other) {
+        if (other == null || ! other.belongsTo(space)) {
+            throw new IncorrectSpaceException();
+        }
+        return space._dot(this, other);
+    }
+
+    public double norm1() {
+        return space._norm1(this);
+    }
+    public double norm2() {
+        return space._norm2(this);
+    }
+    public double normInf() {
+        return space._normInf(this);
+    }
+
+    public void fill(double value) {
+        space._fill(this, value);
+    }
+    public void zero() {
+        space._zero(this);
+    }
+
+    /**
+     * Make a string representation of the vector contents.
+     */
+    @Override
+    public String toString() {
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < size; ++i) {
+            buf.append(i == 0 ? "{" : ", ");
+            buf.append(get(i));
+        }
+        buf.append("}");
+        return buf.toString();
+    }
 }
 
 /*
