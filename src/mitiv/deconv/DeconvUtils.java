@@ -165,7 +165,11 @@ public class DeconvUtils {
             }
             this.imagePsfVect = CommonUtils.imageToVector(psfSpace, PSF, singlePrecision, false); //we will not create a complex now (cf pad)
         }
+        width = image.getWidth();
+        height = image.getHeight();
         single = singlePrecision;
+        this.image = image;
+        this.image_psf = PSF;
         this.isComplex = isComplex;
     }
 

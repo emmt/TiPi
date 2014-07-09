@@ -55,17 +55,17 @@ public class Filter{
     public double[][] wiener(double alpha, double[][] FFT_PSF, double[][] FFTImage) {
         this.FFT_PSF = FFT_PSF;
         this.FFT_Image = FFTImage;
-        width = FFTImage.length;
-        height = FFTImage[0].length/2;
+        height = FFTImage.length;
+        width = FFTImage[0].length/2;
         cc = FFT_PSF[0][0]*FFT_PSF[0][0]+FFT_PSF[0][1]*FFT_PSF[0][1];
         return wiener(alpha);
     }
 
     public double[][] wiener(double alpha) {
         double a,b,c,d,q;
-        double[][]out = new double[width][2*height];
-        for(int i = 0; i<width; i++){
-            for(int j=0;j<height;j++){
+        double[][]out = new double[height][2*width];
+        for(int j = 0; j<width; j++){
+            for(int i=0;i<height;i++){
                 a = FFT_PSF[i][2*j];
                 b = FFT_PSF[i][2*j+1];
                 c = FFT_Image[i][2*j];
@@ -88,7 +88,7 @@ public class Filter{
         this.FFT_Image1D = FFTImage;
         width = Width;
         height = Height;
-        cc = FFT_Image1D[0]*FFT_Image1D[0]+FFT_PSF1D[2*height]*FFT_PSF1D[2*height];
+        cc = FFT_PSF1D[0]*FFT_PSF1D[0]+FFT_PSF1D[2*height]*FFT_PSF1D[2*height];
         return wiener1D(alpha);
     }
 

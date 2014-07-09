@@ -52,7 +52,7 @@ public class Deconvolution{
     DoubleVector vector_image;
     DoubleVector vector_psf;
     int correction;
-
+    boolean useVectors;
     //CG needs
     DoubleVectorSpaceWithRank space;
     DoubleVector x;
@@ -97,7 +97,7 @@ public class Deconvolution{
      */
     public Deconvolution(Object image, Object PSF, int correction, boolean useVectors){
         utils = new DeconvUtils();
-
+        this.useVectors = useVectors;
         if(image instanceof String){
             if (useVectors) {
                 utils.readImageVect((String)image, (String)PSF, false);
@@ -129,7 +129,12 @@ public class Deconvolution{
      * @return
      */
     public BufferedImage firstDeconvolution(double alpha){
-        return firstDeconvolution(alpha, PROCESSING_1D);
+        if (useVectors) {
+            return firstDeconvolution(alpha, PROCESSING_VECTOR);
+        } else {
+            return firstDeconvolution(alpha, PROCESSING_1D);
+        }
+
     }
 
     /**
@@ -143,7 +148,7 @@ public class Deconvolution{
     public BufferedImage firstDeconvolution(double alpha, int job){
         switch (job) {
         case PROCESSING_1D:
-            return firstDeconvolutionSimple(alpha);
+            return firstDeconvolutionSimple1D(alpha);
         case PROCESSING_2D:
             return firstDeconvolutionSimple(alpha);
         case PROCESSING_VECTOR:
@@ -163,13 +168,17 @@ public class Deconvolution{
      * @return
      */
     public BufferedImage nextDeconvolution(double alpha){
-        return nextDeconvolution(alpha, PROCESSING_1D);
+        if (useVectors) {
+            return nextDeconvolution(alpha, PROCESSING_VECTOR);
+        } else {
+            return nextDeconvolution(alpha, PROCESSING_1D);
+        }
     }
 
     public BufferedImage nextDeconvolution(double alpha, int job){
         switch (job) {
         case PROCESSING_1D:
-            return nextDeconvolutionSimple(alpha);
+            return nextDeconvolutionSimple1D(alpha);
         case PROCESSING_2D:
             return nextDeconvolutionSimple(alpha);
         case PROCESSING_VECTOR:
@@ -208,6 +217,35 @@ public class Deconvolution{
         return(utils.arrayToImage(out, correction));
     }
 
+    /**
+     * First deconvolution for the wiener filter
+     * 
+     * @param alpha
+     * @return deconvoluated image
+     */
+    private BufferedImage firstDeconvolutionSimple1D(double alpha){
+        image1D = utils.imageToArray1D(true);
+        psf1D = utils.psfPadding1D(true);
+        utils.FFT1D(image1D);
+        utils.FFT1D(psf1D);
+        double[] out = wiener.wiener1D(alpha, psf1D, image1D,utils.width,utils.height);
+        utils.IFFT1D(out);
+        return(utils.arrayToImage1D(out, correction, true));
+    }
+
+    /**
+     * Will compute less than firstDeconvolution: 1FTT inverse instead
+     * of 2FFT + 1 inverse FFT
+     * 
+     * @param alpha
+     * @return deconvoluated image
+     */
+    private BufferedImage nextDeconvolutionSimple1D(double alpha){
+        double[] out = wiener.wiener1D(alpha);
+        utils.IFFT1D(out);
+        return(utils.arrayToImage1D(out, correction,true));
+    }
+
     private BufferedImage firstDeconvolutionVector(double alpha){
         vector_image = (DoubleVector) utils.getImageVect();
         vector_psf = (DoubleVector) utils.getPsfPad();
@@ -234,7 +272,11 @@ public class Deconvolution{
      * @return
      */ 
     public BufferedImage firstDeconvolutionQuad(double alpha){
-        return firstDeconvolutionQuad(alpha, PROCESSING_2D);
+        if (useVectors) {
+            return firstDeconvolutionQuad(alpha, PROCESSING_VECTOR);
+        } else {
+            return firstDeconvolutionQuad(alpha, PROCESSING_2D);
+        }
     }
 
     /**
@@ -266,7 +308,11 @@ public class Deconvolution{
      * @return
      */
     public BufferedImage nextDeconvolutionQuad(double alpha){
-        return nextDeconvolutionQuad(alpha, PROCESSING_2D);
+        if (useVectors) {
+            return nextDeconvolutionQuad(alpha, PROCESSING_VECTOR);
+        } else {
+            return nextDeconvolutionQuad(alpha, PROCESSING_2D);
+        }
     }
 
     /**
@@ -417,6 +463,14 @@ public class Deconvolution{
         if (vector_image == null) {
             vector_image = space.wrap(utils.imageToArray1D(false));
         }
+        /*//We should use this one BUT as there is only CG with vectors, then in the case of no vectors, there is no imageVect
+        if (vector_image == null) {
+            vector_image = (DoubleVector) utils.getImageVect();
+        }
+        if (vector_psf == null) {
+            vector_psf = (DoubleVector) utils.getPsfPad();
+        }
+         */
 
         x = space.create(0);
         w = space.create(1);
