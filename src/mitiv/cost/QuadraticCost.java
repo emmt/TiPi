@@ -192,8 +192,7 @@ public class QuadraticCost implements DifferentiableCostFunction {
     }
 
     @Override
-    public double evaluate(double alpha, Vector x)
-    {
+    public double evaluate(double alpha, Vector x) {
         /* Deal with a zero multiplier. */
         if (alpha == 0.0) {
             return 0.0;
@@ -202,7 +201,7 @@ public class QuadraticCost implements DifferentiableCostFunction {
         /* Form the (anti-)residuals : r = H.x - y, their weighted counterpart Wr = W.r
          * and compute the quadratic cost q. */
         formResiduals(x);
-        double q = r.getSpace().dot(r, Wr);
+        double q = r.dot(Wr);
 
         /* Do not preserve the storage for the (anti-)residuals if r is an alias to x. */
         if (r == x) {
@@ -217,16 +216,14 @@ public class QuadraticCost implements DifferentiableCostFunction {
         /* Deal with a zero multiplier. */
         if (alpha == 0.0) {
             if (clr) {
-                /* FIXME: optimize? */
-                gx.getSpace().axpby(0.0, gx, 0.0, gx, gx);
+                gx.zero();
             }
             return 0.0;
         }
 
-
         /* Form the residuals and compute the quadratic cost. */
         formResiduals(x);
-        double q = r.getSpace().dot(r, Wr);
+        double q = r.dot(Wr);
 
         /* Compute/integrate the gradients. */
         if (H != null) {
@@ -279,8 +276,8 @@ public class QuadraticCost implements DifferentiableCostFunction {
      * </pre>
      * The weighted residuals are:
      * <pre>
-     *     Wr = W.    (W != null)
-     *     Wr = r     (W == null)
+     *     Wr = W.r       (W != null)
+     *     Wr = r         (W == null)
      * </pre>
      */
     private void formResiduals(Vector x) {
