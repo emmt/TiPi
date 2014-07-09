@@ -56,6 +56,7 @@ public class Deconvolution{
     //CG needs
     DoubleVectorSpaceWithRank space;
     DoubleVector x;
+    DoubleVector w;
     LinearDeconvolver linDeconv;
     int outputValue = LinearConjugateGradient.CONVERGED;
 
@@ -390,7 +391,7 @@ public class Deconvolution{
     }
 
     public BufferedImage nextDeconvolutionCG(double alpha){
-        return firstDeconvolutionCG(alpha, PROCESSING_VECTOR);
+        return nextDeconvolutionCG(alpha, PROCESSING_VECTOR);
     }
 
     public BufferedImage nextDeconvolutionCG(double alpha, int job){
@@ -418,7 +419,7 @@ public class Deconvolution{
         }
 
         x = space.create(0);
-        DoubleVector w = space.create(1);
+        w = space.create(1);
 
         linDeconv = new LinearDeconvolver(
                 space.cloneShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
@@ -432,9 +433,17 @@ public class Deconvolution{
     /**
      * @param alpha
      * @return deconvoluated image
+     * @throws  
      */
     private BufferedImage nextDeconvolutionCGNormal(double alpha){
-        return firstDeconvolutionCGNormal(alpha);
+        boolean verbose = false;
+        x = space.create(0);
+        linDeconv.setMu(alpha);
+        outputValue = linDeconv.solve(x.getData(), 20, false);
+        if (verbose) {
+            parseOuputCG(outputValue); //print nothing if good, print in err else
+        }
+        return(utils.arrayToImage1D(x.getData(), correction, false));
     }
 
     public int getOuputValue(){

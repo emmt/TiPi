@@ -54,8 +54,11 @@ public class Benchmark2D_1D {
 
     static int size = 50;
 
-    static int NB_BENCH = 10;
+    static int NB_BENCH = 20;
     static BufferedImage imageout;
+    
+    private static String pathImage = "/home/light/workspace2/FATRAS/saturn.png";
+    private static String pathPsf = "/home/light/workspace2/FATRAS/saturn_psf.png";
 
     private static final int greyToColor(double g, double alpha, double beta)
     {
@@ -334,8 +337,8 @@ public class Benchmark2D_1D {
     }
 
     public static void benchVectorDouble(){
-        Deconvolution deconvVect = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png",CommonUtils.SCALE,true);
-        Deconvolution deconv = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png",CommonUtils.SCALE,false);
+        Deconvolution deconvVect = new Deconvolution(pathImage, pathPsf,CommonUtils.SCALE,true);
+        Deconvolution deconv = new Deconvolution(pathImage, pathPsf,CommonUtils.SCALE,false);
 
         for(int i=0;i<NB_BENCH;i++){
             System.out.println("Round "+i);
@@ -406,7 +409,7 @@ public class Benchmark2D_1D {
     }
 
     public static void benchQuad2D1D(){
-        Deconvolution a = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png", CommonUtils.SCALE,false);
+        Deconvolution a = new Deconvolution(pathImage, pathPsf, CommonUtils.SCALE,false);
         int deuxD = computeQuad2D(a);
         int unD = computeQuad1D(a);
         System.out.println("Beginnig of the bench on "+NB_BENCH+" rounds");
@@ -419,7 +422,7 @@ public class Benchmark2D_1D {
     }
 
     public static void benchQuad2D1DWithOptims(){
-        Deconvolution a = new Deconvolution("/home/light/workspace2/FATRAS/saturn.png", "/home/light/workspace2/FATRAS/saturn_psf.png", CommonUtils.SCALE,false);
+        Deconvolution a = new Deconvolution(pathImage, pathPsf, CommonUtils.SCALE,false);
         int deuxD = computeQuad2D(a);
         int unD = computeQuad1D(a);
         System.out.println("Beginnig of the bench on "+NB_BENCH+" rounds");
@@ -431,6 +434,30 @@ public class Benchmark2D_1D {
         System.out.println("QUAD1D: "+unD+" ms\n");
     }
 
+    public static void benchCG(){
+        Deconvolution a = new Deconvolution(pathImage, pathPsf);
+        System.out.println("Beginnig of the bench on "+NB_BENCH+" rounds");
+        
+        double mu = 1000000;
+        long begin = System.currentTimeMillis();
+        for (int i = 0; i < NB_BENCH; i++) {
+            a.firstDeconvolutionCG(mu);
+        }
+        long end = System.currentTimeMillis();
+        long moyFirst = (end-begin)/NB_BENCH;
+        
+        begin = System.currentTimeMillis();
+        for (int i = 0; i < NB_BENCH; i++) {
+            a.nextDeconvolutionCG(mu);
+        }
+        end = System.currentTimeMillis();
+        long moyNext = (end-begin)/NB_BENCH;
+        
+        System.out.println("CG First: "+moyFirst+" ms");
+        System.out.println("CG Next : "+moyNext +" ms");
+        System.out.println("Speedup by: "+(int)(((double)(moyFirst-moyNext)/moyFirst)*100) +"%\n");
+    }
+    
     /**
      * Only uncomment what tests you want to see
      * 
@@ -446,6 +473,9 @@ public class Benchmark2D_1D {
         //bench_fft2D();
         //computeStat();
 
+        benchCG();
+        
+        /*
         bench_matrix2D();
         computeStat();
         bench_matrix1D();
@@ -455,7 +485,7 @@ public class Benchmark2D_1D {
         benchQuad2D1DWithOptims();
 
         benchVectorDouble();
-
+         */
         System.exit(0);
     }
 
