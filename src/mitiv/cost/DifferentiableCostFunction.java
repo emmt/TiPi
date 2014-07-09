@@ -71,8 +71,8 @@ public interface DifferentiableCostFunction extends CostFunction {
      * @param x     - The vector of variables.
      * @param gx    - The vector to store the gradient of the cost function times the
      *                weight.
-     * @param clr   - Indicate whether the gradient vector has to be cleared (that
-     *                is filled with zero) prior to the computation.  If false, the
+     * @param clr   - Indicate whether the gradient vector has to be cleared (that is,
+     *                filled with zero) prior to the computation.  If false, the
      *                contents of the gradient vector is incremented with the gradient
      *                of the cost function.
      * 
