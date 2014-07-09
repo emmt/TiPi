@@ -440,9 +440,10 @@ public class CommonUtils {
         } else {
             out = new double[height][width];
         }
+        int[] tmp = new int[raster.getNumBands()];
         for(int j=0;j<width;j++){
             for(int i=0;i<height;i++){
-                int[] tmp = raster.getPixel(j, i, (int[])null);
+                raster.getPixel(j, i, tmp);
                 if (tmp.length == 1 || tmp.length == 2) {
                     out[i][j] = colorToGrey(tmp[0], tmp[0], tmp[0]);
                 } else {
@@ -469,9 +470,10 @@ public class CommonUtils {
         } else {
             out = new float[height][width];
         }
+        int[] tmp = new int[raster.getNumBands()];
         for(int j=0;j<width;j++){
             for(int i=0;i<height;i++){
-                int[] tmp = raster.getPixel(j, i, (int[])null);
+                raster.getPixel(j, i, tmp);
                 if (tmp.length == 1 || tmp.length == 2) {
                     out[i][j] = colorToGrey(tmp[0], tmp[0], tmp[0]);
                 } else {
@@ -499,9 +501,10 @@ public class CommonUtils {
         } else {
             out = new double[width*height];
         }
+        int[] tmp = new int[raster.getNumBands()];
         for(int j=0;j<width;j++){
             for(int i=0;i<height;i++){
-                int[] tmp = raster.getPixel(j, i, (int[])null);
+                raster.getPixel(j, i, tmp);
                 if (tmp.length == 1 || tmp.length == 2) {
                     out[(i+j*height)] = colorToGrey(tmp[0], tmp[0], tmp[0]);
                 } else {
@@ -528,10 +531,11 @@ public class CommonUtils {
         } else {
             out = new float[width*height];
         }
+        int[] tmp = new int[raster.getNumBands()];
         if (isComplex) {
             for(int j=0;j<width;j++){
                 for(int i=0;i<height;i++){
-                    int[] tmp = raster.getPixel(j, i, (int[])null);
+                    raster.getPixel(j, i, tmp);
                     if (tmp.length == 1 || tmp.length == 2) {
                         out[2*(i+j*height)] = colorToGrey(tmp[0], tmp[0], tmp[0]);
                     } else {
@@ -542,7 +546,7 @@ public class CommonUtils {
         } else {
             for(int j=0;j<width;j++){
                 for(int i=0;i<height;i++){
-                    int[] tmp = raster.getPixel(j, i, (int[])null);
+                    raster.getPixel(j, i, tmp);
                     if (tmp.length == 1 || tmp.length == 2) {
                         out[(i+j*height)] = colorToGrey(tmp[0], tmp[0], tmp[0]);
                     } else {
