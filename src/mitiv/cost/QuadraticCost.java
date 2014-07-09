@@ -176,15 +176,15 @@ public class QuadraticCost implements DifferentiableCostFunction {
         quickWeightedResiduals = (W == null);
         quickQuasiGradient = (H == null);
         shareMemory = (! quickResiduals && inputSpace == outputSpace);
-        if (quickResiduals || ! r.belongsTo(outputSpace)) {
+        if (r != null && (quickResiduals || ! r.belongsTo(outputSpace))) {
             r = null;
         }
-        if (quickWeightedResiduals || ! Wr.belongsTo(outputSpace)) {
+        if (Wr != null && (quickWeightedResiduals || ! Wr.belongsTo(outputSpace))) {
             Wr = null;
         }
         if (shareMemory) {
             HtWr = r;
-        } else if (quickQuasiGradient || ! HtWr.belongsTo(inputSpace)) {
+        } else if (HtWr != null && (quickQuasiGradient || ! HtWr.belongsTo(inputSpace))) {
             HtWr = null;
         }
     }
