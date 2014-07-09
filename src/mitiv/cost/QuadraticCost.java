@@ -68,6 +68,11 @@ public class QuadraticCost implements DifferentiableCostFunction {
     /** Cached vector to store the quasi gradient: {@code HtWr = H'.Wr = H'.W.r = H'.W.(H.x - y)} */
     protected Vector HtWr = null;
 
+    protected boolean quickResiduals;         // H and y are null, thus r = x
+    protected boolean quickWeightedResiduals; // W is null, thus W.r = r
+    protected boolean quickQuasiGradient;     // H is null, thus H'.W.r = W.r
+    protected boolean shareMemory;            // share storage between residuals r and quasi-gradients HtWr
+
     /** Constructor for a general quadratic cost function.
      * 
      * Create an instance of the differentiable cost function:
@@ -162,26 +167,24 @@ public class QuadraticCost implements DifferentiableCostFunction {
             throw new IllegalArgumentException("one of H, y, or W must be non null");
         }
 
-        /* Cleanup cache and instantiate components. */
-        cleanupCache(outputSpace);
+        /* Instantiate components and cleanup cache. */
         this.H = H;
         this.y = y;
         this.W = W;
         this.inputSpace = inputSpace;
-    }
-
-    /** Cleanup cache.
-     * Release inappropriate cache vectors {@code r}, {@code Wr}, and/or {@code HtWr}.
-     * @param space - The inner vector space.
-     */
-    protected void cleanupCache(VectorSpace space) {
-        if (Wr != null && ! Wr.belongsTo(space)) {
-            Wr = null;
-        }
-        if (r != null && ! r.belongsTo(space)) {
+        quickResiduals = (H == null && y == null);
+        quickWeightedResiduals = (W == null);
+        quickQuasiGradient = (H == null);
+        shareMemory = (! quickResiduals && inputSpace == outputSpace);
+        if (quickResiduals || ! r.belongsTo(outputSpace)) {
             r = null;
         }
-        if (HtWr != null && ! HtWr.belongsTo(inputSpace)) {
+        if (quickWeightedResiduals || ! Wr.belongsTo(outputSpace)) {
+            Wr = null;
+        }
+        if (shareMemory) {
+            HtWr = r;
+        } else if (quickQuasiGradient || ! HtWr.belongsTo(inputSpace)) {
             HtWr = null;
         }
     }
@@ -203,11 +206,15 @@ public class QuadraticCost implements DifferentiableCostFunction {
         formResiduals(x);
         double q = r.dot(Wr);
 
-        /* Do not preserve the storage for the (anti-)residuals if r is an alias to x. */
-        if (r == x) {
+        /* Cleanup any alias made so far. */
+        if (quickResiduals) {
             r = null;
         }
+        if (quickWeightedResiduals) {
+            Wr = null;
+        }
 
+        /* Return the scaled cost. */
         return alpha*q;
     }
 
@@ -226,35 +233,32 @@ public class QuadraticCost implements DifferentiableCostFunction {
         double q = r.dot(Wr);
 
         /* Compute/integrate the gradients. */
-        if (H != null) {
+        if (quickQuasiGradient) {
+            HtWr = Wr;
+        } else {
             if (HtWr == null || ! HtWr.belongsTo(inputSpace)) {
                 /* Create/find workspace to store HtWr = H'.W.r with the constraints that
                  * HtWr must be writable (thus not x) and must not be Wr as operator H is
                  * not warranted to be applicable in-place. */
-                if (r.belongsTo(inputSpace) && r != x && r != Wr) {
+                if (shareMemory) {
                     HtWr = r;
                 } else {
                     HtWr = inputSpace.create();
                 }
             }
             H.apply(Wr, HtWr, LinearOperator.ADJOINT);
-
         }
-        gx.getSpace().axpby((clr ? 0.0 : 1.0), gx, 2.0*alpha, Wr, gx);
+        inputSpace.axpby((clr ? 0.0 : 1.0), gx, 2.0*alpha, HtWr, gx);
 
-        /* Do not preserve the storage for H'.W.r if HtWr is an alias to r. */
-        if (HtWr == r) {
-            HtWr = null;
+        /* Cleanup any alias made so far. */
+        if (quickResiduals) {
+            r = null;
         }
-
-        /* Do not preserve the storage for the weighted residuals if Wr is an alias to r. */
-        if (Wr == r) {
+        if (quickWeightedResiduals) {
             Wr = null;
         }
-
-        /* Do not preserve the storage for the residuals if r is an alias to x. */
-        if (r == x) {
-            r = null;
+        if (quickQuasiGradient) {
+            HtWr = null;
         }
 
         /* Return the quadratic cost times the multiplier. */
@@ -281,38 +285,40 @@ public class QuadraticCost implements DifferentiableCostFunction {
      * </pre>
      */
     private void formResiduals(Vector x) {
+        // Figure out the vector space for the residuals:
+        VectorSpace innerSpace = (H == null ? inputSpace : H.getOutputSpace());
+
         /* Form the (anti-)residuals: r = H.x - y.  There are 4 different cases. */
-        if (H != null) {
-            /* The (anti-)residuals are: r = H.x or r = H.x - y. */
-            if (r == null || ! r.belongsTo(H.getOutputSpace())) {
-                r = H.getOutputSpace().create();
-            }
-            H.apply(x, r);
-            if (y != null) {
-                r.getSpace().axpby(1.0, r, -1.0, y, r);
-            }
-        } else if (y != null) {
-            /* The (anti-)residuals are: r = x - y. */
-            if (r == null || ! r.belongsTo(y.getSpace())) {
-                r = y.getSpace().create();
-            }
-            r.getSpace().axpby(1.0, x, -1.0, y, r);
-        } else {
+        if (quickResiduals) {
             /* The (anti-)residuals are just an alias to X. */
             r = x;
+        } else {
+            /* The (anti-)residuals are: r = x - y, or r = H.x, or r = H.x - y. */
+            if (r == null || ! r.belongsTo(innerSpace)) {
+                r = innerSpace.create();
+            }
+            if (H == null) {
+                /* The (anti-)residuals are: r = x - y. */
+                innerSpace.axpby(1.0, x, -1.0, y, r);
+            } else {
+                /* The (anti-)residuals are: r = H.x or r = H.x - y. */
+                H.apply(x, r);
+                if (y != null) {
+                    innerSpace.axpby(1.0, r, -1.0, y, r);
+                }
+            }
         }
 
         /* Form the weighted (anti-)residuals: Wr = W.r. */
-        if (W != null) {
-            /* Apply the weights: Wr = W.r. */
-            VectorSpace innerSpace = r.getSpace();
+        if (quickWeightedResiduals) {
+            /* Same as if W is the identity: Wr = r.  Thus the weighted (anti-)residuals
+             * are just an alias to r. */
+            Wr = r;
+        } else {
             if (Wr == null || ! Wr.belongsTo(innerSpace)) {
                 Wr = innerSpace.create();
             }
             W.apply(r, Wr);
-        } else {
-            /* Same as if W is the identity: Wr = r. */
-            Wr = r;
         }
     }
 }
