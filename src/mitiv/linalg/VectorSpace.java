@@ -405,6 +405,17 @@ public abstract class VectorSpace {
     }
     protected abstract void _fill(Vector x, double alpha);
 
+
+    /**
+     * Check whether a given vector belongs to the vector space.
+     *
+     * @param v - A vector.
+     * @return True if {@code v} is not {@code null} and belongs to this vector space.
+     */
+    public final boolean owns(Vector v) {
+        return (v != null && v.belongsTo(this));
+    }
+
     /**
      * Make sure a given vector belongs to the vector space.
      *
@@ -415,7 +426,7 @@ public abstract class VectorSpace {
      * @throws IncorrectSpaceException V must belong to this vector space.
      */
     public final void check(Vector v) throws IncorrectSpaceException {
-        if (v == null || ! v.belongsTo(this)) {
+        if (! owns(v)) {
             throw new IncorrectSpaceException();
         }
     }
