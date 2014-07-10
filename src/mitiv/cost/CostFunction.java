@@ -34,8 +34,8 @@ import mitiv.linalg.VectorSpace;
  * The solution of many inverse problems can be expressed as minimizing a cost
  * which is a function of the parameters of interest.  A cost function is then
  * just a mapping of an input vector space to the set of reals (possibly
- * including {@code +Infinity}).  An instance of this class if able to return
- * {@code f(x)} given a vector {@code x}.
+ * including {@link Double#POSITIVE_INFINITY}.  An instance of this class if
+ * able to return {@code f(x)} given a vector {@code x}.
  * <p>
  * There are many "optimizable" cost functions: smooth functions which are differentiable,
  * non-smooth functions for which we can compute their proximal operator, continuous
@@ -44,10 +44,12 @@ import mitiv.linalg.VectorSpace;
  * 
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
-interface CostFunction {
+public interface CostFunction {
     /**
      * Get the input space of the cost function.
      * 
+     * A cost function is a mapping from an input space (which can be queried by this
+     * method) to the set of reals (possibly including {@link Double#POSITIVE_INFINITY}).
      * @return The input space of the cost function.
      */
     abstract public VectorSpace getInputSpace();
