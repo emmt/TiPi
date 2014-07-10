@@ -146,7 +146,7 @@ public class DeconvUtils {
     }
 
     public void readImageVect(BufferedImage image, BufferedImage PSF, Boolean padding, boolean singlePrecision, boolean isComplex) {
-        //For now, no padding option TODO add padding option
+        //For now, no padding option: TODO add padding option
         if (singlePrecision) {
             imageSpace = new FloatVectorSpaceWithRank(image.getHeight(), image.getWidth());
             FloatVectorSpaceWithRank psfSpace = new FloatVectorSpaceWithRank(PSF.getWidth(), PSF.getHeight());
@@ -163,7 +163,8 @@ public class DeconvUtils {
             } else {
                 this.imageVect = CommonUtils.imageToVector(imageSpace, image, singlePrecision , isComplex);
             }
-            this.imagePsfVect = CommonUtils.imageToVector(psfSpace, PSF, singlePrecision, false); //we will not create a complex now (cf pad)
+          //we will not create a complex now (cf pad)
+            this.imagePsfVect = CommonUtils.imageToVector(psfSpace, PSF, singlePrecision, false); 
         }
         width = image.getWidth();
         height = image.getHeight();
@@ -179,7 +180,7 @@ public class DeconvUtils {
         return imageVect.getSpace().clone(imageVect);
     }
 
-    public Vector getPsfPad(){
+    public Vector getPsfPadVect(){
         return CommonUtils.psfPadding1D(imageSpace,imageSpaceComplex, imagePsfVect, single, isComplex);
     }
 
@@ -463,141 +464,6 @@ public class DeconvUtils {
     }
 
     /********************************** Utils functions **********************************/
-
-    public void printTab(double[][]tab){
-        System.out.println("Normal");
-        for(double[]ab:tab){
-            for(double a:ab){
-                System.out.print((int)a+",");
-            }
-            System.out.println("");
-        }
-    }
-
-    /**
-     * util function
-     * @param tab
-     */
-    public void printTab(float[][]tab){
-        System.out.println("Normal");
-        for(float[]ab:tab){
-            for(float a:ab){
-                System.out.print((int)a+",");
-            }
-            System.out.println("");
-        }
-    }
-
-    public void printTab1D(double[] tab, boolean isComplex) {
-        int count =0;
-        int wdth = 0;
-        if (isComplex) {
-            System.out.println("1D Complex");
-            wdth = 2*width;
-        } else {
-            System.out.println("1D");
-            wdth = width;
-        }
-
-        for(double ab:tab){
-            System.out.print((int)ab+",");
-            count++;
-            if(count == wdth){
-                System.out.println("");
-                count=0;
-            }
-        }
-    }
-
-    /**
-     *
-     * @param tab
-     * @param isComplex
-     */
-    public void printTab1D(float[] tab, boolean isComplex) {
-        int count =0;
-        int wdth = 0;
-        if (isComplex) {
-            System.out.println("1D Complex");
-            wdth = 2*width;
-        } else {
-            System.out.println("1D");
-            wdth = width;
-        }
-
-        for(float ab:tab){
-            System.out.print((int)ab+",");
-            count++;
-            if(count == wdth){
-                System.out.println("");
-                count=0;
-            }
-        }
-    }
-
-    /**
-     * Purely debug function
-     *
-     * @param tab
-     * @param isComplex
-     */
-    public void printPSF1D(double[] tab, boolean isComplex) {
-        int count =0;
-        int wdth = image_psf.getHeight();
-        for(double ab:tab){
-            System.out.print((int)ab+",");
-            count++;
-            if(count == wdth){
-                System.out.println("");
-                count=0;
-            }
-        }
-    }
-
-    /**
-     * Purely debug function
-     *
-     * @param tab
-     * @param isComplex
-     */
-    public void printPSF1D(float[] tab, boolean isComplex) {
-        int count =0;
-        int wdth = image_psf.getHeight();
-        for(float ab:tab){
-            System.out.print((int)ab+",");
-            count++;
-            if(count == wdth){
-                System.out.println("");
-                count=0;
-            }
-        }
-    }
-
-    /**
-     * test the tab for bad values
-     * @param tab
-     */
-    public static void testLongTab(float[] tab){
-        for(float a: tab){
-            if (a == (Long.MAX_VALUE+1)) {
-                System.err.println("Your Long value is too long");
-            }
-        }
-    }
-
-    /**
-     * Still testing tab for bad values
-     * @param tab
-     */
-    public static void testLongTab(float[][] tab){
-        for(float[] a: tab){
-            for(float b:a){
-                if (b == (Long.MAX_VALUE+1)) {
-                    System.err.println("Your Long value is too long");
-                }
-            }
-        }
-    }
 
     public int getImagePadding(){
         return sizePadding;
