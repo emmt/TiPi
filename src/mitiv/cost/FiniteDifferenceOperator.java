@@ -40,9 +40,9 @@ import mitiv.random.UniformDistribution;
 public class FiniteDifferenceOperator extends LinearOperator {
     private int[][] index;
 
-    private static void testDoubleOperator(DoubleGenerator generator, int[] shape, boolean periodic) {
+    private static void testDoubleOperator(DoubleGenerator generator, int[] shape, int condition) {
         DoubleVectorSpaceWithRank inp = new DoubleVectorSpaceWithRank(shape);
-        LinearOperator D = new FiniteDifferenceOperator(inp, periodic);
+        LinearOperator D = new FiniteDifferenceOperator(inp, condition);
         DoubleVectorSpaceWithRank out = (DoubleVectorSpaceWithRank) D.getOutputSpace();
         DoubleVectorWithRank a = inp.create();
         DoubleVectorWithRank b = out.create();
@@ -54,9 +54,9 @@ public class FiniteDifferenceOperator extends LinearOperator {
         System.out.println("  relative error = " + D.checkAdjoint(a, b));
     }
 
-    private static void testFloatOperator(FloatGenerator generator, int[] shape, boolean periodic) {
+    private static void testFloatOperator(FloatGenerator generator, int[] shape, int condition) {
         FloatVectorSpaceWithRank inp = new FloatVectorSpaceWithRank(shape);
-        LinearOperator D = new FiniteDifferenceOperator(inp, periodic);
+        LinearOperator D = new FiniteDifferenceOperator(inp, condition);
         FloatVectorSpaceWithRank out = (FloatVectorSpaceWithRank) D.getOutputSpace();
         FloatVectorWithRank a = inp.create();
         FloatVectorWithRank b = out.create();
@@ -98,10 +98,10 @@ public class FiniteDifferenceOperator extends LinearOperator {
         System.out.println("c = " + c);
         System.out.println("");
         UniformDistribution rand = new UniformDistribution(-1.0, +1.0);
-        testDoubleOperator(rand, new int[]{3,4,5}, false);
-        testDoubleOperator(rand, new int[]{3,4,5}, true);
-        testFloatOperator(rand, new int[]{3,4,5,6}, false);
-        testFloatOperator(rand, new int[]{3,4,5,6,7}, true);
+        testDoubleOperator(rand, new int[]{3,4,5}, BoundaryConditions.MIRROR);
+        testDoubleOperator(rand, new int[]{3,4,5}, BoundaryConditions.NORMAL);
+        testFloatOperator(rand, new int[]{3,4,5,6}, BoundaryConditions.NORMAL);
+        testFloatOperator(rand, new int[]{3,4,5,6,7}, BoundaryConditions.PERIODIC);
     }
 
     /**
@@ -114,15 +114,15 @@ public class FiniteDifferenceOperator extends LinearOperator {
      * differences along each of the {@code n} dimensions.
      * @param inputSpace - The inputs space of the operator (the output space is automatically
      *                     built).
-     * @param periodic   - An array of boolean indicating whether the finite difference along
-     *                     each dimension should be taken assuming periodic conditions.  If
-     *                     {@code null}, non periodic conditions are assumed for all
-     *                     dimensions; otherwise, if shorter than {@code n}, the rank of
-     *                     {@code inputSpace}, missing values are assumed to be {@code false}.
+     * @param bounds     - An array of integers indicating the boundary conditions for
+     *                     each dimension.  If {@code null}, normal conditions are assumed for
+     *                     all dimensions; otherwise, if shorter than {@code n}, the rank of
+     *                     {@code inputSpace}, missing values are assumed to be
+     *                     {@link BoundaryConditions#NORMAL}.
      */
-    public FiniteDifferenceOperator(DoubleVectorSpaceWithRank inputSpace, boolean[] periodic) {
+    public FiniteDifferenceOperator(DoubleVectorSpaceWithRank inputSpace, int[] bounds) {
         super(inputSpace, new DoubleVectorSpaceWithRank(buildShape(inputSpace.cloneShape())));
-        buildIndex(inputSpace.cloneShape(), periodic);
+        buildIndex(inputSpace.cloneShape(), bounds);
     }
 
     /**
@@ -131,12 +131,14 @@ public class FiniteDifferenceOperator extends LinearOperator {
      * See {@link #FiniteDifferenceOperator(DoubleVectorSpaceWithRank, boolean[])} for more
      * explanations.
      * @param inputSpace - The inputs space of the operator
-     * @param periodic   - Indicates whether periodic conditions shall be assumed or not
-     *                     for all dimensions.
+     * @param bounds     - Indicates the boundary conditions for all dimensions, one of
+     *                     {@link BoundaryConditions#PERIODIC}, or
+     *                     {@link BoundaryConditions#MIRROR}, otherwise
+     *                     {@link BoundaryConditions#NORMAL} is assumed.
      */
-    public FiniteDifferenceOperator(DoubleVectorSpaceWithRank inputSpace, boolean periodic) {
+    public FiniteDifferenceOperator(DoubleVectorSpaceWithRank inputSpace, int bounds) {
         super(inputSpace, new DoubleVectorSpaceWithRank(buildShape(inputSpace.cloneShape())));
-        buildIndex(inputSpace.cloneShape(), periodic);
+        buildIndex(inputSpace.cloneShape(), bounds);
     }
 
     /**
@@ -147,7 +149,7 @@ public class FiniteDifferenceOperator extends LinearOperator {
      * @param inputSpace - The inputs space of the operator
      */
     public FiniteDifferenceOperator(DoubleVectorSpaceWithRank inputSpace) {
-        this(inputSpace, false);
+        this(inputSpace, BoundaryConditions.NORMAL);
     }
 
     /**
@@ -156,12 +158,15 @@ public class FiniteDifferenceOperator extends LinearOperator {
      * Same as {@link #FiniteDifferenceOperator(DoubleVectorSpaceWithRank, boolean[])} but for
      * single precision floating point shaped vectors.
      * @param inputSpace - The inputs space of the operator
-     * @param periodic   - Indicates whether periodic conditions shall be assumed or not
-     *                     for each dimensions.
+     * @param bounds     - An array of integers indicating the boundary conditions for
+     *                     each dimension.  If {@code null}, normal conditions are assumed for
+     *                     all dimensions; otherwise, if shorter than {@code n}, the rank of
+     *                     {@code inputSpace}, missing values are assumed to be
+     *                     {@link BoundaryConditions#NORMAL}.
      */
-    public FiniteDifferenceOperator(FloatVectorSpaceWithRank inputSpace, boolean[] periodic) {
+    public FiniteDifferenceOperator(FloatVectorSpaceWithRank inputSpace, int[] bounds) {
         super(inputSpace, new FloatVectorSpaceWithRank(buildShape(inputSpace.cloneShape())));
-        buildIndex(inputSpace.cloneShape(), periodic);
+        buildIndex(inputSpace.cloneShape(), bounds);
     }
 
     /**
@@ -170,12 +175,14 @@ public class FiniteDifferenceOperator extends LinearOperator {
      * Same as {@link #FiniteDifferenceOperator(DoubleVectorSpaceWithRank, boolean)} but for
      * single precision floating point shaped vectors.
      * @param inputSpace - The inputs space of the operator
-     * @param periodic   - Indicates whether periodic conditions shall be assumed or not
-     *                     for all dimensions.
+     * @param bounds     - Indicates the boundary conditions for all dimensions, one of
+     *                     {@link BoundaryConditions#PERIODIC}, or
+     *                     {@link BoundaryConditions#MIRROR}, otherwise
+     *                     {@link BoundaryConditions#NORMAL} is assumed.
      */
-    public FiniteDifferenceOperator(FloatVectorSpaceWithRank inputSpace, boolean periodic) {
+    public FiniteDifferenceOperator(FloatVectorSpaceWithRank inputSpace, int bounds) {
         super(inputSpace, new FloatVectorSpaceWithRank(buildShape(inputSpace.cloneShape())));
-        buildIndex(inputSpace.cloneShape(), periodic);
+        buildIndex(inputSpace.cloneShape(), bounds);
     }
 
     /**
@@ -186,7 +193,7 @@ public class FiniteDifferenceOperator extends LinearOperator {
      * @param inputSpace - The inputs space of the operator
      */
     public FiniteDifferenceOperator(FloatVectorSpaceWithRank inputSpace) {
-        this(inputSpace, false);
+        this(inputSpace, BoundaryConditions.NORMAL);
     }
 
 
@@ -205,32 +212,23 @@ public class FiniteDifferenceOperator extends LinearOperator {
         return outShape;
     }
 
-    private int[] fillPreviousIndex(int[] prev, boolean periodic) {
-        int dim = prev.length;
-        prev[0] = (periodic ? dim - 1 : 0);
-        for (int j = 1; j < dim; ++j) {
-            prev[j] = j - 1;
-        }
-        return prev;
+    private int getBound(int[] arr, int k) {
+        return ((arr == null || k < 0 || k >= arr.length) ? BoundaryConditions.NORMAL : arr[k]);
     }
 
-    private void buildIndex(int[] inputShape, boolean periodic) {
+    private void buildIndex(int[] inputShape, int[] bounds) {
         int rank = inputShape.length;
         index = new int[rank][];
         for (int k =0; k < rank; ++k) {
-            index[k] = fillPreviousIndex(new int[inputShape[k]], periodic);
+            index[k] = BoundaryConditions.buildIndex(inputShape[k], -1, getBound(bounds, k));
         }
     }
 
-    private boolean getBoolean(boolean[] arr, int k) {
-        return ((arr == null || k < 0 || k >= arr.length) ? false : arr[k]);
-    }
-
-    private void buildIndex(int[] inputShape, boolean[] periodic) {
+    private void buildIndex(int[] inputShape, int bounds) {
         int rank = inputShape.length;
         index = new int[rank][];
         for (int k =0; k < rank; ++k) {
-            index[k] = fillPreviousIndex(new int[inputShape[k]], getBoolean(periodic, k));
+            index[k] = BoundaryConditions.buildIndex(inputShape[k], -1, bounds);
         }
     }
 
@@ -465,7 +463,7 @@ public class FiniteDifferenceOperator extends LinearOperator {
         int[] prev4 = index[3];   // index to previous position along 4th dimension
         int n4 = prev4.length;    // length of 4th dimension
         int n1n2n3 = n1n2*n3;     // stride along 4th dimension
-        int[] prev5 = index[5];   // index to previous position along 5th dimension
+        int[] prev5 = index[4];   // index to previous position along 5th dimension
         int n5 = prev5.length;    // length of 5th dimension
         int n1n2n3n4 = n1n2n3*n4; // stride along 5th dimension
         if (transpose) {
@@ -703,7 +701,7 @@ public class FiniteDifferenceOperator extends LinearOperator {
         int[] prev4 = index[3];   // index to previous position along 4th dimension
         int n4 = prev4.length;    // length of 4th dimension
         int n1n2n3 = n1n2*n3;     // stride along 4th dimension
-        int[] prev5 = index[5];   // index to previous position along 5th dimension
+        int[] prev5 = index[4];   // index to previous position along 5th dimension
         int n5 = prev5.length;    // length of 5th dimension
         int n1n2n3n4 = n1n2n3*n4; // stride along 5th dimension
         if (transpose) {
