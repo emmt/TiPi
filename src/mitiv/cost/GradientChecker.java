@@ -56,11 +56,11 @@ public class GradientChecker {
 
     /**
      * Set the value of the variables.
-     * 
+     *
      * Setting the variables must be done prior to any gradient check and trigger
      * the computation of the function and its gradient at the position of the
      * variables.
-     * 
+     *
      * @param x     - The value of the variables where to perform the check.
      * @param clone - Indicate whether the vector {@code x} should be cloned;
      *                otherwise, a simple reference to {@code x} is stored.
@@ -181,9 +181,9 @@ public class GradientChecker {
                 gxj_approx = (fy - fx)/h;
             }
             y.set(j, xj);
-            double relativeError = relativeDifference(gxj, gxj_approx);
-            System.out.println("gx[" + j + "] = " + gxj + " .:. (fx - fy)/h = "
-                    + gxj_approx + " .:. relative error = " + relativeError);
+            double relativeError = Math.abs(relativeDifference(gxj, gxj_approx));
+            System.out.printf("gx[%6d] = %20.12E .:. (fx - fy)/h = %20.12E .:. relative error =%8.1E\n",
+                    j, gxj, gxj_approx, relativeError);
         }
     }
 
@@ -208,7 +208,7 @@ public class GradientChecker {
      *
      * This method computes a small but non-negligible step size given the
      * value of the parameter to pertubate.
-     * 
+     *
      * @param x - The value of the parameter to pertubate.
      * @return A small step size
      */
@@ -225,7 +225,6 @@ public class GradientChecker {
     }
 
 }
-
 
 /*
  * Local Variables:
