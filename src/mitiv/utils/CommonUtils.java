@@ -2004,7 +2004,7 @@ public class CommonUtils {
         return buffI2array(openAsBufferedImage(imageName));
     }
 
-    public static BufferedImage array2BuffI(double[][] I) //TODO delete and use arrayToImage(array, false)
+    public static BufferedImage array2BuffI(double[][] I) //TODO delete and use arrayToImage(array, SCALE_CORRECTED_COLORMAP, false)
     {
 
         int H = I.length;
@@ -2022,7 +2022,7 @@ public class CommonUtils {
         return bufferedI;
     }
 
-    public static double[][] buffI2array(BufferedImage I) //TODO delete and use imageToArray(I, false)
+    public static double[][] buffI2array(BufferedImage I) //TODO delete and use imageToArray(I , false)
     {
         int H = I.getHeight();
         int W = I.getWidth();

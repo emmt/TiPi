@@ -248,7 +248,7 @@ public class Deconvolution{
 
     private BufferedImage firstDeconvolutionVector(double alpha){
         vector_image = (DoubleVector) utils.getImageVect();
-        vector_psf = (DoubleVector) utils.getPsfPad();
+        vector_psf = (DoubleVector) utils.getPsfPadVect();
         utils.FFT1D(vector_image);
         utils.FFT1D(vector_psf);
         Vector out = wiener.wienerVect(alpha, vector_psf, vector_image);
@@ -396,7 +396,7 @@ public class Deconvolution{
 
     private BufferedImage firstDeconvolutionQuadVector(double alpha){
         vector_image = (DoubleVector) utils.getImageVect();
-        vector_psf = (DoubleVector) utils.getPsfPad();
+        vector_psf = (DoubleVector) utils.getPsfPadVect();
         utils.FFT1D(vector_image);
         utils.FFT1D(vector_psf);
         Vector out = wiener.wienerQuadVect(alpha, vector_psf, vector_image);
