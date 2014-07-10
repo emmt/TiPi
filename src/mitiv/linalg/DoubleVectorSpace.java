@@ -50,11 +50,16 @@ public class DoubleVectorSpace extends VectorSpace {
     }
 
     @Override
-    public DoubleVector create(final Vector v) {
-        check(v);
-        DoubleVector vc = new DoubleVector(this);
-        _copy(v, vc);
-        return vc;
+    public DoubleVector clone(Vector vec) {
+        check(vec);
+        return _clone(vec);
+    }
+
+    @Override
+    protected DoubleVector _clone(Vector vec) {
+        DoubleVector cpy = new DoubleVector(this);
+        _copy(vec, cpy);
+        return cpy;
     }
 
     public DoubleVector wrap(double[] x) {

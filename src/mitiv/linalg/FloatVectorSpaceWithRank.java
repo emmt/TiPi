@@ -73,11 +73,16 @@ public class FloatVectorSpaceWithRank extends FloatVectorSpace {
     }
 
     @Override
-    public FloatVectorWithRank create(final Vector u) {
-        check(u);
-        FloatVectorWithRank v = new FloatVectorWithRank(this);
-        copy(v, u);
-        return v;
+    public FloatVectorWithRank clone(Vector vec) {
+        check(vec);
+        return _clone(vec);
+    }
+
+    @Override
+    protected FloatVectorWithRank _clone(Vector vec) {
+        FloatVectorWithRank cpy = new FloatVectorWithRank(this);
+        _copy(vec, cpy);
+        return cpy;
     }
 
     /**

@@ -50,11 +50,16 @@ public class FloatVectorSpace extends VectorSpace {
     }
 
     @Override
-    public FloatVector create(Vector v) {
-        check(v);
-        FloatVector vc = new FloatVector(this);
-        _copy(v, vc);
-        return vc;
+    public FloatVector clone(Vector vec) {
+        check(vec);
+        return _clone(vec);
+    }
+
+    @Override
+    protected FloatVector _clone(Vector vec) {
+        FloatVector cpy = new FloatVector(this);
+        _copy(vec, cpy);
+        return cpy;
     }
 
     public FloatVector wrap(float[] x) {

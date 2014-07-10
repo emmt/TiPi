@@ -107,13 +107,6 @@ public abstract class VectorSpace {
     public abstract Vector create(double alpha);
 
     /**
-     * Create a new vector from this vector space as a copy of another vector.
-     * @param u - A vector from this space.
-     * @return A new duplicate copy of the vector {@code u}.
-     */
-    public abstract Vector create(Vector u);
-
-    /**
      * Compute the inner product of two vectors.
      *
      * The inner product, also called dot or scalar product of two vectors, is
@@ -352,17 +345,28 @@ public abstract class VectorSpace {
      * As implemented in the base class, this method is not optimized but
      * provides the reference behavior.
      *
-     * @param v - The vector to clone (must belongs to this vector space).
+     * @param vec - The vector to clone (must belongs to this vector space).
      * @return A clone of the input vector.
      * @throws IncorrectSpaceException V must belong to this vector space.
      */
-    public Vector clone(Vector v) throws IncorrectSpaceException {
-        if (!v.belongsTo(this)) {
-            throw new IncorrectSpaceException();
-        }
-        Vector vc = create();
-        copy(v, vc);
-        return vc;
+    public Vector clone(Vector vec) throws IncorrectSpaceException {
+        check(vec);
+        return _clone(vec);
+    }
+    /**
+     * Create a new vector from this vector space as a copy of another vector.
+     *
+     * This protected method is called by {@link #clone} to do the real work after
+     * checking the argument.  Derived classes can implement a more efficient
+     * version than this one which is based on the {@link #create} method and the
+     * {@link #_copy} protected method.
+     * @param vec - A vector from this space (this has been checked).
+     * @return A new duplicate copy of the vector {@code v}.
+     */
+    protected Vector _clone(Vector vec) {
+        Vector cpy = create();
+        _copy(vec, cpy);
+        return cpy;
     }
 
     /**
@@ -422,7 +426,7 @@ public abstract class VectorSpace {
      * This method throws an {@code IncorrectSpaceException} exception
      * if its argument does not belong to the vector space.
      *
-     * @param v   A vector.
+     * @param v   A vector to check.
      * @throws IncorrectSpaceException V must belong to this vector space.
      */
     public final void check(Vector v) throws IncorrectSpaceException {

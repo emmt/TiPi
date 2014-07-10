@@ -73,11 +73,16 @@ public class DoubleVectorSpaceWithRank extends DoubleVectorSpace {
     }
 
     @Override
-    public DoubleVectorWithRank create(final Vector u) {
-        check(u);
-        DoubleVectorWithRank v = new DoubleVectorWithRank(this);
-        copy(v, u);
-        return v;
+    public DoubleVectorWithRank clone(Vector vec) {
+        check(vec);
+        return _clone(vec);
+    }
+
+    @Override
+    protected DoubleVectorWithRank _clone(Vector vec) {
+        DoubleVectorWithRank cpy = new DoubleVectorWithRank(this);
+        _copy(vec, cpy);
+        return cpy;
     }
 
     /**
