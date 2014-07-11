@@ -166,13 +166,12 @@ public class Filter{
     public double[] wienerQuad1D(double alpha, double[] FFT_PSF,double[] FFTImage, int Width, int Height) {
         this.FFT_PSF1D = FFT_PSF;
         this.FFT_Image1D = FFTImage;
-        width = Width;
-        height = Height;
+        width = Height; //Don't know why but this have to be done ...
+        height = Width;
         double e,f;
         tabcc1D = new double[width*height];
-
-        for(int j = 0; j<height; j++){
-            for(int i = 0; i<width; i++){
+        for(int j = 0; j < height; j++){
+            for(int i = 0; i < width; i++){
                 if(j<=height/2){
                     e = ((double)j/height);
                 }else{

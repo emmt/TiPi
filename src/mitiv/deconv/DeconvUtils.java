@@ -179,6 +179,10 @@ public class DeconvUtils {
     public Vector getImageVect(){
         return imageVect.getSpace().clone(imageVect);
     }
+    
+    public Vector getPsfVect(){
+        return imagePsfVect.getSpace().clone(imagePsfVect);
+    }
 
     public Vector getPsfPadVect(){
         return CommonUtils.psfPadding1D(imageSpace,imageSpaceComplex, imagePsfVect, single, isComplex);
@@ -194,6 +198,10 @@ public class DeconvUtils {
     public double[][] imageToArray(boolean isComplex) {
         return CommonUtils.imageToArray(image, isComplex);
     }
+    
+    public double[][] psfToArray(boolean isComplex) {
+        return CommonUtils.imageToArray(image_psf, isComplex);
+    }
 
     /**
      * Convert image to float array
@@ -208,6 +216,10 @@ public class DeconvUtils {
 
     public double[] imageToArray1D(boolean isComplex) {
         return CommonUtils.imageToArray1D(image, isComplex);
+    }
+
+    public double[] psfToArray1D(boolean isComplex) {
+        return CommonUtils.imageToArray1D(image_psf, isComplex);
     }
 
     /**

@@ -42,6 +42,7 @@ public class Deconvolution{
     public static final int PROCESSING_2D = 0;
     public static final int PROCESSING_1D = 1; 
     public static final int PROCESSING_VECTOR = 2; 
+    private int standardProcessing = PROCESSING_1D;
 
     DeconvUtils utils;
     Filter wiener;
@@ -52,6 +53,7 @@ public class Deconvolution{
     DoubleVector vector_image;
     DoubleVector vector_psf;
     int correction;
+    boolean isPsfSplitted = false;
     boolean useVectors;
     //CG needs
     DoubleVectorSpaceWithRank space;
@@ -71,6 +73,7 @@ public class Deconvolution{
     public Deconvolution(Object image, Object PSF){
         this(image,PSF,CommonUtils.SCALE,false);
     }
+
 
     /**
      * Initial constructor that take the image and the PSF as parameters
@@ -130,9 +133,29 @@ public class Deconvolution{
      */
     public BufferedImage firstDeconvolution(double alpha){
         if (useVectors) {
-            return firstDeconvolution(alpha, PROCESSING_VECTOR);
+            return firstDeconvolution(alpha, PROCESSING_VECTOR, false);
         } else {
-            return firstDeconvolution(alpha, PROCESSING_1D);
+            return firstDeconvolution(alpha, standardProcessing, false);
+        }
+
+    }
+
+    /**
+     * Simple filter based on the wiener filter.
+     * This should be used for the first time
+     * <br>
+     * Options: job
+     * 
+     * @param alpha
+     * @param FFT_PSF
+     * @param FFTImage
+     * @return
+     */
+    public BufferedImage firstDeconvolution(double alpha , boolean isPsfSplitted){
+        if (useVectors) {
+            return firstDeconvolution(alpha, PROCESSING_VECTOR, isPsfSplitted);
+        } else {
+            return firstDeconvolution(alpha, standardProcessing, isPsfSplitted);
         }
 
     }
@@ -145,7 +168,8 @@ public class Deconvolution{
      * @param job see static PROCESSING_?
      * @return
      */
-    public BufferedImage firstDeconvolution(double alpha, int job){
+    public BufferedImage firstDeconvolution(double alpha, int job, boolean isPsfSplitted){
+        this.isPsfSplitted = isPsfSplitted;
         switch (job) {
         case PROCESSING_1D:
             return firstDeconvolutionSimple1D(alpha);
@@ -171,7 +195,7 @@ public class Deconvolution{
         if (useVectors) {
             return nextDeconvolution(alpha, PROCESSING_VECTOR);
         } else {
-            return nextDeconvolution(alpha, PROCESSING_1D);
+            return nextDeconvolution(alpha, standardProcessing);
         }
     }
 
@@ -196,7 +220,11 @@ public class Deconvolution{
      */
     private BufferedImage firstDeconvolutionSimple(double alpha){
         image = utils.imageToArray(true);
-        psf = utils.psfPadding(true);
+        if (isPsfSplitted) {
+            psf = utils.psfToArray(true);
+        } else {
+            psf = utils.psfPadding(true);
+        }
         utils.FFT(image);
         utils.FFT(psf);
         double[][] out = wiener.wiener(alpha, psf, image);
@@ -225,7 +253,11 @@ public class Deconvolution{
      */
     private BufferedImage firstDeconvolutionSimple1D(double alpha){
         image1D = utils.imageToArray1D(true);
-        psf1D = utils.psfPadding1D(true);
+        if (isPsfSplitted) {
+            psf1D = utils.psfToArray1D(true);
+        } else {
+            psf1D = utils.psfPadding1D(true);
+        }
         utils.FFT1D(image1D);
         utils.FFT1D(psf1D);
         double[] out = wiener.wiener1D(alpha, psf1D, image1D,utils.width,utils.height);
@@ -249,6 +281,7 @@ public class Deconvolution{
     private BufferedImage firstDeconvolutionVector(double alpha){
         vector_image = (DoubleVector) utils.getImageVect();
         vector_psf = (DoubleVector) utils.getPsfPadVect();
+        //TODO add getPsfVect need change on opening of the image
         utils.FFT1D(vector_image);
         utils.FFT1D(vector_psf);
         Vector out = wiener.wienerVect(alpha, vector_psf, vector_image);
@@ -273,9 +306,17 @@ public class Deconvolution{
      */ 
     public BufferedImage firstDeconvolutionQuad(double alpha){
         if (useVectors) {
-            return firstDeconvolutionQuad(alpha, PROCESSING_VECTOR);
+            return firstDeconvolutionQuad(alpha, PROCESSING_VECTOR, false);
         } else {
-            return firstDeconvolutionQuad(alpha, PROCESSING_1D);
+            return firstDeconvolutionQuad(alpha, standardProcessing, false);
+        }
+    }
+    
+    public BufferedImage firstDeconvolutionQuad(double alpha, boolean isPsfSplitted){
+        if (useVectors) {
+            return firstDeconvolutionQuad(alpha, PROCESSING_VECTOR, isPsfSplitted);
+        } else {
+            return firstDeconvolutionQuad(alpha, standardProcessing, isPsfSplitted);
         }
     }
 
@@ -287,7 +328,8 @@ public class Deconvolution{
      * @param job see static PROCESSING_?
      * @return
      */ 
-    public BufferedImage firstDeconvolutionQuad(double alpha, int job){
+    public BufferedImage firstDeconvolutionQuad(double alpha, int job, boolean isPsfSplitted){
+        this .isPsfSplitted = isPsfSplitted;
         switch (job) {
         case PROCESSING_1D:
             return firstDeconvolutionQuad1D(alpha);
@@ -311,7 +353,7 @@ public class Deconvolution{
         if (useVectors) {
             return nextDeconvolutionQuad(alpha, PROCESSING_VECTOR);
         } else {
-            return nextDeconvolutionQuad(alpha, PROCESSING_1D);
+            return nextDeconvolutionQuad(alpha, standardProcessing);
         }
     }
 
@@ -344,7 +386,11 @@ public class Deconvolution{
      */
     private BufferedImage firstDeconvolutionQuadSimple(double alpha){
         image = utils.imageToArray(true);
-        psf = utils.psfPadding(true);
+        if (isPsfSplitted) {
+            psf = utils.psfToArray(true);
+        } else {
+            psf = utils.psfPadding(true);
+        }
         utils.FFT(image);
         utils.FFT(psf);
         double[][] out = wiener.wienerQuad(alpha, psf, image);
@@ -373,7 +419,11 @@ public class Deconvolution{
      */
     private BufferedImage firstDeconvolutionQuad1D(double alpha){
         image1D = utils.imageToArray1D(true);
-        psf1D = utils.psfPadding1D(true);
+        if (isPsfSplitted) {
+            psf1D = utils.psfToArray1D(true);
+        } else {
+            psf1D = utils.psfPadding1D(true);
+        }
         utils.FFT1D(image1D);
         utils.FFT1D(psf1D);
         double[] out = wiener.wienerQuad1D(alpha, psf1D, image1D, utils.width, utils.height);
@@ -424,10 +474,15 @@ public class Deconvolution{
     }
 
     public BufferedImage firstDeconvolutionCG(double alpha){
-        return firstDeconvolutionCG(alpha, PROCESSING_VECTOR);
+        return firstDeconvolutionCG(alpha, PROCESSING_VECTOR, false);
+    }
+    
+    public BufferedImage firstDeconvolutionCG(double alpha, boolean isPsfSplitted){
+        return firstDeconvolutionCG(alpha, PROCESSING_VECTOR, isPsfSplitted);
     }
 
-    public BufferedImage firstDeconvolutionCG(double alpha, int job){
+    public BufferedImage firstDeconvolutionCG(double alpha, int job, boolean isPsfSplitted){
+        this.isPsfSplitted = isPsfSplitted;
         switch (job) {
         case PROCESSING_VECTOR:
             return firstDeconvolutionCGNormal(alpha);
@@ -461,7 +516,7 @@ public class Deconvolution{
             vector_psf = space.wrap(utils.psfPadding1D(false));
         }
         if (vector_image == null) {
-            vector_image = space.wrap(utils.imageToArray1D(false));
+                vector_image = space.wrap(utils.imageToArray1D(false));
         }
         /*//We should use this one BUT as there is only CG with vectors, then in the case of no vectors, there is no imageVect
         if (vector_image == null) {

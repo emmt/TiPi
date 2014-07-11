@@ -1683,7 +1683,7 @@ public class CommonUtils {
         int psfW = imagePsf.getWidth();
         double[]test = imageToArray1D(imagePsf,false);
 
-        return psfPadding1D(tableau_psf,width,height,test,psfH,psfW,isComplex);
+        return psfPadding1D(tableau_psf,width,height,test,psfW,psfH,isComplex);
     }
 
     /**
@@ -1769,58 +1769,28 @@ public class CommonUtils {
         //   D | C     ->
         //   -----     -> Image
         //   B | A     ->
-
-        if (isComplex) {    //TODO not changing for now
-            //Here we are writing at 2*(i+j*hght)
-            //Bloc haut a gauche: D
-            for(int j = 0; j < demiPsfW; j++){
-                for(int i = 0; i < demiPsfH; i++){
-                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
-                }
+        //Bloc haut a gauche: bloc psf D
+        for(int j = 0; j < demiPsfH; j++){
+            for(int i = 0; i < demiPsfW; i++){
+                imageout[i+j*imageWidth] = imagePsf[(demiPsfW+i)+(demiPsfH+j)*psfWidth];
             }
-            //bloc haut a droite: C
-            for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
-                for(int i = 0; i < demiPsfH; i++){
-                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW-imageWidth+j)*psfHeight];
-                }
+        }
+        //bloc haut a droite: bloc psf C
+        for(int j = 0; j < demiPsfH; j++){
+            for(int i = imageWidth-demiPsfW; i < imageWidth ; i++){
+                imageout[i+j*imageWidth] = imagePsf[(demiPsfW-imageWidth+i)+(demiPsfH+j)*psfWidth];
             }
-            //bloc bas a gauche: B
-            for(int j = 0; j < demiPsfW; j++){
-                for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW+j)*psfHeight];
-                }
+        }
+        //bloc bas a gauche: bloc psf B
+        for(int j = imageHeight-demiPsfH; j < imageHeight; j++){
+            for(int i = 0; i < demiPsfW; i++){
+                imageout[i+j*imageWidth] = imagePsf[(demiPsfW+i)+(demiPsfH-imageHeight+j)*psfWidth];
             }
-            //bloc bas a droite: A
-            for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
-                for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW-imageWidth+j)*psfHeight];
-                }
-            }
-        }else{
-            //Here we are writing at (i+j*hght)
-            //Bloc haut a gauche: D
-            for(int j = 0; j < demiPsfW; j++){
-                for(int i = 0; i < demiPsfH; i++){
-                    imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
-                }
-            }
-            //bloc haut a droite: C
-            for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
-                for(int i = 0; i < demiPsfH; i++){
-                    imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW-imageWidth+j)*psfHeight];
-                }
-            }
-            //bloc bas a gauche: B
-            for(int j = 0; j < demiPsfW; j++){
-                for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                    imageout[i+j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW+j)*psfHeight];
-                }
-            }
-            //bloc bas a droite: A
-            for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
-                for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                    imageout[i+j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW-imageWidth+j)*psfHeight];
-                }
+        }
+        //bloc bas a droite: bloc psf A
+        for(int j = imageHeight-demiPsfH; j < imageHeight; j++){
+            for(int i = imageWidth-demiPsfW; i < imageWidth; i++){
+                imageout[i+j*imageWidth] = imagePsf[(demiPsfW-imageWidth+i)+(demiPsfH-imageHeight+j)*psfWidth];
             }
         }
         return imageout;
@@ -1899,28 +1869,29 @@ public class CommonUtils {
         //   -----     -> Image
         //   B | A     ->
         //Here we are writing at (i+j*imageHeight)
+        int coef = isComplex ? 1 : 1;
         //Bloc haut a gauche: D
-        for(int j = 0; j < demiPsfW; j++){
-            for(int i = 0; i < demiPsfH; i++){
-                imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
+        for(int j = 0; j < demiPsfH; j++){
+            for(int i = 0; i < demiPsfW; i++){
+                imageout[i+coef*j*imageWidth] = imagePsf[(demiPsfW+i)+(demiPsfH+j)*psfWidth];
             }
         }
         //bloc haut a droite: C
-        for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
-            for(int i = 0; i < demiPsfH; i++){
-                imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW-imageWidth+j)*psfHeight];
+        for(int j = 0; j < demiPsfH; j++){
+            for(int i = imageWidth-demiPsfW; i < imageWidth ; i++){
+                imageout[i+coef*j*imageWidth] = imagePsf[(demiPsfW-imageWidth+i)+(demiPsfH+j)*psfWidth];
             }
         }
         //bloc bas a gauche: B
-        for(int j = 0; j < demiPsfW; j++){
-            for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                imageout[i+j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW+j)*psfHeight];
+        for(int j = imageHeight-demiPsfH; j < imageHeight; j++){
+            for(int i = 0; i < demiPsfW; i++){
+                imageout[i+coef*j*imageWidth] = imagePsf[(demiPsfW+i)+(demiPsfH-imageHeight+j)*psfWidth];
             }
         }
         //bloc bas a droite: A
-        for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
-            for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                imageout[i+j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW-imageWidth+j)*psfHeight];
+        for(int j = imageHeight-demiPsfH; j < imageHeight; j++){
+            for(int i = imageWidth-demiPsfW; i < imageWidth; i++){
+                imageout[i+coef*j*imageWidth] = imagePsf[(demiPsfW-imageWidth+i)+(demiPsfH-imageHeight+j)*psfWidth];
             }
         }
         return imageout;
