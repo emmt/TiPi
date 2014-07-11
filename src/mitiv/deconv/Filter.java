@@ -55,17 +55,17 @@ public class Filter{
     public double[][] wiener(double alpha, double[][] FFT_PSF, double[][] FFTImage) {
         this.FFT_PSF = FFT_PSF;
         this.FFT_Image = FFTImage;
-        height = FFTImage.length;
-        width = FFTImage[0].length/2;
+        width = FFTImage.length;
+        height = FFTImage[0].length/2;
         cc = FFT_PSF[0][0]*FFT_PSF[0][0]+FFT_PSF[0][1]*FFT_PSF[0][1];
         return wiener(alpha);
     }
 
     public double[][] wiener(double alpha) {
         double a,b,c,d,q;
-        double[][]out = new double[height][2*width];
-        for(int j = 0; j<width; j++){
-            for(int i=0;i<height;i++){
+        double[][]out = new double[width][2*height];
+        for(int j = 0; j<height; j++){
+            for(int i=0;i<width;i++){
                 a = FFT_PSF[i][2*j];
                 b = FFT_PSF[i][2*j+1];
                 c = FFT_Image[i][2*j];
@@ -88,22 +88,22 @@ public class Filter{
         this.FFT_Image1D = FFTImage;
         width = Width;
         height = Height;
-        cc = FFT_PSF1D[0]*FFT_PSF1D[0]+FFT_PSF1D[2*height]*FFT_PSF1D[2*height];
+        cc = FFT_PSF1D[0]*FFT_PSF1D[0]+FFT_PSF1D[2*width]*FFT_PSF1D[2*width];
         return wiener1D(alpha);
     }
 
     public double[] wiener1D(double alpha) {
         double a,b,c,d,q;
         double[]out = new double[width*2*height];
-        for(int j = 0; j < width; j++){
-            for(int i = 0; i < height; i++){
-                a = FFT_PSF1D[2*i    +2*j*height];
-                b = FFT_PSF1D[2*i+1  +2*j*height];
-                c = FFT_Image1D[2*i  +2*j*height];
-                d = FFT_Image1D[2*i+1+2*j*height];
+        for(int j = 0; j < height; j++){
+            for(int i = 0; i < width; i++){
+                a = FFT_PSF1D[2*i    +2*j*width];
+                b = FFT_PSF1D[2*i+1  +2*j*width];
+                c = FFT_Image1D[2*i  +2*j*width];
+                d = FFT_Image1D[2*i+1+2*j*width];
                 q = 1.0/(a*a + b*b + cc*alpha);
-                out[2*i+   2*j*height] = (a*c + b*d)*q;
-                out[2*i+1 +2*j*height] = (a*d - b*c)*q;
+                out[2*i+   2*j*width] = (a*c + b*d)*q;
+                out[2*i+1 +2*j*width] = (a*d - b*c)*q;
             }
         }
         return out;
@@ -128,8 +128,8 @@ public class Filter{
         height = FFTImage[0].length/2;
         double e,f;
         tabcc = new double[width][height];
-        for(int i = 0; i<width; i++){
-            for(int j = 0; j<height; j++){
+        for(int j = 0; j<height; j++){
+            for(int i = 0; i<width; i++){
                 if(i <= width/2){
                     e = ((double)i/width);
                 }else{
@@ -149,8 +149,8 @@ public class Filter{
     public double[][] wienerQuad(double alpha) {
         double a,b,c,d,q;
         double[][]out = new double[width][2*height];
-        for(int i = 0; i<width; i++){
-            for(int j=0; j<height; j++){
+        for(int j = 0; j<height; j++){
+            for(int i=0; i<width; i++){
                 a = FFT_PSF[i][2*j];
                 b = FFT_PSF[i][2*j+1];
                 c = FFT_Image[i][2*j];
@@ -171,19 +171,19 @@ public class Filter{
         double e,f;
         tabcc1D = new double[width*height];
 
-        for(int j = 0; j<width; j++){
-            for(int i = 0; i<height; i++){
-                if(j<=width/2){
-                    e = ((double)j/width);
+        for(int j = 0; j<height; j++){
+            for(int i = 0; i<width; i++){
+                if(j<=height/2){
+                    e = ((double)j/height);
                 }else{
-                    e = ((double)(j-width)/width);
+                    e = ((double)(j-height)/height);
                 }
-                if(i<=height/2){
-                    f = ((double)i/height);
+                if(i<=width/2){
+                    f = ((double)i/width);
                 }else{
-                    f = ((double)(i-height)/height);
+                    f = ((double)(i-width)/width);
                 }
-                tabcc1D[i+j*height] = 4*Math.PI*Math.PI*(e*e+f*f);
+                tabcc1D[i+j*width] = 4*Math.PI*Math.PI*(e*e+f*f);
             }
         }
         return wienerQuad1D(alpha);
@@ -192,15 +192,15 @@ public class Filter{
     public double[] wienerQuad1D(double alpha) {
         double a,b,c,d,q;
         double[]out = new double[width*2*height];
-        for(int j = 0; j < width; j++){
-            for(int i = 0; i < height; i++){
-                a = FFT_PSF1D[2*i    +2*j*height];
-                b = FFT_PSF1D[2*i+1  +2*j*height];
-                c = FFT_Image1D[2*i  +2*j*height];
-                d = FFT_Image1D[2*i+1+2*j*height];
-                q = 1.0/(a*a + b*b + tabcc1D[i+j*height]*alpha);
-                out[2*i+   2*j*height] = (a*c + b*d)*q;
-                out[2*i+1 +2*j*height] = (a*d - b*c)*q;
+        for(int j = 0; j < height; j++){
+            for(int i = 0; i < width; i++){
+                a = FFT_PSF1D[2*i    +2*j*width];
+                b = FFT_PSF1D[2*i+1  +2*j*width];
+                c = FFT_Image1D[2*i  +2*j*width];
+                d = FFT_Image1D[2*i+1+2*j*width];
+                q = 1.0/(a*a + b*b + tabcc1D[i+j*width]*alpha);
+                out[2*i+   2*j*width] = (a*c + b*d)*q;
+                out[2*i+1 +2*j*width] = (a*d - b*c)*q;
             }
         }
         return out;

@@ -163,7 +163,7 @@ public class DeconvUtils {
             } else {
                 this.imageVect = CommonUtils.imageToVector(imageSpace, image, singlePrecision , isComplex);
             }
-          //we will not create a complex now (cf pad)
+            //we will not create a complex now (cf pad)
             this.imagePsfVect = CommonUtils.imageToVector(psfSpace, PSF, singlePrecision, false); 
         }
         width = image.getWidth();
@@ -313,9 +313,9 @@ public class DeconvUtils {
 
     private void scale(double[][] array){
         double scale = 1.0/(width*height);
-        for (int i = 0; i < array[0].length; i++) {
-            for (int j = 0; j < array.length; j++) {
-                array[j][i]*=scale;
+        for (int j = 0; j < array[0].length; j++) {
+            for (int i = 0; i < array.length; i++) {
+                array[i][j]*=scale;
             }
         }
     }
@@ -329,9 +329,9 @@ public class DeconvUtils {
 
     private void scale(float[][] array){
         double scale = 1.0/(width*height);
-        for (int i = 0; i < array[0].length; i++) {
-            for (int j = 0; j < array.length; j++) {
-                array[j][i]*=scale;
+        for (int j = 0; j < array[0].length; j++) {
+            for (int i = 0; i < array.length; i++) {
+                array[i][j]*=scale;
             }
         }
     }
@@ -339,7 +339,7 @@ public class DeconvUtils {
 
     public void FFT(double[][] array) {
         if(fft == null){
-            fft = new DoubleFFT_2D(height, width);
+            fft = new DoubleFFT_2D(width, height);
         }
         fft.realForwardFull(array);
     }
@@ -351,7 +351,7 @@ public class DeconvUtils {
      */
     public void FFT(float[][] array) {
         if(fftFloat == null){
-            fftFloat = new FloatFFT_2D(height, width);
+            fftFloat = new FloatFFT_2D(width, height);
         }
         fftFloat.realForwardFull(array);
     }

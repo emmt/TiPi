@@ -275,7 +275,7 @@ public class Deconvolution{
         if (useVectors) {
             return firstDeconvolutionQuad(alpha, PROCESSING_VECTOR);
         } else {
-            return firstDeconvolutionQuad(alpha, PROCESSING_2D);
+            return firstDeconvolutionQuad(alpha, PROCESSING_1D);
         }
     }
 
@@ -311,7 +311,7 @@ public class Deconvolution{
         if (useVectors) {
             return nextDeconvolutionQuad(alpha, PROCESSING_VECTOR);
         } else {
-            return nextDeconvolutionQuad(alpha, PROCESSING_2D);
+            return nextDeconvolutionQuad(alpha, PROCESSING_1D);
         }
     }
 
