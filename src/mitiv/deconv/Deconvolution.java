@@ -511,7 +511,7 @@ public class Deconvolution{
      */
     private BufferedImage firstDeconvolutionCGNormal(double alpha){
         boolean verbose = false;
-        space = new DoubleVectorSpaceWithRank(utils.width, utils.height);
+        space = new DoubleVectorSpaceWithRank(utils.height, utils.width);
         if (vector_psf == null) {
             vector_psf = space.wrap(utils.psfPadding1D(false));
         }
@@ -536,7 +536,7 @@ public class Deconvolution{
         if (verbose) {
             parseOuputCG(outputValue); //print nothing if good, print in err else
         }
-        return(utils.arrayToImage1D(x.getData(), correction, false));
+        return (utils.arrayToImage1D(x.getData(), correction, false));
     }
 
     /**
