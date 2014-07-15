@@ -68,7 +68,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     //Mydata
     EzVarText options = new EzVarText("Regularization", new String[] { wiener,quad,cg}, 0, false);
     EzVarText correction = new EzVarText("Output", new String[] { normal,corrected,colormap,correctColormap}, 0, false);
-    //EzVarBoolean  varBoolean;
+    EzVarBoolean  varBoolean = new EzVarBoolean("Is PSF splitted ?", false);
     EzVarSequence sequencePSF = new EzVarSequence("PSF");
     EzVarSequence sequenceImage = new EzVarSequence("Image");
 
@@ -139,14 +139,15 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     private BufferedImage firstJob(int job){
         thread = new ThreadCG(this);
         thread.start();
+        boolean isSplitted = varBoolean.getValue();
         switch (job) {
         //First value correspond to next job with alpha = 0, not all are equal to 1
         case DeconvUtils.JOB_WIENER: 
-            return (deconvolution.firstDeconvolution(muMin));
+            return (deconvolution.firstDeconvolution(muMin, isSplitted));
         case DeconvUtils.JOB_QUAD:
-            return (deconvolution.firstDeconvolutionQuad(muMin));
+            return (deconvolution.firstDeconvolutionQuad(muMin, isSplitted));
         case DeconvUtils.JOB_CG:
-            return (deconvolution.firstDeconvolutionCG(muMin));
+            return (deconvolution.firstDeconvolutionCG(muMin, isSplitted));
         default:
             throw new IllegalArgumentException("Invalid Job");
         }
@@ -180,6 +181,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         slider.setEnabled(false);  
         label = new JLabel("                     ");
         super.addEzComponent(sequencePSF);
+        super.addEzComponent(varBoolean);
         super.addEzComponent(sequenceImage);
         super.addEzComponent(options);
         super.addEzComponent(correction);

@@ -311,7 +311,7 @@ public class Deconvolution{
             return firstDeconvolutionQuad(alpha, standardProcessing, false);
         }
     }
-    
+
     public BufferedImage firstDeconvolutionQuad(double alpha, boolean isPsfSplitted){
         if (useVectors) {
             return firstDeconvolutionQuad(alpha, PROCESSING_VECTOR, isPsfSplitted);
@@ -476,7 +476,7 @@ public class Deconvolution{
     public BufferedImage firstDeconvolutionCG(double alpha){
         return firstDeconvolutionCG(alpha, PROCESSING_VECTOR, false);
     }
-    
+
     public BufferedImage firstDeconvolutionCG(double alpha, boolean isPsfSplitted){
         return firstDeconvolutionCG(alpha, PROCESSING_VECTOR, isPsfSplitted);
     }
@@ -512,13 +512,14 @@ public class Deconvolution{
     private BufferedImage firstDeconvolutionCGNormal(double alpha){
         boolean verbose = false;
         space = new DoubleVectorSpaceWithRank(utils.height, utils.width);
-        if (vector_psf == null) {
+        if (isPsfSplitted) {
+            vector_psf = space.wrap(utils.psfToArray1D(false));
+        } else {
             vector_psf = space.wrap(utils.psfPadding1D(false));
         }
-        if (vector_image == null) {
-                vector_image = space.wrap(utils.imageToArray1D(false));
-        }
+        vector_image = space.wrap(utils.imageToArray1D(false));
         /*//We should use this one BUT as there is only CG with vectors, then in the case of no vectors, there is no imageVect
+        In others words, if useVectors is False, getImageVect return null.
         if (vector_image == null) {
             vector_image = (DoubleVector) utils.getImageVect();
         }
