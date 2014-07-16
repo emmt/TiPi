@@ -52,6 +52,14 @@ public class Filter{
     //vector
     Vector image;
 
+    /**
+     * Apply the Wiener filter
+     * 
+     * @param alpha
+     * @param FFT_PSF
+     * @param FFTImage
+     * @return An array
+     */
     public double[][] wiener(double alpha, double[][] FFT_PSF, double[][] FFTImage) {
         this.FFT_PSF = FFT_PSF;
         this.FFT_Image = FFTImage;
@@ -61,6 +69,13 @@ public class Filter{
         return wiener(alpha);
     }
 
+    /**
+     * Apply the Wiener filter
+     * Quick version (need to call Wiener with full arguments at least once) 
+     * 
+     * @param alpha
+     * @return An array
+     */
     public double[][] wiener(double alpha) {
         double a,b,c,d,q;
         double[][]out = new double[width][2*height];
@@ -83,6 +98,16 @@ public class Filter{
         return out;
     }
 
+    /**
+     * Apply the Wiener filter on 1D input
+     * 
+     * @param alpha
+     * @param FFT_PSF
+     * @param FFTImage
+     * @param Width
+     * @param Height
+     * @return An array
+     */
     public double[] wiener1D(double alpha, double[] FFT_PSF,double[] FFTImage, int Width, int Height) {
         this.FFT_PSF1D = FFT_PSF;
         this.FFT_Image1D = FFTImage;
@@ -92,6 +117,13 @@ public class Filter{
         return wiener1D(alpha);
     }
 
+    /**
+     * Apply the Wiener filter on 1D input
+     * Quick version (need to call Wiener1D with full arguments at least once) 
+     * 
+     * @param alpha
+     * @return An arrray
+     */
     public double[] wiener1D(double alpha) {
         double a,b,c,d,q;
         double[]out = new double[width*2*height];
@@ -109,6 +141,14 @@ public class Filter{
         return out;
     }
 
+    /**
+     * Apply the Wiener filter on Vector
+     * 
+     * @param alpha
+     * @param PSF
+     * @param image
+     * @return A vector
+     */
     public Vector wienerVect(double alpha, Vector PSF, Vector image) {
         this.image = image;
         int[]shape = ((DoubleVectorSpaceWithRank)image.getSpace()).cloneShape();
@@ -116,11 +156,26 @@ public class Filter{
         return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
     }
 
+    /**
+     * Apply the Wiener filter on Vector
+     * Quick version (need to call Wiener1D with full arguments at least once)
+     * 
+     * @param alpha
+     * @return A vector
+     */
     public Vector wienerVect(double alpha) {
         double[] out = wiener1D(alpha);
         return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
     }
 
+    /**
+     * Apply the Wiener filter with quadratic approximation on Vector
+     * 
+     * @param alpha
+     * @param FFT_PSF
+     * @param FFTImage
+     * @return An array
+     */
     public double[][] wienerQuad(double alpha, double[][] FFT_PSF,double[][] FFTImage) {
         this.FFT_PSF = FFT_PSF;
         this.FFT_Image = FFTImage;
@@ -146,6 +201,13 @@ public class Filter{
         return wienerQuad(alpha);
     }
 
+    /**
+     * Apply the Wiener filter with quadratic approximation on Vector
+     * Quick version (need to call WienerQuad with full arguments at least once)
+     * 
+     * @param alpha
+     * @return An array
+     */
     public double[][] wienerQuad(double alpha) {
         double a,b,c,d,q;
         double[][]out = new double[width][2*height];
@@ -163,6 +225,16 @@ public class Filter{
         return out;
     }
 
+    /**
+     * Apply the Wiener filter with quadratic approximation on 1D input
+     * 
+     * @param alpha
+     * @param FFT_PSF
+     * @param FFTImage
+     * @param Width 
+     * @param Height 
+     * @return An array
+     */
     public double[] wienerQuad1D(double alpha, double[] FFT_PSF,double[] FFTImage, int Width, int Height) {
         this.FFT_PSF1D = FFT_PSF;
         this.FFT_Image1D = FFTImage;
@@ -188,6 +260,13 @@ public class Filter{
         return wienerQuad1D(alpha);
     }
 
+    /**
+     * Apply the Wiener filter with quadratic approximation on 1D
+     * Quick version (need to call WienerQuad with full arguments at least once)
+     * 
+     * @param alpha
+     * @return An array
+     */
     public double[] wienerQuad1D(double alpha) {
         double a,b,c,d,q;
         double[]out = new double[width*2*height];
@@ -205,6 +284,14 @@ public class Filter{
         return out;
     }
 
+    /**
+     * Apply the Wiener filter with quadratic approximation on Vector
+     * 
+     * @param alpha
+     * @param PSF 
+     * @param image 
+     * @return A vector
+     */
     public Vector wienerQuadVect(double alpha, Vector PSF, Vector image) {
         this.image = image;
         int[]shape = ((DoubleVectorSpaceWithRank)image.getSpace()).cloneShape();
@@ -212,6 +299,13 @@ public class Filter{
         return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
     }
 
+    /**
+     * Apply the Wiener filter with quadratic approximation on Vector
+     * Quick version (need to call WienerQuad with full arguments at least once)
+     * 
+     * @param alpha
+     * @return A vector
+     */
     public Vector wienerQuadVect(double alpha) {
         double[] out = wienerQuad1D(alpha);
         return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);

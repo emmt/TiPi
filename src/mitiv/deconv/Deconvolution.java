@@ -39,9 +39,19 @@ import mitiv.utils.CommonUtils;
  *
  */
 public class Deconvolution{
+    /**
+     * Compute all the operations with 2D arrays
+     */
     public static final int PROCESSING_2D = 0;
+    /**
+     * Compute all the operations with 1D arrays
+     */
     public static final int PROCESSING_1D = 1; 
+    /**
+     * Compute all the operations with Vectors i.e 1D vector
+     */
     public static final int PROCESSING_VECTOR = 2; 
+    
     private int standardProcessing = PROCESSING_1D;
 
     DeconvUtils utils;
@@ -127,9 +137,7 @@ public class Deconvolution{
      * Options: job
      * 
      * @param alpha
-     * @param FFT_PSF
-     * @param FFTImage
-     * @return
+     * @return The bufferedImage for the input value given
      */
     public BufferedImage firstDeconvolution(double alpha){
         if (useVectors) {
@@ -147,9 +155,8 @@ public class Deconvolution{
      * Options: job
      * 
      * @param alpha
-     * @param FFT_PSF
-     * @param FFTImage
-     * @return
+     * @param isPsfSplitted IF the psf is centered or not
+     * @return The bufferedImage for the input value given
      */
     public BufferedImage firstDeconvolution(double alpha , boolean isPsfSplitted){
         if (useVectors) {
@@ -166,7 +173,8 @@ public class Deconvolution{
      * 
      * @param alpha
      * @param job see static PROCESSING_?
-     * @return
+     * @param isPsfSplitted isPsfSplitted If the psf is centered or not
+     * @return The bufferedImage for the input value given
      */
     public BufferedImage firstDeconvolution(double alpha, int job, boolean isPsfSplitted){
         this.isPsfSplitted = isPsfSplitted;
@@ -189,7 +197,7 @@ public class Deconvolution{
      * option: job
      * 
      * @param alpha
-     * @return
+     * @return The bufferedImage for the input value given
      */
     public BufferedImage nextDeconvolution(double alpha){
         if (useVectors) {
@@ -199,6 +207,14 @@ public class Deconvolution{
         }
     }
 
+    /**
+     * Simple filter based on the wiener filter.
+     * This should be used for the first time.
+     * 
+     * @param alpha
+     * @param job see static PROCESSING_?
+     * @return The bufferedImage for the input value given
+     */
     public BufferedImage nextDeconvolution(double alpha, int job){
         switch (job) {
         case PROCESSING_1D:
@@ -216,7 +232,7 @@ public class Deconvolution{
      * First deconvolution for the wiener filter
      * 
      * @param alpha
-     * @return deconvoluated image
+     * @return The bufferedImage for the input value given
      */
     private BufferedImage firstDeconvolutionSimple(double alpha){
         image = utils.imageToArray(true);
@@ -237,7 +253,7 @@ public class Deconvolution{
      * of 2FFT + 1 inverse FFT
      * 
      * @param alpha
-     * @return deconvoluated image
+     * @return The bufferedImage for the input value given
      */
     private BufferedImage nextDeconvolutionSimple(double alpha){
         double[][] out = wiener.wiener(alpha);
@@ -249,7 +265,7 @@ public class Deconvolution{
      * First deconvolution for the wiener filter
      * 
      * @param alpha
-     * @return deconvoluated image
+     * @return The bufferedImage for the input value given
      */
     private BufferedImage firstDeconvolutionSimple1D(double alpha){
         image1D = utils.imageToArray1D(true);
@@ -270,7 +286,7 @@ public class Deconvolution{
      * of 2FFT + 1 inverse FFT
      * 
      * @param alpha
-     * @return deconvoluated image
+     * @return The bufferedImage for the input value given
      */
     private BufferedImage nextDeconvolutionSimple1D(double alpha){
         double[] out = wiener.wiener1D(alpha);
@@ -279,7 +295,7 @@ public class Deconvolution{
     }
 
     private BufferedImage firstDeconvolutionVector(double alpha){
-        vector_image = (DoubleVector) utils.getImageVect();
+        vector_image = (DoubleVector) utils.cloneImageVect();
         vector_psf = (DoubleVector) utils.getPsfPadVect();
         //TODO add getPsfVect need change on opening of the image
         utils.FFT1D(vector_image);
@@ -302,7 +318,7 @@ public class Deconvolution{
      * option: job
      * 
      * @param alpha
-     * @return
+     * @return The bufferedImage for the input value given
      */ 
     public BufferedImage firstDeconvolutionQuad(double alpha){
         if (useVectors) {
@@ -312,6 +328,11 @@ public class Deconvolution{
         }
     }
 
+    /**
+     * @param alpha
+     * @param isPsfSplitted If the psf is centered or not
+     * @return The bufferedImage for the input value given
+     */
     public BufferedImage firstDeconvolutionQuad(double alpha, boolean isPsfSplitted){
         if (useVectors) {
             return firstDeconvolutionQuad(alpha, PROCESSING_VECTOR, isPsfSplitted);
@@ -326,7 +347,8 @@ public class Deconvolution{
      * 
      * @param alpha
      * @param job see static PROCESSING_?
-     * @return
+     * @param isPsfSplitted isPsfSplitted If the psf is centered or not
+     * @return The bufferedImage for the input value given
      */ 
     public BufferedImage firstDeconvolutionQuad(double alpha, int job, boolean isPsfSplitted){
         this .isPsfSplitted = isPsfSplitted;
@@ -347,7 +369,7 @@ public class Deconvolution{
      * After the initialization use this function
      * 
      * @param alpha
-     * @return
+     * @return The bufferedImage for the input value given
      */
     public BufferedImage nextDeconvolutionQuad(double alpha){
         if (useVectors) {
@@ -363,7 +385,7 @@ public class Deconvolution{
      * 
      * @param alpha
      * @param job see static PROCESSING_?
-     * @return
+     * @return The bufferedImage for the input value given
      */
     public BufferedImage nextDeconvolutionQuad(double alpha, int job){
         switch (job) {
@@ -382,7 +404,7 @@ public class Deconvolution{
      * First deconvolution with quadratic option
      * 
      * @param alpha
-     * @return deconvoluated image
+     * @return The bufferedImage for the input value given
      */
     private BufferedImage firstDeconvolutionQuadSimple(double alpha){
         image = utils.imageToArray(true);
@@ -403,7 +425,7 @@ public class Deconvolution{
      * of 2FFT + 1 inverse FFT
      * 
      * @param alpha
-     * @return deconvoluated image
+     * @return The bufferedImage for the input value given
      */
     private BufferedImage nextDeconvolutionQuadSimple(double alpha){
         double[][] out = wiener.wienerQuad(alpha);
@@ -415,7 +437,7 @@ public class Deconvolution{
      * First deconvolution with quadratic option and use in internal only 1D arrays
      * 
      * @param alpha
-     * @return deconvoluated image
+     * @return The bufferedImage for the input value given
      */
     private BufferedImage firstDeconvolutionQuad1D(double alpha){
         image1D = utils.imageToArray1D(true);
@@ -436,7 +458,7 @@ public class Deconvolution{
      * of 2FFT + 1 inverse FFT, with 1D arrays optimization
      * 
      * @param alpha
-     * @return deconvoluated image
+     * @return The bufferedImage for the input value given
      */
     private BufferedImage nextDeconvolutionQuad1D(double alpha){
         double[] out = wiener.wienerQuad1D(alpha);
@@ -445,7 +467,7 @@ public class Deconvolution{
     }
 
     private BufferedImage firstDeconvolutionQuadVector(double alpha){
-        vector_image = (DoubleVector) utils.getImageVect();
+        vector_image = (DoubleVector) utils.cloneImageVect();
         vector_psf = (DoubleVector) utils.getPsfPadVect();
         utils.FFT1D(vector_image);
         utils.FFT1D(vector_psf);
@@ -473,14 +495,35 @@ public class Deconvolution{
         }
     }
 
+    /**
+     * Use the conjugate gradients to deconvoluate the image
+     * 
+     * @param alpha
+     * @return The bufferedImage for the input value given
+     */
     public BufferedImage firstDeconvolutionCG(double alpha){
         return firstDeconvolutionCG(alpha, PROCESSING_VECTOR, false);
     }
 
+    /**
+     * Use the conjugate gradients to deconvoluate the image
+     * 
+     * @param alpha
+     * @param isPsfSplitted If the psf is centered or not
+     * @return The bufferedImage for the input value given
+     */
     public BufferedImage firstDeconvolutionCG(double alpha, boolean isPsfSplitted){
         return firstDeconvolutionCG(alpha, PROCESSING_VECTOR, isPsfSplitted);
     }
 
+    /**
+     * Use the conjugate gradients to deconvoluate the image
+     * 
+     * @param alpha
+     * @param job see static PROCESSING_?
+     * @param isPsfSplitted If the psf is centered or not
+     * @return The bufferedImage for the input value given
+     */
     public BufferedImage firstDeconvolutionCG(double alpha, int job, boolean isPsfSplitted){
         this.isPsfSplitted = isPsfSplitted;
         switch (job) {
@@ -491,10 +534,25 @@ public class Deconvolution{
         }
     }
 
+    /**
+     * Use the conjugate gradients to deconvoluate the image.<br>
+     * Do less computations and allocations.
+     * 
+     * @param alpha
+     * @return The bufferedImage for the input value given
+     */
     public BufferedImage nextDeconvolutionCG(double alpha){
         return nextDeconvolutionCG(alpha, PROCESSING_VECTOR);
     }
 
+    /**
+     * Use the conjugate gradients to deconvoluate the image.<br>
+     * Do less computations and allocations.
+     * 
+     * @param alpha
+     * @param job see static PROCESSING_?
+     * @return The bufferedImage for the input value given
+     */
     public BufferedImage nextDeconvolutionCG(double alpha, int job){
         switch (job) {
         case PROCESSING_VECTOR:
@@ -507,7 +565,7 @@ public class Deconvolution{
      * Use the conjugate gradients to deconvoluate the image
      * 
      * @param alpha
-     * @return deconvoluated image
+     * @return The bufferedImage for the input value given
      */
     private BufferedImage firstDeconvolutionCGNormal(double alpha){
         boolean verbose = false;
@@ -541,9 +599,11 @@ public class Deconvolution{
     }
 
     /**
+     * Use the conjugate gradients to deconvoluate the image.<br>
+     * Do less computations and allocations.
+     * 
      * @param alpha
-     * @return deconvoluated image
-     * @throws  
+     * @return The bufferedImage for the input value given
      */
     private BufferedImage nextDeconvolutionCGNormal(double alpha){
         boolean verbose = false;
@@ -556,6 +616,9 @@ public class Deconvolution{
         return(utils.arrayToImage1D(x.getData(), correction, false));
     }
 
+    /**
+     * @return The value of the result of the computation of the gradients
+     */
     public int getOuputValue(){
         return outputValue;
     }
