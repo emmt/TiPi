@@ -25,6 +25,7 @@
 
 package mitiv.deconv;
 
+import mitiv.exception.IncorrectSpaceException;
 import mitiv.exception.NotImplementedException;
 import mitiv.linalg.DoubleVector;
 import mitiv.linalg.FloatVector;
@@ -32,90 +33,153 @@ import mitiv.linalg.LinearOperator;
 import mitiv.linalg.RealComplexFFT;
 import mitiv.linalg.Utils;
 import mitiv.linalg.Vector;
+import mitiv.linalg.VectorSpace;
 
 /**
+ * Implements a FFT-based convolution.
  * 
- * @author Leger Jonathan
- *
+ * <p>
+ * The convolution operator {@code H} writes:
+ * <pre>
+ *   H = F'.diag(F.h).F</pre>
+ * with {@code F} the FFT (Fast Fourier Transform) operator and {@code h} the
+ * PSF (Point Spread Function).
+ * 
+ * @author Jonathan Léger
  */
 public class ConvolutionOperator extends LinearOperator {
 
     protected RealComplexFFT FFT = null;
     protected Vector mtf;
     protected Vector tmp;
-    protected int size = 0; // number of values in the direct space
-    
+    protected final int number; // number of values in the direct space
+    private final boolean single;
+
     /**
-     * The goal of the convolution operator is to make the operation:
-     * F'.diag(ĥ).F
+     * Create a new FFT-based convolution operator given the PSF.
      * 
-     * @param FFT
-     * @param psf
+     * @param FFT - The Fast Fourier Transform operator.
+     * @param psf - The point spread function.
      */
     public ConvolutionOperator(RealComplexFFT FFT, Vector psf) {
-        super(FFT.getInputSpace());
-        this.FFT = FFT;
-        mtf = FFT.getOutputSpace().create();
-        FFT.apply(psf, mtf);
-        tmp = FFT.getOutputSpace().create();
-        size = FFT.getInputSpace().getSize();
+        this(FFT, psf, null);
     }
 
+    /**
+     * Create a new FFT-based convolution operator given the PSF or the MTF.
+     * 
+     * <p>
+     * At least one of the point spread function (PSF) or the modulation
+     * transfer function (MTF) must be given (that is non-{@code null}).
+     * If {@code mtf} is not {@code null} it is used as the MTF; otherwise
+     * the FFT operator is applied to {@code psf} to compute the MTF.
+     * Note that if the MTF is directly provided, a simple reference to
+     * {@code mtf} is kept by the operator.  Thus, you may have to clone
+     * {@code mtf} if you intend to modify its contents while using the
+     * operator.
+     * 
+     * @param FFT - The Fast Fourier Transform operator.
+     * @param psf - The point spread function (PSF) or {@code null}.
+     * @param mtf - The modulation transfer function (MTF) or {@code null}.
+     * @param mtf - If true, {@code h} is the MTF; otherwise, {@code h} is
+     *              the PSF.  Note that if {@code h} is the MTF, a simple
+     *              reference to it is kept by the operator.  Thus, you
+     *              should clone {@code h} if you intend to modify its
+     *              contents while using the operator.
+     */
+    public ConvolutionOperator(RealComplexFFT FFT, Vector psf, Vector mtf) {
+        super(FFT.getInputSpace());
+        VectorSpace realSpace = FFT.getInputSpace();
+        VectorSpace complexSpace = FFT.getOutputSpace();
+        if (psf != null && ! psf.belongsTo(realSpace)) {
+            throw new IncorrectSpaceException("PSF must belong to the input space of the FFT operator");
+        }
+        if (mtf != null && ! mtf.belongsTo(complexSpace)) {
+            throw new IncorrectSpaceException("MTF must belong to the output space of the FFT operator");
+        }
+        if (mtf == null) {
+            if (psf == null) {
+                throw new NullPointerException("At least one of PSF or MTF must be non-null");
+            }
+            this.mtf = complexSpace.create();
+            FFT.apply(psf, this.mtf);
+        } else {
+            this.mtf = mtf;
+        }
+        this.FFT = FFT;
+        tmp = complexSpace.create();
+        number = realSpace.getSize();
+        int type = realSpace.getType();
+        single = (type == Utils.TYPE_FLOAT);
+        if (! single && type != Utils.TYPE_DOUBLE) {
+            throw new IllegalArgumentException("Only float and double types supported");
+        }
+    }
+
+    @Override
     protected void privApply(final Vector src, Vector dst, int job) {
         if (job != DIRECT && job != ADJOINT) {
             throw new NotImplementedException("For now we do not implement inverse convolution operations "+
                     "(talk to Éric if you ignore the dangers of doing that!)");
         }
         FFT.apply(src, tmp, DIRECT);
-        if (inputSpace.getType() == Utils.TYPE_DOUBLE) {
-            final double[] h = ((DoubleVector)mtf).getData();
-            double[] z = ((DoubleVector)tmp).getData(); 
-            if (job == DIRECT) {
-                for (int k = 0; k < size; ++k) {
-                    double h_re = h[2*k];
-                    double h_im = h[2*k+1];
-                    double z_re = z[2*k];
-                    double z_im = z[2*k+1];
-                    z[2*k]   = h_re*z_re - h_im*z_im;
-                    z[2*k+1] = h_re*z_im + h_im*z_re;
-                }
-            } else {
-                for (int k = 0; k < size; ++k) {
-                    double h_re = h[2*k];
-                    double h_im = h[2*k+1];
-                    double z_re = z[2*k];
-                    double z_im = z[2*k+1];
-                    z[2*k]   = h_re*z_re + h_im*z_im;
-                    z[2*k+1] = h_re*z_im - h_im*z_re;
-                }
-            }
-        } else if (inputSpace.getType() == Utils.TYPE_FLOAT) {
+        if (single) {
+            /* Single precision version. */
             final float[] h = ((FloatVector)mtf).getData();
-            float[] z = ((FloatVector)tmp).getData(); 
+            float[] z = ((FloatVector)tmp).getData();
             if (job == DIRECT) {
-                for (int k = 0; k < size; ++k) {
-                    float h_re = h[2*k];
-                    float h_im = h[2*k+1];
-                    float z_re = z[2*k];
-                    float z_im = z[2*k+1];
-                    z[2*k]   = h_re*z_re - h_im*z_im;
-                    z[2*k+1] = h_re*z_im + h_im*z_re;
+                for (int k = 0; k < number; ++k) {
+                    int real = k + k;
+                    int imag = real + 1;
+                    float h_re = h[real];
+                    float h_im = h[imag];
+                    float z_re = z[real];
+                    float z_im = z[imag];
+                    z[real] = h_re*z_re - h_im*z_im;
+                    z[imag] = h_re*z_im + h_im*z_re;
                 }
             } else {
-                for (int k = 0; k < size; ++k) {
-                    float h_re = h[2*k];
-                    float h_im = h[2*k+1];
-                    float z_re = z[2*k];
-                    float z_im = z[2*k+1];
-                    z[2*k]   = h_re*z_re + h_im*z_im;
-                    z[2*k+1] = h_re*z_im - h_im*z_re;
+                for (int k = 0; k < number; ++k) {
+                    int real = k + k;
+                    int imag = real + 1;
+                    float h_re = h[real];
+                    float h_im = h[imag];
+                    float z_re = z[real];
+                    float z_im = z[imag];
+                    z[real] = h_re*z_re + h_im*z_im;
+                    z[imag] = h_re*z_im - h_im*z_re;
                 }
             }
         } else {
-            throw new IllegalArgumentException("Unexpected data type (MUST BE A BUG).");
+            /* Double precision version. */
+            final double[] h = ((DoubleVector)mtf).getData();
+            double[] z = ((DoubleVector)tmp).getData();
+            if (job == DIRECT) {
+                for (int k = 0; k < number; ++k) {
+                    int real = k + k;
+                    int imag = real + 1;
+                    double h_re = h[real];
+                    double h_im = h[imag];
+                    double z_re = z[real];
+                    double z_im = z[imag];
+                    z[real] = h_re*z_re - h_im*z_im;
+                    z[imag] = h_re*z_im + h_im*z_re;
+                }
+            } else {
+                for (int k = 0; k < number; ++k) {
+                    int real = k + k;
+                    int imag = real + 1;
+                    double h_re = h[real];
+                    double h_im = h[imag];
+                    double z_re = z[real];
+                    double z_im = z[imag];
+                    z[real] = h_re*z_re + h_im*z_im;
+                    z[imag] = h_re*z_im - h_im*z_re;
+                }
+            }
         }
         FFT.apply(tmp, dst, INVERSE);
-     }
+    }
 }
 
 /*
