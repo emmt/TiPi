@@ -286,12 +286,12 @@ public class CommonUtils {
     public static float[] computeMinMax1Das2D(float[] array, int width,int height, boolean isComplex){
         float min = array[0],max = array[0];
         int current = 0;
-        for(int j = 0; j<width; j++){
-            for(int i = 0; i<height; i++){
+        for(int j = 0; j<height; j++){
+            for(int i = 0; i<width; i++){
                 if (isComplex) {
-                    current = 2*(i+j*height);
+                    current = 2*(i+j*width);
                 } else {
-                    current = i+j*height;
+                    current = i+j*width;
                 }
                 if(array[current] < min ){
                     min = array[current];
@@ -317,12 +317,12 @@ public class CommonUtils {
     public static double[] computeMinMax1Das2D(double[] array, int width, int height,boolean isComplex){
         double min = array[0],max = array[0];
         int current = 0;
-        for(int i = 0; i<width; i++){
-            for(int j = 0; j<height; j++){
+        for(int j = 0; j<height; j++){
+            for(int i = 0; i<width; i++){
                 if (isComplex) {
-                    current = 2*(i+j*height);
+                    current = 2*(i+j*width);
                 } else {
-                    current = i+j*height;
+                    current = i+j*width;
                 }
                 if(array[current] < min ){
                     min = array[current];
@@ -436,14 +436,14 @@ public class CommonUtils {
         WritableRaster raster = image.getRaster();
         double [][]out;
         if (isComplex) {
-            out = new double[height][2*width];
+            out = new double[width][2*height];
         } else {
-            out = new double[height][width];
+            out = new double[width][height];
         }
         int[] tmp = new int[raster.getNumBands()];
-        for(int j=0;j<width;j++){
-            for(int i=0;i<height;i++){
-                raster.getPixel(j, i, tmp);
+        for(int j=0;j<height;j++){
+            for(int i=0;i<width;i++){
+                raster.getPixel(i, j, tmp);
                 if (tmp.length == 1 || tmp.length == 2) {
                     out[i][j] = colorToGrey(tmp[0], tmp[0], tmp[0]);
                 } else {
@@ -466,14 +466,14 @@ public class CommonUtils {
         WritableRaster raster = image.getRaster();
         float [][]out;
         if (isComplex) {
-            out = new float[height][2*width];
+            out = new float[width][2*height];
         } else {
-            out = new float[height][width];
+            out = new float[width][height];
         }
         int[] tmp = new int[raster.getNumBands()];
-        for(int j=0;j<width;j++){
-            for(int i=0;i<height;i++){
-                raster.getPixel(j, i, tmp);
+        for(int j=0;j<height;j++){
+            for(int i=0;i<width;i++){
+                raster.getPixel(i, j, tmp);
                 if (tmp.length == 1 || tmp.length == 2) {
                     out[i][j] = colorToGrey(tmp[0], tmp[0], tmp[0]);
                 } else {
@@ -502,13 +502,13 @@ public class CommonUtils {
             out = new double[width*height];
         }
         int[] tmp = new int[raster.getNumBands()];
-        for(int j=0;j<width;j++){
-            for(int i=0;i<height;i++){
-                raster.getPixel(j, i, tmp);
+        for(int j=0;j<height;j++){
+            for(int i=0;i<width;i++){
+                raster.getPixel(i, j, tmp);
                 if (tmp.length == 1 || tmp.length == 2) {
-                    out[(i+j*height)] = colorToGrey(tmp[0], tmp[0], tmp[0]);
+                    out[(i+j*width)] = colorToGrey(tmp[0], tmp[0], tmp[0]);
                 } else {
-                    out[(i+j*height)] = colorToGrey(tmp[0], tmp[1], tmp[2]);
+                    out[(i+j*width)] = colorToGrey(tmp[0], tmp[1], tmp[2]);
                 }
             }
         }
@@ -533,24 +533,24 @@ public class CommonUtils {
         }
         int[] tmp = new int[raster.getNumBands()];
         if (isComplex) {
-            for(int j=0;j<width;j++){
-                for(int i=0;i<height;i++){
-                    raster.getPixel(j, i, tmp);
+            for(int j=0;j<height;j++){
+                for(int i=0;i<width;i++){
+                    raster.getPixel(i, j, tmp);
                     if (tmp.length == 1 || tmp.length == 2) {
-                        out[2*(i+j*height)] = colorToGrey(tmp[0], tmp[0], tmp[0]);
+                        out[2*(i+j*width)] = colorToGrey(tmp[0], tmp[0], tmp[0]);
                     } else {
-                        out[2*(i+j*height)] = colorToGrey(tmp[0], tmp[1], tmp[2]);
+                        out[2*(i+j*width)] = colorToGrey(tmp[0], tmp[1], tmp[2]);
                     }
                 }
             }
         } else {
-            for(int j=0;j<width;j++){
-                for(int i=0;i<height;i++){
-                    raster.getPixel(j, i, tmp);
+            for(int j=0;j<height;j++){
+                for(int i=0;i<width;i++){
+                    raster.getPixel(i, j, tmp);
                     if (tmp.length == 1 || tmp.length == 2) {
-                        out[(i+j*height)] = colorToGrey(tmp[0], tmp[0], tmp[0]);
+                        out[(i+j*width)] = colorToGrey(tmp[0], tmp[0], tmp[0]);
                     } else {
-                        out[(i+j*height)] = colorToGrey(tmp[0], tmp[1], tmp[2]);
+                        out[(i+j*width)] = colorToGrey(tmp[0], tmp[1], tmp[2]);
                     }
                 }
             }
@@ -647,11 +647,11 @@ public class CommonUtils {
     public static BufferedImage createNewBufferedImage(double[][] tab, boolean isComplex){
         int width, height;
         if (isComplex) {
-            width = tab[0].length/2;
-            height = tab.length;
+            height = tab[0].length/2;
+            width = tab.length;
         }else{
-            width = tab[0].length;
-            height = tab.length;
+            height = tab[0].length;
+            width = tab.length;
         }
         return createNewBufferedImage(width, height);
     }
@@ -668,11 +668,11 @@ public class CommonUtils {
     public static BufferedImage createNewBufferedImage(float[][] tab, boolean isComplex){
         int width, height;
         if (isComplex) {
-            width = tab[0].length/2;
-            height = tab.length;
+            height = tab[0].length/2;
+            width = tab.length;
         }else{
-            width = tab[0].length;
-            height = tab.length;
+            height = tab[0].length;
+            width = tab.length;
         }
         return createNewBufferedImage(width, height);
     }
@@ -732,14 +732,14 @@ public class CommonUtils {
         //get max min for scaling
         double[] alphta = computeAlphaBeta1D(array,isComplex);
         int grey;
-        for(int j = 0; j<width; j++){
-            for(int i = 0; i<height; i++){
+        for(int j = 0; j<height; j++){
+            for(int i = 0; i<width; i++){
                 if (isComplex) {
-                    grey = greyToColor(array[2*(i+j*height)],alphta[0], alphta[1]);
-                    array[2*(i+j*height)]= grey;
+                    grey = greyToColor(array[2*(i+j*width)],alphta[0], alphta[1]);
+                    array[2*(i+j*width)]= grey;
                 } else {
-                    grey = greyToColor(array[(i+j*height)],alphta[0], alphta[1]);
-                    array[(i+j*height)]= grey;
+                    grey = greyToColor(array[(i+j*width)],alphta[0], alphta[1]);
+                    array[(i+j*width)]= grey;
                 }
             }
         }
@@ -775,14 +775,14 @@ public class CommonUtils {
         //get max min for scaling
         float[] alphta = computeAlphaBeta1D(array,isComplex);
         int grey;
-        for(int j = 0; j<width; j++){
-            for(int i = 0; i<height; i++){
+        for(int j = 0; j<height; j++){
+            for(int i = 0; i<width; i++){
                 if (isComplex) {
-                    grey = greyToColor(array[2*(i+j*height)],alphta[0], alphta[1]);
-                    array[2*(i+j*height)]= grey;
+                    grey = greyToColor(array[2*(i+j*width)],alphta[0], alphta[1]);
+                    array[2*(i+j*width)]= grey;
                 } else {
-                    grey = greyToColor(array[(i+j*height)],alphta[0], alphta[1]);
-                    array[(i+j*height)]= grey;
+                    grey = greyToColor(array[(i+j*width)],alphta[0], alphta[1]);
+                    array[(i+j*width)]= grey;
                 }
             }
         }
@@ -937,12 +937,12 @@ public class CommonUtils {
         //We get the repartitions of the pixels
         int[] tmpOut = new int[256];
         int grey;
-        for(int j = 0; j<width; j++){
-            for(int i = 0;i<height; i++){
+        for(int j = 0; j<height; j++){
+            for(int i = 0;i<width; i++){
                 if (isComplex) {
-                    grey = (int) array[2*(i+j*height)];
+                    grey = (int) array[2*(i+j*width)];
                 } else {
-                    grey = (int) array[(i+j*height)];
+                    grey = (int) array[(i+j*width)];
                 }
 
                 tmpOut[grey]++;
@@ -970,14 +970,14 @@ public class CommonUtils {
             beta = 0.0;
         }
         //We apply this min max on the input arrays
-        for(int j = 0; j<width; j++){
-            for(int i = 0; i<height; i++){
+        for(int j = 0; j<height; j++){
+            for(int i = 0; i<width; i++){
                 if (isComplex) {
-                    grey = greyToColor(array[2*(i+j*height)],alpha,beta);
-                    array[2*(i+j*height)] = grey;
+                    grey = greyToColor(array[2*(i+j*width)],alpha,beta);
+                    array[2*(i+j*width)] = grey;
                 } else {
-                    grey = greyToColor(array[(i+j*height)],alpha,beta);
-                    array[(i+j*height)] = grey;
+                    grey = greyToColor(array[(i+j*width)],alpha,beta);
+                    array[(i+j*width)] = grey;
                 }
             }
         }
@@ -995,12 +995,12 @@ public class CommonUtils {
         //We get the repartitions of the pixels
         int[] tmpOut = new int[256];
         int grey;
-        for(int j = 0; j<width; j++){
-            for(int i = 0;i<height; i++){
+        for(int j = 0; j<height; j++){
+            for(int i = 0;i<width; i++){
                 if (isComplex) {
-                    grey = (int) array[2*(i+j*height)];
+                    grey = (int) array[2*(i+j*width)];
                 } else {
-                    grey = (int) array[(i+j*height)];
+                    grey = (int) array[(i+j*width)];
                 }
                 tmpOut[grey]++;
             }
@@ -1027,14 +1027,14 @@ public class CommonUtils {
             beta = 0.0;
         }
         //We apply this min max on the input arrays
-        for(int j = 0; j<width; j++){
-            for(int i = 0; i<height; i++){
+        for(int j = 0; j<height; j++){
+            for(int i = 0; i<width; i++){
                 if (isComplex) {
-                    grey = greyToColor(array[2*(i+j*height)],alpha,beta);
-                    array[2*(i+j*height)] = grey;
+                    grey = greyToColor(array[2*(i+j*width)],alpha,beta);
+                    array[2*(i+j*width)] = grey;
                 } else {
-                    grey = greyToColor(array[(i+j*height)],alpha,beta);
-                    array[(i+j*height)] = grey;
+                    grey = greyToColor(array[(i+j*width)],alpha,beta);
+                    array[(i+j*width)] = grey;
                 }
             }
         }
@@ -1161,13 +1161,13 @@ public class CommonUtils {
         int grey;
         int sizeArray = isComplex ? array[0].length/2 : array[0].length;
         for(int j = 0; j<sizeArray; j++){
-            for(int i = 0; i<imageout.getHeight(); i++){
+            for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
                     grey = (int)array[i][2*j];
                 }else{
                     grey = (int)array[i][j];
                 }     
-                raster.setPixel(j, i, new int[]{map.r[grey],map.g[grey],map.b[grey]});
+                raster.setPixel(i, j, new int[]{map.r[grey],map.g[grey],map.b[grey]});
             }
         }
         return imageout;
@@ -1186,13 +1186,13 @@ public class CommonUtils {
         int grey;
         int sizeArray = isComplex ? array[0].length/2 : array[0].length;
         for(int j = 0; j<sizeArray; j++){
-            for(int i = 0; i<imageout.getHeight(); i++){
+            for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
                     grey = (int)array[i][2*j];
                 }else {
                     grey = (int)array[i][j];
                 }
-                raster.setPixel(j, i, new int[]{map.r[grey],map.g[grey],map.b[grey]});
+                raster.setPixel(i, j, new int[]{map.r[grey],map.g[grey],map.b[grey]});
             }
         }
         return imageout;
@@ -1209,14 +1209,14 @@ public class CommonUtils {
         WritableRaster raster = imageout.getRaster();
         ColorMap map = ColorMap.getJet(256);
         int grey;
-        for(int j = 0; j<imageout.getWidth(); j++){
-            for(int i = 0; i<imageout.getHeight(); i++){
+        for(int j = 0; j<imageout.getHeight(); j++){
+            for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
-                    grey = (int)array[2*(i+j*imageout.getHeight())];
+                    grey = (int)array[2*(i+j*imageout.getWidth())];
                 } else {
-                    grey = (int)array[(i+j*imageout.getHeight())];
+                    grey = (int)array[(i+j*imageout.getWidth())];
                 }
-                raster.setPixel(j, i, new int[]{map.r[grey],map.g[grey],map.b[grey]});
+                raster.setPixel(i, j, new int[]{map.r[grey],map.g[grey],map.b[grey]});
             }
         }
         return imageout;
@@ -1233,14 +1233,14 @@ public class CommonUtils {
         WritableRaster raster = imageout.getRaster();
         ColorMap map = ColorMap.getJet(256);
         int grey;
-        for(int j = 0; j<imageout.getWidth(); j++){
-            for(int i = 0; i<imageout.getHeight(); i++){
+        for(int j = 0; j<imageout.getHeight(); j++){
+            for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
-                    grey = (int)array[2*(i+j*imageout.getHeight())];
+                    grey = (int)array[2*(i+j*imageout.getWidth())];
                 } else {
-                    grey = (int)array[(i+j*imageout.getHeight())];
+                    grey = (int)array[(i+j*imageout.getWidth())];
                 }
-                raster.setPixel(j, i, new int[]{map.r[grey],map.g[grey],map.b[grey]});
+                raster.setPixel(i, j, new int[]{map.r[grey],map.g[grey],map.b[grey]});
             }
         }
         return imageout;
@@ -1255,20 +1255,20 @@ public class CommonUtils {
     public static BufferedImage arrayToImage(double[][] array, boolean isComplex){
         BufferedImage imageout;
         if (isComplex) {
-            imageout = createNewBufferedImage(array[0].length/2, array.length);
+            imageout = createNewBufferedImage(array.length, array[0].length/2);
         }else {
-            imageout = createNewBufferedImage(array[0].length, array.length);
+            imageout = createNewBufferedImage(array.length, array[0].length);
         }
         WritableRaster raster = imageout.getRaster();
         int grey;
-        for(int j = 0; j<imageout.getWidth(); j++){
-            for(int i = 0; i<imageout.getHeight(); i++){
+        for(int j = 0; j<imageout.getHeight(); j++){
+            for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
                     grey = (int)array[i][2*j];
                 }else {
                     grey = (int)array[i][j];
                 }
-                raster.setPixel(j, i, new int[]{grey,grey,grey});
+                raster.setPixel(i, j, new int[]{grey,grey,grey});
             }
         }
         return imageout;
@@ -1283,20 +1283,20 @@ public class CommonUtils {
     public static BufferedImage arrayToImage(float[][] array, boolean isComplex){
         BufferedImage imageout;
         if (isComplex) {
-            imageout = createNewBufferedImage(array[0].length/2, array.length);
+            imageout = createNewBufferedImage(array.length, array[0].length/2);
         }else {
-            imageout = createNewBufferedImage(array[0].length, array.length);
+            imageout = createNewBufferedImage(array.length, array[0].length);
         }
         WritableRaster raster = imageout.getRaster();
         int grey;
-        for(int j = 0; j<imageout.getWidth(); j++){
-            for(int i = 0; i<imageout.getHeight(); i++){
+        for(int j = 0; j<imageout.getHeight(); j++){
+            for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
                     grey = (int)array[i][2*j];
                 }else {
                     grey = (int)array[i][j];
                 }
-                raster.setPixel(j, i, new int[]{grey,grey,grey});
+                raster.setPixel(i, j, new int[]{grey,grey,grey});
             }
         }
         return imageout;
@@ -1312,14 +1312,14 @@ public class CommonUtils {
         BufferedImage imageout = createNewBufferedImage(width,height);
         WritableRaster raster = imageout.getRaster();
         int grey;
-        for(int j = 0; j<imageout.getWidth(); j++){
-            for(int i = 0; i<imageout.getHeight(); i++){
+        for(int j = 0; j<imageout.getHeight(); j++){
+            for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
-                    grey = (int)array[2*(i+j*imageout.getHeight())];
+                    grey = (int)array[2*(i+j*imageout.getWidth())];
                 } else {
-                    grey = (int)array[(i+j*imageout.getHeight())];
+                    grey = (int)array[(i+j*imageout.getWidth())];
                 }
-                raster.setPixel(j, i, new int[]{grey,grey,grey});
+                raster.setPixel(i, j, new int[]{grey,grey,grey});
             }
         }
         return imageout;
@@ -1335,14 +1335,14 @@ public class CommonUtils {
         BufferedImage imageout = createNewBufferedImage(width, height);
         WritableRaster raster = imageout.getRaster();
         int grey;
-        for(int j = 0; j<imageout.getWidth(); j++){
-            for(int i = 0; i<imageout.getHeight(); i++){
+        for(int j = 0; j<imageout.getHeight(); j++){
+            for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
                     grey = (int)array[2*(i+j*imageout.getHeight())];
                 } else {
                     grey = (int)array[(i+j*imageout.getHeight())];
                 }
-                raster.setPixel(j, i, new int[]{grey,grey,grey});
+                raster.setPixel(i, j, new int[]{grey,grey,grey});
             }
         }
         return imageout;
@@ -1493,7 +1493,6 @@ public class CommonUtils {
             }
         }
         prev = max -min;
-        System.out.println("W: "+prev);
         max = height;
         min = -1;
         for (int i = 0; i < height; i++){
@@ -1506,7 +1505,6 @@ public class CommonUtils {
                 max = height-i-1;
             }
         }
-        System.out.println("H: "+(max-min));
         return (max-min) > prev ? (max-min) : prev;
     }
 
@@ -1524,9 +1522,9 @@ public class CommonUtils {
         Raster rasterImage = image.getData();
         WritableRaster rasterPad = pad.getRaster();
         int hlf = sizePSF/2;
-        for (int j = 0; j < image.getWidth(); j++) {
-            for (int i = 0; i < image.getHeight(); i++) {
-                rasterPad.setPixel(j+hlf,i+hlf , rasterImage.getPixel(j,i, (int[])null));
+        for (int j = 0; j < image.getHeight(); j++) {
+            for (int i = 0; i < image.getWidth(); i++) {
+                rasterPad.setPixel(i+hlf,j+hlf , rasterImage.getPixel(i,j, (int[])null));
             }
         }
         return pad;
@@ -1574,9 +1572,9 @@ public class CommonUtils {
         int width = image.getWidth();
         int height = image.getHeight();
         if (isComplex) {
-            tableau_psf = new double[height][2*width];
+            tableau_psf = new double[width][2*height];
         } else {
-            tableau_psf = new double[height][width];
+            tableau_psf = new double[width][height];
         }
         double[][]test = imageToArray(imagePsf, false);
         return psfPadding(tableau_psf, test, isComplex);
@@ -1604,14 +1602,14 @@ public class CommonUtils {
      * @return
      */
     public static double[][] psfPadding(double[][] imageOut, double[][] imagePsf, boolean isComplex) {
-        int width, height = imageOut.length;
+        int height, width = imageOut.length;
         if (isComplex) {
-            width = imageOut[0].length/2;
+            height = imageOut[0].length/2;
         } else {
-            width = imageOut[0].length;
+            height = imageOut[0].length;
         }
-        int psfW = imagePsf[0].length, psfH = imagePsf.length;
-        int demiPsfW = imagePsf[0].length/2, demiPsfH = imagePsf.length/2;
+        int psfH = imagePsf[0].length, psfW = imagePsf.length;
+        int demiPsfH = imagePsf[0].length/2, demiPsfW = imagePsf.length/2;
         // IMAGE point of view:
         // It means we have the PSF split in four blocks A,B,C,D
         //   A | B     ->
@@ -1625,27 +1623,27 @@ public class CommonUtils {
         //   B | A     ->
 
         //bloc haut a gauche: A
-        for(int j = 0; j<demiPsfW; j++){
-            for(int i=0;i<demiPsfH;i++){
-                imageOut[(height-demiPsfH)+i][width-demiPsfW+j] = imagePsf[i][j];
+        for(int j = 0; j<demiPsfH; j++){
+            for(int i=0;i<demiPsfW;i++){
+                imageOut[width-demiPsfW+i][(height-demiPsfH)+j] = imagePsf[i][j];
             }
         }
         //bloc haut a droite: B
-        for(int j = demiPsfW; j<psfW; j++){
-            for(int i=0;i<demiPsfH;i++){
-                imageOut[(height-demiPsfH)+i][j-demiPsfW] = imagePsf[i][j];
+        for(int j=0;j<demiPsfH;j++){
+            for(int i = demiPsfW; i<psfW; i++){
+                imageOut[i-demiPsfW][(height-demiPsfH)+j] = imagePsf[i][j];
             }
         }
         //bloc bas a gauche: C
-        for(int j = 0; j<demiPsfW; j++){
-            for(int i=demiPsfH; i<psfH; i++){
-                imageOut[i-demiPsfH][width-demiPsfW+j] = imagePsf[i][j];
+        for(int j = demiPsfH; j < psfH; j++){
+            for(int i = 0; i < demiPsfW; i++){
+                imageOut[width-demiPsfW+i][j-demiPsfH] = imagePsf[i][j];
             }
         }
         //bloc bas a droite: D
-        for(int j = demiPsfW; j<psfW; j++){
-            for(int i=demiPsfH; i<psfH; i++){
-                imageOut[i-demiPsfH][j-demiPsfW] = imagePsf[i][j];
+        for(int j=demiPsfH; j<psfH; j++){
+            for(int i = demiPsfW; i<psfW; i++){
+                imageOut[i-demiPsfW][j-demiPsfH] = imagePsf[i][j];
             }
         }
         return imageOut;
@@ -1685,7 +1683,7 @@ public class CommonUtils {
         int psfW = imagePsf.getWidth();
         double[]test = imageToArray1D(imagePsf,false);
 
-        return psfPadding1D(tableau_psf,width,height,test,psfH,psfW,isComplex);
+        return psfPadding1D(tableau_psf,width,height,test,psfW,psfH,isComplex);
     }
 
     /**
@@ -1771,58 +1769,28 @@ public class CommonUtils {
         //   D | C     ->
         //   -----     -> Image
         //   B | A     ->
-
-        if (isComplex) {
-            //Here we are writing at 2*(i+j*hght)
-            //Bloc haut a gauche: D
-            for(int j = 0; j < demiPsfW; j++){
-                for(int i = 0; i < demiPsfH; i++){
-                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
-                }
+        //Bloc haut a gauche: bloc psf D
+        for(int j = 0; j < demiPsfH; j++){
+            for(int i = 0; i < demiPsfW; i++){
+                imageout[i+j*imageWidth] = imagePsf[(demiPsfW+i)+(demiPsfH+j)*psfWidth];
             }
-            //bloc haut a droite: C
-            for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
-                for(int i = 0; i < demiPsfH; i++){
-                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW-imageWidth+j)*psfHeight];
-                }
+        }
+        //bloc haut a droite: bloc psf C
+        for(int j = 0; j < demiPsfH; j++){
+            for(int i = imageWidth-demiPsfW; i < imageWidth ; i++){
+                imageout[i+j*imageWidth] = imagePsf[(demiPsfW-imageWidth+i)+(demiPsfH+j)*psfWidth];
             }
-            //bloc bas a gauche: B
-            for(int j = 0; j < demiPsfW; j++){
-                for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW+j)*psfHeight];
-                }
+        }
+        //bloc bas a gauche: bloc psf B
+        for(int j = imageHeight-demiPsfH; j < imageHeight; j++){
+            for(int i = 0; i < demiPsfW; i++){
+                imageout[i+j*imageWidth] = imagePsf[(demiPsfW+i)+(demiPsfH-imageHeight+j)*psfWidth];
             }
-            //bloc bas a droite: A
-            for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
-                for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                    imageout[i+2*j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW-imageWidth+j)*psfHeight];
-                }
-            }
-        }else{
-            //Here we are writing at (i+j*hght)
-            //Bloc haut a gauche: D
-            for(int j = 0; j < demiPsfW; j++){
-                for(int i = 0; i < demiPsfH; i++){
-                    imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
-                }
-            }
-            //bloc haut a droite: C
-            for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
-                for(int i = 0; i < demiPsfH; i++){
-                    imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW-imageWidth+j)*psfHeight];
-                }
-            }
-            //bloc bas a gauche: B
-            for(int j = 0; j < demiPsfW; j++){
-                for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                    imageout[i+j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW+j)*psfHeight];
-                }
-            }
-            //bloc bas a droite: A
-            for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
-                for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                    imageout[i+j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW-imageWidth+j)*psfHeight];
-                }
+        }
+        //bloc bas a droite: bloc psf A
+        for(int j = imageHeight-demiPsfH; j < imageHeight; j++){
+            for(int i = imageWidth-demiPsfW; i < imageWidth; i++){
+                imageout[i+j*imageWidth] = imagePsf[(demiPsfW-imageWidth+i)+(demiPsfH-imageHeight+j)*psfWidth];
             }
         }
         return imageout;
@@ -1901,28 +1869,29 @@ public class CommonUtils {
         //   -----     -> Image
         //   B | A     ->
         //Here we are writing at (i+j*imageHeight)
+        int coef = isComplex ? 1 : 1;
         //Bloc haut a gauche: D
-        for(int j = 0; j < demiPsfW; j++){
-            for(int i = 0; i < demiPsfH; i++){
-                imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW+j)*psfHeight];
+        for(int j = 0; j < demiPsfH; j++){
+            for(int i = 0; i < demiPsfW; i++){
+                imageout[i+coef*j*imageWidth] = imagePsf[(demiPsfW+i)+(demiPsfH+j)*psfWidth];
             }
         }
         //bloc haut a droite: C
-        for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
-            for(int i = 0; i < demiPsfH; i++){
-                imageout[i+j*imageHeight] = imagePsf[(demiPsfH+i)+(demiPsfW-imageWidth+j)*psfHeight];
+        for(int j = 0; j < demiPsfH; j++){
+            for(int i = imageWidth-demiPsfW; i < imageWidth ; i++){
+                imageout[i+coef*j*imageWidth] = imagePsf[(demiPsfW-imageWidth+i)+(demiPsfH+j)*psfWidth];
             }
         }
         //bloc bas a gauche: B
-        for(int j = 0; j < demiPsfW; j++){
-            for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                imageout[i+j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW+j)*psfHeight];
+        for(int j = imageHeight-demiPsfH; j < imageHeight; j++){
+            for(int i = 0; i < demiPsfW; i++){
+                imageout[i+coef*j*imageWidth] = imagePsf[(demiPsfW+i)+(demiPsfH-imageHeight+j)*psfWidth];
             }
         }
         //bloc bas a droite: A
-        for(int j = imageWidth-demiPsfW; j < imageWidth; j++){
-            for(int i = imageHeight-demiPsfH; i < imageHeight; i++){
-                imageout[i+j*imageHeight] = imagePsf[(demiPsfH-imageHeight+i)+(demiPsfW-imageWidth+j)*psfHeight];
+        for(int j = imageHeight-demiPsfH; j < imageHeight; j++){
+            for(int i = imageWidth-demiPsfW; i < imageWidth; i++){
+                imageout[i+coef*j*imageWidth] = imagePsf[(demiPsfW-imageWidth+i)+(demiPsfH-imageHeight+j)*psfWidth];
             }
         }
         return imageout;
@@ -1936,12 +1905,12 @@ public class CommonUtils {
      */
     public static double[] array2DTo1D(double[][] In)
     {
-        int H = In.length;
-        int W = In[0].length;
+        int W = In.length;
+        int H = In[0].length;
         double[] Out = new double[H*W];
-        for (int j = 0; j < W; j++)
-            for (int i = 0; i < H; i++)
-                Out[j*H + i] = In[i][j];
+        for (int j = 0; j < H; j++)
+            for (int i = 0; i < W; i++)
+                Out[j*W + i] = In[i][j];
         return Out;
     }
 
@@ -1956,9 +1925,9 @@ public class CommonUtils {
     {
         int W = In.length/H;
         double Out[][] = new double[H][W];
-        for (int j = 0; j < W; j++)
-            for (int i = 0; i < H; i++)
-                Out[i][j] = In[j*H + i];
+        for (int j = 0; j < H; j++)
+            for (int i = 0; i < W; i++)
+                Out[i][j] = In[j*W + i];
         return Out;
     }
 
@@ -2007,16 +1976,16 @@ public class CommonUtils {
     public static BufferedImage array2BuffI(double[][] I) //TODO delete and use arrayToImage(array, SCALE_CORRECTED_COLORMAP, false)
     {
 
-        int H = I.length;
-        int W = I[0].length;
+        int W = I.length;
+        int H = I[0].length;
         ColorMap map = ColorMap.getJet(256);
         BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-        for(int j = 0; j < W; j++)
+        for(int j = 0; j < H; j++)
         {
-            for(int i = 0; i < H; i++)
+            for(int i = 0; i < W; i++)
             {
                 Color b = map.table[ (int)I[i][j] ];
-                bufferedI.setRGB(j, i, b.getRGB()); // j, i inverse
+                bufferedI.setRGB(i, j, b.getRGB());
             }
         }
         return bufferedI;
@@ -2028,11 +1997,11 @@ public class CommonUtils {
         int W = I.getWidth();
         double ImArray[][] = new double[H][W];
         WritableRaster raster = I.getRaster();
-        for (int j = 0; j < W; j++)
+        for (int j = 0; j < H; j++)
         {
-            for (int i = 0; i < H; i++)
+            for (int i = 0; i < W; i++)
             {
-                int[] pixels = raster.getPixel(j, i, (int[]) null);
+                int[] pixels = raster.getPixel(i, j, (int[]) null);
                 ImArray[i][j] = pixels[0];
             }
         }

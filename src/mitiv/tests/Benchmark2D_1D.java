@@ -342,7 +342,7 @@ public class Benchmark2D_1D {
 
         for(int i=0;i<NB_BENCH;i++){
             System.out.println("Round "+i);
-            deconvVect.firstDeconvolutionQuad(0,Deconvolution.PROCESSING_VECTOR);
+            deconvVect.firstDeconvolutionQuad(0,Deconvolution.PROCESSING_VECTOR, false);
             long begin = System.nanoTime();
             for (int j = 0; j < 100; j++) {
                 deconvVect.nextDeconvolutionQuad(j,Deconvolution.PROCESSING_VECTOR);
@@ -350,7 +350,7 @@ public class Benchmark2D_1D {
             long end = System.nanoTime();
             moy = (end-begin + moy)/2;
             computeStat();
-            deconv.firstDeconvolutionQuad(0,Deconvolution.PROCESSING_1D);
+            deconv.firstDeconvolutionQuad(0,Deconvolution.PROCESSING_1D, false);
             begin = System.nanoTime();
             for (int j = 0; j < 100; j++) {
                 deconv.nextDeconvolutionQuad(j,Deconvolution.PROCESSING_1D);
@@ -379,7 +379,7 @@ public class Benchmark2D_1D {
     private static int computeQuad1D(Deconvolution a){
         long begin,end;
         begin = System.nanoTime();
-        a.firstDeconvolutionQuad(1.0,Deconvolution.PROCESSING_1D);
+        a.firstDeconvolutionQuad(1.0,Deconvolution.PROCESSING_1D, false);
         end = System.nanoTime();
         return (int)((end-begin)/1e6);
     }
@@ -387,7 +387,7 @@ public class Benchmark2D_1D {
     private static int computeQuad2D(Deconvolution a){
         long begin,end;
         begin = System.nanoTime();
-        a.firstDeconvolutionQuad(1,Deconvolution.PROCESSING_2D);
+        a.firstDeconvolutionQuad(1,Deconvolution.PROCESSING_2D, false);
         end = System.nanoTime();
         return (int)((end-begin)/1e6);
     }
