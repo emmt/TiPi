@@ -26,9 +26,9 @@
 package mitiv.base.view;
 
 public abstract class View3D implements View {
-    private final int n1, n2, n3;
-    private final int s0, s1, s2, s3;
-    private final int order;
+    protected final int n1, n2, n3;
+    protected final int s0, s1, s2, s3;
+    protected final int order;
 
     protected View3D(int length, int n1, int n2, int n3,
             int s0, int s1, int s2, int s3) {

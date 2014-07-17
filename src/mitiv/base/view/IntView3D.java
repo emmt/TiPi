@@ -26,6 +26,7 @@
 package mitiv.base.view;
 
 import mitiv.base.mapping.IntFunction;
+import mitiv.base.mapping.IntScanner;
 
 /**
  * This class implements 3D views of arrays of int's.
@@ -35,8 +36,21 @@ import mitiv.base.mapping.IntFunction;
  * @author Éric Thiébaut.
  *
  */
-public class IntView3D extends View3D {
+public class IntView3D extends View3D implements IntView {
     private final int[] data;
+
+    /**
+     * Create a 3D view of an array of int's with zero offset, contiguous
+     * elements and {@link #COLUMN_MAJOR} order.
+     * @param data - The array to wrap in the view.
+     * @param n1   - The 1st dimension of the view.
+     * @param n2   - The 2nd dimension of the view.
+     * @param n3   - The 3rd dimension of the view.
+     */
+    public IntView3D(int[] data, int n1, int n2, int n3) {
+        super(data.length, n1, n2, n2, 0, 1, n1, n1*n2);
+        this.data = data;
+    }
 
     /**
      * Create a 3D view of an array of int's.
@@ -86,6 +100,33 @@ public class IntView3D extends View3D {
     }
 
     /**
+     * Set all the values of the view.
+     * @param value - The value to set.
+     */
+    @Override
+    public final void set(int value) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i3 = 0; i3 < n3; ++i3) {
+                        data[index(i1, i2, i3)] = value;
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < n3; ++i3) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i1 = 0; i1 < n1; ++i1) {
+                        data[index(i1, i2, i3)] = value;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Increment the value at a given position of the view.
      * @param i1 - The index along the 1st dimension.
      * @param i2 - The index along the 2nd dimension.
@@ -95,6 +136,33 @@ public class IntView3D extends View3D {
      */
     public final void incr(int i1, int i2, int i3, int value) {
         data[index(i1, i2, i3)] += value;
+    }
+
+    /**
+     * Increment all the values of the view.
+     * @param value - The increment.
+     */
+    @Override
+    public final void incr(int value) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i3 = 0; i3 < n3; ++i3) {
+                        data[index(i1, i2, i3)] += value;
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < n3; ++i3) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i1 = 0; i1 < n1; ++i1) {
+                        data[index(i1, i2, i3)] += value;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -110,6 +178,33 @@ public class IntView3D extends View3D {
     }
 
     /**
+     * Decrement all the values of the view.
+     * @param value - The increment.
+     */
+    @Override
+    public final void decr(int value) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i3 = 0; i3 < n3; ++i3) {
+                        data[index(i1, i2, i3)] -= value;
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < n3; ++i3) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i1 = 0; i1 < n1; ++i1) {
+                        data[index(i1, i2, i3)] -= value;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Multiply the value at a given position of the view.
      * @param i1 - The index along the 1st dimension.
      * @param i2 - The index along the 2nd dimension.
@@ -122,17 +217,109 @@ public class IntView3D extends View3D {
     }
 
     /**
+     * Multiply all the values of the view.
+     * @param value - The multiplier.
+     */
+    @Override
+    public final void mult(int value) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i3 = 0; i3 < n3; ++i3) {
+                        data[index(i1, i2, i3)] *= value;
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < n3; ++i3) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i1 = 0; i1 < n1; ++i1) {
+                        data[index(i1, i2, i3)] *= value;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Map the value at a given position of the view by a function.
      * @param i1 - The index along the 1st dimension.
      * @param i2 - The index along the 2nd dimension.
      * @param i3 - The index along the 3rd dimension.
-     * @param f  - The function to use.
+     * @param func - The function to apply.
      */
-    public final void map(int i1, int i2, int i3, IntFunction f) {
+    public final void map(int i1, int i2, int i3, IntFunction func) {
         int k = index(i1, i2, i3);
-        data[k] = f.apply(data[k]);
+        data[k] = func.apply(data[k]);
     }
 
+    /**
+     * Map all the values of the view by a function.
+     * @param func - The function to apply.
+     */
+    @Override
+    public final void map(IntFunction func) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i3 = 0; i3 < n3; ++i3) {
+                        int k = index(i1, i2, i3);
+                        data[k] = func.apply(data[k]);
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < n3; ++i3) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i1 = 0; i1 < n1; ++i1) {
+                        int k = index(i1, i2, i3);
+                        data[k] = func.apply(data[k]);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Scan the values of the view.
+     * @param scanner - The scanner to use.
+     */
+    @Override
+    public final void scan(IntScanner scanner) {
+        boolean skip = true;
+        scanner.initialize(get(0, 0, 0));
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i3 = 0; i3 < n3; ++i3) {
+                        if (skip) {
+                            skip = false;
+                        } else {
+                            scanner.update(get(i1, i2, i3));
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < n3; ++i3) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i1 = 0; i1 < n1; ++i1) {
+                        if (skip) {
+                            skip = false;
+                        } else {
+                            scanner.update(get(i1, i2, i3));
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 /*

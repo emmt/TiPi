@@ -26,6 +26,7 @@
 package mitiv.base.view;
 
 import mitiv.base.mapping.IntFunction;
+import mitiv.base.mapping.IntScanner;
 
 /**
  * This class implements 1D views of arrays of int's.
@@ -35,8 +36,29 @@ import mitiv.base.mapping.IntFunction;
  * @author Éric Thiébaut.
  *
  */
-public class IntView1D extends View1D {
+public class IntView1D extends View1D implements IntView {
     private final int[] data;
+
+    /**
+     * Create a 1D view of an array of int's with zero offset, contiguous
+     * elements and {@link #COLUMN_MAJOR} order.
+     * @param data - The array to wrap in the view.
+     */
+    public IntView1D(int[] data) {
+        super(data.length, data.length, 0, 1);
+        this.data = data;
+    }
+
+    /**
+     * Create a 1D view of an array of int's with zero offset, contiguous
+     * elements and {@link #COLUMN_MAJOR} order.
+     * @param data - The array to wrap in the view.
+     * @param n1   - The 1st dimension of the view.
+     */
+    public IntView1D(int[] data, int n1) {
+        super(data.length, n1, 0, 1);
+        this.data = data;
+    }
 
     /**
      * Create a 1D view of an array of int's.
@@ -77,6 +99,17 @@ public class IntView1D extends View1D {
     }
 
     /**
+     * Set all the values of the view.
+     * @param value - The value to set.
+     */
+    @Override
+    public final void set(int value) {
+        for (int i1 = 0; i1 < n1; ++i1) {
+            data[index(i1)] = value;
+        }
+    }
+
+    /**
      * Increment the value at a given position of the view.
      * @param i1 - The index along the 1st dimension.
      * @param value - The value to add to the value stored at position
@@ -84,6 +117,17 @@ public class IntView1D extends View1D {
      */
     public final void incr(int i1, int value) {
         data[index(i1)] += value;
+    }
+
+    /**
+     * Increment all the values of the view.
+     * @param value - The increment.
+     */
+    @Override
+    public final void incr(int value) {
+        for (int i1 = 0; i1 < n1; ++i1) {
+            data[index(i1)] += value;
+        }
     }
 
     /**
@@ -97,6 +141,17 @@ public class IntView1D extends View1D {
     }
 
     /**
+     * Decrement all the values of the view.
+     * @param value - The decrement.
+     */
+    @Override
+    public final void decr(int value) {
+        for (int i1 = 0; i1 < n1; ++i1) {
+            data[index(i1)] -= value;
+        }
+    }
+
+    /**
      * Multiply the value at a given position of the view.
      * @param i1 - The index along the 1st dimension.
      * @param value - The value by which to scale the value at position
@@ -107,15 +162,49 @@ public class IntView1D extends View1D {
     }
 
     /**
-     * Map the value at a given position of the view by a function.
-     * @param i1 - The index along the 1st dimension.
-     * @param f  - The function to use.
+     * Multiply all the values of the view.
+     * @param value - The multiplier.
      */
-    public final void map(int i1, IntFunction f) {
-        int k = index(i1);
-        data[k] = f.apply(data[k]);
+    @Override
+    public final void mult(int value) {
+        for (int i1 = 0; i1 < n1; ++i1) {
+            data[index(i1)] *= value;
+        }
     }
 
+    /**
+     * Map the value at a given position of the view by a function.
+     * @param i1 - The index along the 1st dimension.
+     * @param func - The function to apply.
+     */
+    public final void map(int i1, IntFunction func) {
+        int k = index(i1);
+        data[k] = func.apply(data[k]);
+    }
+
+    /**
+     * Map all the values of the view by a function.
+     * @param func - The function to apply.
+     */
+    @Override
+    public final void map(IntFunction func) {
+        for (int i1 = 0; i1 < n1; ++i1) {
+            int k = index(i1);
+            data[k] = func.apply(data[k]);
+        }
+    }
+
+    /**
+     * Scan the values of the view.
+     * @param scanner - The scanner to use.
+     */
+    @Override
+    public final void scan(IntScanner scanner) {
+        scanner.initialize(get(0));
+        for (int i1 = 1; i1 < n1; ++i1) {
+            scanner.update(get(i1));
+        }
+    }
 }
 
 /*

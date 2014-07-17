@@ -26,9 +26,9 @@
 package mitiv.base.view;
 
 public abstract class View4D implements View {
-    private final int n1, n2, n3, n4;
-    private final int s0, s1, s2, s3, s4;
-    private final int order;
+    protected final int n1, n2, n3, n4;
+    protected final int s0, s1, s2, s3, s4;
+    protected final int order;
 
     protected View4D(int length, int n1, int n2, int n3, int n4,
             int s0, int s1, int s2, int s3, int s4) {

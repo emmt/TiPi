@@ -26,6 +26,7 @@
 package mitiv.base.view;
 
 import mitiv.base.mapping.ShortFunction;
+import mitiv.base.mapping.ShortScanner;
 
 /**
  * This class implements 2D views of arrays of short's.
@@ -35,8 +36,20 @@ import mitiv.base.mapping.ShortFunction;
  * @author Éric Thiébaut.
  *
  */
-public class ShortView2D extends View2D {
+public class ShortView2D extends View2D implements ShortView {
     private final short[] data;
+
+    /**
+     * Create a 2D view of an array of short's with zero offset, contiguous
+     * elements and {@link #COLUMN_MAJOR} order.
+     * @param data - The array to wrap in the view.
+     * @param n1   - The 1st dimension of the view.
+     * @param n2   - The 2nd dimension of the view.
+     */
+    public ShortView2D(short[] data, int n1, int n2) {
+        super(data.length, n1, n2, 0, 1, n1);
+        this.data = data;
+    }
 
     /**
      * Create a 2D view of an array of short's.
@@ -81,6 +94,29 @@ public class ShortView2D extends View2D {
     }
 
     /**
+     * Set all the values of the view.
+     * @param value - The value to set.
+     */
+    @Override
+    public final void set(short value) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    data[index(i1, i2)] = value;
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < n2; ++i2) {
+                for (int i1 = 0; i1 < n1; ++i1) {
+                    data[index(i1, i2)] = value;
+                }
+            }
+        }
+    }
+
+    /**
      * Increment the value at a given position of the view.
      * @param i1 - The index along the 1st dimension.
      * @param i2 - The index along the 2nd dimension.
@@ -89,6 +125,29 @@ public class ShortView2D extends View2D {
      */
     public final void incr(int i1, int i2, short value) {
         data[index(i1, i2)] += value;
+    }
+
+    /**
+     * Increment all the values of the view.
+     * @param value - The increment.
+     */
+    @Override
+    public final void incr(short value) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    data[index(i1, i2)] += value;
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < n2; ++i2) {
+                for (int i1 = 0; i1 < n1; ++i1) {
+                    data[index(i1, i2)] += value;
+                }
+            }
+        }
     }
 
     /**
@@ -103,6 +162,29 @@ public class ShortView2D extends View2D {
     }
 
     /**
+     * Decrement all the values of the view.
+     * @param value - The decrement.
+     */
+    @Override
+    public final void decr(short value) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    data[index(i1, i2)] -= value;
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < n2; ++i2) {
+                for (int i1 = 0; i1 < n1; ++i1) {
+                    data[index(i1, i2)] -= value;
+                }
+            }
+        }
+    }
+
+    /**
      * Multiply the value at a given position of the view.
      * @param i1 - The index along the 1st dimension.
      * @param i2 - The index along the 2nd dimension.
@@ -114,16 +196,87 @@ public class ShortView2D extends View2D {
     }
 
     /**
+     * Multiply all the values of the view.
+     * @param value - The multiplier.
+     */
+    @Override
+    public final void mult(short value) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    data[index(i1, i2)] *= value;
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < n2; ++i2) {
+                for (int i1 = 0; i1 < n1; ++i1) {
+                    data[index(i1, i2)] *= value;
+                }
+            }
+        }
+    }
+
+    /**
      * Map the value at a given position of the view by a function.
      * @param i1 - The index along the 1st dimension.
      * @param i2 - The index along the 2nd dimension.
-     * @param f  - The function to use.
+     * @param func - The function to apply.
      */
-    public final void map(int i1, int i2, ShortFunction f) {
+    public final void map(int i1, int i2, ShortFunction func) {
         int k = index(i1, i2);
-        data[k] = f.apply(data[k]);
+        data[k] = func.apply(data[k]);
     }
 
+    /**
+     * Map all the values of the view by a function.
+     * @param func - The function to apply.
+     */
+    @Override
+    public final void map(ShortFunction func) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    int k = index(i1, i2);
+                    data[k] = func.apply(data[k]);
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < n2; ++i2) {
+                for (int i1 = 0; i1 < n1; ++i1) {
+                    int k = index(i1, i2);
+                    data[k] = func.apply(data[k]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Scan the values of the view.
+     * @param scanner - The scanner to use.
+     */
+    @Override
+    public final void scan(ShortScanner scanner) {
+        scanner.initialize(get(0, 0));
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = (i1 == 0 ? 1 : 0); i2 < n2; ++i2) {
+                    scanner.update(get(i1, i2));
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < n2; ++i2) {
+                for (int i1 = (i2 == 0 ? 1 : 0); i1 < n1; ++i1) {
+                    scanner.update(get(i1, i2));
+                }
+            }
+        }
+    }
 }
 
 /*
