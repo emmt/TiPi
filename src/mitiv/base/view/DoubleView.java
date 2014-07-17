@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
+import mitiv.random.DoubleGenerator;
 
 /**
  * Define the global operations which can be applied to a view.
@@ -40,6 +41,12 @@ public interface DoubleView {
      * @param value - The value to set.
      */
     public abstract void set(double value);
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    public abstract void set(DoubleGenerator generator);
 
     /**
      * Increment all the values of the view.

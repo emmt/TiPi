@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
+import mitiv.random.FloatGenerator;
 
 /**
  * This class implements 4D views of arrays of float's.
@@ -128,6 +129,37 @@ public class FloatView4D extends View4D implements FloatView {
                     for (int i2 = 0; i2 < n2; ++i2) {
                         for (int i1 = 0; i1 < n1; ++i1) {
                             data[index(i1, i2, i3, i4)] = value;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    @Override
+    public final void set(FloatGenerator generator) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i3 = 0; i3 < n3; ++i3) {
+                        for (int i4 = 0; i4 < n4; ++i4) {
+                            data[index(i1, i2, i3, i4)] = generator.nextFloat();
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i4 = 0; i4 < n4; ++i4) {
+                for (int i3 = 0; i3 < n3; ++i3) {
+                    for (int i2 = 0; i2 < n2; ++i2) {
+                        for (int i1 = 0; i1 < n1; ++i1) {
+                            data[index(i1, i2, i3, i4)] = generator.nextFloat();
                         }
                     }
                 }
@@ -353,6 +385,7 @@ public class FloatView4D extends View4D implements FloatView {
             }
         }
     }
+
 }
 
 /*

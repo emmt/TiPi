@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
+import mitiv.random.LongGenerator;
 
 /**
  * This class implements 3D views of arrays of long's.
@@ -120,6 +121,33 @@ public class LongView3D extends View3D implements LongView {
                 for (int i2 = 0; i2 < n2; ++i2) {
                     for (int i1 = 0; i1 < n1; ++i1) {
                         data[index(i1, i2, i3)] = value;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    @Override
+    public final void set(LongGenerator generator) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i3 = 0; i3 < n3; ++i3) {
+                        data[index(i1, i2, i3)] = generator.nextLong();
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < n3; ++i3) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i1 = 0; i1 < n1; ++i1) {
+                        data[index(i1, i2, i3)] = generator.nextLong();
                     }
                 }
             }

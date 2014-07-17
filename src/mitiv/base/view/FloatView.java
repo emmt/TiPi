@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
+import mitiv.random.FloatGenerator;
 
 /**
  * Define the global operations which can be applied to a view.
@@ -40,6 +41,12 @@ public interface FloatView {
      * @param value - The value to set.
      */
     public abstract void set(float value);
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    public abstract void set(FloatGenerator generator);
 
     /**
      * Increment all the values of the view.

@@ -26,7 +26,7 @@
 package mitiv.random;
 
 /**
- * Interface for generator of double precision values.
+ * Interface for generator of {@code double}  values.
  * @author Éric Thiébaut.
  *
  */

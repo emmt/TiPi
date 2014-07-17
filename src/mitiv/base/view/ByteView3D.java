@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
+import mitiv.random.ByteGenerator;
 
 /**
  * This class implements 3D views of arrays of byte's.
@@ -120,6 +121,33 @@ public class ByteView3D extends View3D implements ByteView {
                 for (int i2 = 0; i2 < n2; ++i2) {
                     for (int i1 = 0; i1 < n1; ++i1) {
                         data[index(i1, i2, i3)] = value;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    @Override
+    public final void set(ByteGenerator generator) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i3 = 0; i3 < n3; ++i3) {
+                        data[index(i1, i2, i3)] = generator.nextByte();
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < n3; ++i3) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i1 = 0; i1 < n1; ++i1) {
+                        data[index(i1, i2, i3)] = generator.nextByte();
                     }
                 }
             }

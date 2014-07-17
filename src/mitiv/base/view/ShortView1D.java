@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
+import mitiv.random.ShortGenerator;
 
 /**
  * This class implements 1D views of arrays of short's.
@@ -106,6 +107,17 @@ public class ShortView1D extends View1D implements ShortView {
     public final void set(short value) {
         for (int i1 = 0; i1 < n1; ++i1) {
             data[index(i1)] = value;
+        }
+    }
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    @Override
+    public final void set(ShortGenerator generator) {
+        for (int i1 = 0; i1 < n1; ++i1) {
+            data[index(i1)] = generator.nextShort();
         }
     }
 

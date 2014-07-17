@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
+import mitiv.random.LongGenerator;
 
 /**
  * This class implements 1D views of arrays of long's.
@@ -106,6 +107,17 @@ public class LongView1D extends View1D implements LongView {
     public final void set(long value) {
         for (int i1 = 0; i1 < n1; ++i1) {
             data[index(i1)] = value;
+        }
+    }
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    @Override
+    public final void set(LongGenerator generator) {
+        for (int i1 = 0; i1 < n1; ++i1) {
+            data[index(i1)] = generator.nextLong();
         }
     }
 

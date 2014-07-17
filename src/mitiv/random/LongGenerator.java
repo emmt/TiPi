@@ -23,64 +23,17 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.base.view;
-
-import mitiv.base.mapping.ByteFunction;
-import mitiv.base.mapping.ByteScanner;
-import mitiv.random.ByteGenerator;
+package mitiv.random;
 
 /**
- * Define the global operations which can be applied to a view.
+ * Interface for generator of {@code long} values.
  * @author Éric Thiébaut.
  *
  */
-public interface ByteView {
-
-    /**
-     * Set all the values of the view.
-     * @param value - The value to set.
-     */
-    public abstract void set(byte value);
-
-    /**
-     * Set the values of the view with a generator.
-     * @param generator - The generator to use.
-     */
-    public abstract void set(ByteGenerator generator);
-
-    /**
-     * Increment all the values of the view.
-     * @param value - The increment.
-     */
-    public abstract void incr(byte value);
-
-
-    /**
-     * Decrement all the values of the view.
-     * @param value - The decrement.
-     */
-    public abstract void decr(byte value);
-
-    /**
-     * Multiply all the values of the view.
-     * @param value - The multiplier.
-     */
-    public abstract void mult(byte value);
-
-    /**
-     * Map all the values of the view by a function.
-     * @param func - The function to apply.
-     */
-    public abstract void map(ByteFunction func);
-
-    /**
-     * Scan the values of the view.
-     * @param scanner - The scanner to use.
-     */
-    public abstract void scan(ByteScanner scanner);
-
+public interface LongGenerator {
+    /** Fetch next generated value. */
+    public abstract long nextLong();
 }
-
 
 /*
  * Local Variables:

@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
+import mitiv.random.ShortGenerator;
 
 /**
  * This class implements 4D views of arrays of short's.
@@ -128,6 +129,37 @@ public class ShortView4D extends View4D implements ShortView {
                     for (int i2 = 0; i2 < n2; ++i2) {
                         for (int i1 = 0; i1 < n1; ++i1) {
                             data[index(i1, i2, i3, i4)] = value;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    @Override
+    public final void set(ShortGenerator generator) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i3 = 0; i3 < n3; ++i3) {
+                        for (int i4 = 0; i4 < n4; ++i4) {
+                            data[index(i1, i2, i3, i4)] = generator.nextShort();
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i4 = 0; i4 < n4; ++i4) {
+                for (int i3 = 0; i3 < n3; ++i3) {
+                    for (int i2 = 0; i2 < n2; ++i2) {
+                        for (int i1 = 0; i1 < n1; ++i1) {
+                            data[index(i1, i2, i3, i4)] = generator.nextShort();
                         }
                     }
                 }
@@ -353,6 +385,7 @@ public class ShortView4D extends View4D implements ShortView {
             }
         }
     }
+
 }
 
 /*

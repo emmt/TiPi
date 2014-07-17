@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
+import mitiv.random.IntGenerator;
 
 /**
  * Define the global operations which can be applied to a view.
@@ -40,6 +41,12 @@ public interface IntView {
      * @param value - The value to set.
      */
     public abstract void set(int value);
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    public abstract void set(IntGenerator generator);
 
     /**
      * Increment all the values of the view.

@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
+import mitiv.random.IntGenerator;
 
 /**
  * This class implements 3D views of arrays of int's.
@@ -120,6 +121,33 @@ public class IntView3D extends View3D implements IntView {
                 for (int i2 = 0; i2 < n2; ++i2) {
                     for (int i1 = 0; i1 < n1; ++i1) {
                         data[index(i1, i2, i3)] = value;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    @Override
+    public final void set(IntGenerator generator) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i3 = 0; i3 < n3; ++i3) {
+                        data[index(i1, i2, i3)] = generator.nextInt();
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < n3; ++i3) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    for (int i1 = 0; i1 < n1; ++i1) {
+                        data[index(i1, i2, i3)] = generator.nextInt();
                     }
                 }
             }

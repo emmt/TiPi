@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
+import mitiv.random.ShortGenerator;
 
 /**
  * Define the global operations which can be applied to a view.
@@ -40,6 +41,12 @@ public interface ShortView {
      * @param value - The value to set.
      */
     public abstract void set(short value);
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    public abstract void set(ShortGenerator generator);
 
     /**
      * Increment all the values of the view.

@@ -26,7 +26,7 @@
 package mitiv.random;
 
 /**
- * Interface for generator of single precision values.
+ * Interface for generator of {@code float} values.
  * @author Éric Thiébaut.
  *
  */

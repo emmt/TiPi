@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
+import mitiv.random.ShortGenerator;
 
 /**
  * This class implements 2D views of arrays of short's.
@@ -111,6 +112,29 @@ public class ShortView2D extends View2D implements ShortView {
             for (int i2 = 0; i2 < n2; ++i2) {
                 for (int i1 = 0; i1 < n1; ++i1) {
                     data[index(i1, i2)] = value;
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    @Override
+    public final void set(ShortGenerator generator) {
+        if (order == ROW_MAJOR) {
+            /* Scan elements in row-major order. */
+            for (int i1 = 0; i1 < n1; ++i1) {
+                for (int i2 = 0; i2 < n2; ++i2) {
+                    data[index(i1, i2)] = generator.nextShort();
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < n2; ++i2) {
+                for (int i1 = 0; i1 < n1; ++i1) {
+                    data[index(i1, i2)] = generator.nextShort();
                 }
             }
         }

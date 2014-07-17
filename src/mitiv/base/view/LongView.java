@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
+import mitiv.random.LongGenerator;
 
 /**
  * Define the global operations which can be applied to a view.
@@ -40,6 +41,12 @@ public interface LongView {
      * @param value - The value to set.
      */
     public abstract void set(long value);
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    public abstract void set(LongGenerator generator);
 
     /**
      * Increment all the values of the view.

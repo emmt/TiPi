@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
+import mitiv.random.ByteGenerator;
 
 /**
  * This class implements 1D views of arrays of byte's.
@@ -106,6 +107,17 @@ public class ByteView1D extends View1D implements ByteView {
     public final void set(byte value) {
         for (int i1 = 0; i1 < n1; ++i1) {
             data[index(i1)] = value;
+        }
+    }
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    @Override
+    public final void set(ByteGenerator generator) {
+        for (int i1 = 0; i1 < n1; ++i1) {
+            data[index(i1)] = generator.nextByte();
         }
     }
 

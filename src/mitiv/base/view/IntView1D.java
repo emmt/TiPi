@@ -27,6 +27,7 @@ package mitiv.base.view;
 
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
+import mitiv.random.IntGenerator;
 
 /**
  * This class implements 1D views of arrays of int's.
@@ -106,6 +107,17 @@ public class IntView1D extends View1D implements IntView {
     public final void set(int value) {
         for (int i1 = 0; i1 < n1; ++i1) {
             data[index(i1)] = value;
+        }
+    }
+
+    /**
+     * Set the values of the view with a generator.
+     * @param generator - The generator to use.
+     */
+    @Override
+    public final void set(IntGenerator generator) {
+        for (int i1 = 0; i1 < n1; ++i1) {
+            data[index(i1)] = generator.nextInt();
         }
     }
 
