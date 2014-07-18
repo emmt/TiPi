@@ -125,7 +125,7 @@ public class ConvolutionOperator extends LinearOperator {
         FFT.apply(src, tmp, DIRECT);
         if (single) {
             /* Single precision version. */
-            final float[] h = ((FloatVector)mtf).getData();
+            float[] h = ((FloatVector)mtf).getData();
             float[] z = ((FloatVector)tmp).getData();
             if (job == DIRECT) {
                 for (int k = 0; k < number; ++k) {
@@ -152,7 +152,7 @@ public class ConvolutionOperator extends LinearOperator {
             }
         } else {
             /* Double precision version. */
-            final double[] h = ((DoubleVector)mtf).getData();
+            double[] h = ((DoubleVector)mtf).getData();
             double[] z = ((DoubleVector)tmp).getData();
             if (job == DIRECT) {
                 for (int k = 0; k < number; ++k) {
