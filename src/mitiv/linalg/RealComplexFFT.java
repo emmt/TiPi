@@ -24,7 +24,12 @@
  */
 
 package mitiv.linalg;
-import edu.emory.mathcs.jtransforms.fft.*;
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
+import edu.emory.mathcs.jtransforms.fft.FloatFFT_1D;
+import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
+import edu.emory.mathcs.jtransforms.fft.FloatFFT_3D;
 
 /**
  * Emulate real-complex FFT-1D/2D/3D.
@@ -36,18 +41,22 @@ public class RealComplexFFT extends LinearOperator {
     private Object xform = null;
     private double[] tempDouble = null;
     private float[] tempFloat = null;
-    private int size = 0; // number of values in the direct space
-    private int rank = 0; // number of dimensions
-    private int[] shape;
-    private boolean single = false;
+    private final int number; // number of values in the direct space
+    private final int rank; // number of dimensions
+    private final int[] shape; // shape (in column-major order) of the real space
+    private final boolean single;
+    public boolean useSystemArrayCopy = false;
 
     private RealComplexFFT(VectorSpace inputSpace, VectorSpace outputSpace,
             int[] shape, boolean single) {
         super(inputSpace, outputSpace);
-        this.size = inputSpace.getSize();
+        this.number = inputSpace.getSize();
         this.rank = shape.length;
         this.shape = shape;
         this.single = single;
+        if (this.rank < 1 || this.rank > 3) {
+            throw new IllegalArgumentException("Only 1D, 2D or 3D transforms supported");
+        }
     }
 
     public RealComplexFFT(DoubleVectorSpaceWithRank space) {
@@ -74,121 +83,141 @@ public class RealComplexFFT extends LinearOperator {
     protected void privApply(Vector src, Vector dst, int job) {
         if (single) {
             /* Single precision version of the code. */
+            if (xform == null) {
+                /* Create low-level FFT operator. */
+                if (rank == 1) {
+                    xform = new FloatFFT_1D(shape[0]);
+                } else if (rank == 2) {
+                    xform = new FloatFFT_2D(shape[1], shape[0]);
+                } else {
+                    xform = new FloatFFT_3D(shape[2], shape[1], shape[0]);
+                }
+            }
             if (tempFloat == null) {
-                tempFloat = new float[2*size];
+                tempFloat = new float[2*number];
             }
             float[] w = tempFloat;
             float[] x = ((FloatVector)src).getData();
             float[] y = ((FloatVector)dst).getData();
             if (job == LinearOperator.ADJOINT || job == LinearOperator.INVERSE) {
-                for (int k = 0; k < size; ++k) {
-                    w[2*k] = x[2*k];
-                    w[2*k+1] = x[2*k+1];
+                if (useSystemArrayCopy) {
+                    System.arraycopy(x, 0, w, 0, 2*number);
+                } else {
+                    for (int k = 0; k < number; ++k) {
+                        int real = k + k;
+                        int imag = real + 1;
+                        w[real] = x[real];
+                        w[imag] = x[imag];
+                    }
                 }
                 if (rank == 1) {
-                    if (xform == null) xform = new FloatFFT_1D(shape[0]);
                     ((FloatFFT_1D)xform).complexInverse(w, false);
                 } else if (rank == 2) {
-                    if (xform == null) xform = new FloatFFT_2D(shape[0], shape[1]);
                     ((FloatFFT_2D)xform).complexInverse(w, false);
                 } else {
-                    if (xform == null) xform = new FloatFFT_3D(shape[0], shape[1], shape[2]);
                     ((FloatFFT_3D)xform).complexInverse(w, false);
                 }
                 if (job == LinearOperator.INVERSE) {
                     /* Copy real part with scaling in the destination array. */
-                    float s = 1.0F/size;
-                    for (int k = 0; k < size; ++k) {
+                    float s = 1.0F/number;
+                    for (int k = 0; k < number; ++k) {
                         y[k] = s*w[2*k];
                     }
                 } else {
                     /* Copy real part in the destination array. */
-                    for (int k = 0; k < size; ++k) {
+                    for (int k = 0; k < number; ++k) {
                         y[k] = w[2*k];
                     }
                 }
             } else {
                 if (job == LinearOperator.DIRECT) {
-                    for (int k = 0; k < size; ++k) {
+                    for (int k = 0; k < number; ++k) {
                         y[2*k] = x[k];
                         y[2*k+1] = 0.0F;
                     }
                 } else {
-                    float s = 1.0F/size;
-                    for (int k = 0; k < size; ++k) {
+                    float s = 1.0F/number;
+                    for (int k = 0; k < number; ++k) {
                         y[2*k] = s*x[k];
                         y[2*k+1] = 0.0F;
                     }
 
                 }
                 if (rank == 1) {
-                    if (xform == null) xform = new FloatFFT_1D(shape[0]);
                     ((FloatFFT_1D)xform).complexForward(y);
                 } else if (rank == 2) {
-                    if (xform == null) xform = new FloatFFT_2D(shape[0], shape[1]);
                     ((FloatFFT_2D)xform).complexForward(y);
                 } else {
-                    if (xform == null) xform = new FloatFFT_3D(shape[0], shape[1], shape[2]);
                     ((FloatFFT_3D)xform).complexForward(y);
                 }
             }
         } else {
             /* Double precision version of the code. */
+            if (xform == null) {
+                /* Create low-level FFT operator. */
+                if (rank == 1) {
+                    xform = new DoubleFFT_1D(shape[0]);
+                } else if (rank == 2) {
+                    xform = new DoubleFFT_2D(shape[1], shape[0]);
+                } else {
+                    xform = new DoubleFFT_3D(shape[2], shape[1], shape[0]);
+                }
+            }
             if (tempDouble == null) {
-                tempDouble = new double[2*size];
+                tempDouble = new double[2*number];
             }
             double[] w = tempDouble;
             double[] x = ((DoubleVector)src).getData();
             double[] y = ((DoubleVector)dst).getData();
             if (job == LinearOperator.ADJOINT || job == LinearOperator.INVERSE) {
-                for (int k = 0; k < size; ++k) {
-                    w[2*k] = x[2*k];
-                    w[2*k+1] = x[2*k+1];
+                if (useSystemArrayCopy) {
+                    System.arraycopy(x, 0, w, 0, 2*number);
+                } else {
+                    for (int k = 0; k < number; ++k) {
+                        int real = k + k;
+                        int imag = real + 1;
+                        w[real] = x[real];
+                        w[imag] = x[imag];
+                    }
                 }
                 if (rank == 1) {
-                    if (xform == null) xform = new DoubleFFT_1D(shape[0]);
                     ((DoubleFFT_1D)xform).complexInverse(w, false);
                 } else if (rank == 2) {
-                    if (xform == null) xform = new DoubleFFT_2D(shape[0], shape[1]);
                     ((DoubleFFT_2D)xform).complexInverse(w, false);
                 } else {
-                    if (xform == null) xform = new DoubleFFT_3D(shape[0], shape[1], shape[2]);
                     ((DoubleFFT_3D)xform).complexInverse(w, false);
                 }
                 if (job == LinearOperator.INVERSE) {
                     /* Copy real part with scaling in the destination array. */
-                    double s = 1.0/size;
-                    for (int k = 0; k < size; ++k) {
+                    double s = 1.0/number;
+                    for (int k = 0; k < number; ++k) {
                         y[k] = s*w[2*k];
                     }
                 } else {
                     /* Copy real part in the destination array. */
-                    for (int k = 0; k < size; ++k) {
+                    for (int k = 0; k < number; ++k) {
                         y[k] = w[2*k];
                     }
                 }
             } else {
                 if (job == LinearOperator.DIRECT) {
-                    for (int k = 0; k < size; ++k) {
+                    for (int k = 0; k < number; ++k) {
                         y[2*k] = x[k];
                         y[2*k+1] = 0.0;
                     }
                 } else {
-                    double s = 1.0/size;
-                    for (int k = 0; k < size; ++k) {
+                    double s = 1.0/number;
+                    for (int k = 0; k < number; ++k) {
                         y[2*k] = s*x[k];
                         y[2*k+1] = 0.0;
                     }
 
                 }
                 if (rank == 1) {
-                    if (xform == null) xform = new DoubleFFT_1D(shape[0]);
                     ((DoubleFFT_1D)xform).complexForward(y);
                 } else if (rank == 2) {
-                    if (xform == null) xform = new DoubleFFT_2D(shape[0], shape[1]);
                     ((DoubleFFT_2D)xform).complexForward(y);
                 } else {
-                    if (xform == null) xform = new DoubleFFT_3D(shape[0], shape[1], shape[2]);
                     ((DoubleFFT_3D)xform).complexForward(y);
                 }
             }
