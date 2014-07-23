@@ -298,7 +298,12 @@ public class DeconvUtils {
      * @return A 1D array
      */
     public double[] psfToArray1D(boolean isComplex) {
-        return CommonUtils.imageToArray1D(image_psf, isComplex);
+        if (!(image_psf.getWidth() == image.getWidth() && image_psf.getHeight() == image.getHeight())) {
+            throw new IllegalArgumentException("The PSF should be of same size as image (No scale for now when splitted)");
+        } else {
+            return CommonUtils.imageToArray1D(image_psf, isComplex);
+        }
+
     }
 
     /**
