@@ -568,8 +568,7 @@ public class Deconvolution{
      * @return The bufferedImage for the input value given
      */
     private BufferedImage firstDeconvolutionCGNormal(double alpha){
-        boolean verbose = false;
-        space = new DoubleVectorSpaceWithRank(utils.height, utils.width);
+        space = new DoubleVectorSpaceWithRank(utils.width, utils.height);
         if (isPsfSplitted) {
             vector_psf = space.wrap(utils.psfToArray1D(false));
         } else {
@@ -592,9 +591,7 @@ public class Deconvolution{
         linDeconv = new LinearDeconvolver(
                 space.cloneShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
         outputValue = linDeconv.solve(x.getData(), 20, false);
-        if (verbose) {
-            parseOuputCG(outputValue); //print nothing if good, print in err else
-        }
+        parseOuputCG(outputValue); //print nothing if good, print in err else
         return (utils.arrayToImage1D(x.getData(), correction, false));
     }
 
