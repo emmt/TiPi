@@ -1160,14 +1160,18 @@ public class CommonUtils {
         ColorMap map = ColorMap.getJet(256);
         int grey;
         int sizeArray = isComplex ? array[0].length/2 : array[0].length;
+        int[] tmp = new int[3];
         for(int j = 0; j<sizeArray; j++){
             for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
                     grey = (int)array[i][2*j];
                 }else{
                     grey = (int)array[i][j];
-                }     
-                raster.setPixel(i, j, new int[]{map.r[grey],map.g[grey],map.b[grey]});
+                }
+                tmp[0]=map.r[grey];
+                tmp[1]=map.g[grey];
+                tmp[2]=map.b[grey];
+                raster.setPixel(i, j, tmp);
             }
         }
         return imageout;
@@ -1185,6 +1189,7 @@ public class CommonUtils {
         ColorMap map = ColorMap.getJet(256);
         int grey;
         int sizeArray = isComplex ? array[0].length/2 : array[0].length;
+        int[] tmp = new int[3];
         for(int j = 0; j<sizeArray; j++){
             for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
@@ -1192,7 +1197,10 @@ public class CommonUtils {
                 }else {
                     grey = (int)array[i][j];
                 }
-                raster.setPixel(i, j, new int[]{map.r[grey],map.g[grey],map.b[grey]});
+                tmp[0]=map.r[grey];
+                tmp[1]=map.g[grey];
+                tmp[2]=map.b[grey];
+                raster.setPixel(i, j, tmp);
             }
         }
         return imageout;
@@ -1209,6 +1217,7 @@ public class CommonUtils {
         WritableRaster raster = imageout.getRaster();
         ColorMap map = ColorMap.getJet(256);
         int grey;
+        int[] tmp = new int[3];
         for(int j = 0; j<imageout.getHeight(); j++){
             for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
@@ -1216,7 +1225,10 @@ public class CommonUtils {
                 } else {
                     grey = (int)array[(i+j*imageout.getWidth())];
                 }
-                raster.setPixel(i, j, new int[]{map.r[grey],map.g[grey],map.b[grey]});
+                tmp[0]=map.r[grey];
+                tmp[1]=map.g[grey];
+                tmp[2]=map.b[grey];
+                raster.setPixel(i, j, tmp);
             }
         }
         return imageout;
@@ -1233,6 +1245,7 @@ public class CommonUtils {
         WritableRaster raster = imageout.getRaster();
         ColorMap map = ColorMap.getJet(256);
         int grey;
+        int[] tmp = new int[3];
         for(int j = 0; j<imageout.getHeight(); j++){
             for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
@@ -1240,7 +1253,10 @@ public class CommonUtils {
                 } else {
                     grey = (int)array[(i+j*imageout.getWidth())];
                 }
-                raster.setPixel(i, j, new int[]{map.r[grey],map.g[grey],map.b[grey]});
+                tmp[0]=map.r[grey];
+                tmp[1]=map.g[grey];
+                tmp[2]=map.b[grey];
+                raster.setPixel(i, j, tmp);
             }
         }
         return imageout;
@@ -1261,6 +1277,7 @@ public class CommonUtils {
         }
         WritableRaster raster = imageout.getRaster();
         int grey;
+        int[] tmp = new int[3];
         for(int j = 0; j<imageout.getHeight(); j++){
             for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
@@ -1268,7 +1285,8 @@ public class CommonUtils {
                 }else {
                     grey = (int)array[i][j];
                 }
-                raster.setPixel(i, j, new int[]{grey,grey,grey});
+                tmp[0]=tmp[1]=tmp[2]=grey;
+                raster.setPixel(i, j, tmp);
             }
         }
         return imageout;
@@ -1289,6 +1307,7 @@ public class CommonUtils {
         }
         WritableRaster raster = imageout.getRaster();
         int grey;
+        int[] tmp = new int[3];
         for(int j = 0; j<imageout.getHeight(); j++){
             for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
@@ -1296,7 +1315,8 @@ public class CommonUtils {
                 }else {
                     grey = (int)array[i][j];
                 }
-                raster.setPixel(i, j, new int[]{grey,grey,grey});
+                tmp[0]=tmp[1]=tmp[2]=grey;
+                raster.setPixel(i, j, tmp);
             }
         }
         return imageout;
@@ -1312,6 +1332,7 @@ public class CommonUtils {
         BufferedImage imageout = createNewBufferedImage(width,height);
         WritableRaster raster = imageout.getRaster();
         int grey;
+        int[] tmp = new int[3];
         for(int j = 0; j<imageout.getHeight(); j++){
             for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
@@ -1319,7 +1340,8 @@ public class CommonUtils {
                 } else {
                     grey = (int)array[(i+j*imageout.getWidth())];
                 }
-                raster.setPixel(i, j, new int[]{grey,grey,grey});
+                tmp[0]=tmp[1]=tmp[2]=grey;
+                raster.setPixel(i, j, tmp);
             }
         }
         return imageout;
@@ -1335,6 +1357,7 @@ public class CommonUtils {
         BufferedImage imageout = createNewBufferedImage(width, height);
         WritableRaster raster = imageout.getRaster();
         int grey;
+        int[] tmp = new int[3];
         for(int j = 0; j<imageout.getHeight(); j++){
             for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
@@ -1342,7 +1365,8 @@ public class CommonUtils {
                 } else {
                     grey = (int)array[(i+j*imageout.getHeight())];
                 }
-                raster.setPixel(i, j, new int[]{grey,grey,grey});
+                tmp[0]=tmp[1]=tmp[2]=grey;
+                raster.setPixel(i, j, tmp);
             }
         }
         return imageout;
