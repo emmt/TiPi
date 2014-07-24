@@ -53,6 +53,8 @@ public class Deconvolution{
     public static final int PROCESSING_VECTOR = 2; 
     
     private int standardProcessing = PROCESSING_1D;
+    
+    boolean verbose = false;
 
     DeconvUtils utils;
     Filter wiener;
@@ -487,9 +489,9 @@ public class Deconvolution{
         if ( output != LinearConjugateGradient.CONVERGED && output != LinearConjugateGradient.IN_PROGRESS) {
             if (output == LinearConjugateGradient.A_IS_NOT_POSITIVE_DEFINITE) {
                 System.err.println("A_IS_NOT_POSITIVE_DEFINITE");
-            }else if (output == LinearConjugateGradient.TOO_MANY_ITERATIONS) {
+            }else if (output == LinearConjugateGradient.TOO_MANY_ITERATIONS && verbose) {
                 System.err.println("TOO_MANY_ITERATIONS");
-            }else{
+            }else if (verbose){
                 System.err.println("Not ended normally "+output);
             }
         }
