@@ -54,9 +54,9 @@ public class Benchmark2D_1D {
 
     static int size = 50;
 
-    static int NB_BENCH = 20;
+    static int NB_BENCH = 200;
     static BufferedImage imageout;
-    
+
     private static String pathImage = "/home/light/workspace2/FATRAS/saturn.png";
     private static String pathPsf = "/home/light/workspace2/FATRAS/saturn_psf.png";
 
@@ -336,6 +336,9 @@ public class Benchmark2D_1D {
         System.out.println("Moyenne1D: "+moy+"ms\n");
     }
 
+    /**
+     * 
+     */
     public static void benchVectorDouble(){
         Deconvolution deconvVect = new Deconvolution(pathImage, pathPsf,CommonUtils.SCALE,true);
         Deconvolution deconv = new Deconvolution(pathImage, pathPsf,CommonUtils.SCALE,false);
@@ -408,6 +411,9 @@ public class Benchmark2D_1D {
         return (int)((end-begin)/1e6);
     }
 
+    /**
+     * 
+     */
     public static void benchQuad2D1D(){
         Deconvolution a = new Deconvolution(pathImage, pathPsf, CommonUtils.SCALE,false);
         int deuxD = computeQuad2D(a);
@@ -421,6 +427,9 @@ public class Benchmark2D_1D {
         System.out.println("QUAD1D: "+unD+" ms\n");
     }
 
+    /**
+     * 
+     */
     public static void benchQuad2D1DWithOptims(){
         Deconvolution a = new Deconvolution(pathImage, pathPsf, CommonUtils.SCALE,false);
         int deuxD = computeQuad2D(a);
@@ -434,10 +443,13 @@ public class Benchmark2D_1D {
         System.out.println("QUAD1D: "+unD+" ms\n");
     }
 
+    /**
+     * 
+     */
     public static void benchCG(){
         Deconvolution a = new Deconvolution(pathImage, pathPsf);
         System.out.println("Beginnig of the bench on "+NB_BENCH+" rounds");
-        
+
         double mu = 1000000;
         long begin = System.currentTimeMillis();
         for (int i = 0; i < NB_BENCH; i++) {
@@ -445,19 +457,72 @@ public class Benchmark2D_1D {
         }
         long end = System.currentTimeMillis();
         long moyFirst = (end-begin)/NB_BENCH;
-        
+
         begin = System.currentTimeMillis();
         for (int i = 0; i < NB_BENCH; i++) {
             a.nextDeconvolutionCG(mu);
         }
         end = System.currentTimeMillis();
         long moyNext = (end-begin)/NB_BENCH;
-        
+
         System.out.println("CG First: "+moyFirst+" ms");
         System.out.println("CG Next : "+moyNext +" ms");
         System.out.println("Speedup by: "+(int)(((double)(moyFirst-moyNext)/moyFirst)*100) +"%\n");
     }
+
+    static private int count[] = new int[3];
+    static private void add(int[] a){
+        for (int i = 0; i < 3; i++) {
+            count[i]+=a[i];
+        }
+
+    }
     
+    private static long createInt(){
+        long begin=0, end=0;
+        begin = System.nanoTime();
+        for (int i = 0; i < size; i++) {
+            add(new int[]{i,i+1,i+2});
+        }
+        end = System.nanoTime();
+        return end-begin;
+    }
+    
+    private static long noCreateInt(){
+        long begin=0, end=0;
+        begin = System.nanoTime();
+        int[] tmp = new int[3];
+        for (int i = 0; i < size; i++) {
+            tmp[0]=i;
+            tmp[1]=i+1;
+            tmp[2]=i+2;
+            add(tmp);
+        }
+        end = System.nanoTime();
+        return end-begin;
+    }
+    
+    /**
+     * 
+     */
+    public static void benchCreationInt(){
+        moy = createInt();
+        for (int ii = 0; ii < NB_BENCH; ii++) {
+            moy = (createInt()+moy)/2;
+        }
+        System.out.println("Part1 (Creation inside the loop): "+moy);
+        computeStat();
+        moy = noCreateInt();
+        for (int ii = 0; ii < NB_BENCH; ii++) {
+            moy = (noCreateInt()+moy)/2;
+        }
+        System.out.println("Part2 (Creation outside the loop): "+moy+"\n");
+        computeStat();
+    }
+
+
+
+
     /**
      * Only uncomment what tests you want to see
      * 
@@ -473,8 +538,8 @@ public class Benchmark2D_1D {
         //bench_fft2D();
         //computeStat();
 
-        benchCG();
-        
+        //benchCG();
+
         /*
         bench_matrix2D();
         computeStat();
@@ -486,6 +551,7 @@ public class Benchmark2D_1D {
 
         benchVectorDouble();
          */
+        benchCreationInt();
         System.exit(0);
     }
 
