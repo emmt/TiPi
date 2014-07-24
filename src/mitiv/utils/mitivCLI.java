@@ -58,8 +58,8 @@ public class mitivCLI {
     static String[] postTreatmentChoice = new String[]{"none","corrected", "colormap", "correted_colormap"};
     static String alpha = "1.0";
     static String PSF = "";
-    static String Image = "";
-    static String OutputImage = "DeconvoluatedImage.png";
+    static String image = "";
+    static String outputImage = "DeconvoluatedImage.png";
 
     private static boolean isIn(String element, String[] tab){
         boolean ispresent = false;
@@ -72,8 +72,9 @@ public class mitivCLI {
     }
 
     private static void checkArgs(){
-        if (PSF.compareTo("") == 0 || Image.compareTo("") == 0) {
-            System.out.println("We need at least PSF and a image");
+        if (PSF.compareTo("") == 0 || image.compareTo("") == 0) {
+            System.out.println("We need at least PSF and a image\n");
+            printHelp();
             System.exit(1);
         }
         if (!isIn(regularization, regularizationChoice)) {
@@ -120,12 +121,12 @@ public class mitivCLI {
 
     private static void printHelp(){
         System.out.println("Usage: mitivCLI psf image");
-        System.out.println("      options: -o output image");
-        System.out.println("      options: -r kind of regularization");
+        System.out.println("      option: -o output image, Default: "+outputImage);
+        System.out.println("      option: -r kind of regularization, Default: "+regularization);
         System.out.println("                  regularization: "+Arrays.toString(regularizationChoice));
-        System.out.println("      options: -p post treatment");
+        System.out.println("      option: -p post treatment, Default: "+postTreatment);
         System.out.println("                  treatment: "+Arrays.toString(postTreatmentChoice));
-        System.out.println("      options: -a alpha value");
+        System.out.println("      option: -a alpha value, Default: "+alpha);
     }
 
     public static void main(String[] args) {
@@ -139,7 +140,7 @@ public class mitivCLI {
                     printHelp();
                     System.exit(0);
                 case 'o':
-                    OutputImage = next;
+                    outputImage = next;
                     break;
                 case 'r':
                     regularization = next;
@@ -159,17 +160,17 @@ public class mitivCLI {
                     PSF = tmp;
                     psfFound = true;
                 }else{
-                    Image = tmp; 
+                    image = tmp; 
                 }
             }
         }
         checkArgs();
-        System.out.format("Regularization: %s, PostTreatment: %s, alpha: %s, Output: %s\n",regularization,postTreatment,alpha,OutputImage);
+        System.out.format("Regularization: %s, PostTreatment: %s, alpha: %s, Output: %s\n",regularization,postTreatment,alpha,outputImage);
 
-        Deconvolution deconvolution = new Deconvolution(Image,PSF,choosePost(postTreatment),true);
+        Deconvolution deconvolution = new Deconvolution(image,PSF,choosePost(postTreatment),true);
         BufferedImage img = chooseReg(regularization, deconvolution, Double.parseDouble(alpha));
         try {
-            File outputfile = new File(OutputImage);
+            File outputfile = new File(outputImage);
             ImageIO.write(img, "png", outputfile);
             System.out.println("Done.");
         } catch (IOException e) {
