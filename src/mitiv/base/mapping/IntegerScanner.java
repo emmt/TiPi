@@ -23,64 +23,26 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.base.view;
-
-import mitiv.base.mapping.IntegerFunction;
-import mitiv.base.mapping.IntegerScanner;
-import mitiv.random.IntegerGenerator;
+package mitiv.base.mapping;
 
 /**
- * Define the global operations which can be applied to a view.
+ * An IntScanner is designed for scanning a collection of values (of type int).
+ * See {@link DoubleScanner} for more informations.
  * @author Éric Thiébaut.
- *
  */
-public interface IntView {
+public interface IntegerScanner {
+    /**
+     * Initialize the scanner with the first value of the collection.
+     * @param arg - The first value of the collection.
+     */
+    public abstract void initialize(int arg);
 
     /**
-     * Set all the values of the view.
-     * @param value - The value to set.
+     * Update the scanner with an additional value of the collection.
+     * @param arg  - An additional value of the collection.
      */
-    public abstract void set(int value);
-
-    /**
-     * Set the values of the view with a generator.
-     * @param generator - The generator to use.
-     */
-    public abstract void set(IntegerGenerator generator);
-
-    /**
-     * Increment all the values of the view.
-     * @param value - The increment.
-     */
-    public abstract void incr(int value);
-
-
-    /**
-     * Decrement all the values of the view.
-     * @param value - The decrement.
-     */
-    public abstract void decr(int value);
-
-    /**
-     * Multiply all the values of the view.
-     * @param value - The multiplier.
-     */
-    public abstract void mult(int value);
-
-    /**
-     * Map all the values of the view by a function.
-     * @param func - The function to apply.
-     */
-    public abstract void map(IntegerFunction func);
-
-    /**
-     * Scan the values of the view.
-     * @param scanner - The scanner to use.
-     */
-    public abstract void scan(IntegerScanner scanner);
-
+    public abstract void update(int arg);
 }
-
 
 /*
  * Local Variables:
