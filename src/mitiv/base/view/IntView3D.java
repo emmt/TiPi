@@ -25,9 +25,9 @@
 
 package mitiv.base.view;
 
-import mitiv.base.mapping.IntFunction;
-import mitiv.base.mapping.IntScanner;
-import mitiv.random.IntGenerator;
+import mitiv.base.mapping.IntegerFunction;
+import mitiv.base.mapping.IntegerScanner;
+import mitiv.random.IntegerGenerator;
 
 /**
  * This class implements 3D views of arrays of int's.
@@ -132,13 +132,13 @@ public class IntView3D extends View3D implements IntView {
      * @param generator - The generator to use.
      */
     @Override
-    public final void set(IntGenerator generator) {
+    public final void set(IntegerGenerator generator) {
         if (order == ROW_MAJOR) {
             /* Scan elements in row-major order. */
             for (int i1 = 0; i1 < n1; ++i1) {
                 for (int i2 = 0; i2 < n2; ++i2) {
                     for (int i3 = 0; i3 < n3; ++i3) {
-                        data[index(i1, i2, i3)] = generator.nextInt();
+                        data[index(i1, i2, i3)] = generator.nextInteger();
                     }
                 }
             }
@@ -147,7 +147,7 @@ public class IntView3D extends View3D implements IntView {
             for (int i3 = 0; i3 < n3; ++i3) {
                 for (int i2 = 0; i2 < n2; ++i2) {
                     for (int i1 = 0; i1 < n1; ++i1) {
-                        data[index(i1, i2, i3)] = generator.nextInt();
+                        data[index(i1, i2, i3)] = generator.nextInteger();
                     }
                 }
             }
@@ -278,7 +278,7 @@ public class IntView3D extends View3D implements IntView {
      * @param i3 - The index along the 3rd dimension.
      * @param func - The function to apply.
      */
-    public final void map(int i1, int i2, int i3, IntFunction func) {
+    public final void map(int i1, int i2, int i3, IntegerFunction func) {
         int k = index(i1, i2, i3);
         data[k] = func.apply(data[k]);
     }
@@ -288,7 +288,7 @@ public class IntView3D extends View3D implements IntView {
      * @param func - The function to apply.
      */
     @Override
-    public final void map(IntFunction func) {
+    public final void map(IntegerFunction func) {
         if (order == ROW_MAJOR) {
             /* Scan elements in row-major order. */
             for (int i1 = 0; i1 < n1; ++i1) {
@@ -317,7 +317,7 @@ public class IntView3D extends View3D implements IntView {
      * @param scanner - The scanner to use.
      */
     @Override
-    public final void scan(IntScanner scanner) {
+    public final void scan(IntegerScanner scanner) {
         boolean skip = true;
         scanner.initialize(get(0, 0, 0));
         if (order == ROW_MAJOR) {

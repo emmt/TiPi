@@ -33,13 +33,13 @@ package mitiv.cost;
  */
 public class BoundaryConditions {
     /** Ordinary boundary conditions amounts to propagate leftmost or rightmost values. */
-    static final int NORMAL = 0;
+    public static final int NORMAL = 0;
 
     /** Periodic boundary conditions. */
-    static final int PERIODIC = 1;
+    public static final int PERIODIC = 1;
 
     /** Mirror boundary conditions. */
-    static final int MIRROR = 2;
+    public static final int MIRROR = 2;
 
     /**
      * Store index values with given offset and boundary conditions.
