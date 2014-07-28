@@ -129,6 +129,14 @@ public class mitivCLI {
         System.out.println("      option: -a alpha value, Default: "+alpha);
     }
 
+    /**
+     * One way to use the algorithms is to use this interface that is mean to act 
+     * as a standard application launch from a terminal.
+     * 
+     * Just launch application with no arguments or with -h to see parameters and input.
+     * 
+     * @param args
+     */
     public static void main(String[] args) {
         boolean psfFound = false;
         for (int i = 0; i < args.length; i++) {

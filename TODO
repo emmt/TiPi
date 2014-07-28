@@ -5,10 +5,7 @@ Ludo
 
 John
     CG threaded function (half functionnal only)
-    Raster GetPixel: array, give one instead of create it
-    imgpadding merge my functions and ludovic'
     The alpha value from slider is not enough to change image, need eric
-    Add image pad/unpad to deconvutils
 
 Eric
     move linalg.Utils to linalg.LinalgUtils (idea: each Utils should be called ClassUtils except mitiv.utils)
