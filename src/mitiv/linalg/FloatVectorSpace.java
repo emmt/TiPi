@@ -25,6 +25,8 @@
 
 package mitiv.linalg;
 
+import mitiv.base.Traits;
+
 
 /**
  * Class vector spaces which own instances of the FloatVector class.
@@ -34,7 +36,7 @@ package mitiv.linalg;
  */
 public class FloatVectorSpace extends VectorSpace {
     public FloatVectorSpace(int size) {
-        super(size, Utils.TYPE_FLOAT);
+        super(size, Traits.FLOAT);
     }
 
     @Override

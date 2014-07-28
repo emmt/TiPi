@@ -25,6 +25,7 @@
 
 package mitiv.linalg;
 
+import mitiv.base.Traits;
 import mitiv.exception.IncorrectSpaceException;
 
 /**
@@ -76,7 +77,7 @@ import mitiv.exception.IncorrectSpaceException;
  */
 public abstract class VectorSpace {
     protected int size = 0; /* All vector spaces have a size. */
-    protected int type = Utils.TYPE_OPAQUE; /* All vector spaces have a type. */
+    protected int type = Traits.VOID; /* All vector spaces have a type. */
 
     protected VectorSpace(int size, int type) {
         if (size < 1) {

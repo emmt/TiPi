@@ -23,32 +23,20 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.linalg;
+package mitiv.base;
 
 import java.nio.ByteOrder;
 
-public class Utils {
+public class BaseUtils implements Traits {
     /**
      * Makes this class non instantiable, but still let's others inherit from
      * it.
      */
-    protected Utils() {
+    protected BaseUtils() {
         throw new RuntimeException("Non instantiable");
     }
 
-    public static final int TYPE_OPAQUE = 0;
-    public static final int TYPE_CHAR = 1;
-    public static final int TYPE_SHORT = 2;
-    public static final int TYPE_INT = 3;
-    public static final int TYPE_LONG = 4;
-    public static final int TYPE_FLOAT = 5;
-    public static final int TYPE_DOUBLE = 6;
-    
-    public static final int BIG_ENDIAN    = 4321;
-    public static final int LITTLE_ENDIAN = 1234;
-    public static final int UNKNOWN_BYTE_ORDER = -1;
-
-    private static int getNativeByteOrder() {
+    final static int getNativeByteOrder() {
         ByteOrder order = ByteOrder.nativeOrder();
         if (order == ByteOrder.BIG_ENDIAN) {
             return BIG_ENDIAN;
@@ -58,7 +46,6 @@ public class Utils {
             return UNKNOWN_BYTE_ORDER;
         }
     }
-    public static final int NATIVE_BYTE_ORDER = getNativeByteOrder();
 
     public static void main(String[] args) {
         System.out.println("FLT_EPSILON = " + FLT_EPSILON);
@@ -75,13 +62,7 @@ public class Utils {
         System.out.flush();
     }
 
-    /**
-     * FLT_EPSILON is the minimum positive single precision floating
-     * point number such that 1.0F + FLT_EPSILON != 1.0F. 
-     */
-    public static final float FLT_EPSILON = machineEpsilonFloat();
-
-    private static float machineEpsilonFloat() {
+    final static float machineEpsilonFloat() {
         float value = 1.0f;
         while ((1.0F + (value / 2.0F)) != 1.0F) {
             value /= 2.0F;
@@ -92,13 +73,7 @@ public class Utils {
         return value;
     }
 
-    /**
-     * DBL_EPSILON is the minimum positive double precision floating
-     * point number such that 1.0 + DBL_EPSILON != 1.0. 
-     */
-    public static final double DBL_EPSILON = machineEpsilonDouble();
-
-    private static double machineEpsilonDouble() {
+    final static double machineEpsilonDouble() {
         double value = 1.0;
         while ((1.0 + (value / 2.0)) != 1.0) {
             value /= 2.0;

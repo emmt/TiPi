@@ -25,13 +25,13 @@
 
 package mitiv.deconv;
 
+import mitiv.base.Traits;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.exception.NotImplementedException;
 import mitiv.linalg.DoubleVector;
 import mitiv.linalg.FloatVector;
 import mitiv.linalg.LinearOperator;
 import mitiv.linalg.RealComplexFFT;
-import mitiv.linalg.Utils;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 
@@ -110,8 +110,8 @@ public class ConvolutionOperator extends LinearOperator {
         tmp = complexSpace.create();
         number = realSpace.getSize();
         int type = realSpace.getType();
-        single = (type == Utils.TYPE_FLOAT);
-        if (! single && type != Utils.TYPE_DOUBLE) {
+        single = (type == Traits.FLOAT);
+        if (! single && type != Traits.DOUBLE) {
             throw new IllegalArgumentException("Only float and double types supported");
         }
     }

@@ -25,7 +25,7 @@
 
 package mitiv.cost;
 
-import mitiv.linalg.Utils;
+import mitiv.base.BaseUtils;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 
@@ -33,7 +33,7 @@ public class GradientChecker {
     static final int FORWARD_DIFFERENCE  =  1;
     static final int BACKWARD_DIFFERENCE = -1;
     static final int CENTERED_DIFFERENCE =  0;
-    static final double MINIMAL_EPSILON = Utils.DBL_EPSILON;
+    static final double MINIMAL_EPSILON = BaseUtils.DBL_EPSILON;
     static final double DEFAULT_EPSILON = Math.max(MINIMAL_EPSILON, 1e-3);
     private final VectorSpace space;
     private double stepScale = DEFAULT_EPSILON;

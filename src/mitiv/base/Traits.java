@@ -25,6 +25,7 @@
 
 package mitiv.base;
 
+
 /**
  * This interface collects some information about Java primitives.
  *
@@ -97,6 +98,26 @@ public interface Traits {
 
     /** Non-primitive object. */
     static final int OBJECT = 8;
+
+
+    public static final int BIG_ENDIAN    = 4321;
+    public static final int LITTLE_ENDIAN = 1234;
+    public static final int UNKNOWN_BYTE_ORDER = -1;
+
+    public static final int NATIVE_BYTE_ORDER = BaseUtils.getNativeByteOrder();
+
+    /**
+     * FLT_EPSILON is the minimum positive single precision floating
+     * point number such that 1.0F + FLT_EPSILON != 1.0F.
+     */
+    public static final float FLT_EPSILON = BaseUtils.machineEpsilonFloat();
+
+    /**
+     * DBL_EPSILON is the minimum positive double precision floating
+     * point number such that 1.0 + DBL_EPSILON != 1.0.
+     */
+    public static final double DBL_EPSILON = BaseUtils.machineEpsilonDouble();
+
 }
 
 /*

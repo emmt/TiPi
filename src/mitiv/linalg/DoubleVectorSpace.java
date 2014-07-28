@@ -25,6 +25,8 @@
 
 package mitiv.linalg;
 
+import mitiv.base.Traits;
+
 
 /**
  * Class vector spaces which own instances of the DoubleVector class.
@@ -34,7 +36,7 @@ package mitiv.linalg;
  */
 public class DoubleVectorSpace extends VectorSpace {
     public DoubleVectorSpace(int size) {
-        super(size, Utils.TYPE_DOUBLE);
+        super(size, Traits.DOUBLE);
     }
 
     @Override

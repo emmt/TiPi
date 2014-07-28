@@ -25,13 +25,13 @@
 
 package mitiv.cost;
 
+import mitiv.base.Traits;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.linalg.DoubleVectorSpaceWithRank;
 import mitiv.linalg.DoubleVectorWithRank;
 import mitiv.linalg.FloatVectorSpaceWithRank;
 import mitiv.linalg.FloatVectorWithRank;
 import mitiv.linalg.LinearOperator;
-import mitiv.linalg.Utils;
 import mitiv.linalg.Vector;
 import mitiv.random.DoubleGenerator;
 import mitiv.random.FloatGenerator;
@@ -242,7 +242,7 @@ public class FiniteDifferenceOperator extends LinearOperator {
     @Override
     protected void privApply(Vector src, Vector dst, int job)
             throws IncorrectSpaceException {
-        boolean single = (inputSpace.getType() == Utils.TYPE_FLOAT);
+        boolean single = (inputSpace.getType() == Traits.FLOAT);
         boolean transpose;
         if (job == ADJOINT) {
             dst.zero();
