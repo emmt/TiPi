@@ -25,6 +25,8 @@
 
 package mitiv.linalg;
 
+import java.io.PrintStream;
+
 import mitiv.exception.NonconformingArrayException;
 
 
@@ -289,7 +291,7 @@ public class ArrayOps {
 
     /*-----------------------------------------------------------------------*/
     /* MIN/MAX VALUES */
-    
+
     /* FLOAT VERSION */
 
     public static final float getMin(final float[] x) {
@@ -311,7 +313,7 @@ public class ArrayOps {
         }
         return xmax;
     }
-   
+
     public static final float[] getMinMax(final float[] x) {
         return getMinMax(x, new float[2]);
     }
@@ -335,7 +337,7 @@ public class ArrayOps {
 
 
     /* DOUBLE VERSION */
-    
+
     public static final double getMin(final double[] x) {
         int n = getNonZeroLength(x);
         double xmin = x[0];
@@ -379,7 +381,7 @@ public class ArrayOps {
 
     /*-----------------------------------------------------------------------*/
     /* SUM OF VALUES */
-    
+
     /* FLOAT VERSION */
 
     public static final float sum(final float[] x) {
@@ -465,7 +467,7 @@ public class ArrayOps {
         for (int i = 0; i < n; ++i) {
             result += x[i] * y[i];
         }
-        return (double)result;
+        return result;
     }
 
     public static final double dot(int n, final double[] w, final double[] x,
@@ -483,7 +485,7 @@ public class ArrayOps {
         for (int i = 0; i < n; ++i) {
             result += w[i] * x[i] * y[i];
         }
-        return (double)result;
+        return result;
     }
 
     /**
@@ -1217,6 +1219,113 @@ public class ArrayOps {
      */
     public static double dot(final Object w, final Object x, final Object y) {
         return 0.0;
+    }
+
+    /*-----------------------------------------------------------------------*/
+    /* PRINT CONTENTS */
+
+    public static void printArray(Object obj) {
+        printArray(obj, System.out, true);
+    }
+    public static void printArray(Object obj, boolean newline) {
+        printArray(obj, System.out, newline);
+    }
+    public static void printArray(Object obj, PrintStream stream) {
+        printArray(obj, stream, true);
+    }
+    private static void printArrayHelper(Object obj, PrintStream stream, boolean first) {
+
+    }
+    public static void printArray(Object obj, PrintStream stream, boolean newline) {
+        if (obj == null) {
+            stream.print("null");
+        } else {
+            /* Data type is given by first non-'[' character of the class name:
+             *   'B' = byte, 'S' = short, 'I' = int, 'J' = long, 'F' = float,
+             *   'D' = double, 'C' = char, 'Z' = boolean, 'L' = non-primitive object
+             */
+            String classname = obj.getClass().getName();
+            int c0 = classname.charAt(0);
+            if (c0 == '[') {
+                int c1 = classname.charAt(1);
+                if (c1 == 'B') {
+                    // FIXME: print opening brace if length is 0
+                    byte[] arr = (byte[])obj;
+                    for (int i = 0; i < arr.length; ++i) {
+                        stream.print((i == 0 ? "{" : ", ") + arr[i]);
+                    }
+                    stream.print("}");
+                } else if (c1 == 'S') {
+                    short[] arr = (short[])obj;
+                    for (int i = 0; i < arr.length; ++i) {
+                        stream.print((i == 0 ? "{" : ", ") + arr[i]);
+                    }
+                    stream.print("}");
+                } else if (c1 == 'I') {
+                    int[] arr = (int[])obj;
+                    for (int i = 0; i < arr.length; ++i) {
+                        stream.print((i == 0 ? "{" : ", ") + arr[i]);
+                    }
+                    stream.print("}");
+                } else if (c1 == 'J') {
+                    long[] arr = (long[])obj;
+                    for (int i = 0; i < arr.length; ++i) {
+                        stream.print((i == 0 ? "{" : ", ") + arr[i]);
+                    }
+                    stream.print("}");
+                } else if (c1 == 'F') {
+                    float[] arr = (float[])obj;
+                    for (int i = 0; i < arr.length; ++i) {
+                        stream.print((i == 0 ? "{" : ", ") + arr[i]);
+                    }
+                    stream.print("}");
+                } else if (c1 == 'D') {
+                    double[] arr = (double[])obj;
+                    for (int i = 0; i < arr.length; ++i) {
+                        stream.print((i == 0 ? "{" : ", ") + arr[i]);
+                    }
+                    stream.print("}");
+                } else if (c1 == 'C') {
+                    char[] arr = (char[])obj;
+                    for (int i = 0; i < arr.length; ++i) {
+                        stream.print((i == 0 ? "{" : ", ") + arr[i]);
+                    }
+                    stream.print("}");
+                } else if (c1 == 'Z') {
+                    boolean[] arr = (boolean[])obj;
+                    for (int i = 0; i < arr.length; ++i) {
+                        stream.print((i == 0 ? "{" : ", ") + arr[i]);
+                    }
+                    stream.print("}");
+                } else if (c1 == 'L') {
+                    // FIXME: print the array
+                    stream.print(classname.substring(2));
+                } else if (c1 == '[') {
+                    /* An array of arrays. */
+                    Object[] arr = (Object[])obj;
+                    stream.print("{");
+                    for (int i = 0; i < arr.length; ++i) {
+                        if (i > 0) stream.print(", ");
+                        printArray(arr[i], stream, false);
+                    }
+                    stream.print("}");
+                } else {
+                    stream.print("{*unknown*}");
+                }
+            }
+        }
+        if (newline) {
+            stream.println();
+        }
+        /*
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < size; ++i) {
+            buf.append(i == 0 ? "{" : ", ");
+            buf.append(get(i));
+        }
+        buf.append("}");
+        return buf.toString();
+         */
     }
 
 }
