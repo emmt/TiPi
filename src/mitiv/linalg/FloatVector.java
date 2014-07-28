@@ -47,7 +47,7 @@ public class FloatVector extends Vector {
      */
     public FloatVector(FloatVectorSpace owner) {
         super(owner);
-        data = new float[owner.size];
+        data = new float[owner.number];
     }
 
     /**
@@ -62,7 +62,7 @@ public class FloatVector extends Vector {
      */
     public FloatVector(FloatVectorSpace owner, float[] data) {
         super(owner);
-        if (data == null || data.length != owner.size) {
+        if (data == null || data.length != owner.number) {
             throw new IllegalArgumentException("Array size not compatible with vector space.");
         }
         this.data = data;
@@ -131,7 +131,7 @@ public class FloatVector extends Vector {
     }
 
     public void fill(FloatGenerator generator) {
-        for (int k = 0; k < size; ++k) {
+        for (int k = 0; k < number; ++k) {
             data[k] = generator.nextFloat();
         }
     }

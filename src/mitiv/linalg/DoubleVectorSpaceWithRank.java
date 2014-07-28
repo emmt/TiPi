@@ -32,7 +32,7 @@ public class DoubleVectorSpaceWithRank extends DoubleVectorSpace {
     protected int[] shape;
 
     private DoubleVectorSpaceWithRank(int[] shape, boolean copyShape) {
-        super(computeSize(shape));
+        super(computeNumber(shape));
         rank = shape.length;
         if (copyShape) {
             this.shape = new int[rank];
@@ -68,7 +68,7 @@ public class DoubleVectorSpaceWithRank extends DoubleVectorSpace {
     @Override
     public DoubleVectorWithRank create(double value) {
         DoubleVectorWithRank v = new DoubleVectorWithRank(this);
-        ArrayOps.fill(size, v.getData(), value);
+        ArrayOps.fill(number, v.getData(), value);
         return v;
     }
 

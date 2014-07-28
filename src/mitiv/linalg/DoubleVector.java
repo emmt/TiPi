@@ -47,7 +47,7 @@ public class DoubleVector extends Vector {
      */
     public DoubleVector(DoubleVectorSpace owner) {
         super(owner);
-        data = new double[owner.size];
+        data = new double[owner.number];
     }
 
     /**
@@ -62,7 +62,7 @@ public class DoubleVector extends Vector {
      */
     public DoubleVector(DoubleVectorSpace owner, double[] data) {
         super(owner);
-        if (data == null || data.length != owner.size) {
+        if (data == null || data.length != owner.number) {
             throw new IllegalArgumentException("Array size not compatible with vector space.");
         }
         this.data = data;
@@ -119,7 +119,7 @@ public class DoubleVector extends Vector {
     }
 
     public void fill(DoubleGenerator generator) {
-        for (int k = 0; k < size; ++k) {
+        for (int k = 0; k < number; ++k) {
             data[k] = generator.nextDouble();
         }
     }

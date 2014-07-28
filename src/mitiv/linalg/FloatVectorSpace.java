@@ -35,8 +35,8 @@ import mitiv.base.Traits;
  * 
  */
 public class FloatVectorSpace extends VectorSpace {
-    public FloatVectorSpace(int size) {
-        super(size, Traits.FLOAT);
+    public FloatVectorSpace(int number) {
+        super(Traits.FLOAT, number);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class FloatVectorSpace extends VectorSpace {
     @Override
     public FloatVector create(double value) {
         FloatVector v = new FloatVector(this);
-        ArrayOps.fill(size, v.getData(), value);
+        ArrayOps.fill(number, v.getData(), value);
         return v;
     }
 
@@ -75,18 +75,18 @@ public class FloatVectorSpace extends VectorSpace {
 
     @Override
     protected void _copy(Vector src, Vector dst) {
-        ArrayOps.copy(size, ((FloatVector) src).getData(),
+        ArrayOps.copy(number, ((FloatVector) src).getData(),
                 ((FloatVector) dst).getData());
     }
 
     @Override
     protected void _fill(Vector x, double alpha) {
-        ArrayOps.fill(size, ((FloatVector) x).getData(), alpha);
+        ArrayOps.fill(number, ((FloatVector) x).getData(), alpha);
     }
 
     @Override
     protected double _dot(final Vector x, final Vector y) {
-        return ArrayOps.dot(size, ((FloatVector) x).getData(),
+        return ArrayOps.dot(number, ((FloatVector) x).getData(),
                 ((FloatVector) y).getData());
     }
 
@@ -108,7 +108,7 @@ public class FloatVectorSpace extends VectorSpace {
     @Override
     protected void _axpby(double alpha, final Vector x,
             double beta, Vector y) {
-        ArrayOps.axpby(size,
+        ArrayOps.axpby(number,
                 alpha, ((FloatVector) x).getData(),
                 beta,  ((FloatVector) y).getData());
     }
@@ -116,7 +116,7 @@ public class FloatVectorSpace extends VectorSpace {
     @Override
     protected void _axpby(double alpha, final Vector x,
             double beta, final Vector y, Vector dst) {
-        ArrayOps.axpby(size,
+        ArrayOps.axpby(number,
                 alpha, ((FloatVector) x).getData(),
                 beta,  ((FloatVector) y).getData(), ((FloatVector) dst).getData());
     }
@@ -125,7 +125,7 @@ public class FloatVectorSpace extends VectorSpace {
     protected void _axpbypcz(double alpha, final Vector x,
             double beta,  final Vector y,
             double gamma, final Vector z, Vector dst) {
-        ArrayOps.axpbypcz(size,
+        ArrayOps.axpbypcz(number,
                 alpha, ((FloatVector) x).getData(),
                 beta,  ((FloatVector) y).getData(),
                 gamma, ((FloatVector) z).getData(), ((FloatVector) dst).getData());

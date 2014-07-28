@@ -47,7 +47,7 @@ public abstract class Vector {
      * Reference to the VectorSpace to which this vector belongs.
      */
     protected VectorSpace space;
-    protected int size;
+    protected int number;
 
     /**
      * Create a vector from a given vector space.
@@ -55,15 +55,15 @@ public abstract class Vector {
      */
     protected Vector(VectorSpace owner) {
         this.space = owner;
-        this.size = owner.size;
+        this.number = owner.number;
     }
 
     /**
      * Get the size of the vector.
      * @return The number of scalars collected in the vector.
      */
-    public final int getSize() {
-        return size;
+    public final int getNumber() {
+        return number;
     }
 
     /**
@@ -71,7 +71,7 @@ public abstract class Vector {
      * @return The number of scalars collected in the vector.
      */
     public final int length() {
-        return size;
+        return number;
     }
 
     /**
@@ -113,7 +113,7 @@ public abstract class Vector {
      * global level.
      * 
      * @param i  - The index of the value (runs from 0 to {@code n}-1, with {@code n}
-     *             the size of the vector).
+     *             the number of elements of the vector).
      * @return The value of the vector at the given index.
      * @throws IndexOutOfBoundsException if index {@code i} is out of bounds;
      */
@@ -127,7 +127,7 @@ public abstract class Vector {
      * global level.
      * 
      * @param i - The index of the value (runs from 0 to {@code n}-1, with {@code n}
-     *            the size of the vector).
+     *            the number of elements of the vector).
      * @param value - The value to store at the index position.
      * @throws IndexOutOfBoundsException if index {@code i} is out of bounds;
      */
@@ -171,7 +171,7 @@ public abstract class Vector {
     @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < size; ++i) {
+        for (int i = 0; i < number; ++i) {
             buf.append(i == 0 ? "{" : ", ");
             buf.append(get(i));
         }

@@ -50,7 +50,7 @@ public class RealComplexFFT extends LinearOperator {
     private RealComplexFFT(VectorSpace inputSpace, VectorSpace outputSpace,
             int[] shape, boolean single) {
         super(inputSpace, outputSpace);
-        this.number = inputSpace.getSize();
+        this.number = inputSpace.getNumber();
         this.rank = shape.length;
         this.shape = shape;
         this.single = single;

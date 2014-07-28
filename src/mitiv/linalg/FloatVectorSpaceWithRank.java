@@ -32,7 +32,7 @@ public class FloatVectorSpaceWithRank extends FloatVectorSpace {
     protected int[] shape;
 
     private FloatVectorSpaceWithRank(int[] shape, boolean copyShape) {
-        super(computeSize(shape));
+        super(computeNumber(shape));
         rank = shape.length;
         if (copyShape) {
             this.shape = new int[rank];
@@ -68,7 +68,7 @@ public class FloatVectorSpaceWithRank extends FloatVectorSpace {
     @Override
     public FloatVectorWithRank create(double value) {
         FloatVectorWithRank v = new FloatVectorWithRank(this);
-        ArrayOps.fill(size, v.getData(), value);
+        ArrayOps.fill(number, v.getData(), value);
         return v;
     }
 

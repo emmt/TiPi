@@ -108,7 +108,7 @@ public class ConvolutionOperator extends LinearOperator {
         }
         this.FFT = FFT;
         tmp = complexSpace.create();
-        number = realSpace.getSize();
+        number = realSpace.getNumber();
         int type = realSpace.getType();
         single = (type == Traits.FLOAT);
         if (! single && type != Traits.DOUBLE) {

@@ -35,8 +35,8 @@ import mitiv.base.Traits;
  * 
  */
 public class DoubleVectorSpace extends VectorSpace {
-    public DoubleVectorSpace(int size) {
-        super(size, Traits.DOUBLE);
+    public DoubleVectorSpace(int number) {
+        super(Traits.DOUBLE, number);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class DoubleVectorSpace extends VectorSpace {
     @Override
     public DoubleVector create(double value) {
         DoubleVector v = new DoubleVector(this);
-        ArrayOps.fill(size, v.getData(), value);
+        ArrayOps.fill(number, v.getData(), value);
         return v;
     }
 
@@ -75,18 +75,18 @@ public class DoubleVectorSpace extends VectorSpace {
 
     @Override
     protected void _copy(Vector src, Vector dst) {
-        ArrayOps.copy(size, ((DoubleVector) src).getData(),
+        ArrayOps.copy(number, ((DoubleVector) src).getData(),
                 ((DoubleVector) dst).getData());
     }
 
     @Override
     protected void _fill(Vector x, double alpha) {
-        ArrayOps.fill(size, ((DoubleVector) x).getData(), alpha);
+        ArrayOps.fill(number, ((DoubleVector) x).getData(), alpha);
     }
 
     @Override
     protected double _dot(Vector x, Vector y) {
-        return ArrayOps.dot(size, ((DoubleVector) x).getData(),
+        return ArrayOps.dot(number, ((DoubleVector) x).getData(),
                 ((DoubleVector) y).getData());
     }
 
@@ -108,7 +108,7 @@ public class DoubleVectorSpace extends VectorSpace {
     @Override
     protected void _axpby(double alpha, final Vector x,
             double beta, Vector y) {
-        ArrayOps.axpby(size,
+        ArrayOps.axpby(number,
                 alpha, ((DoubleVector) x).getData(),
                 beta,  ((DoubleVector) y).getData());
     }
@@ -116,7 +116,7 @@ public class DoubleVectorSpace extends VectorSpace {
     @Override
     protected void _axpby(double alpha, final Vector x,
             double beta, final Vector y, Vector dst) {
-        ArrayOps.axpby(size,
+        ArrayOps.axpby(number,
                 alpha, ((DoubleVector) x).getData(),
                 beta,  ((DoubleVector) y).getData(), ((DoubleVector) dst).getData());
     }
@@ -125,7 +125,7 @@ public class DoubleVectorSpace extends VectorSpace {
     protected void _axpbypcz(double alpha, final Vector x,
             double beta,  final Vector y,
             double gamma, final Vector z, Vector dst) {
-        ArrayOps.axpbypcz(size,
+        ArrayOps.axpbypcz(number,
                 alpha, ((DoubleVector) x).getData(),
                 beta,  ((DoubleVector) y).getData(),
                 gamma, ((DoubleVector) z).getData(), ((DoubleVector) dst).getData());

@@ -54,7 +54,7 @@ public class WeightingOperator extends LinearOperator {
 	@Override
 	protected void privApply(Vector src, Vector dst, int job)
 			throws IncorrectSpaceException {
-		int n = inputSpace.getSize();
+		int n = inputSpace.getNumber();
 		DoubleVector vectSrc = (DoubleVector)src; // FIXME: should be more general
 		DoubleVector vectDst = (DoubleVector)dst;
 		DoubleVector vectW = (DoubleVector)weight;

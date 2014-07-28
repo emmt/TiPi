@@ -1319,7 +1319,7 @@ public class ArrayOps {
         }
         /*
         StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < size; ++i) {
+        for (int i = 0; i < number; ++i) {
             buf.append(i == 0 ? "{" : ", ");
             buf.append(get(i));
         }

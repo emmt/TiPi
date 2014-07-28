@@ -76,18 +76,18 @@ import mitiv.exception.IncorrectSpaceException;
  *
  */
 public abstract class VectorSpace {
-    protected int size = 0; /* All vector spaces have a size. */
     protected int type = Traits.VOID; /* All vector spaces have a type. */
+    protected int number = 0; /* All vector spaces have a number of elements. */
 
-    protected VectorSpace(int size, int type) {
-        if (size < 1) {
+    protected VectorSpace(int type, int number) {
+        if (number < 1) {
             throw new IllegalArgumentException("Bad vector space size.");
         }
-        this.size = size;
         this.type = type;
+        this.number = number;
     }
-    public int getSize() {
-        return size;
+    public int getNumber() {
+        return number;
     }
     public int getType() {
         return type;
@@ -446,18 +446,18 @@ public abstract class VectorSpace {
      * @return The product of the dimensions.
      * @throws IllegalArgumentException All dimensions must be greater or equal 1.
      */
-    protected static int computeSize(int[] shape) {
+    protected static int computeNumber(int[] shape) {
         if (shape == null) {
             throw new IllegalArgumentException("Illegal NULL shape.");
         }
-        int size = 1;
+        int number = 1;
         for (int r = 0; r < shape.length; ++r) {
             if (shape[r] <= 0) {
                 throw new IllegalArgumentException("Bad dimension length.");
             }
-            size *= shape[r];
+            number *= shape[r];
         }
-        return size;
+        return number;
     }
 
 }
