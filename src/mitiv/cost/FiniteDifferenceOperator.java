@@ -25,27 +25,27 @@
 
 package mitiv.cost;
 
-import mitiv.base.Traits;
 import mitiv.exception.IncorrectSpaceException;
-import mitiv.linalg.DoubleVectorSpaceWithRank;
-import mitiv.linalg.DoubleVectorWithRank;
-import mitiv.linalg.FloatVectorSpaceWithRank;
-import mitiv.linalg.FloatVectorWithRank;
 import mitiv.linalg.LinearOperator;
 import mitiv.linalg.Vector;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.FloatShapedVectorSpace;
 import mitiv.random.DoubleGenerator;
 import mitiv.random.FloatGenerator;
 import mitiv.random.UniformDistribution;
 
 public class FiniteDifferenceOperator extends LinearOperator {
     private int[][] index;
+    final boolean single;
 
     private static void testDoubleOperator(DoubleGenerator generator, int[] shape, int condition) {
-        DoubleVectorSpaceWithRank inp = new DoubleVectorSpaceWithRank(shape);
+        DoubleShapedVectorSpace inp = new DoubleShapedVectorSpace(shape);
         LinearOperator D = new FiniteDifferenceOperator(inp, condition);
-        DoubleVectorSpaceWithRank out = (DoubleVectorSpaceWithRank) D.getOutputSpace();
-        DoubleVectorWithRank a = inp.create();
-        DoubleVectorWithRank b = out.create();
+        DoubleShapedVectorSpace out = (DoubleShapedVectorSpace) D.getOutputSpace();
+        DoubleShapedVector a = inp.create();
+        DoubleShapedVector b = out.create();
         a.fill(generator);
         b.fill(generator);
         System.out.printf("Testing the adjoint in %dD arrays, shape = [%d", shape.length, shape[0]);
@@ -55,11 +55,11 @@ public class FiniteDifferenceOperator extends LinearOperator {
     }
 
     private static void testFloatOperator(FloatGenerator generator, int[] shape, int condition) {
-        FloatVectorSpaceWithRank inp = new FloatVectorSpaceWithRank(shape);
+        FloatShapedVectorSpace inp = new FloatShapedVectorSpace(shape);
         LinearOperator D = new FiniteDifferenceOperator(inp, condition);
-        FloatVectorSpaceWithRank out = (FloatVectorSpaceWithRank) D.getOutputSpace();
-        FloatVectorWithRank a = inp.create();
-        FloatVectorWithRank b = out.create();
+        FloatShapedVectorSpace out = (FloatShapedVectorSpace) D.getOutputSpace();
+        FloatShapedVector a = inp.create();
+        FloatShapedVector b = out.create();
         a.fill(generator);
         b.fill(generator);
         System.out.printf("Testing the adjoint in %dD arrays, shape = [%d", shape.length, shape[0]);
@@ -69,16 +69,16 @@ public class FiniteDifferenceOperator extends LinearOperator {
     }
 
     public static void main(String[] args) {
-        DoubleVectorSpaceWithRank inp = new DoubleVectorSpaceWithRank(new int[]{5});
-        DoubleVectorWithRank a = inp.create();
+        DoubleShapedVectorSpace inp = new DoubleShapedVectorSpace(new int[]{5});
+        DoubleShapedVector a = inp.create();
         a.set(0,  1.2);
         a.set(1,  2.7);
         a.set(2, -3.1);
         a.set(3,  5.3);
         a.set(4, -9.0);
         LinearOperator dif = new FiniteDifferenceOperator(inp);
-        DoubleVectorSpaceWithRank out = (DoubleVectorSpaceWithRank) dif.getOutputSpace();
-        DoubleVectorWithRank b = out.create();
+        DoubleShapedVectorSpace out = (DoubleShapedVectorSpace) dif.getOutputSpace();
+        DoubleShapedVector b = out.create();
         b.set(0,  2.1);
         b.set(1,  7.2);
         b.set(2, -1.3);
@@ -91,7 +91,7 @@ public class FiniteDifferenceOperator extends LinearOperator {
         System.out.println("");
         System.out.println("Testing the operator:");
         dif.apply(a, b);
-        DoubleVectorWithRank c = inp.create();
+        DoubleShapedVector c = inp.create();
         dif.apply(b, c, LinearOperator.ADJOINT);
         System.out.println("a = " + a);
         System.out.println("b = " + b);
@@ -120,15 +120,16 @@ public class FiniteDifferenceOperator extends LinearOperator {
      *                     {@code inputSpace}, missing values are assumed to be
      *                     {@link BoundaryConditions#NORMAL}.
      */
-    public FiniteDifferenceOperator(DoubleVectorSpaceWithRank inputSpace, int[] bounds) {
-        super(inputSpace, new DoubleVectorSpaceWithRank(buildShape(inputSpace.cloneShape())));
+    public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, int[] bounds) {
+        super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.cloneShape())));
         buildIndex(inputSpace.cloneShape(), bounds);
+        single = false;
     }
 
     /**
      * Create an instance of a finite difference operator.
      * <p>
-     * See {@link #FiniteDifferenceOperator(DoubleVectorSpaceWithRank, boolean[])} for more
+     * See {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace, boolean[])} for more
      * explanations.
      * @param inputSpace - The inputs space of the operator
      * @param bounds     - Indicates the boundary conditions for all dimensions, one of
@@ -136,26 +137,27 @@ public class FiniteDifferenceOperator extends LinearOperator {
      *                     {@link BoundaryConditions#MIRROR}, otherwise
      *                     {@link BoundaryConditions#NORMAL} is assumed.
      */
-    public FiniteDifferenceOperator(DoubleVectorSpaceWithRank inputSpace, int bounds) {
-        super(inputSpace, new DoubleVectorSpaceWithRank(buildShape(inputSpace.cloneShape())));
+    public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, int bounds) {
+        super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.cloneShape())));
         buildIndex(inputSpace.cloneShape(), bounds);
+        single = false;
     }
 
     /**
      * Create an instance of a finite difference operator.
      * <p>
-     * Same as {@link #FiniteDifferenceOperator(DoubleVectorSpaceWithRank, boolean[])} but with
+     * Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace, boolean[])} but with
      * non-periodic conditions along all dimensions.
      * @param inputSpace - The inputs space of the operator
      */
-    public FiniteDifferenceOperator(DoubleVectorSpaceWithRank inputSpace) {
+    public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace) {
         this(inputSpace, BoundaryConditions.NORMAL);
     }
 
     /**
      * Create an instance of a finite difference operator.
      * <p>
-     * Same as {@link #FiniteDifferenceOperator(DoubleVectorSpaceWithRank, boolean[])} but for
+     * Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace, boolean[])} but for
      * single precision floating point shaped vectors.
      * @param inputSpace - The inputs space of the operator
      * @param bounds     - An array of integers indicating the boundary conditions for
@@ -164,15 +166,16 @@ public class FiniteDifferenceOperator extends LinearOperator {
      *                     {@code inputSpace}, missing values are assumed to be
      *                     {@link BoundaryConditions#NORMAL}.
      */
-    public FiniteDifferenceOperator(FloatVectorSpaceWithRank inputSpace, int[] bounds) {
-        super(inputSpace, new FloatVectorSpaceWithRank(buildShape(inputSpace.cloneShape())));
+    public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace, int[] bounds) {
+        super(inputSpace, new FloatShapedVectorSpace(buildShape(inputSpace.cloneShape())));
         buildIndex(inputSpace.cloneShape(), bounds);
+        single = true;
     }
 
     /**
      * Create an instance of a finite difference operator.
      * <p>
-     * Same as {@link #FiniteDifferenceOperator(DoubleVectorSpaceWithRank, boolean)} but for
+     * Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace, boolean)} but for
      * single precision floating point shaped vectors.
      * @param inputSpace - The inputs space of the operator
      * @param bounds     - Indicates the boundary conditions for all dimensions, one of
@@ -180,19 +183,20 @@ public class FiniteDifferenceOperator extends LinearOperator {
      *                     {@link BoundaryConditions#MIRROR}, otherwise
      *                     {@link BoundaryConditions#NORMAL} is assumed.
      */
-    public FiniteDifferenceOperator(FloatVectorSpaceWithRank inputSpace, int bounds) {
-        super(inputSpace, new FloatVectorSpaceWithRank(buildShape(inputSpace.cloneShape())));
+    public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace, int bounds) {
+        super(inputSpace, new FloatShapedVectorSpace(buildShape(inputSpace.cloneShape())));
         buildIndex(inputSpace.cloneShape(), bounds);
+        single = true;
     }
 
     /**
      * Create an instance of a finite difference operator.
      * <p>
-     * Same as {@link #FiniteDifferenceOperator(DoubleVectorSpaceWithRank)} but for
+     * Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace)} but for
      * single precision floating point shaped vectors.
      * @param inputSpace - The inputs space of the operator
      */
-    public FiniteDifferenceOperator(FloatVectorSpaceWithRank inputSpace) {
+    public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace) {
         this(inputSpace, BoundaryConditions.NORMAL);
     }
 
@@ -233,16 +237,15 @@ public class FiniteDifferenceOperator extends LinearOperator {
     }
 
     private double[] getDoubleData(Vector v) {
-        return ((DoubleVectorWithRank)v).getData();
+        return ((DoubleShapedVector)v).getData();
     }
     private float[] getFloatData(Vector v) {
-        return ((FloatVectorWithRank)v).getData();
+        return ((FloatShapedVector)v).getData();
     }
 
     @Override
     protected void privApply(Vector src, Vector dst, int job)
             throws IncorrectSpaceException {
-        boolean single = (inputSpace.getType() == Traits.FLOAT);
         boolean transpose;
         if (job == ADJOINT) {
             dst.zero();

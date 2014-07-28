@@ -26,12 +26,12 @@
 package mitiv.cost;
 
 import mitiv.exception.IncorrectSpaceException;
-import mitiv.linalg.DoubleVector;
-import mitiv.linalg.DoubleVectorSpace;
 import mitiv.linalg.Vector;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 
 public class PseudoL1NormOfDoubleVector extends PseudoL1Norm {
-    public PseudoL1NormOfDoubleVector(DoubleVectorSpace space) {
+    public PseudoL1NormOfDoubleVector(DoubleShapedVectorSpace space) {
         super(space);
     }
 
@@ -46,8 +46,8 @@ public class PseudoL1NormOfDoubleVector extends PseudoL1Norm {
             if (! inp.belongsTo(inputSpace) || ! out.belongsTo(inputSpace)) {
                 throw new IncorrectSpaceException();
             }
-            double[] x = ((DoubleVector)inp).getData();
-            double[] y = ((DoubleVector)inp).getData();
+            double[] x = ((DoubleShapedVector)inp).getData();
+            double[] y = ((DoubleShapedVector)inp).getData();
             double tmin = -alpha;
             double tmax = +alpha;
             int n = x.length;

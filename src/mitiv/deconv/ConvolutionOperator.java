@@ -28,12 +28,12 @@ package mitiv.deconv;
 import mitiv.base.Traits;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.exception.NotImplementedException;
-import mitiv.linalg.DoubleVector;
-import mitiv.linalg.FloatVector;
-import mitiv.linalg.LinearOperator;
-import mitiv.linalg.RealComplexFFT;
 import mitiv.linalg.Vector;
-import mitiv.linalg.VectorSpace;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.RealComplexFFT;
+import mitiv.linalg.shaped.ShapedLinearOperator;
+import mitiv.linalg.shaped.ShapedVectorSpace;
 
 /**
  * Implements a FFT-based convolution.
@@ -47,7 +47,7 @@ import mitiv.linalg.VectorSpace;
  * 
  * @author Jonathan Léger
  */
-public class ConvolutionOperator extends LinearOperator {
+public class ConvolutionOperator extends ShapedLinearOperator {
 
     protected RealComplexFFT FFT = null;
     protected Vector mtf;
@@ -89,8 +89,8 @@ public class ConvolutionOperator extends LinearOperator {
      */
     public ConvolutionOperator(RealComplexFFT FFT, Vector psf, Vector mtf) {
         super(FFT.getInputSpace());
-        VectorSpace realSpace = FFT.getInputSpace();
-        VectorSpace complexSpace = FFT.getOutputSpace();
+        ShapedVectorSpace realSpace = FFT.getInputSpace();
+        ShapedVectorSpace complexSpace = FFT.getOutputSpace();
         if (psf != null && ! psf.belongsTo(realSpace)) {
             throw new IncorrectSpaceException("PSF must belong to the input space of the FFT operator");
         }
@@ -125,8 +125,8 @@ public class ConvolutionOperator extends LinearOperator {
         FFT.apply(src, tmp, DIRECT);
         if (single) {
             /* Single precision version. */
-            float[] h = ((FloatVector)mtf).getData();
-            float[] z = ((FloatVector)tmp).getData();
+            float[] h = ((FloatShapedVector)mtf).getData();
+            float[] z = ((FloatShapedVector)tmp).getData();
             if (job == DIRECT) {
                 for (int k = 0; k < number; ++k) {
                     int real = k + k;
@@ -152,8 +152,8 @@ public class ConvolutionOperator extends LinearOperator {
             }
         } else {
             /* Double precision version. */
-            double[] h = ((DoubleVector)mtf).getData();
-            double[] z = ((DoubleVector)tmp).getData();
+            double[] h = ((DoubleShapedVector)mtf).getData();
+            double[] z = ((DoubleShapedVector)tmp).getData();
             if (job == DIRECT) {
                 for (int k = 0; k < number; ++k) {
                     int real = k + k;

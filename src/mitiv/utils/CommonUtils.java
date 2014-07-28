@@ -37,12 +37,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import mitiv.linalg.DoubleVector;
-import mitiv.linalg.DoubleVectorSpaceWithRank;
-import mitiv.linalg.FloatVector;
-import mitiv.linalg.FloatVectorSpaceWithRank;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.FloatShapedVectorSpace;
 
 /**
  * Contains all usual methods to work on color, image, arrays and conversion from one to another.
@@ -569,11 +569,11 @@ public class CommonUtils {
      */
     public static Vector imageToVector(VectorSpace outputSpace, BufferedImage image, boolean singlePrecision ,boolean isComplex){
         if (singlePrecision) {
-            FloatVectorSpaceWithRank space = (FloatVectorSpaceWithRank)outputSpace;
+            FloatShapedVectorSpace space = (FloatShapedVectorSpace)outputSpace;
             float[] tab = imageToArray1DFloat(image, isComplex);
             return space.wrap(tab);
         } else {
-            DoubleVectorSpaceWithRank space = (DoubleVectorSpaceWithRank)outputSpace;
+            DoubleShapedVectorSpace space = (DoubleShapedVectorSpace)outputSpace;
             double[] tab = imageToArray1D(image, isComplex);
             return space.wrap(tab);
         }
@@ -590,19 +590,19 @@ public class CommonUtils {
      */
     public static BufferedImage vectorToImage(VectorSpace outputSpace, Vector vector, int job, boolean singlePrecision ,boolean isComplex){
         if (singlePrecision) {
-            FloatVectorSpaceWithRank space = (FloatVectorSpaceWithRank)outputSpace;
+            FloatShapedVectorSpace space = (FloatShapedVectorSpace)outputSpace;
             int[] shape = space.cloneShape();
             if (!(space.getRank() == 2)) {
                 throw new IllegalArgumentException("The vector should be of rank 2 to create an image");
             }
-            return arrayToImage1D(((DoubleVector)vector).getData(), job, shape[1], shape[0], isComplex);
+            return arrayToImage1D(((DoubleShapedVector)vector).getData(), job, shape[1], shape[0], isComplex);
         } else {
-            DoubleVectorSpaceWithRank space = (DoubleVectorSpaceWithRank)outputSpace;
+            DoubleShapedVectorSpace space = (DoubleShapedVectorSpace)outputSpace;
             int[] shape = space.cloneShape();
             if (!(space.getRank() == 2)) {
                 throw new IllegalArgumentException("The vector should be of rank 2 to create an image");
             }
-            return arrayToImage1D(((DoubleVector)vector).getData(), job, shape[1], shape[0], isComplex);
+            return arrayToImage1D(((DoubleShapedVector)vector).getData(), job, shape[1], shape[0], isComplex);
         }
     }
 
@@ -1733,25 +1733,25 @@ public class CommonUtils {
      */
     public static Vector psfPadding1D(VectorSpace inputSpace, VectorSpace outputSpace, Vector imagePsf, boolean singlePrecision, boolean isComplex) {
         if (singlePrecision) {
-            FloatVectorSpaceWithRank spaceFloat = (FloatVectorSpaceWithRank)outputSpace;
-            FloatVector vectorPsf = (FloatVector)imagePsf;
+            FloatShapedVectorSpace spaceFloat = (FloatShapedVectorSpace)outputSpace;
+            FloatShapedVector vectorPsf = (FloatShapedVector)imagePsf;
             if (!(spaceFloat.getRank() == 2)) {
                 throw new IllegalArgumentException("The rank of vector must be 2");
             }
             int[] shape = spaceFloat.cloneShape();
-            int[] shapePsf = ((FloatVectorSpaceWithRank)imagePsf.getSpace()).cloneShape();
+            int[] shapePsf = ((FloatShapedVectorSpace)imagePsf.getSpace()).cloneShape();
             float[] psfPad = psfPadding1D(spaceFloat.create().getData(),shape[1],
                     shape[0],vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
             return spaceFloat.wrap(psfPad);
         } else {
-            DoubleVectorSpaceWithRank spaceDoubleOut = (DoubleVectorSpaceWithRank)outputSpace;
-            DoubleVectorSpaceWithRank spaceDoubleIn = (DoubleVectorSpaceWithRank)inputSpace;
-            DoubleVector vectorPsf = (DoubleVector)imagePsf;
+            DoubleShapedVectorSpace spaceDoubleOut = (DoubleShapedVectorSpace)outputSpace;
+            DoubleShapedVectorSpace spaceDoubleIn = (DoubleShapedVectorSpace)inputSpace;
+            DoubleShapedVector vectorPsf = (DoubleShapedVector)imagePsf;
             if (!(spaceDoubleOut.getRank() == 2)) {
                 throw new IllegalArgumentException("The rank of vector must be 2");
             }
             int[] shape = spaceDoubleIn.cloneShape();
-            int[] shapePsf = ((DoubleVectorSpaceWithRank)imagePsf.getSpace()).cloneShape();
+            int[] shapePsf = ((DoubleShapedVectorSpace)imagePsf.getSpace()).cloneShape();
             double[] psfPad = psfPadding1D(spaceDoubleOut.create().getData(),shape[1],
                     shape[0], vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
             return spaceDoubleOut.wrap(psfPad);
@@ -1922,7 +1922,7 @@ public class CommonUtils {
     }
 
     /**
-     * Returns 1d array (column major) of a 2d array. 
+     * Returns 1d array (column major) of a 2d array.
      *
      * @param  In 2d array
      * @return 1d array
@@ -1939,7 +1939,7 @@ public class CommonUtils {
     }
 
     /**
-     * Returns 2d array (column major) of a 1d array. 
+     * Returns 2d array (column major) of a 1d array.
      *
      * @param In 1d array of double
      * @param W Width of the 2d array In
@@ -2069,7 +2069,7 @@ public class CommonUtils {
      *         -1 -> at corners to preserve FFT indexing
      */
     public static double[][] imgPad(double oldImg[][], double newImg[][] , int just)
-    {   
+    {
         int oldH = oldImg.length; // hauteur
         int oldW = oldImg[0].length; // largeur
         int newH = newImg.length;

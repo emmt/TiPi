@@ -25,7 +25,6 @@
 
 package mitiv.linalg;
 
-import mitiv.base.Traits;
 import mitiv.exception.IncorrectSpaceException;
 
 /**
@@ -76,23 +75,18 @@ import mitiv.exception.IncorrectSpaceException;
  *
  */
 public abstract class VectorSpace {
-    protected int type = Traits.VOID; /* All vector spaces have a type. */
-    protected int number = 0; /* All vector spaces have a number of elements. */
+    protected final int number; /* All vector spaces have a number of elements. */
 
-    protected VectorSpace(int type, int number) {
+    protected VectorSpace(int number) {
         if (number < 1) {
             throw new IllegalArgumentException("Bad vector space size.");
         }
-        this.type = type;
         this.number = number;
     }
-    public int getNumber() {
+
+    public final int getNumber() {
         return number;
     }
-    public int getType() {
-        return type;
-    }
-
 
     /**
      * Create a new vector from this vector space with undefined contents.
@@ -120,7 +114,7 @@ public abstract class VectorSpace {
      * @return The inner product of {@code x} and {@code y}.
      * @throws IncorrectSpaceException {@code x} and {@code y} must belong to this vector space.
      */
-    public double dot(Vector x, Vector y) {
+    public final double dot(Vector x, Vector y) {
         check(x);
         check(y);
         return _dot(x, y);
@@ -154,7 +148,7 @@ public abstract class VectorSpace {
      * 
      * @throws IncorrectSpaceException x must belong to this vector space.
      */
-    public double norm2(Vector x) throws IncorrectSpaceException {
+    public final double norm2(Vector x) throws IncorrectSpaceException {
         check(x);
         return _norm2(x);
     }
@@ -172,10 +166,11 @@ public abstract class VectorSpace {
      *
      * @throws IncorrectSpaceException x must belong to this vector space.
      */
-    public double norm1(Vector x) throws IncorrectSpaceException {
+    public final double norm1(Vector x) throws IncorrectSpaceException {
         check(x);
         return _norm1(x);
     }
+
     protected abstract double _norm1(Vector x);
 
     /**
@@ -187,10 +182,11 @@ public abstract class VectorSpace {
      *
      * @throws IncorrectSpaceException x must belong to this vector space.
      */
-    public double normInf(Vector x) throws IncorrectSpaceException {
+    public final double normInf(Vector x) throws IncorrectSpaceException {
         check(x);
         return _normInf(x);
     }
+
     protected abstract double _normInf(Vector x);
 
     /**
@@ -218,15 +214,15 @@ public abstract class VectorSpace {
      *            the vector Y (also used to store the result)
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
      */
-    public void axpby(double alpha, final Vector x,
+    public final void axpby(double alpha, Vector x,
             double beta, Vector y) throws IncorrectSpaceException {
         check(x);
         check(y);
         _axpby(alpha, x, beta, y);
     }
 
-    protected void _axpby(double alpha, final Vector x,
-            double beta, Vector y){
+    protected void _axpby(double alpha, Vector x,
+            double beta, Vector y) {
         _axpby(alpha, x, beta, y, y);
     }
 
@@ -260,7 +256,7 @@ public abstract class VectorSpace {
      *
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
      */
-    public void axpby(double alpha, final Vector x,
+    public final void axpby(double alpha, Vector x,
             double beta, Vector y, Vector dst) throws IncorrectSpaceException {
         check(x);
         check(y);
@@ -268,7 +264,7 @@ public abstract class VectorSpace {
         _axpby(alpha, x, beta, y, dst);
     }
 
-    protected abstract void _axpby(double alpha, final Vector x,
+    protected abstract void _axpby(double alpha, Vector x,
             double beta, Vector y, Vector dst);
 
     /**
@@ -300,9 +296,9 @@ public abstract class VectorSpace {
      *
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
      */
-    public void axpbypcz(double alpha, final Vector x,
-            double beta,  final Vector y,
-            double gamma, final Vector z,
+    public final void axpbypcz(double alpha, Vector x,
+            double beta,  Vector y,
+            double gamma, Vector z,
             Vector dst) throws IncorrectSpaceException {
         check(x);
         check(y);
@@ -310,9 +306,10 @@ public abstract class VectorSpace {
         check(dst);
         _axpbypcz(alpha, x, beta, y, gamma, z, dst);
     }
-    protected abstract void _axpbypcz(double alpha, final Vector x,
-            double beta,  final Vector y,
-            double gamma, final Vector z, Vector dst);
+
+    protected abstract void _axpbypcz(double alpha, Vector x,
+            double beta,  Vector y,
+            double gamma, Vector z, Vector dst);
 
     /**
      * Copy the contents of a vector into another one.
@@ -327,7 +324,7 @@ public abstract class VectorSpace {
      *            - destination vector
      * @throws IncorrectSpaceException SRC and DST must belong to this vector space.
      */
-    public void copy(final Vector src, Vector dst)
+    public final void copy(Vector src, Vector dst)
             throws IncorrectSpaceException {
         check(src);
         if (dst != src) {
@@ -335,6 +332,7 @@ public abstract class VectorSpace {
             _copy(src, dst);
         }
     }
+
     protected void _copy(Vector src, Vector dst)
             throws IncorrectSpaceException {
         _axpby(1.0, src, 0.0, dst);
@@ -354,6 +352,7 @@ public abstract class VectorSpace {
         check(vec);
         return _clone(vec);
     }
+
     /**
      * Create a new vector from this vector space as a copy of another vector.
      *
@@ -400,6 +399,7 @@ public abstract class VectorSpace {
         check(v);
         _zero(v);
     }
+
     protected void _zero(Vector v) {
         _fill(v, 0.0);
     }
@@ -408,6 +408,7 @@ public abstract class VectorSpace {
         check(x);
         _fill(x, alpha);
     }
+
     protected abstract void _fill(Vector x, double alpha);
 
 
@@ -434,30 +435,6 @@ public abstract class VectorSpace {
         if (! owns(v)) {
             throw new IncorrectSpaceException();
         }
-    }
-
-    /**
-     * Compute the number of elements from the list of dimensions.
-     *
-     * This utility function computes the number of elements given a list of
-     * dimensions and throws an exception if the list of dimensions is invalid.
-     *
-     * @param shape  The list of dimensions.
-     * @return The product of the dimensions.
-     * @throws IllegalArgumentException All dimensions must be greater or equal 1.
-     */
-    protected static int computeNumber(int[] shape) {
-        if (shape == null) {
-            throw new IllegalArgumentException("Illegal NULL shape.");
-        }
-        int number = 1;
-        for (int r = 0; r < shape.length; ++r) {
-            if (shape[r] <= 0) {
-                throw new IllegalArgumentException("Bad dimension length.");
-            }
-            number *= shape[r];
-        }
-        return number;
     }
 
 }

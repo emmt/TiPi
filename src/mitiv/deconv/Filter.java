@@ -25,9 +25,9 @@
 
 package mitiv.deconv;
 
-import mitiv.linalg.DoubleVector;
-import mitiv.linalg.DoubleVectorSpaceWithRank;
 import mitiv.linalg.Vector;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 
 /**
  * This class contain all the methods to compute the solutions
@@ -151,9 +151,9 @@ public class Filter{
      */
     public Vector wienerVect(double alpha, Vector PSF, Vector image) {
         this.image = image;
-        int[]shape = ((DoubleVectorSpaceWithRank)image.getSpace()).cloneShape();
-        double[] out = wiener1D(alpha, ((DoubleVector)PSF).getData(), ((DoubleVector)image).getData(), shape[1], shape[0]/2);
-        return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
+        int[]shape = ((DoubleShapedVectorSpace)image.getSpace()).cloneShape();
+        double[] out = wiener1D(alpha, ((DoubleShapedVector)PSF).getData(), ((DoubleShapedVector)image).getData(), shape[1], shape[0]/2);
+        return ((DoubleShapedVectorSpace)image.getSpace()).wrap(out);
     }
 
     /**
@@ -165,7 +165,7 @@ public class Filter{
      */
     public Vector wienerVect(double alpha) {
         double[] out = wiener1D(alpha);
-        return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
+        return ((DoubleShapedVectorSpace)image.getSpace()).wrap(out);
     }
 
     /**
@@ -294,9 +294,9 @@ public class Filter{
      */
     public Vector wienerQuadVect(double alpha, Vector PSF, Vector image) {
         this.image = image;
-        int[]shape = ((DoubleVectorSpaceWithRank)image.getSpace()).cloneShape();
-        double[] out = wienerQuad1D(alpha, ((DoubleVector)PSF).getData(), ((DoubleVector)image).getData(), shape[1], shape[0]/2);
-        return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
+        int[]shape = ((DoubleShapedVectorSpace)image.getSpace()).cloneShape();
+        double[] out = wienerQuad1D(alpha, ((DoubleShapedVector)PSF).getData(), ((DoubleShapedVector)image).getData(), shape[1], shape[0]/2);
+        return ((DoubleShapedVectorSpace)image.getSpace()).wrap(out);
     }
 
     /**
@@ -308,7 +308,7 @@ public class Filter{
      */
     public Vector wienerQuadVect(double alpha) {
         double[] out = wienerQuad1D(alpha);
-        return ((DoubleVectorSpaceWithRank)image.getSpace()).wrap(out);
+        return ((DoubleShapedVectorSpace)image.getSpace()).wrap(out);
     }
 
 

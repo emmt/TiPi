@@ -30,12 +30,12 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import mitiv.linalg.DoubleVector;
-import mitiv.linalg.DoubleVectorSpaceWithRank;
-import mitiv.linalg.FloatVector;
-import mitiv.linalg.FloatVectorSpaceWithRank;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.FloatShapedVectorSpace;
 import mitiv.utils.CommonUtils;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
@@ -48,7 +48,7 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
  */
 public class DeconvUtils {
 
-    //Buffered and double 
+    //Buffered and double
     private BufferedImage image;
     private BufferedImage image_psf;
     private DoubleFFT_2D fft;
@@ -182,23 +182,23 @@ public class DeconvUtils {
     public void readImageVect(BufferedImage image, BufferedImage PSF, Boolean padding, boolean singlePrecision, boolean isComplex) {
         //For now, no padding option: TODO add padding option
         if (singlePrecision) {
-            imageSpace = new FloatVectorSpaceWithRank(image.getHeight(), image.getWidth());
-            FloatVectorSpaceWithRank psfSpace = new FloatVectorSpaceWithRank(PSF.getWidth(), PSF.getHeight());
-            imageSpaceComplex = new FloatVectorSpaceWithRank(image.getHeight()*2, image.getWidth());
+            imageSpace = new FloatShapedVectorSpace(image.getHeight(), image.getWidth());
+            FloatShapedVectorSpace psfSpace = new FloatShapedVectorSpace(PSF.getWidth(), PSF.getHeight());
+            imageSpaceComplex = new FloatShapedVectorSpace(image.getHeight()*2, image.getWidth());
 
             this.imageVect = CommonUtils.imageToVector(imageSpace, image, singlePrecision, isComplex);
             this.imagePsfVect = CommonUtils.imageToVector(psfSpace, PSF, singlePrecision, isComplex);
         } else {
-            imageSpace = new DoubleVectorSpaceWithRank(image.getHeight(), image.getWidth());
-            DoubleVectorSpaceWithRank psfSpace = new DoubleVectorSpaceWithRank(PSF.getHeight(), PSF.getWidth());
-            imageSpaceComplex = new DoubleVectorSpaceWithRank(image.getHeight()*2, image.getWidth());
+            imageSpace = new DoubleShapedVectorSpace(image.getHeight(), image.getWidth());
+            DoubleShapedVectorSpace psfSpace = new DoubleShapedVectorSpace(PSF.getHeight(), PSF.getWidth());
+            imageSpaceComplex = new DoubleShapedVectorSpace(image.getHeight()*2, image.getWidth());
             if (isComplex) {
                 this.imageVect = CommonUtils.imageToVector(imageSpaceComplex, image, singlePrecision , isComplex);
             } else {
                 this.imageVect = CommonUtils.imageToVector(imageSpace, image, singlePrecision , isComplex);
             }
             //we will not create a complex now (cf pad)
-            this.imagePsfVect = CommonUtils.imageToVector(psfSpace, PSF, singlePrecision, false); 
+            this.imagePsfVect = CommonUtils.imageToVector(psfSpace, PSF, singlePrecision, false);
         }
         width = image.getWidth();
         height = image.getHeight();
@@ -238,7 +238,7 @@ public class DeconvUtils {
     }
 
     /**
-     * Convert an array to an image with possibility of scaling, adding colors 
+     * Convert an array to an image with possibility of scaling, adding colors
      * 
      * @param vector
      * @param correction see CommonUtils static
@@ -328,7 +328,7 @@ public class DeconvUtils {
     }
 
     /**
-     * Front function that will apply different job on the given complex array. 
+     * Front function that will apply different job on the given complex array.
      * It may also unpad the image.
      * 
      * @param array
@@ -357,12 +357,12 @@ public class DeconvUtils {
     }
 
     /**
-     * Front function that will apply different job on the given complex array. 
+     * Front function that will apply different job on the given complex array.
      * It may also unpad the image.
      *
      * @param array a complex array
      * @param job
-     * @param isImagePadded 
+     * @param isImagePadded
      * @return A buffered image that is the image
      */
     public BufferedImage arrayToImage(float[][] array, int job, boolean isImagePadded){
@@ -529,17 +529,17 @@ public class DeconvUtils {
      */
     public void FFT1D(Vector vector) {
         if (single) {
-            FloatVector vectorFloat = (FloatVector)vector;
+            FloatShapedVector vectorFloat = (FloatShapedVector)vector;
             float[] array = vectorFloat.getData();
-            int size = ((FloatVectorSpaceWithRank)imageSpace).getNumber();
+            int size = ((FloatShapedVectorSpace)imageSpace).getNumber();
             if(fft1DFloat == null){
                 fft1DFloat = new FloatFFT_1D(size);
             }
             fft1DFloat.realForwardFull(array);
         } else {
-            DoubleVector vectorDouble = (DoubleVector)vector;
+            DoubleShapedVector vectorDouble = (DoubleShapedVector)vector;
             double[] array = vectorDouble.getData();
-            int size = ((DoubleVectorSpaceWithRank)imageSpace).getNumber();
+            int size = ((DoubleShapedVectorSpace)imageSpace).getNumber();
             if(fft1D == null){
                 fft1D = new DoubleFFT_1D(size);
             }
@@ -554,11 +554,11 @@ public class DeconvUtils {
      */
     public void IFFT1D(Vector vector) {
         if (single) {
-            FloatVector vectorFloat = (FloatVector)vector;
+            FloatShapedVector vectorFloat = (FloatShapedVector)vector;
             float[] array = vectorFloat.getData();
             fft1DFloat.complexInverse(array, true);
         } else {
-            DoubleVector vectorDouble = (DoubleVector)vector;
+            DoubleShapedVector vectorDouble = (DoubleShapedVector)vector;
             double[] array = vectorDouble.getData();
             fft1D.complexInverse(array, true);
         }
@@ -568,7 +568,7 @@ public class DeconvUtils {
 
     /**
      * Pad the PSF to the size of the image and split it.
-     * @param isComplex 
+     * @param isComplex
      * @return An array
      */
     public double[][] psfPadding(boolean isComplex) {

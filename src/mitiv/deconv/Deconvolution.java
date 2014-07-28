@@ -28,10 +28,10 @@ package mitiv.deconv;
 import java.awt.image.BufferedImage;
 
 import mitiv.invpb.LinearDeconvolver;
-import mitiv.linalg.DoubleVector;
-import mitiv.linalg.DoubleVectorSpaceWithRank;
 import mitiv.linalg.LinearConjugateGradient;
 import mitiv.linalg.Vector;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.utils.CommonUtils;
 
 /**
@@ -46,14 +46,14 @@ public class Deconvolution{
     /**
      * Compute all the operations with 1D arrays
      */
-    public static final int PROCESSING_1D = 1; 
+    public static final int PROCESSING_1D = 1;
     /**
      * Compute all the operations with Vectors i.e 1D vector
      */
-    public static final int PROCESSING_VECTOR = 2; 
-    
-    private int standardProcessing = PROCESSING_1D;
-    
+    public static final int PROCESSING_VECTOR = 2;
+
+    private final int standardProcessing = PROCESSING_1D;
+
     boolean verbose = false;
 
     DeconvUtils utils;
@@ -62,15 +62,15 @@ public class Deconvolution{
     double[][] psf;
     double[] image1D;
     double[] psf1D;
-    DoubleVector vector_image;
-    DoubleVector vector_psf;
+    DoubleShapedVector vector_image;
+    DoubleShapedVector vector_psf;
     int correction;
     boolean isPsfSplitted = false;
     boolean useVectors;
     //CG needs
-    DoubleVectorSpaceWithRank space;
-    DoubleVector x;
-    DoubleVector w;
+    DoubleShapedVectorSpace space;
+    DoubleShapedVector x;
+    DoubleShapedVector w;
     LinearDeconvolver linDeconv;
     int outputValue = LinearConjugateGradient.CONVERGED;
 
@@ -108,7 +108,7 @@ public class Deconvolution{
      * @param image can be path, bufferedImage or IcyBufferedImage
      * @param PSF can be path, bufferedImage or IcyBufferedImage
      * @param correction see static {@link CommonUtils}
-     * @param useVectors 
+     * @param useVectors
      */
     public Deconvolution(Object image, Object PSF, int correction, boolean useVectors){
         utils = new DeconvUtils();
@@ -297,8 +297,8 @@ public class Deconvolution{
     }
 
     private BufferedImage firstDeconvolutionVector(double alpha){
-        vector_image = (DoubleVector) utils.cloneImageVect();
-        vector_psf = (DoubleVector) utils.getPsfPadVect();
+        vector_image = (DoubleShapedVector) utils.cloneImageVect();
+        vector_psf = (DoubleShapedVector) utils.getPsfPadVect();
         //TODO add getPsfVect need change on opening of the image
         utils.FFT1D(vector_image);
         utils.FFT1D(vector_psf);
@@ -321,7 +321,7 @@ public class Deconvolution{
      * 
      * @param alpha
      * @return The bufferedImage for the input value given
-     */ 
+     */
     public BufferedImage firstDeconvolutionQuad(double alpha){
         if (useVectors) {
             return firstDeconvolutionQuad(alpha, PROCESSING_VECTOR, false);
@@ -351,7 +351,7 @@ public class Deconvolution{
      * @param job see static PROCESSING_?
      * @param isPsfSplitted isPsfSplitted If the psf is centered or not
      * @return The bufferedImage for the input value given
-     */ 
+     */
     public BufferedImage firstDeconvolutionQuad(double alpha, int job, boolean isPsfSplitted){
         this .isPsfSplitted = isPsfSplitted;
         switch (job) {
@@ -469,8 +469,8 @@ public class Deconvolution{
     }
 
     private BufferedImage firstDeconvolutionQuadVector(double alpha){
-        vector_image = (DoubleVector) utils.cloneImageVect();
-        vector_psf = (DoubleVector) utils.getPsfPadVect();
+        vector_image = (DoubleShapedVector) utils.cloneImageVect();
+        vector_psf = (DoubleShapedVector) utils.getPsfPadVect();
         utils.FFT1D(vector_image);
         utils.FFT1D(vector_psf);
         Vector out = wiener.wienerQuadVect(alpha, vector_psf, vector_image);
@@ -570,7 +570,7 @@ public class Deconvolution{
      * @return The bufferedImage for the input value given
      */
     private BufferedImage firstDeconvolutionCGNormal(double alpha){
-        space = new DoubleVectorSpaceWithRank(utils.width, utils.height);
+        space = new DoubleShapedVectorSpace(utils.width, utils.height);
         if (isPsfSplitted) {
             vector_psf = space.wrap(utils.psfToArray1D(false));
         } else {
@@ -580,10 +580,10 @@ public class Deconvolution{
         /*//We should use this one BUT as there is only CG with vectors, then in the case of no vectors, there is no imageVect
         In others words, if useVectors is False, getImageVect return null.
         if (vector_image == null) {
-            vector_image = (DoubleVector) utils.getImageVect();
+            vector_image = (DoubleShapedVector) utils.getImageVect();
         }
         if (vector_psf == null) {
-            vector_psf = (DoubleVector) utils.getPsfPad();
+            vector_psf = (DoubleShapedVector) utils.getPsfPad();
         }
          */
 

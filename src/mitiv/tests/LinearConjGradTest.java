@@ -28,6 +28,8 @@ package mitiv.tests;
 import mitiv.exception.IllegalLinearOperationException;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.linalg.*;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 
 public class LinearConjGradTest {
 
@@ -41,12 +43,12 @@ public class LinearConjGradTest {
     public static void main(String[] args) throws IncorrectSpaceException {
 
         // We work in 1D
-        DoubleVectorSpace vsp = new DoubleVectorSpace(arrX.length);
+        DoubleShapedVectorSpace vsp = new DoubleShapedVectorSpace(arrX.length);
 
         // we create vector b and x = {0,0}
-        DoubleVector x0 = vsp.wrap(arrX); // create a vector sharing its values with Java array arrX 
-        DoubleVector x = vsp.create(0); // initial solution (filled with zeros)
-        DoubleVector b = vsp.create(); // RHS vector (undefined contents)
+        DoubleShapedVector x0 = vsp.wrap(arrX); // create a vector sharing its values with Java array arrX 
+        DoubleShapedVector x = vsp.create(0); // initial solution (filled with zeros)
+        DoubleShapedVector b = vsp.create(); // RHS vector (undefined contents)
 
         // Create LHS matrix A as a linear operator:
         LinearOperator A = new LinearOperator(vsp) {
@@ -55,8 +57,8 @@ public class LinearConjGradTest {
                 if (job != DIRECT && job != ADJOINT) {
                     throw new IllegalLinearOperationException();
                 }
-                final double[] x = ((DoubleVector) src).getData();
-                double[] y = ((DoubleVector) dst).getData();
+                final double[] x = ((DoubleShapedVector) src).getData();
+                double[] y = ((DoubleShapedVector) dst).getData();
                 for (int i = 0; i < y.length; ++i) {
                     y[i] = ArrayOps.dot(arrA[i], x);
                 }

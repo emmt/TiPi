@@ -26,9 +26,9 @@
 package mitiv.cost;
 
 import mitiv.exception.IncorrectSpaceException;
-import mitiv.linalg.DoubleVector;
-import mitiv.linalg.DoubleVectorSpace;
 import mitiv.linalg.Vector;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 
 /**
  * Implement proximal operator for pseudo L1 norm, possibly with bounds.
@@ -49,11 +49,11 @@ public class PseudoL1NormOfBoundedDoubleVector extends PseudoL1NormOfDoubleVecto
     protected double xmid = 0.0;
     protected int typeOfBounds = 0;
 
-    public PseudoL1NormOfBoundedDoubleVector(DoubleVectorSpace inputSpace) {
+    public PseudoL1NormOfBoundedDoubleVector(DoubleShapedVectorSpace inputSpace) {
         super(inputSpace);
     }
 
-    public PseudoL1NormOfBoundedDoubleVector(DoubleVectorSpace inputSpace, double xmin, double xmax) {
+    public PseudoL1NormOfBoundedDoubleVector(DoubleShapedVectorSpace inputSpace, double xmin, double xmax) {
         super(inputSpace);
         setBounds(xmin, xmax);
     }
@@ -104,8 +104,8 @@ public class PseudoL1NormOfBoundedDoubleVector extends PseudoL1NormOfDoubleVecto
             if (! inp.belongsTo(inputSpace) || ! out.belongsTo(inputSpace)) {
                 throw new IncorrectSpaceException();
             }
-            double[] x = ((DoubleVector)inp).getData();
-            double[] y = ((DoubleVector)inp).getData();
+            double[] x = ((DoubleShapedVector)inp).getData();
+            double[] y = ((DoubleShapedVector)inp).getData();
             double tmin = -alpha;
             double tmax = +alpha;
             int n = x.length;

@@ -43,10 +43,10 @@
 
 package mitiv.optim;
 
-import mitiv.linalg.DoubleVector;
-import mitiv.linalg.DoubleVectorSpace;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.tests.MinPack1Tests;
 
 public class NonLinearConjugateGradient {
@@ -623,15 +623,15 @@ public class NonLinearConjugateGradient {
         for (int k = 0; k < prob.length; ++k) {
             int p = prob[k];
             int n = size[k];
-            DoubleVectorSpace space = new DoubleVectorSpace(n);
+            DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(n);
             double[] xData = new double[n];
             double[] gData = new double[n];
             int iter = -1;
             int nf = 0;
             int ng = 0;
             double fx = 0.0;
-            DoubleVector x = space.wrap(xData);
-            DoubleVector gx = space.wrap(gData);
+            DoubleShapedVector x = space.wrap(xData);
+            DoubleShapedVector gx = space.wrap(gData);
 
             /* Store initial solution. */
             MinPack1Tests.umipt(xData, p, factor);

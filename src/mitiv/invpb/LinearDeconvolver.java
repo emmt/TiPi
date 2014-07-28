@@ -28,38 +28,36 @@ package mitiv.invpb;
 import mitiv.deconv.ConvolutionOperator;
 import mitiv.exception.NotImplementedException;
 import mitiv.linalg.ArrayOps;
-import mitiv.linalg.DoubleVector;
-import mitiv.linalg.DoubleVectorSpace;
-import mitiv.linalg.DoubleVectorSpaceWithRank;
-import mitiv.linalg.FloatVector;
-import mitiv.linalg.FloatVectorSpace;
-import mitiv.linalg.FloatVectorSpaceWithRank;
 import mitiv.linalg.IdentityOperator;
 import mitiv.linalg.LinearConjugateGradient;
 import mitiv.linalg.LinearOperator;
-import mitiv.linalg.RealComplexFFT;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.FloatShapedVectorSpace;
+import mitiv.linalg.shaped.RealComplexFFT;
 /**
  * 
  * @author Leger Jonathan
  */
 public class LinearDeconvolver {
     private int rank;
-    private Vector h;
+    private final Vector h;
     private Vector q;
-    private Vector w;
-    private Vector y;
+    private final Vector w;
+    private final Vector y;
     private Vector z; // scratch vector in complex space
     private Vector b;
     private LinearOperator H;
     private LinearOperator W;
     private LinearOperator Q;
     private LeftHandSideMatrix A;
-    private RealComplexFFT FFT;
+    private final RealComplexFFT FFT;
     private LinearConjugateGradient cg;
     private double muFactor = 1.0;
-    private boolean single;
+    private final boolean single;
 
     /**
      * Float Version.
@@ -72,7 +70,7 @@ public class LinearDeconvolver {
      */
     public LinearDeconvolver(int shape[], float[] data, float[] psf, float[] wgt, double mu) {
         /* See single precision version for comments. */
-        FloatVectorSpaceWithRank space = new FloatVectorSpaceWithRank(shape);
+        FloatShapedVectorSpace space = new FloatShapedVectorSpace(shape);
         y = space.wrap(data);
         h = space.wrap(psf);
         w = (wgt == null ? null : space.wrap(wgt));
@@ -91,12 +89,12 @@ public class LinearDeconvolver {
      * @param mu
      */
     public LinearDeconvolver(int shape[], double[] data, double[] psf, double[] wgt, double mu) {
-        /* Check dimensions and create FFT operator. 
+        /* Check dimensions and create FFT operator.
          * We assume that all cases (i.e. 1D, 2D, 3D) can be wrapped
          * into a simple vector space.  Note that calling space.wrap() checks
          * whether array size is compatible with vector space.
          */
-        DoubleVectorSpaceWithRank space = new DoubleVectorSpaceWithRank(shape);
+        DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
         y = space.wrap(data);
         h = space.wrap(psf);
         w = (wgt == null ? null : space.wrap(wgt));
@@ -117,27 +115,27 @@ public class LinearDeconvolver {
         q = space.create(); // not outputSpace!
 
         if (single) {
-            generateIsotropicQ(shape, ((FloatVector)q).getData());
-            Q = new LinearOperator(space) {           
+            generateIsotropicQ(shape, ((FloatShapedVector)q).getData());
+            Q = new LinearOperator(space) {
                 @Override
                 protected void privApply(Vector src, Vector dst, int job) {
                     if (job == DIRECT || job == ADJOINT) {
                         FFT.apply(src, z, DIRECT);
-                        multiplyByQ(((FloatVector)q).getData(), ((FloatVector)z).getData());
+                        multiplyByQ(((FloatShapedVector)q).getData(), ((FloatShapedVector)z).getData());
                         FFT.apply(z, dst, INVERSE);
                     } else {
                         throw new NotImplementedException();
                     }
                 }
-            };            
+            };
         } else {
-            generateIsotropicQ(shape, ((DoubleVector)q).getData());
-            Q = new LinearOperator(space) {           
+            generateIsotropicQ(shape, ((DoubleShapedVector)q).getData());
+            Q = new LinearOperator(space) {
                 @Override
                 protected void privApply(Vector src, Vector dst, int job) {
                     if (job == DIRECT || job == ADJOINT) {
                         FFT.apply(src, z, DIRECT);
-                        multiplyByQ(((DoubleVector)q).getData(), ((DoubleVector)z).getData());
+                        multiplyByQ(((DoubleShapedVector)q).getData(), ((DoubleShapedVector)z).getData());
                         FFT.apply(z, dst, INVERSE);
                     } else {
                         throw new NotImplementedException();
@@ -156,11 +154,11 @@ public class LinearDeconvolver {
         } else {
             double wMin, wMax;
             if (single) {
-                float[] wMinMax = ArrayOps.getMinMax(((FloatVector)w).getData());
-                wMin = (double)wMinMax[0];
-                wMax = (double)wMinMax[1];
+                float[] wMinMax = ArrayOps.getMinMax(((FloatShapedVector)w).getData());
+                wMin = wMinMax[0];
+                wMax = wMinMax[1];
             } else {
-                double[] wMinMax = ArrayOps.getMinMax(((DoubleVector)w).getData());
+                double[] wMinMax = ArrayOps.getMinMax(((DoubleShapedVector)w).getData());
                 wMin = wMinMax[0];
                 wMax = wMinMax[1];
             }
@@ -180,11 +178,12 @@ public class LinearDeconvolver {
                 muFactor = 1.0;
                 if (single) {
                     W = new LinearOperator(space) {
+                        @Override
                         protected void privApply(Vector src, Vector dst, int job) {
                             if (job == DIRECT || job == ADJOINT) {
-                                multiplyByW(((FloatVector)w).getData(),
-                                        ((FloatVector)src).getData(),
-                                        ((FloatVector)dst).getData());
+                                multiplyByW(((FloatShapedVector)w).getData(),
+                                        ((FloatShapedVector)src).getData(),
+                                        ((FloatShapedVector)dst).getData());
                             } else {
                                 throw new NotImplementedException();
                             }
@@ -192,11 +191,12 @@ public class LinearDeconvolver {
                     };
                 } else {
                     W = new LinearOperator(space) {
+                        @Override
                         protected void privApply(Vector src, Vector dst, int job) {
                             if (job == DIRECT || job == ADJOINT) {
-                                multiplyByW(((DoubleVector)w).getData(),
-                                        ((DoubleVector)src).getData(),
-                                        ((DoubleVector)dst).getData());
+                                multiplyByW(((DoubleShapedVector)w).getData(),
+                                        ((DoubleShapedVector)src).getData(),
+                                        ((DoubleShapedVector)dst).getData());
                             } else {
                                 throw new NotImplementedException();
                             }
@@ -253,7 +253,7 @@ public class LinearDeconvolver {
         double[] u = new double[length];
         int k0 = length/2;
         for (int k = 0; k <= k0; ++k) {
-            u[k] = s*(double)k;
+            u[k] = s*k;
         }
         for (int k = k0 + 1; k < length; ++k) {
             u[k] = s*(k - length);
@@ -338,7 +338,7 @@ public class LinearDeconvolver {
         if (! single) {
             throw new IllegalArgumentException("Expecting a single precision floating point array.");
         }
-        return solve(((FloatVectorSpace)A.getInputSpace()).wrap(x), maxiter, reset);
+        return solve(((FloatShapedVectorSpace)A.getInputSpace()).wrap(x), maxiter, reset);
     }
 
     /**
@@ -353,7 +353,7 @@ public class LinearDeconvolver {
         if (single) {
             throw new IllegalArgumentException("Expecting a double precision floating point array.");
         }
-        return solve(((DoubleVectorSpace)A.getInputSpace()).wrap(x), maxiter, reset);
+        return solve(((DoubleShapedVectorSpace)A.getInputSpace()).wrap(x), maxiter, reset);
     }
 
     /**

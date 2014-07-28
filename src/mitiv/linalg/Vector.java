@@ -46,8 +46,8 @@ public abstract class Vector {
     /**
      * Reference to the VectorSpace to which this vector belongs.
      */
-    protected VectorSpace space;
-    protected int number;
+    protected final VectorSpace space;
+    protected final  int number;
 
     /**
      * Create a vector from a given vector space.
@@ -56,6 +56,14 @@ public abstract class Vector {
     protected Vector(VectorSpace owner) {
         this.space = owner;
         this.number = owner.number;
+    }
+
+    /**
+     * Get the vector space which owns the vector.
+     * @return The vector space owning the vector.
+     */
+    public VectorSpace getOwner() {
+        return space;
     }
 
     /**

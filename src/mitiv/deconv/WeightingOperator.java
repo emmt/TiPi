@@ -27,9 +27,9 @@ package mitiv.deconv;
 
 import mitiv.exception.IllegalLinearOperationException;
 import mitiv.exception.IncorrectSpaceException;
-import mitiv.linalg.DoubleVector;
 import mitiv.linalg.LinearOperator;
 import mitiv.linalg.Vector;
+import mitiv.linalg.shaped.DoubleShapedVector;
 
 /**
  * Weighting operator will apply a vector give to the constructor 
@@ -55,9 +55,9 @@ public class WeightingOperator extends LinearOperator {
 	protected void privApply(Vector src, Vector dst, int job)
 			throws IncorrectSpaceException {
 		int n = inputSpace.getNumber();
-		DoubleVector vectSrc = (DoubleVector)src; // FIXME: should be more general
-		DoubleVector vectDst = (DoubleVector)dst;
-		DoubleVector vectW = (DoubleVector)weight;
+		DoubleShapedVector vectSrc = (DoubleShapedVector)src; // FIXME: should be more general
+		DoubleShapedVector vectDst = (DoubleShapedVector)dst;
+		DoubleShapedVector vectW = (DoubleShapedVector)weight;
 		if (job == INVERSE) {
 			for (int i = 0; i < n; i++) {
 				vectDst.set(i, vectSrc.get(i)/vectW.get(i));
