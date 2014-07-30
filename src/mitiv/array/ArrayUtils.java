@@ -36,10 +36,6 @@ import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
-import devel.eric.trash.Double2D;
-import devel.eric.trash.Double3D;
-import devel.eric.trash.Float2D;
-import devel.eric.trash.Float3D;
 
 public class ArrayUtils {
 
