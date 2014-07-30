@@ -25,7 +25,6 @@
 
 package mitiv.linalg.shaped;
 
-import mitiv.base.Traits;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.Vector;
 
@@ -38,27 +37,27 @@ import mitiv.linalg.Vector;
 public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
     public FloatShapedVectorSpace(int[] shape, boolean copyShape) {
-        super(Traits.FLOAT, shape, copyShape);
+        super(FLOAT, shape, copyShape);
     }
 
     public FloatShapedVectorSpace(int[] shape) {
-        super(Traits.FLOAT, shape);
+        super(FLOAT, shape);
     }
 
     public FloatShapedVectorSpace(int dim1) {
-        super(Traits.FLOAT, dim1);
+        super(FLOAT, dim1);
     }
 
     public FloatShapedVectorSpace(int dim1, int dim2) {
-        super(Traits.FLOAT, dim1, dim2);
+        super(FLOAT, dim1, dim2);
     }
 
     public FloatShapedVectorSpace(int dim1, int dim2, int dim3) {
-        super(Traits.FLOAT, dim1, dim2, dim3);
+        super(FLOAT, dim1, dim2, dim3);
     }
 
     public FloatShapedVectorSpace(int dim1, int dim2, int dim3, int dim4) {
-        super(Traits.FLOAT, dim1, dim2, dim3, dim4);
+        super(FLOAT, dim1, dim2, dim3, dim4);
     }
 
     @Override
@@ -153,6 +152,7 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
                 beta,  ((FloatShapedVector) y).getData(),
                 gamma, ((FloatShapedVector) z).getData(), ((FloatShapedVector) dst).getData());
     }
+
 }
 
 /*
