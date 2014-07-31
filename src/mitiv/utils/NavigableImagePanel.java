@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+// TODO: Auto-generated Javadoc
 /**
  * Code taken from https://today.java.net/pub/a/today/2007/03/27/navigable-image-panel.html
  * 
@@ -119,9 +120,7 @@ import javax.swing.SwingUtilities;
  */
 public class NavigableImagePanel extends JPanel {
 
-    /**
-     * 
-     */
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -139,30 +138,71 @@ public class NavigableImagePanel extends JPanel {
      */
     public static final String IMAGE_CHANGED_PROPERTY = "image";
 
+    /** The Constant SCREEN_NAV_IMAGE_FACTOR. */
     private static final double SCREEN_NAV_IMAGE_FACTOR = 0.15; // 15% of panel's width
+    
+    /** The Constant NAV_IMAGE_FACTOR. */
     private static final double NAV_IMAGE_FACTOR = 0.3; // 30% of panel's width
+    
+    /** The Constant HIGH_QUALITY_RENDERING_SCALE_THRESHOLD. */
     private static final double HIGH_QUALITY_RENDERING_SCALE_THRESHOLD = 1.0;
+    
+    /** The Constant INTERPOLATION_TYPE. */
     private static final Object INTERPOLATION_TYPE = 
             RenderingHints.VALUE_INTERPOLATION_BILINEAR;
 
+    /** The zoom increment. */
     private double zoomIncrement = 0.2;
+    
+    /** The zoom factor. */
     private double zoomFactor = 1.0 + zoomIncrement;
+    
+    /** The nav zoom factor. */
     private double navZoomFactor = 1.0 + zoomIncrement;
+    
+    /** The image. */
     private BufferedImage image;
+    
+    /** The navigation image. */
     private BufferedImage navigationImage;
+    
+    /** The nav image width. */
     private int navImageWidth;
+    
+    /** The nav image height. */
     private int navImageHeight;
+    
+    /** The initial scale. */
     private double initialScale = 0.0;
+    
+    /** The scale. */
     private double scale = 0.0;
+    
+    /** The nav scale. */
     private double navScale = 0.0;
+    
+    /** The origin x. */
     private int originX = 0;
+    
+    /** The origin y. */
     private int originY = 0;
+    
+    /** The mouse position. */
     private Point mousePosition;
+    
+    /** The previous panel size. */
     private Dimension previousPanelSize;
+    
+    /** The navigation image enabled. */
     private boolean navigationImageEnabled = true;
+    
+    /** The high quality rendering enabled. */
     private boolean highQualityRenderingEnabled = true;
 
+    /** The wheel zoom device. */
     private WheelZoomDevice wheelZoomDevice = null;
+    
+    /** The button zoom device. */
     private ButtonZoomDevice buttonZoomDevice = null;
 
     /**
@@ -185,35 +225,83 @@ public class NavigableImagePanel extends JPanel {
          */
         public static final ZoomDevice MOUSE_WHEEL = new ZoomDevice("mouseWheel");
 
+        /** The zoom device. */
         private String zoomDevice;
+        
+        /**
+         * Instantiates a new zoom device.
+         *
+         * @param zoomDevice the zoom device
+         */
         private ZoomDevice(String zoomDevice) {
             this.zoomDevice = zoomDevice;
         }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
         public String toString() {
             return zoomDevice;
         }
     }
 
     //This class is required for high precision image coordinates translation.
+    /**
+     * The Class Coords.
+     */
     private class Coords {
+        
+        /** The x. */
         public double x;
+        
+        /** The y. */
         public double y;
+        
+        /**
+         * Instantiates a new coords.
+         *
+         * @param x the x
+         * @param y the y
+         */
         public Coords(double x, double y) {
             this.x = x;
             this.y = y;
         }
+        
+        /**
+         * Gets the int x.
+         *
+         * @return the int x
+         */
         public int getIntX() {
             return (int)Math.round(x);
         }
+        
+        /**
+         * Gets the int y.
+         *
+         * @return the int y
+         */
         public int getIntY() {
             return (int)Math.round(y);
         }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
         public String toString() {
             return "[Coords: x=" + x + ",y=" + y + "]";
         }
     }
 
+    /**
+     * The Class WheelZoomDevice.
+     */
     private class WheelZoomDevice implements MouseWheelListener {
+        
+        /* (non-Javadoc)
+         * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
+         */
         public void mouseWheelMoved(MouseWheelEvent e) {
             Point p = e.getPoint();
             boolean zoomIn = (e.getWheelRotation() < 0);
@@ -235,7 +323,14 @@ public class NavigableImagePanel extends JPanel {
         }
     }
 
+    /**
+     * The Class ButtonZoomDevice.
+     */
     private class ButtonZoomDevice extends MouseAdapter {
+        
+        /* (non-Javadoc)
+         * @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
+         */
         public void mouseClicked(MouseEvent e) {
             Point p = e.getPoint();
             if (SwingUtilities.isRightMouseButton(e)) {
@@ -313,12 +408,18 @@ public class NavigableImagePanel extends JPanel {
     /**
      * <p>Creates a new navigable image panel with the specified image 
      * and the mouse scroll wheel as the zooming device.</p>
+     *
+     * @param image the image
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     public NavigableImagePanel(BufferedImage image) throws IOException {
         this();
         setImage(image);
     }
 
+    /**
+     * Adds the wheel zoom device.
+     */
     private void addWheelZoomDevice() {
         if (wheelZoomDevice == null) {
             wheelZoomDevice = new WheelZoomDevice();
@@ -326,6 +427,9 @@ public class NavigableImagePanel extends JPanel {
         }
     }
 
+    /**
+     * Adds the button zoom device.
+     */
     private void addButtonZoomDevice() {
         if (buttonZoomDevice == null) {
             buttonZoomDevice = new ButtonZoomDevice();
@@ -333,6 +437,9 @@ public class NavigableImagePanel extends JPanel {
         }
     }
 
+    /**
+     * Removes the wheel zoom device.
+     */
     private void removeWheelZoomDevice() {
         if (wheelZoomDevice != null) {
             removeMouseWheelListener(wheelZoomDevice);
@@ -340,6 +447,9 @@ public class NavigableImagePanel extends JPanel {
         }	
     }
 
+    /**
+     * Removes the button zoom device.
+     */
     private void removeButtonZoomDevice() {
         if (buttonZoomDevice != null) {
             removeMouseListener(buttonZoomDevice);
@@ -367,6 +477,8 @@ public class NavigableImagePanel extends JPanel {
 
     /**
      * <p>Gets the current zoom device.</p>
+     *
+     * @return the zoom device
      */
     public ZoomDevice getZoomDevice() {
         if (buttonZoomDevice != null) {
@@ -379,6 +491,9 @@ public class NavigableImagePanel extends JPanel {
     }	
 
     //Called from paintComponent() when a new image is set.
+    /**
+     * Initialize params.
+     */
     private void initializeParams() {
         double xScale = (double)getWidth() / image.getWidth();
         double yScale = (double)getHeight() / image.getHeight();
@@ -393,12 +508,18 @@ public class NavigableImagePanel extends JPanel {
     }
 
     //Centers the current image in the panel.
+    /**
+     * Center image.
+     */
     private void centerImage() {
         originX = (int)(getWidth() - getScreenImageWidth()) / 2;
         originY = (int)(getHeight() - getScreenImageHeight()) / 2;
     }
 
     //Creates and renders the navigation image in the upper let corner of the panel.
+    /**
+     * Creates the navigation image.
+     */
     private void createNavigationImage() {
         //We keep the original navigation image larger than initially 
         //displayed to allow for zooming into it without pixellation effect.
@@ -430,22 +551,43 @@ public class NavigableImagePanel extends JPanel {
 
     /**
      * <p>Tests whether an image uses the standard RGB color space.</p>
+     *
+     * @param bImage the b image
+     * @return true, if is standard rgb image
      */
     public static boolean isStandardRGBImage(BufferedImage bImage) {
         return bImage.getColorModel().getColorSpace().isCS_sRGB();
     }
 
     //Converts this panel's coordinates into the original image coordinates
+    /**
+     * Panel to image coords.
+     *
+     * @param p the p
+     * @return the coords
+     */
     private Coords panelToImageCoords(Point p) {
         return new Coords((p.x - originX) / scale, (p.y - originY) / scale);
     }
 
     //Converts the original image coordinates into this panel's coordinates
+    /**
+     * Image to panel coords.
+     *
+     * @param p the p
+     * @return the coords
+     */
     private Coords imageToPanelCoords(Coords p) {
         return new Coords((p.x * scale) + originX, (p.y * scale) + originY);
     }
 
     //Converts the navigation image coordinates into the zoomed image coordinates	
+    /**
+     * Nav to zoomed image coords.
+     *
+     * @param p the p
+     * @return the point
+     */
     private Point navToZoomedImageCoords(Point p) {
         int x = p.x * getScreenImageWidth() / getScreenNavImageWidth();
         int y = p.y * getScreenImageHeight() / getScreenNavImageHeight();
@@ -455,6 +597,11 @@ public class NavigableImagePanel extends JPanel {
     //The user clicked within the navigation image and this part of the image
     //is displayed in the panel.
     //The clicked point of the image is centered in the panel.
+    /**
+     * Display image at.
+     *
+     * @param p the p
+     */
     private void displayImageAt(Point p) {		
         Point scrImagePoint = navToZoomedImageCoords(p);
         originX = -(scrImagePoint.x - getWidth() / 2);
@@ -463,6 +610,12 @@ public class NavigableImagePanel extends JPanel {
     }
 
     //Tests whether a given point in the panel falls within the image boundaries.	
+    /**
+     * Checks if is in image.
+     *
+     * @param p the p
+     * @return true, if is in image
+     */
     private boolean isInImage(Point p) {
         Coords coords = panelToImageCoords(p);
         int x = coords.getIntX();
@@ -472,12 +625,23 @@ public class NavigableImagePanel extends JPanel {
 
     //Tests whether a given point in the panel falls within the navigation image 
     //boundaries.	
+    /**
+     * Checks if is in navigation image.
+     *
+     * @param p the p
+     * @return true, if is in navigation image
+     */
     private boolean isInNavigationImage(Point p) {
         return (isNavigationImageEnabled() && p.x < getScreenNavImageWidth() 
                 && p.y < getScreenNavImageHeight());
     }
 
     //Used when the image is resized.
+    /**
+     * Checks if is image edge in panel.
+     *
+     * @return true, if is image edge in panel
+     */
     private boolean isImageEdgeInPanel() {
         if (previousPanelSize == null) {
             return false;
@@ -488,6 +652,11 @@ public class NavigableImagePanel extends JPanel {
     }
 
     //Tests whether the image is displayed in its entirety in the panel.
+    /**
+     * Checks if is full image in panel.
+     *
+     * @return true, if is full image in panel
+     */
     private boolean isFullImageInPanel() {
         return (originX >= 0 && (originX + getScreenImageWidth()) < getWidth()
                 && originY >= 0 && (originY + getScreenImageHeight()) < getHeight());
@@ -514,6 +683,11 @@ public class NavigableImagePanel extends JPanel {
     //High quality rendering kicks in when when a scaled image is larger 
     //than the original image. In other words, 
     //when image decimation stops and interpolation starts.
+    /**
+     * Checks if is high quality rendering.
+     *
+     * @return true, if is high quality rendering
+     */
     private boolean isHighQualityRendering() {
         return (highQualityRenderingEnabled 
                 && scale > HIGH_QUALITY_RENDERING_SCALE_THRESHOLD);
@@ -541,6 +715,9 @@ public class NavigableImagePanel extends JPanel {
     }
 
     //Used when the panel is resized	 
+    /**
+     * Scale origin.
+     */
     private void scaleOrigin() {
         originX = originX * getWidth() / previousPanelSize.width;
         originY = originY * getHeight() / previousPanelSize.height;
@@ -548,6 +725,12 @@ public class NavigableImagePanel extends JPanel {
     }
 
     //Converts the specified zoom level	to scale.
+    /**
+     * Zoom to scale.
+     *
+     * @param zoom the zoom
+     * @return the double
+     */
     private double zoomToScale(double zoom) {
         return initialScale * zoom;
     }
@@ -581,6 +764,7 @@ public class NavigableImagePanel extends JPanel {
      * After a new zoom level is set the image is repainted.</p>
      *
      * @param newZoom the zoom level used to display this panel's image.
+     * @param zoomingCenter the zooming center
      */
     public void setZoom(double newZoom, Point zoomingCenter) {
         Coords imageP = panelToImageCoords(zoomingCenter);
@@ -634,6 +818,9 @@ public class NavigableImagePanel extends JPanel {
 
     //Zooms an image in the panel by repainting it at the new zoom level.
     //The current mouse position is the zooming center.
+    /**
+     * Zoom image.
+     */
     private void zoomImage() {
         Coords imageP = panelToImageCoords(mousePosition);
         double oldZoom = getZoom();
@@ -650,6 +837,9 @@ public class NavigableImagePanel extends JPanel {
     }
 
     //Zooms the navigation image
+    /**
+     * Zoom navigation image.
+     */
     private void zoomNavigationImage() {
         navScale *= navZoomFactor;
         repaint();
@@ -692,6 +882,11 @@ public class NavigableImagePanel extends JPanel {
     }
 
     //Moves te image (by dragging with the mouse) to a new mouse position p.
+    /**
+     * Move image.
+     *
+     * @param p the p
+     */
     private void moveImage(Point p) {
         int xDelta = p.x - mousePosition.x;
         int yDelta = p.y - mousePosition.y;
@@ -703,6 +898,11 @@ public class NavigableImagePanel extends JPanel {
 
     //Gets the bounds of the image area currently displayed in the panel (in image
     //coordinates).
+    /**
+     * Gets the image clip bounds.
+     *
+     * @return the image clip bounds
+     */
     private Rectangle getImageClipBounds() {
         Coords startCoords = panelToImageCoords(new Point(0, 0));
         Coords endCoords = panelToImageCoords(new Point(getWidth() - 1, getHeight() - 1));
@@ -767,6 +967,11 @@ public class NavigableImagePanel extends JPanel {
 
     //Paints a white outline over the navigation image indicating 
     //the area of the image currently displayed in the panel.
+    /**
+     * Draw zoom area outline.
+     *
+     * @param g the g
+     */
     private void drawZoomAreaOutline(Graphics g) {
         if (isFullImageInPanel()) {
             return;
@@ -780,18 +985,38 @@ public class NavigableImagePanel extends JPanel {
         g.drawRect(x, y, width, height);
     }
 
+    /**
+     * Gets the screen image width.
+     *
+     * @return the screen image width
+     */
     private int getScreenImageWidth() {
         return (int)(scale * image.getWidth());
     }
 
+    /**
+     * Gets the screen image height.
+     *
+     * @return the screen image height
+     */
     private int getScreenImageHeight() {
         return (int)(scale * image.getHeight());
     }
 
+    /**
+     * Gets the screen nav image width.
+     *
+     * @return the screen nav image width
+     */
     private int getScreenNavImageWidth() {
         return (int)(navScale * navImageWidth);
     }
 
+    /**
+     * Gets the screen nav image height.
+     *
+     * @return the screen nav image height
+     */
     private int getScreenNavImageHeight() {
         return (int)(navScale * navImageHeight);
     }
@@ -815,6 +1040,11 @@ public class NavigableImagePanel extends JPanel {
         return (Arrays.binarySearch(getImageFormatExtensions(), extension) >= 0);
     }*/
 
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     */
     public static void main(String[] args) {	
         if (args.length == 0) {
             System.out.println("Usage: java NavigableImagePanel imageFilename");
@@ -848,6 +1078,11 @@ public class NavigableImagePanel extends JPanel {
         });
     }
 
+    /**
+     * Afficher.
+     *
+     * @param args the args
+     */
     public static void afficher(String args) {	
 
 
@@ -878,6 +1113,11 @@ public class NavigableImagePanel extends JPanel {
         });
     }
 
+    /**
+     * Afficher.
+     *
+     * @param image the image
+     */
     public static void afficher(final BufferedImage image) {	
 
 

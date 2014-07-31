@@ -30,8 +30,6 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import mitiv.linalg.Vector;
-import mitiv.linalg.VectorSpace;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;

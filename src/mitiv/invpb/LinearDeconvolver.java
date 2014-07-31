@@ -313,14 +313,14 @@ public class LinearDeconvolver {
     }
 
     /**
-     * 
+     * @return mu
      */
     public double getMu() {
         return A.getMu()/muFactor;
     }
 
     /**
-     * 
+     * @param mu 
      */
     public void setMu(double mu) {
         A.setMu(mu*muFactor);
@@ -359,8 +359,11 @@ public class LinearDeconvolver {
     /**
      * 
      * Not sure if can really be used
+     * @param x 
+     * @param maxiter 
+     * @param reset 
+     * @return 
      */
-    //FIXME should not be public, cause space of x will not be equal further
     public int solve(Vector x, int maxiter, boolean reset) {
         return cg.solve(x, maxiter, reset);
     }

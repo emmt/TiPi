@@ -461,7 +461,6 @@ public class ArrayUtils {
         try {
             ImageIO.write(buf, "png", new File(fileName));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -731,7 +730,6 @@ public class ArrayUtils {
         try {
             ImageIO.write(buf, "png", new File(fileName));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
