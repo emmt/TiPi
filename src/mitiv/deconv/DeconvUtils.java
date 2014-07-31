@@ -531,7 +531,7 @@ public class DeconvUtils {
         if (single) {
             FloatShapedVector vectorFloat = (FloatShapedVector)vector;
             float[] array = vectorFloat.getData();
-            int size = ((FloatShapedVectorSpace)imageSpace).getNumber();
+            int size = imageSpace.getNumber();
             if(fft1DFloat == null){
                 fft1DFloat = new FloatFFT_1D(size);
             }
@@ -539,7 +539,7 @@ public class DeconvUtils {
         } else {
             DoubleShapedVector vectorDouble = (DoubleShapedVector)vector;
             double[] array = vectorDouble.getData();
-            int size = ((DoubleShapedVectorSpace)imageSpace).getNumber();
+            int size = imageSpace.getNumber();
             if(fft1D == null){
                 fft1D = new DoubleFFT_1D(size);
             }

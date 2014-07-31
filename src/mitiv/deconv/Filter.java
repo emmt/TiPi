@@ -25,7 +25,6 @@
 
 package mitiv.deconv;
 
-import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.ShapedVector;
@@ -51,7 +50,7 @@ public class Filter{
     double[] tabcc1D;
 
     //vector
-    Vector image;
+    ShapedVector image;
 
     /**
      * Apply the Wiener filter

@@ -608,16 +608,14 @@ public class CommonUtils {
      */
     public static BufferedImage vectorToImage(ShapedVectorSpace outputSpace, ShapedVector vector, int job, boolean singlePrecision ,boolean isComplex){
         if (singlePrecision) {
-            FloatShapedVectorSpace space = (FloatShapedVectorSpace)outputSpace;
-            int[] shape = space.cloneShape();
-            if (!(space.getRank() == 2)) {
+            int[] shape = outputSpace.cloneShape();
+            if (!(outputSpace.getRank() == 2)) {
                 throw new IllegalArgumentException("The vector should be of rank 2 to create an image");
             }
-            return arrayToImage1D(((DoubleShapedVector)vector).getData(), job, shape[1], shape[0], isComplex);
+            return arrayToImage1D(((FloatShapedVector)vector).getData(), job, shape[1], shape[0], isComplex);
         } else {
-            DoubleShapedVectorSpace space = (DoubleShapedVectorSpace)outputSpace;
-            int[] shape = space.cloneShape();
-            if (!(space.getRank() == 2)) {
+            int[] shape = outputSpace.cloneShape();
+            if (!(outputSpace.getRank() == 2)) {
                 throw new IllegalArgumentException("The vector should be of rank 2 to create an image");
             }
             return arrayToImage1D(((DoubleShapedVector)vector).getData(), job, shape[1], shape[0], isComplex);
