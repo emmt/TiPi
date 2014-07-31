@@ -32,6 +32,7 @@ import mitiv.linalg.LinearConjugateGradient;
 import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.utils.CommonUtils;
 
 /**
@@ -302,13 +303,13 @@ public class Deconvolution{
         //TODO add getPsfVect need change on opening of the image
         utils.FFT1D(vector_image);
         utils.FFT1D(vector_psf);
-        Vector out = wiener.wienerVect(alpha, vector_psf, vector_image);
+        ShapedVector out = wiener.wienerVect(alpha, vector_psf, vector_image);
         utils.IFFT1D(out);
         return(utils.arrayToImage(out, correction,true));
     }
 
     private BufferedImage nextDeconvolutionVector(double alpha){
-        Vector out = wiener.wienerVect(alpha);
+        ShapedVector out = wiener.wienerVect(alpha);
         utils.IFFT1D(out);
         return(utils.arrayToImage(out, correction,true));
     }
@@ -473,13 +474,13 @@ public class Deconvolution{
         vector_psf = (DoubleShapedVector) utils.getPsfPadVect();
         utils.FFT1D(vector_image);
         utils.FFT1D(vector_psf);
-        Vector out = wiener.wienerQuadVect(alpha, vector_psf, vector_image);
+        ShapedVector out = wiener.wienerQuadVect(alpha, vector_psf, vector_image);
         utils.IFFT1D(out);
         return(utils.arrayToImage(out, correction,true));
     }
 
     private BufferedImage nextDeconvolutionQuadVector(double alpha){
-        Vector out = wiener.wienerQuadVect(alpha);
+        ShapedVector out = wiener.wienerQuadVect(alpha);
         utils.IFFT1D(out);
         return(utils.arrayToImage(out, correction,true));
     }

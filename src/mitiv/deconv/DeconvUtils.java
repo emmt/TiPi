@@ -36,6 +36,8 @@ import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
+import mitiv.linalg.shaped.ShapedVector;
+import mitiv.linalg.shaped.ShapedVectorSpace;
 import mitiv.utils.CommonUtils;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
@@ -58,10 +60,10 @@ public class DeconvUtils {
     private int sizePadding = -1;
 
     //Vector part
-    private Vector imageVect;
-    private Vector imagePsfVect;
-    private VectorSpace imageSpace;
-    private VectorSpace imageSpaceComplex;
+    private ShapedVector imageVect;
+    private ShapedVector imagePsfVect;
+    private ShapedVectorSpace imageSpace;
+    private ShapedVectorSpace imageSpaceComplex;
     private boolean single = true;
     boolean isComplex;
 
@@ -215,7 +217,7 @@ public class DeconvUtils {
      * 
      * @return A vector
      */
-    public Vector cloneImageVect(){
+    public ShapedVector cloneImageVect(){
         return imageVect.getSpace().clone(imageVect);
     }
 
@@ -224,7 +226,7 @@ public class DeconvUtils {
      * 
      * @return A vector
      */
-    public Vector clonePsfVect(){
+    public ShapedVector clonePsfVect(){
         return imagePsfVect.getSpace().clone(imagePsfVect);
     }
 
@@ -233,7 +235,7 @@ public class DeconvUtils {
      * 
      * @return A vector
      */
-    public Vector getPsfPadVect(){
+    public ShapedVector getPsfPadVect(){
         return CommonUtils.psfPadding1D(imageSpace,imageSpaceComplex, imagePsfVect, single, isComplex);
     }
 
@@ -245,7 +247,7 @@ public class DeconvUtils {
      * @param isComplex is the input of size 2*size image ?
      * @return A buffered image that is the image
      */
-    public BufferedImage arrayToImage(Vector vector, int correction,boolean isComplex){
+    public BufferedImage arrayToImage(ShapedVector vector, int correction,boolean isComplex){
         return CommonUtils.vectorToImage(imageSpace, vector, correction ,single, isComplex);
     }
 
@@ -527,7 +529,7 @@ public class DeconvUtils {
      * 
      * @param vector
      */
-    public void FFT1D(Vector vector) {
+    public void FFT1D(ShapedVector vector) {
         if (single) {
             FloatShapedVector vectorFloat = (FloatShapedVector)vector;
             float[] array = vectorFloat.getData();
@@ -552,7 +554,7 @@ public class DeconvUtils {
      * 
      * @param vector
      */
-    public void IFFT1D(Vector vector) {
+    public void IFFT1D(ShapedVector vector) {
         if (single) {
             FloatShapedVector vectorFloat = (FloatShapedVector)vector;
             float[] array = vectorFloat.getData();

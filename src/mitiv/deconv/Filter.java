@@ -28,6 +28,7 @@ package mitiv.deconv;
 import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
+import mitiv.linalg.shaped.ShapedVector;
 
 /**
  * This class contain all the methods to compute the solutions
@@ -149,7 +150,7 @@ public class Filter{
      * @param image
      * @return A vector
      */
-    public Vector wienerVect(double alpha, Vector PSF, Vector image) {
+    public ShapedVector wienerVect(double alpha, ShapedVector PSF, ShapedVector image) {
         this.image = image;
         int[]shape = ((DoubleShapedVectorSpace)image.getSpace()).cloneShape();
         double[] out = wiener1D(alpha, ((DoubleShapedVector)PSF).getData(), ((DoubleShapedVector)image).getData(), shape[1], shape[0]/2);
@@ -163,7 +164,7 @@ public class Filter{
      * @param alpha
      * @return A vector
      */
-    public Vector wienerVect(double alpha) {
+    public ShapedVector wienerVect(double alpha) {
         double[] out = wiener1D(alpha);
         return ((DoubleShapedVectorSpace)image.getSpace()).wrap(out);
     }
@@ -292,7 +293,7 @@ public class Filter{
      * @param image 
      * @return A vector
      */
-    public Vector wienerQuadVect(double alpha, Vector PSF, Vector image) {
+    public ShapedVector wienerQuadVect(double alpha, ShapedVector PSF, ShapedVector image) {
         this.image = image;
         int[]shape = ((DoubleShapedVectorSpace)image.getSpace()).cloneShape();
         double[] out = wienerQuad1D(alpha, ((DoubleShapedVector)PSF).getData(), ((DoubleShapedVector)image).getData(), shape[1], shape[0]/2);
@@ -306,7 +307,7 @@ public class Filter{
      * @param alpha
      * @return A vector
      */
-    public Vector wienerQuadVect(double alpha) {
+    public ShapedVector wienerQuadVect(double alpha) {
         double[] out = wienerQuad1D(alpha);
         return ((DoubleShapedVectorSpace)image.getSpace()).wrap(out);
     }

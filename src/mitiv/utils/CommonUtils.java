@@ -37,12 +37,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import mitiv.linalg.Vector;
-import mitiv.linalg.VectorSpace;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
+import mitiv.linalg.shaped.ShapedVector;
+import mitiv.linalg.shaped.ShapedVectorSpace;
 
 /**
  * Contains all usual methods to work on color, image, arrays and conversion from one to another.
@@ -567,7 +567,7 @@ public class CommonUtils {
      * @param isComplex
      * @return
      */
-    public static Vector imageToVector(VectorSpace outputSpace, BufferedImage image, boolean singlePrecision ,boolean isComplex){
+    public static ShapedVector imageToVector(ShapedVectorSpace outputSpace, BufferedImage image, boolean singlePrecision ,boolean isComplex){
         if (singlePrecision) {
             FloatShapedVectorSpace space = (FloatShapedVectorSpace)outputSpace;
             float[] tab = imageToArray1DFloat(image, isComplex);
@@ -583,12 +583,13 @@ public class CommonUtils {
      * Covert an image to a vector
      * 
      * @param outputSpace
-     * @param image
+     * @param vector 
+     * @param job 
      * @param singlePrecision
      * @param isComplex
      * @return
      */
-    public static BufferedImage vectorToImage(VectorSpace outputSpace, Vector vector, int job, boolean singlePrecision ,boolean isComplex){
+    public static BufferedImage vectorToImage(ShapedVectorSpace outputSpace, ShapedVector vector, int job, boolean singlePrecision ,boolean isComplex){
         if (singlePrecision) {
             FloatShapedVectorSpace space = (FloatShapedVectorSpace)outputSpace;
             int[] shape = space.cloneShape();
@@ -681,6 +682,7 @@ public class CommonUtils {
      * Scale an array by doing in place operations
      * 
      * @param array
+     * @param isComplex 
      */
     public static void scaleArray(double[][] array, boolean isComplex){
         //get max min for scaling
@@ -1725,13 +1727,15 @@ public class CommonUtils {
      *     D | C     <br>
      *     -------    Image (WidthImage HeightImage)<br>
      *     B | A     <br>
+     * @param inputSpace 
+     * @param outputSpace 
      * 
-     * @param image
      * @param imagePsf
+     * @param singlePrecision 
      * @param isComplex
      * @return
      */
-    public static Vector psfPadding1D(VectorSpace inputSpace, VectorSpace outputSpace, Vector imagePsf, boolean singlePrecision, boolean isComplex) {
+    public static ShapedVector psfPadding1D(ShapedVectorSpace inputSpace, ShapedVectorSpace outputSpace, ShapedVector imagePsf, boolean singlePrecision, boolean isComplex) {
         if (singlePrecision) {
             FloatShapedVectorSpace spaceFloat = (FloatShapedVectorSpace)outputSpace;
             FloatShapedVector vectorPsf = (FloatShapedVector)imagePsf;
