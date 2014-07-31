@@ -81,7 +81,7 @@ public class ConvolutionOperator extends ShapedLinearOperator {
      * @param FFT - The Fast Fourier Transform operator.
      * @param psf - The point spread function (PSF) or {@code null}.
      * @param mtf - The modulation transfer function (MTF) or {@code null}.
-     * @param mtf - If true, {@code h} is the MTF; otherwise, {@code h} is
+     *            - If true, {@code h} is the MTF; otherwise, {@code h} is
      *              the PSF.  Note that if {@code h} is the MTF, a simple
      *              reference to it is kept by the operator.  Thus, you
      *              should clone {@code h} if you intend to modify its

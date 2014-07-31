@@ -105,7 +105,7 @@ public class RankOneOperator extends LinearOperator {
 
     /**
      * Set the right vector of a rank-one linear operator.
-     * @param u  the new right vector.
+     * @param v  the new right vector.
      * @throws IncorrectSpaceException
      */
     public void setV(Vector v) throws IncorrectSpaceException {

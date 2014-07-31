@@ -84,7 +84,7 @@ public class GradientChecker {
     /**
      * Set the relative size of the finite difference step.
      * @param value - The relative step size.  If smaller than {@code MINIMAL_EPSILON},
-     *                the value {@ DEFAULT_EPSILON} is taken.
+     *                the value {@DEFAULT_EPSILON} is taken.
      */
     public void setStepScale(double value) {
         if (value < MINIMAL_EPSILON) {

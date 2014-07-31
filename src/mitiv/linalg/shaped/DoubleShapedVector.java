@@ -69,26 +69,21 @@ public class DoubleShapedVector extends ShapedVector {
         this.data = data;
     }
 
-    /**
-     * Get the value of a given coefficient of a vector.
-     * 
-     * @param i
-     *            The index of the coefficient.
-     * @return The value of the coefficient.
-     */
+    @Override
+    public DoubleShapedVectorSpace getOwner() {
+        return (DoubleShapedVectorSpace) space;
+    }
+    
+    @Override
+    public DoubleShapedVectorSpace getSpace() {
+        return getOwner();
+    }
+    
     @Override
     public final double get(int i) {
         return data[i];
     }
 
-    /**
-     * Set the value of a given coefficient of a vector.
-     * 
-     * @param i
-     *            The index of the coefficient.
-     * @param value
-     *            The value of the coefficient.
-     */
     @Override
     public final void set(int i, double value) {
         data[i] = value;
