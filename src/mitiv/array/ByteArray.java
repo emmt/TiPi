@@ -25,7 +25,6 @@
 
 package mitiv.array;
 
-
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
@@ -98,6 +97,25 @@ public interface ByteArray extends ShapedArray {
      *         the ByteArray.
      */
     public abstract byte[] flatten(boolean forceCopy);
+
+    /**
+     * Flatten the contents of byte's in a simple array.
+     * <p>
+     * The contents of a (multi-dimensional) ByteArray can be stored in many
+     * different forms.  This storage details are hidden to the end-user in
+     * favor of a unified and comprehensive interface.  This method returns
+     * the contents of the ByteArray object as a simple flat array.  If the
+     * ByteArray object is multi-dimensional, the storage of the returned
+     * result is column-major order.
+     * <p>
+     * Depending on the storage layout, the returned array may or may not
+     * share the same storage as the ByteArray array.  Call {@code
+     * flatten(true)} to make sure that the two storage areas are independent.
+     * @return A simple array of bytes with the contents of
+     *         the ByteArray array.
+     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     */
+    public abstract byte[] flatten();
 
 }
 

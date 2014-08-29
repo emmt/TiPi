@@ -25,7 +25,6 @@
 
 package mitiv.array;
 
-
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
@@ -98,6 +97,25 @@ public interface DoubleArray extends ShapedArray {
      *         the DoubleArray.
      */
     public abstract double[] flatten(boolean forceCopy);
+
+    /**
+     * Flatten the contents of double's in a simple array.
+     * <p>
+     * The contents of a (multi-dimensional) DoubleArray can be stored in many
+     * different forms.  This storage details are hidden to the end-user in
+     * favor of a unified and comprehensive interface.  This method returns
+     * the contents of the DoubleArray object as a simple flat array.  If the
+     * DoubleArray object is multi-dimensional, the storage of the returned
+     * result is column-major order.
+     * <p>
+     * Depending on the storage layout, the returned array may or may not
+     * share the same storage as the DoubleArray array.  Call {@code
+     * flatten(true)} to make sure that the two storage areas are independent.
+     * @return A simple array of doubles with the contents of
+     *         the DoubleArray array.
+     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     */
+    public abstract double[] flatten();
 
 }
 

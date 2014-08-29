@@ -30,6 +30,7 @@ import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
 import mitiv.random.ShortGenerator;
 
+
 /**
  * Define class for comprehensive 4-dimensional arrays of short's.
  *
@@ -160,7 +161,7 @@ public abstract class Short4D extends Array4D implements ShortArray {
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i4 = 0; i4 < dim4; ++i4) {
-                            set(i1,i2,i3,i4, (short)(get(i1,i2,i3,i4)*value));
+                            set(i1,i2,i3,i4, (short)(get(i1,i2,i3,i4) * value));
                         }
                     }
                 }
@@ -171,7 +172,7 @@ public abstract class Short4D extends Array4D implements ShortArray {
                 for (int i3 = 0; i3 < dim3; ++i3) {
                     for (int i2 = 0; i2 < dim2; ++i2) {
                         for (int i1 = 0; i1 < dim1; ++i1) {
-                            set(i1,i2,i3,i4, (short)(get(i1,i2,i3,i4)*value));
+                            set(i1,i2,i3,i4, (short)(get(i1,i2,i3,i4) * value));
                         }
                     }
                 }
@@ -240,11 +241,7 @@ public abstract class Short4D extends Array4D implements ShortArray {
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i4 = 0; i4 < dim4; ++i4) {
-                            if (skip) {
-                    skip = false;
-                } else {
-                    scanner.update(get(i1,i2,i3,i4));
-                }
+                            if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4));
                         }
                     }
                 }
@@ -255,11 +252,7 @@ public abstract class Short4D extends Array4D implements ShortArray {
                 for (int i3 = 0; i3 < dim3; ++i3) {
                     for (int i2 = 0; i2 < dim2; ++i2) {
                         for (int i1 = 0; i1 < dim1; ++i1) {
-                            if (skip) {
-                    skip = false;
-                } else {
-                    scanner.update(get(i1,i2,i3,i4));
-                }
+                            if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4));
                         }
                     }
                 }
@@ -275,13 +268,13 @@ public abstract class Short4D extends Array4D implements ShortArray {
     @Override
     public short[] flatten(boolean forceCopy) {
         /* Copy the elements in column-major order. */
-        short[] out = new short[getNumber()];
-        int i = 0;
+        short[] out = new short[number];
+        int i = -1;
         for (int i4 = 0; i4 < dim4; ++i4) {
             for (int i3 = 0; i3 < dim3; ++i3) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     for (int i1 = 0; i1 < dim1; ++i1) {
-                        out[i++] = get(i1,i2,i3,i4);
+                        out[++i] = get(i1,i2,i3,i4);
                     }
                 }
             }
@@ -289,21 +282,7 @@ public abstract class Short4D extends Array4D implements ShortArray {
         return out;
     }
 
-    /**
-     * Flatten the contents of the 4D array of short's as a simple array.
-     * <p>
-     * The contents of a Short4D array can be stored in many different forms.
-     * The storage details are hidden to the end-user in favor of a unified
-     * and comprehensive interface.  This method returns the contents of the
-     * Short4D array as a simple array in column-major storage order.
-     * <p>
-     * Depending on the storage layout, the returned array may or may not
-     * share the same storage as the Short4D array.  Call {@code
-     * flatten(true)} to make sure that the two storage areas are independent.
-     * @return A simple array of shorts with the contents of
-     *         the Short4D array.
-     * @see {@link ShortArray#flatten}, {@link Shaped#COLUMN_MAJOR}.
-     */
+    @Override
     public short[] flatten() {
         return flatten(false);
     }
@@ -320,7 +299,7 @@ public abstract class Short4D extends Array4D implements ShortArray {
     private static final Short4D factory = new Short4D(1,1,1,1) {
         @Override
         public final short get(int i1, int i2, int i3, int i4) {
-            return (short)0;
+            return 0;
         }
         @Override
         public final void set(int i1, int i2, int i3, int i4, short value) {
@@ -413,7 +392,7 @@ public abstract class Short4D extends Array4D implements ShortArray {
      * <p>
      * The returned 4D array have zero offset, contiguous elements and
      * column-major storage order.  More specifically:
-     * <pre>arr(i1,i2,i3,i4) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*i4))]</pre>
+     * <pre>arr.get(i1,i2,i3,i4) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*i4))]</pre>
      * with {@code arr} the returned 4D array.
      * @param data - The data to wrap in the 4D array.
      * @param shape - The list of dimensions of the 4D array.  This argument is
@@ -602,12 +581,12 @@ public abstract class Short4D extends Array4D implements ShortArray {
                 System.arraycopy(data, offset, out, 0, number);
             } else {
                 /* Must access the output in column-major order. */
-                int i = 0;
+                int i = -1;
                 for (int i4 = 0; i4 < dim4; ++i4) {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i2 = 0; i2 < dim2; ++i2) {
                             for (int i1 = 0; i1 < dim1; ++i1) {
-                                out[i++] = get(i1,i2,i3,i4);
+                                out[++i] = get(i1,i2,i3,i4);
                             }
                         }
                     }

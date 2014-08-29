@@ -25,7 +25,6 @@
 
 package mitiv.array;
 
-
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.random.LongGenerator;
@@ -98,6 +97,25 @@ public interface LongArray extends ShapedArray {
      *         the LongArray.
      */
     public abstract long[] flatten(boolean forceCopy);
+
+    /**
+     * Flatten the contents of long's in a simple array.
+     * <p>
+     * The contents of a (multi-dimensional) LongArray can be stored in many
+     * different forms.  This storage details are hidden to the end-user in
+     * favor of a unified and comprehensive interface.  This method returns
+     * the contents of the LongArray object as a simple flat array.  If the
+     * LongArray object is multi-dimensional, the storage of the returned
+     * result is column-major order.
+     * <p>
+     * Depending on the storage layout, the returned array may or may not
+     * share the same storage as the LongArray array.  Call {@code
+     * flatten(true)} to make sure that the two storage areas are independent.
+     * @return A simple array of longs with the contents of
+     *         the LongArray array.
+     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     */
+    public abstract long[] flatten();
 
 }
 

@@ -24,8 +24,8 @@
  */
 
 package mitiv.array;
-
 import mitiv.base.Shaped;
+
 
 /**
  * Define abstract class for multi-dimensional arrays of rank 2.
@@ -133,10 +133,14 @@ public abstract class Array2D implements Shaped {
         if (imin < 0 || imax >= number) {
             throw new IndexOutOfBoundsException("2D view is not within available space");
         }
-        if (Math.abs(stride1) <= Math.abs(stride2)) {
+        int s1 = Math.abs(stride1);
+        int s2 = Math.abs(stride2);
+        if (s1 <= s2) {
             return COLUMN_MAJOR;
-        } else {
+        } else if (s1 >= s2) {
             return ROW_MAJOR;
+        } else {
+            return NONSPECIFIC_ORDER;
         }
     }
 

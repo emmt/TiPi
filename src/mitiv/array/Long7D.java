@@ -30,6 +30,7 @@ import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.random.LongGenerator;
 
+
 /**
  * Define class for comprehensive 7-dimensional arrays of long's.
  *
@@ -205,7 +206,7 @@ public abstract class Long7D extends Array7D implements LongArray {
                             for (int i5 = 0; i5 < dim5; ++i5) {
                                 for (int i6 = 0; i6 < dim6; ++i6) {
                                     for (int i7 = 0; i7 < dim7; ++i7) {
-                                        set(i1,i2,i3,i4,i5,i6,i7, get(i1,i2,i3,i4,i5,i6,i7)*value);
+                                        set(i1,i2,i3,i4,i5,i6,i7, get(i1,i2,i3,i4,i5,i6,i7) * value);
                                     }
                                 }
                             }
@@ -222,7 +223,7 @@ public abstract class Long7D extends Array7D implements LongArray {
                             for (int i3 = 0; i3 < dim3; ++i3) {
                                 for (int i2 = 0; i2 < dim2; ++i2) {
                                     for (int i1 = 0; i1 < dim1; ++i1) {
-                                        set(i1,i2,i3,i4,i5,i6,i7, get(i1,i2,i3,i4,i5,i6,i7)*value);
+                                        set(i1,i2,i3,i4,i5,i6,i7, get(i1,i2,i3,i4,i5,i6,i7) * value);
                                     }
                                 }
                             }
@@ -321,11 +322,7 @@ public abstract class Long7D extends Array7D implements LongArray {
                             for (int i5 = 0; i5 < dim5; ++i5) {
                                 for (int i6 = 0; i6 < dim6; ++i6) {
                                     for (int i7 = 0; i7 < dim7; ++i7) {
-                                        if (skip) {
-                    skip = false;
-                } else {
-                    scanner.update(get(i1,i2,i3,i4,i5,i6,i7));
-                }
+                                        if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4,i5,i6,i7));
                                     }
                                 }
                             }
@@ -342,11 +339,7 @@ public abstract class Long7D extends Array7D implements LongArray {
                             for (int i3 = 0; i3 < dim3; ++i3) {
                                 for (int i2 = 0; i2 < dim2; ++i2) {
                                     for (int i1 = 0; i1 < dim1; ++i1) {
-                                        if (skip) {
-                    skip = false;
-                } else {
-                    scanner.update(get(i1,i2,i3,i4,i5,i6,i7));
-                }
+                                        if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4,i5,i6,i7));
                                     }
                                 }
                             }
@@ -365,8 +358,8 @@ public abstract class Long7D extends Array7D implements LongArray {
     @Override
     public long[] flatten(boolean forceCopy) {
         /* Copy the elements in column-major order. */
-        long[] out = new long[getNumber()];
-        int i = 0;
+        long[] out = new long[number];
+        int i = -1;
         for (int i7 = 0; i7 < dim7; ++i7) {
             for (int i6 = 0; i6 < dim6; ++i6) {
                 for (int i5 = 0; i5 < dim5; ++i5) {
@@ -374,7 +367,7 @@ public abstract class Long7D extends Array7D implements LongArray {
                         for (int i3 = 0; i3 < dim3; ++i3) {
                             for (int i2 = 0; i2 < dim2; ++i2) {
                                 for (int i1 = 0; i1 < dim1; ++i1) {
-                                    out[i++] = get(i1,i2,i3,i4,i5,i6,i7);
+                                    out[++i] = get(i1,i2,i3,i4,i5,i6,i7);
                                 }
                             }
                         }
@@ -385,21 +378,7 @@ public abstract class Long7D extends Array7D implements LongArray {
         return out;
     }
 
-    /**
-     * Flatten the contents of the 7D array of long's as a simple array.
-     * <p>
-     * The contents of a Long7D array can be stored in many different forms.
-     * The storage details are hidden to the end-user in favor of a unified
-     * and comprehensive interface.  This method returns the contents of the
-     * Long7D array as a simple array in column-major storage order.
-     * <p>
-     * Depending on the storage layout, the returned array may or may not
-     * share the same storage as the Long7D array.  Call {@code
-     * flatten(true)} to make sure that the two storage areas are independent.
-     * @return A simple array of longs with the contents of
-     *         the Long7D array.
-     * @see {@link LongArray#flatten}, {@link Shaped#COLUMN_MAJOR}.
-     */
+    @Override
     public long[] flatten() {
         return flatten(false);
     }
@@ -416,7 +395,7 @@ public abstract class Long7D extends Array7D implements LongArray {
     private static final Long7D factory = new Long7D(1,1,1,1,1,1,1) {
         @Override
         public final long get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-            return 0L;
+            return 0;
         }
         @Override
         public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, long value) {
@@ -515,7 +494,7 @@ public abstract class Long7D extends Array7D implements LongArray {
      * <p>
      * The returned 7D array have zero offset, contiguous elements and
      * column-major storage order.  More specifically:
-     * <pre>arr(i1,i2,i3,i4,i5,i6,i7) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*(i4 + shape[3]*(i5 + shape[4]*(i6 + shape[5]*i7)))))]</pre>
+     * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*(i4 + shape[3]*(i5 + shape[4]*(i6 + shape[5]*i7)))))]</pre>
      * with {@code arr} the returned 7D array.
      * @param data - The data to wrap in the 7D array.
      * @param shape - The list of dimensions of the 7D array.  This argument is
@@ -731,7 +710,7 @@ public abstract class Long7D extends Array7D implements LongArray {
                 System.arraycopy(data, offset, out, 0, number);
             } else {
                 /* Must access the output in column-major order. */
-                int i = 0;
+                int i = -1;
                 for (int i7 = 0; i7 < dim7; ++i7) {
                     for (int i6 = 0; i6 < dim6; ++i6) {
                         for (int i5 = 0; i5 < dim5; ++i5) {
@@ -739,7 +718,7 @@ public abstract class Long7D extends Array7D implements LongArray {
                                 for (int i3 = 0; i3 < dim3; ++i3) {
                                     for (int i2 = 0; i2 < dim2; ++i2) {
                                         for (int i1 = 0; i1 < dim1; ++i1) {
-                                            out[i++] = get(i1,i2,i3,i4,i5,i6,i7);
+                                            out[++i] = get(i1,i2,i3,i4,i5,i6,i7);
                                         }
                                     }
                                 }

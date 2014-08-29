@@ -25,7 +25,6 @@
 
 package mitiv.array;
 
-
 import mitiv.base.mapping.IntegerFunction;
 import mitiv.base.mapping.IntegerScanner;
 import mitiv.random.IntegerGenerator;
@@ -98,6 +97,25 @@ public interface IntegerArray extends ShapedArray {
      *         the IntegerArray.
      */
     public abstract int[] flatten(boolean forceCopy);
+
+    /**
+     * Flatten the contents of int's in a simple array.
+     * <p>
+     * The contents of a (multi-dimensional) IntegerArray can be stored in many
+     * different forms.  This storage details are hidden to the end-user in
+     * favor of a unified and comprehensive interface.  This method returns
+     * the contents of the IntegerArray object as a simple flat array.  If the
+     * IntegerArray object is multi-dimensional, the storage of the returned
+     * result is column-major order.
+     * <p>
+     * Depending on the storage layout, the returned array may or may not
+     * share the same storage as the IntegerArray array.  Call {@code
+     * flatten(true)} to make sure that the two storage areas are independent.
+     * @return A simple array of ints with the contents of
+     *         the IntegerArray array.
+     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     */
+    public abstract int[] flatten();
 
 }
 

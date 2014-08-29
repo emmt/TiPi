@@ -30,6 +30,7 @@ import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
 
+
 /**
  * Define class for comprehensive 1-dimensional arrays of double's.
  *
@@ -93,7 +94,7 @@ public abstract class Double1D extends Array1D implements DoubleArray {
     @Override
     public void mult(double value) {
         for (int i1 = 0; i1 < dim1; ++i1) {
-            set(i1, get(i1)*value);
+            set(i1, get(i1) * value);
         }
     }
 
@@ -113,14 +114,9 @@ public abstract class Double1D extends Array1D implements DoubleArray {
 
     @Override
     public void scan(DoubleScanner scanner)  {
-        boolean skip = true;
         scanner.initialize(get(0));
-        for (int i1 = 0; i1 < dim1; ++i1) {
-            if (skip) {
-                skip = false;
-            } else {
-                scanner.update(get(i1));
-            }
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            scanner.update(get(i1));
         }
     }
 
@@ -131,6 +127,7 @@ public abstract class Double1D extends Array1D implements DoubleArray {
      */
     @Override
     public double[] flatten(boolean forceCopy) {
+        /* Copy the elements in column-major order. */
         double[] out = new double[dim1];
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[i1] = get(i1);
@@ -138,21 +135,7 @@ public abstract class Double1D extends Array1D implements DoubleArray {
         return out;
     }
 
-    /**
-     * Flatten the contents of the 1D array of double's as a simple array.
-     * <p>
-     * The contents of a Double1D array can be stored in many different forms.
-     * The storage details are hidden to the end-user in favor of a unified
-     * and comprehensive interface.  This method returns the contents of the
-     * Double1D array as a simple array in column-major storage order.
-     * <p>
-     * Depending on the storage layout, the returned array may or may not
-     * share the same storage as the Double1D array.  Call {@code
-     * flatten(true)} to make sure that the two storage areas are independent.
-     * @return A simple array of doubles with the contents of
-     *         the Double1D array.
-     * @see {@link DoubleArray#flatten}, {@link Shaped#COLUMN_MAJOR}.
-     */
+    @Override
     public double[] flatten() {
         return flatten(false);
     }
@@ -256,7 +239,7 @@ public abstract class Double1D extends Array1D implements DoubleArray {
      * <p>
      * The returned 1D array have zero offset, contiguous elements and
      * column-major storage order.  More specifically:
-     * <pre>arr(i1) = data[i1]</pre>
+     * <pre>arr.get(i1) = data[i1]</pre>
      * with {@code arr} the returned 1D array.
      * @param data - The data to wrap in the 1D array.
      * @param shape - The list of dimensions of the 1D array.  This argument is
@@ -423,58 +406,15 @@ public abstract class Double1D extends Array1D implements DoubleArray {
                 System.arraycopy(data, offset, out, 0, number);
             } else {
                 /* Must access the output in column-major order. */
-                int i = 0;
+                int i = -1;
                 for (int i1 = 0; i1 < dim1; ++i1) {
-                    out[i++] = get(i1);
+                    out[++i] = get(i1);
                 }
             }
             return out;
         }
     }
 
-    /*=======================================================================*/
-    /* MULTIDIMENSIONAL (1D) LAYOUT */
-
-    /**
-     * Wrap an existing 1D array of double's in a Double1D array.
-     * <p>
-     * More specifically:
-     * <pre>arr.get(i1) = data[i1]</pre>
-     * with {@code arr} the returned 1D array.
-     * @param data    - The array to wrap in the 1D array.
-     * @return A 1D array sharing the elements of <b>data</b>.
-     */
-    public static Double1D wrap(double[] data) {
-        return factory.new Multi1(data);
-    }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 1D array stored in a 1D Java array.  To instantiate such an inner class,
-     * an instance of the outer class must be available (this is the purpose
-     * of the static "factory" instance).
-     */
-    class Multi1 extends Double1D {
-        private static final int order = COLUMN_MAJOR;
-        private final double[] data;
-
-        protected Multi1(double[] arr) {
-            super(arr.length);
-            data = arr;
-        }
-        @Override
-        public int getOrder() {
-            return order;
-        }
-        @Override
-        public final double get(int i1) {
-            return data[i1];
-        }
-        @Override
-        public final void set(int i1, double value) {
-            data[i1] = value;
-        }
-    }
 
 }
 

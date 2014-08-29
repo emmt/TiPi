@@ -24,8 +24,8 @@
  */
 
 package mitiv.array;
-
 import mitiv.base.Shaped;
+
 
 /**
  * Define abstract class for multi-dimensional arrays of rank 3.
