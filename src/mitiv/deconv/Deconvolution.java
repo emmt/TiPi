@@ -40,10 +40,6 @@ import mitiv.utils.CommonUtils;
  */
 public class Deconvolution{
     /**
-     * Compute all the operations with 2D arrays
-     */
-    public static final int PROCESSING_2D = 0;
-    /**
      * Compute all the operations with 1D arrays
      */
     public static final int PROCESSING_1D = 1;
@@ -52,14 +48,12 @@ public class Deconvolution{
      */
     public static final int PROCESSING_VECTOR = 2;
 
-    private final int standardProcessing = PROCESSING_1D;
+    private final int standardProcessing = PROCESSING_VECTOR;
 
     boolean verbose = false;
 
     DeconvUtils utils;
     Filter wiener;
-    double[][] image;
-    double[][] psf;
     double[] image1D;
     double[] psf1D;
     DoubleShapedVector vector_image;
@@ -147,7 +141,6 @@ public class Deconvolution{
         } else {
             return firstDeconvolution(alpha, standardProcessing, false);
         }
-
     }
 
     /**
@@ -166,7 +159,6 @@ public class Deconvolution{
         } else {
             return firstDeconvolution(alpha, standardProcessing, isPsfSplitted);
         }
-
     }
 
     /**
@@ -183,8 +175,6 @@ public class Deconvolution{
         switch (job) {
         case PROCESSING_1D:
             return firstDeconvolutionSimple1D(alpha);
-        case PROCESSING_2D:
-            return firstDeconvolutionSimple(alpha);
         case PROCESSING_VECTOR:
             return firstDeconvolutionVector(alpha);
         default:
@@ -221,46 +211,11 @@ public class Deconvolution{
         switch (job) {
         case PROCESSING_1D:
             return nextDeconvolutionSimple1D(alpha);
-        case PROCESSING_2D:
-            return nextDeconvolutionSimple(alpha);
         case PROCESSING_VECTOR:
             return nextDeconvolutionVector(alpha);
         default:
             throw new IllegalArgumentException("The job given does not exist");
         }
-    }
-
-    /**
-     * First deconvolution for the wiener filter
-     * 
-     * @param alpha
-     * @return The bufferedImage for the input value given
-     */
-    private BufferedImage firstDeconvolutionSimple(double alpha){
-        image = utils.imageToArray(true);
-        if (isPsfSplitted) {
-            psf = utils.psfToArray(true);
-        } else {
-            psf = utils.psfPadding(true);
-        }
-        utils.FFT(image);
-        utils.FFT(psf);
-        double[][] out = wiener.wiener(alpha, psf, image);
-        utils.IFFT(out);
-        return(utils.arrayToImage(out, correction));
-    }
-
-    /**
-     * Will compute less than firstDeconvolution: 1FTT inverse instead
-     * of 2FFT + 1 inverse FFT
-     * 
-     * @param alpha
-     * @return The bufferedImage for the input value given
-     */
-    private BufferedImage nextDeconvolutionSimple(double alpha){
-        double[][] out = wiener.wiener(alpha);
-        utils.IFFT(out);
-        return(utils.arrayToImage(out, correction));
     }
 
     /**
@@ -357,8 +312,6 @@ public class Deconvolution{
         switch (job) {
         case PROCESSING_1D:
             return firstDeconvolutionQuad1D(alpha);
-        case PROCESSING_2D:
-            return firstDeconvolutionQuadSimple(alpha);
         case PROCESSING_VECTOR:
             return firstDeconvolutionQuadVector(alpha);
         default:
@@ -393,46 +346,11 @@ public class Deconvolution{
         switch (job) {
         case PROCESSING_1D:
             return nextDeconvolutionQuad1D(alpha);
-        case PROCESSING_2D:
-            return nextDeconvolutionQuadSimple(alpha);
         case PROCESSING_VECTOR:
             return nextDeconvolutionQuadVector(alpha);
         default:
             throw new IllegalArgumentException("The job given does not exist");
         }
-    }
-
-    /**
-     * First deconvolution with quadratic option
-     * 
-     * @param alpha
-     * @return The bufferedImage for the input value given
-     */
-    private BufferedImage firstDeconvolutionQuadSimple(double alpha){
-        image = utils.imageToArray(true);
-        if (isPsfSplitted) {
-            psf = utils.psfToArray(true);
-        } else {
-            psf = utils.psfPadding(true);
-        }
-        utils.FFT(image);
-        utils.FFT(psf);
-        double[][] out = wiener.wienerQuad(alpha, psf, image);
-        utils.IFFT(out);
-        return(utils.arrayToImage(out, correction));
-    }
-
-    /**
-     * Will compute less than firstDeconvolutionQuad: 1FTT inverse instead
-     * of 2FFT + 1 inverse FFT
-     * 
-     * @param alpha
-     * @return The bufferedImage for the input value given
-     */
-    private BufferedImage nextDeconvolutionQuadSimple(double alpha){
-        double[][] out = wiener.wienerQuad(alpha);
-        utils.IFFT(out);
-        return(utils.arrayToImage(out, correction));
     }
 
     /**
@@ -563,6 +481,7 @@ public class Deconvolution{
             throw new IllegalArgumentException("The job given does not exist");
         }
     }
+    
     /**
      * Use the conjugate gradients to deconvoluate the image
      * 

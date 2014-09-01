@@ -36,14 +36,9 @@ import mitiv.linalg.shaped.ShapedVector;
  *
  */
 public class Filter{
-
-    double[][] FFT_PSF;
-    double[][] FFT_Image;
     int width;
     int height;
     double cc;
-    double [][]tabcc;
-
     //1D
     double[] FFT_PSF1D;
     double[] FFT_Image1D;
@@ -51,52 +46,6 @@ public class Filter{
 
     //vector
     ShapedVector image;
-
-    /**
-     * Apply the Wiener filter
-     * 
-     * @param alpha
-     * @param FFT_PSF
-     * @param FFTImage
-     * @return An array
-     */
-    public double[][] wiener(double alpha, double[][] FFT_PSF, double[][] FFTImage) {
-        this.FFT_PSF = FFT_PSF;
-        this.FFT_Image = FFTImage;
-        width = FFTImage.length;
-        height = FFTImage[0].length/2;
-        cc = FFT_PSF[0][0]*FFT_PSF[0][0]+FFT_PSF[0][1]*FFT_PSF[0][1];
-        return wiener(alpha);
-    }
-
-    /**
-     * Apply the Wiener filter
-     * Quick version (need to call Wiener with full arguments at least once) 
-     * 
-     * @param alpha
-     * @return An array
-     */
-    public double[][] wiener(double alpha) {
-        double a,b,c,d,q;
-        double[][]out = new double[width][2*height];
-        for(int j = 0; j<height; j++){
-            for(int i=0;i<width;i++){
-                a = FFT_PSF[i][2*j];
-                b = FFT_PSF[i][2*j+1];
-                c = FFT_Image[i][2*j];
-                d = FFT_Image[i][2*j+1];
-                //up = conjuguate(fft_psf)*fft_image
-                //upRe = a*c + b*d;
-                //upIm = a*d - b*c;
-                //down = abs2(fft_psf)+alpha*abs2(fft_psf(0,0));
-                q = 1.0/(a*a + b*b + cc*alpha);
-                //out = up/down
-                out[i][2*j] = (a*c + b*d)*q;
-                out[i][2*j+1] = (a*d - b*c)*q;
-            }
-        }
-        return out;
-    }
 
     /**
      * Apply the Wiener filter on 1D input
@@ -122,7 +71,7 @@ public class Filter{
      * Quick version (need to call Wiener1D with full arguments at least once) 
      * 
      * @param alpha
-     * @return An arrray
+     * @return An array
      */
     public double[] wiener1D(double alpha) {
         double a,b,c,d,q;
@@ -151,7 +100,7 @@ public class Filter{
      */
     public ShapedVector wienerVect(double alpha, ShapedVector PSF, ShapedVector image) {
         this.image = image;
-        int[]shape = ((DoubleShapedVectorSpace)image.getSpace()).cloneShape();
+        int[] shape = ((DoubleShapedVectorSpace)image.getSpace()).cloneShape();
         double[] out = wiener1D(alpha, ((DoubleShapedVector)PSF).getData(), ((DoubleShapedVector)image).getData(), shape[1], shape[0]/2);
         return ((DoubleShapedVectorSpace)image.getSpace()).wrap(out);
     }
@@ -166,63 +115,6 @@ public class Filter{
     public ShapedVector wienerVect(double alpha) {
         double[] out = wiener1D(alpha);
         return ((DoubleShapedVectorSpace)image.getSpace()).wrap(out);
-    }
-
-    /**
-     * Apply the Wiener filter with quadratic approximation on Vector
-     * 
-     * @param alpha
-     * @param FFT_PSF
-     * @param FFTImage
-     * @return An array
-     */
-    public double[][] wienerQuad(double alpha, double[][] FFT_PSF,double[][] FFTImage) {
-        this.FFT_PSF = FFT_PSF;
-        this.FFT_Image = FFTImage;
-        width = FFTImage.length;
-        height = FFTImage[0].length/2;
-        double e,f;
-        tabcc = new double[width][height];
-        for(int j = 0; j<height; j++){
-            for(int i = 0; i<width; i++){
-                if(i <= width/2){
-                    e = ((double)i/width);
-                }else{
-                    e = ((double)(i-width)/width);
-                }
-                if(j <= height/2){
-                    f = ((double)j/height);
-                }else{
-                    f = ((double)(j-height)/height);
-                }
-                tabcc[i][j] = 4*Math.PI*Math.PI*(e*e+f*f);
-            }
-        }
-        return wienerQuad(alpha);
-    }
-
-    /**
-     * Apply the Wiener filter with quadratic approximation on Vector
-     * Quick version (need to call WienerQuad with full arguments at least once)
-     * 
-     * @param alpha
-     * @return An array
-     */
-    public double[][] wienerQuad(double alpha) {
-        double a,b,c,d,q;
-        double[][]out = new double[width][2*height];
-        for(int j = 0; j<height; j++){
-            for(int i=0; i<width; i++){
-                a = FFT_PSF[i][2*j];
-                b = FFT_PSF[i][2*j+1];
-                c = FFT_Image[i][2*j];
-                d = FFT_Image[i][2*j+1];
-                q = 1.0/(a*a + b*b + tabcc[i][j]*alpha);
-                out[i][2*j] = (a*c + b*d)*q;
-                out[i][2*j+1] = (a*d - b*c)*q;
-            }
-        }
-        return out;
     }
 
     /**
@@ -269,7 +161,7 @@ public class Filter{
      */
     public double[] wienerQuad1D(double alpha) {
         double a,b,c,d,q;
-        double[]out = new double[width*2*height];
+        double[] out = new double[width*2*height];
         for(int j = 0; j < height; j++){
             for(int i = 0; i < width; i++){
                 a = FFT_PSF1D[2*i    +2*j*width];
@@ -294,7 +186,7 @@ public class Filter{
      */
     public ShapedVector wienerQuadVect(double alpha, ShapedVector PSF, ShapedVector image) {
         this.image = image;
-        int[]shape = ((DoubleShapedVectorSpace)image.getSpace()).cloneShape();
+        int[] shape = ((DoubleShapedVectorSpace)image.getSpace()).cloneShape();
         double[] out = wienerQuad1D(alpha, ((DoubleShapedVector)PSF).getData(), ((DoubleShapedVector)image).getData(), shape[1], shape[0]/2);
         return ((DoubleShapedVectorSpace)image.getSpace()).wrap(out);
     }
@@ -310,8 +202,6 @@ public class Filter{
         double[] out = wienerQuad1D(alpha);
         return ((DoubleShapedVectorSpace)image.getSpace()).wrap(out);
     }
-
-
 }
 
 /*

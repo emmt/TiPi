@@ -38,9 +38,7 @@ import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 import mitiv.utils.CommonUtils;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_1D;
-import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 
 /**
  * @author Leger Jonathan
@@ -51,9 +49,7 @@ public class DeconvUtils {
     //Buffered and double
     private BufferedImage image;
     private BufferedImage image_psf;
-    private DoubleFFT_2D fft;
     private DoubleFFT_1D fft1D;
-    private FloatFFT_2D fftFloat;
     private FloatFFT_1D fft1DFloat;
     private int sizePadding = -1;
 
@@ -252,36 +248,6 @@ public class DeconvUtils {
     /********************************** X TO ARRAY **********************************/
 
     /**
-     * Convert the image to a double array
-     * 
-     * @param isComplex is the input of size 2*size image ?
-     * @return An array
-     */
-    public double[][] imageToArray(boolean isComplex) {
-        return CommonUtils.imageToArray(image, isComplex);
-    }
-
-    /**
-     * Convert the PSF to a double array
-     * 
-     * @param isComplex is the input of size 2*size image ?
-     * @return An array
-     */
-    public double[][] psfToArray(boolean isComplex) {
-        return CommonUtils.imageToArray(image_psf, isComplex);
-    }
-
-    /**
-     * Convert image to float array
-     *
-     * @param isComplex is the input of size 2*size image ?
-     * @return An array
-     */
-    public float[][] imageToArrayFloat(boolean isComplex) {
-        return CommonUtils.imageToArrayFloat(image, isComplex);
-    }
-
-    /**
      * Convert an image to a 1D array
      * 
      * @param isComplex is the input of size 2*size image ?
@@ -317,64 +283,6 @@ public class DeconvUtils {
     }
 
     /**
-     * Front function that will apply different job on the given array
-     *
-     * @param array a complex array
-     * @param job see DeconUtils static
-     * @return A buffered image that is the image
-     */
-    public BufferedImage arrayToImage(double[][] array, int job){
-        return arrayToImage(array, job, false);
-    }
-
-    /**
-     * Front function that will apply different job on the given complex array.
-     * It may also unpad the image.
-     * 
-     * @param array
-     * @param job see CommonUtils static
-     * @param isImagePadded
-     * @return A buffered image that is the image
-     */
-    public BufferedImage arrayToImage(double[][] array, int job, boolean isImagePadded){
-        if (isImagePadded) {
-            BufferedImage tmp =  CommonUtils.arrayToImage(array, job, true);
-            return CommonUtils.imageUnPad(tmp, sizePadding);
-        } else {
-            return CommonUtils.arrayToImage(array, job, true);
-        }
-    }
-
-    /**
-     * Front function that will apply different job on the given complex array
-     *
-     * @param array a complex array
-     * @param job
-     * @return A buffered image that is the image
-     */
-    public BufferedImage arrayToImage(float[][] array, int job){
-        return arrayToImage(array, job, false);
-    }
-
-    /**
-     * Front function that will apply different job on the given complex array.
-     * It may also unpad the image.
-     *
-     * @param array a complex array
-     * @param job
-     * @param isImagePadded
-     * @return A buffered image that is the image
-     */
-    public BufferedImage arrayToImage(float[][] array, int job, boolean isImagePadded){
-        if (isImagePadded) {
-            BufferedImage tmp =  CommonUtils.arrayToImage(array, job, true);
-            return CommonUtils.imageUnPad(tmp, sizePadding);
-        } else {
-            return CommonUtils.arrayToImage(array, job, true);
-        }
-    }
-
-    /**
      * Front function that will apply different job on the given complex array
      *
      * @param array a complex array
@@ -407,73 +315,11 @@ public class DeconvUtils {
         }
     }
 
-    private void scale(double[][] array){
-        double scale = 1.0/(width*height);
-        for (int j = 0; j < array[0].length; j++) {
-            for (int i = 0; i < array.length; i++) {
-                array[i][j]*=scale;
-            }
-        }
-    }
-
     private void scale(float[] array){
         double scale = 1.0/(width*height);
         for (int i = 0; i < array.length; i++) {
             array[i]*=scale;
         }
-    }
-
-    private void scale(float[][] array){
-        double scale = 1.0/(width*height);
-        for (int j = 0; j < array[0].length; j++) {
-            for (int i = 0; i < array.length; i++) {
-                array[i][j]*=scale;
-            }
-        }
-    }
-
-    /**
-     * Make in place computation of the FFT
-     * 
-     * @param array
-     */
-    public void FFT(double[][] array) {
-        if(fft == null){
-            fft = new DoubleFFT_2D(width, height);
-        }
-        fft.realForwardFull(array);
-    }
-
-    /**
-     * FFT using float with 2D float array
-     *
-     * @param array
-     */
-    public void FFT(float[][] array) {
-        if(fftFloat == null){
-            fftFloat = new FloatFFT_2D(width, height);
-        }
-        fftFloat.realForwardFull(array);
-    }
-
-    /**
-     * Make in place computation of the inverse FFT
-     * 
-     * @param array
-     */
-    public void IFFT(double[][] array) {
-        fft.complexInverse(array, false);
-        scale(array);
-    }
-
-    /**
-     * inverse FFT using float with 2D float array
-     *
-     * @param array
-     */
-    public void IFFT(float[][] array) {
-        fftFloat.complexInverse(array, false);
-        scale(array);
     }
 
     /**
@@ -565,15 +411,6 @@ public class DeconvUtils {
     }
 
     /********************************** PSF PADDING **********************************/
-
-    /**
-     * Pad the PSF to the size of the image and split it.
-     * @param isComplex
-     * @return An array
-     */
-    public double[][] psfPadding(boolean isComplex) {
-        return CommonUtils.psfPadding(image, image_psf, isComplex);
-    }
 
     /**
      * Pad the PSF to the size of the image and split it.
