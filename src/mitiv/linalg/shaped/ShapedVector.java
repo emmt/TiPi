@@ -42,6 +42,11 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
     public ShapedVectorSpace getOwner() {
         return (ShapedVectorSpace)space;
     }
+    
+
+    public ShapedVectorSpace getSpace(){
+        return getOwner();
+    }
 
     @Override
     public final int getType() {
@@ -67,7 +72,6 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
     public final int getDimension(int k) {
         return descr.getDimension(k);
     }
-
 }
 
 /*

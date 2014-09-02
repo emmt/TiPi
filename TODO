@@ -8,11 +8,7 @@ John
     The alpha value from slider is not enough to change image, need eric
 
 Eric
-    move linalg.Utils to linalg.LinalgUtils (idea: each Utils should be called ClassUtils except mitiv.utils)
 
 Discussion
     Add .classpath file to solve the probleme of src package (not a perfect solution)
-    Should we create interface for regul/optim (ask many others questions)
     (John) In functions 1D as 2D do we ask width, height or only one and we guess the other ?
-    Retro compatibility with java 6: ie no switch on string
-    Should we update old functions with vectors

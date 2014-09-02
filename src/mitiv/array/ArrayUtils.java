@@ -34,8 +34,6 @@ import javax.imageio.ImageIO;
 
 import mitiv.base.Shaped;
 import mitiv.linalg.shaped.DoubleShapedVector;
-import devel.eric.trash.Double2D;
-import devel.eric.trash.Double3D;
 
 public class ArrayUtils {
 
@@ -413,7 +411,6 @@ public class ArrayUtils {
         try {
             ImageIO.write(buf, type, new File(fileName));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

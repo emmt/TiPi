@@ -87,57 +87,21 @@ public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, T
         return descr.getDimension(k);
     }
 
-    /*
-    @Override
-    public Vector create() {
-        // TODO Auto-generated method stub
-        return null;
+    public ShapedVector clone(ShapedVector vec) {
+        check(vec);
+        return _clone(vec);
     }
 
-    @Override
-    public Vector create(double alpha) {
-        // TODO Auto-generated method stub
-        return null;
+    protected ShapedVector _clone(ShapedVector vec) {
+        ShapedVector cpy;
+        if (vec.getType() == DOUBLE) {
+            cpy = new DoubleShapedVector((DoubleShapedVectorSpace)vec.getOwner());
+        } else {
+            cpy = new FloatShapedVector((FloatShapedVectorSpace)vec.getOwner());
+        }
+        _copy(vec, cpy);
+        return cpy;
     }
-
-    @Override
-    protected double _dot(Vector x, Vector y) throws IncorrectSpaceException {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    protected double _norm1(Vector x) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    protected double _normInf(Vector x) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    protected void _axpby(double alpha, Vector x, double beta, Vector y,
-            Vector dst) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected void _axpbypcz(double alpha, Vector x, double beta, Vector y,
-            double gamma, Vector z, Vector dst) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected void _fill(Vector x, double alpha) {
-        // TODO Auto-generated method stub
-
-    }
-     */
 }
 
 

@@ -40,21 +40,40 @@ import javax.swing.JLabel;
 
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MathUtils.
+ */
 public class MathUtils {
 
+    /** The Constant COLORMAP_GRAYSCALE. */
     public static final int COLORMAP_GRAYSCALE = 0;
+    
+    /** The Constant COLORMAP_JET. */
     public static final int COLORMAP_JET = 1;
+    
+    /** The Constant GAUSSIAN. */
     public static final int GAUSSIAN = 2;
+    
+    /** The Constant AVERAGE. */
     public static final int AVERAGE = 3;
+    
+    /** The Constant PREWITT. */
     public static final int PREWITT = 4;
+    
+    /** The Constant SOBEL. */
     public static final int SOBEL = 5;
+    
+    /** The Constant KIRSH. */
     public static final int KIRSH = 6;
+    
+    /** The Constant DISK. */
     public static final int DISK = 7;
 
     /**
      * Check if the number is even. 
      *
-     * @param  x  an integer value
+     * @param x the x
      * @return return a boolean
      */
     public static boolean even(int x)
@@ -65,7 +84,7 @@ public class MathUtils {
     /**
      * Returns the factorial of a number. 
      *
-     * @param  n  an integer value
+     * @param n the n
      * @return the factorial of the number
      */
     public static long factorial(long n)
@@ -225,6 +244,12 @@ public class MathUtils {
         return k;
     }
 
+    /**
+     * Fft dist.
+     *
+     * @param L the l
+     * @return the double[]
+     */
     public static double[] fftDist(int L)
     {
         double x[] = new double[L];
@@ -264,9 +289,10 @@ public class MathUtils {
     /**
      * Returns array of N doubles equally spaced from START to STOP.
      *
-     * @param W width
-     * @param H height
-     * @return Euclidian lenght of spatial frequencies in frequel units for a
+     * @param begin the begin
+     * @param end the end
+     * @param scale the scale
+     * @return Euclidian length of spatial frequencies in frequel units for a
      * FFT of dimensions [W,H].
      */
     public static double[] span(double begin, double end, double scale)
@@ -309,7 +335,7 @@ public class MathUtils {
 
     /**
      * Returns "index generator" list -- an array of longs running from
-     * START to STOP with a step of 1
+     * START to STOP with a step of 1.
      *
      * @param start array's first value
      * @param stop array's end value
@@ -335,7 +361,7 @@ public class MathUtils {
 
     /**
      * Returns "index generator" list -- an array of longs running from
-     * START to STOP with a SCALE
+     * START to STOP with a SCALE.
      *
      * @param start array's first value
      * @param stop array's end value
@@ -362,11 +388,12 @@ public class MathUtils {
         }
         return tab;
     }
+    
     /**
      * Returns array of N doubles equally spaced from START to STOP.
      *
      * @param start the begining of the array
-     * @param end of the array
+     * @param stop the stop
      * @param n number of element in the array
      * @return array of N doubles equally spaced from START to STOP.
      */
@@ -403,7 +430,9 @@ public class MathUtils {
 
     /**
      * Scale array values into a 8bit (between 0 and 255).
+     *
      * @param A array of double to convert in 8bit
+     * @return the double[][]
      */
     public static double[][] scaleArrayTo8bit(double[][] A)
     {
@@ -427,6 +456,7 @@ public class MathUtils {
     /**
      * Scale array values into a 8bit (between 0 and 255).
      *
+     * @param A the a
      */
     public static void uint8(double[][] A)
     {
@@ -445,6 +475,11 @@ public class MathUtils {
     }
 
     /* converts the image in range [0, 1] */
+    /**
+     * Im2double.
+     *
+     * @param a the a
+     */
     public static void im2double(double[][] a)
     {
         int H = a.length;
@@ -461,6 +496,12 @@ public class MathUtils {
         }
     }
 
+    /**
+     * Conj1.
+     *
+     * @param A the a
+     * @return the double[][]
+     */
     public static double[][] conj1(double[][] A)
     {
         int H = A.length;
@@ -476,6 +517,11 @@ public class MathUtils {
         return conjA;
     }
 
+    /**
+     * Conj2.
+     *
+     * @param A the a
+     */
     public static void conj2(double[][] A)
     {
         int H = A.length;
@@ -511,7 +557,7 @@ public class MathUtils {
     /**
      * Returns the squared absolute value of 1d array.
      *
-     * @param IN array
+     * @param x the x
      * @return square absolute value.
      */
     public static double[] abs2(double[] x)
@@ -567,6 +613,9 @@ public class MathUtils {
 
     /**
      * Compute the maximum value of a 1d array.
+     *
+     * @param matrix the matrix
+     * @return the double
      */
     public static double max(double[] matrix)
     {
@@ -583,6 +632,9 @@ public class MathUtils {
 
     /**
      * Compute the maximum value of a 2d array.
+     *
+     * @param matrix the matrix
+     * @return the double
      */
     public static double max(double[][] matrix) {
         double max = matrix[0][0];
@@ -596,11 +648,21 @@ public class MathUtils {
         return max;
     }
 
+    /**
+     * Prints the array.
+     *
+     * @param A the a
+     */
     public static void printArray(double A[])
     {   
         System.out.println(Arrays.toString(A));
     }
 
+    /**
+     * Prints the array.
+     *
+     * @param A the a
+     */
     public static void printArray(double A[][])
     {	
         int H = A.length;
@@ -610,10 +672,10 @@ public class MathUtils {
     }
 
     /**
-     * Display image of an 2d array
-     * 
+     * Display image of an 2d array.
+     *
      * @param A array to display
-     * @param colorMap 0 for a grayscale display and 1 with a colormap 
+     * @param colorMap 0 for a grayscale display and 1 with a colormap
      */
     public static void pli(double A[][], int colorMap)
     {   
@@ -662,7 +724,10 @@ public class MathUtils {
     /**
      * Display image of an 2d array
      * 
-     * Different from the "pli" function, uses "naviguablePanel" for a better displaying
+     * Different from the "pli" function, uses "naviguablePanel" for a better displaying.
+     *
+     * @param A the a
+     * @param colorMap the color map
      */
     public static void pli2(double A[][], int colorMap)
     {	
@@ -706,7 +771,8 @@ public class MathUtils {
      * "frequel" scale along both axis (SCALE is a scalar) or along each axis
      * (SCALE is a 2-element vector: SCALE=[XSCALE,YSCALE]); by default,
      * SCALE=[1.0, 1.0].
-     * 
+     *
+     * @param A the a
      */
     public static void fftPli2(double A[][])
     {	
@@ -721,7 +787,8 @@ public class MathUtils {
      * "frequel" scale along both axis (SCALE is a scalar) or along each axis
      * (SCALE is a 2-element vector: SCALE=[XSCALE,YSCALE]); by default,
      * SCALE=[1.0, 1.0].
-     * 
+     *
+     * @param A the a
      */
     public static void fftPli(double A[][])
     {	
@@ -732,8 +799,10 @@ public class MathUtils {
 
 
     /**
-     * Shift zero-frequency component to center of spectrum
-     * 
+     * Shift zero-frequency component to center of spectrum.
+     *
+     * @param A the a
+     * @return the double[][]
      */
     public static double[][] fftShift(double A[][])
     {	
@@ -776,9 +845,10 @@ public class MathUtils {
     }
 
     /**
-     * Convolution using fast fourier transform
-     * @param img
-     * @param h 
+     * Convolution using fast fourier transform.
+     *
+     * @param img the img
+     * @param h the h
      * @return convolution between img and h
      */
     public static double[][] fftConv(double img[][], double h[][])
@@ -810,7 +880,10 @@ public class MathUtils {
 
     /**
      * Compute an array of real value in array of complex
-     * value thus the dimension will be [H,2*W]
+     * value thus the dimension will be [H,2*W].
+     *
+     * @param a the a
+     * @return the double[][]
      */
     public static double[][] real2complex(double[][] a)
     {
@@ -828,7 +901,10 @@ public class MathUtils {
     }
 
     /**
-     * Average or mean value of array
+     * Average or mean value of array.
+     *
+     * @param a the a
+     * @return the double
      */
     public static double avg(double[] a)
     {
@@ -836,7 +912,10 @@ public class MathUtils {
     }
 
     /**
-     * Average or mean value of array
+     * Average or mean value of array.
+     *
+     * @param a the a
+     * @return the double
      */
     public static double avg(long[] a)
     {
@@ -844,7 +923,10 @@ public class MathUtils {
     }
 
     /**
-     * Average or mean value of array
+     * Average or mean value of array.
+     *
+     * @param a the a
+     * @return the double
      */
     public static double avg(double[][] a)
     {
@@ -854,7 +936,10 @@ public class MathUtils {
     }
 
     /**
-     * Sum of the values in the array
+     * Sum of the values in the array.
+     *
+     * @param a the a
+     * @return the double
      */
     public static double sum(double a[])
     {
@@ -868,7 +953,10 @@ public class MathUtils {
     }
 
     /**
-     * Sum of the values in the array
+     * Sum of the values in the array.
+     *
+     * @param array the array
+     * @return the long
      */
     public static long sum(long array[])
     {
@@ -882,7 +970,10 @@ public class MathUtils {
     }
 
     /**
-     * Sum of the values in the array
+     * Sum of the values in the array.
+     *
+     * @param array the array
+     * @return the double
      */
     public static double sum(double array[][])
     {
@@ -896,7 +987,11 @@ public class MathUtils {
     }
 
     /**
-     * Inner product
+     * Inner product.
+     *
+     * @param a the a
+     * @param b the b
+     * @return the double[]
      */
     public static double[] innerProd(double a[], double b[])
     {
@@ -914,6 +1009,11 @@ public class MathUtils {
      * Hadamard (also known as the element-wise product)
      * product A ○ B is a matrix of the same dimensions,
      * the i, j element of A is multiplied with the i, j element of B.
+     *
+     * @param a the a
+     * @param b the b
+     * @param isComplex the is complex
+     * @return the double[][]
      */
     public static double[][] hadamardProd(double a[][], double b[][], int isComplex)
     {
@@ -947,7 +1047,12 @@ public class MathUtils {
 
     //FIXME faire un ax + y
     /**
-     * Sum of the values in the array
+     * Sum of the values in the array.
+     *
+     * @param a the a
+     * @param b the b
+     * @param sign the sign
+     * @return the double[][]
      */
     public static double[][] sumArrays(double a[][], double b[][], String sign)
     {
@@ -972,7 +1077,10 @@ public class MathUtils {
     }
 
     /**
-     * Standard deviation of the matrix σ
+     * Standard deviation of the matrix σ.
+     *
+     * @param a the a
+     * @return the double
      */
     public static double std(double a[][])
     {
@@ -981,7 +1089,10 @@ public class MathUtils {
     }
 
     /**
-     * Variance of the matrix 
+     * Variance of the matrix.
+     *
+     * @param a the a
+     * @return the double
      */
     public static double var(double a[][])
     {
@@ -993,7 +1104,9 @@ public class MathUtils {
 
     /**
      * Some information about the matrix
-     * height, width, minimum, maximum, average, variance, standard deviation
+     * height, width, minimum, maximum, average, variance, standard deviation.
+     *
+     * @param a the a
      */
     public static void stat(double a[][])
     {
@@ -1004,12 +1117,13 @@ public class MathUtils {
 
     //FIXME add poisson
     /**
-     * Add noise to image
+     * Add noise to image.
+     *
      * @param img image
      * @param type GAUSSIAN : for gaussian white noise, POISSON
      * @param arg1 standard deviation of the gaussian noise
      * @param arg2 mean of the gaussian noise
-     * @return 
+     * @return the double[][]
      */
     public static double[][] imnoise(double[][] img, int type, double arg1, double arg2)
     {
@@ -1040,6 +1154,12 @@ public class MathUtils {
         return imnoise;
     }
 
+    /**
+     * Fspecial average.
+     *
+     * @param arg1 the arg1
+     * @return the double[][]
+     */
     public static double[][] fspecialAverage(int[] arg1)
     { 
         double[][] ha = new double[arg1[0]][arg1[1]];
@@ -1057,10 +1177,11 @@ public class MathUtils {
     }
 
     /**
-     * Create predefined 2-D filter
+     * Create predefined 2-D filter.
+     *
      * @param type type of the filter
-     * @param arg1 
-     * @return 
+     * @param arg1 the arg1
+     * @return the double[][]
      */
     public static double[][] fspecial(int type, int arg1)
     { 
@@ -1101,11 +1222,12 @@ public class MathUtils {
     }
 
     /**
-     * Create predefined 2-D filter
+     * Create predefined 2-D filter.
+     *
      * @param type type of the filter
      * @param arg1 Height
      * @param arg2 Width
-     * @return 
+     * @return the double[][]
      */
     public static double[][] fspecial(int type, int[] arg1, double arg2)
     { 
@@ -1146,10 +1268,11 @@ public class MathUtils {
     }
 
     /**
-     * Create predefined 3*3 filter kernel
+     * Create predefined 3*3 filter kernel.
+     *
      * @param type type of the filter : AVERAGE, DISK,
      * SOBEL, PREWITT, KIRSH
-     * @return 
+     * @return the double[][]
      */
     public static double[][] fspecial(int type)
     { 
@@ -1203,6 +1326,12 @@ public class MathUtils {
         }
     }
 
+    /**
+     * Write stat.
+     *
+     * @param a the a
+     * @param name the name
+     */
     public static void writeStat(double a[][], String name)
     {
         BufferedWriter bw;
@@ -1226,6 +1355,12 @@ public class MathUtils {
         }
     }
 
+    /**
+     * X y2 xz.
+     *
+     * @param inXY the in xy
+     * @return the double[][][]
+     */
     public static double[][][] XY2XZ(double inXY[][][])
     {
         int Nz = inXY.length;
@@ -1243,6 +1378,12 @@ public class MathUtils {
         return outXZ;
     }
 
+    /**
+     * Cum sum.
+     *
+     * @param tab the tab
+     * @return the double[]
+     */
     public static double[] cumSum(double tab[])
     {
         int L = tab.length;

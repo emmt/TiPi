@@ -126,13 +126,14 @@ public class LeftHandSideMatrix extends LinearOperator {
     }
 
     /**
-     * 
+     * @return double value mu
      */
     public double getMu() {
         return this.mu;
     }
 
     /**
+     * @param mu Set the mu value
      * 
      */
     public void setMu(double mu) {

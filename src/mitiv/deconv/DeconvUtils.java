@@ -30,17 +30,15 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import mitiv.linalg.Vector;
-import mitiv.linalg.VectorSpace;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
+import mitiv.linalg.shaped.ShapedVector;
+import mitiv.linalg.shaped.ShapedVectorSpace;
 import mitiv.utils.CommonUtils;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_1D;
-import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 
 /**
  * @author Leger Jonathan
@@ -51,17 +49,15 @@ public class DeconvUtils {
     //Buffered and double
     private BufferedImage image;
     private BufferedImage image_psf;
-    private DoubleFFT_2D fft;
     private DoubleFFT_1D fft1D;
-    private FloatFFT_2D fftFloat;
     private FloatFFT_1D fft1DFloat;
     private int sizePadding = -1;
 
     //Vector part
-    private Vector imageVect;
-    private Vector imagePsfVect;
-    private VectorSpace imageSpace;
-    private VectorSpace imageSpaceComplex;
+    private ShapedVector imageVect;
+    private ShapedVector imagePsfVect;
+    private ShapedVectorSpace imageSpace;
+    private ShapedVectorSpace imageSpaceComplex;
     private boolean single = true;
     boolean isComplex;
 
@@ -215,7 +211,7 @@ public class DeconvUtils {
      * 
      * @return A vector
      */
-    public Vector cloneImageVect(){
+    public ShapedVector cloneImageVect(){
         return imageVect.getSpace().clone(imageVect);
     }
 
@@ -224,7 +220,7 @@ public class DeconvUtils {
      * 
      * @return A vector
      */
-    public Vector clonePsfVect(){
+    public ShapedVector clonePsfVect(){
         return imagePsfVect.getSpace().clone(imagePsfVect);
     }
 
@@ -233,7 +229,7 @@ public class DeconvUtils {
      * 
      * @return A vector
      */
-    public Vector getPsfPadVect(){
+    public ShapedVector getPsfPadVect(){
         return CommonUtils.psfPadding1D(imageSpace,imageSpaceComplex, imagePsfVect, single, isComplex);
     }
 
@@ -245,41 +241,11 @@ public class DeconvUtils {
      * @param isComplex is the input of size 2*size image ?
      * @return A buffered image that is the image
      */
-    public BufferedImage arrayToImage(Vector vector, int correction,boolean isComplex){
+    public BufferedImage arrayToImage(ShapedVector vector, int correction,boolean isComplex){
         return CommonUtils.vectorToImage(imageSpace, vector, correction ,single, isComplex);
     }
 
     /********************************** X TO ARRAY **********************************/
-
-    /**
-     * Convert the image to a double array
-     * 
-     * @param isComplex is the input of size 2*size image ?
-     * @return An array
-     */
-    public double[][] imageToArray(boolean isComplex) {
-        return CommonUtils.imageToArray(image, isComplex);
-    }
-
-    /**
-     * Convert the PSF to a double array
-     * 
-     * @param isComplex is the input of size 2*size image ?
-     * @return An array
-     */
-    public double[][] psfToArray(boolean isComplex) {
-        return CommonUtils.imageToArray(image_psf, isComplex);
-    }
-
-    /**
-     * Convert image to float array
-     *
-     * @param isComplex is the input of size 2*size image ?
-     * @return An array
-     */
-    public float[][] imageToArrayFloat(boolean isComplex) {
-        return CommonUtils.imageToArrayFloat(image, isComplex);
-    }
 
     /**
      * Convert an image to a 1D array
@@ -317,64 +283,6 @@ public class DeconvUtils {
     }
 
     /**
-     * Front function that will apply different job on the given array
-     *
-     * @param array a complex array
-     * @param job see DeconUtils static
-     * @return A buffered image that is the image
-     */
-    public BufferedImage arrayToImage(double[][] array, int job){
-        return arrayToImage(array, job, false);
-    }
-
-    /**
-     * Front function that will apply different job on the given complex array.
-     * It may also unpad the image.
-     * 
-     * @param array
-     * @param job see CommonUtils static
-     * @param isImagePadded
-     * @return A buffered image that is the image
-     */
-    public BufferedImage arrayToImage(double[][] array, int job, boolean isImagePadded){
-        if (isImagePadded) {
-            BufferedImage tmp =  CommonUtils.arrayToImage(array, job, true);
-            return CommonUtils.imageUnPad(tmp, sizePadding);
-        } else {
-            return CommonUtils.arrayToImage(array, job, true);
-        }
-    }
-
-    /**
-     * Front function that will apply different job on the given complex array
-     *
-     * @param array a complex array
-     * @param job
-     * @return A buffered image that is the image
-     */
-    public BufferedImage arrayToImage(float[][] array, int job){
-        return arrayToImage(array, job, false);
-    }
-
-    /**
-     * Front function that will apply different job on the given complex array.
-     * It may also unpad the image.
-     *
-     * @param array a complex array
-     * @param job
-     * @param isImagePadded
-     * @return A buffered image that is the image
-     */
-    public BufferedImage arrayToImage(float[][] array, int job, boolean isImagePadded){
-        if (isImagePadded) {
-            BufferedImage tmp =  CommonUtils.arrayToImage(array, job, true);
-            return CommonUtils.imageUnPad(tmp, sizePadding);
-        } else {
-            return CommonUtils.arrayToImage(array, job, true);
-        }
-    }
-
-    /**
      * Front function that will apply different job on the given complex array
      *
      * @param array a complex array
@@ -407,73 +315,11 @@ public class DeconvUtils {
         }
     }
 
-    private void scale(double[][] array){
-        double scale = 1.0/(width*height);
-        for (int j = 0; j < array[0].length; j++) {
-            for (int i = 0; i < array.length; i++) {
-                array[i][j]*=scale;
-            }
-        }
-    }
-
     private void scale(float[] array){
         double scale = 1.0/(width*height);
         for (int i = 0; i < array.length; i++) {
             array[i]*=scale;
         }
-    }
-
-    private void scale(float[][] array){
-        double scale = 1.0/(width*height);
-        for (int j = 0; j < array[0].length; j++) {
-            for (int i = 0; i < array.length; i++) {
-                array[i][j]*=scale;
-            }
-        }
-    }
-
-    /**
-     * Make in place computation of the FFT
-     * 
-     * @param array
-     */
-    public void FFT(double[][] array) {
-        if(fft == null){
-            fft = new DoubleFFT_2D(width, height);
-        }
-        fft.realForwardFull(array);
-    }
-
-    /**
-     * FFT using float with 2D float array
-     *
-     * @param array
-     */
-    public void FFT(float[][] array) {
-        if(fftFloat == null){
-            fftFloat = new FloatFFT_2D(width, height);
-        }
-        fftFloat.realForwardFull(array);
-    }
-
-    /**
-     * Make in place computation of the inverse FFT
-     * 
-     * @param array
-     */
-    public void IFFT(double[][] array) {
-        fft.complexInverse(array, false);
-        scale(array);
-    }
-
-    /**
-     * inverse FFT using float with 2D float array
-     *
-     * @param array
-     */
-    public void IFFT(float[][] array) {
-        fftFloat.complexInverse(array, false);
-        scale(array);
     }
 
     /**
@@ -527,11 +373,11 @@ public class DeconvUtils {
      * 
      * @param vector
      */
-    public void FFT1D(Vector vector) {
+    public void FFT1D(ShapedVector vector) {
         if (single) {
             FloatShapedVector vectorFloat = (FloatShapedVector)vector;
             float[] array = vectorFloat.getData();
-            int size = ((FloatShapedVectorSpace)imageSpace).getNumber();
+            int size = imageSpace.getNumber();
             if(fft1DFloat == null){
                 fft1DFloat = new FloatFFT_1D(size);
             }
@@ -539,7 +385,7 @@ public class DeconvUtils {
         } else {
             DoubleShapedVector vectorDouble = (DoubleShapedVector)vector;
             double[] array = vectorDouble.getData();
-            int size = ((DoubleShapedVectorSpace)imageSpace).getNumber();
+            int size = imageSpace.getNumber();
             if(fft1D == null){
                 fft1D = new DoubleFFT_1D(size);
             }
@@ -552,7 +398,7 @@ public class DeconvUtils {
      * 
      * @param vector
      */
-    public void IFFT1D(Vector vector) {
+    public void IFFT1D(ShapedVector vector) {
         if (single) {
             FloatShapedVector vectorFloat = (FloatShapedVector)vector;
             float[] array = vectorFloat.getData();
@@ -565,15 +411,6 @@ public class DeconvUtils {
     }
 
     /********************************** PSF PADDING **********************************/
-
-    /**
-     * Pad the PSF to the size of the image and split it.
-     * @param isComplex
-     * @return An array
-     */
-    public double[][] psfPadding(boolean isComplex) {
-        return CommonUtils.psfPadding(image, image_psf, isComplex);
-    }
 
     /**
      * Pad the PSF to the size of the image and split it.
