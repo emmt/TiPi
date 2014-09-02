@@ -142,6 +142,30 @@ public abstract class Vector {
     public abstract void set(int i, double value) throws IndexOutOfBoundsException;
 
     /**
+     * Create a clone of the vector.
+     *
+     * @return A clone of the vector.
+     */
+    @Override
+    public Vector clone() {
+        return space._clone(this);
+    }
+
+    /**
+     * Copy the contents of the vector into another one.
+     *
+     * @param dst - The destination vector.
+     * @throws IncorrectSpaceException DST must belong to the vector space of the source vector.
+     */
+    public final void copy(Vector dst)
+            throws IncorrectSpaceException {
+        if (dst != this) {
+            space.check(dst);
+            space._copy(this, dst);
+        }
+    }
+
+    /**
      * Compute the inner product of this vector with another vector.
      *
      * @param other - Another vector of this vector space.
