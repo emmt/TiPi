@@ -48,7 +48,7 @@ public class Deconvolution{
      */
     public static final int PROCESSING_VECTOR = 2;
 
-    private final int standardProcessing = PROCESSING_VECTOR;
+    private final int standardProcessing = PROCESSING_1D;
 
     boolean verbose = false;
 
@@ -67,6 +67,8 @@ public class Deconvolution{
     DoubleShapedVector w;
     LinearDeconvolver linDeconv;
     int outputValue = LinearConjugateGradient.CONVERGED;
+    
+    static boolean forceVectorUsage = false;
 
     /**
      * Initial constructor that take the image and the PSF as parameters
@@ -77,7 +79,7 @@ public class Deconvolution{
      * @param PSF can be path, bufferedImage or IcyBufferedImage
      */
     public Deconvolution(Object image, Object PSF){
-        this(image,PSF,CommonUtils.SCALE,false);
+        this(image,PSF,CommonUtils.SCALE,forceVectorUsage);
     }
 
 
@@ -91,7 +93,7 @@ public class Deconvolution{
      * @param correction see static {@link CommonUtils}
      */
     public Deconvolution(Object image, Object PSF, int correction){
-        this(image,PSF,correction,false);
+        this(image,PSF,correction,forceVectorUsage);
     }
 
     /**

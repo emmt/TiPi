@@ -62,13 +62,12 @@ public class mitivCLI {
     static String outputImage = "DeconvoluatedImage.png";
 
     private static boolean isIn(String element, String[] tab){
-        boolean ispresent = false;
         for (int i = 0; i < tab.length; i++) {
             if (tab[i].compareTo(element) == 0) {
-                ispresent = true;
+                return true;
             }
         }
-        return ispresent;
+        return false;
     }
 
     private static void checkArgs(){
