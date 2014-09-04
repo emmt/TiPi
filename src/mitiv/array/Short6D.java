@@ -46,6 +46,10 @@ public abstract class Short6D extends Array6D implements ShortArray {
         super(shape, cloneShape);
     }
 
+    protected Short6D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

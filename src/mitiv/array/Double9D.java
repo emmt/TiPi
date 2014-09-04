@@ -46,6 +46,10 @@ public abstract class Double9D extends Array9D implements DoubleArray {
         super(shape, cloneShape);
     }
 
+    protected Double9D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

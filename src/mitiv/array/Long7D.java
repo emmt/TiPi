@@ -46,6 +46,10 @@ public abstract class Long7D extends Array7D implements LongArray {
         super(shape, cloneShape);
     }
 
+    protected Long7D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

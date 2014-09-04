@@ -46,6 +46,10 @@ public abstract class Float8D extends Array8D implements FloatArray {
         super(shape, cloneShape);
     }
 
+    protected Float8D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

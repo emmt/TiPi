@@ -46,6 +46,10 @@ public abstract class Short9D extends Array9D implements ShortArray {
         super(shape, cloneShape);
     }
 
+    protected Short9D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

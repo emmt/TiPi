@@ -25,6 +25,7 @@
 
 package mitiv.array;
 
+import mitiv.base.Shaped;
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
 import mitiv.random.ShortGenerator;

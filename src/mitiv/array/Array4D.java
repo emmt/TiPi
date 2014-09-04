@@ -58,6 +58,10 @@ public abstract class Array4D implements Shaped {
         this.shape = new int[]{dim1,dim2,dim3,dim4};
     }
 
+    protected Array4D(int[] shape) {
+        this(shape, true);
+    }
+
     protected Array4D(int[] shape, boolean cloneShape) {
         if (shape == null || shape.length != rank ||
                 (dim1 = shape[0]) < 1 ||

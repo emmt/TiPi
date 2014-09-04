@@ -46,6 +46,10 @@ public abstract class Float3D extends Array3D implements FloatArray {
         super(shape, cloneShape);
     }
 
+    protected Float3D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

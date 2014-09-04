@@ -46,6 +46,10 @@ public abstract class Double5D extends Array5D implements DoubleArray {
         super(shape, cloneShape);
     }
 
+    protected Double5D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

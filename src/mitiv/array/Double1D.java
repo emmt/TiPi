@@ -46,6 +46,10 @@ public abstract class Double1D extends Array1D implements DoubleArray {
         super(shape, cloneShape);
     }
 
+    protected Double1D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

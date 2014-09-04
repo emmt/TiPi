@@ -46,6 +46,10 @@ public abstract class Short2D extends Array2D implements ShortArray {
         super(shape, cloneShape);
     }
 
+    protected Short2D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

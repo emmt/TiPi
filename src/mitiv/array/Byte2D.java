@@ -46,6 +46,10 @@ public abstract class Byte2D extends Array2D implements ByteArray {
         super(shape, cloneShape);
     }
 
+    protected Byte2D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

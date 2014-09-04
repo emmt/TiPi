@@ -46,6 +46,10 @@ public abstract class Long9D extends Array9D implements LongArray {
         super(shape, cloneShape);
     }
 
+    protected Long9D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

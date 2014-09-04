@@ -46,6 +46,10 @@ public abstract class Byte5D extends Array5D implements ByteArray {
         super(shape, cloneShape);
     }
 
+    protected Byte5D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

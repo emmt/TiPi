@@ -46,6 +46,10 @@ public abstract class Double8D extends Array8D implements DoubleArray {
         super(shape, cloneShape);
     }
 
+    protected Double8D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

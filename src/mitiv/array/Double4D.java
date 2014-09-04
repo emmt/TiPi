@@ -46,6 +46,10 @@ public abstract class Double4D extends Array4D implements DoubleArray {
         super(shape, cloneShape);
     }
 
+    protected Double4D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

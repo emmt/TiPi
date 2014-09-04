@@ -56,6 +56,10 @@ public abstract class Array3D implements Shaped {
         this.shape = new int[]{dim1,dim2,dim3};
     }
 
+    protected Array3D(int[] shape) {
+        this(shape, true);
+    }
+
     protected Array3D(int[] shape, boolean cloneShape) {
         if (shape == null || shape.length != rank ||
                 (dim1 = shape[0]) < 1 ||

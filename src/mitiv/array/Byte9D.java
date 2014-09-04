@@ -46,6 +46,10 @@ public abstract class Byte9D extends Array9D implements ByteArray {
         super(shape, cloneShape);
     }
 
+    protected Byte9D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

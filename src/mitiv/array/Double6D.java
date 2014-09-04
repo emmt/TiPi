@@ -46,6 +46,10 @@ public abstract class Double6D extends Array6D implements DoubleArray {
         super(shape, cloneShape);
     }
 
+    protected Double6D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

@@ -60,6 +60,10 @@ public abstract class Array5D implements Shaped {
         this.shape = new int[]{dim1,dim2,dim3,dim4,dim5};
     }
 
+    protected Array5D(int[] shape) {
+        this(shape, true);
+    }
+
     protected Array5D(int[] shape, boolean cloneShape) {
         if (shape == null || shape.length != rank ||
                 (dim1 = shape[0]) < 1 ||

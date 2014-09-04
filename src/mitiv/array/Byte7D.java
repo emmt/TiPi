@@ -46,6 +46,10 @@ public abstract class Byte7D extends Array7D implements ByteArray {
         super(shape, cloneShape);
     }
 
+    protected Byte7D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

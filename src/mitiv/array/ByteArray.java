@@ -25,6 +25,7 @@
 
 package mitiv.array;
 
+import mitiv.base.Shaped;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;

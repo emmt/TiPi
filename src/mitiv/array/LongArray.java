@@ -25,6 +25,7 @@
 
 package mitiv.array;
 
+import mitiv.base.Shaped;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.random.LongGenerator;
