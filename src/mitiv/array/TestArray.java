@@ -26,8 +26,7 @@
 package mitiv.array;
 
 import mitiv.random.MersenneTwisterGenerator;
-import devel.eric.random.NormalDistribution;
-import devel.eric.trash.Float3D;
+import mitiv.random.NormalDistribution;
 
 public class TestArray {
     public static void main(String[] args) {
