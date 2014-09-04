@@ -239,7 +239,7 @@ public class MdaFormat {
             } else {
                 throw new DataFormatException(ex.getMessage());
             }
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             dataStream.reset();
             throw ex;
         }
