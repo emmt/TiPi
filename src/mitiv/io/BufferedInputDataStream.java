@@ -112,15 +112,13 @@ public class BufferedInputDataStream extends InternalBuffer {
                 /* Read as many bytes as possible. (FIXME: blocking mode is assumed.) */
                 try {
                     channel.read(buffer);
-                } catch (Exception ex) {
-                    /* Make sure to switch the internal buffer back to read mode before
-                       re-throwing the exception. */
-                    buffer.flip();
+                } catch (IOException ex) {
                     throw ex;
+                } finally {
+                    /* Switch the internal buffer back to read mode. */
+                    buffer.flip();
                 }
             }
-            /* Switch the internal buffer back to read mode. */
-            buffer.flip();
         }
         /* Return the number of bytes available for reading. */
         return buffer.remaining();

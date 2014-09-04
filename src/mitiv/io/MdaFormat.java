@@ -297,13 +297,18 @@ public class MdaFormat {
         ShapedArray obj;
         try {
             obj = load(dataStream);
-        } catch (Exception ex) {
+        } catch (FileNotFoundException ex) {
+            throw ex;
+        } catch (IOException ex) {
+            throw ex;
+        } catch (DataFormatException ex) {
+            throw ex;
+        } catch (RecoverableFormatException ex) {
+            throw ex;
+        } finally{
             dataStream.close();
             fileStream.close();
-            throw ex;
         }
-        dataStream.close();
-        fileStream.close();
         return obj;
     }
 
@@ -319,7 +324,9 @@ public class MdaFormat {
         dataStream.setByteOrder(order);
         try {
             save(obj, dataStream);
-        } catch (Exception ex) {
+        } catch (FileNotFoundException ex) {
+            throw ex;
+        } catch (IOException ex) {
             throw ex;
         } finally {
             dataStream.close();

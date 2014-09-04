@@ -102,15 +102,12 @@ public class BufferedOutputDataStream extends InternalBuffer {
                 do {
                     channel.write(buffer);
                 } while (buffer.hasRemaining());
-            } catch (Exception ex) {
-                /* Make sure to switch the internal buffer back to read mode before
-                 * re-throwing the exception. */
-                buffer.compact();
+            } catch (IOException ex) {
                 throw ex;
+            } finally{
+                /* Switch the internal buffer back to read mode. */
+                buffer.compact();
             }
-
-            /* Switch the internal buffer back to read mode. */
-            buffer.compact();
         }
     }
 
