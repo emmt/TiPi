@@ -32,7 +32,9 @@ import mitiv.base.Typed;
 /**
  * A ShapedArray is a shaped object with a primitive type.
  * <p>
- * A ShapedArray stores rectangular multi-dimensional arrays of elements of the same data type.
+ * A ShapedArray stores rectangular multi-dimensional arrays of elements of
+ * the same data type.  Compared to a {@link #ShapedVector}, the elements
+ * of a ShapedArray reside in conventional memory.
  * 
  * @author Éric Thiébaut.
  */
