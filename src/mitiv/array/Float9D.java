@@ -46,6 +46,10 @@ public abstract class Float9D extends Array9D implements FloatArray {
         super(shape, cloneShape);
     }
 
+    protected Float9D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

@@ -46,6 +46,10 @@ public abstract class Float7D extends Array7D implements FloatArray {
         super(shape, cloneShape);
     }
 
+    protected Float7D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

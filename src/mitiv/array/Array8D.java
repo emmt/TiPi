@@ -66,6 +66,10 @@ public abstract class Array8D implements Shaped {
         this.shape = new int[]{dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8};
     }
 
+    protected Array8D(int[] shape) {
+        this(shape, true);
+    }
+
     protected Array8D(int[] shape, boolean cloneShape) {
         if (shape == null || shape.length != rank ||
                 (dim1 = shape[0]) < 1 ||

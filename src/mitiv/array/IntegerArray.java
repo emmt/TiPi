@@ -25,6 +25,7 @@
 
 package mitiv.array;
 
+import mitiv.base.Shaped;
 import mitiv.base.mapping.IntegerFunction;
 import mitiv.base.mapping.IntegerScanner;
 import mitiv.random.IntegerGenerator;

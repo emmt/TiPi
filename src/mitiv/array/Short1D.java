@@ -46,6 +46,10 @@ public abstract class Short1D extends Array1D implements ShortArray {
         super(shape, cloneShape);
     }
 
+    protected Short1D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

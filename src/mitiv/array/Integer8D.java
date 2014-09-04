@@ -46,6 +46,10 @@ public abstract class Integer8D extends Array8D implements IntegerArray {
         super(shape, cloneShape);
     }
 
+    protected Integer8D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

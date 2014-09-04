@@ -46,6 +46,10 @@ public abstract class Short8D extends Array8D implements ShortArray {
         super(shape, cloneShape);
     }
 
+    protected Short8D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

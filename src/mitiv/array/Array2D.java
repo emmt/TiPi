@@ -54,6 +54,10 @@ public abstract class Array2D implements Shaped {
         this.shape = new int[]{dim1,dim2};
     }
 
+    protected Array2D(int[] shape) {
+        this(shape, true);
+    }
+
     protected Array2D(int[] shape, boolean cloneShape) {
         if (shape == null || shape.length != rank ||
                 (dim1 = shape[0]) < 1 ||

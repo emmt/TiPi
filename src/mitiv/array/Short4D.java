@@ -46,6 +46,10 @@ public abstract class Short4D extends Array4D implements ShortArray {
         super(shape, cloneShape);
     }
 
+    protected Short4D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

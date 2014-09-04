@@ -46,6 +46,10 @@ public abstract class Double3D extends Array3D implements DoubleArray {
         super(shape, cloneShape);
     }
 
+    protected Double3D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

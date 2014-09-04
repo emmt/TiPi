@@ -46,6 +46,10 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
         super(shape, cloneShape);
     }
 
+    protected Integer1D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

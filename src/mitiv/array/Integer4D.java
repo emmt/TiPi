@@ -46,6 +46,10 @@ public abstract class Integer4D extends Array4D implements IntegerArray {
         super(shape, cloneShape);
     }
 
+    protected Integer4D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

@@ -46,6 +46,10 @@ public abstract class Float6D extends Array6D implements FloatArray {
         super(shape, cloneShape);
     }
 
+    protected Float6D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

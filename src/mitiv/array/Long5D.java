@@ -46,6 +46,10 @@ public abstract class Long5D extends Array5D implements LongArray {
         super(shape, cloneShape);
     }
 
+    protected Long5D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

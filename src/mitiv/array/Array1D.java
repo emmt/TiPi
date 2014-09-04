@@ -50,6 +50,10 @@ public abstract class Array1D implements Shaped {
         this.shape = new int[]{dim1};
     }
 
+    protected Array1D(int[] shape) {
+        this(shape, true);
+    }
+
     protected Array1D(int[] shape, boolean cloneShape) {
         if (shape == null || shape.length != rank ||
                 (dim1 = shape[0]) < 1) {

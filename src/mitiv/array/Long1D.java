@@ -46,6 +46,10 @@ public abstract class Long1D extends Array1D implements LongArray {
         super(shape, cloneShape);
     }
 
+    protected Long1D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

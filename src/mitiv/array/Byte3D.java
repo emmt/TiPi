@@ -46,6 +46,10 @@ public abstract class Byte3D extends Array3D implements ByteArray {
         super(shape, cloneShape);
     }
 
+    protected Byte3D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

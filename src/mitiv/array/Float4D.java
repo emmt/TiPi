@@ -46,6 +46,10 @@ public abstract class Float4D extends Array4D implements FloatArray {
         super(shape, cloneShape);
     }
 
+    protected Float4D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

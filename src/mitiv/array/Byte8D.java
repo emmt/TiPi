@@ -46,6 +46,10 @@ public abstract class Byte8D extends Array8D implements ByteArray {
         super(shape, cloneShape);
     }
 
+    protected Byte8D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

@@ -25,6 +25,7 @@
 
 package mitiv.array;
 
+import mitiv.base.Shaped;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;

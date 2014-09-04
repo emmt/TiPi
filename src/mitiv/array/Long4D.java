@@ -46,6 +46,10 @@ public abstract class Long4D extends Array4D implements LongArray {
         super(shape, cloneShape);
     }
 
+    protected Long4D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

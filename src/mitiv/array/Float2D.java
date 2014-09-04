@@ -46,6 +46,10 @@ public abstract class Float2D extends Array2D implements FloatArray {
         super(shape, cloneShape);
     }
 
+    protected Float2D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

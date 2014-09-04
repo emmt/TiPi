@@ -46,6 +46,10 @@ public abstract class Short7D extends Array7D implements ShortArray {
         super(shape, cloneShape);
     }
 
+    protected Short7D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

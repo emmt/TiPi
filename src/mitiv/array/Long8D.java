@@ -46,6 +46,10 @@ public abstract class Long8D extends Array8D implements LongArray {
         super(shape, cloneShape);
     }
 
+    protected Long8D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

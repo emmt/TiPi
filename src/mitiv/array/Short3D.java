@@ -46,6 +46,10 @@ public abstract class Short3D extends Array3D implements ShortArray {
         super(shape, cloneShape);
     }
 
+    protected Short3D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

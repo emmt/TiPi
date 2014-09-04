@@ -46,6 +46,10 @@ public abstract class Long3D extends Array3D implements LongArray {
         super(shape, cloneShape);
     }
 
+    protected Long3D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

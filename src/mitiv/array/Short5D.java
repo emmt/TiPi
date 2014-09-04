@@ -46,6 +46,10 @@ public abstract class Short5D extends Array5D implements ShortArray {
         super(shape, cloneShape);
     }
 
+    protected Short5D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

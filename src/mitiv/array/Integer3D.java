@@ -46,6 +46,10 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
         super(shape, cloneShape);
     }
 
+    protected Integer3D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

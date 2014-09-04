@@ -46,6 +46,10 @@ public abstract class Double2D extends Array2D implements DoubleArray {
         super(shape, cloneShape);
     }
 
+    protected Double2D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

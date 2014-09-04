@@ -46,6 +46,10 @@ public abstract class Float5D extends Array5D implements FloatArray {
         super(shape, cloneShape);
     }
 
+    protected Float5D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

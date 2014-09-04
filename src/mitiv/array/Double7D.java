@@ -46,6 +46,10 @@ public abstract class Double7D extends Array7D implements DoubleArray {
         super(shape, cloneShape);
     }
 
+    protected Double7D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;

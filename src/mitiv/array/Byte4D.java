@@ -46,6 +46,10 @@ public abstract class Byte4D extends Array4D implements ByteArray {
         super(shape, cloneShape);
     }
 
+    protected Byte4D(int[] shape) {
+        super(shape, true);
+    }
+
     @Override
     public final int getType() {
         return type;
