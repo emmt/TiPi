@@ -240,7 +240,9 @@ public class MdaFormat {
                 throw new DataFormatException(ex.getMessage());
             }
         } catch (IOException ex) {
-            dataStream.reset();
+            if (minHeaderSize + dimensionsRead*4 <= preserved) {
+                dataStream.reset();
+            }
             throw ex;
         }
 

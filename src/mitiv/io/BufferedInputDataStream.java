@@ -106,18 +106,18 @@ public class BufferedInputDataStream extends InternalBuffer {
      */
     public int fill() throws IOException {
         if (readable) {
-            /* Switch the internal buffer to write mode, preserving unread bytes if any. */
-            buffer.compact();
-            if (buffer.remaining() > 0) {
-                /* Read as many bytes as possible. (FIXME: blocking mode is assumed.) */
-                try {
+            try {
+                /* Switch the internal buffer to write mode, preserving unread bytes if any. */
+                buffer.compact();
+                if (buffer.remaining() > 0) {
+                    /* Read as many bytes as possible. (FIXME: blocking mode is assumed.) */
                     channel.read(buffer);
-                } catch (IOException ex) {
-                    throw ex;
-                } finally {
-                    /* Switch the internal buffer back to read mode. */
-                    buffer.flip();
                 }
+            } catch (IOException ex) {
+                throw ex;
+            } finally {
+                /* Switch the internal buffer back to read mode. */
+                buffer.flip();
             }
         }
         /* Return the number of bytes available for reading. */

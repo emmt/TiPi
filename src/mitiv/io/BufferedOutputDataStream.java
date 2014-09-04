@@ -95,9 +95,9 @@ public class BufferedOutputDataStream extends InternalBuffer {
      */
     public void flush() throws IOException {
         if (writable && buffer.position() > 0) {
-            /* Switch the internal buffer to read mode. */
-            buffer.flip();
             try {
+                /* Switch the internal buffer to read mode. */
+                buffer.flip();
                 /* Write as many bytes as possible. (FIXME: assume blocking mode). */
                 do {
                     channel.write(buffer);
@@ -105,7 +105,7 @@ public class BufferedOutputDataStream extends InternalBuffer {
             } catch (IOException ex) {
                 throw ex;
             } finally{
-                /* Switch the internal buffer back to read mode. */
+                /* Switch the internal buffer back to write mode. */
                 buffer.compact();
             }
         }
