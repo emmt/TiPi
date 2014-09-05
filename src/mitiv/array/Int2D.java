@@ -26,27 +26,27 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
-import mitiv.base.mapping.LongFunction;
-import mitiv.base.mapping.LongScanner;
-import mitiv.random.LongGenerator;
+import mitiv.base.mapping.IntFunction;
+import mitiv.base.mapping.IntScanner;
+import mitiv.random.IntGenerator;
 
 
 /**
- * Define class for comprehensive 2-dimensional arrays of long's.
+ * Define class for comprehensive 2-dimensional arrays of int's.
  *
  * @author Éric Thiébaut.
  */
-public abstract class Long2D extends Array2D implements LongArray {
+public abstract class Int2D extends Array2D implements IntArray {
 
-    protected Long2D(int dim1, int dim2) {
+    protected Int2D(int dim1, int dim2) {
         super(dim1,dim2);
     }
 
-    protected Long2D(int[] shape, boolean cloneShape) {
+    protected Int2D(int[] shape, boolean cloneShape) {
         super(shape, cloneShape);
     }
 
-    protected Long2D(int[] shape) {
+    protected Int2D(int[] shape) {
         super(shape, true);
     }
 
@@ -61,7 +61,7 @@ public abstract class Long2D extends Array2D implements LongArray {
      * @param i2 - The index along the 2nd dimension.
      * @return The value stored at position {@code (i1,i2)}.
      */
-    public abstract long get(int i1, int i2);
+    public abstract int get(int i1, int i2);
 
     /**
      * Set the value at a given position.
@@ -69,7 +69,7 @@ public abstract class Long2D extends Array2D implements LongArray {
      * @param i2    - The index along the 2nd dimension.
      * @param value - The value to store at position {@code (i1,i2)}.
      */
-    public abstract void set(int i1, int i2, long value);
+    public abstract void set(int i1, int i2, int value);
 
     /*=======================================================================*/
     /* Provide default (non-optimized, except for the loop ordering)
@@ -77,7 +77,7 @@ public abstract class Long2D extends Array2D implements LongArray {
      * and "get" methods. */
 
     @Override
-    public void fill(long value) {
+    public void fill(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -95,7 +95,7 @@ public abstract class Long2D extends Array2D implements LongArray {
     }
 
     @Override
-    public void incr(long value) {
+    public void incr(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -113,7 +113,7 @@ public abstract class Long2D extends Array2D implements LongArray {
     }
 
     @Override
-    public void decr(long value) {
+    public void decr(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -131,7 +131,7 @@ public abstract class Long2D extends Array2D implements LongArray {
     }
 
     @Override
-    public void mult(long value) {
+    public void mult(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -149,7 +149,7 @@ public abstract class Long2D extends Array2D implements LongArray {
     }
 
     @Override
-    public void map(LongFunction function) {
+    public void map(IntFunction function) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -167,25 +167,25 @@ public abstract class Long2D extends Array2D implements LongArray {
     }
 
     @Override
-    public void fill(LongGenerator generator) {
+    public void fill(IntGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
-                    set(i1,i2, generator.nextLong());
+                    set(i1,i2, generator.nextInt());
                 }
             }
         } else {
             /* Assume column-major order. */
             for (int i2 = 0; i2 < dim2; ++i2) {
                 for (int i1 = 0; i1 < dim1; ++i1) {
-                    set(i1,i2, generator.nextLong());
+                    set(i1,i2, generator.nextInt());
                 }
             }
         }
     }
 
     @Override
-    public void scan(LongScanner scanner)  {
+    public void scan(IntScanner scanner)  {
         boolean skip = true;
         scanner.initialize(get(0,0));
         if (getOrder() == ROW_MAJOR) {
@@ -207,12 +207,12 @@ public abstract class Long2D extends Array2D implements LongArray {
     /* Note that the following default implementation of the "flatten" method
      * is always returning a copy of the contents whatever the value of the
      * "forceCopy" argument.
-     * @see devel.eric.array.base.LongArray#flatten(boolean)
+     * @see devel.eric.array.base.IntArray#flatten(boolean)
      */
     @Override
-    public long[] flatten(boolean forceCopy) {
+    public int[] flatten(boolean forceCopy) {
         /* Copy the elements in column-major order. */
-        long[] out = new long[number];
+        int[] out = new int[number];
         int i = -1;
         for (int i2 = 0; i2 < dim2; ++i2) {
             for (int i1 = 0; i1 < dim1; ++i1) {
@@ -223,7 +223,7 @@ public abstract class Long2D extends Array2D implements LongArray {
     }
 
     @Override
-    public long[] flatten() {
+    public int[] flatten() {
         return flatten(false);
     }
 
@@ -278,14 +278,7 @@ public abstract class Long2D extends Array2D implements LongArray {
      */
     @Override
     public Int2D toInt() {
-        int[] out = new int[number];
-        int i = -1;
-        for (int i2 = 0; i2 < dim2; ++i2) {
-            for (int i1 = 0; i1 < dim1; ++i1) {
-                out[++i] = (int)get(i1,i2);
-            }
-        }
-        return Int2D.wrap(out, dim1, dim2);
+        return this;
     }
     /**
      * Convert instance into a Long2D.
@@ -298,7 +291,14 @@ public abstract class Long2D extends Array2D implements LongArray {
      */
     @Override
     public Long2D toLong() {
-        return this;
+        long[] out = new long[number];
+        int i = -1;
+        for (int i2 = 0; i2 < dim2; ++i2) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                out[++i] = (long)get(i1,i2);
+            }
+        }
+        return Long2D.wrap(out, dim1, dim2);
     }
     /**
      * Convert instance into a Float2D.
@@ -350,20 +350,20 @@ public abstract class Long2D extends Array2D implements LongArray {
      * inner class is needed).  The outer class is however "abstract" and we
      * must provide a minimal set of methods to make it instantiable.
      */
-    private static final Long2D factory = new Long2D(1,1) {
+    private static final Int2D factory = new Int2D(1,1) {
         @Override
-        public final long get(int i1, int i2) {
+        public final int get(int i1, int i2) {
             return 0;
         }
         @Override
-        public final void set(int i1, int i2, long value) {
+        public final void set(int i1, int i2, int value) {
         }
         @Override
         public final int getOrder() {
             return COLUMN_MAJOR;
         }
         @Override
-        public long[] flatten(boolean forceCopy) {
+        public int[] flatten(boolean forceCopy) {
             return null;
         }
     };
@@ -372,39 +372,39 @@ public abstract class Long2D extends Array2D implements LongArray {
     /* FLAT LAYOUT */
 
     /**
-     * Create a 2D array of long's with given dimensions.
+     * Create a 2D array of int's with given dimensions.
      * <p>
-     * This method creates a 2D array of long's with zero offset, contiguous
+     * This method creates a 2D array of int's with zero offset, contiguous
      * elements and column-major order.  All dimensions must at least 1.
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
-     * @return A new 2D array of long's.
+     * @return A new 2D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D create(int dim1, int dim2) {
+    public static Int2D create(int dim1, int dim2) {
         return factory.new Flat(dim1,dim2);
     }
 
     /**
-     * Create a 2D array of long's with given shape.
+     * Create a 2D array of int's with given shape.
      * <p>
-     * This method creates a 2D array of long's with zero offset, contiguous
+     * This method creates a 2D array of int's with zero offset, contiguous
      * elements and column-major order.
      * @param shape - The list of dimensions of the 2D array (all dimensions
      *                must at least 1).  This argument is not referenced by
      *                the returned object and its contents can be modified
      *                after calling this method.
-     * @return A new 2D array of long's.
+     * @return A new 2D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D create(int[] shape) {
+    public static Int2D create(int[] shape) {
         return factory.new Flat(shape, true);
     }
 
     /**
-     * Create a 2D array of long's with given shape.
+     * Create a 2D array of int's with given shape.
      * <p>
-     * This method creates a 2D array of long's with zero offset, contiguous
+     * This method creates a 2D array of int's with zero offset, contiguous
      * elements and column-major order.
      * @param shape      - The list of dimensions of the 2D array (all
      *                     dimensions must at least 1).
@@ -413,15 +413,15 @@ public abstract class Long2D extends Array2D implements LongArray {
      *                     <b>shape</b> whose contents <b><i>must not be
      *                     modified</i></b> while the returned object is in
      *                     use.
-     * @return A new 2D array of long's.
+     * @return A new 2D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D create(int[] shape, boolean cloneShape) {
+    public static Int2D create(int[] shape, boolean cloneShape) {
         return factory.new Flat(shape, cloneShape);
     }
 
     /**
-     * Wrap an existing array in a 2D array of long's with given dimensions.
+     * Wrap an existing array in a 2D array of int's with given dimensions.
      * <p>
      * The returned 2D array have zero offset, contiguous elements and
      * column-major storage order.  More specifically:
@@ -433,12 +433,12 @@ public abstract class Long2D extends Array2D implements LongArray {
      * @return A 2D array sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D wrap(long[] data, int dim1, int dim2) {
+    public static Int2D wrap(int[] data, int dim1, int dim2) {
         return factory.new Flat(data, dim1,dim2);
     }
 
     /**
-     * Wrap an existing array in a 2D array of long's with given shape.
+     * Wrap an existing array in a 2D array of int's with given shape.
      * <p>
      * The returned 2D array have zero offset, contiguous elements and
      * column-major storage order.  More specifically:
@@ -448,15 +448,15 @@ public abstract class Long2D extends Array2D implements LongArray {
      * @param shape - The list of dimensions of the 2D array.  This argument is
      *                not referenced by the returned object and its contents
      *                can be modified after the call to this method.
-     * @return A new 2D array of long's sharing the elements of <b>data</b>.
+     * @return A new 2D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D wrap(long[] data, int[] shape) {
+    public static Int2D wrap(int[] data, int[] shape) {
         return factory.new Flat(data, shape, true);
     }
 
     /**
-     * Wrap an existing array in a 2D array of long's with given shape.
+     * Wrap an existing array in a 2D array of int's with given shape.
      * <p>
      * The returned 2D array have zero offset, contiguous elements and
      * column-major storage order.  More specifically:
@@ -469,10 +469,10 @@ public abstract class Long2D extends Array2D implements LongArray {
      *                     <b>shape</b> whose contents <b><i>must not be
      *                     modified</i></b> while the returned object is in
      *                     use.
-     * @return A new 2D array of long's sharing the elements of <b>data</b>.
+     * @return A new 2D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D wrap(long[] data, int[] shape, boolean cloneShape) {
+    public static Int2D wrap(int[] data, int[] shape, boolean cloneShape) {
         return factory.new Flat(data, shape, cloneShape);
     }
 
@@ -482,37 +482,37 @@ public abstract class Long2D extends Array2D implements LongArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Flat extends Long2D {
+    private class Flat extends Int2D {
         private static final int order = COLUMN_MAJOR;
-        private final long[] data;
+        private final int[] data;
 
         Flat(int dim1, int dim2) {
             super(dim1,dim2);
-            data = new long[number];
+            data = new int[number];
         }
 
         Flat(int[] shape, boolean cloneShape) {
             super(shape, cloneShape);
-            data = new long[number];
+            data = new int[number];
         }
 
-        Flat(long[] arr, int dim1, int dim2) {
+        Flat(int[] arr, int dim1, int dim2) {
             super(dim1,dim2);
             data = arr;
         }
 
-        Flat(long[] arr, int[] shape, boolean cloneShape) {
+        Flat(int[] arr, int[] shape, boolean cloneShape) {
             super(shape, cloneShape);
             data = arr;
         }
 
         @Override
-        public final long get(int i1, int i2) {
+        public final int get(int i1, int i2) {
             return data[dim1*i2 + i1];
         }
 
         @Override
-        public final void set(int i1, int i2, long value) {
+        public final void set(int i1, int i2, int value) {
             data[dim1*i2 + i1] = value;
         }
 
@@ -522,12 +522,12 @@ public abstract class Long2D extends Array2D implements LongArray {
         }
 
         @Override
-        public long[] flatten(boolean forceCopy) {
+        public int[] flatten(boolean forceCopy) {
             if (! forceCopy) {
                 return data;
             }
             int number = getNumber();
-            long[] out = new long[number];
+            int[] out = new int[number];
             System.arraycopy(data, 0, out, 0, number);
             return out;
         }
@@ -537,7 +537,7 @@ public abstract class Long2D extends Array2D implements LongArray {
     /* STRIDED LAYOUT */
 
     /**
-     * Wrap an existing array in a 2D array of long's with given dimensions,
+     * Wrap an existing array in a 2D array of int's with given dimensions,
      * strides and offset.
      * <p>
      * This creates a 2D array of dimensions {{@code dim1,dim2}}
@@ -554,7 +554,7 @@ public abstract class Long2D extends Array2D implements LongArray {
      * @param stride2 - The stride along the 2nd dimension.
      * @return A 2D array sharing the elements of <b>data</b>.
      */
-    public static Long2D wrap(long[] data, int dim1, int dim2,
+    public static Int2D wrap(int[] data, int dim1, int dim2,
             int offset, int stride1, int stride2) {
         return factory.new Strided(data, dim1,dim2, offset, stride1,stride2);
     }
@@ -565,14 +565,14 @@ public abstract class Long2D extends Array2D implements LongArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Strided extends Long2D {
-        private final long[] data;
+    private class Strided extends Int2D {
+        private final int[] data;
         private final int order;
         private final int offset;
         private final int stride1;
         private final int stride2;
 
-        Strided(long[] arr, int dim1, int dim2, int offset, int stride1, int stride2) {
+        Strided(int[] arr, int dim1, int dim2, int offset, int stride1, int stride2) {
             super(dim1,dim2);
             this.data = arr;
             this.offset = offset;
@@ -586,12 +586,12 @@ public abstract class Long2D extends Array2D implements LongArray {
         }
 
         @Override
-        public final long get(int i1, int i2) {
+        public final int get(int i1, int i2) {
             return data[index(i1,i2)];
         }
 
         @Override
-        public final void set(int i1, int i2, long value) {
+        public final void set(int i1, int i2, int value) {
             data[index(i1,i2)] = value;
         }
 
@@ -601,14 +601,14 @@ public abstract class Long2D extends Array2D implements LongArray {
         }
 
         @Override
-        public long[] flatten(boolean forceCopy) {
+        public int[] flatten(boolean forceCopy) {
             boolean flat = (stride1 == 1 && stride2 == dim1);
             if (flat && ! forceCopy && offset == 0) {
                 return data;
             }
-            long[] out;
+            int[] out;
             int number = getNumber();
-            out = new long[number];
+            out = new int[number];
             if (flat) {
                 System.arraycopy(data, offset, out, 0, number);
             } else {
@@ -628,7 +628,7 @@ public abstract class Long2D extends Array2D implements LongArray {
     /* MULTIDIMENSIONAL (2D) LAYOUT */
 
     /**
-     * Wrap an existing 2D array of long's in a Long2D array.
+     * Wrap an existing 2D array of int's in a Int2D array.
      * <p>
      * More specifically:
      * <pre>arr.get(i1,i2) = data[i2][i1]</pre>
@@ -636,7 +636,7 @@ public abstract class Long2D extends Array2D implements LongArray {
      * @param data    - The array to wrap in the 2D array.
      * @return A 2D array sharing the elements of <b>data</b>.
      */
-    public static Long2D wrap(long[][] data) {
+    public static Int2D wrap(int[][] data) {
         return factory.new Multi2(data);
     }
 
@@ -646,11 +646,11 @@ public abstract class Long2D extends Array2D implements LongArray {
      * an instance of the outer class must be available (this is the purpose
      * of the static "factory" instance).
      */
-    class Multi2 extends Long2D {
+    class Multi2 extends Int2D {
         private static final int order = COLUMN_MAJOR;
-        private final long[][] data;
+        private final int[][] data;
 
-        protected Multi2(long[][] arr) {
+        protected Multi2(int[][] arr) {
             super(arr[0].length, arr.length);
             data = arr;
         }
@@ -659,11 +659,11 @@ public abstract class Long2D extends Array2D implements LongArray {
             return order;
         }
         @Override
-        public final long get(int i1, int i2) {
+        public final int get(int i1, int i2) {
             return data[i2][i1];
         }
         @Override
-        public final void set(int i1, int i2, long value) {
+        public final void set(int i1, int i2, int value) {
             data[i2][i1] = value;
         }
     }

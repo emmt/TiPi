@@ -26,27 +26,27 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
-import mitiv.base.mapping.ByteFunction;
-import mitiv.base.mapping.ByteScanner;
-import mitiv.random.ByteGenerator;
+import mitiv.base.mapping.IntFunction;
+import mitiv.base.mapping.IntScanner;
+import mitiv.random.IntGenerator;
 
 
 /**
- * Define class for comprehensive 5-dimensional arrays of byte's.
+ * Define class for comprehensive 5-dimensional arrays of int's.
  *
  * @author Éric Thiébaut.
  */
-public abstract class Byte5D extends Array5D implements ByteArray {
+public abstract class Int5D extends Array5D implements IntArray {
 
-    protected Byte5D(int dim1, int dim2, int dim3, int dim4, int dim5) {
+    protected Int5D(int dim1, int dim2, int dim3, int dim4, int dim5) {
         super(dim1,dim2,dim3,dim4,dim5);
     }
 
-    protected Byte5D(int[] shape, boolean cloneShape) {
+    protected Int5D(int[] shape, boolean cloneShape) {
         super(shape, cloneShape);
     }
 
-    protected Byte5D(int[] shape) {
+    protected Int5D(int[] shape) {
         super(shape, true);
     }
 
@@ -64,7 +64,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      * @param i5 - The index along the 5th dimension.
      * @return The value stored at position {@code (i1,i2,i3,i4,i5)}.
      */
-    public abstract byte get(int i1, int i2, int i3, int i4, int i5);
+    public abstract int get(int i1, int i2, int i3, int i4, int i5);
 
     /**
      * Set the value at a given position.
@@ -75,7 +75,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      * @param i5    - The index along the 5th dimension.
      * @param value - The value to store at position {@code (i1,i2,i3,i4,i5)}.
      */
-    public abstract void set(int i1, int i2, int i3, int i4, int i5, byte value);
+    public abstract void set(int i1, int i2, int i3, int i4, int i5, int value);
 
     /*=======================================================================*/
     /* Provide default (non-optimized, except for the loop ordering)
@@ -83,7 +83,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      * and "get" methods. */
 
     @Override
-    public void fill(byte value) {
+    public void fill(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -113,14 +113,14 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     }
 
     @Override
-    public void incr(byte value) {
+    public void incr(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i4 = 0; i4 < dim4; ++i4) {
                             for (int i5 = 0; i5 < dim5; ++i5) {
-                                set(i1,i2,i3,i4,i5, (byte)(get(i1,i2,i3,i4,i5) + value));
+                                set(i1,i2,i3,i4,i5, get(i1,i2,i3,i4,i5) + value);
                             }
                         }
                     }
@@ -133,7 +133,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i2 = 0; i2 < dim2; ++i2) {
                             for (int i1 = 0; i1 < dim1; ++i1) {
-                                set(i1,i2,i3,i4,i5, (byte)(get(i1,i2,i3,i4,i5) + value));
+                                set(i1,i2,i3,i4,i5, get(i1,i2,i3,i4,i5) + value);
                             }
                         }
                     }
@@ -143,14 +143,14 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     }
 
     @Override
-    public void decr(byte value) {
+    public void decr(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i4 = 0; i4 < dim4; ++i4) {
                             for (int i5 = 0; i5 < dim5; ++i5) {
-                                set(i1,i2,i3,i4,i5, (byte)(get(i1,i2,i3,i4,i5) - value));
+                                set(i1,i2,i3,i4,i5, get(i1,i2,i3,i4,i5) - value);
                             }
                         }
                     }
@@ -163,7 +163,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i2 = 0; i2 < dim2; ++i2) {
                             for (int i1 = 0; i1 < dim1; ++i1) {
-                                set(i1,i2,i3,i4,i5, (byte)(get(i1,i2,i3,i4,i5) - value));
+                                set(i1,i2,i3,i4,i5, get(i1,i2,i3,i4,i5) - value);
                             }
                         }
                     }
@@ -173,14 +173,14 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     }
 
     @Override
-    public void mult(byte value) {
+    public void mult(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i4 = 0; i4 < dim4; ++i4) {
                             for (int i5 = 0; i5 < dim5; ++i5) {
-                                set(i1,i2,i3,i4,i5, (byte)(get(i1,i2,i3,i4,i5) * value));
+                                set(i1,i2,i3,i4,i5, get(i1,i2,i3,i4,i5) * value);
                             }
                         }
                     }
@@ -193,7 +193,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i2 = 0; i2 < dim2; ++i2) {
                             for (int i1 = 0; i1 < dim1; ++i1) {
-                                set(i1,i2,i3,i4,i5, (byte)(get(i1,i2,i3,i4,i5) * value));
+                                set(i1,i2,i3,i4,i5, get(i1,i2,i3,i4,i5) * value);
                             }
                         }
                     }
@@ -203,7 +203,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     }
 
     @Override
-    public void map(ByteFunction function) {
+    public void map(IntFunction function) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -233,14 +233,14 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     }
 
     @Override
-    public void fill(ByteGenerator generator) {
+    public void fill(IntGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i4 = 0; i4 < dim4; ++i4) {
                             for (int i5 = 0; i5 < dim5; ++i5) {
-                                set(i1,i2,i3,i4,i5, generator.nextByte());
+                                set(i1,i2,i3,i4,i5, generator.nextInt());
                             }
                         }
                     }
@@ -253,7 +253,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i2 = 0; i2 < dim2; ++i2) {
                             for (int i1 = 0; i1 < dim1; ++i1) {
-                                set(i1,i2,i3,i4,i5, generator.nextByte());
+                                set(i1,i2,i3,i4,i5, generator.nextInt());
                             }
                         }
                     }
@@ -263,7 +263,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     }
 
     @Override
-    public void scan(ByteScanner scanner)  {
+    public void scan(IntScanner scanner)  {
         boolean skip = true;
         scanner.initialize(get(0,0,0,0,0));
         if (getOrder() == ROW_MAJOR) {
@@ -297,12 +297,12 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     /* Note that the following default implementation of the "flatten" method
      * is always returning a copy of the contents whatever the value of the
      * "forceCopy" argument.
-     * @see devel.eric.array.base.ByteArray#flatten(boolean)
+     * @see devel.eric.array.base.IntArray#flatten(boolean)
      */
     @Override
-    public byte[] flatten(boolean forceCopy) {
+    public int[] flatten(boolean forceCopy) {
         /* Copy the elements in column-major order. */
-        byte[] out = new byte[number];
+        int[] out = new int[number];
         int i = -1;
         for (int i5 = 0; i5 < dim5; ++i5) {
             for (int i4 = 0; i4 < dim4; ++i4) {
@@ -319,7 +319,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     }
 
     @Override
-    public byte[] flatten() {
+    public int[] flatten() {
         return flatten(false);
     }
 
@@ -334,7 +334,20 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      */
     @Override
     public Byte5D toByte() {
-        return this;
+        byte[] out = new byte[number];
+        int i = -1;
+        for (int i5 = 0; i5 < dim5; ++i5) {
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            out[++i] = (byte)get(i1,i2,i3,i4,i5);
+                        }
+                    }
+                }
+            }
+        }
+        return Byte5D.wrap(out, dim1, dim2, dim3, dim4, dim5);
     }
     /**
      * Convert instance into a Short5D.
@@ -373,20 +386,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      */
     @Override
     public Int5D toInt() {
-        int[] out = new int[number];
-        int i = -1;
-        for (int i5 = 0; i5 < dim5; ++i5) {
-            for (int i4 = 0; i4 < dim4; ++i4) {
-                for (int i3 = 0; i3 < dim3; ++i3) {
-                    for (int i2 = 0; i2 < dim2; ++i2) {
-                        for (int i1 = 0; i1 < dim1; ++i1) {
-                            out[++i] = (int)get(i1,i2,i3,i4,i5);
-                        }
-                    }
-                }
-            }
-        }
-        return Int5D.wrap(out, dim1, dim2, dim3, dim4, dim5);
+        return this;
     }
     /**
      * Convert instance into a Long5D.
@@ -476,20 +476,20 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      * inner class is needed).  The outer class is however "abstract" and we
      * must provide a minimal set of methods to make it instantiable.
      */
-    private static final Byte5D factory = new Byte5D(1,1,1,1,1) {
+    private static final Int5D factory = new Int5D(1,1,1,1,1) {
         @Override
-        public final byte get(int i1, int i2, int i3, int i4, int i5) {
+        public final int get(int i1, int i2, int i3, int i4, int i5) {
             return 0;
         }
         @Override
-        public final void set(int i1, int i2, int i3, int i4, int i5, byte value) {
+        public final void set(int i1, int i2, int i3, int i4, int i5, int value) {
         }
         @Override
         public final int getOrder() {
             return COLUMN_MAJOR;
         }
         @Override
-        public byte[] flatten(boolean forceCopy) {
+        public int[] flatten(boolean forceCopy) {
             return null;
         }
     };
@@ -498,42 +498,42 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     /* FLAT LAYOUT */
 
     /**
-     * Create a 5D array of byte's with given dimensions.
+     * Create a 5D array of int's with given dimensions.
      * <p>
-     * This method creates a 5D array of byte's with zero offset, contiguous
+     * This method creates a 5D array of int's with zero offset, contiguous
      * elements and column-major order.  All dimensions must at least 1.
      * @param dim1 - The 1st dimension of the 5D array.
      * @param dim2 - The 2nd dimension of the 5D array.
      * @param dim3 - The 3rd dimension of the 5D array.
      * @param dim4 - The 4th dimension of the 5D array.
      * @param dim5 - The 5th dimension of the 5D array.
-     * @return A new 5D array of byte's.
+     * @return A new 5D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Byte5D create(int dim1, int dim2, int dim3, int dim4, int dim5) {
+    public static Int5D create(int dim1, int dim2, int dim3, int dim4, int dim5) {
         return factory.new Flat(dim1,dim2,dim3,dim4,dim5);
     }
 
     /**
-     * Create a 5D array of byte's with given shape.
+     * Create a 5D array of int's with given shape.
      * <p>
-     * This method creates a 5D array of byte's with zero offset, contiguous
+     * This method creates a 5D array of int's with zero offset, contiguous
      * elements and column-major order.
      * @param shape - The list of dimensions of the 5D array (all dimensions
      *                must at least 1).  This argument is not referenced by
      *                the returned object and its contents can be modified
      *                after calling this method.
-     * @return A new 5D array of byte's.
+     * @return A new 5D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Byte5D create(int[] shape) {
+    public static Int5D create(int[] shape) {
         return factory.new Flat(shape, true);
     }
 
     /**
-     * Create a 5D array of byte's with given shape.
+     * Create a 5D array of int's with given shape.
      * <p>
-     * This method creates a 5D array of byte's with zero offset, contiguous
+     * This method creates a 5D array of int's with zero offset, contiguous
      * elements and column-major order.
      * @param shape      - The list of dimensions of the 5D array (all
      *                     dimensions must at least 1).
@@ -542,15 +542,15 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      *                     <b>shape</b> whose contents <b><i>must not be
      *                     modified</i></b> while the returned object is in
      *                     use.
-     * @return A new 5D array of byte's.
+     * @return A new 5D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Byte5D create(int[] shape, boolean cloneShape) {
+    public static Int5D create(int[] shape, boolean cloneShape) {
         return factory.new Flat(shape, cloneShape);
     }
 
     /**
-     * Wrap an existing array in a 5D array of byte's with given dimensions.
+     * Wrap an existing array in a 5D array of int's with given dimensions.
      * <p>
      * The returned 5D array have zero offset, contiguous elements and
      * column-major storage order.  More specifically:
@@ -565,12 +565,12 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      * @return A 5D array sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Byte5D wrap(byte[] data, int dim1, int dim2, int dim3, int dim4, int dim5) {
+    public static Int5D wrap(int[] data, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return factory.new Flat(data, dim1,dim2,dim3,dim4,dim5);
     }
 
     /**
-     * Wrap an existing array in a 5D array of byte's with given shape.
+     * Wrap an existing array in a 5D array of int's with given shape.
      * <p>
      * The returned 5D array have zero offset, contiguous elements and
      * column-major storage order.  More specifically:
@@ -580,15 +580,15 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      * @param shape - The list of dimensions of the 5D array.  This argument is
      *                not referenced by the returned object and its contents
      *                can be modified after the call to this method.
-     * @return A new 5D array of byte's sharing the elements of <b>data</b>.
+     * @return A new 5D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Byte5D wrap(byte[] data, int[] shape) {
+    public static Int5D wrap(int[] data, int[] shape) {
         return factory.new Flat(data, shape, true);
     }
 
     /**
-     * Wrap an existing array in a 5D array of byte's with given shape.
+     * Wrap an existing array in a 5D array of int's with given shape.
      * <p>
      * The returned 5D array have zero offset, contiguous elements and
      * column-major storage order.  More specifically:
@@ -601,10 +601,10 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      *                     <b>shape</b> whose contents <b><i>must not be
      *                     modified</i></b> while the returned object is in
      *                     use.
-     * @return A new 5D array of byte's sharing the elements of <b>data</b>.
+     * @return A new 5D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Byte5D wrap(byte[] data, int[] shape, boolean cloneShape) {
+    public static Int5D wrap(int[] data, int[] shape, boolean cloneShape) {
         return factory.new Flat(data, shape, cloneShape);
     }
 
@@ -614,16 +614,16 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Flat extends Byte5D {
+    private class Flat extends Int5D {
         private static final int order = COLUMN_MAJOR;
-        private final byte[] data;
+        private final int[] data;
         private final int dim1dim2;
         private final int dim1dim2dim3;
         private final int dim1dim2dim3dim4;
 
         Flat(int dim1, int dim2, int dim3, int dim4, int dim5) {
             super(dim1,dim2,dim3,dim4,dim5);
-            data = new byte[number];
+            data = new int[number];
             dim1dim2 = dim1*dim2;
             dim1dim2dim3 = dim1dim2*dim3;
             dim1dim2dim3dim4 = dim1dim2dim3*dim4;
@@ -631,13 +631,13 @@ public abstract class Byte5D extends Array5D implements ByteArray {
 
         Flat(int[] shape, boolean cloneShape) {
             super(shape, cloneShape);
-            data = new byte[number];
+            data = new int[number];
             dim1dim2 = dim1*dim2;
             dim1dim2dim3 = dim1dim2*dim3;
             dim1dim2dim3dim4 = dim1dim2dim3*dim4;
         }
 
-        Flat(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
+        Flat(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
             super(dim1,dim2,dim3,dim4,dim5);
             data = arr;
             dim1dim2 = dim1*dim2;
@@ -645,7 +645,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
             dim1dim2dim3dim4 = dim1dim2dim3*dim4;
         }
 
-        Flat(byte[] arr, int[] shape, boolean cloneShape) {
+        Flat(int[] arr, int[] shape, boolean cloneShape) {
             super(shape, cloneShape);
             data = arr;
             dim1dim2 = dim1*dim2;
@@ -654,12 +654,12 @@ public abstract class Byte5D extends Array5D implements ByteArray {
         }
 
         @Override
-        public final byte get(int i1, int i2, int i3, int i4, int i5) {
+        public final int get(int i1, int i2, int i3, int i4, int i5) {
             return data[dim1dim2dim3dim4*i5 + dim1dim2dim3*i4 + dim1dim2*i3 + dim1*i2 + i1];
         }
 
         @Override
-        public final void set(int i1, int i2, int i3, int i4, int i5, byte value) {
+        public final void set(int i1, int i2, int i3, int i4, int i5, int value) {
             data[dim1dim2dim3dim4*i5 + dim1dim2dim3*i4 + dim1dim2*i3 + dim1*i2 + i1] = value;
         }
 
@@ -669,12 +669,12 @@ public abstract class Byte5D extends Array5D implements ByteArray {
         }
 
         @Override
-        public byte[] flatten(boolean forceCopy) {
+        public int[] flatten(boolean forceCopy) {
             if (! forceCopy) {
                 return data;
             }
             int number = getNumber();
-            byte[] out = new byte[number];
+            int[] out = new int[number];
             System.arraycopy(data, 0, out, 0, number);
             return out;
         }
@@ -684,7 +684,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     /* STRIDED LAYOUT */
 
     /**
-     * Wrap an existing array in a 5D array of byte's with given dimensions,
+     * Wrap an existing array in a 5D array of int's with given dimensions,
      * strides and offset.
      * <p>
      * This creates a 5D array of dimensions {{@code dim1,dim2,dim3,dim4,dim5}}
@@ -707,7 +707,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      * @param stride5 - The stride along the 5th dimension.
      * @return A 5D array sharing the elements of <b>data</b>.
      */
-    public static Byte5D wrap(byte[] data, int dim1, int dim2, int dim3, int dim4, int dim5,
+    public static Int5D wrap(int[] data, int dim1, int dim2, int dim3, int dim4, int dim5,
             int offset, int stride1, int stride2, int stride3, int stride4, int stride5) {
         return factory.new Strided(data, dim1,dim2,dim3,dim4,dim5, offset, stride1,stride2,stride3,stride4,stride5);
     }
@@ -718,8 +718,8 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Strided extends Byte5D {
-        private final byte[] data;
+    private class Strided extends Int5D {
+        private final int[] data;
         private final int order;
         private final int offset;
         private final int stride1;
@@ -728,7 +728,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
         private final int stride4;
         private final int stride5;
 
-        Strided(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int offset, int stride1, int stride2, int stride3, int stride4, int stride5) {
+        Strided(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int offset, int stride1, int stride2, int stride3, int stride4, int stride5) {
             super(dim1,dim2,dim3,dim4,dim5);
             this.data = arr;
             this.offset = offset;
@@ -745,12 +745,12 @@ public abstract class Byte5D extends Array5D implements ByteArray {
         }
 
         @Override
-        public final byte get(int i1, int i2, int i3, int i4, int i5) {
+        public final int get(int i1, int i2, int i3, int i4, int i5) {
             return data[index(i1,i2,i3,i4,i5)];
         }
 
         @Override
-        public final void set(int i1, int i2, int i3, int i4, int i5, byte value) {
+        public final void set(int i1, int i2, int i3, int i4, int i5, int value) {
             data[index(i1,i2,i3,i4,i5)] = value;
         }
 
@@ -760,14 +760,14 @@ public abstract class Byte5D extends Array5D implements ByteArray {
         }
 
         @Override
-        public byte[] flatten(boolean forceCopy) {
+        public int[] flatten(boolean forceCopy) {
             boolean flat = (stride1 == 1 && stride2 == dim1 && stride3 == stride2*dim2 && stride4 == stride3*dim3 && stride5 == stride4*dim4);
             if (flat && ! forceCopy && offset == 0) {
                 return data;
             }
-            byte[] out;
+            int[] out;
             int number = getNumber();
-            out = new byte[number];
+            out = new int[number];
             if (flat) {
                 System.arraycopy(data, offset, out, 0, number);
             } else {
@@ -793,7 +793,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     /* MULTIDIMENSIONAL (5D) LAYOUT */
 
     /**
-     * Wrap an existing 5D array of byte's in a Byte5D array.
+     * Wrap an existing 5D array of int's in a Int5D array.
      * <p>
      * More specifically:
      * <pre>arr.get(i1,i2,i3,i4,i5) = data[i5][i4][i3][i2][i1]</pre>
@@ -801,7 +801,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      * @param data    - The array to wrap in the 5D array.
      * @return A 5D array sharing the elements of <b>data</b>.
      */
-    public static Byte5D wrap(byte[][][][][] data) {
+    public static Int5D wrap(int[][][][][] data) {
         return factory.new Multi5(data);
     }
 
@@ -811,11 +811,11 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      * an instance of the outer class must be available (this is the purpose
      * of the static "factory" instance).
      */
-    class Multi5 extends Byte5D {
+    class Multi5 extends Int5D {
         private static final int order = COLUMN_MAJOR;
-        private final byte[][][][][] data;
+        private final int[][][][][] data;
 
-        protected Multi5(byte[][][][][] arr) {
+        protected Multi5(int[][][][][] arr) {
             super(arr[0][0][0][0].length, arr[0][0][0].length, arr[0][0].length, arr[0].length, arr.length);
             data = arr;
         }
@@ -824,11 +824,11 @@ public abstract class Byte5D extends Array5D implements ByteArray {
             return order;
         }
         @Override
-        public final byte get(int i1, int i2, int i3, int i4, int i5) {
+        public final int get(int i1, int i2, int i3, int i4, int i5) {
             return data[i5][i4][i3][i2][i1];
         }
         @Override
-        public final void set(int i1, int i2, int i3, int i4, int i5, byte value) {
+        public final void set(int i1, int i2, int i3, int i4, int i5, int value) {
             data[i5][i4][i3][i2][i1] = value;
         }
     }

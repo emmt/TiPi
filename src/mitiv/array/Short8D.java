@@ -71,14 +71,14 @@ public abstract class Short8D extends Array8D implements ShortArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
-     * @param i4 - The index along the 4th dimension.
-     * @param i5 - The index along the 5th dimension.
-     * @param i6 - The index along the 6th dimension.
-     * @param i7 - The index along the 7th dimension.
-     * @param i8 - The index along the 8th dimension.
+     * @param i1    - The index along the 1st dimension.
+     * @param i2    - The index along the 2nd dimension.
+     * @param i3    - The index along the 3rd dimension.
+     * @param i4    - The index along the 4th dimension.
+     * @param i5    - The index along the 5th dimension.
+     * @param i6    - The index along the 6th dimension.
+     * @param i7    - The index along the 7th dimension.
+     * @param i8    - The index along the 8th dimension.
      * @param value - The value to store at position {@code (i1,i2,i3,i4,i5,i6,i7,i8)}.
      */
     public abstract void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int i8, short value);
@@ -89,7 +89,7 @@ public abstract class Short8D extends Array8D implements ShortArray {
      * and "get" methods. */
 
     @Override
-    public void set(short value) {
+    public void fill(short value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -299,7 +299,7 @@ public abstract class Short8D extends Array8D implements ShortArray {
     }
 
     @Override
-    public void set(ShortGenerator generator) {
+    public void fill(ShortGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -417,6 +417,180 @@ public abstract class Short8D extends Array8D implements ShortArray {
     @Override
     public short[] flatten() {
         return flatten(false);
+    }
+
+    /**
+     * Convert instance into a Byte8D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte8D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte8D toByte() {
+        byte[] out = new byte[number];
+        int i = -1;
+        for (int i8 = 0; i8 < dim8; ++i8) {
+            for (int i7 = 0; i7 < dim7; ++i7) {
+                for (int i6 = 0; i6 < dim6; ++i6) {
+                    for (int i5 = 0; i5 < dim5; ++i5) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i3 = 0; i3 < dim3; ++i3) {
+                                for (int i2 = 0; i2 < dim2; ++i2) {
+                                    for (int i1 = 0; i1 < dim1; ++i1) {
+                                        out[++i] = (byte)get(i1,i2,i3,i4,i5,i6,i7,i8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Byte8D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+    }
+    /**
+     * Convert instance into a Short8D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short8D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short8D toShort() {
+        return this;
+    }
+    /**
+     * Convert instance into an Int8D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int8D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int8D toInt() {
+        int[] out = new int[number];
+        int i = -1;
+        for (int i8 = 0; i8 < dim8; ++i8) {
+            for (int i7 = 0; i7 < dim7; ++i7) {
+                for (int i6 = 0; i6 < dim6; ++i6) {
+                    for (int i5 = 0; i5 < dim5; ++i5) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i3 = 0; i3 < dim3; ++i3) {
+                                for (int i2 = 0; i2 < dim2; ++i2) {
+                                    for (int i1 = 0; i1 < dim1; ++i1) {
+                                        out[++i] = (int)get(i1,i2,i3,i4,i5,i6,i7,i8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Int8D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+    }
+    /**
+     * Convert instance into a Long8D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long8D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long8D toLong() {
+        long[] out = new long[number];
+        int i = -1;
+        for (int i8 = 0; i8 < dim8; ++i8) {
+            for (int i7 = 0; i7 < dim7; ++i7) {
+                for (int i6 = 0; i6 < dim6; ++i6) {
+                    for (int i5 = 0; i5 < dim5; ++i5) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i3 = 0; i3 < dim3; ++i3) {
+                                for (int i2 = 0; i2 < dim2; ++i2) {
+                                    for (int i1 = 0; i1 < dim1; ++i1) {
+                                        out[++i] = (long)get(i1,i2,i3,i4,i5,i6,i7,i8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Long8D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+    }
+    /**
+     * Convert instance into a Float8D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float8D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float8D toFloat() {
+        float[] out = new float[number];
+        int i = -1;
+        for (int i8 = 0; i8 < dim8; ++i8) {
+            for (int i7 = 0; i7 < dim7; ++i7) {
+                for (int i6 = 0; i6 < dim6; ++i6) {
+                    for (int i5 = 0; i5 < dim5; ++i5) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i3 = 0; i3 < dim3; ++i3) {
+                                for (int i2 = 0; i2 < dim2; ++i2) {
+                                    for (int i1 = 0; i1 < dim1; ++i1) {
+                                        out[++i] = (float)get(i1,i2,i3,i4,i5,i6,i7,i8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Float8D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+    }
+    /**
+     * Convert instance into a Double8D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double8D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double8D toDouble() {
+        double[] out = new double[number];
+        int i = -1;
+        for (int i8 = 0; i8 < dim8; ++i8) {
+            for (int i7 = 0; i7 < dim7; ++i7) {
+                for (int i6 = 0; i6 < dim6; ++i6) {
+                    for (int i5 = 0; i5 < dim5; ++i5) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i3 = 0; i3 < dim3; ++i3) {
+                                for (int i2 = 0; i2 < dim2; ++i2) {
+                                    for (int i1 = 0; i1 < dim1; ++i1) {
+                                        out[++i] = (double)get(i1,i2,i3,i4,i5,i6,i7,i8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Double8D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /*=======================================================================*/

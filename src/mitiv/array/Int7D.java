@@ -26,27 +26,27 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
-import mitiv.base.mapping.FloatFunction;
-import mitiv.base.mapping.FloatScanner;
-import mitiv.random.FloatGenerator;
+import mitiv.base.mapping.IntFunction;
+import mitiv.base.mapping.IntScanner;
+import mitiv.random.IntGenerator;
 
 
 /**
- * Define class for comprehensive 7-dimensional arrays of float's.
+ * Define class for comprehensive 7-dimensional arrays of int's.
  *
  * @author Éric Thiébaut.
  */
-public abstract class Float7D extends Array7D implements FloatArray {
+public abstract class Int7D extends Array7D implements IntArray {
 
-    protected Float7D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
+    protected Int7D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         super(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
     }
 
-    protected Float7D(int[] shape, boolean cloneShape) {
+    protected Int7D(int[] shape, boolean cloneShape) {
         super(shape, cloneShape);
     }
 
-    protected Float7D(int[] shape) {
+    protected Int7D(int[] shape) {
         super(shape, true);
     }
 
@@ -66,7 +66,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
      * @param i7 - The index along the 7th dimension.
      * @return The value stored at position {@code (i1,i2,i3,i4,i5,i6,i7)}.
      */
-    public abstract float get(int i1, int i2, int i3, int i4, int i5, int i6, int i7);
+    public abstract int get(int i1, int i2, int i3, int i4, int i5, int i6, int i7);
 
     /**
      * Set the value at a given position.
@@ -79,7 +79,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
      * @param i7    - The index along the 7th dimension.
      * @param value - The value to store at position {@code (i1,i2,i3,i4,i5,i6,i7)}.
      */
-    public abstract void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, float value);
+    public abstract void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int value);
 
     /*=======================================================================*/
     /* Provide default (non-optimized, except for the loop ordering)
@@ -87,7 +87,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
      * and "get" methods. */
 
     @Override
-    public void fill(float value) {
+    public void fill(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -125,7 +125,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
     }
 
     @Override
-    public void incr(float value) {
+    public void incr(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -163,7 +163,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
     }
 
     @Override
-    public void decr(float value) {
+    public void decr(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -201,7 +201,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
     }
 
     @Override
-    public void mult(float value) {
+    public void mult(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -239,7 +239,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
     }
 
     @Override
-    public void map(FloatFunction function) {
+    public void map(IntFunction function) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -277,7 +277,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
     }
 
     @Override
-    public void fill(FloatGenerator generator) {
+    public void fill(IntGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -286,7 +286,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
                             for (int i5 = 0; i5 < dim5; ++i5) {
                                 for (int i6 = 0; i6 < dim6; ++i6) {
                                     for (int i7 = 0; i7 < dim7; ++i7) {
-                                        set(i1,i2,i3,i4,i5,i6,i7, generator.nextFloat());
+                                        set(i1,i2,i3,i4,i5,i6,i7, generator.nextInt());
                                     }
                                 }
                             }
@@ -303,7 +303,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
                             for (int i3 = 0; i3 < dim3; ++i3) {
                                 for (int i2 = 0; i2 < dim2; ++i2) {
                                     for (int i1 = 0; i1 < dim1; ++i1) {
-                                        set(i1,i2,i3,i4,i5,i6,i7, generator.nextFloat());
+                                        set(i1,i2,i3,i4,i5,i6,i7, generator.nextInt());
                                     }
                                 }
                             }
@@ -315,7 +315,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
     }
 
     @Override
-    public void scan(FloatScanner scanner)  {
+    public void scan(IntScanner scanner)  {
         boolean skip = true;
         scanner.initialize(get(0,0,0,0,0,0,0));
         if (getOrder() == ROW_MAJOR) {
@@ -357,12 +357,12 @@ public abstract class Float7D extends Array7D implements FloatArray {
     /* Note that the following default implementation of the "flatten" method
      * is always returning a copy of the contents whatever the value of the
      * "forceCopy" argument.
-     * @see devel.eric.array.base.FloatArray#flatten(boolean)
+     * @see devel.eric.array.base.IntArray#flatten(boolean)
      */
     @Override
-    public float[] flatten(boolean forceCopy) {
+    public int[] flatten(boolean forceCopy) {
         /* Copy the elements in column-major order. */
-        float[] out = new float[number];
+        int[] out = new int[number];
         int i = -1;
         for (int i7 = 0; i7 < dim7; ++i7) {
             for (int i6 = 0; i6 < dim6; ++i6) {
@@ -383,7 +383,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
     }
 
     @Override
-    public float[] flatten() {
+    public int[] flatten() {
         return flatten(false);
     }
 
@@ -458,24 +458,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
      */
     @Override
     public Int7D toInt() {
-        int[] out = new int[number];
-        int i = -1;
-        for (int i7 = 0; i7 < dim7; ++i7) {
-            for (int i6 = 0; i6 < dim6; ++i6) {
-                for (int i5 = 0; i5 < dim5; ++i5) {
-                    for (int i4 = 0; i4 < dim4; ++i4) {
-                        for (int i3 = 0; i3 < dim3; ++i3) {
-                            for (int i2 = 0; i2 < dim2; ++i2) {
-                                for (int i1 = 0; i1 < dim1; ++i1) {
-                                    out[++i] = (int)get(i1,i2,i3,i4,i5,i6,i7);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return Int7D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+        return this;
     }
     /**
      * Convert instance into a Long7D.
@@ -518,7 +501,24 @@ public abstract class Float7D extends Array7D implements FloatArray {
      */
     @Override
     public Float7D toFloat() {
-        return this;
+        float[] out = new float[number];
+        int i = -1;
+        for (int i7 = 0; i7 < dim7; ++i7) {
+            for (int i6 = 0; i6 < dim6; ++i6) {
+                for (int i5 = 0; i5 < dim5; ++i5) {
+                    for (int i4 = 0; i4 < dim4; ++i4) {
+                        for (int i3 = 0; i3 < dim3; ++i3) {
+                            for (int i2 = 0; i2 < dim2; ++i2) {
+                                for (int i1 = 0; i1 < dim1; ++i1) {
+                                    out[++i] = (float)get(i1,i2,i3,i4,i5,i6,i7);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Float7D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
     /**
      * Convert instance into a Double7D.
@@ -560,20 +560,20 @@ public abstract class Float7D extends Array7D implements FloatArray {
      * inner class is needed).  The outer class is however "abstract" and we
      * must provide a minimal set of methods to make it instantiable.
      */
-    private static final Float7D factory = new Float7D(1,1,1,1,1,1,1) {
+    private static final Int7D factory = new Int7D(1,1,1,1,1,1,1) {
         @Override
-        public final float get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-            return 0.0F;
+        public final int get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
+            return 0;
         }
         @Override
-        public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, float value) {
+        public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int value) {
         }
         @Override
         public final int getOrder() {
             return COLUMN_MAJOR;
         }
         @Override
-        public float[] flatten(boolean forceCopy) {
+        public int[] flatten(boolean forceCopy) {
             return null;
         }
     };
@@ -582,9 +582,9 @@ public abstract class Float7D extends Array7D implements FloatArray {
     /* FLAT LAYOUT */
 
     /**
-     * Create a 7D array of float's with given dimensions.
+     * Create a 7D array of int's with given dimensions.
      * <p>
-     * This method creates a 7D array of float's with zero offset, contiguous
+     * This method creates a 7D array of int's with zero offset, contiguous
      * elements and column-major order.  All dimensions must at least 1.
      * @param dim1 - The 1st dimension of the 7D array.
      * @param dim2 - The 2nd dimension of the 7D array.
@@ -593,33 +593,33 @@ public abstract class Float7D extends Array7D implements FloatArray {
      * @param dim5 - The 5th dimension of the 7D array.
      * @param dim6 - The 6th dimension of the 7D array.
      * @param dim7 - The 7th dimension of the 7D array.
-     * @return A new 7D array of float's.
+     * @return A new 7D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Float7D create(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
+    public static Int7D create(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return factory.new Flat(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
     }
 
     /**
-     * Create a 7D array of float's with given shape.
+     * Create a 7D array of int's with given shape.
      * <p>
-     * This method creates a 7D array of float's with zero offset, contiguous
+     * This method creates a 7D array of int's with zero offset, contiguous
      * elements and column-major order.
      * @param shape - The list of dimensions of the 7D array (all dimensions
      *                must at least 1).  This argument is not referenced by
      *                the returned object and its contents can be modified
      *                after calling this method.
-     * @return A new 7D array of float's.
+     * @return A new 7D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Float7D create(int[] shape) {
+    public static Int7D create(int[] shape) {
         return factory.new Flat(shape, true);
     }
 
     /**
-     * Create a 7D array of float's with given shape.
+     * Create a 7D array of int's with given shape.
      * <p>
-     * This method creates a 7D array of float's with zero offset, contiguous
+     * This method creates a 7D array of int's with zero offset, contiguous
      * elements and column-major order.
      * @param shape      - The list of dimensions of the 7D array (all
      *                     dimensions must at least 1).
@@ -628,15 +628,15 @@ public abstract class Float7D extends Array7D implements FloatArray {
      *                     <b>shape</b> whose contents <b><i>must not be
      *                     modified</i></b> while the returned object is in
      *                     use.
-     * @return A new 7D array of float's.
+     * @return A new 7D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Float7D create(int[] shape, boolean cloneShape) {
+    public static Int7D create(int[] shape, boolean cloneShape) {
         return factory.new Flat(shape, cloneShape);
     }
 
     /**
-     * Wrap an existing array in a 7D array of float's with given dimensions.
+     * Wrap an existing array in a 7D array of int's with given dimensions.
      * <p>
      * The returned 7D array have zero offset, contiguous elements and
      * column-major storage order.  More specifically:
@@ -653,12 +653,12 @@ public abstract class Float7D extends Array7D implements FloatArray {
      * @return A 7D array sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Float7D wrap(float[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
+    public static Int7D wrap(int[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return factory.new Flat(data, dim1,dim2,dim3,dim4,dim5,dim6,dim7);
     }
 
     /**
-     * Wrap an existing array in a 7D array of float's with given shape.
+     * Wrap an existing array in a 7D array of int's with given shape.
      * <p>
      * The returned 7D array have zero offset, contiguous elements and
      * column-major storage order.  More specifically:
@@ -668,15 +668,15 @@ public abstract class Float7D extends Array7D implements FloatArray {
      * @param shape - The list of dimensions of the 7D array.  This argument is
      *                not referenced by the returned object and its contents
      *                can be modified after the call to this method.
-     * @return A new 7D array of float's sharing the elements of <b>data</b>.
+     * @return A new 7D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Float7D wrap(float[] data, int[] shape) {
+    public static Int7D wrap(int[] data, int[] shape) {
         return factory.new Flat(data, shape, true);
     }
 
     /**
-     * Wrap an existing array in a 7D array of float's with given shape.
+     * Wrap an existing array in a 7D array of int's with given shape.
      * <p>
      * The returned 7D array have zero offset, contiguous elements and
      * column-major storage order.  More specifically:
@@ -689,10 +689,10 @@ public abstract class Float7D extends Array7D implements FloatArray {
      *                     <b>shape</b> whose contents <b><i>must not be
      *                     modified</i></b> while the returned object is in
      *                     use.
-     * @return A new 7D array of float's sharing the elements of <b>data</b>.
+     * @return A new 7D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Float7D wrap(float[] data, int[] shape, boolean cloneShape) {
+    public static Int7D wrap(int[] data, int[] shape, boolean cloneShape) {
         return factory.new Flat(data, shape, cloneShape);
     }
 
@@ -702,9 +702,9 @@ public abstract class Float7D extends Array7D implements FloatArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Flat extends Float7D {
+    private class Flat extends Int7D {
         private static final int order = COLUMN_MAJOR;
-        private final float[] data;
+        private final int[] data;
         private final int dim1dim2;
         private final int dim1dim2dim3;
         private final int dim1dim2dim3dim4;
@@ -713,7 +713,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
 
         Flat(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
             super(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
-            data = new float[number];
+            data = new int[number];
             dim1dim2 = dim1*dim2;
             dim1dim2dim3 = dim1dim2*dim3;
             dim1dim2dim3dim4 = dim1dim2dim3*dim4;
@@ -723,7 +723,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
 
         Flat(int[] shape, boolean cloneShape) {
             super(shape, cloneShape);
-            data = new float[number];
+            data = new int[number];
             dim1dim2 = dim1*dim2;
             dim1dim2dim3 = dim1dim2*dim3;
             dim1dim2dim3dim4 = dim1dim2dim3*dim4;
@@ -731,7 +731,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
             dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
         }
 
-        Flat(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
+        Flat(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
             super(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
             data = arr;
             dim1dim2 = dim1*dim2;
@@ -741,7 +741,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
             dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
         }
 
-        Flat(float[] arr, int[] shape, boolean cloneShape) {
+        Flat(int[] arr, int[] shape, boolean cloneShape) {
             super(shape, cloneShape);
             data = arr;
             dim1dim2 = dim1*dim2;
@@ -752,12 +752,12 @@ public abstract class Float7D extends Array7D implements FloatArray {
         }
 
         @Override
-        public final float get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
+        public final int get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
             return data[dim1dim2dim3dim4dim5dim6*i7 + dim1dim2dim3dim4dim5*i6 + dim1dim2dim3dim4*i5 + dim1dim2dim3*i4 + dim1dim2*i3 + dim1*i2 + i1];
         }
 
         @Override
-        public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, float value) {
+        public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int value) {
             data[dim1dim2dim3dim4dim5dim6*i7 + dim1dim2dim3dim4dim5*i6 + dim1dim2dim3dim4*i5 + dim1dim2dim3*i4 + dim1dim2*i3 + dim1*i2 + i1] = value;
         }
 
@@ -767,12 +767,12 @@ public abstract class Float7D extends Array7D implements FloatArray {
         }
 
         @Override
-        public float[] flatten(boolean forceCopy) {
+        public int[] flatten(boolean forceCopy) {
             if (! forceCopy) {
                 return data;
             }
             int number = getNumber();
-            float[] out = new float[number];
+            int[] out = new int[number];
             System.arraycopy(data, 0, out, 0, number);
             return out;
         }
@@ -782,7 +782,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
     /* STRIDED LAYOUT */
 
     /**
-     * Wrap an existing array in a 7D array of float's with given dimensions,
+     * Wrap an existing array in a 7D array of int's with given dimensions,
      * strides and offset.
      * <p>
      * This creates a 7D array of dimensions {{@code dim1,dim2,dim3,dim4,dim5,dim6,dim7}}
@@ -809,7 +809,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
      * @param stride7 - The stride along the 7th dimension.
      * @return A 7D array sharing the elements of <b>data</b>.
      */
-    public static Float7D wrap(float[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7,
+    public static Int7D wrap(int[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7,
             int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7) {
         return factory.new Strided(data, dim1,dim2,dim3,dim4,dim5,dim6,dim7, offset, stride1,stride2,stride3,stride4,stride5,stride6,stride7);
     }
@@ -820,8 +820,8 @@ public abstract class Float7D extends Array7D implements FloatArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Strided extends Float7D {
-        private final float[] data;
+    private class Strided extends Int7D {
+        private final int[] data;
         private final int order;
         private final int offset;
         private final int stride1;
@@ -832,7 +832,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
         private final int stride6;
         private final int stride7;
 
-        Strided(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7) {
+        Strided(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7) {
             super(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
             this.data = arr;
             this.offset = offset;
@@ -851,12 +851,12 @@ public abstract class Float7D extends Array7D implements FloatArray {
         }
 
         @Override
-        public final float get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
+        public final int get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
             return data[index(i1,i2,i3,i4,i5,i6,i7)];
         }
 
         @Override
-        public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, float value) {
+        public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int value) {
             data[index(i1,i2,i3,i4,i5,i6,i7)] = value;
         }
 
@@ -866,14 +866,14 @@ public abstract class Float7D extends Array7D implements FloatArray {
         }
 
         @Override
-        public float[] flatten(boolean forceCopy) {
+        public int[] flatten(boolean forceCopy) {
             boolean flat = (stride1 == 1 && stride2 == dim1 && stride3 == stride2*dim2 && stride4 == stride3*dim3 && stride5 == stride4*dim4 && stride6 == stride5*dim5 && stride7 == stride6*dim6);
             if (flat && ! forceCopy && offset == 0) {
                 return data;
             }
-            float[] out;
+            int[] out;
             int number = getNumber();
-            out = new float[number];
+            out = new int[number];
             if (flat) {
                 System.arraycopy(data, offset, out, 0, number);
             } else {
@@ -903,7 +903,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
     /* MULTIDIMENSIONAL (7D) LAYOUT */
 
     /**
-     * Wrap an existing 7D array of float's in a Float7D array.
+     * Wrap an existing 7D array of int's in a Int7D array.
      * <p>
      * More specifically:
      * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7) = data[i7][i6][i5][i4][i3][i2][i1]</pre>
@@ -911,7 +911,7 @@ public abstract class Float7D extends Array7D implements FloatArray {
      * @param data    - The array to wrap in the 7D array.
      * @return A 7D array sharing the elements of <b>data</b>.
      */
-    public static Float7D wrap(float[][][][][][][] data) {
+    public static Int7D wrap(int[][][][][][][] data) {
         return factory.new Multi7(data);
     }
 
@@ -921,11 +921,11 @@ public abstract class Float7D extends Array7D implements FloatArray {
      * an instance of the outer class must be available (this is the purpose
      * of the static "factory" instance).
      */
-    class Multi7 extends Float7D {
+    class Multi7 extends Int7D {
         private static final int order = COLUMN_MAJOR;
-        private final float[][][][][][][] data;
+        private final int[][][][][][][] data;
 
-        protected Multi7(float[][][][][][][] arr) {
+        protected Multi7(int[][][][][][][] arr) {
             super(arr[0][0][0][0][0][0].length, arr[0][0][0][0][0].length, arr[0][0][0][0].length, arr[0][0][0].length, arr[0][0].length, arr[0].length, arr.length);
             data = arr;
         }
@@ -934,11 +934,11 @@ public abstract class Float7D extends Array7D implements FloatArray {
             return order;
         }
         @Override
-        public final float get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
+        public final int get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
             return data[i7][i6][i5][i4][i3][i2][i1];
         }
         @Override
-        public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, float value) {
+        public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int value) {
             data[i7][i6][i5][i4][i3][i2][i1] = value;
         }
     }

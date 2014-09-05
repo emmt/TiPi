@@ -70,13 +70,13 @@ public abstract class Long7D extends Array7D implements LongArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
-     * @param i4 - The index along the 4th dimension.
-     * @param i5 - The index along the 5th dimension.
-     * @param i6 - The index along the 6th dimension.
-     * @param i7 - The index along the 7th dimension.
+     * @param i1    - The index along the 1st dimension.
+     * @param i2    - The index along the 2nd dimension.
+     * @param i3    - The index along the 3rd dimension.
+     * @param i4    - The index along the 4th dimension.
+     * @param i5    - The index along the 5th dimension.
+     * @param i6    - The index along the 6th dimension.
+     * @param i7    - The index along the 7th dimension.
      * @param value - The value to store at position {@code (i1,i2,i3,i4,i5,i6,i7)}.
      */
     public abstract void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, long value);
@@ -87,7 +87,7 @@ public abstract class Long7D extends Array7D implements LongArray {
      * and "get" methods. */
 
     @Override
-    public void set(long value) {
+    public void fill(long value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -277,7 +277,7 @@ public abstract class Long7D extends Array7D implements LongArray {
     }
 
     @Override
-    public void set(LongGenerator generator) {
+    public void fill(LongGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -385,6 +385,170 @@ public abstract class Long7D extends Array7D implements LongArray {
     @Override
     public long[] flatten() {
         return flatten(false);
+    }
+
+    /**
+     * Convert instance into a Byte7D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte7D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte7D toByte() {
+        byte[] out = new byte[number];
+        int i = -1;
+        for (int i7 = 0; i7 < dim7; ++i7) {
+            for (int i6 = 0; i6 < dim6; ++i6) {
+                for (int i5 = 0; i5 < dim5; ++i5) {
+                    for (int i4 = 0; i4 < dim4; ++i4) {
+                        for (int i3 = 0; i3 < dim3; ++i3) {
+                            for (int i2 = 0; i2 < dim2; ++i2) {
+                                for (int i1 = 0; i1 < dim1; ++i1) {
+                                    out[++i] = (byte)get(i1,i2,i3,i4,i5,i6,i7);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Byte7D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+    }
+    /**
+     * Convert instance into a Short7D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short7D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short7D toShort() {
+        short[] out = new short[number];
+        int i = -1;
+        for (int i7 = 0; i7 < dim7; ++i7) {
+            for (int i6 = 0; i6 < dim6; ++i6) {
+                for (int i5 = 0; i5 < dim5; ++i5) {
+                    for (int i4 = 0; i4 < dim4; ++i4) {
+                        for (int i3 = 0; i3 < dim3; ++i3) {
+                            for (int i2 = 0; i2 < dim2; ++i2) {
+                                for (int i1 = 0; i1 < dim1; ++i1) {
+                                    out[++i] = (short)get(i1,i2,i3,i4,i5,i6,i7);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Short7D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+    }
+    /**
+     * Convert instance into an Int7D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int7D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int7D toInt() {
+        int[] out = new int[number];
+        int i = -1;
+        for (int i7 = 0; i7 < dim7; ++i7) {
+            for (int i6 = 0; i6 < dim6; ++i6) {
+                for (int i5 = 0; i5 < dim5; ++i5) {
+                    for (int i4 = 0; i4 < dim4; ++i4) {
+                        for (int i3 = 0; i3 < dim3; ++i3) {
+                            for (int i2 = 0; i2 < dim2; ++i2) {
+                                for (int i1 = 0; i1 < dim1; ++i1) {
+                                    out[++i] = (int)get(i1,i2,i3,i4,i5,i6,i7);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Int7D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+    }
+    /**
+     * Convert instance into a Long7D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long7D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long7D toLong() {
+        return this;
+    }
+    /**
+     * Convert instance into a Float7D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float7D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float7D toFloat() {
+        float[] out = new float[number];
+        int i = -1;
+        for (int i7 = 0; i7 < dim7; ++i7) {
+            for (int i6 = 0; i6 < dim6; ++i6) {
+                for (int i5 = 0; i5 < dim5; ++i5) {
+                    for (int i4 = 0; i4 < dim4; ++i4) {
+                        for (int i3 = 0; i3 < dim3; ++i3) {
+                            for (int i2 = 0; i2 < dim2; ++i2) {
+                                for (int i1 = 0; i1 < dim1; ++i1) {
+                                    out[++i] = (float)get(i1,i2,i3,i4,i5,i6,i7);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Float7D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+    }
+    /**
+     * Convert instance into a Double7D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double7D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double7D toDouble() {
+        double[] out = new double[number];
+        int i = -1;
+        for (int i7 = 0; i7 < dim7; ++i7) {
+            for (int i6 = 0; i6 < dim6; ++i6) {
+                for (int i5 = 0; i5 < dim5; ++i5) {
+                    for (int i4 = 0; i4 < dim4; ++i4) {
+                        for (int i3 = 0; i3 < dim3; ++i3) {
+                            for (int i2 = 0; i2 < dim2; ++i2) {
+                                for (int i1 = 0; i1 < dim1; ++i1) {
+                                    out[++i] = (double)get(i1,i2,i3,i4,i5,i6,i7);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Double7D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /*=======================================================================*/

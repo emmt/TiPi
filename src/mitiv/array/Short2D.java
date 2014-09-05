@@ -65,8 +65,8 @@ public abstract class Short2D extends Array2D implements ShortArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
+     * @param i1    - The index along the 1st dimension.
+     * @param i2    - The index along the 2nd dimension.
      * @param value - The value to store at position {@code (i1,i2)}.
      */
     public abstract void set(int i1, int i2, short value);
@@ -77,7 +77,7 @@ public abstract class Short2D extends Array2D implements ShortArray {
      * and "get" methods. */
 
     @Override
-    public void set(short value) {
+    public void fill(short value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -167,7 +167,7 @@ public abstract class Short2D extends Array2D implements ShortArray {
     }
 
     @Override
-    public void set(ShortGenerator generator) {
+    public void fill(ShortGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -225,6 +225,120 @@ public abstract class Short2D extends Array2D implements ShortArray {
     @Override
     public short[] flatten() {
         return flatten(false);
+    }
+
+    /**
+     * Convert instance into a Byte2D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte2D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte2D toByte() {
+        byte[] out = new byte[number];
+        int i = -1;
+        for (int i2 = 0; i2 < dim2; ++i2) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                out[++i] = (byte)get(i1,i2);
+            }
+        }
+        return Byte2D.wrap(out, dim1, dim2);
+    }
+    /**
+     * Convert instance into a Short2D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short2D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short2D toShort() {
+        return this;
+    }
+    /**
+     * Convert instance into an Int2D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int2D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int2D toInt() {
+        int[] out = new int[number];
+        int i = -1;
+        for (int i2 = 0; i2 < dim2; ++i2) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                out[++i] = (int)get(i1,i2);
+            }
+        }
+        return Int2D.wrap(out, dim1, dim2);
+    }
+    /**
+     * Convert instance into a Long2D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long2D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long2D toLong() {
+        long[] out = new long[number];
+        int i = -1;
+        for (int i2 = 0; i2 < dim2; ++i2) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                out[++i] = (long)get(i1,i2);
+            }
+        }
+        return Long2D.wrap(out, dim1, dim2);
+    }
+    /**
+     * Convert instance into a Float2D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float2D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float2D toFloat() {
+        float[] out = new float[number];
+        int i = -1;
+        for (int i2 = 0; i2 < dim2; ++i2) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                out[++i] = (float)get(i1,i2);
+            }
+        }
+        return Float2D.wrap(out, dim1, dim2);
+    }
+    /**
+     * Convert instance into a Double2D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double2D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double2D toDouble() {
+        double[] out = new double[number];
+        int i = -1;
+        for (int i2 = 0; i2 < dim2; ++i2) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                out[++i] = (double)get(i1,i2);
+            }
+        }
+        return Double2D.wrap(out, dim1, dim2);
     }
 
     /*=======================================================================*/

@@ -67,10 +67,10 @@ public abstract class Short4D extends Array4D implements ShortArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
-     * @param i4 - The index along the 4th dimension.
+     * @param i1    - The index along the 1st dimension.
+     * @param i2    - The index along the 2nd dimension.
+     * @param i3    - The index along the 3rd dimension.
+     * @param i4    - The index along the 4th dimension.
      * @param value - The value to store at position {@code (i1,i2,i3,i4)}.
      */
     public abstract void set(int i1, int i2, int i3, int i4, short value);
@@ -81,7 +81,7 @@ public abstract class Short4D extends Array4D implements ShortArray {
      * and "get" methods. */
 
     @Override
-    public void set(short value) {
+    public void fill(short value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -211,7 +211,7 @@ public abstract class Short4D extends Array4D implements ShortArray {
     }
 
     @Override
-    public void set(ShortGenerator generator) {
+    public void fill(ShortGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -289,6 +289,140 @@ public abstract class Short4D extends Array4D implements ShortArray {
     @Override
     public short[] flatten() {
         return flatten(false);
+    }
+
+    /**
+     * Convert instance into a Byte4D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte4D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte4D toByte() {
+        byte[] out = new byte[number];
+        int i = -1;
+        for (int i4 = 0; i4 < dim4; ++i4) {
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        out[++i] = (byte)get(i1,i2,i3,i4);
+                    }
+                }
+            }
+        }
+        return Byte4D.wrap(out, dim1, dim2, dim3, dim4);
+    }
+    /**
+     * Convert instance into a Short4D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short4D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short4D toShort() {
+        return this;
+    }
+    /**
+     * Convert instance into an Int4D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int4D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int4D toInt() {
+        int[] out = new int[number];
+        int i = -1;
+        for (int i4 = 0; i4 < dim4; ++i4) {
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        out[++i] = (int)get(i1,i2,i3,i4);
+                    }
+                }
+            }
+        }
+        return Int4D.wrap(out, dim1, dim2, dim3, dim4);
+    }
+    /**
+     * Convert instance into a Long4D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long4D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long4D toLong() {
+        long[] out = new long[number];
+        int i = -1;
+        for (int i4 = 0; i4 < dim4; ++i4) {
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        out[++i] = (long)get(i1,i2,i3,i4);
+                    }
+                }
+            }
+        }
+        return Long4D.wrap(out, dim1, dim2, dim3, dim4);
+    }
+    /**
+     * Convert instance into a Float4D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float4D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float4D toFloat() {
+        float[] out = new float[number];
+        int i = -1;
+        for (int i4 = 0; i4 < dim4; ++i4) {
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        out[++i] = (float)get(i1,i2,i3,i4);
+                    }
+                }
+            }
+        }
+        return Float4D.wrap(out, dim1, dim2, dim3, dim4);
+    }
+    /**
+     * Convert instance into a Double4D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double4D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double4D toDouble() {
+        double[] out = new double[number];
+        int i = -1;
+        for (int i4 = 0; i4 < dim4; ++i4) {
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        out[++i] = (double)get(i1,i2,i3,i4);
+                    }
+                }
+            }
+        }
+        return Double4D.wrap(out, dim1, dim2, dim3, dim4);
     }
 
     /*=======================================================================*/
