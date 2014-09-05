@@ -1,0 +1,137 @@
+//# if defined(type)
+//#     // Convert type name into a numerical code.
+//#     def type_byte   = 0
+//#     def type_short  = 1
+//#     def type_int    = 2
+//#     def type_long   = 3
+//#     def type_float  = 4
+//#     def type_double = 5
+//#     def type_number = ${}{type_${type}}
+//#     //debug type_number ---> ${type_number}
+//#     def type_number = ${type_number}
+//#     //debug type_number ---> ${type_number}
+//#
+//#     if ${type_number} == ${type_byte}
+//#         def Type = Byte
+//#         def TYPE = BYTE
+//#     elif ${type_number} == ${type_short}
+//#         def Type = Short
+//#         def TYPE = SHORT
+//#     elif ${type_number} == ${type_int}
+//#         def Type = Integer
+//#         def TYPE = INT
+//#     elif ${type_number} == ${type_long}
+//#         def Type = Long
+//#         def TYPE = LONG
+//#     elif ${type_number} == ${type_float}
+//#         def Type = Float
+//#         def TYPE = FLOAT
+//#     elif ${type_number} == ${type_double}
+//#         def Type = Double
+//#         def TYPE = DOUBLE
+//#     else
+//#         error Unknown type ${type}
+//#     endif
+//# endif
+//#
+//# if defined(rank)
+//#     // Define templates for simple and complex numbered lists.
+//#     //
+//#     // For simple numbered lists, the macros 'item' and 'sep' must be defined
+//#     // before expanding the macro 'list1' to yield:
+//#     //
+//#     //     ${item}1${sep}${item}2...${sep}${item}${rank}
+//#     //
+//#     // For complex numbered lists, the macros 'part1', 'part2', 'part3' and
+//#     // 'sep' must be defined before expanding the macro 'list2' to yield a
+//#     // list where the k-th item is: ${part1}${k}${part2}${k}${part3} for
+//#     // ${k} set to 1, ..., ${rank}.
+//#     //
+//#     def list0 := ${item}
+//#     def list1 := ${item}1
+//#     def list2 := ${part1}1${part2}1${part3}
+//#     def listK := ${part1}1${part2}0${part3}
+//#     if ${rank} >= 2
+//#         def list0 := ${list0}${sep}${item}
+//#         def list1 := ${list1}${sep}${item}2
+//#         def list2 := ${list2}${sep}${part1}2${part2}2${part3}
+//#         def listK := ${listK}${sep}${part1}2${part2}1${part3}
+//#         if ${rank} >= 3
+//#             def list0 := ${list0}${sep}${item}
+//#             def list1 := ${list1}${sep}${item}3
+//#             def list2 := ${list2}${sep}${part1}3${part2}3${part3}
+//#             def listK := ${listK}${sep}${part1}3${part2}2${part3}
+//#             if ${rank} >= 4
+//#                 def list0 := ${list0}${sep}${item}
+//#                 def list1 := ${list1}${sep}${item}4
+//#                 def list2 := ${list2}${sep}${part1}4${part2}4${part3}
+//#                 def listK := ${listK}${sep}${part1}4${part2}3${part3}
+//#                 if ${rank} >= 5
+//#                     def list0 := ${list0}${sep}${item}
+//#                     def list1 := ${list1}${sep}${item}5
+//#                     def list2 := ${list2}${sep}${part1}5${part2}5${part3}
+//#                     def listK := ${listK}${sep}${part1}5${part2}4${part3}
+//#                     if ${rank} >= 6
+//#                          def list0 := ${list0}${sep}${item}
+//#                          def list1 := ${list1}${sep}${item}6
+//#                          def list2 := ${list2}${sep}${part1}6${part2}6${part3}
+//#                          def listK := ${listK}${sep}${part1}6${part2}5${part3}
+//#                          if ${rank} >= 7
+//#                              def list0 := ${list0}${sep}${item}
+//#                              def list1 := ${list1}${sep}${item}7
+//#                              def list2 := ${list2}${sep}${part1}7${part2}7${part3}
+//#                              def listK := ${listK}${sep}${part1}7${part2}6${part3}
+//#                              if ${rank} >= 8
+//#                                  def list0 := ${list0}${sep}${item}
+//#                                  def list1 := ${list1}${sep}${item}8
+//#                                  def list2 := ${list2}${sep}${part1}8${part2}8${part3}
+//#                                  def listK := ${listK}${sep}${part1}8${part2}7${part3}
+//#                                  if ${rank} >= 9
+//#                                       def list0 := ${list0}${sep}${item}
+//#                                       def list1 := ${list1}${sep}${item}9
+//#                                       def list2 := ${list2}${sep}${part1}9${part2}9${part3}
+//#                                       def listK := ${listK}${sep}${part1}9${part2}8${part3}
+//#                                  endif
+//#                              endif
+//#                          endif
+//#                      endif
+//#                  endif
+//#              endif
+//#          endif
+//#     endif
+//#
+//#     // Substitute the 'list' template to produce declaration lists:
+//#     def sep = ,${__SPACE__}
+//#     def item = int dim
+//#     def declDimList = ${list1}
+//#     def item = int stride
+//#     def declStrideList = ${list1}
+//#     def item = int i
+//#     def declIndexList = ${list1}
+//#
+//#     // Substitute the 'list' template to produce compact lists of arguments:
+//#     def sep = ,
+//#     def item = dim
+//#     def dimList = ${list1}
+//#     def item = stride
+//#     def strideList = ${list1}
+//#     def item = i
+//#     def indexList = ${list1}
+//#     def item = 0
+//#     def zeroList = ${list0}
+//#     def item = 1
+//#     def oneList = ${list0}
+//# endif
+//#
+//# // Indentation (assuming 4 spaces):
+//# def __INDENT__ = ${__SPACE__}${__SPACE__}${__SPACE__}${__SPACE__}
+//# def __INDENT0__ =
+//# def __INDENT1__ = ${__INDENT__}
+//# def __INDENT2__ = ${__INDENT__}${__INDENT1__}
+//# def __INDENT3__ = ${__INDENT__}${__INDENT2__}
+//# def __INDENT4__ = ${__INDENT__}${__INDENT3__}
+//# def __INDENT5__ = ${__INDENT__}${__INDENT4__}
+//# def __INDENT6__ = ${__INDENT__}${__INDENT5__}
+//# def __INDENT7__ = ${__INDENT__}${__INDENT6__}
+//# def __INDENT8__ = ${__INDENT__}${__INDENT7__}
+//# def __INDENT9__ = ${__INDENT__}${__INDENT8__}
