@@ -1,0 +1,742 @@
+/*
+ * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
+ * developed by the MitiV project.
+ *
+ * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+//# include <common.javax>          // Get common definitions.
+//# def className = ${Type}${rank}D // Define the name of the class.
+//#
+//# if ${rank} == 1
+//#     def number = dim1
+//# else
+//#     def number = number
+//# endif
+//#
+//# // Be prepared to deal with different types.
+//# if ${type_number} == ${type_float}
+//#   def zero = 0.0F
+//# elif ${type_number} == ${type_double}
+//#   def zero = 0.0
+//# else
+//#   def zero = 0
+//# endif
+//#
+package ${package};
+
+import mitiv.base.Shaped;
+import mitiv.base.mapping.${Type}Function;
+import mitiv.base.mapping.${Type}Scanner;
+import mitiv.random.${Type}Generator;
+
+//# def k = 1
+//# def flatIndexDoc   =  i${k}
+//# def shapeIndexDoc  =  i${k}
+//# def strideIndexDoc =  stride${k}*i${k}
+//# def strideIndex    =  stride${k}*i${k}
+//# def close          =
+//# while ${k} < ${rank}
+//#     eval k += 1
+//#     eval km2 = ${k} - 2
+//#     eval km1 = ${k} - 1
+//#     if ${k} < ${rank}
+//#          def open  = (
+//#          def close = ${close})
+//#     else
+//#          def open  =
+//#     endif
+//#     def flatIndexDoc   = ${flatIndexDoc} + dim${km1}*${open}i${k}
+//#     def shapeIndexDoc  = ${shapeIndexDoc} + shape[${km2}]*${open}i${k}
+//#     def strideIndexDoc = ${strideIndexDoc} + stride${k}*i${k}
+//#     def strideIndex    = stride${k}*i${k} + ${strideIndex}
+//# done
+//# def strideIndex    = offset + ${strideIndex}
+//# def strideIndexDoc = offset + ${strideIndexDoc}
+//# def flatIndexDoc   = ${flatIndexDoc}${close}
+//# def shapeIndexDoc  = ${shapeIndexDoc}${close}
+//#
+//# //debug strideIndex: ${strideIndex}
+//# //debug strideIndexDoc: ${strideIndexDoc}
+//# //debug shapeIndexDoc: ${shapeIndexDoc}
+//# //debug flatIndexDoc: ${flatIndexDoc}
+
+/**
+ * Define class for comprehensive ${rank}-dimensional arrays of ${type}'s.
+ *
+ * @author Éric Thiébaut.
+ */
+public abstract class ${className} extends Array${rank}D implements ${Type}Array {
+
+    protected ${className}(${declDimList}) {
+        super(${dimList});
+    }
+
+    protected ${className}(int[] shape, boolean cloneShape) {
+        super(shape, cloneShape);
+    }
+
+    protected ${className}(int[] shape) {
+        super(shape, true);
+    }
+
+    @Override
+    public final int getType() {
+        return type;
+    }
+
+    /**
+     * Query the value stored at a given position.
+     * @param i1 - The index along the 1st dimension.
+     * @param i2 - The index along the 2nd dimension.
+     * @param i3 - The index along the 3rd dimension.
+     * @param i4 - The index along the 4th dimension.
+     * @param i5 - The index along the 5th dimension.
+     * @param i6 - The index along the 6th dimension.
+     * @param i7 - The index along the 7th dimension.
+     * @param i8 - The index along the 8th dimension.
+     * @param i9 - The index along the 9th dimension.
+     * @return The value stored at position {@code (${indexList})}.
+     */
+    public abstract ${type} get(${declIndexList});
+
+    /**
+     * Set the value at a given position.
+     * @param i1 - The index along the 1st dimension.
+     * @param i2 - The index along the 2nd dimension.
+     * @param i3 - The index along the 3rd dimension.
+     * @param i4 - The index along the 4th dimension.
+     * @param i5 - The index along the 5th dimension.
+     * @param i6 - The index along the 6th dimension.
+     * @param i7 - The index along the 7th dimension.
+     * @param i8 - The index along the 8th dimension.
+     * @param i9 - The index along the 9th dimension.
+     * @param value - The value to store at position {@code (${indexList})}.
+     */
+    public abstract void set(${declIndexList}, ${type} value);
+
+    /*=======================================================================*/
+    /* Provide default (non-optimized, except for the loop ordering)
+     * implementation of methods that can be coded solely with the "set"
+     * and "get" methods. */
+
+    //# // Build the row-major and column-major loop structures.
+    //# def rowMajorTemplate := ${alignLoop}for (int i${k} = 0; i${k} < dim${k}; ++i${k}) {
+    //# def colMajorTemplate := ${alignLoop}for (int i${j} = 0; i${j} < dim${j}; ++i${j}) {
+    //# suspend loopPrefix loopBody // will be interpolated later
+    //# def alignLoop := ${loopPrefix}
+    //# eval k = 1
+    //# eval j = ${rank}
+    //# def closeLoop    = ${alignLoop}}
+    //# def rowMajorLoop = ${rowMajorTemplate}
+    //# def colMajorLoop = ${colMajorTemplate}
+    //# while ${k} < ${rank}
+    //#     eval k += 1
+    //#     eval j -= 1
+    //#     def alignLoop   := ${alignLoop}${__INDENT__}
+    //#     def rowMajorLoop = ${rowMajorLoop}${__NEWLINE__}${rowMajorTemplate}
+    //#     def colMajorLoop = ${colMajorLoop}${__NEWLINE__}${colMajorTemplate}
+    //#     def closeLoop    = ${alignLoop}}${__NEWLINE__}${closeLoop}
+    //# done
+    //# def alignLoop   := ${alignLoop}${__INDENT__}
+    //# def colMajorLoop = ${colMajorLoop}${__NEWLINE__}${alignLoop}${loopBody}${__NEWLINE__}${closeLoop}
+    //# def rowMajorLoop = ${rowMajorLoop}${__NEWLINE__}${alignLoop}${loopBody}${__NEWLINE__}${closeLoop}
+    //# undef closeLoop
+    //# //debug ${colMajorLoop}
+    //# //debug ${rowMajorLoop}
+    //#
+    //# if ${rank} == 1
+    //#     def loopIndent := ${__INDENT2__}
+    //#     def loopPrefix := ${__INDENT2__}
+    //#     def loop = ${colMajorLoop}
+    //# else
+    //#     def loopIndent := ${__INDENT2__}
+    //#     def loopPrefix := ${__INDENT3__}
+    //#     def loop = ${loopIndent}if (getOrder() == ROW_MAJOR) {
+    //#     def loop = ${loop}${__NEWLINE__}${rowMajorLoop}
+    //#     def loop = ${loop}${__NEWLINE__}${loopIndent}} else {
+    //#     def loop = ${loop}${__NEWLINE__}${loopPrefix}/* Assume column-major order. */
+    //#     def loop = ${loop}${__NEWLINE__}${colMajorLoop}
+    //#     def loop = ${loop}${__NEWLINE__}${loopIndent}}
+    //# endif
+    //# //debug ${loop}
+    //#
+    @Override
+    public void set(${type} value) {
+        //# def loopBody = set(${indexList}, value);
+        //# emit ${loop}
+    }
+
+    //# suspend loopOperator
+    //# def loopExpr = get(${indexList}) ${loopOperator} value
+    //# if ${type_number} <= 1
+    //#     def loopExpr = (${type})(${loopExpr})
+    //# endif
+    //# def loopBody = set(${indexList}, ${loopExpr});
+    @Override
+    public void incr(${type} value) {
+        //# def loopOperator = +
+        //# emit ${loop}
+    }
+
+    @Override
+    public void decr(${type} value) {
+        //# def loopOperator = -
+        //# emit ${loop}
+    }
+
+    @Override
+    public void mult(${type} value) {
+        //# def loopOperator = *
+        //# emit ${loop}
+    }
+
+    //# suspend loopExpr
+    //# def loopBody = set(${indexList}, ${loopExpr});
+    @Override
+    public void map(${Type}Function function) {
+        //# def loopExpr = function.apply(get(${indexList}))
+        //# emit ${loop}
+    }
+
+    @Override
+    public void set(${Type}Generator generator) {
+        //# def loopExpr = generator.next${Type}()
+        //# emit ${loop}
+    }
+
+    @Override
+    public void scan(${Type}Scanner scanner)  {
+        //# if ${rank} == 1
+        scanner.initialize(get(0));
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            scanner.update(get(i1));
+        }
+        //# else
+        boolean skip = true;
+        scanner.initialize(get(${zeroList}));
+        //# def loopBody = if (skip) skip = false; else scanner.update(get(${indexList}));
+        //# emit ${loop}
+        //# endif
+    }
+
+    /* Note that the following default implementation of the "flatten" method
+     * is always returning a copy of the contents whatever the value of the
+     * "forceCopy" argument.
+     * @see devel.eric.array.base.${Type}Array#flatten(boolean)
+     */
+    @Override
+    public ${type}[] flatten(boolean forceCopy) {
+        /* Copy the elements in column-major order. */
+        ${type}[] out = new ${type}[${number}];
+        //# if ${rank} == 1
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            out[i1] = get(i1);
+        }
+        //# else
+        int i = -1;
+        //#     def loopPrefix := ${__INDENT2__}
+        //#     def loopBody = out[++i] = get(${indexList});
+        //#     emit ${colMajorLoop}
+        //# endif
+        return out;
+    }
+
+    @Override
+    public ${type}[] flatten() {
+        return flatten(false);
+    }
+
+    /*=======================================================================*/
+    /* FACTORY */
+
+    /* Inner class instances can only be created from an instance of the outer
+     * class.  For this, we need a static instance of the outer class (to
+     * spare the creation of this instance each time a new instance of the
+     * inner class is needed).  The outer class is however "abstract" and we
+     * must provide a minimal set of methods to make it instantiable.
+     */
+    private static final ${className} factory = new ${className}(${oneList}) {
+        @Override
+        public final ${type} get(${declIndexList}) {
+            return ${zero};
+        }
+        @Override
+        public final void set(${declIndexList}, ${type} value) {
+        }
+        @Override
+        public final int getOrder() {
+            return COLUMN_MAJOR;
+        }
+        @Override
+        public ${type}[] flatten(boolean forceCopy) {
+            return null;
+        }
+    };
+
+    /*=======================================================================*/
+    /* FLAT LAYOUT */
+
+    /**
+     * Create a ${rank}D array of ${type}'s with given dimensions.
+     * <p>
+     * This method creates a ${rank}D array of ${type}'s with zero offset, contiguous
+     * elements and column-major order.  All dimensions must at least 1.
+     * @param dim1 - The 1st dimension of the ${rank}D array.
+     * @param dim2 - The 2nd dimension of the ${rank}D array.
+     * @param dim3 - The 3rd dimension of the ${rank}D array.
+     * @param dim4 - The 4th dimension of the ${rank}D array.
+     * @param dim5 - The 5th dimension of the ${rank}D array.
+     * @param dim6 - The 6th dimension of the ${rank}D array.
+     * @param dim7 - The 7th dimension of the ${rank}D array.
+     * @param dim8 - The 8th dimension of the ${rank}D array.
+     * @param dim9 - The 9th dimension of the ${rank}D array.
+     * @return A new ${rank}D array of ${type}'s.
+     * @see {@link Shaped#COLUMN_MAJOR}
+     */
+    public static ${className} create(${declDimList}) {
+        return factory.new Flat(${dimList});
+    }
+
+    /**
+     * Create a ${rank}D array of ${type}'s with given shape.
+     * <p>
+     * This method creates a ${rank}D array of ${type}'s with zero offset, contiguous
+     * elements and column-major order.
+     * @param shape - The list of dimensions of the ${rank}D array (all dimensions
+     *                must at least 1).  This argument is not referenced by
+     *                the returned object and its contents can be modified
+     *                after calling this method.
+     * @return A new ${rank}D array of ${type}'s.
+     * @see {@link Shaped#COLUMN_MAJOR}
+     */
+    public static ${className} create(int[] shape) {
+        return factory.new Flat(shape, true);
+    }
+
+    /**
+     * Create a ${rank}D array of ${type}'s with given shape.
+     * <p>
+     * This method creates a ${rank}D array of ${type}'s with zero offset, contiguous
+     * elements and column-major order.
+     * @param shape      - The list of dimensions of the ${rank}D array (all
+     *                     dimensions must at least 1).
+     * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
+     *                     otherwise, the returned object will reference
+     *                     <b>shape</b> whose contents <b><i>must not be
+     *                     modified</i></b> while the returned object is in
+     *                     use.
+     * @return A new ${rank}D array of ${type}'s.
+     * @see {@link Shaped#COLUMN_MAJOR}
+     */
+    public static ${className} create(int[] shape, boolean cloneShape) {
+        return factory.new Flat(shape, cloneShape);
+    }
+
+    /**
+     * Wrap an existing array in a ${rank}D array of ${type}'s with given dimensions.
+     * <p>
+     * The returned ${rank}D array have zero offset, contiguous elements and
+     * column-major storage order.  More specifically:
+     * <pre>arr.get(${indexList}) = data[${flatIndexDoc}]</pre>
+     * with {@code arr} the returned ${rank}D array.
+     * @param data - The data to wrap in the ${rank}D array.
+     * @param dim1 - The 1st dimension of the ${rank}D array.
+     * @param dim2 - The 2nd dimension of the ${rank}D array.
+     * @param dim3 - The 3rd dimension of the ${rank}D array.
+     * @param dim4 - The 4th dimension of the ${rank}D array.
+     * @param dim5 - The 5th dimension of the ${rank}D array.
+     * @param dim6 - The 6th dimension of the ${rank}D array.
+     * @param dim7 - The 7th dimension of the ${rank}D array.
+     * @param dim8 - The 8th dimension of the ${rank}D array.
+     * @param dim9 - The 9th dimension of the ${rank}D array.
+     * @return A ${rank}D array sharing the elements of <b>data</b>.
+     * @see {@link Shaped#COLUMN_MAJOR}
+     */
+    public static ${className} wrap(${type}[] data, ${declDimList}) {
+        return factory.new Flat(data, ${dimList});
+    }
+
+    /**
+     * Wrap an existing array in a ${rank}D array of ${type}'s with given shape.
+     * <p>
+     * The returned ${rank}D array have zero offset, contiguous elements and
+     * column-major storage order.  More specifically:
+     * <pre>arr.get(${indexList}) = data[${shapeIndexDoc}]</pre>
+     * with {@code arr} the returned ${rank}D array.
+     * @param data - The data to wrap in the ${rank}D array.
+     * @param shape - The list of dimensions of the ${rank}D array.  This argument is
+     *                not referenced by the returned object and its contents
+     *                can be modified after the call to this method.
+     * @return A new ${rank}D array of ${type}'s sharing the elements of <b>data</b>.
+     * @see {@link Shaped#COLUMN_MAJOR}
+     */
+    public static ${className} wrap(${type}[] data, int[] shape) {
+        return factory.new Flat(data, shape, true);
+    }
+
+    /**
+     * Wrap an existing array in a ${rank}D array of ${type}'s with given shape.
+     * <p>
+     * The returned ${rank}D array have zero offset, contiguous elements and
+     * column-major storage order.  More specifically:
+     * <pre>arr.get(${indexList}) = data[${shapeIndexDoc}]</pre>
+     * with {@code arr} the returned ${rank}D array.
+     * @param data       - The data to wrap in the ${rank}D array.
+     * @param shape      - The list of dimensions of the ${rank}D array.
+     * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
+     *                     otherwise, the returned object will reference
+     *                     <b>shape</b> whose contents <b><i>must not be
+     *                     modified</i></b> while the returned object is in
+     *                     use.
+     * @return A new ${rank}D array of ${type}'s sharing the elements of <b>data</b>.
+     * @see {@link Shaped#COLUMN_MAJOR}
+     */
+    public static ${className} wrap(${type}[] data, int[] shape, boolean cloneShape) {
+        return factory.new Flat(data, shape, cloneShape);
+    }
+
+    /*
+     * The following inner class is defined to handle the specific case of a
+     * ${rank}D array stored in a "flat" (1D) Java array in column-major order.
+     * To instantiate such an inner class, an instance of the outer class must
+     * be available (this is the purpose of the static "factory" instance).
+     */
+    private class Flat extends ${className} {
+        private static final int order = COLUMN_MAJOR;
+        private final ${type}[] data;
+        //# def indent := ${__INDENT3__}
+        //# def k = 1
+        //# def flatIndex = i1
+        //# def flatStrideInit =
+        //# def strideName = dim1
+        //# while ${k} < ${rank}
+        //#     eval k += 1
+        //#     def flatIndex = ${strideName}*i${k} + ${flatIndex}
+        //#     if ${k} > 2
+        private final int ${strideName};
+        //#         def code = ${indent}${strideName} = ${strideExpr};
+        //#         if ${k} == 3
+        //#             def flatStrideInit = ${code}
+        //#         else
+        //#             def flatStrideInit = ${flatStrideInit}${__NEWLINE__}${code}
+        //#         endif
+        //#     endif
+        //#     def strideExpr = ${strideName}*dim${k}
+        //#     def strideName = ${strideName}dim${k}
+        //# done
+
+        Flat(${declDimList}) {
+            super(${dimList});
+            data = new ${type}[${number}];
+            //# if ${rank} > 2
+            //#     emit ${flatStrideInit}
+            //# endif
+        }
+
+        Flat(int[] shape, boolean cloneShape) {
+            super(shape, cloneShape);
+            data = new ${type}[${number}];
+            //# if ${rank} > 2
+            //#     emit ${flatStrideInit}
+            //# endif
+        }
+
+        Flat(${type}[] arr, ${declDimList}) {
+            super(${dimList});
+            data = arr;
+            //# if ${rank} > 2
+            //#     emit ${flatStrideInit}
+            //# endif
+        }
+
+        Flat(${type}[] arr, int[] shape, boolean cloneShape) {
+            super(shape, cloneShape);
+            data = arr;
+            //# if ${rank} > 2
+            //#     emit ${flatStrideInit}
+            //# endif
+        }
+
+        @Override
+        public final ${type} get(${declIndexList}) {
+            return data[${flatIndex}];
+        }
+
+        @Override
+        public final void set(${declIndexList}, ${type} value) {
+            data[${flatIndex}] = value;
+        }
+
+        @Override
+        public final int getOrder() {
+            return order;
+        }
+
+        @Override
+        public ${type}[] flatten(boolean forceCopy) {
+            if (! forceCopy) {
+                return data;
+            }
+            int number = getNumber();
+            ${type}[] out = new ${type}[${number}];
+            System.arraycopy(data, 0, out, 0, number);
+            return out;
+        }
+    }
+
+    /*=======================================================================*/
+    /* STRIDED LAYOUT */
+
+    /**
+     * Wrap an existing array in a ${rank}D array of ${type}'s with given dimensions,
+     * strides and offset.
+     * <p>
+     * This creates a ${rank}D array of dimensions {{@code ${dimList}}}
+     * sharing (part of) the contents of {@code data} in arbitrary storage
+     * order.  More specifically:
+     * <pre>arr.get(${indexList}) = data[${strideIndexDoc}]</pre>
+     * with {@code arr} the returned ${rank}D array.
+     * @param data    - The array to wrap in the ${rank}D array.
+     * @param dim1    - The 1st dimension of the ${rank}D array.
+     * @param dim2    - The 2nd dimension of the ${rank}D array.
+     * @param dim3    - The 3rd dimension of the ${rank}D array.
+     * @param dim4    - The 4th dimension of the ${rank}D array.
+     * @param dim5    - The 5th dimension of the ${rank}D array.
+     * @param dim6    - The 6th dimension of the ${rank}D array.
+     * @param dim7    - The 7th dimension of the ${rank}D array.
+     * @param dim8    - The 8th dimension of the ${rank}D array.
+     * @param dim9    - The 9th dimension of the ${rank}D array.
+     * @param offset  - The offset in {@code data} of element (${zeroList}) of
+     *                  the ${rank}D array.
+     * @param stride1 - The stride along the 1st dimension.
+     * @param stride2 - The stride along the 2nd dimension.
+     * @param stride3 - The stride along the 3rd dimension.
+     * @param stride4 - The stride along the 4th dimension.
+     * @param stride5 - The stride along the 5th dimension.
+     * @param stride6 - The stride along the 6th dimension.
+     * @param stride7 - The stride along the 7th dimension.
+     * @param stride8 - The stride along the 8th dimension.
+     * @param stride9 - The stride along the 9th dimension.
+     * @return A ${rank}D array sharing the elements of <b>data</b>.
+     */
+    public static ${className} wrap(${type}[] data, ${declDimList},
+            int offset, ${declStrideList}) {
+        return factory.new Strided(data, ${dimList}, offset, ${strideList});
+    }
+
+    /*
+     * The following inner class is defined to handle the specific case of a
+     * ${rank}D array stored in a "flat" (1D) Java array with offset and strides.
+     * To instantiate such an inner class, an instance of the outer class must
+     * be available (this is the purpose of the static "factory" instance).
+     */
+    private class Strided extends ${className} {
+        private final ${type}[] data;
+        private final int order;
+        private final int offset;
+        //# def k = 0
+        //# while ${k} < ${rank}
+        //#     eval k += 1
+        private final int stride${k};
+        //# done
+
+        Strided(${type}[] arr, ${declDimList}, int offset, ${declStrideList}) {
+            super(${dimList});
+            this.data = arr;
+            this.offset = offset;
+            //# def k = 0
+            //# while ${k} < ${rank}
+            //#     eval k += 1
+            this.stride${k} = stride${k};
+            //# done
+            this.order = checkViewStrides(arr.length, ${dimList}, offset, ${strideList});
+        }
+
+        private final int index(${declIndexList}) {
+            return ${strideIndex};
+        }
+
+        @Override
+        public final ${type} get(${declIndexList}) {
+            return data[index(${indexList})];
+        }
+
+        @Override
+        public final void set(${declIndexList}, ${type} value) {
+            data[index(${indexList})] = value;
+        }
+
+        @Override
+        public final int getOrder() {
+            return order;
+        }
+
+        @Override
+        public ${type}[] flatten(boolean forceCopy) {
+            //# def isFlatExpr = stride1 == 1
+            //# if ${rank} >= 2
+            //#     def isFlatExpr = ${isFlatExpr} && stride2 == dim1
+            //#     def k = 2
+            //#     while ${k} < ${rank}
+            //#         eval kp = ${k}
+            //#         eval k += 1
+            //#         def isFlatExpr = ${isFlatExpr} && stride${k} == stride${kp}*dim${kp}
+            //#     done
+            //# endif
+            boolean flat = (${isFlatExpr});
+            if (flat && ! forceCopy && offset == 0) {
+                return data;
+            }
+            ${type}[] out;
+            int number = getNumber();
+            out = new ${type}[${number}];
+            if (flat) {
+                System.arraycopy(data, offset, out, 0, number);
+            } else {
+                /* Must access the output in column-major order. */
+                int i = -1;
+                //# def loopPrefix = ${__INDENT4__}
+                //# def loopBody = out[++i] = get(${indexList});
+                //# emit ${colMajorLoop}
+            }
+            return out;
+        }
+    }
+
+    //# if ${rank} > 1
+    /*=======================================================================*/
+    /* MULTIDIMENSIONAL (${rank}D) LAYOUT */
+
+    //# def k = 1
+    //# def bracketList = []
+    //# def bracketIndexedList = [i1]
+    //# def arrayLengthPrefix = arr
+    //# def arrayLengthList = ${arrayLengthPrefix}.length
+    //# while ${k} < ${rank}
+    //#     eval k += 1
+    //#     def bracketList = []${bracketList}
+    //#     def bracketIndexedList = [i${k}]${bracketIndexedList}
+    //#     def arrayLengthPrefix = ${arrayLengthPrefix}[0]
+    //#     def arrayLengthList = ${arrayLengthPrefix}.length, ${arrayLengthList}
+    //# done
+    //#
+    /**
+     * Wrap an existing ${rank}D array of ${type}'s in a ${className} array.
+     * <p>
+     * More specifically:
+     * <pre>arr.get(${indexList}) = data${bracketIndexedList}</pre>
+     * with {@code arr} the returned ${rank}D array.
+     * @param data    - The array to wrap in the ${rank}D array.
+     * @return A ${rank}D array sharing the elements of <b>data</b>.
+     */
+    public static ${className} wrap(${type}${bracketList} data) {
+        return factory.new Multi${rank}(data);
+    }
+
+    /*
+     * The following inner class is defined to handle the specific case of a
+     * ${rank}D array stored in a ${rank}D Java array.  To instantiate such an inner class,
+     * an instance of the outer class must be available (this is the purpose
+     * of the static "factory" instance).
+     */
+    class Multi${rank} extends ${className} {
+        private static final int order = COLUMN_MAJOR;
+        private final ${type}${bracketList} data;
+
+        protected Multi${rank}(${type}${bracketList} arr) {
+            super(${arrayLengthList});
+            data = arr;
+        }
+        @Override
+        public int getOrder() {
+            return order;
+        }
+        @Override
+        public final ${type} get(${declIndexList}) {
+            return data${bracketIndexedList};
+        }
+        @Override
+        public final void set(${declIndexList}, ${type} value) {
+            data${bracketIndexedList} = value;
+        }
+    }
+    //# endif
+    //#
+    //# if ${rank} == 3
+
+    /*=======================================================================*/
+    /* MULTIDIMENSIONAL (2D) LAYOUT */
+
+    /**
+     * Wrap an existing 2D array of ${type}'s in a ${Type}3D array.
+     * <p>
+     * More specifically:
+     * <pre>arr.get(i1,i2,i3) = data[i3][dim1*i2 + i1]</pre>
+     * with {@code arr} the returned 3D array.
+     * @param data    - The array to wrap in the 4D array.
+     * @param dim1    - The 1st dimension of the 3D array.
+     * @param dim2    - The 2nd dimension of the 3D array.
+     * @return A 4D array sharing the elements of <b>data</b>.
+     */
+    public static ${Type}3D wrap(${type}[][] arr, int dim1, int dim2) {
+        return factory.new Multi2(arr, dim1, dim2);
+    }
+
+    class Multi2 extends ${Type}3D {
+        private static final int order = COLUMN_MAJOR;
+        private final ${type}[][] data;
+
+        protected Multi2(${type}[][] arr, int dim1, int dim2) {
+            super(dim1, dim2, arr.length);
+            data = arr;
+        }
+
+        @Override
+        public int getOrder() {
+            return order;
+        }
+
+        @Override
+        public final ${type} get(int i1, int i2, int i3) {
+            return data[i3][i2*dim1 + i1];
+        }
+
+        @Override
+        public final void set(int i1, int i2, int i3, ${type} value) {
+            data[i3][i2*dim1 + i1] = value;
+        }
+    }
+    //# endif
+
+}
+
+/*
+ * Local Variables:
+ * mode: Java
+ * tab-width: 8
+ * indent-tabs-mode: nil
+ * c-basic-offset: 4
+ * fill-column: 78
+ * coding: utf-8
+ * ispell-local-dictionary: "american"
+ * End:
+ */

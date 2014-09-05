@@ -1,0 +1,263 @@
+/*
+ * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
+ * developed by the MitiV project.
+ *
+ * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+//# include <common.javax>       // Get common definitions.
+//# def className = ArrayFactory // Define the name of the class.
+package ${package};
+import mitiv.base.Shaped;
+import mitiv.base.Traits;
+
+//# def BYTE   = 0
+//# def type_0 = byte
+//# def Type_0 = Byte
+//# def TYPE_0 = BYTE
+//# def Name_0 = ${Type_0}
+//# def SHORT  = 1
+//# def type_1 = short
+//# def Type_1 = Short
+//# def TYPE_1 = SHORT
+//# def Name_1 = ${Type_1}
+//# def INT    = 2
+//# def type_2 = int
+//# def Type_2 = Int
+//# def TYPE_2 = INT
+//# def Name_2 = Integer
+//# def LONG   = 3
+//# def type_3 = long
+//# def Type_3 = Long
+//# def TYPE_3 = LONG
+//# def Name_3 = ${Type_3}
+//# def FLOAT  = 4
+//# def type_4 = float
+//# def Type_4 = Float
+//# def TYPE_4 = FLOAT
+//# def Name_4 = ${Type_4}
+//# def DOUBLE = 5
+//# def type_5 = double
+//# def Type_5 = Double
+//# def TYPE_5 = DOUBLE
+//# def Name_5 = ${Type_5}
+
+/**
+ * Conversion functions.
+ *
+ * @author Éric Thiébaut & Jonathan Léger.
+ */
+public abstract class ${className} implements Shaped {
+    /**
+     * This class is not instantiable.
+     */
+    protected ${className}() {}
+
+    //# def dst = ${BYTE}
+    //# while ${dst} <= ${DOUBLE}
+    //#     def dst_type = ${}{type_${dst}}
+    //#     def dst_Type = ${}{Type_${dst}}
+    //#     def dst_TYPE = ${}{TYPE_${dst}}
+    //#     def dst_TypeArray = ${}{Name_${dst}}Array
+    //#     if ${dst} == 2
+    //#         def a = an
+    //#         def A = An
+    //#     else
+    //#         def a = a
+    //#         def A = A
+    //#     endif
+    /**
+     * Convert a ShapedArray into ${a} ${dst_Type}Array.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it already
+     * of the requested type.
+     *
+     * @param src - The source array.
+     * @return ${A} ${dst_Type}Array whose values has been converted into ${dst_type}'s
+     *         from those of {@code src}.
+     */
+    public ${dst_TypeArray} to${dst_Type}(ShapedArray src) {
+        int srcType = src.getType();
+        if (src.getType() == Traits.${dst_TYPE}) {
+            return (${dst_TypeArray})src;
+        }
+        int number = src.getNumber();
+        ${dst_type}[] out = new ${dst_type}[number];
+        switch (srcType) {
+            //# def src = ${BYTE}
+            //# while ${src} <= ${DOUBLE}
+            //#     if ${src} != ${dst}
+            //#         def src_type = ${}{type_${src}}
+            //#         def src_Type = ${}{Type_${src}}
+            //#         def src_TYPE = ${}{TYPE_${src}}
+            //#         def src_TypeArray = ${}{Name_${src}}Array
+        case Traits.${src_TYPE}:
+            {
+                ${src_type}[] inp = ((${src_TypeArray})src).flatten(false);
+                for (int j = 0; j < number; ++j) {
+                    out[j] = (${dst_type})inp[j];
+                }
+            }
+            break;
+            //#     endif
+            //#     eval src += 1
+            //# done
+        default:
+            throw new IllegalArgumentException("unexpected type (BUG)");
+        }
+        return wrap(out, src.cloneShape(), false);
+    }
+
+    //#     eval dst += 1
+    //# done
+
+    //# def id = ${BYTE}
+    //# while ${id} <= ${DOUBLE}
+    //#     def type = ${}{type_${id}}
+    //#     def Type = ${}{Type_${id}}
+    //#     def TYPE = ${}{TYPE_${id}}
+    //#     def Name = ${}{Name_${id}}
+    //#     def TypeArray = ${Name}Array
+    //#     if ${id} == 2
+    //#         def a = an
+    //#         def A = An
+    //#     else
+    //#         def a = a
+    //#         def A = A
+    //#     endif
+    //#     def rank = 1
+    //#     while ${rank} <= 9
+    //#         def argDimList = dim1
+    //#         def declDimList = int dim1
+    //#         def k = 1
+    //#         while ${k} < ${rank}
+    //#             eval k += 1
+    //#             def argDimList = ${argDimList}, dim${k}
+    //#             def declDimList = ${declDimList}, int dim${k}
+    //#         done
+    /**
+     * Wrap an array of ${type} values into ${a} ${Name}Array.
+     * <p>
+     * Notes: (i) The source array {@code arr} and the returned ${Name}Array
+     * share the same contents. (ii) The storage order is assumed to be
+     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
+     * {@link #${Name}1D}, {@link #${Name}2D}, ... according to the number of
+     * dimensions in {@code shape}.
+     *
+     * @param arr  - The source array.
+     //#         def k = 1
+     //#         while ${k} <= ${rank}
+     //#         if ${k} == 1
+     //#             def th = st
+     //#         elif ${k} == 2
+     //#             def th = nd
+     //#         elif ${k} == 3
+     //#             def th = rd
+     //#         else
+     //#             def th = th
+     //#         endif
+     * @param dim${k} - The ${k}${th} dimension of the ${rank}D array.
+     //#             eval k += 1
+     //#         done
+     * @return A ${Name}Array wrapped around the source array {@code arr}.
+      */
+    public static ${Name}${rank}D wrap(${type}[] arr, ${declDimList}) {
+        return (${Name}${rank}D)wrap(arr, new int[]{${argDimList}}, false);
+    }
+
+    //#     eval rank += 1
+    //# done
+    /**
+     * Wrap ${a} ${TypeArray} object around a simple array of ${type}'s.
+     * <p>
+     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
+     * and that the result can be safely casted into a {@link #${Name}1D},
+     * {@link #${Name}2D}, ... according to the number of dimensions in
+     * {@code shape}.
+     *
+     * @param arr   - The input array.
+     * @param shape - The dimension list of the result.
+     *
+     * @return An instance of ${TypeArray} sharing its data with the input array
+     *         {@code arr}.
+     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static ${TypeArray} wrap(${type}[] arr, int[] shape) {
+        return wrap(arr, shape, true);
+    }
+
+    /**
+     * Wrap ${a} ${TypeArray} object around a simple array of ${type}'s.
+     * <p>
+     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
+     * and that the result can be safely casted into a {@link #${Name}1D},
+     * {@link #${Name}2D}, ... according to the number of dimensions in
+     * {@code shape}.
+     *
+     * @param arr   - The input array.
+     * @param shape - The dimension list of the result.
+     * @param cloneShape - Indicate whether the {@code shape} parameter must be
+     *                     cloned.
+     *
+     * @return An instance of ${TypeArray} sharing its data with the input array
+     *         {@code arr}.
+     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static ${TypeArray} wrap(${type}[] arr, int[] shape, boolean cloneShape) {
+        int rank = (shape == null ? 0 : shape.length);
+        if (rank == 1) {
+            return ${Name}1D.wrap(arr, shape, cloneShape);
+        } else if (rank == 2) {
+            return ${Name}2D.wrap(arr, shape, cloneShape);
+        } else if (rank == 3) {
+            return ${Name}3D.wrap(arr, shape, cloneShape);
+        } else if (rank == 4) {
+            return ${Name}4D.wrap(arr, shape, cloneShape);
+        } else if (rank == 5) {
+            return ${Name}5D.wrap(arr, shape, cloneShape);
+        } else if (rank == 6) {
+            return ${Name}6D.wrap(arr, shape, cloneShape);
+        } else if (rank == 7) {
+            return ${Name}7D.wrap(arr, shape, cloneShape);
+        } else if (rank == 8) {
+            return ${Name}8D.wrap(arr, shape, cloneShape);
+        } else if (rank == 9) {
+            return ${Name}9D.wrap(arr, shape, cloneShape);
+        } else {
+            throw new IllegalArgumentException("bad number of dimensions");
+        }
+    }
+
+    //#     eval id += 1
+    //# done
+}
+
+/*
+ * Local Variables:
+ * mode: Java
+ * tab-width: 8
+ * indent-tabs-mode: nil
+ * c-basic-offset: 4
+ * fill-column: 78
+ * coding: utf-8
+ * ispell-local-dictionary: "american"
+ * End:
+ */

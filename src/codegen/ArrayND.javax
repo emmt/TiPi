@@ -1,0 +1,231 @@
+/*
+ * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
+ * developed by the MitiV project.
+ *
+ * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+//# include <common.javax>        // Get common definitions.
+//# def className = Array${rank}D // Define the name of the class.
+package ${package};
+import mitiv.base.Shaped;
+
+
+/**
+ * Define abstract class for multi-dimensional arrays of rank ${rank}.
+ *
+ * @author Éric Thiébaut.
+ */
+public abstract class ${className} implements Shaped {
+    //# def scope = protected final
+    static ${scope} int rank = ${rank};
+    //# def productOfDimensions = dim1
+    //# eval k = 1
+    //# while ${k} <= ${rank}
+    ${scope} int dim${k};
+    //#     if ${k} > 1
+    //#         def productOfDimensions = ${productOfDimensions}*dim${k}
+    //#     endif
+    //#     eval k += 1
+    //# done
+    //# if ${rank} == 1
+    //#     def number = dim1
+    //# else
+    //#     def number = number
+    ${scope} int number;
+    //# endif
+    ${scope} int[] shape;
+
+    /*
+     * The following constructors make this class non instantiable, but still
+     * let others inherit from this class.
+     */
+
+    protected ${className}(${declDimList}) {
+        //# def badDims = dim1 < 1
+        //# def k = 2
+        //# while ${k} <= ${rank}
+        //#     def badDims = ${badDims} || dim${k} < 1
+        //#     eval k += 1
+        //# done
+        if (${badDims}) {
+            throw new IllegalArgumentException("Bad dimension(s) for ${rank}D array");
+        }
+        //# def k = 1
+        //# while ${k} <= ${rank}
+        this.dim${k} = dim${k};
+        //#     eval k += 1
+        //# done
+        //# if ${rank} > 1
+        this.number = ${productOfDimensions};
+        //# endif
+        this.shape = new int[]{${dimList}};
+    }
+
+    protected ${className}(int[] shape) {
+        this(shape, true);
+    }
+
+    protected ${className}(int[] shape, boolean cloneShape) {
+        if (shape == null || shape.length != rank ||
+        //# def j = 0
+        //# def k = 1
+        //# while ${k} < ${rank}
+                (dim${k} = shape[${j}]) < 1 ||
+        //#     eval j = ${k}
+        //#     eval k += 1
+        //# done
+                (dim${k} = shape[${j}]) < 1) {
+            throw new IllegalArgumentException("Bad shape for ${rank}D array");
+        }
+        //# if ${rank} > 1
+        this.number = ${productOfDimensions};
+        //# endif
+        if (cloneShape) {
+            this.shape = new int[]{${dimList}};
+        } else {
+            this.shape = shape;
+        }
+    }
+
+    @Override
+    public final int getRank() {
+        return rank;
+    }
+
+    @Override
+    public final int[] cloneShape() {
+        return new int[]{${dimList}};
+    }
+
+    /**
+     * Get the shape (that is the list of dimensions) of the shaped object.
+     * <p>
+     * The result returned by this method must be considered as
+     * <b><i>read-only</i></b>.  This is why the visibility of this method is
+     * limited to the package. Use {@link #cloneShape} to get a copy of the
+     * dimension list.
+     *
+     * @return A list of dimensions.
+     */
+    int[] getShape() {
+        return shape;
+    }
+
+    @Override
+    public final int getNumber() {
+        return ${number};
+    }
+
+    @Override
+    public final int getDimension(int k) {
+        return (k < rank ? shape[k] : 1);
+    }
+
+    /**
+     * Check the parameters of a ${rank}D view with strides and get ordering.
+     * @param number  - The number of elements in the wrapped array.
+     * @param dim1    - The 1st dimension of the ${rank}D view.
+     * @param dim2    - The 2nd dimension of the ${rank}D view.
+     * @param dim3    - The 3rd dimension of the ${rank}D view.
+     * @param dim4    - The 4th dimension of the ${rank}D view.
+     * @param dim5    - The 5th dimension of the ${rank}D view.
+     * @param dim6    - The 6th dimension of the ${rank}D view.
+     * @param dim7    - The 7th dimension of the ${rank}D view.
+     * @param dim8    - The 8th dimension of the ${rank}D view.
+     * @param dim9    - The 9th dimension of the ${rank}D view.
+     * @param offset  - The offset of element (${zeroList}) of the ${rank}D view.
+     * @param stride1 - The stride along the 1st dimension.
+     * @param stride2 - The stride along the 2nd dimension.
+     * @param stride3 - The stride along the 3rd dimension.
+     * @param stride4 - The stride along the 4th dimension.
+     * @param stride5 - The stride along the 5th dimension.
+     * @param stride6 - The stride along the 6th dimension.
+     * @param stride7 - The stride along the 7th dimension.
+     * @param stride8 - The stride along the 8th dimension.
+     * @param stride9 - The stride along the 9th dimension.
+     * @return The ordering: {@link Shaped#COLUMN_MAJOR},
+     *         {@link Shaped#ROW_MAJOR}, or {@link Shaped#NONSPECIFIC_ORDER}.
+     */
+    protected static int checkViewStrides(int number, ${declDimList},
+            int offset, ${declStrideList}) {
+        int imin, imax, itmp;
+        //# def k = 0
+        //# while ${k} < ${rank}
+        //#     eval k += 1
+        itmp = (dim${k} - 1)*stride${k};
+        //#     if ${k} == 1
+        if (itmp >= 0) {
+            imin = offset;
+            imax = offset + itmp;
+        } else {
+            imin = offset + itmp;
+            imax = offset;
+        }
+        //#     else
+        if (itmp >= 0) {
+            imax += itmp;
+        } else {
+            imin += itmp;
+        }
+        //#     endif
+        //# done
+        if (imin < 0 || imax >= number) {
+            throw new IndexOutOfBoundsException("${rank}D view is not within available space");
+        }
+        //# if ${rank} == 1
+        return COLUMN_MAJOR;
+        //# else
+        //#     def isColumnMajor = s1 <= s2 // to check column major order
+        //#     def isRowMajor    = s1 >= s2 // to check row major order
+        //#     eval k = 1
+        //#     while ${k} <= ${rank}
+        int s${k} = Math.abs(stride${k});
+        //#         if ${k} >= 3
+        //#             eval j = ${k} - 1
+        //#             def isColumnMajor = ${isColumnMajor} && s${j} <= s${k}
+        //#             def isRowMajor =       ${isRowMajor} && s${j} >= s${k}
+        //#         endif
+        //#         eval k += 1
+        //#     done
+        if (${isColumnMajor}) {
+            return COLUMN_MAJOR;
+        } else if (${isRowMajor}) {
+            return ROW_MAJOR;
+        } else {
+            return NONSPECIFIC_ORDER;
+        }
+        //# endif
+    }
+
+}
+
+/*
+ * Local Variables:
+ * mode: Java
+ * tab-width: 8
+ * indent-tabs-mode: nil
+ * c-basic-offset: 4
+ * fill-column: 78
+ * coding: utf-8
+ * ispell-local-dictionary: "american"
+ * End:
+ */
