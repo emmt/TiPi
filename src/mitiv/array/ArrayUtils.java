@@ -332,31 +332,80 @@ public class ArrayUtils {
     }
 
     public static void writeImage(DoubleArray img, String fileName) {
-        int[] dims = getImageDimensions(img);
-        writeImage(img.flatten(), dims[0], dims[1], dims[2], fileName);
+        BufferedImage buf = doubleAsBuffered(img);
+        writeImage(buf, fileName);
     }
 
     public static void writeImage(DoubleArray img, String fileName, ScalingOptions scaleOpts) {
-        int[] dims = getImageDimensions(img);
-        writeImage(img.flatten(), dims[0], dims[1], dims[2], fileName, scaleOpts);
+        BufferedImage buf = doubleAsBuffered(img, scaleOpts);
+        writeImage(buf, fileName);
     }
 
     public static void writeImage(DoubleShapedVector img, String fileName) {
-        int[] dims = getImageDimensions(img);
-        writeImage(img.getData(), dims[0], dims[1], dims[2], fileName);
+        BufferedImage buf = doubleAsBuffered(img);
+        writeImage(buf, fileName);
     }
 
     public static void writeImage(DoubleShapedVector img, String fileName, ScalingOptions scaleOpts) {
-        int[] dims = getImageDimensions(img);
-        writeImage(img.getData(), dims[0], dims[1], dims[2], fileName, scaleOpts);
+        BufferedImage buf = doubleAsBuffered(img, scaleOpts);
+        writeImage(buf, fileName);
     }
 
     // FIXME: deal with NaN and INFINITE
     public static void writeImage(double[] arr, int depth, int width, int height, String fileName) {
-        writeImage(arr, depth, width, height, fileName, new ScalingOptions());
+        BufferedImage buf = doubleAsBuffered(arr, depth, width, height);
+        writeImage(buf, fileName);
     }
 
     public static void writeImage(double[] arr, int depth, int width, int height, String fileName,
+            ScalingOptions scaleOpts) {
+        BufferedImage buf = doubleAsBuffered(arr, depth, width, height, scaleOpts);
+        writeImage(buf, fileName);
+    }
+
+    private static int checkDimensions(double[] arr, int depth, int width, int height) {
+        int number;
+        if ((depth != 1 && depth != 3 && depth != 4)) {
+            throw new IllegalArgumentException("Only gray, RGB or RGBA images supported.");
+        }
+        if (width < 1 || height < 1) {
+            throw new IllegalArgumentException("Bad image size.");
+        }
+        number = depth*width*height;
+        if (arr == null || number > arr.length) {
+            throw new IllegalArgumentException("More pixel values than array elements.");
+        }
+        return number;
+    }
+    
+    /*=======================================================================*/
+    /* FUNCTIONS TO BUFFERED */
+    
+    public static BufferedImage doubleAsBuffered(DoubleArray img) {
+        int[] dims = getImageDimensions(img);
+        return doubleAsBuffered(img.flatten(), dims[0], dims[1], dims[2]);
+    }
+
+    public static BufferedImage doubleAsBuffered(DoubleArray img, ScalingOptions scaleOpts) {
+        int[] dims = getImageDimensions(img);
+        return doubleAsBuffered(img.flatten(), dims[0], dims[1], dims[2], scaleOpts);
+    }
+
+    public static BufferedImage doubleAsBuffered(DoubleShapedVector img) {
+        int[] dims = getImageDimensions(img);
+        return doubleAsBuffered(img.getData(), dims[0], dims[1], dims[2]);
+    }
+
+    public static BufferedImage doubleAsBuffered(DoubleShapedVector img, ScalingOptions scaleOpts) {
+        int[] dims = getImageDimensions(img);
+        return doubleAsBuffered(img.getData(), dims[0], dims[1], dims[2], scaleOpts);
+    }
+
+    public static BufferedImage doubleAsBuffered(double[] arr, int depth, int width, int height) {
+        return doubleAsBuffered(arr, depth, width, height, new ScalingOptions());
+    }
+
+    public static BufferedImage doubleAsBuffered(double[] arr, int depth, int width, int height,
             ScalingOptions scaleOpts) {
         int number = checkDimensions(arr, depth, width, height);
         double[] sf = scaleOpts.getScaling(arr, 0, number, 0, 255);
@@ -407,27 +456,16 @@ public class ArrayUtils {
         } else {
             throw new IllegalArgumentException("Unexpected image depth.");
         }
+        return buf;
+    }
+    
+    private static void writeImage(BufferedImage buf, String fileName){
         String type = "png"; // FIXME: guess from extension
         try {
             ImageIO.write(buf, type, new File(fileName));
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private static int checkDimensions(double[] arr, int depth, int width, int height) {
-        int number;
-        if ((depth != 1 && depth != 3 && depth != 4)) {
-            throw new IllegalArgumentException("Only gray, RGB or RGBA images supported.");
-        }
-        if (width < 1 || height < 1) {
-            throw new IllegalArgumentException("Bad image size.");
-        }
-        number = depth*width*height;
-        if (arr == null || number > arr.length) {
-            throw new IllegalArgumentException("More pixel values than array elements.");
-        }
-        return number;
     }
 
     /*=======================================================================*/
