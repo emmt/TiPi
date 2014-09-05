@@ -143,25 +143,19 @@ public abstract class ${className} implements Shaped {
     /**
      * Check the parameters of a ${rank}D view with strides and get ordering.
      * @param number  - The number of elements in the wrapped array.
-     * @param dim1    - The 1st dimension of the ${rank}D view.
-     * @param dim2    - The 2nd dimension of the ${rank}D view.
-     * @param dim3    - The 3rd dimension of the ${rank}D view.
-     * @param dim4    - The 4th dimension of the ${rank}D view.
-     * @param dim5    - The 5th dimension of the ${rank}D view.
-     * @param dim6    - The 6th dimension of the ${rank}D view.
-     * @param dim7    - The 7th dimension of the ${rank}D view.
-     * @param dim8    - The 8th dimension of the ${rank}D view.
-     * @param dim9    - The 9th dimension of the ${rank}D view.
+     //# def k = 1
+     //# while ${k} <= ${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param dim${k}    - The ${kth} dimension of the ${rank}D view.
+     //#   eval k += 1
+     //# done
      * @param offset  - The offset of element (${zeroList}) of the ${rank}D view.
-     * @param stride1 - The stride along the 1st dimension.
-     * @param stride2 - The stride along the 2nd dimension.
-     * @param stride3 - The stride along the 3rd dimension.
-     * @param stride4 - The stride along the 4th dimension.
-     * @param stride5 - The stride along the 5th dimension.
-     * @param stride6 - The stride along the 6th dimension.
-     * @param stride7 - The stride along the 7th dimension.
-     * @param stride8 - The stride along the 8th dimension.
-     * @param stride9 - The stride along the 9th dimension.
+     //# def k = 1
+     //# while ${k} <= ${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param stride${k} - The stride along the ${kth} dimension.
+     //#   eval k += 1
+     //# done
      * @return The ordering: {@link Shaped#COLUMN_MAJOR},
      *         {@link Shaped#ROW_MAJOR}, or {@link Shaped#NONSPECIFIC_ORDER}.
      */

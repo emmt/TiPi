@@ -46,13 +46,13 @@ public interface ${className} extends ShapedArray {
      * Set all the values of the array of ${type}'s.
      * @param value - The value to set.
      */
-    public abstract void set(${type} value);
+    public abstract void fill(${type} value);
 
     /**
      * Set the values of the array of ${type}'s with a generator.
      * @param generator - The generator to use.
      */
-    public abstract void set(${Type}Generator generator);
+    public abstract void fill(${Type}Generator generator);
 
     /**
      * Increment all the values of the array of ${type}'s.
@@ -120,6 +120,28 @@ public interface ${className} extends ShapedArray {
      */
     public abstract ${type}[] flatten();
 
+    //#if 0
+    public static ${Type}Array wrap(${type}[] data, int[] shape) {
+        // TODO
+        return null;
+    }
+
+    //# def rank = 1
+    //# while ${rank} <= 9
+    //#     def argDimList = dim1
+    //#     def declDimList = int dim1
+    //#     def k = 1
+    //#     while ${k} < ${rank}
+    //#         eval k += 1
+    //#         def argDimList = ${argDimList}, dim${k}
+    //#         def declDimList = ${declDimList}, int dim${k}
+    //#     done
+    public static ${Type}${rank}D wrap(${type}[] data, ${declDimList}) {
+        return ${Type}${rank}D.wrap(data, new int[]{${argDimList}}, false);
+    }
+    //#     eval rank += 1
+    //# done
+    //#endif
 }
 
 /*

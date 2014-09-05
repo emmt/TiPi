@@ -44,13 +44,13 @@ public interface ByteArray extends ShapedArray {
      * Set all the values of the array of byte's.
      * @param value - The value to set.
      */
-    public abstract void set(byte value);
+    public abstract void fill(byte value);
 
     /**
      * Set the values of the array of byte's with a generator.
      * @param generator - The generator to use.
      */
-    public abstract void set(ByteGenerator generator);
+    public abstract void fill(ByteGenerator generator);
 
     /**
      * Increment all the values of the array of byte's.

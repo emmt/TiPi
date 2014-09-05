@@ -44,13 +44,13 @@ public interface DoubleArray extends ShapedArray {
      * Set all the values of the array of double's.
      * @param value - The value to set.
      */
-    public abstract void set(double value);
+    public abstract void fill(double value);
 
     /**
      * Set the values of the array of double's with a generator.
      * @param generator - The generator to use.
      */
-    public abstract void set(DoubleGenerator generator);
+    public abstract void fill(DoubleGenerator generator);
 
     /**
      * Increment all the values of the array of double's.

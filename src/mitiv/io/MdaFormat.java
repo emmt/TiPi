@@ -31,12 +31,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
 
+import mitiv.array.Array3D;
 import mitiv.array.ArrayFactory;
 import mitiv.array.ByteArray;
 import mitiv.array.DoubleArray;
 import mitiv.array.Float3D;
 import mitiv.array.FloatArray;
-import mitiv.array.IntegerArray;
+import mitiv.array.IntArray;
 import mitiv.array.LongArray;
 import mitiv.array.ShapedArray;
 import mitiv.array.ShortArray;
@@ -388,7 +389,7 @@ public class MdaFormat {
             short[] arr = ((ShortArray)obj).flatten();
             transfered = dataStream.write(arr, 0, number);
         } else if (type == Traits.INT) {
-            int[] arr = ((IntegerArray)obj).flatten();
+            int[] arr = ((IntArray)obj).flatten();
             transfered = dataStream.write(arr, 0, number);
         } else if (type == Traits.LONG) {
             long[] arr = ((LongArray)obj).flatten();

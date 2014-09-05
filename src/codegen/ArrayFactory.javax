@@ -29,36 +29,6 @@ package ${package};
 import mitiv.base.Shaped;
 import mitiv.base.Traits;
 
-//# def BYTE   = 0
-//# def type_0 = byte
-//# def Type_0 = Byte
-//# def TYPE_0 = BYTE
-//# def Name_0 = ${Type_0}
-//# def SHORT  = 1
-//# def type_1 = short
-//# def Type_1 = Short
-//# def TYPE_1 = SHORT
-//# def Name_1 = ${Type_1}
-//# def INT    = 2
-//# def type_2 = int
-//# def Type_2 = Int
-//# def TYPE_2 = INT
-//# def Name_2 = Integer
-//# def LONG   = 3
-//# def type_3 = long
-//# def Type_3 = Long
-//# def TYPE_3 = LONG
-//# def Name_3 = ${Type_3}
-//# def FLOAT  = 4
-//# def type_4 = float
-//# def Type_4 = Float
-//# def TYPE_4 = FLOAT
-//# def Name_4 = ${Type_4}
-//# def DOUBLE = 5
-//# def type_5 = double
-//# def Type_5 = Double
-//# def TYPE_5 = DOUBLE
-//# def Name_5 = ${Type_5}
 
 /**
  * Conversion functions.
@@ -76,7 +46,6 @@ public abstract class ${className} implements Shaped {
     //#     def dst_type = ${}{type_${dst}}
     //#     def dst_Type = ${}{Type_${dst}}
     //#     def dst_TYPE = ${}{TYPE_${dst}}
-    //#     def dst_TypeArray = ${}{Name_${dst}}Array
     //#     if ${dst} == 2
     //#         def a = an
     //#         def A = An
@@ -87,17 +56,17 @@ public abstract class ${className} implements Shaped {
     /**
      * Convert a ShapedArray into ${a} ${dst_Type}Array.
      * <p>
-     * The operation is lazy, in the sense that {@code src} is returned if it already
-     * of the requested type.
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
      *
      * @param src - The source array.
      * @return ${A} ${dst_Type}Array whose values has been converted into ${dst_type}'s
      *         from those of {@code src}.
      */
-    public ${dst_TypeArray} to${dst_Type}(ShapedArray src) {
+    public ${dst_Type}Array to${dst_Type}(ShapedArray src) {
         int srcType = src.getType();
         if (src.getType() == Traits.${dst_TYPE}) {
-            return (${dst_TypeArray})src;
+            return (${dst_Type}Array)src;
         }
         int number = src.getNumber();
         ${dst_type}[] out = new ${dst_type}[number];
@@ -108,10 +77,9 @@ public abstract class ${className} implements Shaped {
             //#         def src_type = ${}{type_${src}}
             //#         def src_Type = ${}{Type_${src}}
             //#         def src_TYPE = ${}{TYPE_${src}}
-            //#         def src_TypeArray = ${}{Name_${src}}Array
         case Traits.${src_TYPE}:
             {
-                ${src_type}[] inp = ((${src_TypeArray})src).flatten(false);
+                ${src_type}[] inp = ((${src_Type}Array)src).flatten(false);
                 for (int j = 0; j < number; ++j) {
                     out[j] = (${dst_type})inp[j];
                 }
@@ -135,7 +103,7 @@ public abstract class ${className} implements Shaped {
     //#     def Type = ${}{Type_${id}}
     //#     def TYPE = ${}{TYPE_${id}}
     //#     def Name = ${}{Name_${id}}
-    //#     def TypeArray = ${Name}Array
+    //#     def TypeArray = ${Type}Array
     //#     if ${id} == 2
     //#         def a = an
     //#         def A = An
@@ -154,33 +122,33 @@ public abstract class ${className} implements Shaped {
     //#             def declDimList = ${declDimList}, int dim${k}
     //#         done
     /**
-     * Wrap an array of ${type} values into ${a} ${Name}Array.
+     * Wrap an array of ${type} values into ${a} ${Type}Array.
      * <p>
-     * Notes: (i) The source array {@code arr} and the returned ${Name}Array
+     * Notes: (i) The source array {@code arr} and the returned ${Type}Array
      * share the same contents. (ii) The storage order is assumed to be
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #${Name}1D}, {@link #${Name}2D}, ... according to the number of
+     * {@link #${Type}1D}, {@link #${Type}2D}, ... according to the number of
      * dimensions in {@code shape}.
      *
      * @param arr  - The source array.
      //#         def k = 1
      //#         while ${k} <= ${rank}
-     //#         if ${k} == 1
-     //#             def th = st
-     //#         elif ${k} == 2
-     //#             def th = nd
-     //#         elif ${k} == 3
-     //#             def th = rd
-     //#         else
-     //#             def th = th
-     //#         endif
+     //#             if ${k} == 1
+     //#                 def th = st
+     //#             elif ${k} == 2
+     //#                 def th = nd
+     //#             elif ${k} == 3
+     //#                 def th = rd
+     //#             else
+     //#                 def th = th
+     //#             endif
      * @param dim${k} - The ${k}${th} dimension of the ${rank}D array.
      //#             eval k += 1
      //#         done
-     * @return A ${Name}Array wrapped around the source array {@code arr}.
+     * @return A ${Type}Array wrapped around the source array {@code arr}.
       */
-    public static ${Name}${rank}D wrap(${type}[] arr, ${declDimList}) {
-        return (${Name}${rank}D)wrap(arr, new int[]{${argDimList}}, false);
+    public static ${Type}${rank}D wrap(${type}[] arr, ${declDimList}) {
+        return (${Type}${rank}D)wrap(arr, new int[]{${argDimList}}, false);
     }
 
     //#     eval rank += 1
@@ -189,8 +157,8 @@ public abstract class ${className} implements Shaped {
      * Wrap ${a} ${TypeArray} object around a simple array of ${type}'s.
      * <p>
      * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #${Name}1D},
-     * {@link #${Name}2D}, ... according to the number of dimensions in
+     * and that the result can be safely casted into a {@link #${Type}1D},
+     * {@link #${Type}2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
      * @param arr   - The input array.
@@ -208,8 +176,8 @@ public abstract class ${className} implements Shaped {
      * Wrap ${a} ${TypeArray} object around a simple array of ${type}'s.
      * <p>
      * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #${Name}1D},
-     * {@link #${Name}2D}, ... according to the number of dimensions in
+     * and that the result can be safely casted into a {@link #${Type}1D},
+     * {@link #${Type}2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
      * @param arr   - The input array.
@@ -224,23 +192,23 @@ public abstract class ${className} implements Shaped {
     public static ${TypeArray} wrap(${type}[] arr, int[] shape, boolean cloneShape) {
         int rank = (shape == null ? 0 : shape.length);
         if (rank == 1) {
-            return ${Name}1D.wrap(arr, shape, cloneShape);
+            return ${Type}1D.wrap(arr, shape, cloneShape);
         } else if (rank == 2) {
-            return ${Name}2D.wrap(arr, shape, cloneShape);
+            return ${Type}2D.wrap(arr, shape, cloneShape);
         } else if (rank == 3) {
-            return ${Name}3D.wrap(arr, shape, cloneShape);
+            return ${Type}3D.wrap(arr, shape, cloneShape);
         } else if (rank == 4) {
-            return ${Name}4D.wrap(arr, shape, cloneShape);
+            return ${Type}4D.wrap(arr, shape, cloneShape);
         } else if (rank == 5) {
-            return ${Name}5D.wrap(arr, shape, cloneShape);
+            return ${Type}5D.wrap(arr, shape, cloneShape);
         } else if (rank == 6) {
-            return ${Name}6D.wrap(arr, shape, cloneShape);
+            return ${Type}6D.wrap(arr, shape, cloneShape);
         } else if (rank == 7) {
-            return ${Name}7D.wrap(arr, shape, cloneShape);
+            return ${Type}7D.wrap(arr, shape, cloneShape);
         } else if (rank == 8) {
-            return ${Name}8D.wrap(arr, shape, cloneShape);
+            return ${Type}8D.wrap(arr, shape, cloneShape);
         } else if (rank == 9) {
-            return ${Name}9D.wrap(arr, shape, cloneShape);
+            return ${Type}9D.wrap(arr, shape, cloneShape);
         } else {
             throw new IllegalArgumentException("bad number of dimensions");
         }

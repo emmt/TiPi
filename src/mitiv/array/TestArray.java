@@ -96,7 +96,7 @@ public class TestArray {
             System.out.println("direct filling of cube array in wrong order: " + (t1 - t0) + " ms");
 
             t0 = System.currentTimeMillis();
-            a.set(1.0F);
+            a.fill(1.0F);
             t1 = System.currentTimeMillis();
             System.out.println("filling of flat array: " + (t1 - t0) + " ms");
 
@@ -108,18 +108,18 @@ public class TestArray {
              */
 
             t0 = System.currentTimeMillis();
-            c.set(1.0F);
+            c.fill(1.0F);
             t1 = System.currentTimeMillis();
             System.out.println("filling of cube array: " + (t1 - t0) + " ms");
             System.out.println("some values: " + c.get(1, 2, 3) + ", " + c.get(3, 4, 5));
 
             t0 = System.currentTimeMillis();
-            a.set(generator);
+            a.fill(generator);
             t1 = System.currentTimeMillis();
             System.out.println("random fill of flat array: " + (t1 - t0) + " ms");
 
             t0 = System.currentTimeMillis();
-            c.set(generator);
+            c.fill(generator);
             t1 = System.currentTimeMillis();
             System.out.println("random fill of cube array: " + (t1 - t0) + " ms");
         }
