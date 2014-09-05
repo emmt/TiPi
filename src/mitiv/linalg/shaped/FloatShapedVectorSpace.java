@@ -72,6 +72,17 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
         return v;
     }
 
+    public FloatShapedVector clone(FloatShapedVector vec) {
+        check(vec);
+        return _clone(vec);
+    }
+
+    protected FloatShapedVector _clone(FloatShapedVector vec) {
+        FloatShapedVector cpy = new FloatShapedVector(this);
+        _copy(vec, cpy);
+        return cpy;
+    }
+
     @Override
     public FloatShapedVector clone(Vector vec) {
         check(vec);
@@ -80,9 +91,7 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
     @Override
     protected FloatShapedVector _clone(Vector vec) {
-        FloatShapedVector cpy = new FloatShapedVector(this);
-        _copy(vec, cpy);
-        return cpy;
+        return _clone((FloatShapedVector)vec);
     }
 
     public FloatShapedVector wrap(float[] x) {
