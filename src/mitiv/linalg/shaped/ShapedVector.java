@@ -42,7 +42,7 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
     public ShapedVectorSpace getOwner() {
         return (ShapedVectorSpace)space;
     }
-    
+
 
     public ShapedVectorSpace getSpace(){
         return getOwner();
@@ -71,6 +71,11 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
     @Override
     public final int getDimension(int k) {
         return descr.getDimension(k);
+    }
+
+    @Override
+    public ShapedVector clone(){
+        return getSpace()._clone(this);
     }
 }
 
