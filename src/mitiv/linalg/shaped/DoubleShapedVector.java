@@ -73,12 +73,12 @@ public class DoubleShapedVector extends ShapedVector {
     public DoubleShapedVectorSpace getOwner() {
         return (DoubleShapedVectorSpace) space;
     }
-    
+
     @Override
     public DoubleShapedVectorSpace getSpace() {
         return getOwner();
     }
-    
+
     @Override
     public final double get(int i) {
         return data[i];
@@ -118,6 +118,11 @@ public class DoubleShapedVector extends ShapedVector {
         for (int k = 0; k < number; ++k) {
             data[k] = generator.nextDouble();
         }
+    }
+
+    @Override
+    public DoubleShapedVector clone(){
+        return (DoubleShapedVector) getSpace().clone(this);
     }
 
 }

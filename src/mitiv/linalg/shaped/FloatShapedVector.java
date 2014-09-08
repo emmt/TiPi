@@ -73,12 +73,12 @@ public class FloatShapedVector extends ShapedVector {
     public FloatShapedVectorSpace getOwner() {
         return (FloatShapedVectorSpace)space;
     }
-    
+
     @Override
     public FloatShapedVectorSpace getSpace() {
         return getOwner();
     }
-    
+
     @Override
     public final double get(int i) {
         return data[i];
@@ -130,6 +130,11 @@ public class FloatShapedVector extends ShapedVector {
         for (int k = 0; k < number; ++k) {
             data[k] = generator.nextFloat();
         }
+    }
+
+    @Override
+    public FloatShapedVector clone(){
+        return (FloatShapedVector) getSpace().clone(this);
     }
 
 }
