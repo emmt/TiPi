@@ -36,6 +36,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import mitiv.array.ArrayUtils;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
@@ -125,7 +126,7 @@ public class CommonUtils {
     }
 
     /**
-     * Convert a RGB value to an int grey value.
+     * Convert a RGB value to an int grey value (float version).
      *
      * @param r the r
      * @param g the g
@@ -134,35 +135,16 @@ public class CommonUtils {
      */
     public static int colorToGrey(double r, double g, double b)
     {
-        return (int)(0.2126*r+0.7152*g+0.0722*b);
+        return (int) ArrayUtils.colorToGrey(r, g, b);
     }
-
-    /**
-     * Take an array (max size 3) of rgb value and convert it to grey.
-     *
-     * @param rgb the rgb
-     * @return the int
-     */
+    
     public static int colorToGrey(int[]rgb)
     {
         if (rgb.length == 3) {
-            return (int)(0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2]);
+            return ArrayUtils.colorToGrey(rgb[0], rgb[1], rgb[2]);
         } else {
             return rgb[0];
         }
-    }
-    
-    /**
-     * Convert a RGB value to an int grey value (float version).
-     *
-     * @param r the r
-     * @param g the g
-     * @param b the b
-     * @return the int
-     */
-    public static int colorToGrey(float r, float g, float b)
-    {
-        return (int)(0.2126*r+0.7152*g+0.0722*b);
     }
 
     /**
