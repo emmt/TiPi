@@ -39,6 +39,12 @@ import mitiv.base.Typed;
  * @author Éric Thiébaut.
  */
 public interface ShapedArray extends Shaped, Typed {
+    public ByteArray   toByte();
+    public ShortArray  toShort();
+    public IntArray    toInt();
+    public LongArray   toLong();
+    public FloatArray  toFloat();
+    public DoubleArray toDouble();
 }
 
 /*

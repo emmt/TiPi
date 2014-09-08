@@ -64,7 +64,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
+     * @param i1    - The index along the 1st dimension.
      * @param value - The value to store at position {@code (i1)}.
      */
     public abstract void set(int i1, float value);
@@ -75,7 +75,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
      * and "get" methods. */
 
     @Override
-    public void set(float value) {
+    public void fill(float value) {
         for (int i1 = 0; i1 < dim1; ++i1) {
             set(i1, value);
         }
@@ -110,7 +110,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
     }
 
     @Override
-    public void set(FloatGenerator generator) {
+    public void fill(FloatGenerator generator) {
         for (int i1 = 0; i1 < dim1; ++i1) {
             set(i1, generator.nextFloat());
         }
@@ -142,6 +142,110 @@ public abstract class Float1D extends Array1D implements FloatArray {
     @Override
     public float[] flatten() {
         return flatten(false);
+    }
+
+    /**
+     * Convert instance into a Byte1D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte1D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte1D toByte() {
+        byte[] out = new byte[dim1];
+        int i = -1;
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            out[++i] = (byte)get(i1);
+        }
+        return Byte1D.wrap(out, dim1);
+    }
+    /**
+     * Convert instance into a Short1D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short1D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short1D toShort() {
+        short[] out = new short[dim1];
+        int i = -1;
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            out[++i] = (short)get(i1);
+        }
+        return Short1D.wrap(out, dim1);
+    }
+    /**
+     * Convert instance into an Int1D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int1D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int1D toInt() {
+        int[] out = new int[dim1];
+        int i = -1;
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            out[++i] = (int)get(i1);
+        }
+        return Int1D.wrap(out, dim1);
+    }
+    /**
+     * Convert instance into a Long1D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long1D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long1D toLong() {
+        long[] out = new long[dim1];
+        int i = -1;
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            out[++i] = (long)get(i1);
+        }
+        return Long1D.wrap(out, dim1);
+    }
+    /**
+     * Convert instance into a Float1D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float1D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float1D toFloat() {
+        return this;
+    }
+    /**
+     * Convert instance into a Double1D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double1D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double1D toDouble() {
+        double[] out = new double[dim1];
+        int i = -1;
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            out[++i] = (double)get(i1);
+        }
+        return Double1D.wrap(out, dim1);
     }
 
     /*=======================================================================*/

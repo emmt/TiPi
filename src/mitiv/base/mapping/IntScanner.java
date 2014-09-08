@@ -30,7 +30,7 @@ package mitiv.base.mapping;
  * See {@link DoubleScanner} for more informations.
  * @author Éric Thiébaut.
  */
-public interface IntegerScanner {
+public interface IntScanner {
     /**
      * Initialize the scanner with the first value of the collection.
      * @param arg - The first value of the collection.

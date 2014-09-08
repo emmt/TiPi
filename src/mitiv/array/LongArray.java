@@ -44,13 +44,13 @@ public interface LongArray extends ShapedArray {
      * Set all the values of the array of long's.
      * @param value - The value to set.
      */
-    public abstract void set(long value);
+    public abstract void fill(long value);
 
     /**
      * Set the values of the array of long's with a generator.
      * @param generator - The generator to use.
      */
-    public abstract void set(LongGenerator generator);
+    public abstract void fill(LongGenerator generator);
 
     /**
      * Increment all the values of the array of long's.

@@ -121,10 +121,9 @@ public class DoubleShapedVector extends ShapedVector {
     }
 
     @Override
-    public DoubleShapedVector clone(){
-        return (DoubleShapedVector) getSpace().clone(this);
+    public DoubleShapedVector clone() {
+        return ((DoubleShapedVectorSpace)space)._clone(this);
     }
-
 }
 
 /*

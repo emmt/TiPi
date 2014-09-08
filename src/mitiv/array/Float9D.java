@@ -72,15 +72,15 @@ public abstract class Float9D extends Array9D implements FloatArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
-     * @param i4 - The index along the 4th dimension.
-     * @param i5 - The index along the 5th dimension.
-     * @param i6 - The index along the 6th dimension.
-     * @param i7 - The index along the 7th dimension.
-     * @param i8 - The index along the 8th dimension.
-     * @param i9 - The index along the 9th dimension.
+     * @param i1    - The index along the 1st dimension.
+     * @param i2    - The index along the 2nd dimension.
+     * @param i3    - The index along the 3rd dimension.
+     * @param i4    - The index along the 4th dimension.
+     * @param i5    - The index along the 5th dimension.
+     * @param i6    - The index along the 6th dimension.
+     * @param i7    - The index along the 7th dimension.
+     * @param i8    - The index along the 8th dimension.
+     * @param i9    - The index along the 9th dimension.
      * @param value - The value to store at position {@code (i1,i2,i3,i4,i5,i6,i7,i8,i9)}.
      */
     public abstract void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int i8, int i9, float value);
@@ -91,7 +91,7 @@ public abstract class Float9D extends Array9D implements FloatArray {
      * and "get" methods. */
 
     @Override
-    public void set(float value) {
+    public void fill(float value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -321,7 +321,7 @@ public abstract class Float9D extends Array9D implements FloatArray {
     }
 
     @Override
-    public void set(FloatGenerator generator) {
+    public void fill(FloatGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -449,6 +449,190 @@ public abstract class Float9D extends Array9D implements FloatArray {
     @Override
     public float[] flatten() {
         return flatten(false);
+    }
+
+    /**
+     * Convert instance into a Byte9D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte9D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte9D toByte() {
+        byte[] out = new byte[number];
+        int i = -1;
+        for (int i9 = 0; i9 < dim9; ++i9) {
+            for (int i8 = 0; i8 < dim8; ++i8) {
+                for (int i7 = 0; i7 < dim7; ++i7) {
+                    for (int i6 = 0; i6 < dim6; ++i6) {
+                        for (int i5 = 0; i5 < dim5; ++i5) {
+                            for (int i4 = 0; i4 < dim4; ++i4) {
+                                for (int i3 = 0; i3 < dim3; ++i3) {
+                                    for (int i2 = 0; i2 < dim2; ++i2) {
+                                        for (int i1 = 0; i1 < dim1; ++i1) {
+                                            out[++i] = (byte)get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Byte9D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+    }
+    /**
+     * Convert instance into a Short9D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short9D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short9D toShort() {
+        short[] out = new short[number];
+        int i = -1;
+        for (int i9 = 0; i9 < dim9; ++i9) {
+            for (int i8 = 0; i8 < dim8; ++i8) {
+                for (int i7 = 0; i7 < dim7; ++i7) {
+                    for (int i6 = 0; i6 < dim6; ++i6) {
+                        for (int i5 = 0; i5 < dim5; ++i5) {
+                            for (int i4 = 0; i4 < dim4; ++i4) {
+                                for (int i3 = 0; i3 < dim3; ++i3) {
+                                    for (int i2 = 0; i2 < dim2; ++i2) {
+                                        for (int i1 = 0; i1 < dim1; ++i1) {
+                                            out[++i] = (short)get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Short9D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+    }
+    /**
+     * Convert instance into an Int9D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int9D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int9D toInt() {
+        int[] out = new int[number];
+        int i = -1;
+        for (int i9 = 0; i9 < dim9; ++i9) {
+            for (int i8 = 0; i8 < dim8; ++i8) {
+                for (int i7 = 0; i7 < dim7; ++i7) {
+                    for (int i6 = 0; i6 < dim6; ++i6) {
+                        for (int i5 = 0; i5 < dim5; ++i5) {
+                            for (int i4 = 0; i4 < dim4; ++i4) {
+                                for (int i3 = 0; i3 < dim3; ++i3) {
+                                    for (int i2 = 0; i2 < dim2; ++i2) {
+                                        for (int i1 = 0; i1 < dim1; ++i1) {
+                                            out[++i] = (int)get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Int9D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+    }
+    /**
+     * Convert instance into a Long9D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long9D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long9D toLong() {
+        long[] out = new long[number];
+        int i = -1;
+        for (int i9 = 0; i9 < dim9; ++i9) {
+            for (int i8 = 0; i8 < dim8; ++i8) {
+                for (int i7 = 0; i7 < dim7; ++i7) {
+                    for (int i6 = 0; i6 < dim6; ++i6) {
+                        for (int i5 = 0; i5 < dim5; ++i5) {
+                            for (int i4 = 0; i4 < dim4; ++i4) {
+                                for (int i3 = 0; i3 < dim3; ++i3) {
+                                    for (int i2 = 0; i2 < dim2; ++i2) {
+                                        for (int i1 = 0; i1 < dim1; ++i1) {
+                                            out[++i] = (long)get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Long9D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+    }
+    /**
+     * Convert instance into a Float9D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float9D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float9D toFloat() {
+        return this;
+    }
+    /**
+     * Convert instance into a Double9D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double9D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double9D toDouble() {
+        double[] out = new double[number];
+        int i = -1;
+        for (int i9 = 0; i9 < dim9; ++i9) {
+            for (int i8 = 0; i8 < dim8; ++i8) {
+                for (int i7 = 0; i7 < dim7; ++i7) {
+                    for (int i6 = 0; i6 < dim6; ++i6) {
+                        for (int i5 = 0; i5 < dim5; ++i5) {
+                            for (int i4 = 0; i4 < dim4; ++i4) {
+                                for (int i3 = 0; i3 < dim3; ++i3) {
+                                    for (int i2 = 0; i2 < dim2; ++i2) {
+                                        for (int i1 = 0; i1 < dim1; ++i1) {
+                                            out[++i] = (double)get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Double9D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /*=======================================================================*/

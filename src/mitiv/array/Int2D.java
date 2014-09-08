@@ -26,9 +26,9 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
-import mitiv.base.mapping.IntegerFunction;
-import mitiv.base.mapping.IntegerScanner;
-import mitiv.random.IntegerGenerator;
+import mitiv.base.mapping.IntFunction;
+import mitiv.base.mapping.IntScanner;
+import mitiv.random.IntGenerator;
 
 
 /**
@@ -36,17 +36,17 @@ import mitiv.random.IntegerGenerator;
  *
  * @author Éric Thiébaut.
  */
-public abstract class Integer2D extends Array2D implements IntegerArray {
+public abstract class Int2D extends Array2D implements IntArray {
 
-    protected Integer2D(int dim1, int dim2) {
+    protected Int2D(int dim1, int dim2) {
         super(dim1,dim2);
     }
 
-    protected Integer2D(int[] shape, boolean cloneShape) {
+    protected Int2D(int[] shape, boolean cloneShape) {
         super(shape, cloneShape);
     }
 
-    protected Integer2D(int[] shape) {
+    protected Int2D(int[] shape) {
         super(shape, true);
     }
 
@@ -65,8 +65,8 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
+     * @param i1    - The index along the 1st dimension.
+     * @param i2    - The index along the 2nd dimension.
      * @param value - The value to store at position {@code (i1,i2)}.
      */
     public abstract void set(int i1, int i2, int value);
@@ -77,7 +77,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * and "get" methods. */
 
     @Override
-    public void set(int value) {
+    public void fill(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -149,7 +149,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
     }
 
     @Override
-    public void map(IntegerFunction function) {
+    public void map(IntFunction function) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -167,25 +167,25 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
     }
 
     @Override
-    public void set(IntegerGenerator generator) {
+    public void fill(IntGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
-                    set(i1,i2, generator.nextInteger());
+                    set(i1,i2, generator.nextInt());
                 }
             }
         } else {
             /* Assume column-major order. */
             for (int i2 = 0; i2 < dim2; ++i2) {
                 for (int i1 = 0; i1 < dim1; ++i1) {
-                    set(i1,i2, generator.nextInteger());
+                    set(i1,i2, generator.nextInt());
                 }
             }
         }
     }
 
     @Override
-    public void scan(IntegerScanner scanner)  {
+    public void scan(IntScanner scanner)  {
         boolean skip = true;
         scanner.initialize(get(0,0));
         if (getOrder() == ROW_MAJOR) {
@@ -207,7 +207,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
     /* Note that the following default implementation of the "flatten" method
      * is always returning a copy of the contents whatever the value of the
      * "forceCopy" argument.
-     * @see devel.eric.array.base.IntegerArray#flatten(boolean)
+     * @see devel.eric.array.base.IntArray#flatten(boolean)
      */
     @Override
     public int[] flatten(boolean forceCopy) {
@@ -227,6 +227,120 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
         return flatten(false);
     }
 
+    /**
+     * Convert instance into a Byte2D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte2D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte2D toByte() {
+        byte[] out = new byte[number];
+        int i = -1;
+        for (int i2 = 0; i2 < dim2; ++i2) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                out[++i] = (byte)get(i1,i2);
+            }
+        }
+        return Byte2D.wrap(out, dim1, dim2);
+    }
+    /**
+     * Convert instance into a Short2D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short2D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short2D toShort() {
+        short[] out = new short[number];
+        int i = -1;
+        for (int i2 = 0; i2 < dim2; ++i2) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                out[++i] = (short)get(i1,i2);
+            }
+        }
+        return Short2D.wrap(out, dim1, dim2);
+    }
+    /**
+     * Convert instance into an Int2D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int2D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int2D toInt() {
+        return this;
+    }
+    /**
+     * Convert instance into a Long2D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long2D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long2D toLong() {
+        long[] out = new long[number];
+        int i = -1;
+        for (int i2 = 0; i2 < dim2; ++i2) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                out[++i] = (long)get(i1,i2);
+            }
+        }
+        return Long2D.wrap(out, dim1, dim2);
+    }
+    /**
+     * Convert instance into a Float2D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float2D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float2D toFloat() {
+        float[] out = new float[number];
+        int i = -1;
+        for (int i2 = 0; i2 < dim2; ++i2) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                out[++i] = (float)get(i1,i2);
+            }
+        }
+        return Float2D.wrap(out, dim1, dim2);
+    }
+    /**
+     * Convert instance into a Double2D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double2D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double2D toDouble() {
+        double[] out = new double[number];
+        int i = -1;
+        for (int i2 = 0; i2 < dim2; ++i2) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                out[++i] = (double)get(i1,i2);
+            }
+        }
+        return Double2D.wrap(out, dim1, dim2);
+    }
+
     /*=======================================================================*/
     /* FACTORY */
 
@@ -236,7 +350,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * inner class is needed).  The outer class is however "abstract" and we
      * must provide a minimal set of methods to make it instantiable.
      */
-    private static final Integer2D factory = new Integer2D(1,1) {
+    private static final Int2D factory = new Int2D(1,1) {
         @Override
         public final int get(int i1, int i2) {
             return 0;
@@ -267,7 +381,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * @return A new 2D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer2D create(int dim1, int dim2) {
+    public static Int2D create(int dim1, int dim2) {
         return factory.new Flat(dim1,dim2);
     }
 
@@ -283,7 +397,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * @return A new 2D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer2D create(int[] shape) {
+    public static Int2D create(int[] shape) {
         return factory.new Flat(shape, true);
     }
 
@@ -302,7 +416,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * @return A new 2D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer2D create(int[] shape, boolean cloneShape) {
+    public static Int2D create(int[] shape, boolean cloneShape) {
         return factory.new Flat(shape, cloneShape);
     }
 
@@ -319,7 +433,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * @return A 2D array sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer2D wrap(int[] data, int dim1, int dim2) {
+    public static Int2D wrap(int[] data, int dim1, int dim2) {
         return factory.new Flat(data, dim1,dim2);
     }
 
@@ -337,7 +451,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * @return A new 2D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer2D wrap(int[] data, int[] shape) {
+    public static Int2D wrap(int[] data, int[] shape) {
         return factory.new Flat(data, shape, true);
     }
 
@@ -358,7 +472,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * @return A new 2D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer2D wrap(int[] data, int[] shape, boolean cloneShape) {
+    public static Int2D wrap(int[] data, int[] shape, boolean cloneShape) {
         return factory.new Flat(data, shape, cloneShape);
     }
 
@@ -368,7 +482,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Flat extends Integer2D {
+    private class Flat extends Int2D {
         private static final int order = COLUMN_MAJOR;
         private final int[] data;
 
@@ -440,7 +554,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * @param stride2 - The stride along the 2nd dimension.
      * @return A 2D array sharing the elements of <b>data</b>.
      */
-    public static Integer2D wrap(int[] data, int dim1, int dim2,
+    public static Int2D wrap(int[] data, int dim1, int dim2,
             int offset, int stride1, int stride2) {
         return factory.new Strided(data, dim1,dim2, offset, stride1,stride2);
     }
@@ -451,7 +565,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Strided extends Integer2D {
+    private class Strided extends Int2D {
         private final int[] data;
         private final int order;
         private final int offset;
@@ -514,7 +628,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
     /* MULTIDIMENSIONAL (2D) LAYOUT */
 
     /**
-     * Wrap an existing 2D array of int's in a Integer2D array.
+     * Wrap an existing 2D array of int's in a Int2D array.
      * <p>
      * More specifically:
      * <pre>arr.get(i1,i2) = data[i2][i1]</pre>
@@ -522,7 +636,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * @param data    - The array to wrap in the 2D array.
      * @return A 2D array sharing the elements of <b>data</b>.
      */
-    public static Integer2D wrap(int[][] data) {
+    public static Int2D wrap(int[][] data) {
         return factory.new Multi2(data);
     }
 
@@ -532,7 +646,7 @@ public abstract class Integer2D extends Array2D implements IntegerArray {
      * an instance of the outer class must be available (this is the purpose
      * of the static "factory" instance).
      */
-    class Multi2 extends Integer2D {
+    class Multi2 extends Int2D {
         private static final int order = COLUMN_MAJOR;
         private final int[][] data;
 

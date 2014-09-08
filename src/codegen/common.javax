@@ -1,38 +1,77 @@
-//# if defined(type)
-//#     // Convert type name into a numerical code.
-//#     def type_byte   = 0
-//#     def type_short  = 1
-//#     def type_int    = 2
-//#     def type_long   = 3
-//#     def type_float  = 4
-//#     def type_double = 5
-//#     def type_number = ${}{type_${type}}
-//#     //debug type_number ---> ${type_number}
-//#     def type_number = ${type_number}
-//#     //debug type_number ---> ${type_number}
+//# // Definitions for all available types.
 //#
-//#     if ${type_number} == ${type_byte}
-//#         def Type = Byte
-//#         def TYPE = BYTE
-//#     elif ${type_number} == ${type_short}
-//#         def Type = Short
-//#         def TYPE = SHORT
-//#     elif ${type_number} == ${type_int}
-//#         def Type = Integer
-//#         def TYPE = INT
-//#     elif ${type_number} == ${type_long}
-//#         def Type = Long
-//#         def TYPE = LONG
-//#     elif ${type_number} == ${type_float}
-//#         def Type = Float
-//#         def TYPE = FLOAT
-//#     elif ${type_number} == ${type_double}
-//#         def Type = Double
-//#         def TYPE = DOUBLE
-//#     else
+//# def BYTE   = 0
+//# def type_0 = byte
+//# def Type_0 = Byte
+//# def TYPE_0 = BYTE
+//# def TypeClass_0 = ${Type_0}
+//#
+//# def SHORT  = 1
+//# def type_1 = short
+//# def Type_1 = Short
+//# def TYPE_1 = SHORT
+//# def TypeClass_1 = ${Type_1}
+//#
+//# def INT    = 2
+//# def type_2 = int
+//# def Type_2 = Int
+//# def TYPE_2 = INT
+//# def TypeClass_2 = Integer
+//#
+//# def LONG   = 3
+//# def type_3 = long
+//# def Type_3 = Long
+//# def TYPE_3 = LONG
+//# def TypeClass_3 = ${Type_3}
+//#
+//# def FLOAT  = 4
+//# def type_4 = float
+//# def Type_4 = Float
+//# def TYPE_4 = FLOAT
+//# def TypeClass_4 = ${Type_4}
+//#
+//# def DOUBLE = 5
+//# def type_5 = double
+//# def Type_5 = Double
+//# def TYPE_5 = DOUBLE
+//# def TypeClass_5 = ${Type_5}
+//#
+//# // Convert type name into a numerical code.
+//# def identof_byte   = ${BYTE}
+//# def identof_short  = ${SHORT}
+//# def identof_int    = ${INT}
+//# def identof_long   = ${LONG}
+//# def identof_float  = ${FLOAT}
+//# def identof_double = ${DOUBLE}
+//#
+//# // Definitions for a specific type.
+//# if defined(type)
+//#     // Build a macro, then evaluate it to get the
+//#     // identifier of the current type.
+//#     def type_id = ${}{identof_${type}}
+//#     def type_id = ${type_id}
+//#     if ${type_id} < ${BYTE} || ${type_id} > ${DOUBLE}
 //#         error Unknown type ${type}
 //#     endif
+//#     def Type = ${}{Type_${type_id}}
+//#     def Type = ${Type}
+//#     def TYPE = ${}{TYPE_${type_id}}
+//#     def TYPE = ${TYPE}
+//#     def TypeClass = ${}{TypeClass_${type_id}}
+//#     def TypeClass = ${TypeClass}
 //# endif
+//#
+//# // Define ordering macros:
+//# def nth_0 = 0th
+//# def nth_1 = 1st
+//# def nth_2 = 2nd
+//# def nth_3 = 3rd
+//# def nth_4 = 4th
+//# def nth_5 = 5th
+//# def nth_6 = 6th
+//# def nth_7 = 7th
+//# def nth_8 = 8th
+//# def nth_9 = 9th
 //#
 //# if defined(rank)
 //#     // Define templates for simple and complex numbered lists.

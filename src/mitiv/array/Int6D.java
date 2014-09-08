@@ -26,9 +26,9 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
-import mitiv.base.mapping.IntegerFunction;
-import mitiv.base.mapping.IntegerScanner;
-import mitiv.random.IntegerGenerator;
+import mitiv.base.mapping.IntFunction;
+import mitiv.base.mapping.IntScanner;
+import mitiv.random.IntGenerator;
 
 
 /**
@@ -36,17 +36,17 @@ import mitiv.random.IntegerGenerator;
  *
  * @author Éric Thiébaut.
  */
-public abstract class Integer6D extends Array6D implements IntegerArray {
+public abstract class Int6D extends Array6D implements IntArray {
 
-    protected Integer6D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
+    protected Int6D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         super(dim1,dim2,dim3,dim4,dim5,dim6);
     }
 
-    protected Integer6D(int[] shape, boolean cloneShape) {
+    protected Int6D(int[] shape, boolean cloneShape) {
         super(shape, cloneShape);
     }
 
-    protected Integer6D(int[] shape) {
+    protected Int6D(int[] shape) {
         super(shape, true);
     }
 
@@ -69,12 +69,12 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
-     * @param i4 - The index along the 4th dimension.
-     * @param i5 - The index along the 5th dimension.
-     * @param i6 - The index along the 6th dimension.
+     * @param i1    - The index along the 1st dimension.
+     * @param i2    - The index along the 2nd dimension.
+     * @param i3    - The index along the 3rd dimension.
+     * @param i4    - The index along the 4th dimension.
+     * @param i5    - The index along the 5th dimension.
+     * @param i6    - The index along the 6th dimension.
      * @param value - The value to store at position {@code (i1,i2,i3,i4,i5,i6)}.
      */
     public abstract void set(int i1, int i2, int i3, int i4, int i5, int i6, int value);
@@ -85,7 +85,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * and "get" methods. */
 
     @Override
-    public void set(int value) {
+    public void fill(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -221,7 +221,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
     }
 
     @Override
-    public void map(IntegerFunction function) {
+    public void map(IntFunction function) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -255,7 +255,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
     }
 
     @Override
-    public void set(IntegerGenerator generator) {
+    public void fill(IntGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -263,7 +263,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
                         for (int i4 = 0; i4 < dim4; ++i4) {
                             for (int i5 = 0; i5 < dim5; ++i5) {
                                 for (int i6 = 0; i6 < dim6; ++i6) {
-                                    set(i1,i2,i3,i4,i5,i6, generator.nextInteger());
+                                    set(i1,i2,i3,i4,i5,i6, generator.nextInt());
                                 }
                             }
                         }
@@ -278,7 +278,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
                         for (int i3 = 0; i3 < dim3; ++i3) {
                             for (int i2 = 0; i2 < dim2; ++i2) {
                                 for (int i1 = 0; i1 < dim1; ++i1) {
-                                    set(i1,i2,i3,i4,i5,i6, generator.nextInteger());
+                                    set(i1,i2,i3,i4,i5,i6, generator.nextInt());
                                 }
                             }
                         }
@@ -289,7 +289,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
     }
 
     @Override
-    public void scan(IntegerScanner scanner)  {
+    public void scan(IntScanner scanner)  {
         boolean skip = true;
         scanner.initialize(get(0,0,0,0,0,0));
         if (getOrder() == ROW_MAJOR) {
@@ -327,7 +327,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
     /* Note that the following default implementation of the "flatten" method
      * is always returning a copy of the contents whatever the value of the
      * "forceCopy" argument.
-     * @see devel.eric.array.base.IntegerArray#flatten(boolean)
+     * @see devel.eric.array.base.IntArray#flatten(boolean)
      */
     @Override
     public int[] flatten(boolean forceCopy) {
@@ -355,6 +355,160 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
         return flatten(false);
     }
 
+    /**
+     * Convert instance into a Byte6D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte6D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte6D toByte() {
+        byte[] out = new byte[number];
+        int i = -1;
+        for (int i6 = 0; i6 < dim6; ++i6) {
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                out[++i] = (byte)get(i1,i2,i3,i4,i5,i6);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Byte6D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6);
+    }
+    /**
+     * Convert instance into a Short6D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short6D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short6D toShort() {
+        short[] out = new short[number];
+        int i = -1;
+        for (int i6 = 0; i6 < dim6; ++i6) {
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                out[++i] = (short)get(i1,i2,i3,i4,i5,i6);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Short6D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6);
+    }
+    /**
+     * Convert instance into an Int6D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int6D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int6D toInt() {
+        return this;
+    }
+    /**
+     * Convert instance into a Long6D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long6D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long6D toLong() {
+        long[] out = new long[number];
+        int i = -1;
+        for (int i6 = 0; i6 < dim6; ++i6) {
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                out[++i] = (long)get(i1,i2,i3,i4,i5,i6);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Long6D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6);
+    }
+    /**
+     * Convert instance into a Float6D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float6D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float6D toFloat() {
+        float[] out = new float[number];
+        int i = -1;
+        for (int i6 = 0; i6 < dim6; ++i6) {
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                out[++i] = (float)get(i1,i2,i3,i4,i5,i6);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Float6D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6);
+    }
+    /**
+     * Convert instance into a Double6D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double6D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double6D toDouble() {
+        double[] out = new double[number];
+        int i = -1;
+        for (int i6 = 0; i6 < dim6; ++i6) {
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                out[++i] = (double)get(i1,i2,i3,i4,i5,i6);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Double6D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6);
+    }
+
     /*=======================================================================*/
     /* FACTORY */
 
@@ -364,7 +518,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * inner class is needed).  The outer class is however "abstract" and we
      * must provide a minimal set of methods to make it instantiable.
      */
-    private static final Integer6D factory = new Integer6D(1,1,1,1,1,1) {
+    private static final Int6D factory = new Int6D(1,1,1,1,1,1) {
         @Override
         public final int get(int i1, int i2, int i3, int i4, int i5, int i6) {
             return 0;
@@ -399,7 +553,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * @return A new 6D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer6D create(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
+    public static Int6D create(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return factory.new Flat(dim1,dim2,dim3,dim4,dim5,dim6);
     }
 
@@ -415,7 +569,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * @return A new 6D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer6D create(int[] shape) {
+    public static Int6D create(int[] shape) {
         return factory.new Flat(shape, true);
     }
 
@@ -434,7 +588,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * @return A new 6D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer6D create(int[] shape, boolean cloneShape) {
+    public static Int6D create(int[] shape, boolean cloneShape) {
         return factory.new Flat(shape, cloneShape);
     }
 
@@ -455,7 +609,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * @return A 6D array sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer6D wrap(int[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
+    public static Int6D wrap(int[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return factory.new Flat(data, dim1,dim2,dim3,dim4,dim5,dim6);
     }
 
@@ -473,7 +627,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * @return A new 6D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer6D wrap(int[] data, int[] shape) {
+    public static Int6D wrap(int[] data, int[] shape) {
         return factory.new Flat(data, shape, true);
     }
 
@@ -494,7 +648,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * @return A new 6D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer6D wrap(int[] data, int[] shape, boolean cloneShape) {
+    public static Int6D wrap(int[] data, int[] shape, boolean cloneShape) {
         return factory.new Flat(data, shape, cloneShape);
     }
 
@@ -504,7 +658,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Flat extends Integer6D {
+    private class Flat extends Int6D {
         private static final int order = COLUMN_MAJOR;
         private final int[] data;
         private final int dim1dim2;
@@ -604,7 +758,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * @param stride6 - The stride along the 6th dimension.
      * @return A 6D array sharing the elements of <b>data</b>.
      */
-    public static Integer6D wrap(int[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6,
+    public static Int6D wrap(int[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6,
             int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6) {
         return factory.new Strided(data, dim1,dim2,dim3,dim4,dim5,dim6, offset, stride1,stride2,stride3,stride4,stride5,stride6);
     }
@@ -615,7 +769,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Strided extends Integer6D {
+    private class Strided extends Int6D {
         private final int[] data;
         private final int order;
         private final int offset;
@@ -694,7 +848,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
     /* MULTIDIMENSIONAL (6D) LAYOUT */
 
     /**
-     * Wrap an existing 6D array of int's in a Integer6D array.
+     * Wrap an existing 6D array of int's in a Int6D array.
      * <p>
      * More specifically:
      * <pre>arr.get(i1,i2,i3,i4,i5,i6) = data[i6][i5][i4][i3][i2][i1]</pre>
@@ -702,7 +856,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * @param data    - The array to wrap in the 6D array.
      * @return A 6D array sharing the elements of <b>data</b>.
      */
-    public static Integer6D wrap(int[][][][][][] data) {
+    public static Int6D wrap(int[][][][][][] data) {
         return factory.new Multi6(data);
     }
 
@@ -712,7 +866,7 @@ public abstract class Integer6D extends Array6D implements IntegerArray {
      * an instance of the outer class must be available (this is the purpose
      * of the static "factory" instance).
      */
-    class Multi6 extends Integer6D {
+    class Multi6 extends Int6D {
         private static final int order = COLUMN_MAJOR;
         private final int[][][][][][] data;
 

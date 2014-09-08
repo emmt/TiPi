@@ -26,9 +26,9 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
-import mitiv.base.mapping.IntegerFunction;
-import mitiv.base.mapping.IntegerScanner;
-import mitiv.random.IntegerGenerator;
+import mitiv.base.mapping.IntFunction;
+import mitiv.base.mapping.IntScanner;
+import mitiv.random.IntGenerator;
 
 
 /**
@@ -36,17 +36,17 @@ import mitiv.random.IntegerGenerator;
  *
  * @author Éric Thiébaut.
  */
-public abstract class Integer3D extends Array3D implements IntegerArray {
+public abstract class Int3D extends Array3D implements IntArray {
 
-    protected Integer3D(int dim1, int dim2, int dim3) {
+    protected Int3D(int dim1, int dim2, int dim3) {
         super(dim1,dim2,dim3);
     }
 
-    protected Integer3D(int[] shape, boolean cloneShape) {
+    protected Int3D(int[] shape, boolean cloneShape) {
         super(shape, cloneShape);
     }
 
-    protected Integer3D(int[] shape) {
+    protected Int3D(int[] shape) {
         super(shape, true);
     }
 
@@ -66,9 +66,9 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
+     * @param i1    - The index along the 1st dimension.
+     * @param i2    - The index along the 2nd dimension.
+     * @param i3    - The index along the 3rd dimension.
      * @param value - The value to store at position {@code (i1,i2,i3)}.
      */
     public abstract void set(int i1, int i2, int i3, int value);
@@ -79,7 +79,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * and "get" methods. */
 
     @Override
-    public void set(int value) {
+    public void fill(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -167,7 +167,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
     }
 
     @Override
-    public void map(IntegerFunction function) {
+    public void map(IntFunction function) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -189,12 +189,12 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
     }
 
     @Override
-    public void set(IntegerGenerator generator) {
+    public void fill(IntGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     for (int i3 = 0; i3 < dim3; ++i3) {
-                        set(i1,i2,i3, generator.nextInteger());
+                        set(i1,i2,i3, generator.nextInt());
                     }
                 }
             }
@@ -203,7 +203,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
             for (int i3 = 0; i3 < dim3; ++i3) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     for (int i1 = 0; i1 < dim1; ++i1) {
-                        set(i1,i2,i3, generator.nextInteger());
+                        set(i1,i2,i3, generator.nextInt());
                     }
                 }
             }
@@ -211,7 +211,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
     }
 
     @Override
-    public void scan(IntegerScanner scanner)  {
+    public void scan(IntScanner scanner)  {
         boolean skip = true;
         scanner.initialize(get(0,0,0));
         if (getOrder() == ROW_MAJOR) {
@@ -237,7 +237,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
     /* Note that the following default implementation of the "flatten" method
      * is always returning a copy of the contents whatever the value of the
      * "forceCopy" argument.
-     * @see devel.eric.array.base.IntegerArray#flatten(boolean)
+     * @see devel.eric.array.base.IntArray#flatten(boolean)
      */
     @Override
     public int[] flatten(boolean forceCopy) {
@@ -259,6 +259,130 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
         return flatten(false);
     }
 
+    /**
+     * Convert instance into a Byte3D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte3D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte3D toByte() {
+        byte[] out = new byte[number];
+        int i = -1;
+        for (int i3 = 0; i3 < dim3; ++i3) {
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    out[++i] = (byte)get(i1,i2,i3);
+                }
+            }
+        }
+        return Byte3D.wrap(out, dim1, dim2, dim3);
+    }
+    /**
+     * Convert instance into a Short3D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short3D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short3D toShort() {
+        short[] out = new short[number];
+        int i = -1;
+        for (int i3 = 0; i3 < dim3; ++i3) {
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    out[++i] = (short)get(i1,i2,i3);
+                }
+            }
+        }
+        return Short3D.wrap(out, dim1, dim2, dim3);
+    }
+    /**
+     * Convert instance into an Int3D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int3D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int3D toInt() {
+        return this;
+    }
+    /**
+     * Convert instance into a Long3D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long3D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long3D toLong() {
+        long[] out = new long[number];
+        int i = -1;
+        for (int i3 = 0; i3 < dim3; ++i3) {
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    out[++i] = (long)get(i1,i2,i3);
+                }
+            }
+        }
+        return Long3D.wrap(out, dim1, dim2, dim3);
+    }
+    /**
+     * Convert instance into a Float3D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float3D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float3D toFloat() {
+        float[] out = new float[number];
+        int i = -1;
+        for (int i3 = 0; i3 < dim3; ++i3) {
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    out[++i] = (float)get(i1,i2,i3);
+                }
+            }
+        }
+        return Float3D.wrap(out, dim1, dim2, dim3);
+    }
+    /**
+     * Convert instance into a Double3D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double3D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double3D toDouble() {
+        double[] out = new double[number];
+        int i = -1;
+        for (int i3 = 0; i3 < dim3; ++i3) {
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    out[++i] = (double)get(i1,i2,i3);
+                }
+            }
+        }
+        return Double3D.wrap(out, dim1, dim2, dim3);
+    }
+
     /*=======================================================================*/
     /* FACTORY */
 
@@ -268,7 +392,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * inner class is needed).  The outer class is however "abstract" and we
      * must provide a minimal set of methods to make it instantiable.
      */
-    private static final Integer3D factory = new Integer3D(1,1,1) {
+    private static final Int3D factory = new Int3D(1,1,1) {
         @Override
         public final int get(int i1, int i2, int i3) {
             return 0;
@@ -300,7 +424,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * @return A new 3D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer3D create(int dim1, int dim2, int dim3) {
+    public static Int3D create(int dim1, int dim2, int dim3) {
         return factory.new Flat(dim1,dim2,dim3);
     }
 
@@ -316,7 +440,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * @return A new 3D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer3D create(int[] shape) {
+    public static Int3D create(int[] shape) {
         return factory.new Flat(shape, true);
     }
 
@@ -335,7 +459,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * @return A new 3D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer3D create(int[] shape, boolean cloneShape) {
+    public static Int3D create(int[] shape, boolean cloneShape) {
         return factory.new Flat(shape, cloneShape);
     }
 
@@ -353,7 +477,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * @return A 3D array sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer3D wrap(int[] data, int dim1, int dim2, int dim3) {
+    public static Int3D wrap(int[] data, int dim1, int dim2, int dim3) {
         return factory.new Flat(data, dim1,dim2,dim3);
     }
 
@@ -371,7 +495,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * @return A new 3D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer3D wrap(int[] data, int[] shape) {
+    public static Int3D wrap(int[] data, int[] shape) {
         return factory.new Flat(data, shape, true);
     }
 
@@ -392,7 +516,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * @return A new 3D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer3D wrap(int[] data, int[] shape, boolean cloneShape) {
+    public static Int3D wrap(int[] data, int[] shape, boolean cloneShape) {
         return factory.new Flat(data, shape, cloneShape);
     }
 
@@ -402,7 +526,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Flat extends Integer3D {
+    private class Flat extends Int3D {
         private static final int order = COLUMN_MAJOR;
         private final int[] data;
         private final int dim1dim2;
@@ -481,7 +605,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * @param stride3 - The stride along the 3rd dimension.
      * @return A 3D array sharing the elements of <b>data</b>.
      */
-    public static Integer3D wrap(int[] data, int dim1, int dim2, int dim3,
+    public static Int3D wrap(int[] data, int dim1, int dim2, int dim3,
             int offset, int stride1, int stride2, int stride3) {
         return factory.new Strided(data, dim1,dim2,dim3, offset, stride1,stride2,stride3);
     }
@@ -492,7 +616,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Strided extends Integer3D {
+    private class Strided extends Int3D {
         private final int[] data;
         private final int order;
         private final int offset;
@@ -559,7 +683,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
     /* MULTIDIMENSIONAL (3D) LAYOUT */
 
     /**
-     * Wrap an existing 3D array of int's in a Integer3D array.
+     * Wrap an existing 3D array of int's in a Int3D array.
      * <p>
      * More specifically:
      * <pre>arr.get(i1,i2,i3) = data[i3][i2][i1]</pre>
@@ -567,7 +691,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * @param data    - The array to wrap in the 3D array.
      * @return A 3D array sharing the elements of <b>data</b>.
      */
-    public static Integer3D wrap(int[][][] data) {
+    public static Int3D wrap(int[][][] data) {
         return factory.new Multi3(data);
     }
 
@@ -577,7 +701,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * an instance of the outer class must be available (this is the purpose
      * of the static "factory" instance).
      */
-    class Multi3 extends Integer3D {
+    class Multi3 extends Int3D {
         private static final int order = COLUMN_MAJOR;
         private final int[][][] data;
 
@@ -603,7 +727,7 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
     /* MULTIDIMENSIONAL (2D) LAYOUT */
 
     /**
-     * Wrap an existing 2D array of int's in a Integer3D array.
+     * Wrap an existing 2D array of int's in a Int3D array.
      * <p>
      * More specifically:
      * <pre>arr.get(i1,i2,i3) = data[i3][dim1*i2 + i1]</pre>
@@ -613,11 +737,11 @@ public abstract class Integer3D extends Array3D implements IntegerArray {
      * @param dim2    - The 2nd dimension of the 3D array.
      * @return A 4D array sharing the elements of <b>data</b>.
      */
-    public static Integer3D wrap(int[][] arr, int dim1, int dim2) {
+    public static Int3D wrap(int[][] arr, int dim1, int dim2) {
         return factory.new Multi2(arr, dim1, dim2);
     }
 
-    class Multi2 extends Integer3D {
+    class Multi2 extends Int3D {
         private static final int order = COLUMN_MAJOR;
         private final int[][] data;
 

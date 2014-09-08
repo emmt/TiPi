@@ -69,12 +69,12 @@ public abstract class Long6D extends Array6D implements LongArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
-     * @param i4 - The index along the 4th dimension.
-     * @param i5 - The index along the 5th dimension.
-     * @param i6 - The index along the 6th dimension.
+     * @param i1    - The index along the 1st dimension.
+     * @param i2    - The index along the 2nd dimension.
+     * @param i3    - The index along the 3rd dimension.
+     * @param i4    - The index along the 4th dimension.
+     * @param i5    - The index along the 5th dimension.
+     * @param i6    - The index along the 6th dimension.
      * @param value - The value to store at position {@code (i1,i2,i3,i4,i5,i6)}.
      */
     public abstract void set(int i1, int i2, int i3, int i4, int i5, int i6, long value);
@@ -85,7 +85,7 @@ public abstract class Long6D extends Array6D implements LongArray {
      * and "get" methods. */
 
     @Override
-    public void set(long value) {
+    public void fill(long value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -255,7 +255,7 @@ public abstract class Long6D extends Array6D implements LongArray {
     }
 
     @Override
-    public void set(LongGenerator generator) {
+    public void fill(LongGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -353,6 +353,160 @@ public abstract class Long6D extends Array6D implements LongArray {
     @Override
     public long[] flatten() {
         return flatten(false);
+    }
+
+    /**
+     * Convert instance into a Byte6D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte6D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte6D toByte() {
+        byte[] out = new byte[number];
+        int i = -1;
+        for (int i6 = 0; i6 < dim6; ++i6) {
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                out[++i] = (byte)get(i1,i2,i3,i4,i5,i6);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Byte6D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6);
+    }
+    /**
+     * Convert instance into a Short6D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short6D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short6D toShort() {
+        short[] out = new short[number];
+        int i = -1;
+        for (int i6 = 0; i6 < dim6; ++i6) {
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                out[++i] = (short)get(i1,i2,i3,i4,i5,i6);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Short6D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6);
+    }
+    /**
+     * Convert instance into an Int6D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int6D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int6D toInt() {
+        int[] out = new int[number];
+        int i = -1;
+        for (int i6 = 0; i6 < dim6; ++i6) {
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                out[++i] = (int)get(i1,i2,i3,i4,i5,i6);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Int6D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6);
+    }
+    /**
+     * Convert instance into a Long6D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long6D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long6D toLong() {
+        return this;
+    }
+    /**
+     * Convert instance into a Float6D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float6D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float6D toFloat() {
+        float[] out = new float[number];
+        int i = -1;
+        for (int i6 = 0; i6 < dim6; ++i6) {
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                out[++i] = (float)get(i1,i2,i3,i4,i5,i6);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Float6D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6);
+    }
+    /**
+     * Convert instance into a Double6D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double6D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double6D toDouble() {
+        double[] out = new double[number];
+        int i = -1;
+        for (int i6 = 0; i6 < dim6; ++i6) {
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                out[++i] = (double)get(i1,i2,i3,i4,i5,i6);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Double6D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /*=======================================================================*/

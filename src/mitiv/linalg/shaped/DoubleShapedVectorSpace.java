@@ -72,6 +72,17 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
         return v;
     }
 
+    public DoubleShapedVector clone(DoubleShapedVector vec) {
+        check(vec);
+        return _clone(vec);
+    }
+
+    protected DoubleShapedVector _clone(DoubleShapedVector vec) {
+        DoubleShapedVector cpy = new DoubleShapedVector(this);
+        _copy(vec, cpy);
+        return cpy;
+    }
+
     @Override
     public DoubleShapedVector clone(Vector vec) {
         check(vec);
@@ -80,9 +91,7 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
 
     @Override
     protected DoubleShapedVector _clone(Vector vec) {
-        DoubleShapedVector cpy = new DoubleShapedVector(this);
-        _copy(vec, cpy);
-        return cpy;
+        return _clone((DoubleShapedVector)vec);
     }
 
     public DoubleShapedVector wrap(double[] x) {
@@ -95,10 +104,13 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
         ((DoubleShapedVector)dst).set(src);
     }
 
+    protected void _copy(DoubleShapedVector src, DoubleShapedVector dst) {
+        ArrayOps.copy(number, src.getData(), dst.getData());
+    }
+
     @Override
     protected void _copy(Vector src, Vector dst) {
-        ArrayOps.copy(number, ((DoubleShapedVector) src).getData(),
-                ((DoubleShapedVector) dst).getData());
+        _copy((DoubleShapedVector)src, (DoubleShapedVector)dst);
     }
 
     @Override

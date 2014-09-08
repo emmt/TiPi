@@ -33,9 +33,9 @@
 //# endif
 //#
 //# // Be prepared to deal with different types.
-//# if ${type_number} == ${type_float}
+//# if ${type_id} == ${FLOAT}
 //#   def zero = 0.0F
-//# elif ${type_number} == ${type_double}
+//# elif ${type_id} == ${DOUBLE}
 //#   def zero = 0.0
 //# else
 //#   def zero = 0
@@ -105,30 +105,24 @@ public abstract class ${className} extends Array${rank}D implements ${Type}Array
 
     /**
      * Query the value stored at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
-     * @param i4 - The index along the 4th dimension.
-     * @param i5 - The index along the 5th dimension.
-     * @param i6 - The index along the 6th dimension.
-     * @param i7 - The index along the 7th dimension.
-     * @param i8 - The index along the 8th dimension.
-     * @param i9 - The index along the 9th dimension.
+     //# def k = 1
+     //# while ${k} <= ${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param i${k} - The index along the ${kth} dimension.
+     //#   eval k += 1
+     //# done
      * @return The value stored at position {@code (${indexList})}.
      */
     public abstract ${type} get(${declIndexList});
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
-     * @param i4 - The index along the 4th dimension.
-     * @param i5 - The index along the 5th dimension.
-     * @param i6 - The index along the 6th dimension.
-     * @param i7 - The index along the 7th dimension.
-     * @param i8 - The index along the 8th dimension.
-     * @param i9 - The index along the 9th dimension.
+     //# def k = 1
+     //# while ${k} <= ${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param i${k}    - The index along the ${kth} dimension.
+     //#   eval k += 1
+     //# done
      * @param value - The value to store at position {@code (${indexList})}.
      */
     public abstract void set(${declIndexList}, ${type} value);
@@ -180,14 +174,14 @@ public abstract class ${className} extends Array${rank}D implements ${Type}Array
     //# //debug ${loop}
     //#
     @Override
-    public void set(${type} value) {
+    public void fill(${type} value) {
         //# def loopBody = set(${indexList}, value);
         //# emit ${loop}
     }
 
     //# suspend loopOperator
     //# def loopExpr = get(${indexList}) ${loopOperator} value
-    //# if ${type_number} <= 1
+    //# if ${type_id} <= 1
     //#     def loopExpr = (${type})(${loopExpr})
     //# endif
     //# def loopBody = set(${indexList}, ${loopExpr});
@@ -218,7 +212,7 @@ public abstract class ${className} extends Array${rank}D implements ${Type}Array
     }
 
     @Override
-    public void set(${Type}Generator generator) {
+    public void fill(${Type}Generator generator) {
         //# def loopExpr = generator.next${Type}()
         //# emit ${loop}
     }
@@ -265,6 +259,49 @@ public abstract class ${className} extends Array${rank}D implements ${Type}Array
         return flatten(false);
     }
 
+    //# def dst = ${BYTE}
+    //# while ${dst} <= ${DOUBLE}
+    //#     def dst_type = ${}{type_${dst}}
+    //#     def dst_Type = ${}{Type_${dst}}
+    //#     def dst_TYPE = ${}{TYPE_${dst}}
+    //#     if ${dst} == 2
+    //#         def a = an
+    //#         def A = An
+    //#     else
+    //#         def a = a
+    //#         def A = A
+    //#     endif
+    //#     def argDimList = dim1
+    //#     def k = 1
+    //#     while ${k} < ${rank}
+    //#         eval k += 1
+    //#         def argDimList = ${argDimList}, dim${k}
+    //#     done
+    /**
+     * Convert instance into ${a} ${dst_Type}${rank}D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return ${A} ${dst_Type}${rank}D whose values has been converted into ${dst_type}'s
+     *         from those of {@code this}.
+     */
+    @Override
+    public ${dst_Type}${rank}D to${dst_Type}() {
+        //# if ${type_id} == ${dst}
+        return this;
+        //# else
+        ${dst_type}[] out = new ${dst_type}[${number}];
+        int i = -1;
+        //#     def loopPrefix := ${__INDENT2__}
+        //#     def loopBody = out[++i] = (${dst_type})get(${indexList});
+        //#     emit ${colMajorLoop}
+        return ${dst_Type}${rank}D.wrap(out, ${argDimList});
+        //# endif
+    }
+    //#     eval dst += 1
+    //# done
+
     /*=======================================================================*/
     /* FACTORY */
 
@@ -300,15 +337,12 @@ public abstract class ${className} extends Array${rank}D implements ${Type}Array
      * <p>
      * This method creates a ${rank}D array of ${type}'s with zero offset, contiguous
      * elements and column-major order.  All dimensions must at least 1.
-     * @param dim1 - The 1st dimension of the ${rank}D array.
-     * @param dim2 - The 2nd dimension of the ${rank}D array.
-     * @param dim3 - The 3rd dimension of the ${rank}D array.
-     * @param dim4 - The 4th dimension of the ${rank}D array.
-     * @param dim5 - The 5th dimension of the ${rank}D array.
-     * @param dim6 - The 6th dimension of the ${rank}D array.
-     * @param dim7 - The 7th dimension of the ${rank}D array.
-     * @param dim8 - The 8th dimension of the ${rank}D array.
-     * @param dim9 - The 9th dimension of the ${rank}D array.
+     //# def k = 1
+     //# while ${k} <= ${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param dim${k} - The ${kth} dimension of the ${rank}D array.
+     //#   eval k += 1
+     //# done
      * @return A new ${rank}D array of ${type}'s.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
@@ -359,15 +393,12 @@ public abstract class ${className} extends Array${rank}D implements ${Type}Array
      * <pre>arr.get(${indexList}) = data[${flatIndexDoc}]</pre>
      * with {@code arr} the returned ${rank}D array.
      * @param data - The data to wrap in the ${rank}D array.
-     * @param dim1 - The 1st dimension of the ${rank}D array.
-     * @param dim2 - The 2nd dimension of the ${rank}D array.
-     * @param dim3 - The 3rd dimension of the ${rank}D array.
-     * @param dim4 - The 4th dimension of the ${rank}D array.
-     * @param dim5 - The 5th dimension of the ${rank}D array.
-     * @param dim6 - The 6th dimension of the ${rank}D array.
-     * @param dim7 - The 7th dimension of the ${rank}D array.
-     * @param dim8 - The 8th dimension of the ${rank}D array.
-     * @param dim9 - The 9th dimension of the ${rank}D array.
+     //# def k = 1
+     //# while ${k} <= ${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param dim${k} - The ${kth} dimension of the ${rank}D array.
+     //#   eval k += 1
+     //# done
      * @return A ${rank}D array sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
@@ -516,26 +547,20 @@ public abstract class ${className} extends Array${rank}D implements ${Type}Array
      * <pre>arr.get(${indexList}) = data[${strideIndexDoc}]</pre>
      * with {@code arr} the returned ${rank}D array.
      * @param data    - The array to wrap in the ${rank}D array.
-     * @param dim1    - The 1st dimension of the ${rank}D array.
-     * @param dim2    - The 2nd dimension of the ${rank}D array.
-     * @param dim3    - The 3rd dimension of the ${rank}D array.
-     * @param dim4    - The 4th dimension of the ${rank}D array.
-     * @param dim5    - The 5th dimension of the ${rank}D array.
-     * @param dim6    - The 6th dimension of the ${rank}D array.
-     * @param dim7    - The 7th dimension of the ${rank}D array.
-     * @param dim8    - The 8th dimension of the ${rank}D array.
-     * @param dim9    - The 9th dimension of the ${rank}D array.
+     //# def k = 1
+     //# while ${k} <= ${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param dim${k}    - The ${kth} dimension of the ${rank}D array.
+     //#   eval k += 1
+     //# done
      * @param offset  - The offset in {@code data} of element (${zeroList}) of
      *                  the ${rank}D array.
-     * @param stride1 - The stride along the 1st dimension.
-     * @param stride2 - The stride along the 2nd dimension.
-     * @param stride3 - The stride along the 3rd dimension.
-     * @param stride4 - The stride along the 4th dimension.
-     * @param stride5 - The stride along the 5th dimension.
-     * @param stride6 - The stride along the 6th dimension.
-     * @param stride7 - The stride along the 7th dimension.
-     * @param stride8 - The stride along the 8th dimension.
-     * @param stride9 - The stride along the 9th dimension.
+     //# def k = 1
+     //# while ${k} <= ${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param stride${k} - The stride along the ${kth} dimension.
+     //#   eval k += 1
+     //# done
      * @return A ${rank}D array sharing the elements of <b>data</b>.
      */
     public static ${className} wrap(${type}[] data, ${declDimList},

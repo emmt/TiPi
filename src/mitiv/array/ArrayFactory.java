@@ -34,12 +34,16 @@ import mitiv.base.Traits;
  * @author Éric Thiébaut & Jonathan Léger.
  */
 public abstract class ArrayFactory implements Shaped {
+    /**
+     * This class is not instantiable.
+     */
+    protected ArrayFactory() {}
 
     /**
      * Convert a ShapedArray into a ByteArray.
      * <p>
-     * The operation is lazy, in the sense that {@code src} is returned if it already
-     * of the requested type.
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
      *
      * @param src - The source array.
      * @return A ByteArray whose values has been converted into byte's
@@ -63,7 +67,7 @@ public abstract class ArrayFactory implements Shaped {
             break;
         case Traits.INT:
             {
-                int[] inp = ((IntegerArray)src).flatten(false);
+                int[] inp = ((IntArray)src).flatten(false);
                 for (int j = 0; j < number; ++j) {
                     out[j] = (byte)inp[j];
                 }
@@ -102,8 +106,8 @@ public abstract class ArrayFactory implements Shaped {
     /**
      * Convert a ShapedArray into a ShortArray.
      * <p>
-     * The operation is lazy, in the sense that {@code src} is returned if it already
-     * of the requested type.
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
      *
      * @param src - The source array.
      * @return A ShortArray whose values has been converted into short's
@@ -127,7 +131,7 @@ public abstract class ArrayFactory implements Shaped {
             break;
         case Traits.INT:
             {
-                int[] inp = ((IntegerArray)src).flatten(false);
+                int[] inp = ((IntArray)src).flatten(false);
                 for (int j = 0; j < number; ++j) {
                     out[j] = (short)inp[j];
                 }
@@ -166,17 +170,17 @@ public abstract class ArrayFactory implements Shaped {
     /**
      * Convert a ShapedArray into an IntArray.
      * <p>
-     * The operation is lazy, in the sense that {@code src} is returned if it already
-     * of the requested type.
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
      *
      * @param src - The source array.
      * @return An IntArray whose values has been converted into int's
      *         from those of {@code src}.
      */
-    public IntegerArray toInt(ShapedArray src) {
+    public IntArray toInt(ShapedArray src) {
         int srcType = src.getType();
         if (src.getType() == Traits.INT) {
-            return (IntegerArray)src;
+            return (IntArray)src;
         }
         int number = src.getNumber();
         int[] out = new int[number];
@@ -230,8 +234,8 @@ public abstract class ArrayFactory implements Shaped {
     /**
      * Convert a ShapedArray into a LongArray.
      * <p>
-     * The operation is lazy, in the sense that {@code src} is returned if it already
-     * of the requested type.
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
      *
      * @param src - The source array.
      * @return A LongArray whose values has been converted into long's
@@ -263,7 +267,7 @@ public abstract class ArrayFactory implements Shaped {
             break;
         case Traits.INT:
             {
-                int[] inp = ((IntegerArray)src).flatten(false);
+                int[] inp = ((IntArray)src).flatten(false);
                 for (int j = 0; j < number; ++j) {
                     out[j] = (long)inp[j];
                 }
@@ -294,8 +298,8 @@ public abstract class ArrayFactory implements Shaped {
     /**
      * Convert a ShapedArray into a FloatArray.
      * <p>
-     * The operation is lazy, in the sense that {@code src} is returned if it already
-     * of the requested type.
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
      *
      * @param src - The source array.
      * @return A FloatArray whose values has been converted into float's
@@ -327,7 +331,7 @@ public abstract class ArrayFactory implements Shaped {
             break;
         case Traits.INT:
             {
-                int[] inp = ((IntegerArray)src).flatten(false);
+                int[] inp = ((IntArray)src).flatten(false);
                 for (int j = 0; j < number; ++j) {
                     out[j] = (float)inp[j];
                 }
@@ -358,8 +362,8 @@ public abstract class ArrayFactory implements Shaped {
     /**
      * Convert a ShapedArray into a DoubleArray.
      * <p>
-     * The operation is lazy, in the sense that {@code src} is returned if it already
-     * of the requested type.
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
      *
      * @param src - The source array.
      * @return A DoubleArray whose values has been converted into double's
@@ -391,7 +395,7 @@ public abstract class ArrayFactory implements Shaped {
             break;
         case Traits.INT:
             {
-                int[] inp = ((IntegerArray)src).flatten(false);
+                int[] inp = ((IntArray)src).flatten(false);
                 for (int j = 0; j < number; ++j) {
                     out[j] = (double)inp[j];
                 }
@@ -921,66 +925,66 @@ public abstract class ArrayFactory implements Shaped {
     }
 
     /**
-     * Wrap an array of int values into an IntegerArray.
+     * Wrap an array of int values into an IntArray.
      * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntegerArray
+     * Notes: (i) The source array {@code arr} and the returned IntArray
      * share the same contents. (ii) The storage order is assumed to be
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Integer1D}, {@link #Integer2D}, ... according to the number of
+     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
      *
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
-     * @return A IntegerArray wrapped around the source array {@code arr}.
+     * @return A IntArray wrapped around the source array {@code arr}.
       */
-    public static Integer1D wrap(int[] arr, int dim1) {
-        return (Integer1D)wrap(arr, new int[]{dim1}, false);
+    public static Int1D wrap(int[] arr, int dim1) {
+        return (Int1D)wrap(arr, new int[]{dim1}, false);
     }
 
     /**
-     * Wrap an array of int values into an IntegerArray.
+     * Wrap an array of int values into an IntArray.
      * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntegerArray
+     * Notes: (i) The source array {@code arr} and the returned IntArray
      * share the same contents. (ii) The storage order is assumed to be
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Integer1D}, {@link #Integer2D}, ... according to the number of
+     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
      *
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
-     * @return A IntegerArray wrapped around the source array {@code arr}.
+     * @return A IntArray wrapped around the source array {@code arr}.
       */
-    public static Integer2D wrap(int[] arr, int dim1, int dim2) {
-        return (Integer2D)wrap(arr, new int[]{dim1, dim2}, false);
+    public static Int2D wrap(int[] arr, int dim1, int dim2) {
+        return (Int2D)wrap(arr, new int[]{dim1, dim2}, false);
     }
 
     /**
-     * Wrap an array of int values into an IntegerArray.
+     * Wrap an array of int values into an IntArray.
      * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntegerArray
+     * Notes: (i) The source array {@code arr} and the returned IntArray
      * share the same contents. (ii) The storage order is assumed to be
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Integer1D}, {@link #Integer2D}, ... according to the number of
+     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
      *
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 3D array.
      * @param dim2 - The 2nd dimension of the 3D array.
      * @param dim3 - The 3rd dimension of the 3D array.
-     * @return A IntegerArray wrapped around the source array {@code arr}.
+     * @return A IntArray wrapped around the source array {@code arr}.
       */
-    public static Integer3D wrap(int[] arr, int dim1, int dim2, int dim3) {
-        return (Integer3D)wrap(arr, new int[]{dim1, dim2, dim3}, false);
+    public static Int3D wrap(int[] arr, int dim1, int dim2, int dim3) {
+        return (Int3D)wrap(arr, new int[]{dim1, dim2, dim3}, false);
     }
 
     /**
-     * Wrap an array of int values into an IntegerArray.
+     * Wrap an array of int values into an IntArray.
      * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntegerArray
+     * Notes: (i) The source array {@code arr} and the returned IntArray
      * share the same contents. (ii) The storage order is assumed to be
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Integer1D}, {@link #Integer2D}, ... according to the number of
+     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
      *
      * @param arr  - The source array.
@@ -988,19 +992,19 @@ public abstract class ArrayFactory implements Shaped {
      * @param dim2 - The 2nd dimension of the 4D array.
      * @param dim3 - The 3rd dimension of the 4D array.
      * @param dim4 - The 4th dimension of the 4D array.
-     * @return A IntegerArray wrapped around the source array {@code arr}.
+     * @return A IntArray wrapped around the source array {@code arr}.
       */
-    public static Integer4D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4) {
-        return (Integer4D)wrap(arr, new int[]{dim1, dim2, dim3, dim4}, false);
+    public static Int4D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4) {
+        return (Int4D)wrap(arr, new int[]{dim1, dim2, dim3, dim4}, false);
     }
 
     /**
-     * Wrap an array of int values into an IntegerArray.
+     * Wrap an array of int values into an IntArray.
      * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntegerArray
+     * Notes: (i) The source array {@code arr} and the returned IntArray
      * share the same contents. (ii) The storage order is assumed to be
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Integer1D}, {@link #Integer2D}, ... according to the number of
+     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
      *
      * @param arr  - The source array.
@@ -1009,19 +1013,19 @@ public abstract class ArrayFactory implements Shaped {
      * @param dim3 - The 3rd dimension of the 5D array.
      * @param dim4 - The 4th dimension of the 5D array.
      * @param dim5 - The 5th dimension of the 5D array.
-     * @return A IntegerArray wrapped around the source array {@code arr}.
+     * @return A IntArray wrapped around the source array {@code arr}.
       */
-    public static Integer5D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
-        return (Integer5D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5}, false);
+    public static Int5D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
+        return (Int5D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5}, false);
     }
 
     /**
-     * Wrap an array of int values into an IntegerArray.
+     * Wrap an array of int values into an IntArray.
      * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntegerArray
+     * Notes: (i) The source array {@code arr} and the returned IntArray
      * share the same contents. (ii) The storage order is assumed to be
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Integer1D}, {@link #Integer2D}, ... according to the number of
+     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
      *
      * @param arr  - The source array.
@@ -1031,19 +1035,19 @@ public abstract class ArrayFactory implements Shaped {
      * @param dim4 - The 4th dimension of the 6D array.
      * @param dim5 - The 5th dimension of the 6D array.
      * @param dim6 - The 6th dimension of the 6D array.
-     * @return A IntegerArray wrapped around the source array {@code arr}.
+     * @return A IntArray wrapped around the source array {@code arr}.
       */
-    public static Integer6D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
-        return (Integer6D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6}, false);
+    public static Int6D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
+        return (Int6D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6}, false);
     }
 
     /**
-     * Wrap an array of int values into an IntegerArray.
+     * Wrap an array of int values into an IntArray.
      * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntegerArray
+     * Notes: (i) The source array {@code arr} and the returned IntArray
      * share the same contents. (ii) The storage order is assumed to be
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Integer1D}, {@link #Integer2D}, ... according to the number of
+     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
      *
      * @param arr  - The source array.
@@ -1054,19 +1058,19 @@ public abstract class ArrayFactory implements Shaped {
      * @param dim5 - The 5th dimension of the 7D array.
      * @param dim6 - The 6th dimension of the 7D array.
      * @param dim7 - The 7th dimension of the 7D array.
-     * @return A IntegerArray wrapped around the source array {@code arr}.
+     * @return A IntArray wrapped around the source array {@code arr}.
       */
-    public static Integer7D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        return (Integer7D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7}, false);
+    public static Int7D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
+        return (Int7D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7}, false);
     }
 
     /**
-     * Wrap an array of int values into an IntegerArray.
+     * Wrap an array of int values into an IntArray.
      * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntegerArray
+     * Notes: (i) The source array {@code arr} and the returned IntArray
      * share the same contents. (ii) The storage order is assumed to be
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Integer1D}, {@link #Integer2D}, ... according to the number of
+     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
      *
      * @param arr  - The source array.
@@ -1078,19 +1082,19 @@ public abstract class ArrayFactory implements Shaped {
      * @param dim6 - The 6th dimension of the 8D array.
      * @param dim7 - The 7th dimension of the 8D array.
      * @param dim8 - The 8th dimension of the 8D array.
-     * @return A IntegerArray wrapped around the source array {@code arr}.
+     * @return A IntArray wrapped around the source array {@code arr}.
       */
-    public static Integer8D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
-        return (Integer8D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8}, false);
+    public static Int8D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
+        return (Int8D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8}, false);
     }
 
     /**
-     * Wrap an array of int values into an IntegerArray.
+     * Wrap an array of int values into an IntArray.
      * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntegerArray
+     * Notes: (i) The source array {@code arr} and the returned IntArray
      * share the same contents. (ii) The storage order is assumed to be
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Integer1D}, {@link #Integer2D}, ... according to the number of
+     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
      *
      * @param arr  - The source array.
@@ -1103,37 +1107,37 @@ public abstract class ArrayFactory implements Shaped {
      * @param dim7 - The 7th dimension of the 9D array.
      * @param dim8 - The 8th dimension of the 9D array.
      * @param dim9 - The 9th dimension of the 9D array.
-     * @return A IntegerArray wrapped around the source array {@code arr}.
+     * @return A IntArray wrapped around the source array {@code arr}.
       */
-    public static Integer9D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
-        return (Integer9D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9}, false);
+    public static Int9D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
+        return (Int9D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9}, false);
     }
 
     /**
-     * Wrap an IntegerArray object around a simple array of int's.
+     * Wrap an IntArray object around a simple array of int's.
      * <p>
      * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Integer1D},
-     * {@link #Integer2D}, ... according to the number of dimensions in
+     * and that the result can be safely casted into a {@link #Int1D},
+     * {@link #Int2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
      * @param arr   - The input array.
      * @param shape - The dimension list of the result.
      *
-     * @return An instance of IntegerArray sharing its data with the input array
+     * @return An instance of IntArray sharing its data with the input array
      *         {@code arr}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static IntegerArray wrap(int[] arr, int[] shape) {
+    public static IntArray wrap(int[] arr, int[] shape) {
         return wrap(arr, shape, true);
     }
 
     /**
-     * Wrap an IntegerArray object around a simple array of int's.
+     * Wrap an IntArray object around a simple array of int's.
      * <p>
      * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Integer1D},
-     * {@link #Integer2D}, ... according to the number of dimensions in
+     * and that the result can be safely casted into a {@link #Int1D},
+     * {@link #Int2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
      * @param arr   - The input array.
@@ -1141,30 +1145,30 @@ public abstract class ArrayFactory implements Shaped {
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
-     * @return An instance of IntegerArray sharing its data with the input array
+     * @return An instance of IntArray sharing its data with the input array
      *         {@code arr}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static IntegerArray wrap(int[] arr, int[] shape, boolean cloneShape) {
+    public static IntArray wrap(int[] arr, int[] shape, boolean cloneShape) {
         int rank = (shape == null ? 0 : shape.length);
         if (rank == 1) {
-            return Integer1D.wrap(arr, shape, cloneShape);
+            return Int1D.wrap(arr, shape, cloneShape);
         } else if (rank == 2) {
-            return Integer2D.wrap(arr, shape, cloneShape);
+            return Int2D.wrap(arr, shape, cloneShape);
         } else if (rank == 3) {
-            return Integer3D.wrap(arr, shape, cloneShape);
+            return Int3D.wrap(arr, shape, cloneShape);
         } else if (rank == 4) {
-            return Integer4D.wrap(arr, shape, cloneShape);
+            return Int4D.wrap(arr, shape, cloneShape);
         } else if (rank == 5) {
-            return Integer5D.wrap(arr, shape, cloneShape);
+            return Int5D.wrap(arr, shape, cloneShape);
         } else if (rank == 6) {
-            return Integer6D.wrap(arr, shape, cloneShape);
+            return Int6D.wrap(arr, shape, cloneShape);
         } else if (rank == 7) {
-            return Integer7D.wrap(arr, shape, cloneShape);
+            return Int7D.wrap(arr, shape, cloneShape);
         } else if (rank == 8) {
-            return Integer8D.wrap(arr, shape, cloneShape);
+            return Int8D.wrap(arr, shape, cloneShape);
         } else if (rank == 9) {
-            return Integer9D.wrap(arr, shape, cloneShape);
+            return Int9D.wrap(arr, shape, cloneShape);
         } else {
             throw new IllegalArgumentException("bad number of dimensions");
         }

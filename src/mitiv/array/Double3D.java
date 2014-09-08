@@ -66,9 +66,9 @@ public abstract class Double3D extends Array3D implements DoubleArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
+     * @param i1    - The index along the 1st dimension.
+     * @param i2    - The index along the 2nd dimension.
+     * @param i3    - The index along the 3rd dimension.
      * @param value - The value to store at position {@code (i1,i2,i3)}.
      */
     public abstract void set(int i1, int i2, int i3, double value);
@@ -79,7 +79,7 @@ public abstract class Double3D extends Array3D implements DoubleArray {
      * and "get" methods. */
 
     @Override
-    public void set(double value) {
+    public void fill(double value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -189,7 +189,7 @@ public abstract class Double3D extends Array3D implements DoubleArray {
     }
 
     @Override
-    public void set(DoubleGenerator generator) {
+    public void fill(DoubleGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -257,6 +257,130 @@ public abstract class Double3D extends Array3D implements DoubleArray {
     @Override
     public double[] flatten() {
         return flatten(false);
+    }
+
+    /**
+     * Convert instance into a Byte3D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte3D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte3D toByte() {
+        byte[] out = new byte[number];
+        int i = -1;
+        for (int i3 = 0; i3 < dim3; ++i3) {
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    out[++i] = (byte)get(i1,i2,i3);
+                }
+            }
+        }
+        return Byte3D.wrap(out, dim1, dim2, dim3);
+    }
+    /**
+     * Convert instance into a Short3D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short3D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short3D toShort() {
+        short[] out = new short[number];
+        int i = -1;
+        for (int i3 = 0; i3 < dim3; ++i3) {
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    out[++i] = (short)get(i1,i2,i3);
+                }
+            }
+        }
+        return Short3D.wrap(out, dim1, dim2, dim3);
+    }
+    /**
+     * Convert instance into an Int3D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int3D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int3D toInt() {
+        int[] out = new int[number];
+        int i = -1;
+        for (int i3 = 0; i3 < dim3; ++i3) {
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    out[++i] = (int)get(i1,i2,i3);
+                }
+            }
+        }
+        return Int3D.wrap(out, dim1, dim2, dim3);
+    }
+    /**
+     * Convert instance into a Long3D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long3D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long3D toLong() {
+        long[] out = new long[number];
+        int i = -1;
+        for (int i3 = 0; i3 < dim3; ++i3) {
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    out[++i] = (long)get(i1,i2,i3);
+                }
+            }
+        }
+        return Long3D.wrap(out, dim1, dim2, dim3);
+    }
+    /**
+     * Convert instance into a Float3D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float3D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float3D toFloat() {
+        float[] out = new float[number];
+        int i = -1;
+        for (int i3 = 0; i3 < dim3; ++i3) {
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    out[++i] = (float)get(i1,i2,i3);
+                }
+            }
+        }
+        return Float3D.wrap(out, dim1, dim2, dim3);
+    }
+    /**
+     * Convert instance into a Double3D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double3D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double3D toDouble() {
+        return this;
     }
 
     /*=======================================================================*/

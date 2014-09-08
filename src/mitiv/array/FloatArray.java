@@ -44,13 +44,13 @@ public interface FloatArray extends ShapedArray {
      * Set all the values of the array of float's.
      * @param value - The value to set.
      */
-    public abstract void set(float value);
+    public abstract void fill(float value);
 
     /**
      * Set the values of the array of float's with a generator.
      * @param generator - The generator to use.
      */
-    public abstract void set(FloatGenerator generator);
+    public abstract void fill(FloatGenerator generator);
 
     /**
      * Increment all the values of the array of float's.

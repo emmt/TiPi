@@ -68,11 +68,11 @@ public abstract class Byte5D extends Array5D implements ByteArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
-     * @param i4 - The index along the 4th dimension.
-     * @param i5 - The index along the 5th dimension.
+     * @param i1    - The index along the 1st dimension.
+     * @param i2    - The index along the 2nd dimension.
+     * @param i3    - The index along the 3rd dimension.
+     * @param i4    - The index along the 4th dimension.
+     * @param i5    - The index along the 5th dimension.
      * @param value - The value to store at position {@code (i1,i2,i3,i4,i5)}.
      */
     public abstract void set(int i1, int i2, int i3, int i4, int i5, byte value);
@@ -83,7 +83,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
      * and "get" methods. */
 
     @Override
-    public void set(byte value) {
+    public void fill(byte value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -233,7 +233,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     }
 
     @Override
-    public void set(ByteGenerator generator) {
+    public void fill(ByteGenerator generator) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -321,6 +321,150 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     @Override
     public byte[] flatten() {
         return flatten(false);
+    }
+
+    /**
+     * Convert instance into a Byte5D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte5D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte5D toByte() {
+        return this;
+    }
+    /**
+     * Convert instance into a Short5D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short5D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short5D toShort() {
+        short[] out = new short[number];
+        int i = -1;
+        for (int i5 = 0; i5 < dim5; ++i5) {
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            out[++i] = (short)get(i1,i2,i3,i4,i5);
+                        }
+                    }
+                }
+            }
+        }
+        return Short5D.wrap(out, dim1, dim2, dim3, dim4, dim5);
+    }
+    /**
+     * Convert instance into an Int5D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int5D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int5D toInt() {
+        int[] out = new int[number];
+        int i = -1;
+        for (int i5 = 0; i5 < dim5; ++i5) {
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            out[++i] = (int)get(i1,i2,i3,i4,i5);
+                        }
+                    }
+                }
+            }
+        }
+        return Int5D.wrap(out, dim1, dim2, dim3, dim4, dim5);
+    }
+    /**
+     * Convert instance into a Long5D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long5D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long5D toLong() {
+        long[] out = new long[number];
+        int i = -1;
+        for (int i5 = 0; i5 < dim5; ++i5) {
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            out[++i] = (long)get(i1,i2,i3,i4,i5);
+                        }
+                    }
+                }
+            }
+        }
+        return Long5D.wrap(out, dim1, dim2, dim3, dim4, dim5);
+    }
+    /**
+     * Convert instance into a Float5D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float5D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float5D toFloat() {
+        float[] out = new float[number];
+        int i = -1;
+        for (int i5 = 0; i5 < dim5; ++i5) {
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            out[++i] = (float)get(i1,i2,i3,i4,i5);
+                        }
+                    }
+                }
+            }
+        }
+        return Float5D.wrap(out, dim1, dim2, dim3, dim4, dim5);
+    }
+    /**
+     * Convert instance into a Double5D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double5D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double5D toDouble() {
+        double[] out = new double[number];
+        int i = -1;
+        for (int i5 = 0; i5 < dim5; ++i5) {
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            out[++i] = (double)get(i1,i2,i3,i4,i5);
+                        }
+                    }
+                }
+            }
+        }
+        return Double5D.wrap(out, dim1, dim2, dim3, dim4, dim5);
     }
 
     /*=======================================================================*/

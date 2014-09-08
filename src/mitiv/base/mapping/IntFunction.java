@@ -23,16 +23,19 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.random;
+package mitiv.base.mapping;
 
 /**
- * Interface for generator of {@code int} values.
+ * An IntFunction has an {@link #apply} method to map a int argument to a int result.
  * @author Éric Thiébaut.
- *
  */
-public interface IntegerGenerator {
-    /** Fetch next generated value. */
-    public abstract int nextInteger();
+public interface IntFunction {
+    /**
+     * Map a int argument to a int result.
+     * @param arg  - The argument of the function.
+     * @return The result of the function for argument {@code arg}.
+     */
+    public abstract int apply(int arg);
 }
 
 /*

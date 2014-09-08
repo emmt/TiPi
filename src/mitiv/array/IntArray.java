@@ -26,9 +26,9 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
-import mitiv.base.mapping.IntegerFunction;
-import mitiv.base.mapping.IntegerScanner;
-import mitiv.random.IntegerGenerator;
+import mitiv.base.mapping.IntFunction;
+import mitiv.base.mapping.IntScanner;
+import mitiv.random.IntGenerator;
 
 /**
  * Define the global operations which can be applied to an array with a
@@ -36,7 +36,7 @@ import mitiv.random.IntegerGenerator;
  *
  * @author Éric Thiébaut.
  */
-public interface IntegerArray extends ShapedArray {
+public interface IntArray extends ShapedArray {
 
     static public final int type = INT;
 
@@ -44,13 +44,13 @@ public interface IntegerArray extends ShapedArray {
      * Set all the values of the array of int's.
      * @param value - The value to set.
      */
-    public abstract void set(int value);
+    public abstract void fill(int value);
 
     /**
      * Set the values of the array of int's with a generator.
      * @param generator - The generator to use.
      */
-    public abstract void set(IntegerGenerator generator);
+    public abstract void fill(IntGenerator generator);
 
     /**
      * Increment all the values of the array of int's.
@@ -75,45 +75,45 @@ public interface IntegerArray extends ShapedArray {
      * Map all the values of the array of int's by a function.
      * @param func - The function to apply.
      */
-    public abstract void map(IntegerFunction func);
+    public abstract void map(IntFunction func);
 
     /**
      * Scan the values of the array of int's.
      * @param scanner - The scanner to use.
      */
-    public abstract void scan(IntegerScanner scanner);
+    public abstract void scan(IntScanner scanner);
 
     /**
      * Flatten the array of int's in a simple array.
      * <p>
-     * The contents of a (multi-dimensional) IntegerArray can be stored in many
+     * The contents of a (multi-dimensional) IntArray can be stored in many
      * different forms.  This storage details are hidden to the end-user in
      * favor of a unified and comprehensive interface.  This method returns
-     * the contents of the IntegerArray object as a simple flat array.  If the
-     * IntegerArray object is multi-dimensional, the storage of the returned
+     * the contents of the IntArray object as a simple flat array.  If the
+     * IntArray object is multi-dimensional, the storage of the returned
      * result is column-major order.
      * @param forceCopy - Set true to force a copy of the internal data
      *                    even though it can already be in a flat form.
      * @return A simple array of int's with the contents of
-     *         the IntegerArray.
+     *         the IntArray.
      */
     public abstract int[] flatten(boolean forceCopy);
 
     /**
      * Flatten the contents of int's in a simple array.
      * <p>
-     * The contents of a (multi-dimensional) IntegerArray can be stored in many
+     * The contents of a (multi-dimensional) IntArray can be stored in many
      * different forms.  This storage details are hidden to the end-user in
      * favor of a unified and comprehensive interface.  This method returns
-     * the contents of the IntegerArray object as a simple flat array.  If the
-     * IntegerArray object is multi-dimensional, the storage of the returned
+     * the contents of the IntArray object as a simple flat array.  If the
+     * IntArray object is multi-dimensional, the storage of the returned
      * result is column-major order.
      * <p>
      * Depending on the storage layout, the returned array may or may not
-     * share the same storage as the IntegerArray array.  Call {@code
+     * share the same storage as the IntArray array.  Call {@code
      * flatten(true)} to make sure that the two storage areas are independent.
      * @return A simple array of ints with the contents of
-     *         the IntegerArray array.
+     *         the IntArray array.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public abstract int[] flatten();

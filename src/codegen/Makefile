@@ -1,6 +1,6 @@
 
 #CODGER=./tpp --autopkg --docfilter
-CODGER=./tpp -Dpackage=mitiv.array --docfilter
+CODGER=./tpp -Dpackage=mitiv.array
 PFX= ../mitiv/array/
 
 MISC_OUTPUTS = $(PFX)ArrayFactory.java;
@@ -19,10 +19,10 @@ SHORT_OUTPUTS = $(PFX)Short1D.java $(PFX)Short2D.java $(PFX)Short3D.java \
                 $(PFX)Short7D.java $(PFX)Short8D.java $(PFX)Short9D.java \
                 $(PFX)ShortArray.java
 
-INTEGER_OUTPUTS = $(PFX)Integer1D.java $(PFX)Integer2D.java $(PFX)Integer3D.java \
-                  $(PFX)Integer4D.java $(PFX)Integer5D.java $(PFX)Integer6D.java \
-                  $(PFX)Integer7D.java $(PFX)Integer8D.java $(PFX)Integer9D.java \
-                  $(PFX)IntegerArray.java
+INTEGER_OUTPUTS = $(PFX)Int1D.java $(PFX)Int2D.java $(PFX)Int3D.java \
+                  $(PFX)Int4D.java $(PFX)Int5D.java $(PFX)Int6D.java \
+                  $(PFX)Int7D.java $(PFX)Int8D.java $(PFX)Int9D.java \
+                  $(PFX)IntArray.java
 
 LONG_OUTPUTS = $(PFX)Long1D.java $(PFX)Long2D.java $(PFX)Long3D.java \
                $(PFX)Long4D.java $(PFX)Long5D.java $(PFX)Long6D.java \
@@ -162,38 +162,38 @@ $(PFX)Short9D.java: $(TYPE_RANK_INPUTS)
 	$(CODGER) -Dtype=short -Drank=9 $< $@
 
 #-----------------------------------------------------------------------------
-# Integer
+# Int
 
 all-integer: $(INTEGER_OUTPUTS)
 
-$(PFX)IntegerArray.java: $(TYPED_ARRAY_INPUTS)
+$(PFX)IntArray.java: $(TYPED_ARRAY_INPUTS)
 	$(CODGER) -Dtype=int $< $@
 
-$(PFX)Integer1D.java: $(TYPE_RANK_INPUTS)
+$(PFX)Int1D.java: $(TYPE_RANK_INPUTS)
 	$(CODGER) -Dtype=int -Drank=1 $< $@
 
-$(PFX)Integer2D.java: $(TYPE_RANK_INPUTS)
+$(PFX)Int2D.java: $(TYPE_RANK_INPUTS)
 	$(CODGER) -Dtype=int -Drank=2 $< $@
 
-$(PFX)Integer3D.java: $(TYPE_RANK_INPUTS)
+$(PFX)Int3D.java: $(TYPE_RANK_INPUTS)
 	$(CODGER) -Dtype=int -Drank=3 $< $@
 
-$(PFX)Integer4D.java: $(TYPE_RANK_INPUTS)
+$(PFX)Int4D.java: $(TYPE_RANK_INPUTS)
 	$(CODGER) -Dtype=int -Drank=4 $< $@
 
-$(PFX)Integer5D.java: $(TYPE_RANK_INPUTS)
+$(PFX)Int5D.java: $(TYPE_RANK_INPUTS)
 	$(CODGER) -Dtype=int -Drank=5 $< $@
 
-$(PFX)Integer6D.java: $(TYPE_RANK_INPUTS)
+$(PFX)Int6D.java: $(TYPE_RANK_INPUTS)
 	$(CODGER) -Dtype=int -Drank=6 $< $@
 
-$(PFX)Integer7D.java: $(TYPE_RANK_INPUTS)
+$(PFX)Int7D.java: $(TYPE_RANK_INPUTS)
 	$(CODGER) -Dtype=int -Drank=7 $< $@
 
-$(PFX)Integer8D.java: $(TYPE_RANK_INPUTS)
+$(PFX)Int8D.java: $(TYPE_RANK_INPUTS)
 	$(CODGER) -Dtype=int -Drank=8 $< $@
 
-$(PFX)Integer9D.java: $(TYPE_RANK_INPUTS)
+$(PFX)Int9D.java: $(TYPE_RANK_INPUTS)
 	$(CODGER) -Dtype=int -Drank=9 $< $@
 
 #-----------------------------------------------------------------------------

@@ -44,13 +44,13 @@ public interface ShortArray extends ShapedArray {
      * Set all the values of the array of short's.
      * @param value - The value to set.
      */
-    public abstract void set(short value);
+    public abstract void fill(short value);
 
     /**
      * Set the values of the array of short's with a generator.
      * @param generator - The generator to use.
      */
-    public abstract void set(ShortGenerator generator);
+    public abstract void fill(ShortGenerator generator);
 
     /**
      * Increment all the values of the array of short's.

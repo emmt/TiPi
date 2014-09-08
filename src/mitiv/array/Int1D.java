@@ -26,9 +26,9 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
-import mitiv.base.mapping.IntegerFunction;
-import mitiv.base.mapping.IntegerScanner;
-import mitiv.random.IntegerGenerator;
+import mitiv.base.mapping.IntFunction;
+import mitiv.base.mapping.IntScanner;
+import mitiv.random.IntGenerator;
 
 
 /**
@@ -36,17 +36,17 @@ import mitiv.random.IntegerGenerator;
  *
  * @author Éric Thiébaut.
  */
-public abstract class Integer1D extends Array1D implements IntegerArray {
+public abstract class Int1D extends Array1D implements IntArray {
 
-    protected Integer1D(int dim1) {
+    protected Int1D(int dim1) {
         super(dim1);
     }
 
-    protected Integer1D(int[] shape, boolean cloneShape) {
+    protected Int1D(int[] shape, boolean cloneShape) {
         super(shape, cloneShape);
     }
 
-    protected Integer1D(int[] shape) {
+    protected Int1D(int[] shape) {
         super(shape, true);
     }
 
@@ -64,7 +64,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
 
     /**
      * Set the value at a given position.
-     * @param i1 - The index along the 1st dimension.
+     * @param i1    - The index along the 1st dimension.
      * @param value - The value to store at position {@code (i1)}.
      */
     public abstract void set(int i1, int value);
@@ -75,7 +75,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
      * and "get" methods. */
 
     @Override
-    public void set(int value) {
+    public void fill(int value) {
         for (int i1 = 0; i1 < dim1; ++i1) {
             set(i1, value);
         }
@@ -103,21 +103,21 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
     }
 
     @Override
-    public void map(IntegerFunction function) {
+    public void map(IntFunction function) {
         for (int i1 = 0; i1 < dim1; ++i1) {
             set(i1, function.apply(get(i1)));
         }
     }
 
     @Override
-    public void set(IntegerGenerator generator) {
+    public void fill(IntGenerator generator) {
         for (int i1 = 0; i1 < dim1; ++i1) {
-            set(i1, generator.nextInteger());
+            set(i1, generator.nextInt());
         }
     }
 
     @Override
-    public void scan(IntegerScanner scanner)  {
+    public void scan(IntScanner scanner)  {
         scanner.initialize(get(0));
         for (int i1 = 1; i1 < dim1; ++i1) {
             scanner.update(get(i1));
@@ -127,7 +127,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
     /* Note that the following default implementation of the "flatten" method
      * is always returning a copy of the contents whatever the value of the
      * "forceCopy" argument.
-     * @see devel.eric.array.base.IntegerArray#flatten(boolean)
+     * @see devel.eric.array.base.IntArray#flatten(boolean)
      */
     @Override
     public int[] flatten(boolean forceCopy) {
@@ -144,6 +144,110 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
         return flatten(false);
     }
 
+    /**
+     * Convert instance into a Byte1D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Byte1D whose values has been converted into byte's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Byte1D toByte() {
+        byte[] out = new byte[dim1];
+        int i = -1;
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            out[++i] = (byte)get(i1);
+        }
+        return Byte1D.wrap(out, dim1);
+    }
+    /**
+     * Convert instance into a Short1D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Short1D whose values has been converted into short's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Short1D toShort() {
+        short[] out = new short[dim1];
+        int i = -1;
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            out[++i] = (short)get(i1);
+        }
+        return Short1D.wrap(out, dim1);
+    }
+    /**
+     * Convert instance into an Int1D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return An Int1D whose values has been converted into int's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Int1D toInt() {
+        return this;
+    }
+    /**
+     * Convert instance into a Long1D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Long1D whose values has been converted into long's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Long1D toLong() {
+        long[] out = new long[dim1];
+        int i = -1;
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            out[++i] = (long)get(i1);
+        }
+        return Long1D.wrap(out, dim1);
+    }
+    /**
+     * Convert instance into a Float1D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Float1D whose values has been converted into float's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Float1D toFloat() {
+        float[] out = new float[dim1];
+        int i = -1;
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            out[++i] = (float)get(i1);
+        }
+        return Float1D.wrap(out, dim1);
+    }
+    /**
+     * Convert instance into a Double1D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return A Double1D whose values has been converted into double's
+     *         from those of {@code this}.
+     */
+    @Override
+    public Double1D toDouble() {
+        double[] out = new double[dim1];
+        int i = -1;
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            out[++i] = (double)get(i1);
+        }
+        return Double1D.wrap(out, dim1);
+    }
+
     /*=======================================================================*/
     /* FACTORY */
 
@@ -153,7 +257,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
      * inner class is needed).  The outer class is however "abstract" and we
      * must provide a minimal set of methods to make it instantiable.
      */
-    private static final Integer1D factory = new Integer1D(1) {
+    private static final Int1D factory = new Int1D(1) {
         @Override
         public final int get(int i1) {
             return 0;
@@ -183,7 +287,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
      * @return A new 1D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer1D create(int dim1) {
+    public static Int1D create(int dim1) {
         return factory.new Flat(dim1);
     }
 
@@ -199,7 +303,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
      * @return A new 1D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer1D create(int[] shape) {
+    public static Int1D create(int[] shape) {
         return factory.new Flat(shape, true);
     }
 
@@ -218,7 +322,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
      * @return A new 1D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer1D create(int[] shape, boolean cloneShape) {
+    public static Int1D create(int[] shape, boolean cloneShape) {
         return factory.new Flat(shape, cloneShape);
     }
 
@@ -234,7 +338,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
      * @return A 1D array sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer1D wrap(int[] data, int dim1) {
+    public static Int1D wrap(int[] data, int dim1) {
         return factory.new Flat(data, dim1);
     }
 
@@ -252,7 +356,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
      * @return A new 1D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer1D wrap(int[] data, int[] shape) {
+    public static Int1D wrap(int[] data, int[] shape) {
         return factory.new Flat(data, shape, true);
     }
 
@@ -273,7 +377,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
      * @return A new 1D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Integer1D wrap(int[] data, int[] shape, boolean cloneShape) {
+    public static Int1D wrap(int[] data, int[] shape, boolean cloneShape) {
         return factory.new Flat(data, shape, cloneShape);
     }
 
@@ -283,7 +387,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Flat extends Integer1D {
+    private class Flat extends Int1D {
         private static final int order = COLUMN_MAJOR;
         private final int[] data;
 
@@ -353,7 +457,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
      * @param stride1 - The stride along the 1st dimension.
      * @return A 1D array sharing the elements of <b>data</b>.
      */
-    public static Integer1D wrap(int[] data, int dim1,
+    public static Int1D wrap(int[] data, int dim1,
             int offset, int stride1) {
         return factory.new Strided(data, dim1, offset, stride1);
     }
@@ -364,7 +468,7 @@ public abstract class Integer1D extends Array1D implements IntegerArray {
      * To instantiate such an inner class, an instance of the outer class must
      * be available (this is the purpose of the static "factory" instance).
      */
-    private class Strided extends Integer1D {
+    private class Strided extends Int1D {
         private final int[] data;
         private final int order;
         private final int offset;
