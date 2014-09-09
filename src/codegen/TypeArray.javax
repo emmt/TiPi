@@ -121,8 +121,19 @@ public interface ${className} extends ShapedArray {
     public abstract ${type}[] flatten();
 
     //#if 0
-    public static ${Type}Array wrap(${type}[] data, int[] shape) {
-        // TODO
+    public static ${Type}Array wrap(${type}[] data, int[] shape, boolean cloneShape) {
+        int rank = (shape == null ? 0 : shape.length);
+        //#     def rank = 1
+        if (rank == ${rank}) {
+            return ${Type}${rank}D.wrap(arr, shape, cloneShape);
+            //# while ${rank} < 9
+            //#     eval rank += 1
+        } else if (rank == ${rank}) {
+            return ${Type}${rank}D.wrap(arr, shape, cloneShape);
+            //# done
+        } else {
+            throw new IllegalArgumentException("Invalid shape.");
+        }
         return null;
     }
 

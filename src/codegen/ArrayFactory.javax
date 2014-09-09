@@ -102,7 +102,6 @@ public abstract class ${className} implements Shaped {
     //#     def type = ${}{type_${id}}
     //#     def Type = ${}{Type_${id}}
     //#     def TYPE = ${}{TYPE_${id}}
-    //#     def Name = ${}{Name_${id}}
     //#     def TypeArray = ${Type}Array
     //#     if ${id} == 2
     //#         def a = an
@@ -131,24 +130,16 @@ public abstract class ${className} implements Shaped {
      * dimensions in {@code shape}.
      *
      * @param arr  - The source array.
-     //#         def k = 1
-     //#         while ${k} <= ${rank}
-     //#             if ${k} == 1
-     //#                 def th = st
-     //#             elif ${k} == 2
-     //#                 def th = nd
-     //#             elif ${k} == 3
-     //#                 def th = rd
-     //#             else
-     //#                 def th = th
-     //#             endif
-     * @param dim${k} - The ${k}${th} dimension of the ${rank}D array.
+     //#         def k = 0
+     //#         while ${k} < ${rank}
      //#             eval k += 1
+     //#             def kth = ${}{nth_${k}}
+     * @param dim${k} - The ${kth} dimension of the ${rank}D array.
      //#         done
      * @return A ${Type}Array wrapped around the source array {@code arr}.
       */
     public static ${Type}${rank}D wrap(${type}[] arr, ${declDimList}) {
-        return (${Type}${rank}D)wrap(arr, new int[]{${argDimList}}, false);
+        return ${Type}${rank}D.wrap(arr, ${argDimList});
     }
 
     //#     eval rank += 1
@@ -180,37 +171,27 @@ public abstract class ${className} implements Shaped {
      * {@link #${Type}2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
+     * @param data   - The input array.
      * @param shape - The dimension list of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
      * @return An instance of ${TypeArray} sharing its data with the input array
-     *         {@code arr}.
+     *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static ${TypeArray} wrap(${type}[] arr, int[] shape, boolean cloneShape) {
+    public static ${Type}Array wrap(${type}[] data, int[] shape, boolean cloneShape) {
         int rank = (shape == null ? 0 : shape.length);
-        if (rank == 1) {
-            return ${Type}1D.wrap(arr, shape, cloneShape);
-        } else if (rank == 2) {
-            return ${Type}2D.wrap(arr, shape, cloneShape);
-        } else if (rank == 3) {
-            return ${Type}3D.wrap(arr, shape, cloneShape);
-        } else if (rank == 4) {
-            return ${Type}4D.wrap(arr, shape, cloneShape);
-        } else if (rank == 5) {
-            return ${Type}5D.wrap(arr, shape, cloneShape);
-        } else if (rank == 6) {
-            return ${Type}6D.wrap(arr, shape, cloneShape);
-        } else if (rank == 7) {
-            return ${Type}7D.wrap(arr, shape, cloneShape);
-        } else if (rank == 8) {
-            return ${Type}8D.wrap(arr, shape, cloneShape);
-        } else if (rank == 9) {
-            return ${Type}9D.wrap(arr, shape, cloneShape);
+        //#     def rank = 1
+        if (rank == ${rank}) {
+            return ${Type}${rank}D.wrap(data, shape, cloneShape);
+            //# while ${rank} < 9
+            //#     eval rank += 1
+        } else if (rank == ${rank}) {
+            return ${Type}${rank}D.wrap(data, shape, cloneShape);
+            //# done
         } else {
-            throw new IllegalArgumentException("bad number of dimensions");
+            throw new IllegalArgumentException("Invalid shape.");
         }
     }
 
