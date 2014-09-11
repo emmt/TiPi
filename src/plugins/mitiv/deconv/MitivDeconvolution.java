@@ -33,6 +33,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import icy.gui.frame.progress.AnnounceFrame;
 import icy.sequence.Sequence;
 import icy.sequence.SequenceEvent;
 import icy.sequence.SequenceListener;
@@ -210,34 +211,47 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         }
 
         if(sequenceImage.getValue() == null || sequencePSF.getValue() == null){
-            throw new IllegalArgumentException("We need a PSF and/or an image");
-        }
-        deconvolution = new Deconvolution(sequenceImage.getValue().getFirstNonNullImage(),
-                sequencePSF.getValue().getFirstNonNullImage(),correct);
-
-        myseq = new Sequence();
-        myseq.addImage(0,firstJob(job));
-        myseq.addListener(this); 
-        myseq.setName("");
-        if (isHeadLess()) {
-            double value = valueBlock.getValue();
-            updateImage(nextJob((int)value, job), (int)value);
-        } else {
-            addSequence(myseq);
-            slider.setEnabled(true);
-            slider.addChangeListener(new ChangeListener(){
-                public void stateChanged(ChangeEvent event){
-                    //getUI().setProgressBarMessage("Computation in progress");
-                    int sliderValue =(((JSlider)event.getSource()).getValue());
-                    updateProgressBarMessage("Computing");
-                    thread.prepareNextJob(sliderValue, job);
-                    //OMEXMLMetadataImpl metaData = new OMEXMLMetadataImpl();
-                    //myseq.setMetaData(metaData);
-                    //updateImage(buffered, tmp);
+            String message = "You have forgotten to give ";
+            String messageEnd = "";
+            if (sequenceImage.getValue() == null) {
+                messageEnd = messageEnd.concat("the image ");
+            }
+            if(sequencePSF.getValue() == null) {
+                if (sequenceImage.getValue() == null) {
+                    messageEnd = messageEnd.concat("and ");
                 }
-            });  
-            //Beware, need to be called at the END
-            slider.setValue(0);
+                messageEnd = messageEnd.concat("a PSF");
+            }
+            new AnnounceFrame(message+messageEnd);
+            //throw new IllegalArgumentException("We need a PSF and/or an image");
+        }else{
+            deconvolution = new Deconvolution(sequenceImage.getValue().getFirstNonNullImage(),
+                    sequencePSF.getValue().getFirstNonNullImage(),correct);
+
+            myseq = new Sequence();
+            myseq.addImage(0,firstJob(job));
+            myseq.addListener(this); 
+            myseq.setName("");
+            if (isHeadLess()) {
+                double value = valueBlock.getValue();
+                updateImage(nextJob((int)value, job), (int)value);
+            } else {
+                addSequence(myseq);
+                slider.setEnabled(true);
+                slider.addChangeListener(new ChangeListener(){
+                    public void stateChanged(ChangeEvent event){
+                        //getUI().setProgressBarMessage("Computation in progress");
+                        int sliderValue =(((JSlider)event.getSource()).getValue());
+                        updateProgressBarMessage("Computing");
+                        thread.prepareNextJob(sliderValue, job);
+                        //OMEXMLMetadataImpl metaData = new OMEXMLMetadataImpl();
+                        //myseq.setMetaData(metaData);
+                        //updateImage(buffered, tmp);
+                    }
+                });  
+                //Beware, need to be called at the END
+                slider.setValue(0);
+            }
         }
     }
 
