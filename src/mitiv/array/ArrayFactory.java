@@ -438,7 +438,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ByteArray wrapped around the source array {@code arr}.
       */
     public static Byte1D wrap(byte[] arr, int dim1) {
-        return (Byte1D)wrap(arr, new int[]{dim1}, false);
+        return Byte1D.wrap(arr, dim1);
     }
 
     /**
@@ -456,7 +456,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ByteArray wrapped around the source array {@code arr}.
       */
     public static Byte2D wrap(byte[] arr, int dim1, int dim2) {
-        return (Byte2D)wrap(arr, new int[]{dim1, dim2}, false);
+        return Byte2D.wrap(arr, dim1, dim2);
     }
 
     /**
@@ -475,7 +475,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ByteArray wrapped around the source array {@code arr}.
       */
     public static Byte3D wrap(byte[] arr, int dim1, int dim2, int dim3) {
-        return (Byte3D)wrap(arr, new int[]{dim1, dim2, dim3}, false);
+        return Byte3D.wrap(arr, dim1, dim2, dim3);
     }
 
     /**
@@ -495,7 +495,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ByteArray wrapped around the source array {@code arr}.
       */
     public static Byte4D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4) {
-        return (Byte4D)wrap(arr, new int[]{dim1, dim2, dim3, dim4}, false);
+        return Byte4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
 
     /**
@@ -516,7 +516,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ByteArray wrapped around the source array {@code arr}.
       */
     public static Byte5D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
-        return (Byte5D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5}, false);
+        return Byte5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
 
     /**
@@ -538,7 +538,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ByteArray wrapped around the source array {@code arr}.
       */
     public static Byte6D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
-        return (Byte6D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6}, false);
+        return Byte6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /**
@@ -561,7 +561,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ByteArray wrapped around the source array {@code arr}.
       */
     public static Byte7D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        return (Byte7D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7}, false);
+        return Byte7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /**
@@ -585,7 +585,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ByteArray wrapped around the source array {@code arr}.
       */
     public static Byte8D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
-        return (Byte8D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8}, false);
+        return Byte8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /**
@@ -610,7 +610,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ByteArray wrapped around the source array {@code arr}.
       */
     public static Byte9D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
-        return (Byte9D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9}, false);
+        return Byte9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /**
@@ -640,37 +640,37 @@ public abstract class ArrayFactory implements Shaped {
      * {@link #Byte2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
+     * @param data   - The input array.
      * @param shape - The dimension list of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
      * @return An instance of ByteArray sharing its data with the input array
-     *         {@code arr}.
+     *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static ByteArray wrap(byte[] arr, int[] shape, boolean cloneShape) {
+    public static ByteArray wrap(byte[] data, int[] shape, boolean cloneShape) {
         int rank = (shape == null ? 0 : shape.length);
         if (rank == 1) {
-            return Byte1D.wrap(arr, shape, cloneShape);
+            return Byte1D.wrap(data, shape, cloneShape);
         } else if (rank == 2) {
-            return Byte2D.wrap(arr, shape, cloneShape);
+            return Byte2D.wrap(data, shape, cloneShape);
         } else if (rank == 3) {
-            return Byte3D.wrap(arr, shape, cloneShape);
+            return Byte3D.wrap(data, shape, cloneShape);
         } else if (rank == 4) {
-            return Byte4D.wrap(arr, shape, cloneShape);
+            return Byte4D.wrap(data, shape, cloneShape);
         } else if (rank == 5) {
-            return Byte5D.wrap(arr, shape, cloneShape);
+            return Byte5D.wrap(data, shape, cloneShape);
         } else if (rank == 6) {
-            return Byte6D.wrap(arr, shape, cloneShape);
+            return Byte6D.wrap(data, shape, cloneShape);
         } else if (rank == 7) {
-            return Byte7D.wrap(arr, shape, cloneShape);
+            return Byte7D.wrap(data, shape, cloneShape);
         } else if (rank == 8) {
-            return Byte8D.wrap(arr, shape, cloneShape);
+            return Byte8D.wrap(data, shape, cloneShape);
         } else if (rank == 9) {
-            return Byte9D.wrap(arr, shape, cloneShape);
+            return Byte9D.wrap(data, shape, cloneShape);
         } else {
-            throw new IllegalArgumentException("bad number of dimensions");
+            throw new IllegalArgumentException("Invalid shape.");
         }
     }
 
@@ -688,7 +688,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ShortArray wrapped around the source array {@code arr}.
       */
     public static Short1D wrap(short[] arr, int dim1) {
-        return (Short1D)wrap(arr, new int[]{dim1}, false);
+        return Short1D.wrap(arr, dim1);
     }
 
     /**
@@ -706,7 +706,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ShortArray wrapped around the source array {@code arr}.
       */
     public static Short2D wrap(short[] arr, int dim1, int dim2) {
-        return (Short2D)wrap(arr, new int[]{dim1, dim2}, false);
+        return Short2D.wrap(arr, dim1, dim2);
     }
 
     /**
@@ -725,7 +725,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ShortArray wrapped around the source array {@code arr}.
       */
     public static Short3D wrap(short[] arr, int dim1, int dim2, int dim3) {
-        return (Short3D)wrap(arr, new int[]{dim1, dim2, dim3}, false);
+        return Short3D.wrap(arr, dim1, dim2, dim3);
     }
 
     /**
@@ -745,7 +745,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ShortArray wrapped around the source array {@code arr}.
       */
     public static Short4D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4) {
-        return (Short4D)wrap(arr, new int[]{dim1, dim2, dim3, dim4}, false);
+        return Short4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
 
     /**
@@ -766,7 +766,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ShortArray wrapped around the source array {@code arr}.
       */
     public static Short5D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
-        return (Short5D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5}, false);
+        return Short5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
 
     /**
@@ -788,7 +788,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ShortArray wrapped around the source array {@code arr}.
       */
     public static Short6D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
-        return (Short6D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6}, false);
+        return Short6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /**
@@ -811,7 +811,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ShortArray wrapped around the source array {@code arr}.
       */
     public static Short7D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        return (Short7D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7}, false);
+        return Short7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /**
@@ -835,7 +835,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ShortArray wrapped around the source array {@code arr}.
       */
     public static Short8D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
-        return (Short8D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8}, false);
+        return Short8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /**
@@ -860,7 +860,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A ShortArray wrapped around the source array {@code arr}.
       */
     public static Short9D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
-        return (Short9D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9}, false);
+        return Short9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /**
@@ -890,37 +890,37 @@ public abstract class ArrayFactory implements Shaped {
      * {@link #Short2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
+     * @param data   - The input array.
      * @param shape - The dimension list of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
      * @return An instance of ShortArray sharing its data with the input array
-     *         {@code arr}.
+     *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static ShortArray wrap(short[] arr, int[] shape, boolean cloneShape) {
+    public static ShortArray wrap(short[] data, int[] shape, boolean cloneShape) {
         int rank = (shape == null ? 0 : shape.length);
         if (rank == 1) {
-            return Short1D.wrap(arr, shape, cloneShape);
+            return Short1D.wrap(data, shape, cloneShape);
         } else if (rank == 2) {
-            return Short2D.wrap(arr, shape, cloneShape);
+            return Short2D.wrap(data, shape, cloneShape);
         } else if (rank == 3) {
-            return Short3D.wrap(arr, shape, cloneShape);
+            return Short3D.wrap(data, shape, cloneShape);
         } else if (rank == 4) {
-            return Short4D.wrap(arr, shape, cloneShape);
+            return Short4D.wrap(data, shape, cloneShape);
         } else if (rank == 5) {
-            return Short5D.wrap(arr, shape, cloneShape);
+            return Short5D.wrap(data, shape, cloneShape);
         } else if (rank == 6) {
-            return Short6D.wrap(arr, shape, cloneShape);
+            return Short6D.wrap(data, shape, cloneShape);
         } else if (rank == 7) {
-            return Short7D.wrap(arr, shape, cloneShape);
+            return Short7D.wrap(data, shape, cloneShape);
         } else if (rank == 8) {
-            return Short8D.wrap(arr, shape, cloneShape);
+            return Short8D.wrap(data, shape, cloneShape);
         } else if (rank == 9) {
-            return Short9D.wrap(arr, shape, cloneShape);
+            return Short9D.wrap(data, shape, cloneShape);
         } else {
-            throw new IllegalArgumentException("bad number of dimensions");
+            throw new IllegalArgumentException("Invalid shape.");
         }
     }
 
@@ -938,7 +938,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A IntArray wrapped around the source array {@code arr}.
       */
     public static Int1D wrap(int[] arr, int dim1) {
-        return (Int1D)wrap(arr, new int[]{dim1}, false);
+        return Int1D.wrap(arr, dim1);
     }
 
     /**
@@ -956,7 +956,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A IntArray wrapped around the source array {@code arr}.
       */
     public static Int2D wrap(int[] arr, int dim1, int dim2) {
-        return (Int2D)wrap(arr, new int[]{dim1, dim2}, false);
+        return Int2D.wrap(arr, dim1, dim2);
     }
 
     /**
@@ -975,7 +975,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A IntArray wrapped around the source array {@code arr}.
       */
     public static Int3D wrap(int[] arr, int dim1, int dim2, int dim3) {
-        return (Int3D)wrap(arr, new int[]{dim1, dim2, dim3}, false);
+        return Int3D.wrap(arr, dim1, dim2, dim3);
     }
 
     /**
@@ -995,7 +995,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A IntArray wrapped around the source array {@code arr}.
       */
     public static Int4D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4) {
-        return (Int4D)wrap(arr, new int[]{dim1, dim2, dim3, dim4}, false);
+        return Int4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
 
     /**
@@ -1016,7 +1016,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A IntArray wrapped around the source array {@code arr}.
       */
     public static Int5D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
-        return (Int5D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5}, false);
+        return Int5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
 
     /**
@@ -1038,7 +1038,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A IntArray wrapped around the source array {@code arr}.
       */
     public static Int6D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
-        return (Int6D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6}, false);
+        return Int6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /**
@@ -1061,7 +1061,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A IntArray wrapped around the source array {@code arr}.
       */
     public static Int7D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        return (Int7D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7}, false);
+        return Int7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /**
@@ -1085,7 +1085,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A IntArray wrapped around the source array {@code arr}.
       */
     public static Int8D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
-        return (Int8D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8}, false);
+        return Int8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /**
@@ -1110,7 +1110,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A IntArray wrapped around the source array {@code arr}.
       */
     public static Int9D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
-        return (Int9D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9}, false);
+        return Int9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /**
@@ -1140,37 +1140,37 @@ public abstract class ArrayFactory implements Shaped {
      * {@link #Int2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
+     * @param data   - The input array.
      * @param shape - The dimension list of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
      * @return An instance of IntArray sharing its data with the input array
-     *         {@code arr}.
+     *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static IntArray wrap(int[] arr, int[] shape, boolean cloneShape) {
+    public static IntArray wrap(int[] data, int[] shape, boolean cloneShape) {
         int rank = (shape == null ? 0 : shape.length);
         if (rank == 1) {
-            return Int1D.wrap(arr, shape, cloneShape);
+            return Int1D.wrap(data, shape, cloneShape);
         } else if (rank == 2) {
-            return Int2D.wrap(arr, shape, cloneShape);
+            return Int2D.wrap(data, shape, cloneShape);
         } else if (rank == 3) {
-            return Int3D.wrap(arr, shape, cloneShape);
+            return Int3D.wrap(data, shape, cloneShape);
         } else if (rank == 4) {
-            return Int4D.wrap(arr, shape, cloneShape);
+            return Int4D.wrap(data, shape, cloneShape);
         } else if (rank == 5) {
-            return Int5D.wrap(arr, shape, cloneShape);
+            return Int5D.wrap(data, shape, cloneShape);
         } else if (rank == 6) {
-            return Int6D.wrap(arr, shape, cloneShape);
+            return Int6D.wrap(data, shape, cloneShape);
         } else if (rank == 7) {
-            return Int7D.wrap(arr, shape, cloneShape);
+            return Int7D.wrap(data, shape, cloneShape);
         } else if (rank == 8) {
-            return Int8D.wrap(arr, shape, cloneShape);
+            return Int8D.wrap(data, shape, cloneShape);
         } else if (rank == 9) {
-            return Int9D.wrap(arr, shape, cloneShape);
+            return Int9D.wrap(data, shape, cloneShape);
         } else {
-            throw new IllegalArgumentException("bad number of dimensions");
+            throw new IllegalArgumentException("Invalid shape.");
         }
     }
 
@@ -1188,7 +1188,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A LongArray wrapped around the source array {@code arr}.
       */
     public static Long1D wrap(long[] arr, int dim1) {
-        return (Long1D)wrap(arr, new int[]{dim1}, false);
+        return Long1D.wrap(arr, dim1);
     }
 
     /**
@@ -1206,7 +1206,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A LongArray wrapped around the source array {@code arr}.
       */
     public static Long2D wrap(long[] arr, int dim1, int dim2) {
-        return (Long2D)wrap(arr, new int[]{dim1, dim2}, false);
+        return Long2D.wrap(arr, dim1, dim2);
     }
 
     /**
@@ -1225,7 +1225,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A LongArray wrapped around the source array {@code arr}.
       */
     public static Long3D wrap(long[] arr, int dim1, int dim2, int dim3) {
-        return (Long3D)wrap(arr, new int[]{dim1, dim2, dim3}, false);
+        return Long3D.wrap(arr, dim1, dim2, dim3);
     }
 
     /**
@@ -1245,7 +1245,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A LongArray wrapped around the source array {@code arr}.
       */
     public static Long4D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4) {
-        return (Long4D)wrap(arr, new int[]{dim1, dim2, dim3, dim4}, false);
+        return Long4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
 
     /**
@@ -1266,7 +1266,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A LongArray wrapped around the source array {@code arr}.
       */
     public static Long5D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
-        return (Long5D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5}, false);
+        return Long5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
 
     /**
@@ -1288,7 +1288,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A LongArray wrapped around the source array {@code arr}.
       */
     public static Long6D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
-        return (Long6D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6}, false);
+        return Long6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /**
@@ -1311,7 +1311,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A LongArray wrapped around the source array {@code arr}.
       */
     public static Long7D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        return (Long7D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7}, false);
+        return Long7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /**
@@ -1335,7 +1335,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A LongArray wrapped around the source array {@code arr}.
       */
     public static Long8D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
-        return (Long8D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8}, false);
+        return Long8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /**
@@ -1360,7 +1360,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A LongArray wrapped around the source array {@code arr}.
       */
     public static Long9D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
-        return (Long9D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9}, false);
+        return Long9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /**
@@ -1390,37 +1390,37 @@ public abstract class ArrayFactory implements Shaped {
      * {@link #Long2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
+     * @param data   - The input array.
      * @param shape - The dimension list of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
      * @return An instance of LongArray sharing its data with the input array
-     *         {@code arr}.
+     *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static LongArray wrap(long[] arr, int[] shape, boolean cloneShape) {
+    public static LongArray wrap(long[] data, int[] shape, boolean cloneShape) {
         int rank = (shape == null ? 0 : shape.length);
         if (rank == 1) {
-            return Long1D.wrap(arr, shape, cloneShape);
+            return Long1D.wrap(data, shape, cloneShape);
         } else if (rank == 2) {
-            return Long2D.wrap(arr, shape, cloneShape);
+            return Long2D.wrap(data, shape, cloneShape);
         } else if (rank == 3) {
-            return Long3D.wrap(arr, shape, cloneShape);
+            return Long3D.wrap(data, shape, cloneShape);
         } else if (rank == 4) {
-            return Long4D.wrap(arr, shape, cloneShape);
+            return Long4D.wrap(data, shape, cloneShape);
         } else if (rank == 5) {
-            return Long5D.wrap(arr, shape, cloneShape);
+            return Long5D.wrap(data, shape, cloneShape);
         } else if (rank == 6) {
-            return Long6D.wrap(arr, shape, cloneShape);
+            return Long6D.wrap(data, shape, cloneShape);
         } else if (rank == 7) {
-            return Long7D.wrap(arr, shape, cloneShape);
+            return Long7D.wrap(data, shape, cloneShape);
         } else if (rank == 8) {
-            return Long8D.wrap(arr, shape, cloneShape);
+            return Long8D.wrap(data, shape, cloneShape);
         } else if (rank == 9) {
-            return Long9D.wrap(arr, shape, cloneShape);
+            return Long9D.wrap(data, shape, cloneShape);
         } else {
-            throw new IllegalArgumentException("bad number of dimensions");
+            throw new IllegalArgumentException("Invalid shape.");
         }
     }
 
@@ -1438,7 +1438,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A FloatArray wrapped around the source array {@code arr}.
       */
     public static Float1D wrap(float[] arr, int dim1) {
-        return (Float1D)wrap(arr, new int[]{dim1}, false);
+        return Float1D.wrap(arr, dim1);
     }
 
     /**
@@ -1456,7 +1456,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A FloatArray wrapped around the source array {@code arr}.
       */
     public static Float2D wrap(float[] arr, int dim1, int dim2) {
-        return (Float2D)wrap(arr, new int[]{dim1, dim2}, false);
+        return Float2D.wrap(arr, dim1, dim2);
     }
 
     /**
@@ -1475,7 +1475,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A FloatArray wrapped around the source array {@code arr}.
       */
     public static Float3D wrap(float[] arr, int dim1, int dim2, int dim3) {
-        return (Float3D)wrap(arr, new int[]{dim1, dim2, dim3}, false);
+        return Float3D.wrap(arr, dim1, dim2, dim3);
     }
 
     /**
@@ -1495,7 +1495,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A FloatArray wrapped around the source array {@code arr}.
       */
     public static Float4D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4) {
-        return (Float4D)wrap(arr, new int[]{dim1, dim2, dim3, dim4}, false);
+        return Float4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
 
     /**
@@ -1516,7 +1516,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A FloatArray wrapped around the source array {@code arr}.
       */
     public static Float5D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
-        return (Float5D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5}, false);
+        return Float5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
 
     /**
@@ -1538,7 +1538,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A FloatArray wrapped around the source array {@code arr}.
       */
     public static Float6D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
-        return (Float6D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6}, false);
+        return Float6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /**
@@ -1561,7 +1561,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A FloatArray wrapped around the source array {@code arr}.
       */
     public static Float7D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        return (Float7D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7}, false);
+        return Float7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /**
@@ -1585,7 +1585,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A FloatArray wrapped around the source array {@code arr}.
       */
     public static Float8D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
-        return (Float8D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8}, false);
+        return Float8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /**
@@ -1610,7 +1610,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A FloatArray wrapped around the source array {@code arr}.
       */
     public static Float9D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
-        return (Float9D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9}, false);
+        return Float9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /**
@@ -1640,37 +1640,37 @@ public abstract class ArrayFactory implements Shaped {
      * {@link #Float2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
+     * @param data   - The input array.
      * @param shape - The dimension list of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
      * @return An instance of FloatArray sharing its data with the input array
-     *         {@code arr}.
+     *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static FloatArray wrap(float[] arr, int[] shape, boolean cloneShape) {
+    public static FloatArray wrap(float[] data, int[] shape, boolean cloneShape) {
         int rank = (shape == null ? 0 : shape.length);
         if (rank == 1) {
-            return Float1D.wrap(arr, shape, cloneShape);
+            return Float1D.wrap(data, shape, cloneShape);
         } else if (rank == 2) {
-            return Float2D.wrap(arr, shape, cloneShape);
+            return Float2D.wrap(data, shape, cloneShape);
         } else if (rank == 3) {
-            return Float3D.wrap(arr, shape, cloneShape);
+            return Float3D.wrap(data, shape, cloneShape);
         } else if (rank == 4) {
-            return Float4D.wrap(arr, shape, cloneShape);
+            return Float4D.wrap(data, shape, cloneShape);
         } else if (rank == 5) {
-            return Float5D.wrap(arr, shape, cloneShape);
+            return Float5D.wrap(data, shape, cloneShape);
         } else if (rank == 6) {
-            return Float6D.wrap(arr, shape, cloneShape);
+            return Float6D.wrap(data, shape, cloneShape);
         } else if (rank == 7) {
-            return Float7D.wrap(arr, shape, cloneShape);
+            return Float7D.wrap(data, shape, cloneShape);
         } else if (rank == 8) {
-            return Float8D.wrap(arr, shape, cloneShape);
+            return Float8D.wrap(data, shape, cloneShape);
         } else if (rank == 9) {
-            return Float9D.wrap(arr, shape, cloneShape);
+            return Float9D.wrap(data, shape, cloneShape);
         } else {
-            throw new IllegalArgumentException("bad number of dimensions");
+            throw new IllegalArgumentException("Invalid shape.");
         }
     }
 
@@ -1688,7 +1688,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A DoubleArray wrapped around the source array {@code arr}.
       */
     public static Double1D wrap(double[] arr, int dim1) {
-        return (Double1D)wrap(arr, new int[]{dim1}, false);
+        return Double1D.wrap(arr, dim1);
     }
 
     /**
@@ -1706,7 +1706,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A DoubleArray wrapped around the source array {@code arr}.
       */
     public static Double2D wrap(double[] arr, int dim1, int dim2) {
-        return (Double2D)wrap(arr, new int[]{dim1, dim2}, false);
+        return Double2D.wrap(arr, dim1, dim2);
     }
 
     /**
@@ -1725,7 +1725,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A DoubleArray wrapped around the source array {@code arr}.
       */
     public static Double3D wrap(double[] arr, int dim1, int dim2, int dim3) {
-        return (Double3D)wrap(arr, new int[]{dim1, dim2, dim3}, false);
+        return Double3D.wrap(arr, dim1, dim2, dim3);
     }
 
     /**
@@ -1745,7 +1745,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A DoubleArray wrapped around the source array {@code arr}.
       */
     public static Double4D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4) {
-        return (Double4D)wrap(arr, new int[]{dim1, dim2, dim3, dim4}, false);
+        return Double4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
 
     /**
@@ -1766,7 +1766,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A DoubleArray wrapped around the source array {@code arr}.
       */
     public static Double5D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
-        return (Double5D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5}, false);
+        return Double5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
 
     /**
@@ -1788,7 +1788,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A DoubleArray wrapped around the source array {@code arr}.
       */
     public static Double6D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
-        return (Double6D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6}, false);
+        return Double6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /**
@@ -1811,7 +1811,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A DoubleArray wrapped around the source array {@code arr}.
       */
     public static Double7D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        return (Double7D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7}, false);
+        return Double7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /**
@@ -1835,7 +1835,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A DoubleArray wrapped around the source array {@code arr}.
       */
     public static Double8D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
-        return (Double8D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8}, false);
+        return Double8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /**
@@ -1860,7 +1860,7 @@ public abstract class ArrayFactory implements Shaped {
      * @return A DoubleArray wrapped around the source array {@code arr}.
       */
     public static Double9D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
-        return (Double9D)wrap(arr, new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9}, false);
+        return Double9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /**
@@ -1890,37 +1890,37 @@ public abstract class ArrayFactory implements Shaped {
      * {@link #Double2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
+     * @param data   - The input array.
      * @param shape - The dimension list of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
      * @return An instance of DoubleArray sharing its data with the input array
-     *         {@code arr}.
+     *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static DoubleArray wrap(double[] arr, int[] shape, boolean cloneShape) {
+    public static DoubleArray wrap(double[] data, int[] shape, boolean cloneShape) {
         int rank = (shape == null ? 0 : shape.length);
         if (rank == 1) {
-            return Double1D.wrap(arr, shape, cloneShape);
+            return Double1D.wrap(data, shape, cloneShape);
         } else if (rank == 2) {
-            return Double2D.wrap(arr, shape, cloneShape);
+            return Double2D.wrap(data, shape, cloneShape);
         } else if (rank == 3) {
-            return Double3D.wrap(arr, shape, cloneShape);
+            return Double3D.wrap(data, shape, cloneShape);
         } else if (rank == 4) {
-            return Double4D.wrap(arr, shape, cloneShape);
+            return Double4D.wrap(data, shape, cloneShape);
         } else if (rank == 5) {
-            return Double5D.wrap(arr, shape, cloneShape);
+            return Double5D.wrap(data, shape, cloneShape);
         } else if (rank == 6) {
-            return Double6D.wrap(arr, shape, cloneShape);
+            return Double6D.wrap(data, shape, cloneShape);
         } else if (rank == 7) {
-            return Double7D.wrap(arr, shape, cloneShape);
+            return Double7D.wrap(data, shape, cloneShape);
         } else if (rank == 8) {
-            return Double8D.wrap(arr, shape, cloneShape);
+            return Double8D.wrap(data, shape, cloneShape);
         } else if (rank == 9) {
-            return Double9D.wrap(arr, shape, cloneShape);
+            return Double9D.wrap(data, shape, cloneShape);
         } else {
-            throw new IllegalArgumentException("bad number of dimensions");
+            throw new IllegalArgumentException("Invalid shape.");
         }
     }
 
