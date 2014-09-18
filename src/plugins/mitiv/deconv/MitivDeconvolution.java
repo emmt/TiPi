@@ -43,7 +43,6 @@ import mitiv.utils.CommonUtils;
 import plugins.adufour.blocks.lang.Block;
 import plugins.adufour.blocks.util.VarList;
 import plugins.adufour.ezplug.*;
-
 /**
  * EzPlug interface to get the choices of the user
  * 
@@ -72,6 +71,12 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     EzVarBoolean  varBoolean = new EzVarBoolean("Is PSF splitted ?", false);
     EzVarSequence sequencePSF = new EzVarSequence("PSF");
     EzVarSequence sequenceImage = new EzVarSequence("Image");
+
+    EzVarInteger advOne = new EzVarInteger("Complex1");
+    EzVarInteger advTwo = new EzVarInteger("Complex2");
+    EzVarInteger advThree = new EzVarInteger("Complex3");
+
+    EzVarBoolean advancedOptions = new EzVarBoolean("Show advanced options", false);
 
     Sequence myseq;
     JLabel label;
@@ -181,13 +186,23 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         slider = new JSlider(0, 100, 0);
         slider.setEnabled(false);  
         label = new JLabel("                     ");
-        super.addEzComponent(sequencePSF);
-        super.addEzComponent(varBoolean);
-        super.addEzComponent(sequenceImage);
-        super.addEzComponent(options);
-        super.addEzComponent(correction);
-        super.addComponent(slider);
-        super.addComponent(label);
+
+
+        addEzComponent(sequencePSF);
+        addEzComponent(varBoolean);
+        addEzComponent(sequenceImage);
+        addEzComponent(options);
+        addEzComponent(correction);
+        addComponent(slider);
+        addComponent(label);
+        advancedOptions.addVisibilityTriggerTo(advOne, true);
+        advancedOptions.addVisibilityTriggerTo(advTwo, true);
+        advancedOptions.addVisibilityTriggerTo(advThree, true);
+        addEzComponent(advancedOptions);
+        addEzComponent(advOne);
+        addEzComponent(advTwo);
+        addEzComponent(advThree);
+
     }
 
     public void updateImage(BufferedImage buffered, int value){
@@ -211,6 +226,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         }
 
         if(sequenceImage.getValue() == null || sequencePSF.getValue() == null){
+            //If there is a missing parameter we notify the user with the missing parameter as information
             String message = "You have forgotten to give ";
             String messageEnd = "";
             if (sequenceImage.getValue() == null) {
@@ -223,34 +239,36 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
                 messageEnd = messageEnd.concat("a PSF");
             }
             new AnnounceFrame(message+messageEnd);
-            //throw new IllegalArgumentException("We need a PSF and/or an image");
         }else{
-            deconvolution = new Deconvolution(sequenceImage.getValue().getFirstNonNullImage(),
-                    sequencePSF.getValue().getFirstNonNullImage(),correct);
-
-            myseq = new Sequence();
-            myseq.addImage(0,firstJob(job));
-            myseq.addListener(this); 
-            myseq.setName("");
-            if (isHeadLess()) {
-                double value = valueBlock.getValue();
-                updateImage(nextJob((int)value, job), (int)value);
-            } else {
-                addSequence(myseq);
-                slider.setEnabled(true);
-                slider.addChangeListener(new ChangeListener(){
-                    public void stateChanged(ChangeEvent event){
-                        //getUI().setProgressBarMessage("Computation in progress");
-                        int sliderValue =(((JSlider)event.getSource()).getValue());
-                        updateProgressBarMessage("Computing");
-                        thread.prepareNextJob(sliderValue, job);
-                        //OMEXMLMetadataImpl metaData = new OMEXMLMetadataImpl();
-                        //myseq.setMetaData(metaData);
-                        //updateImage(buffered, tmp);
-                    }
-                });  
-                //Beware, need to be called at the END
-                slider.setValue(0);
+            try {
+                deconvolution = new Deconvolution(sequenceImage.getValue().getFirstNonNullImage(),
+                        sequencePSF.getValue().getFirstNonNullImage(),correct);
+                myseq = new Sequence();
+                myseq.addImage(0,firstJob(job));
+                myseq.addListener(this); 
+                myseq.setName("");
+                if (isHeadLess()) {
+                    double value = valueBlock.getValue();
+                    updateImage(nextJob((int)value, job), (int)value);
+                } else {
+                    addSequence(myseq);
+                    slider.setEnabled(true);
+                    slider.addChangeListener(new ChangeListener(){
+                        public void stateChanged(ChangeEvent event){
+                            //getUI().setProgressBarMessage("Computation in progress");
+                            int sliderValue =(((JSlider)event.getSource()).getValue());
+                            updateProgressBarMessage("Computing");
+                            thread.prepareNextJob(sliderValue, job);
+                            //OMEXMLMetadataImpl metaData = new OMEXMLMetadataImpl();
+                            //myseq.setMetaData(metaData);
+                            //updateImage(buffered, tmp);
+                        }
+                    });  
+                    //Beware, need to be called at the END
+                    slider.setValue(0);
+                }
+            } catch (Exception e) {
+                new AnnounceFrame("Oops, Error: "+e.getMessage());
             }
         }
     }
