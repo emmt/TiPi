@@ -27,6 +27,8 @@ package mitiv.io;
 
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
+
 /**
  * This class deals with identifying various data format.
  * 
@@ -210,6 +212,33 @@ public class DataFormat {
         return (s == (byte)' ' || s == (byte)'\n' || s == (byte)'\r' || s == (byte)'\t');
     }
 
+    public static void main(String[] args) {
+        String[] str;
+        str = ImageIO.getReaderFormatNames();
+        System.out.format("Format names understood by registered readers:\n");
+        for (int i = 0; i < str.length; ++i) {
+            System.out.format("  - %s\n", str[i]);
+        }
+
+        str = ImageIO.getReaderFileSuffixes();
+        System.out.format("\nImage suffixes understood by registered readers:\n");
+        for (int i = 0; i < str.length; ++i) {
+            System.out.format("  - %s\n", str[i]);
+        }
+
+        str = ImageIO.getWriterFormatNames();
+        System.out.format("\nFormat names understood by registered writers:\n");
+        for (int i = 0; i < str.length; ++i) {
+            System.out.format("  - %s\n", str[i]);
+        }
+
+        str = ImageIO.getWriterFileSuffixes();
+        System.out.format("\nImage suffixes understood by registered writers:\n");
+        for (int i = 0; i < str.length; ++i) {
+            System.out.format("  - %s\n", str[i]);
+        }
+
+    }
 }
 
 /*
