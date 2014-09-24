@@ -40,8 +40,8 @@ public class ScalingOptions {
         return (minValueGiven ? minValue : Double.NaN);
     }
 
-    public void setMinValue(double minValue) {
-        this.minValue = minValue;
+    public void setMinValue(double value) {
+        minValue = value;
         minValueGiven = true;
     }
 
@@ -49,16 +49,22 @@ public class ScalingOptions {
         return (maxValueGiven ? maxValue : Double.NaN);
     }
 
-    public void setMaxValue(double maxValue) {
-        this.maxValue = maxValue;
+    public void setMaxValue(double value) {
+        maxValue = value;
         maxValueGiven = true;
     }
 
     public double[] getScaling(double arr[], double fileMin, double fileMax) {
-        return getScaling(arr, 0, arr.length);
+        return getScaling(arr, 0, arr.length, fileMin, fileMax);
     }
 
-    public double[] getScaling(double arr[], int offset, int number, double fileMin, double fileMax) {
+    public double[] getScaling(double arr[], int offset, int number,
+            double fileMin, double fileMax) {
+        if (arr == null || offset < 0 || number <= 0 || offset + number > arr.length) {
+            /* Invalid arguments or no elements to consider, silently return neutral
+               scaling parameters. */
+            return new double[]{1.0, 0.0};
+        }
         double dataMin, dataMax;
         if (minValueGiven && maxValueGiven) {
             dataMin = minValue;
@@ -130,20 +136,6 @@ public class ScalingOptions {
      */
     public static void computeScalingFactors(double dataMin, double dataMax,
             double fileMin, double fileMax, double[] param) {
-        /* First rescale the input values to avoid overflows. */
-        double factor = Math.abs(dataMin);
-        factor = Math.max(factor, Math.abs(dataMax));
-        factor = Math.max(factor, Math.abs(fileMin));
-        factor = Math.max(factor, Math.abs(fileMax));
-        if (factor > 0.0 && factor != 1.0) {
-            dataMin /= factor;
-            dataMax /= factor;
-            fileMin /= factor;
-            fileMax /= factor;
-        } else {
-            factor = 1.0;
-        }
-
         /*
          * We compute the scaling parameters SCALE and BIAS to
          * map the data values to the file values according to the
@@ -151,13 +143,13 @@ public class ScalingOptions {
          *
          * Notation:
          *     y = data (physical) value
-         *     x = file value (below integer file value is assumed)
+         *     x = file value (integer type is assumed in what follows)
          * When reading:
          *     y = SCALE*x + BIAS
          * When writing:
          *     x = round((y - BIAS)/SCALE)
-         * where the round() function returns an interger such that:
-         *     u - 1/2 <= round(u) < u + 1/2
+         * where the round() function rounds to the nearest integer:
+         *          u - 1/2 <= round(u) < u + 1/2
          *     <==> round(u) - 1/2 < u <= round(u) + 1/2
          *
          * a/ We want the smallest SCALE (in magnitude) such that
@@ -225,8 +217,21 @@ public class ScalingOptions {
         double scale, bias;
         if (dataMin == dataMax || fileMin == fileMax) {
             scale = 1.0;
-            bias = (dataMin + dataMax)*factor/2.0;
+            bias = (dataMin + dataMax)/2.0;
         } else {
+            /* Normalize the input values to avoid overflows. */
+            double factor = Math.abs(dataMin);
+            factor = Math.max(factor, Math.abs(dataMax));
+            factor = Math.max(factor, Math.abs(fileMin));
+            factor = Math.max(factor, Math.abs(fileMax));
+            if (factor > 0.0 && factor != 1.0) {
+                dataMin /= factor;
+                dataMax /= factor;
+                fileMin /= factor;
+                fileMax /= factor;
+            } else {
+                factor = 1.0;
+            }
             scale = (dataMax - dataMin)/(fileMax - fileMin);
             bias = Math.rint((fileMax*dataMin - fileMin*dataMax)/(dataMax - dataMin)*factor)*scale;
         }
