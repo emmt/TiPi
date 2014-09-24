@@ -179,8 +179,12 @@ public class TotalVariationDeconvolution {
             } else {
                 img = ArrayUtils.imageAsDouble(ImageIO.read(new File(fileName)), colorModel);
             }
-        } catch (IOException | DataFormatException | RecoverableFormatException e) {
-            fatal("Error while reading " + description + "(" + e.getMessage() +").");
+        } catch (Exception e) {
+            if (e instanceof IOException || e instanceof DataFormatException || e instanceof RecoverableFormatException) {
+                fatal("Error while reading " + description + "(" + e.getMessage() +").");
+            } else {
+                throw new IllegalArgumentException(e.getMessage());
+            }
         }
         return img;
     }
