@@ -865,7 +865,8 @@ public class CommonUtils {
      * @return the buffered image
      */
     public static BufferedImage arrayToImage1D(double[] array, int width, int height, boolean isComplex){
-        BufferedImage imageout = createNewBufferedImage(width,height);
+        //BufferedImage imageout = createNewBufferedImage(width,height);
+        BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
         WritableRaster raster = imageout.getRaster();
         int grey;
         int[] tmp = new int[3];
@@ -893,7 +894,8 @@ public class CommonUtils {
      * @return the buffered image
      */
     public static BufferedImage arrayToImage1D(float[] array, int width, int height, boolean isComplex){
-        BufferedImage imageout = createNewBufferedImage(width, height);
+        //BufferedImage imageout = createNewBufferedImage(width, height);
+        BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
         WritableRaster raster = imageout.getRaster();
         int grey;
         int[] tmp = new int[3];
