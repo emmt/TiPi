@@ -38,8 +38,14 @@ public class ThreadCG extends Thread {
     int nextJobValue;
     int nextJobJob;
 
+    boolean compute3D = false;
+    
     public ThreadCG(MitivDeconvolution deconv){
         this.deconv = deconv;
+    }
+    
+    public void compute3D(){
+        this.compute3D = true;
     }
 
     public void prepareNextJob(int tmp, int job){
@@ -52,15 +58,20 @@ public class ThreadCG extends Thread {
         while (!stop) {
             if (hasjob) {
                 hasjob = false; //first because if while computing a new job appear, we will not miss it
-                BufferedImage buffered = deconv.nextJob(nextJobValue, nextJobJob);
-                deconv.updateImage(buffered, nextJobValue);
+                if (compute3D) {
+                    deconv.nextJob3D(nextJobValue, nextJobJob);
+                } else {
+                    BufferedImage buffered = deconv.nextJob(nextJobValue, nextJobJob);
+                    deconv.updateImage(buffered, nextJobValue);
 
-                //If we have not finish the computation we will continue it later
-                if (deconv.getOutputValue() == LinearConjugateGradient.IN_PROGRESS) {
-                    hasjob = true;
-                }else{
-                    deconv.updateProgressBarMessage("Done");
+                    //If we have not finish the computation we will continue it later
+                    if (deconv.getOutputValue() == LinearConjugateGradient.IN_PROGRESS) {
+                        hasjob = true;
+                    }else{
+                        deconv.updateProgressBarMessage("Done");
+                    }
                 }
+
             }
             try {
                 sleep(50);

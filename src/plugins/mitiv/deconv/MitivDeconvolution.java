@@ -180,6 +180,32 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         }
     }
 
+    private void firstJob3D(int job){
+        thread = new ThreadCG(this);
+        thread.start();
+    }
+
+    public void nextJob3D(int slidervalue, int job){
+        double mu = sliderToRegularizationWeight(slidervalue);
+        if (!isHeadLess()) {
+            updateLabel(mu);
+        }
+        Sequence seqIm = sequenceImage.getValue();
+        Sequence seqPsf = sequencePSF.getValue();
+        double mult = 1E9; //HACK While the data uniformization is not done...
+        switch (job) {
+        case DeconvUtils.JOB_WIENER:
+            System.out.println("Im LEN: "+seqIm.getDataCopyXYCZTAsDouble().length);
+            System.out.println("PSF LEN: "+seqIm.getDataCopyXYCZTAsDouble().length);
+        case DeconvUtils.JOB_QUAD:
+            //LALALA
+        case DeconvUtils.JOB_CG:
+            throw new IllegalArgumentException("Nor implemented yet");
+        default:
+            throw new IllegalArgumentException("Invalid Job");
+        }
+    }
+    
     @Override
     protected void initialize()
     {
@@ -224,9 +250,8 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         if (myseq != null) {
             myseq.close();
         }
-
+        //If there is a missing parameter we notify the user with the missing parameter as information
         if(sequenceImage.getValue() == null || sequencePSF.getValue() == null){
-            //If there is a missing parameter we notify the user with the missing parameter as information
             String message = "You have forgotten to give ";
             String messageEnd = "";
             if (sequenceImage.getValue() == null) {
@@ -241,31 +266,55 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             new AnnounceFrame(message+messageEnd);
         }else{
             try {
-                deconvolution = new Deconvolution(sequenceImage.getValue().getFirstNonNullImage(),
-                        sequencePSF.getValue().getFirstNonNullImage(),correct);
-                myseq = new Sequence();
-                myseq.addImage(0,firstJob(job));
-                myseq.addListener(this); 
-                myseq.setName("");
-                if (isHeadLess()) {
-                    double value = valueBlock.getValue();
-                    updateImage(nextJob((int)value, job), (int)value);
+                Sequence seqIm = sequenceImage.getValue();
+                Sequence seqPsf = sequencePSF.getValue();
+                if (seqIm.getSizeZ() == 1 && seqPsf.getSizeZ() == 1) {
+                    deconvolution = new Deconvolution(seqIm.getFirstNonNullImage(), seqPsf.getFirstNonNullImage(),correct);
+                    myseq = new Sequence();
+                    myseq.addImage(0,firstJob(job));
+                    myseq.addListener(this); 
+                    myseq.setName("");
+                    if (isHeadLess()) {
+                        double value = valueBlock.getValue();
+                        updateImage(nextJob((int)value, job), (int)value);
+                    } else {
+                        addSequence(myseq);
+                        slider.setEnabled(true);
+                        slider.addChangeListener(new ChangeListener(){
+                            public void stateChanged(ChangeEvent event){
+                                //getUI().setProgressBarMessage("Computation in progress");
+                                int sliderValue =(((JSlider)event.getSource()).getValue());
+                                updateProgressBarMessage("Computing");
+                                thread.prepareNextJob(sliderValue, job);
+                                //OMEXMLMetadataImpl metaData = new OMEXMLMetadataImpl();
+                                //myseq.setMetaData(metaData);
+                                //updateImage(buffered, tmp);
+                            }
+                        });  
+                        //Beware, need to be called at the END
+                        slider.setValue(0);
+                    }
                 } else {
-                    addSequence(myseq);
-                    slider.setEnabled(true);
-                    slider.addChangeListener(new ChangeListener(){
-                        public void stateChanged(ChangeEvent event){
-                            //getUI().setProgressBarMessage("Computation in progress");
-                            int sliderValue =(((JSlider)event.getSource()).getValue());
-                            updateProgressBarMessage("Computing");
-                            thread.prepareNextJob(sliderValue, job);
-                            //OMEXMLMetadataImpl metaData = new OMEXMLMetadataImpl();
-                            //myseq.setMetaData(metaData);
-                            //updateImage(buffered, tmp);
-                        }
-                    });  
-                    //Beware, need to be called at the END
-                    slider.setValue(0);
+                    myseq = new Sequence();
+                    myseq.addListener(this); 
+                    myseq.setName("");
+                    firstJob3D(job);
+                    if (isHeadLess()) {
+                        //TODO pour 3D verifier
+                        double value = valueBlock.getValue();
+                        updateImage(nextJob((int)value, job), (int)value);
+                    } else {
+                        addSequence(myseq);
+                        slider.setEnabled(true);
+                        slider.addChangeListener(new ChangeListener(){
+                            public void stateChanged(ChangeEvent event){
+                                int sliderValue =(((JSlider)event.getSource()).getValue());
+                                updateProgressBarMessage("Computing");
+                                thread.prepareNextJob(sliderValue, job);
+                            }
+                        });
+                        slider.setValue(0);
+                    }
                 }
             } catch (Exception e) {
                 new AnnounceFrame("Oops, Error: "+e.getMessage());
