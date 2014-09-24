@@ -40,44 +40,44 @@ import mitiv.linalg.shaped.DoubleShapedVector;
  *
  */
 public class WeightingOperator extends LinearOperator {
-	Vector weight;
-	/**
-	 * Constructor ^^
-	 * 
-	 * @param weight
-	 */
-	public WeightingOperator(final Vector weight) {
-		super(weight.getSpace());
-	    this.weight = weight;
-	}
+    Vector weight;
+    /**
+     * Constructor ^^
+     * 
+     * @param weight
+     */
+    public WeightingOperator(final Vector weight) {
+        super(weight.getSpace());
+        this.weight = weight;
+    }
 
-	@Override
-	protected void privApply(Vector src, Vector dst, int job)
-			throws IncorrectSpaceException {
-		int n = inputSpace.getNumber();
-		DoubleShapedVector vectSrc = (DoubleShapedVector)src; // FIXME: should be more general
-		DoubleShapedVector vectDst = (DoubleShapedVector)dst;
-		DoubleShapedVector vectW = (DoubleShapedVector)weight;
-		if (job == INVERSE) {
-			for (int i = 0; i < n; i++) {
-				vectDst.set(i, vectSrc.get(i)/vectW.get(i));
-			}
-		} else if (job == DIRECT) {
-			for (int i = 0; i < n; i++) {
-				vectDst.set(i, vectSrc.get(i)*vectW.get(i));
-			}
-		} else {
-			throw new IllegalLinearOperationException("This job is not possible");
-		}
-	}
+    @Override
+    protected void privApply(Vector src, Vector dst, int job)
+            throws IncorrectSpaceException {
+        int n = inputSpace.getNumber();
+        DoubleShapedVector vectSrc = (DoubleShapedVector)src; // FIXME: should be more general
+        DoubleShapedVector vectDst = (DoubleShapedVector)dst;
+        DoubleShapedVector vectW = (DoubleShapedVector)weight;
+        if (job == INVERSE) {
+            for (int i = 0; i < n; i++) {
+                vectDst.set(i, vectSrc.get(i)/vectW.get(i));
+            }
+        } else if (job == DIRECT) {
+            for (int i = 0; i < n; i++) {
+                vectDst.set(i, vectSrc.get(i)*vectW.get(i));
+            }
+        } else {
+            throw new IllegalLinearOperationException("This job is not possible");
+        }
+    }
 
-	/**
-	 * A gettterrr
-	 * @return
-	 */
-	public Vector getWeight(){
-		return weight;
-	}
+    /**
+     * A gettterrr
+     * @return
+     */
+    public Vector getWeight(){
+        return weight;
+    }
 }
 
 /*
