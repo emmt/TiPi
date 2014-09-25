@@ -148,7 +148,7 @@ public class TotalVariationDeconvolution {
         CmdLineParser parser = new CmdLineParser(job);
         try {
             parser.parseArgument(args);
-            if (job.mu <= 0.0) {
+            if (job.mu < 0.0) {
                 System.err.format("Regularization level MU must be strictly positive.\n");
                 System.exit(1);
             }
@@ -235,9 +235,21 @@ public class TotalVariationDeconvolution {
         DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
         RealComplexFFT FFT = new RealComplexFFT(space);
         LinearOperator W = null; // new LinearOperator(space);
+        double[] tmp = psf.flatten();
+        DoubleShapedVector x = space.create();
         DoubleShapedVector y = space.wrap(data.flatten());
-        DoubleShapedVector x = y.clone();
-        DoubleShapedVector h = space.wrap(psf.flatten());
+        DoubleShapedVector h = space.wrap(tmp);
+        double psf_sum = 0.0;
+        for (int j = 0; j < tmp.length; ++j) {
+            psf_sum += tmp[j];
+        }
+        if (psf_sum != 1.0) {
+            if (psf_sum != 0.0) {
+                space.axpby(0.0, x, 1.0/psf_sum, y, x);
+            } else {
+                x.fill(0.0);
+            }
+        }
         ConvolutionOperator H = new ConvolutionOperator(FFT, h);
         result = ArrayFactory.wrap(x.getData(), x.cloneShape(), false);
         if (debug) {
