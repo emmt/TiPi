@@ -100,34 +100,34 @@ public class NonLinearConjugateGradient {
                               given by the inner product: <d|g0> = - <p|g0> */
     private double dg1;    /* Directional derivative at the end or during the line search;
                               given by the inner product: <d|g1> = - <p|g1> */
-  //private double alpha0; /* Scale factor for the initial step step size. */
+    //private double alpha0; /* Scale factor for the initial step step size. */
     private double grtol;  /* Relative threshold for the norm or the gradient (relative
-                              to the initial gradient) for convergence. */
+                              to GTEST the norm of the initial gradient) for convergence. */
     private double gatol;  /* Absolute threshold for the norm or the gradient for
                               convergence. */
-    private double gtest;  /* Threshold for the norm or the gradient for
-                              convergence: GTEST = MAX(0, GATOL, GRTOL*NORM(GINIT)) */
+    private double gtest;  /* Norm or the initial gradient. */
     private double fmin;   /* Minimal function value if provided. */
     private double alpha;  /* Current step length. */
     private double beta;   /* Current parameter in conjugate gradient update rule (for
                               information). */
-    private double stpmin; /* Relative lower bound for the step length. */
-    private double stpmax; /* Relative upper bound for the step length. */
-    VectorSpace vsp;
-    private LineSearch lnsrch;
-    private Vector x0;     /* Variables at start of line search. */
-    private Vector g0;     /* Gradient at start of line search. */
-    private Vector p;      /* (Anti-)search direction, new iterate is searched
+    private final double stpmin; /* Relative lower bound for the step length. */
+    private final double stpmax; /* Relative upper bound for the step length. */
+    private final VectorSpace vsp;
+    private final LineSearch lnsrch;
+    private final Vector x0;     /* Variables at start of line search. */
+    private final Vector g0;     /* Gradient at start of line search. */
+    private final Vector p;      /* (Anti-)search direction, new iterate is searched
                               as: x1 = x0 - alpha*p, for alpha >= 0. */
-    private Vector y;      /* Work vector (e.g., to store the gradient difference:
+    private final Vector y;      /* Work vector (e.g., to store the gradient difference:
                               Y = G1 - G0). */
     private int iter;      /* Iteration number. */
     private int nrestarts; /* Number of algorithm restarts. */
     private int nevals;    /* Number of function and gradient evaluations. */
-    private int method;    /* Conjugate gradient method. */
+    private final int method;    /* Conjugate gradient method. */
     private int task;      /* Current caller task. */
     private boolean starting;   /* Indicate whether algorithm is starting */
     private boolean fmin_given; /* Indicate whether FMIN is specified. */
+    private final boolean update_Hager_Zhang_orig = false;
 
     private static double max(double a1, double a2, double a3)
     {
@@ -149,7 +149,7 @@ public class NonLinearConjugateGradient {
         not less than 1E-4, XTOL=1E-17, STPMIN=1E-20 STPMAX=1E+20 and MAXFEV=40) */
         this(vsp, method, new MoreThuenteLineSearch(/* sftol */ 0.05, /* sgtol */ 0.1, /* sxtol */ 1E-17));
     }
-    
+
     public NonLinearConjugateGradient(VectorSpace vsp, int method, LineSearch lnsrch)
     {
         /* Check the input arguments for errors. */
@@ -202,8 +202,9 @@ public class NonLinearConjugateGradient {
         unsetFMin();
         this.method = method;
         this.lnsrch = lnsrch;
-        this.grtol = 1e-6;
+        this.grtol = 1e-3;
         this.gatol = 0.0;
+        this.gtest = 0.0;
         this.stpmin = STPMIN;
         this.stpmax = STPMAX;
         this.x0 = vsp.create();
@@ -360,7 +361,7 @@ public class NonLinearConjugateGradient {
         double dy = -vsp.dot(p, y);
         double beta;
         if (dy != 0.0) {
-            if (false) {
+            if (update_Hager_Zhang_orig) {
                 /* Original formulation. */
                 double q = 1.0/dy;
                 double r = q*vsp.norm2(y);
@@ -446,33 +447,13 @@ public class NonLinearConjugateGradient {
         }
     }
 
-    public double getFMin()
-    {
-        return fmin;
-    }
-
-    public void setFMin(double value)
-    {
-        if (Double.isInfinite(value) || Double.isNaN(value)) {
-            unsetFMin();            
-        } else {
-            fmin = value;
-            fmin_given = true;
-        }
-    }
-
-    public void unsetFMin()
-    {
-        fmin = Double.NaN;
-        fmin_given = false;            
-    }
-
     public int start()
     {
         iter = 0;
         nevals = 0;
         nrestarts = 0;
         starting = true;
+        gtest = 0.0;
         return (task = TASK_COMPUTE_FG);
     }
 
@@ -484,16 +465,12 @@ public class NonLinearConjugateGradient {
          *            = x_{k} - \alpha_{k} p_{k}
          * as we consider the anti-search direction p = -d here.
          */
-
-        //System.out.println("x1 = " + x1);
-        //System.out.println("g1 = " + g1);
-        //System.out.println("|g1| = " + vsp.norm2(g1));
         if (task == TASK_COMPUTE_FG) {
             boolean accept;
             ++nevals;
             if (starting) {
                 g1norm = vsp.norm2(g1);
-                gtest = max(0.0, gatol, grtol*g1norm);
+                gtest = g1norm;
                 accept = true;
             } else {
                 /* Compute directional derivative and check whether line search has
@@ -504,7 +481,7 @@ public class NonLinearConjugateGradient {
                 if (status == LineSearch.SEARCH) {
                     accept = false;
                 } else if (status == LineSearch.CONVERGENCE ||
-                           status == LineSearch.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS) {
+                        status == LineSearch.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS) {
                     ++iter;
                     g1norm = vsp.norm2(g1);
                     accept = true;
@@ -521,7 +498,7 @@ public class NonLinearConjugateGradient {
             }
             if (accept) {
                 /* Check for global convergence. */
-                if (g1norm <= gtest) {
+                if (g1norm <= getGradientThreshold()) {
                     task = TASK_FINAL_X;
                 } else {
                     task = TASK_NEW_X;
@@ -584,8 +561,8 @@ public class NonLinearConjugateGradient {
             /* Start the line search. */
             dg1 = dg0;
             int status = lnsrch.start(f0, dg0, alpha,
-                                      stpmin*alpha,
-                                      stpmax*alpha);
+                    stpmin*alpha,
+                    stpmax*alpha);
             if (status != LineSearch.SEARCH) {
                 if (lnsrch.hasWarnings()) {
                     task = TASK_WARNING;
@@ -607,16 +584,131 @@ public class NonLinearConjugateGradient {
     }
 
     /**
+     * Set the absolute tolerance for the convergence criterion.
+     * @param gatol - Absolute tolerance for the convergence criterion.
+     * @see {@link #setRelativeTolerance}, {@link #getAbsoluteTolerance},
+     *      {@link #getGradientThreshold}.
+     */
+    public void setAbsoluteTolerance(double gatol) {
+        this.gatol = gatol;
+    }
+
+    /**
+     * Set the relative tolerance for the convergence criterion.
+     * @param grtol - Relative tolerance for the convergence criterion.
+     * @see {@link #setAbsoluteTolerance}, {@link #getRelativeTolerance},
+     *      {@link #getGradientThreshold}.
+     */
+    public void setRelativeTolerance(double grtol) {
+        this.grtol = grtol;
+    }
+
+    /**
+     * Query the absolute tolerance for the convergence criterion.
+     * @see {@link #setAbsoluteTolerance}, {@link #getRelativeTolerance},
+     *      {@link #getGradientThreshold}.
+     */
+    public double getAbsoluteTolerance() {
+        return gatol;
+    }
+
+    /**
+     * Query the relative tolerance for the convergence criterion.
+     * @see {@link #setRelativeTolerance}, {@link #getAbsoluteTolerance},
+     *      {@link #getGradientThreshold}.
+     */
+    public double getRelativeTolerance() {
+        return grtol;
+    }
+
+    /**
+     * Query the gradient threshold for the convergence criterion.
+     * 
+     * The convergence of the optimization method is achieved when the
+     * Euclidean norm of the gradient at a new iterate is less or equal
+     * the threshold:
+     * <pre>
+     *    max(0.0, gatol, grtol*gtest)
+     * </pre>
+     * where {@code gtest} is the norm of the initial gradient, {@code gatol}
+     * {@code grtol} are the absolute and relative tolerances for the
+     * convergence criterion.
+     * @return The gradient threshold.
+     * @see {@link #setAbsoluteTolerance}, {@link #setRelativeTolerance},
+     *      {@link #getAbsoluteTolerance}, {@link #getRelativeTolerance}.
+     */
+    public double getGradientThreshold() {
+        return max(0.0, gatol, grtol*gtest);
+    }
+
+    /**
+     * Query the assumed function least value.
+     * @return The assumed function least value if it has been set,
+     *         {@code Double.NaN} else.
+     */
+    public double getFMin()
+    {
+        return (fmin_given ? fmin : Double.NaN);
+    }
+
+    /**
+     * Set the assumed function least value.
+     * @param value - An estimate of the function least value.
+     */
+    public void setFMin(double value)
+    {
+        if (Double.isInfinite(value) || Double.isNaN(value)) {
+            unsetFMin();
+        } else {
+            fmin = value;
+            fmin_given = true;
+        }
+    }
+
+    /**
+     * Forget the assumed function least value.
+     */
+    public void unsetFMin()
+    {
+        fmin = Double.NaN;
+        fmin_given = false;
+    }
+
+    /**
+     * Get the iteration number.
+     * @return The number of iterations since last start.
+     */
+    public int getIterations() {
+        return iter;
+    }
+
+    /**
+     * Get the number of function (and gradient) evaluations since last start.
+     * @return The number of function and gradient evaluations since last start.
+     */
+    public int getEvaluations() {
+        return nevals;
+    }
+
+    /**
+     * Get the number of restarts.
+     * @return The number of times algorithm has been restarted since last start.
+     */
+    public int getRestarts() {
+        return nrestarts;
+    }
+
+    /**
      * Testing routine.
      * @param args
      */
     public static void main(String[] args) {
-        
+
         int[] prob = new int[] {1, 2, 3, 4, 5, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
         int[] size = new int[] {3, 6, 3, 2, 3, 5, 6, 9, 6, 8,  2,  4,  3,  8,  8, 12,  2,  4, 30};
         double factor = 1.0;
 
-        /* Create line search object and set options. */        
+        /* Create line search object and set options. */
         int method = HAGER_ZHANG;
         MoreThuenteLineSearch lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-8);
 
@@ -635,39 +727,35 @@ public class NonLinearConjugateGradient {
 
             /* Store initial solution. */
             MinPack1Tests.umipt(xData, p, factor);
-           
+
             /* Create conjugate gradient minimizer. */
             NonLinearConjugateGradient minimizer = new NonLinearConjugateGradient(space, method, lineSearch);
-            
+
             int task = minimizer.start();
             while (true) {
                 if (task == TASK_COMPUTE_FG) {
                     fx = MinPack1Tests.umobj(xData, p);
                     ++nf;
                     MinPack1Tests.umgrd(xData, gData, p);
-                    ++ng;                    
+                    ++ng;
                 } else if (task == TASK_NEW_X) {
                     ++iter;
                     if (iter == 0) {
                         System.out.println("\nProblem #" + p + " with " + n + " variables.");
                         System.out.println("|x0| = " + space.norm2(x) + " f0 = " + fx + " |g0| = " + space.norm2(gx));
-                    /*} else {
+                        /*} else {
                         System.out.println("iter = " + iter + " f(x) = " + fx + " |g(x)| = " + space.norm2(gx)); */
                     }
                 } else if (task == TASK_FINAL_X) {
                     ++iter;
                     System.out.println("|xn| = " + space.norm2(x) + " f(xn) = " + fx + " |g(xn)| = " + space.norm2(gx));
                     System.out.println("in " + iter + " iterations, " + nf + " function calls and "
-                                       + ng + " gradient calls");
+                            + ng + " gradient calls");
                     break;
                 } else {
                     System.err.println("error/warning: " + task);
                     break;
                 }
-                //System.out.println("x  = " + x);
-                //System.out.println("|x| = " + space.norm2(x));
-                //System.out.println("gx = " + gx);
-                //System.out.println("|gx| = " + space.norm2(gx));
                 task = minimizer.iterate(x, fx, gx);
             }
         }
@@ -676,31 +764,6 @@ public class NonLinearConjugateGradient {
         System.out.flush();
         System.err.flush();
     }
-
-    /**
-     * Get the iteration number.
-     * @return The number of iterations since last start.
-     */
-    public int getIterations() {
-        return iter;
-    }
-    
-    /**
-     * Get the number of function (and gradient) evaluations since last start.
-     * @return The number of function and gradient evaluations since last start.
-     */
-    public int getEvaluations() {
-        return nevals;
-    }
-    
-    /**
-     * Get the number of restarts.
-     * @return The number of times algorithm has been restarted since last start.
-     */
-    public int getRestarts() {
-        return nrestarts;
-    }
-    
 
 }
 
