@@ -105,13 +105,13 @@ package mitiv.optim;
  * </pre>
  * </p>
  * 
- * <h2>Using line search<h2>
+ * <h2>Using line search</h2>
  * 
  * <ol type="a">
  *   <li>choose search direction {@code p} at {@code x0};</li>
  *   <li>compute {@code f0 = f(x0)} and {@code g0 = p'.g(x0)};</li>
  *   <li>perform line search:
- *     <pre> 
+ *     <pre>
  *     SomeLineSearchClass lineSearch = new SomeLineSearchClass();
  *     double alpha = 1.0; // first step to try
  *     lineSearch.start(f0, g0, alpha, 0.0, 1E2*alpha);
@@ -157,7 +157,7 @@ package mitiv.optim;
  */
 public abstract class LineSearch {
 
-    public static final int ERROR_ILLEGAL_FX                         = -13; // FIXME: write message
+    public static final int ERROR_ILLEGAL_FX                         = -13;
     public static final int ERROR_ILLEGAL_ADDRESS                    = -12; // FIXME: unused
     public static final int ERROR_CORRUPTED_WORKSPACE                = -11; // FIXME: unused
     public static final int ERROR_BAD_WORKSPACE                      = -10; // FIXME: unused
@@ -234,7 +234,7 @@ public abstract class LineSearch {
      * at the new position to try.  Upon return, this method indicates whether the line
      * search has converged.  Otherwise, it computes a new step to try.
      * 
-     * @param s1   The value of the step (same as the value returned by {@link #getStep}). 
+     * @param s1   The value of the step (same as the value returned by {@link #getStep}).
      * @param f1   The value of the function at {@code x1 = x0 + s1*p} where {@code x0}
      *             are the variables at the start of the line search and {@code p} is the
      *             search direction.
@@ -246,27 +246,27 @@ public abstract class LineSearch {
      */
     public int iterate(double s1, double f1, double g1)
     {
-      if (status == SEARCH) {
-        if (s1 != stp) {
-          status = ERROR_STP_CHANGED;
+        if (status == SEARCH) {
+            if (s1 != stp) {
+                status = ERROR_STP_CHANGED;
+            } else {
+                status = iterateHook(s1, f1, g1);
+                if (stp >= stpmax) {
+                    if (s1 >= stpmax) {
+                        status = WARNING_STP_EQ_STPMAX;
+                    }
+                    stp = stpmax;
+                } else if (stp <= stpmin) {
+                    if (s1 <= stpmin) {
+                        status = WARNING_STP_EQ_STPMIN;
+                    }
+                    stp = stpmin;
+                }
+            }
         } else {
-          status = iterateHook(s1, f1, g1);
-          if (stp >= stpmax) {
-            if (s1 >= stpmax) {
-              status = WARNING_STP_EQ_STPMAX;
-            }
-            stp = stpmax;
-          } else if (stp <= stpmin) {
-            if (s1 <= stpmin) {
-              status = WARNING_STP_EQ_STPMIN;
-            }
-            stp = stpmin;
-          }
+            status = ERROR_NOT_STARTED;
         }
-      } else {
-        status = ERROR_NOT_STARTED;
-      }
-      return status;
+        return status;
     }
 
     /**
@@ -291,7 +291,7 @@ public abstract class LineSearch {
      * as attribute {@code stp}).  The provided arguments have been checked.  Upon return,
      * the caller method, {@link #iterate}, takes care of safeguarding the step.
      * 
-     * @param s1   The value of the step (same as the value returned by {@link #getStep}). 
+     * @param s1   The value of the step (same as the value returned by {@link #getStep}).
      * @param f1   The value of the function at {@code x1 = x0 + s1*p} where {@code x0}
      *             are the variables at the start of the line search and {@code p} is the
      *             search direction.
@@ -333,6 +333,8 @@ public abstract class LineSearch {
     public final String getMessage(int code)
     {
         switch(code) {
+        case ERROR_ILLEGAL_FX:
+            return "Illegal function value.";
         case ERROR_ILLEGAL_ADDRESS:
             return "Illegal address";
         case ERROR_CORRUPTED_WORKSPACE:
