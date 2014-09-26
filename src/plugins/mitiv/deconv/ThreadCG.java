@@ -38,7 +38,7 @@ public class ThreadCG extends Thread {
     int nextJobValue;
     int nextJobJob;
 
-    boolean compute3D = false;
+    private boolean compute3D = false;
     
     public ThreadCG(MitivDeconvolution deconv){
         this.deconv = deconv;
@@ -58,8 +58,10 @@ public class ThreadCG extends Thread {
         while (!stop) {
             if (hasjob) {
                 hasjob = false; //first because if while computing a new job appear, we will not miss it
+                deconv.updateProgressBarMessage("Computing");
                 if (compute3D) {
                     deconv.nextJob3D(nextJobValue, nextJobJob);
+                    deconv.updateProgressBarMessage("Done");
                 } else {
                     BufferedImage buffered = deconv.nextJob(nextJobValue, nextJobJob);
                     deconv.updateImage(buffered, nextJobValue);

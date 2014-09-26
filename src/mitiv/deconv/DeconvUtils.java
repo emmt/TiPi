@@ -27,6 +27,7 @@ package mitiv.deconv;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -38,6 +39,7 @@ import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 import mitiv.utils.CommonUtils;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_1D;
 
 /**
@@ -60,6 +62,12 @@ public class DeconvUtils {
     private ShapedVectorSpace imageSpaceComplex;
     private boolean single = true;
     boolean isComplex;
+
+    //3D
+    ArrayList<BufferedImage> listImage;
+    ArrayList<BufferedImage> listPSF;
+    public int sizeZ;
+    private DoubleFFT_3D fft3D;
 
     /**
      * Job to compute with the wiener filter
@@ -107,6 +115,31 @@ public class DeconvUtils {
             e.printStackTrace();
             System.err.println("Wrong path given");
         }
+    }
+
+    /**
+     * Open the images and store them
+     * @param image 
+     * @param PSF 
+     */
+    public void readImage(ArrayList<BufferedImage> image, ArrayList<BufferedImage> PSF) {
+        //IMPORTANT WE PAD AS WE COMPUTE OR NOT ...
+        //FIXME PAD HERE
+        /*sizePadding = Math.max(PSF.get(0).getHeight(), PSF.get(0).getWidth());
+        ArrayList<BufferedImage> listPSFPad = CommonUtils.imagePad(PSF, sizePadding);
+        ArrayList<BufferedImage> listImagePad = CommonUtils.imagePad(image, sizePadding);
+        this.listImage = listImagePad;
+        this.listPSF = listPSFPad;
+        sizeZ = listImagePad.size();
+        width = listImagePad.get(0).getWidth();
+        height = listImagePad.get(0).getHeight();*/
+        
+        this.listImage = image;
+        this.listPSF = PSF;
+        sizeZ = image.size();
+        width = image.get(0).getWidth();
+        height = image.get(0).getHeight();
+
     }
 
     /**
@@ -273,6 +306,39 @@ public class DeconvUtils {
     }
 
     /**
+     * Convert an image to a 1D array
+     * 
+     * @return A 1D array
+     */
+    public double[] image3DToArray1D() {
+        System.out.println(sizeZ+" "+width+" "+height);
+        double[] out = new double[2*sizeZ*width*height];
+        for (int j = 0; j < sizeZ; j++) {
+            double[] tmp = CommonUtils.imageToArray1D(listImage.get(j), true);
+            for (int i = 0; i < tmp.length; i++) {
+                out[i+j*tmp.length] = tmp[i];
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Convert the PSF to a 1D array
+     * 
+     * @return A 1D array
+     */
+    public double[] psf3DToArray1D() {
+        double[] out = new double[width*height*sizeZ*2];
+        for (int j = 0; j < sizeZ; j++) {
+            double[] tmp = CommonUtils.psfPadding1D(listImage.get(j), listPSF.get(j), false);
+            for (int i = 0; i < tmp.length; i++) {
+                out[i+j*tmp.length] = tmp[i];
+            }
+        }
+        return out;
+    }
+
+    /**
      * Convert image to float 1D array
      * 
      * @param isComplex is the input of size 2*size image ?
@@ -306,6 +372,24 @@ public class DeconvUtils {
         return CommonUtils.arrayToImage1D(array, job, image.getWidth(), image.getHeight(), isComplex);
     }
 
+    public ArrayList<BufferedImage> arrayToImage3D(double[] array, int job){
+        ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
+        double[] tmp = new double[width*height];
+        for (int k = 0; k < sizeZ; k++) {
+            for (int j = 0; j < height; j++) {
+                for (int i = 0; i < width; i++) {
+                    tmp[i+j*width] = array[i+j*width+2*k*height*width];
+                }
+            }
+            out.add(CommonUtils.arrayToImage1D(tmp, job, width, height, false));
+        }
+        //IMPORTANT WE DEPAD AS WE COMPUTE OR NOT ...
+        //return CommonUtils.imageUnPad(out, sizePadding);
+        return out;
+        //FIXME pad option
+
+    }
+
     /********************************** FFT PART **********************************/
 
     private void scale(double[] array){
@@ -332,6 +416,17 @@ public class DeconvUtils {
             fft1D = new DoubleFFT_1D(width*height);
         }
         fft1D.realForwardFull(array);
+    }
+
+    public void FFT3D(double[] array) {
+        if(fft3D == null){
+            fft3D = new DoubleFFT_3D(sizeZ,width,height);
+        }
+        fft3D.complexForward(array);
+    }
+
+    public void IFFT3D(double[] array) {
+        fft3D.complexInverse(array, true);
     }
 
     /**

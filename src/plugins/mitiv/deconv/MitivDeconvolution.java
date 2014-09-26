@@ -27,6 +27,7 @@ package plugins.mitiv.deconv;
 
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JSlider;
@@ -149,7 +150,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         switch (job) {
         //First value correspond to next job with alpha = 0, not all are equal to 1
         case DeconvUtils.JOB_WIENER: 
-            return (deconvolution.firstDeconvolution(muMin, isSplitted));
+            return (deconvolution.firstDeconvolution(muMin, isSplitted)).get(0);
         case DeconvUtils.JOB_QUAD:
             return (deconvolution.firstDeconvolutionQuad(muMin, isSplitted));
         case DeconvUtils.JOB_CG:
@@ -167,7 +168,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         double mult = 1E9; //HACK While the data uniformization is not done...
         switch (job) {
         case DeconvUtils.JOB_WIENER:
-            return (deconvolution.nextDeconvolution(mu));
+            return (deconvolution.nextDeconvolution(mu).get(0));
 
         case DeconvUtils.JOB_QUAD:
             return (deconvolution.nextDeconvolutionQuad(mu*mult));
@@ -182,7 +183,24 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
 
     private void firstJob3D(int job){
         thread = new ThreadCG(this);
+        thread.compute3D();
         thread.start();
+        boolean isSplitted = varBoolean.getValue();
+        switch (job) {
+        //First value correspond to next job with alpha = 0, not all are equal to 1
+        case DeconvUtils.JOB_WIENER: 
+            ArrayList<BufferedImage>tmp = deconvolution.firstDeconvolution(muMin,Deconvolution.PROCESSING_3D,isSplitted);
+            for (int i = 0; i < tmp.size(); i++) {
+                myseq.setImage(0, i, tmp.get(i));
+            }
+            break;
+        case DeconvUtils.JOB_QUAD:
+            throw new IllegalArgumentException("Not implemented yet");
+        case DeconvUtils.JOB_CG:
+            throw new IllegalArgumentException("Not implemented yet");
+        default:
+            throw new IllegalArgumentException("Invalid Job");
+        }
     }
 
     public void nextJob3D(int slidervalue, int job){
@@ -190,17 +208,18 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         if (!isHeadLess()) {
             updateLabel(mu);
         }
-        Sequence seqIm = sequenceImage.getValue();
-        Sequence seqPsf = sequencePSF.getValue();
         double mult = 1E9; //HACK While the data uniformization is not done...
         switch (job) {
         case DeconvUtils.JOB_WIENER:
-            System.out.println("Im LEN: "+seqIm.getDataCopyXYCZTAsDouble().length);
-            System.out.println("PSF LEN: "+seqIm.getDataCopyXYCZTAsDouble().length);
+            ArrayList<BufferedImage>tmp = deconvolution.nextDeconvolution(mu,Deconvolution.PROCESSING_3D);
+            for (int i = 0; i < tmp.size(); i++) {
+                myseq.setImage(0, i, tmp.get(i));
+            }
+            break;
         case DeconvUtils.JOB_QUAD:
-            //LALALA
+            throw new IllegalArgumentException("Not implemented yet");
         case DeconvUtils.JOB_CG:
-            throw new IllegalArgumentException("Nor implemented yet");
+            throw new IllegalArgumentException("Not implemented yet");
         default:
             throw new IllegalArgumentException("Invalid Job");
         }
@@ -265,7 +284,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             }
             new AnnounceFrame(message+messageEnd);
         }else{
-            try {
+            //try {
                 Sequence seqIm = sequenceImage.getValue();
                 Sequence seqPsf = sequencePSF.getValue();
                 if (seqIm.getSizeZ() == 1 && seqPsf.getSizeZ() == 1) {
@@ -295,6 +314,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
                         slider.setValue(0);
                     }
                 } else {
+                    deconvolution = new Deconvolution(seqIm.getAllImage(), seqPsf.getAllImage(),correct);
                     myseq = new Sequence();
                     myseq.addListener(this); 
                     myseq.setName("");
@@ -306,6 +326,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
                     } else {
                         addSequence(myseq);
                         slider.setEnabled(true);
+                        slider.setValue(0);
                         slider.addChangeListener(new ChangeListener(){
                             public void stateChanged(ChangeEvent event){
                                 int sliderValue =(((JSlider)event.getSource()).getValue());
@@ -313,12 +334,11 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
                                 thread.prepareNextJob(sliderValue, job);
                             }
                         });
-                        slider.setValue(0);
                     }
                 }
-            } catch (Exception e) {
-                new AnnounceFrame("Oops, Error: "+e.getMessage());
-            }
+            //} catch (Exception e) {
+            //    new AnnounceFrame("Oops, Error: "+e.getMessage());
+            //}
         }
     }
 

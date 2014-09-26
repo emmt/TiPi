@@ -30,6 +30,7 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -866,7 +867,7 @@ public class CommonUtils {
      */
     public static BufferedImage arrayToImage1D(double[] array, int width, int height, boolean isComplex){
         //BufferedImage imageout = createNewBufferedImage(width,height);
-        BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
         WritableRaster raster = imageout.getRaster();
         int grey;
         int[] tmp = new int[3];
@@ -895,7 +896,7 @@ public class CommonUtils {
      */
     public static BufferedImage arrayToImage1D(float[] array, int width, int height, boolean isComplex){
         //BufferedImage imageout = createNewBufferedImage(width, height);
-        BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
         WritableRaster raster = imageout.getRaster();
         int grey;
         int[] tmp = new int[3];
@@ -1022,26 +1023,54 @@ public class CommonUtils {
         return (max-min) > prev ? (max-min) : prev;
     }
 
+    private static BufferedImage createZeroBufferedImmage(int width, int height){
+        BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+        WritableRaster rasterImage = out.getRaster();
+        int[] tmp = new int[]{0};
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                rasterImage.setPixel(i,j,tmp);
+            }
+        }
+        return out;
+    }
+    
     /**
      * Zero pad an image with the new size:<br>
      * WidthOutput = WidthInput + sizePSF<br>
      * HeightOutput = HeightInput +sizePSF.
      *
      * @param image the image
-     * @param sizePSF the size psf
+     * @param sizePading the size psf
      * @return the buffered image
      */
-    public static BufferedImage imagePad(BufferedImage image, int sizePSF) {
-        BufferedImage pad = new BufferedImage(image.getWidth()+sizePSF, image.getHeight()+sizePSF, image.getType());
-        Raster rasterImage = image.getData();
+    public static BufferedImage imagePad(BufferedImage image, int sizePading) {
+        BufferedImage pad = new BufferedImage(image.getWidth()+sizePading, image.getHeight()+sizePading, BufferedImage.TYPE_USHORT_GRAY);
+        WritableRaster rasterImage = image.getRaster();
         WritableRaster rasterPad = pad.getRaster();
-        int hlf = sizePSF/2;
+        int hlf = sizePading/2;
         for (int j = 0; j < image.getHeight(); j++) {
             for (int i = 0; i < image.getWidth(); i++) {
                 rasterPad.setPixel(i+hlf,j+hlf , rasterImage.getPixel(i,j, (int[])null));
             }
         }
         return pad;
+    }
+    
+    public static ArrayList<BufferedImage> imagePad(ArrayList<BufferedImage> image, int sizePSF) {
+        ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
+        int width = image.get(0).getWidth();
+        int height = image.get(0).getHeight();
+        for (int i = 0; i < image.size()/2; i++) {
+            out.add(createZeroBufferedImmage(width+sizePSF, height+sizePSF));
+        }
+        for (BufferedImage tmp : image) {
+            out.add(imagePad(tmp, sizePSF));
+        }
+        for (int i = 0; i < image.size()/2; i++) {
+            out.add(createZeroBufferedImmage(width+sizePSF, height+sizePSF));
+        }
+        return out;
     }
 
     /**
@@ -1056,6 +1085,14 @@ public class CommonUtils {
     public static BufferedImage imageUnPad(BufferedImage image, int sizePSF) {
         int hlf = sizePSF/2;
         return image.getSubimage(hlf, hlf, image.getWidth()-sizePSF, image.getHeight()-sizePSF);
+    }
+    
+    public static ArrayList<BufferedImage> imageUnPad(ArrayList<BufferedImage> image, int sizePSF) {
+        ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
+        for (int i = 0; i < image.size()/2; i++) {
+            out.add(imageUnPad(image.get(i), sizePSF));
+        }
+        return out;
     }
 
     /**
