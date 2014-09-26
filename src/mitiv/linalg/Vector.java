@@ -155,14 +155,37 @@ public abstract class Vector {
      * Copy the contents of the vector into another one.
      *
      * @param dst - The destination vector.
-     * @throws IncorrectSpaceException DST must belong to the vector space of the source vector.
+     * @throws IncorrectSpaceException {@code dst} must belong to the same vector space.
      */
-    public final void copy(Vector dst)
+    public final void copyTo(Vector dst)
             throws IncorrectSpaceException {
         if (dst != this) {
             space.check(dst);
             space._copy(this, dst);
         }
+    }
+
+    /**
+     * Copy the contents of the vector from another one.
+     *
+     * @param src - The source vector.
+     * @throws IncorrectSpaceException {@code src} must belong to the same vector space.
+     */
+    public final void copyFrom(Vector src)
+            throws IncorrectSpaceException {
+        if (src != this) {
+            space.check(src);
+            space._copy(src, this);
+        }
+    }
+
+    /**
+     * Multiply the values of the vector by a constant factor.
+     *
+     * @param alpha - The scale factor.
+     */
+    public void scale(double alpha) {
+        space._scale(this, alpha);
     }
 
     /**
@@ -195,6 +218,28 @@ public abstract class Vector {
     }
     public void zero() {
         space._zero(this);
+    }
+
+    /**
+     * Compute a linear combination of two vectors.
+     *
+     * In pseudo-code, this method does:
+     * <pre>
+     * this[i] = alpha*x[i] + beta*y[i];
+     * </pre>
+     * for all indices {@code i}.
+     *
+     * @param alpha - The scalar factor for vector {@code x}.
+     * @param x     - A vector.
+     * @param beta  - The scalar factor for vector {@code y}.
+     * @param y     - Another vector.
+     * @throws IncorrectSpaceException all vectors must belong to the same vector space.
+     */
+    public final void axpby(double alpha, Vector x,
+            double beta, Vector y) throws IncorrectSpaceException {
+        space.check(x);
+        space.check(y);
+        space._axpby(alpha, x, beta, y, this);
     }
 
     /**

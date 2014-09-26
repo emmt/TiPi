@@ -189,6 +189,22 @@ public abstract class VectorSpace {
 
     protected abstract double _normInf(Vector x);
 
+
+    /**
+     * Multiply the values of the vector by a constant factor.
+     *
+     * @param alpha - The scale factor.
+     */
+    public void scale(Vector v, double alpha) {
+        check(v);
+        _scale(v, alpha);
+    }
+
+    protected void _scale(Vector v, double alpha) {
+        _axpby(alpha, v, 0.0, v, v);
+
+    }
+
     /**
      * Compute a linear combination of two vectors.
      *
