@@ -53,6 +53,7 @@ import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
 import mitiv.optim.MoreThuenteLineSearch;
 import mitiv.optim.NonLinearConjugateGradient;
+import mitiv.optim.OptimTask;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -279,19 +280,19 @@ public class TotalVariationDeconvolution {
         }
 
         // Launch the non linear conjugate gradient
-        int task = minimizer.start();
+        OptimTask task = minimizer.start();
         while (true) {
-            if (task == NonLinearConjugateGradient.TASK_COMPUTE_FG) {
+            if (task == OptimTask.COMPUTE_FG) {
                 fcost = cost.computeCostAndGradient(0.1, x, gcost, true);
                 ++eval;
-            } else if (task == NonLinearConjugateGradient.TASK_NEW_X ||
-                    task == NonLinearConjugateGradient.TASK_FINAL_X) {
+            } else if (task == OptimTask.NEW_X ||
+                    task == OptimTask.FINAL_X) {
                 ++iter;
                 if (verbose) {
                     System.out.format("iter: %4d    eval: %4d    fx = %21.15g    |gx| = %8.2g (%.2g)\n",
                             iter, eval, fcost, space.norm2(gcost), minimizer.getGradientThreshold());
                 }
-                boolean stop = (task == NonLinearConjugateGradient.TASK_FINAL_X);
+                boolean stop = (task == OptimTask.FINAL_X);
                 if (! stop && maxiter >= 0 && iter >= maxiter) {
                     System.err.format("Warning: too many iterations (%d).\n", maxiter);
                     stop = true;
