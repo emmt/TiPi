@@ -51,9 +51,11 @@ import mitiv.linalg.LinearOperator;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
+import mitiv.optim.LBGFS;
 import mitiv.optim.MoreThuenteLineSearch;
 import mitiv.optim.NonLinearConjugateGradient;
 import mitiv.optim.OptimTask;
+import mitiv.optim.ReverseCommunicationOptimizer;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -79,6 +81,9 @@ public class TotalVariationDeconvolution {
 
     @Option(name = "--grtol", usage = "Relative gradient tolerance for the convergence.", metaVar = "GRTOL")
     private double grtol = 1e-3;
+
+    @Option(name = "--lbfgs", usage = "Use LBFGS method with M saved steps.", metaVar = "M")
+    private int limitedMemorySize = 0;
 
     @Option(name = "--help", aliases = {"-h", "-?"}, usage = "Display help.")
     private boolean help;
@@ -113,6 +118,9 @@ public class TotalVariationDeconvolution {
     }
     public void setMaximumIterations(int value) {
         maxiter = value;
+    }
+    public void setLimitedMemorySize(int value) {
+        limitedMemorySize = value;
     }
     public void setTargetError(double value) {
         eta = value;
@@ -271,10 +279,19 @@ public class TotalVariationDeconvolution {
         MoreThuenteLineSearch lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
         int iter = -1;
         int eval = 0;
-        int method = NonLinearConjugateGradient.DEFAULT_METHOD;
-        NonLinearConjugateGradient minimizer = new NonLinearConjugateGradient(space, method, lineSearch);
-        minimizer.setAbsoluteTolerance(gatol);
-        minimizer.setRelativeTolerance(grtol);
+        ReverseCommunicationOptimizer minimizer;
+        if (limitedMemorySize > 0) {
+            LBGFS foo = new LBGFS(space, limitedMemorySize, lineSearch);
+            foo.setAbsoluteTolerance(gatol);
+            foo.setRelativeTolerance(grtol);
+            minimizer = foo;
+        } else {
+            int method = NonLinearConjugateGradient.DEFAULT_METHOD;
+            NonLinearConjugateGradient bar = new NonLinearConjugateGradient(space, method, lineSearch);
+            bar.setAbsoluteTolerance(gatol);
+            bar.setRelativeTolerance(grtol);
+            minimizer = bar;
+        }
         if (debug) {
             System.out.println("Non linear conjugate gradient initialization complete.");
         }
@@ -289,8 +306,14 @@ public class TotalVariationDeconvolution {
                     task == OptimTask.FINAL_X) {
                 ++iter;
                 if (verbose) {
+                    double threshold;
+                    if (limitedMemorySize > 0) {
+                        threshold = ((LBGFS)minimizer).getGradientThreshold();
+                    } else {
+                        threshold = ((NonLinearConjugateGradient)minimizer).getGradientThreshold();
+                    }
                     System.out.format("iter: %4d    eval: %4d    fx = %21.15g    |gx| = %8.2g (%.2g)\n",
-                            iter, eval, fcost, space.norm2(gcost), minimizer.getGradientThreshold());
+                            iter, eval, fcost, space.norm2(gcost), threshold);
                 }
                 boolean stop = (task == OptimTask.FINAL_X);
                 if (! stop && maxiter >= 0 && iter >= maxiter) {
