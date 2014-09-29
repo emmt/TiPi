@@ -192,7 +192,7 @@ public class Filter{
     public double[] wienerQuad1D(double alpha, double[] FFT_PSF,double[] FFTImage, int Width, int Height) {
         this.FFT_PSF1D = FFT_PSF;
         this.FFT_Image1D = FFTImage;
-        width = Height; //Don't know why but this have to be done ...
+        width = Height;
         height = Width;
         double e,f;
         tabcc1D = new double[width*height];
@@ -233,6 +233,57 @@ public class Filter{
                 q = 1.0/(a*a + b*b + tabcc1D[i+j*width]*alpha);
                 out[2*i+   2*j*width] = (a*c + b*d)*q;
                 out[2*i+1 +2*j*width] = (a*d - b*c)*q;
+            }
+        }
+        return out;
+    }
+
+    public double[] wienerQuad3D(double alpha, double[] FFT_PSF,double[] FFTImage, int sizeZ, int Width, int Height, int sizePading) {
+        this.FFT_PSF1D = FFT_PSF;
+        this.FFT_Image1D = FFTImage;
+        width = Height;
+        height = Width;
+        this.sizeZ = sizeZ;
+        double e,f;
+        tabcc1D = new double[width*height];
+        int halfPad  = sizePading/2;
+        for(int j = 0; j < height; j++){
+            for(int i = 0; i < width; i++){
+                if(j<=height/2){
+                    e = ((double)j/height);
+                }else{
+                    e = ((double)(j-height)/height);
+                }
+                if(i<=width/2){
+                    f = ((double)i/width);
+                }else{
+                    f = ((double)(i-width)/width);
+                }
+                tabcc1D[i+j*width] = 4*Math.PI*Math.PI*(e*e+f*f);
+            }
+        }
+        return wienerQuad3D(alpha);
+    }
+
+    /**
+     * Apply the Wiener filter with quadratic approximation on 1D
+     * Quick version (need to call WienerQuad with full arguments at least once)
+     * 
+     * @param alpha
+     * @return An array
+     */
+    public double[] wienerQuad3D(double alpha) {
+        double a,b,c,d,q;
+        double[] out = new double[sizeZ*width*2*height];
+        for (int j = 0; j < sizeZ; j++) {
+            for(int i = 0; i < width*height; i++){
+                a = FFT_PSF1D[2*i    +j*width*height*2];
+                b = FFT_PSF1D[2*i+1  +j*width*height*2];
+                c = FFT_Image1D[2*i  +j*width*height*2];
+                d = FFT_Image1D[2*i+1+j*width*height*2];
+                q = 1.0/(a*a + b*b + tabcc1D[i]*alpha);
+                out[2*i  +j*width*height*2] = (a*c + b*d)*q;
+                out[2*i+1+j*width*height*2] = (a*d - b*c)*q;
             }
         }
         return out;

@@ -62,7 +62,7 @@ public class CommonUtils {
      * 
      * */
     public static final int LOWER_LEFT = 0;
-    
+
     /** 
      * padding options: Nothing is done 
      * _______
@@ -72,7 +72,7 @@ public class CommonUtils {
      * 
      * */
     public static final int CENTERED = 1;
-    
+
     /** 
      * padding options: Nothing is done 
      * _______
@@ -138,7 +138,7 @@ public class CommonUtils {
     {
         return (int) ArrayUtils.colorToGrey(r, g, b);
     }
-    
+
     public static int colorToGrey(int[]rgb)
     {
         if (rgb.length == 3) {
@@ -1034,7 +1034,7 @@ public class CommonUtils {
         }
         return out;
     }
-    
+
     /**
      * Zero pad an image with the new size:<br>
      * WidthOutput = WidthInput + sizePSF<br>
@@ -1056,19 +1056,20 @@ public class CommonUtils {
         }
         return pad;
     }
-    
+
     public static ArrayList<BufferedImage> imagePad(ArrayList<BufferedImage> image, int sizePSF) {
         ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
         int width = image.get(0).getWidth();
         int height = image.get(0).getHeight();
+        BufferedImage zero = createNewBufferedImage(width+sizePSF, height+sizePSF);
         for (int i = 0; i < image.size()/2; i++) {
-            out.add(createZeroBufferedImmage(width+sizePSF, height+sizePSF));
+            out.add(zero);
         }
         for (BufferedImage tmp : image) {
             out.add(imagePad(tmp, sizePSF));
         }
         for (int i = 0; i < image.size()/2; i++) {
-            out.add(createZeroBufferedImmage(width+sizePSF, height+sizePSF));
+            out.add(zero);
         }
         return out;
     }
@@ -1086,12 +1087,16 @@ public class CommonUtils {
         int hlf = sizePSF/2;
         return image.getSubimage(hlf, hlf, image.getWidth()-sizePSF, image.getHeight()-sizePSF);
     }
-    
+
     public static ArrayList<BufferedImage> imageUnPad(ArrayList<BufferedImage> image, int sizePSF) {
         ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
-        for (int i = 0; i < image.size()/2; i++) {
+        for (int i = (image.size()*3)/4; i < image.size(); i++) {
             out.add(imageUnPad(image.get(i), sizePSF));
         }
+        for (int i = 0; i < image.size()/4; i++) {
+            out.add(imageUnPad(image.get(i), sizePSF));
+        }
+
         return out;
     }
 

@@ -143,6 +143,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         }
     }
 
+    //FIXME return arraylist bufferedImage and use this for both 3D and 1D
     private BufferedImage firstJob(int job){
         thread = new ThreadCG(this);
         thread.start();
@@ -152,9 +153,9 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         case DeconvUtils.JOB_WIENER: 
             return (deconvolution.firstDeconvolution(muMin, isSplitted)).get(0);
         case DeconvUtils.JOB_QUAD:
-            return (deconvolution.firstDeconvolutionQuad(muMin, isSplitted));
+            return (deconvolution.firstDeconvolutionQuad(muMin, isSplitted).get(0));
         case DeconvUtils.JOB_CG:
-            return (deconvolution.firstDeconvolutionCG(muMin, isSplitted));
+            return (deconvolution.firstDeconvolutionCG(muMin, isSplitted).get(0));
         default:
             throw new IllegalArgumentException("Invalid Job");
         }
@@ -171,10 +172,10 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             return (deconvolution.nextDeconvolution(mu).get(0));
 
         case DeconvUtils.JOB_QUAD:
-            return (deconvolution.nextDeconvolutionQuad(mu*mult));
+            return (deconvolution.nextDeconvolutionQuad(mu*mult).get(0));
 
         case DeconvUtils.JOB_CG:
-            return (deconvolution.nextDeconvolutionCG(mu*mult));
+            return (deconvolution.nextDeconvolutionCG(mu*mult).get(0));
 
         default:
             throw new IllegalArgumentException("Invalid Job");
@@ -185,19 +186,28 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         thread = new ThreadCG(this);
         thread.compute3D();
         thread.start();
-        boolean isSplitted = varBoolean.getValue();
+        boolean isSplitted = false;
+        ArrayList<BufferedImage>tmp;
         switch (job) {
         //First value correspond to next job with alpha = 0, not all are equal to 1
         case DeconvUtils.JOB_WIENER: 
-            ArrayList<BufferedImage>tmp = deconvolution.firstDeconvolution(muMin,Deconvolution.PROCESSING_3D,isSplitted);
+            tmp = deconvolution.firstDeconvolution(muMin,Deconvolution.PROCESSING_3D,isSplitted);
             for (int i = 0; i < tmp.size(); i++) {
                 myseq.setImage(0, i, tmp.get(i));
             }
             break;
         case DeconvUtils.JOB_QUAD:
-            throw new IllegalArgumentException("Not implemented yet");
+            tmp = deconvolution.firstDeconvolutionQuad(muMin,Deconvolution.PROCESSING_3D,isSplitted);
+            for (int i = 0; i < tmp.size(); i++) {
+                myseq.setImage(0, i, tmp.get(i));
+            }
+            break;
         case DeconvUtils.JOB_CG:
-            throw new IllegalArgumentException("Not implemented yet");
+            tmp = deconvolution.firstDeconvolutionCG(muMin,Deconvolution.PROCESSING_3D,isSplitted);
+            for (int i = 0; i < tmp.size(); i++) {
+                myseq.setImage(0, i, tmp.get(i));
+            }
+            break;
         default:
             throw new IllegalArgumentException("Invalid Job");
         }
@@ -209,17 +219,26 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             updateLabel(mu);
         }
         double mult = 1E9; //HACK While the data uniformization is not done...
+        ArrayList<BufferedImage>tmp;
         switch (job) {
         case DeconvUtils.JOB_WIENER:
-            ArrayList<BufferedImage>tmp = deconvolution.nextDeconvolution(mu,Deconvolution.PROCESSING_3D);
+            tmp = deconvolution.nextDeconvolution(mu,Deconvolution.PROCESSING_3D);
             for (int i = 0; i < tmp.size(); i++) {
                 myseq.setImage(0, i, tmp.get(i));
             }
             break;
         case DeconvUtils.JOB_QUAD:
-            throw new IllegalArgumentException("Not implemented yet");
+            tmp = deconvolution.nextDeconvolutionQuad(mu*mult,Deconvolution.PROCESSING_3D);
+            for (int i = 0; i < tmp.size(); i++) {
+                myseq.setImage(0, i, tmp.get(i));
+            }
+            break;
         case DeconvUtils.JOB_CG:
-            throw new IllegalArgumentException("Not implemented yet");
+            tmp = deconvolution.nextDeconvolutionCG(mu*mult,Deconvolution.PROCESSING_3D);
+            for (int i = 0; i < tmp.size(); i++) {
+                myseq.setImage(0, i, tmp.get(i));
+            }
+            break;
         default:
             throw new IllegalArgumentException("Invalid Job");
         }

@@ -1,5 +1,4 @@
 /*
- * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
  * developed by the MitiV project.
  *
  * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
@@ -53,7 +52,7 @@ public class DeconvUtils {
     private BufferedImage image_psf;
     private DoubleFFT_1D fft1D;
     private FloatFFT_1D fft1DFloat;
-    private int sizePadding = -1;
+    public int sizePadding = -1;
 
     //Vector part
     private ShapedVector imageVect;
@@ -123,23 +122,16 @@ public class DeconvUtils {
      * @param PSF 
      */
     public void readImage(ArrayList<BufferedImage> image, ArrayList<BufferedImage> PSF) {
-        //IMPORTANT WE PAD AS WE COMPUTE OR NOT ...
-        //FIXME PAD HERE
-        /*sizePadding = Math.max(PSF.get(0).getHeight(), PSF.get(0).getWidth());
+        //IMPORTANT WE PAD AS WE COMPUTE
+        //FIXME here padding
+        sizePadding = Math.max(PSF.get(0).getHeight(), PSF.get(0).getWidth());
         ArrayList<BufferedImage> listPSFPad = CommonUtils.imagePad(PSF, sizePadding);
         ArrayList<BufferedImage> listImagePad = CommonUtils.imagePad(image, sizePadding);
         this.listImage = listImagePad;
         this.listPSF = listPSFPad;
         sizeZ = listImagePad.size();
         width = listImagePad.get(0).getWidth();
-        height = listImagePad.get(0).getHeight();*/
-        
-        this.listImage = image;
-        this.listPSF = PSF;
-        sizeZ = image.size();
-        width = image.get(0).getWidth();
-        height = image.get(0).getHeight();
-
+        height = listImagePad.get(0).getHeight();
     }
 
     /**
@@ -199,15 +191,10 @@ public class DeconvUtils {
         readImageVect(image, PSF, false, singlePrecision,true);
     }
 
-    /**
-     * Open the images and store them as vectors
-     * 
-     * @param image
-     * @param PSF
-     * @param padding Do we zero pad the image ?
-     * @param singlePrecision Double or Float ?
-     * @param isComplex is the input of size 2*size image ?
-     */
+    public void readImageVect(ArrayList<BufferedImage>image, ArrayList<BufferedImage> PSF, boolean singlePrecision) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
     public void readImageVect(BufferedImage image, BufferedImage PSF, Boolean padding, boolean singlePrecision, boolean isComplex) {
         //For now, no padding option: TODO add padding option
         if (singlePrecision) {
@@ -247,6 +234,10 @@ public class DeconvUtils {
     public ShapedVector cloneImageVect(){
         return imageVect.getSpace().clone(imageVect);
     }
+    
+    public ShapedVector getImageVect(){
+        return imageVect;
+    }
 
     /**
      * Clone the PSF
@@ -256,7 +247,10 @@ public class DeconvUtils {
     public ShapedVector clonePsfVect(){
         return imagePsfVect.getSpace().clone(imagePsfVect);
     }
-
+    
+    public ShapedVector getPSfVect(){
+        return imagePsfVect;
+    }
     /**
      * Pad the PSF and return a vector
      * 
@@ -306,29 +300,39 @@ public class DeconvUtils {
     }
 
     /**
-     * Convert an image to a 1D array
+     * Convert a stack of image to a 1D array
+     * @param isComplex 
      * 
      * @return A 1D array
      */
-    public double[] image3DToArray1D() {
-        System.out.println(sizeZ+" "+width+" "+height);
-        double[] out = new double[2*sizeZ*width*height];
+    public double[] image3DToArray1D(boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[2*sizeZ*width*height];
+        } else {
+            out = new double[sizeZ*width*height];
+        }
         for (int j = 0; j < sizeZ; j++) {
-            double[] tmp = CommonUtils.imageToArray1D(listImage.get(j), true);
+            double[] tmp = CommonUtils.imageToArray1D(listImage.get(j), false);
             for (int i = 0; i < tmp.length; i++) {
                 out[i+j*tmp.length] = tmp[i];
             }
         }
         return out;
     }
-
     /**
      * Convert the PSF to a 1D array
+     * @param isComplex 
      * 
      * @return A 1D array
      */
-    public double[] psf3DToArray1D() {
-        double[] out = new double[width*height*sizeZ*2];
+    public double[] psf3DToArray1D(boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[width*height*sizeZ*2];
+        } else {
+            out = new double[width*height*sizeZ];
+        }
         for (int j = 0; j < sizeZ; j++) {
             double[] tmp = CommonUtils.psfPadding1D(listImage.get(j), listPSF.get(j), false);
             for (int i = 0; i < tmp.length; i++) {
@@ -372,20 +376,28 @@ public class DeconvUtils {
         return CommonUtils.arrayToImage1D(array, job, image.getWidth(), image.getHeight(), isComplex);
     }
 
-    public ArrayList<BufferedImage> arrayToImage3D(double[] array, int job){
+    public ArrayList<BufferedImage> arrayToImage3D(double[] array, int job, boolean isComplex){
         ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
-        double[] tmp = new double[width*height];
-        for (int k = 0; k < sizeZ; k++) {
-            for (int j = 0; j < height; j++) {
-                for (int i = 0; i < width; i++) {
-                    tmp[i+j*width] = array[i+j*width+2*k*height*width];
+        if (isComplex) {
+            double[] tmp = new double[width*height*2];
+            for (int j = 0; j < sizeZ; j++) {
+                for (int i = 0; i < width*height*2; i++) {
+                    tmp[i] = array[i+2*j*height*width];
                 }
+                out.add(CommonUtils.arrayToImage1D(tmp, job, width, height, true));
             }
-            out.add(CommonUtils.arrayToImage1D(tmp, job, width, height, false));
+        }else{
+            double[] tmp = new double[width*height];
+            for (int j = 0; j < sizeZ; j++) {
+                for (int i = 0; i < width*height; i++) {
+                    tmp[i] = array[i+2*j*height*width];
+                }
+                out.add(CommonUtils.arrayToImage1D(tmp, job, width, height, false));
+            }
         }
         //IMPORTANT WE DEPAD AS WE COMPUTE OR NOT ...
-        //return CommonUtils.imageUnPad(out, sizePadding);
-        return out;
+        return CommonUtils.imageUnPad(out, sizePadding);
+        //return out;
         //FIXME pad option
 
     }
@@ -420,9 +432,9 @@ public class DeconvUtils {
 
     public void FFT3D(double[] array) {
         if(fft3D == null){
-            fft3D = new DoubleFFT_3D(sizeZ,width,height);
+            fft3D = new DoubleFFT_3D(sizeZ,height,width);
         }
-        fft3D.complexForward(array);
+        fft3D.realForwardFull(array);
     }
 
     public void IFFT3D(double[] array) {

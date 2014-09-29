@@ -45,7 +45,7 @@ public class Deconvolution{
      * Compute all the operations with 1D arrays
      */
     public static final int PROCESSING_1D = 1;
-    
+
     /**
      * Compute all the operations with 3D arrays
      */
@@ -68,8 +68,7 @@ public class Deconvolution{
     int correction;
     boolean isPsfSplitted = false;
     boolean useVectors;
-    //3D PART
-    boolean compute3D = false;
+
     //CG needs
     DoubleShapedVectorSpace space;
     DoubleShapedVector x;
@@ -131,10 +130,9 @@ public class Deconvolution{
                 utils.readImage((BufferedImage)image, (BufferedImage)PSF);
             }
         }else if(image instanceof ArrayList){
-            compute3D = true;
-            //we pad the image
+            //we pad the image in any case
             utils.readImage((ArrayList<BufferedImage>)image, (ArrayList<BufferedImage>)PSF);
-            
+
         }else{
             throw new IllegalArgumentException("Input should be a IcyBufferedImage, BufferedImage or a path");
         }
@@ -147,7 +145,7 @@ public class Deconvolution{
         tmp.add(im);
         return tmp;
     }
-    
+
     /**
      * Simple filter based on the wiener filter.
      * This should be used for the first time
@@ -284,14 +282,14 @@ public class Deconvolution{
      * @return The bufferedImage for the input value given
      */
     private ArrayList<BufferedImage> firstDeconvolutionSimple3D(double alpha){
-        image1D = utils.image3DToArray1D();
-        psf1D = utils.psf3DToArray1D();
+        image1D = utils.image3DToArray1D(true);
+        psf1D = utils.psf3DToArray1D(true);
         utils.FFT3D(image1D);
         utils.FFT3D(psf1D);
         double[] out = wiener.wiener3D(alpha, psf1D, image1D,utils.sizeZ,utils.width,utils.height);
         //double[] out = Arrays.copyOf(image1D, image1D.length);
         utils.IFFT3D(out);
-        return utils.arrayToImage3D(out, correction);
+        return utils.arrayToImage3D(out, correction,true);
     }
 
     /**
@@ -305,9 +303,9 @@ public class Deconvolution{
         double[] out = wiener.wiener3D(alpha);
         //double[] out = Arrays.copyOf(image1D, image1D.length);
         utils.IFFT3D(out);
-        return utils.arrayToImage3D(out, correction);
+        return utils.arrayToImage3D(out, correction, true);
     }
-    
+
     private BufferedImage firstDeconvolutionVector(double alpha){
         vector_image = (DoubleShapedVector) utils.cloneImageVect();
         vector_psf = (DoubleShapedVector) utils.getPsfPadVect();
@@ -334,7 +332,7 @@ public class Deconvolution{
      * @param alpha
      * @return The bufferedImage for the input value given
      */
-    public BufferedImage firstDeconvolutionQuad(double alpha){
+    public ArrayList<BufferedImage> firstDeconvolutionQuad(double alpha){
         if (useVectors) {
             return firstDeconvolutionQuad(alpha, PROCESSING_VECTOR, false);
         } else {
@@ -347,7 +345,7 @@ public class Deconvolution{
      * @param isPsfSplitted If the psf is centered or not
      * @return The bufferedImage for the input value given
      */
-    public BufferedImage firstDeconvolutionQuad(double alpha, boolean isPsfSplitted){
+    public ArrayList<BufferedImage> firstDeconvolutionQuad(double alpha, boolean isPsfSplitted){
         if (useVectors) {
             return firstDeconvolutionQuad(alpha, PROCESSING_VECTOR, isPsfSplitted);
         } else {
@@ -364,13 +362,15 @@ public class Deconvolution{
      * @param isPsfSplitted isPsfSplitted If the psf is centered or not
      * @return The bufferedImage for the input value given
      */
-    public BufferedImage firstDeconvolutionQuad(double alpha, int job, boolean isPsfSplitted){
-        this .isPsfSplitted = isPsfSplitted;
+    public ArrayList<BufferedImage> firstDeconvolutionQuad(double alpha, int job, boolean isPsfSplitted){
+        this.isPsfSplitted = isPsfSplitted;
         switch (job) {
         case PROCESSING_1D:
-            return firstDeconvolutionQuad1D(alpha);
+            return list(firstDeconvolutionQuad1D(alpha));
+        case PROCESSING_3D:
+            return firstDeconvolutionQuad3D(alpha);
         case PROCESSING_VECTOR:
-            return firstDeconvolutionQuadVector(alpha);
+            return list(firstDeconvolutionQuadVector(alpha));
         default:
             throw new IllegalArgumentException("The job given does not exist");
         }
@@ -383,7 +383,7 @@ public class Deconvolution{
      * @param alpha
      * @return The bufferedImage for the input value given
      */
-    public BufferedImage nextDeconvolutionQuad(double alpha){
+    public ArrayList<BufferedImage> nextDeconvolutionQuad(double alpha){
         if (useVectors) {
             return nextDeconvolutionQuad(alpha, PROCESSING_VECTOR);
         } else {
@@ -399,12 +399,14 @@ public class Deconvolution{
      * @param job see static PROCESSING_?
      * @return The bufferedImage for the input value given
      */
-    public BufferedImage nextDeconvolutionQuad(double alpha, int job){
+    public ArrayList<BufferedImage> nextDeconvolutionQuad(double alpha, int job){
         switch (job) {
         case PROCESSING_1D:
-            return nextDeconvolutionQuad1D(alpha);
+            return list(nextDeconvolutionQuad1D(alpha));
+        case PROCESSING_3D:
+            return nextDeconvolutionQuad3D(alpha);
         case PROCESSING_VECTOR:
-            return nextDeconvolutionQuadVector(alpha);
+            return list(nextDeconvolutionQuadVector(alpha));
         default:
             throw new IllegalArgumentException("The job given does not exist");
         }
@@ -443,6 +445,37 @@ public class Deconvolution{
         return(utils.arrayToImage1D(out, correction, true));
     }
 
+    /**
+     * First deconvolution with quadratic option and use in internal only 1D arrays
+     * 
+     * @param alpha
+     * @return The bufferedImage for the input value given
+     */
+    private ArrayList<BufferedImage> firstDeconvolutionQuad3D(double alpha){
+        image1D = utils.image3DToArray1D(true);
+        psf1D = utils.psf3DToArray1D(true);
+        utils.FFT3D(image1D);
+        utils.FFT3D(psf1D);
+        double[] out = wiener.wienerQuad3D(alpha, psf1D, image1D,utils.sizeZ,utils.width,utils.height,utils.sizePadding);
+        //double[] out = Arrays.copyOf(image1D, image1D.length);
+        utils.IFFT3D(out);
+        return utils.arrayToImage3D(out, correction,true);
+    }
+
+    /**
+     * Will compute less than firstDeconvolutionQuad: 1FTT inverse instead
+     * of 2FFT + 1 inverse FFT, with 1D arrays optimization
+     * 
+     * @param alpha
+     * @return The bufferedImage for the input value given
+     */
+    private ArrayList<BufferedImage> nextDeconvolutionQuad3D(double alpha){
+        double[] out = wiener.wienerQuad3D(alpha);
+        //double[] out = Arrays.copyOf(image1D, image1D.length);
+        utils.IFFT3D(out);
+        return(utils.arrayToImage3D(out, correction,true));
+    }
+
     private BufferedImage firstDeconvolutionQuadVector(double alpha){
         vector_image = (DoubleShapedVector) utils.cloneImageVect();
         vector_psf = (DoubleShapedVector) utils.getPsfPadVect();
@@ -478,7 +511,7 @@ public class Deconvolution{
      * @param alpha
      * @return The bufferedImage for the input value given
      */
-    public BufferedImage firstDeconvolutionCG(double alpha){
+    public ArrayList<BufferedImage> firstDeconvolutionCG(double alpha){
         return firstDeconvolutionCG(alpha, PROCESSING_VECTOR, false);
     }
 
@@ -489,7 +522,7 @@ public class Deconvolution{
      * @param isPsfSplitted If the psf is centered or not
      * @return The bufferedImage for the input value given
      */
-    public BufferedImage firstDeconvolutionCG(double alpha, boolean isPsfSplitted){
+    public ArrayList<BufferedImage> firstDeconvolutionCG(double alpha, boolean isPsfSplitted){
         return firstDeconvolutionCG(alpha, PROCESSING_VECTOR, isPsfSplitted);
     }
 
@@ -501,11 +534,13 @@ public class Deconvolution{
      * @param isPsfSplitted If the psf is centered or not
      * @return The bufferedImage for the input value given
      */
-    public BufferedImage firstDeconvolutionCG(double alpha, int job, boolean isPsfSplitted){
+    public ArrayList<BufferedImage> firstDeconvolutionCG(double alpha, int job, boolean isPsfSplitted){
         this.isPsfSplitted = isPsfSplitted;
         switch (job) {
         case PROCESSING_VECTOR:
-            return firstDeconvolutionCGNormal(alpha);
+            return list(firstDeconvolutionCGNormal(alpha));
+        case PROCESSING_3D:
+            return firstDeconvolutionCG3D(alpha);
         default:
             throw new IllegalArgumentException("The job given does not exist");
         }
@@ -518,7 +553,7 @@ public class Deconvolution{
      * @param alpha
      * @return The bufferedImage for the input value given
      */
-    public BufferedImage nextDeconvolutionCG(double alpha){
+    public ArrayList<BufferedImage> nextDeconvolutionCG(double alpha){
         return nextDeconvolutionCG(alpha, PROCESSING_VECTOR);
     }
 
@@ -530,10 +565,12 @@ public class Deconvolution{
      * @param job see static PROCESSING_?
      * @return The bufferedImage for the input value given
      */
-    public BufferedImage nextDeconvolutionCG(double alpha, int job){
+    public ArrayList<BufferedImage> nextDeconvolutionCG(double alpha, int job){
         switch (job) {
         case PROCESSING_VECTOR:
-            return nextDeconvolutionCGNormal(alpha);
+            return list(nextDeconvolutionCGNormal(alpha));
+        case PROCESSING_3D:
+            return nextDeconvolutionCG3D(alpha);
         default:
             throw new IllegalArgumentException("The job given does not exist");
         }
@@ -589,6 +626,33 @@ public class Deconvolution{
             parseOuputCG(outputValue); //print nothing if good, print in err else
         }
         return(utils.arrayToImage1D(x.getData(), correction, false));
+    }
+
+    private ArrayList<BufferedImage> firstDeconvolutionCG3D(double alpha){
+        space = new DoubleShapedVectorSpace(utils.sizeZ, utils.width, utils.height);
+        vector_psf = space.wrap(utils.psf3DToArray1D(false));
+        vector_image = space.wrap(utils.image3DToArray1D(false));
+
+
+        x = space.create(0);
+        w = space.create(1);
+
+        linDeconv = new LinearDeconvolver(
+                space.cloneShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
+        outputValue = linDeconv.solve(x.getData(), 20, false);
+        parseOuputCG(outputValue); //print nothing if good, print in err else
+        return (utils.arrayToImage3D(x.getData(), correction,false));
+    }
+
+    private ArrayList<BufferedImage> nextDeconvolutionCG3D(double alpha){
+        boolean verbose = false;
+        x = space.create(0);
+        linDeconv.setMu(alpha);
+        outputValue = linDeconv.solve(x.getData(), 20, false);
+        if (verbose) {
+            parseOuputCG(outputValue); //print nothing if good, print in err else
+        }
+        return(utils.arrayToImage3D(x.getData(), correction,false));
     }
 
     /**

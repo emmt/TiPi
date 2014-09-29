@@ -59,6 +59,7 @@ public class ThreadCG extends Thread {
             if (hasjob) {
                 hasjob = false; //first because if while computing a new job appear, we will not miss it
                 deconv.updateProgressBarMessage("Computing");
+                deconv.myseq.beginUpdate();
                 if (compute3D) {
                     deconv.nextJob3D(nextJobValue, nextJobJob);
                     deconv.updateProgressBarMessage("Done");
@@ -73,7 +74,7 @@ public class ThreadCG extends Thread {
                         deconv.updateProgressBarMessage("Done");
                     }
                 }
-
+                deconv.myseq.endUpdate();
             }
             try {
                 sleep(50);
