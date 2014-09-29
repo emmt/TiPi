@@ -390,7 +390,7 @@ public class DeconvUtils {
             double[] tmp = new double[width*height];
             for (int j = 0; j < sizeZ; j++) {
                 for (int i = 0; i < width*height; i++) {
-                    tmp[i] = array[i+2*j*height*width];
+                    tmp[i] = array[i+j*height*width];
                 }
                 out.add(CommonUtils.arrayToImage1D(tmp, job, width, height, false));
             }

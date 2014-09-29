@@ -29,6 +29,9 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.LocalDateTime;
+
 import mitiv.invpb.LinearDeconvolver;
 import mitiv.linalg.LinearConjugateGradient;
 import mitiv.linalg.shaped.DoubleShapedVector;
@@ -75,7 +78,8 @@ public class Deconvolution{
     DoubleShapedVector w;
     LinearDeconvolver linDeconv;
     int outputValue = LinearConjugateGradient.CONVERGED;
-
+    int maxIter = 20;
+    
     static boolean forceVectorUsage = false;
 
     /**
@@ -605,7 +609,7 @@ public class Deconvolution{
 
         linDeconv = new LinearDeconvolver(
                 space.cloneShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
-        outputValue = linDeconv.solve(x.getData(), 20, false);
+        outputValue = linDeconv.solve(x.getData(), maxIter, false);
         parseOuputCG(outputValue); //print nothing if good, print in err else
         return (utils.arrayToImage1D(x.getData(), correction, false));
     }
@@ -621,7 +625,7 @@ public class Deconvolution{
         boolean verbose = false;
         x = space.create(0);
         linDeconv.setMu(alpha);
-        outputValue = linDeconv.solve(x.getData(), 20, false);
+        outputValue = linDeconv.solve(x.getData(), maxIter, false);
         if (verbose) {
             parseOuputCG(outputValue); //print nothing if good, print in err else
         }
@@ -629,17 +633,16 @@ public class Deconvolution{
     }
 
     private ArrayList<BufferedImage> firstDeconvolutionCG3D(double alpha){
-        space = new DoubleShapedVectorSpace(utils.sizeZ, utils.width, utils.height);
+        space = new DoubleShapedVectorSpace(utils.width, utils.height,utils.sizeZ);
         vector_psf = space.wrap(utils.psf3DToArray1D(false));
         vector_image = space.wrap(utils.image3DToArray1D(false));
 
-
         x = space.create(0);
-        w = space.create(1);
-
+        //w = space.create(1);
+        maxIter = 50;
         linDeconv = new LinearDeconvolver(
-                space.cloneShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
-        outputValue = linDeconv.solve(x.getData(), 20, false);
+                space.cloneShape(), vector_image.getData(), vector_psf.getData(), null, alpha);
+        outputValue = linDeconv.solve(x.getData(), maxIter, false);
         parseOuputCG(outputValue); //print nothing if good, print in err else
         return (utils.arrayToImage3D(x.getData(), correction,false));
     }
@@ -648,7 +651,7 @@ public class Deconvolution{
         boolean verbose = false;
         x = space.create(0);
         linDeconv.setMu(alpha);
-        outputValue = linDeconv.solve(x.getData(), 20, false);
+        outputValue = linDeconv.solve(x.getData(), maxIter, false);
         if (verbose) {
             parseOuputCG(outputValue); //print nothing if good, print in err else
         }
