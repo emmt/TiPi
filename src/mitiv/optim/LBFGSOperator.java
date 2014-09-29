@@ -251,8 +251,6 @@ public class LBFGSOperator extends LinearOperator {
         r.copyFrom(src);
         for (int k = newest; k >= oldest; --k) {
             int j = slot(k);
-            System.out.format("1st loop: j=%d, k=%d, m=%d, mp=%d, mark=%d\n",
-                    j, k, m, mp, mark);
             if (rho[j] > 0.0) {
                 alpha[j] = rho[j]*r.dot(s[j]);
                 r.axpby(1.0, r, -alpha[j], y[j]);
@@ -278,8 +276,6 @@ public class LBFGSOperator extends LinearOperator {
          * newest one). */
         for (int k = oldest; k <= newest; ++k) {
             int j = slot(k);
-            System.out.format("2nd loop: j=%d, k=%d, m=%d, mp=%d, mark=%d\n",
-                    j, k, m, mp, mark);
             if (rho[j] > 0.0) {
                 double beta = rho[j]*q.dot(y[j]);
                 q.axpby(1.0, q, alpha[j] - beta, s[j]);
