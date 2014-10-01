@@ -51,11 +51,18 @@ import mitiv.linalg.LinearOperator;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
-import mitiv.optim.LBGFS;
+import mitiv.optim.ArmijoLineSearch;
+import mitiv.optim.BoundProjector;
+import mitiv.optim.LBFGS;
+import mitiv.optim.LBFGSB;
+import mitiv.optim.LineSearch;
 import mitiv.optim.MoreThuenteLineSearch;
 import mitiv.optim.NonLinearConjugateGradient;
 import mitiv.optim.OptimTask;
 import mitiv.optim.ReverseCommunicationOptimizer;
+import mitiv.optim.SimpleBounds;
+import mitiv.optim.SimpleLowerBound;
+import mitiv.optim.SimpleUpperBound;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -84,6 +91,12 @@ public class TotalVariationDeconvolution {
 
     @Option(name = "--lbfgs", usage = "Use LBFGS method with M saved steps.", metaVar = "M")
     private int limitedMemorySize = 0;
+
+    @Option(name = "--xmin", usage = "Lower bound for the variables.", metaVar = "VALUE")
+    private double lowerBound = Double.NEGATIVE_INFINITY;
+
+    @Option(name = "--xmax", usage = "Upper bound for the variables.", metaVar = "VALUE")
+    private double upperBound = Double.POSITIVE_INFINITY;
 
     @Option(name = "--help", aliases = {"-h", "-?"}, usage = "Display help.")
     private boolean help;
@@ -137,6 +150,13 @@ public class TotalVariationDeconvolution {
     public void setRelativeTolerance(double value) {
         grtol = value;
     }
+    public void setLowerBound(double value) {
+        lowerBound = value;
+    }
+    public void setUpperBound(double value) {
+        upperBound = value;
+    }
+
 
     //private static double parseDouble(String option, String arg) {
     //    try {
@@ -276,24 +296,57 @@ public class TotalVariationDeconvolution {
         }
 
         // Initialize the non linear conjugate gradient
-        MoreThuenteLineSearch lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
-        int iter = -1;
-        int eval = 0;
-        ReverseCommunicationOptimizer minimizer;
-        if (limitedMemorySize > 0) {
-            LBGFS foo = new LBGFS(space, limitedMemorySize, lineSearch);
-            foo.setAbsoluteTolerance(gatol);
-            foo.setRelativeTolerance(grtol);
-            minimizer = foo;
+        LineSearch lineSearch = null;
+        LBFGS lbfgs = null;
+        LBFGSB lbfgsb = null;
+        NonLinearConjugateGradient nlcg = null;
+        ReverseCommunicationOptimizer minimizer = null;
+        BoundProjector projector = null;
+        int bounded = 0;
+        if (lowerBound != Double.NEGATIVE_INFINITY) {
+            bounded |= 1;
+        }
+        if (upperBound != Double.POSITIVE_INFINITY) {
+            bounded |= 2;
+        }
+        if (bounded == 0) {
+            /* No bounds have been specified. */
+            lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
+            if (limitedMemorySize > 0) {
+                lbfgs = new LBFGS(space, limitedMemorySize, lineSearch);
+                lbfgs.setAbsoluteTolerance(gatol);
+                lbfgs.setRelativeTolerance(grtol);
+                minimizer = lbfgs;
+            } else {
+                int method = NonLinearConjugateGradient.DEFAULT_METHOD;
+                nlcg = new NonLinearConjugateGradient(space, method, lineSearch);
+                nlcg.setAbsoluteTolerance(gatol);
+                nlcg.setRelativeTolerance(grtol);
+                minimizer = nlcg;
+            }
         } else {
-            int method = NonLinearConjugateGradient.DEFAULT_METHOD;
-            NonLinearConjugateGradient bar = new NonLinearConjugateGradient(space, method, lineSearch);
-            bar.setAbsoluteTolerance(gatol);
-            bar.setRelativeTolerance(grtol);
-            minimizer = bar;
+            /* Some bounds have been specified. */
+            lineSearch = new ArmijoLineSearch(0.5, 0.1);
+            if (bounded == 1) {
+                /* Only a lower bound has been specified. */
+                projector = new SimpleLowerBound(space, lowerBound);
+            } else if (bounded == 2) {
+                /* Only an upper bound has been specified. */
+                projector = new SimpleUpperBound(space, upperBound);
+            } else {
+                /* Both a lower and an upper bounds have been specified. */
+                projector = new SimpleBounds(space, lowerBound, upperBound);
+            }
+            int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
+            lbfgsb = new LBFGSB(space, projector, m, lineSearch);
+            lbfgsb.setAbsoluteTolerance(gatol);
+            lbfgsb.setRelativeTolerance(grtol);
+            minimizer = lbfgsb;
+            projector.apply(x, x);
+
         }
         if (debug) {
-            System.out.println("Non linear conjugate gradient initialization complete.");
+            System.out.println("Optimization method initialization complete.");
         }
 
         // Launch the non linear conjugate gradient
@@ -301,22 +354,24 @@ public class TotalVariationDeconvolution {
         while (true) {
             if (task == OptimTask.COMPUTE_FG) {
                 fcost = cost.computeCostAndGradient(0.1, x, gcost, true);
-                ++eval;
-            } else if (task == OptimTask.NEW_X ||
-                    task == OptimTask.FINAL_X) {
-                ++iter;
+            } else if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
                 if (verbose) {
                     double threshold;
-                    if (limitedMemorySize > 0) {
-                        threshold = ((LBGFS)minimizer).getGradientThreshold();
+                    if (minimizer == lbfgs) {
+                        threshold = lbfgs.getGradientThreshold();
+                    } else if (minimizer == lbfgsb) {
+                        threshold = lbfgsb.getGradientThreshold();
+                    } else if (minimizer == nlcg) {
+                        threshold = nlcg.getGradientThreshold();
                     } else {
-                        threshold = ((NonLinearConjugateGradient)minimizer).getGradientThreshold();
+                        threshold = 0.0;
                     }
                     System.out.format("iter: %4d    eval: %4d    fx = %21.15g    |gx| = %8.2g (%.2g)\n",
-                            iter, eval, fcost, space.norm2(gcost), threshold);
+                            minimizer.getIterations(), minimizer.getEvaluations(),
+                            fcost, gcost.norm2(), threshold);
                 }
                 boolean stop = (task == OptimTask.FINAL_X);
-                if (! stop && maxiter >= 0 && iter >= maxiter) {
+                if (! stop && maxiter >= 0 && minimizer.getIterations() >= maxiter) {
                     System.err.format("Warning: too many iterations (%d).\n", maxiter);
                     stop = true;
                 }
