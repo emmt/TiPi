@@ -55,17 +55,37 @@ public class DataFormat {
     /** Portable Network Graphic (PNG) image. */
     public static final int FMT_PNG = 3;
 
+    /** GIF image. */
+    public static final int FMT_GIF = 4;
+
+    /** BMP image. */
+    public static final int FMT_BMP = 5;
+
+    /** Wireless Bitmap (WBMP) image format. */
+    public static final int FMT_WBMP = 6;
+
     /** TIFF image format. */
-    public static final int FMT_TIFF = 4;
+    public static final int FMT_TIFF = 7;
 
     /** Flexible Image Transport System (FITS) format. */
-    public static final int FMT_FITS = 5;
-
-    /** GIF image. */
-    public static final int FMT_GIF = 6;
+    public static final int FMT_FITS = 8;
 
     /** Multi-dimensional array (MDA) format. */
-    public static final int FMT_MDA = 7;
+    public static final int FMT_MDA = 9;
+
+    private static final String[] formatNames = {null, "PNM", "JPEG", "PNG", "GIF", "BMP", "WBMP", "TIFF", "FITS", "MDA"};
+
+    /**
+     * Get the name of a data file format.
+     * 
+     * For image format supported by Java, the format name is suitable for
+     * {@link ImageIO#write}.
+     * @param id - The identifier of the file format, as {@link #FMT_JPGEG}.
+     * @return The name of the format, {@code null} if {@code id} does not correspond to a known format.
+     */
+    public static String getFormatName(int id) {
+        return (id >= 0 && id < formatNames.length ? formatNames[id] : null);
+    }
 
     /**
      * Guess data format from the extension of the file name.

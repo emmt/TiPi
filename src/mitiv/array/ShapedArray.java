@@ -34,16 +34,52 @@ import mitiv.base.Typed;
  * <p>
  * A ShapedArray stores rectangular multi-dimensional arrays of elements of
  * the same data type.  Compared to a {@link #ShapedVector}, the elements
- * of a ShapedArray reside in conventional memory.
+ * of a ShapedArray reside in conventional memory and may be stored in arbitrary
+ * order and in a non-contiguous way.
  * 
  * @author Éric Thiébaut.
  */
 public interface ShapedArray extends Shaped, Typed {
-    public ByteArray   toByte();
-    public ShortArray  toShort();
-    public IntArray    toInt();
-    public LongArray   toLong();
-    public FloatArray  toFloat();
+    /**
+     * Convert array elements to type {@code byte}.
+     * @return A {@link ByteArray} object which may be the object itself
+     *         if it is already a ByteArray.
+     */
+    public ByteArray toByte();
+
+    /**
+     * Convert array elements to type {@code short}.
+     * @return A {@link ShortArray} object which may be the object itself
+     *         if it is already a ShortArray.
+     */
+    public ShortArray toShort();
+
+    /**
+     * Convert array elements to type {@code int}.
+     * @return A {@link IntArray} object which may be the object itself
+     *         if it is already an IntArray.
+     */
+    public IntArray toInt();
+
+    /**
+     * Convert array elements to type {@code long}.
+     * @return A {@link LongArray} object which may be the object itself
+     *         if it is already a LongArray.
+     */
+    public LongArray toLong();
+
+    /**
+     * Convert array elements to type {@code float}.
+     * @return A {@link FloatArray} object which may be the object itself
+     *         if it is already a FloatArray.
+     */
+    public FloatArray toFloat();
+
+    /**
+     * Convert array elements to type {@code double}.
+     * @return A {@link DoubleArray} object which may be the object itself
+     *         if it is already a DoubleArray.
+     */
     public DoubleArray toDouble();
 }
 
