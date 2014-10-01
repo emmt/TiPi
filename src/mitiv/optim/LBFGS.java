@@ -30,7 +30,7 @@ import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 
 /**
- * Multivariate non-linear optimization by LBFGS/VMLM method.
+ * Multivariate non-linear optimization by L-BFGS/VMLM method.
  * 
  * @author Éric Thiébaut.
  *
@@ -255,17 +255,15 @@ public class LBFGS implements ReverseCommunicationOptimizer {
              * and take the first step along the search direction. */
             if (H.mp >= 1 || H.scaling == LBFGSOperator.USER_SCALING) {
                 alpha = 1.0;
-            } else {
-                if (0.0 < tiny && tiny < 1.0) {
-                    double xnorm = x1.norm2();
-                    if (xnorm > 0.0) {
-                        alpha = (xnorm/g1norm)*tiny;
-                    } else {
-                        alpha = 1.0/g1norm;
-                    }
+            } else if (0.0 < tiny && tiny < 1.0) {
+                double xnorm = x1.norm2();
+                if (xnorm > 0.0) {
+                    alpha = (xnorm/g1norm)*tiny;
                 } else {
                     alpha = 1.0/g1norm;
                 }
+            } else {
+                alpha = 1.0/g1norm;
             }
             int status = lnsrch.start(f0, dg0, alpha, stpmin*alpha, stpmax*alpha);
             if (status != LineSearch.SEARCH) {
