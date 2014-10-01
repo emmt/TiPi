@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -45,8 +44,6 @@ import mitiv.cost.CompositeDifferentiableCostFunction;
 import mitiv.cost.HyperbolicTotalVariation;
 import mitiv.cost.QuadraticCost;
 import mitiv.deconv.ConvolutionOperator;
-import mitiv.exception.DataFormatException;
-import mitiv.exception.RecoverableFormatException;
 import mitiv.io.DataFormat;
 import mitiv.io.MdaFormat;
 import mitiv.linalg.ArrayOps;
@@ -54,8 +51,18 @@ import mitiv.linalg.LinearOperator;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
+import mitiv.optim.ArmijoLineSearch;
+import mitiv.optim.BoundProjector;
+import mitiv.optim.LBFGS;
+import mitiv.optim.LBFGSB;
+import mitiv.optim.LineSearch;
 import mitiv.optim.MoreThuenteLineSearch;
 import mitiv.optim.NonLinearConjugateGradient;
+import mitiv.optim.OptimTask;
+import mitiv.optim.ReverseCommunicationOptimizer;
+import mitiv.optim.SimpleBounds;
+import mitiv.optim.SimpleLowerBound;
+import mitiv.optim.SimpleUpperBound;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -64,36 +71,96 @@ import org.kohsuke.args4j.Option;
 
 public class TotalVariationDeconvolution {
 
-    @Option(name = "-o", aliases = {"--output"}, usage = "Name of output image.", metaVar = "OUTPUT")
-    private final String outName = "output.mda";
+    @Option(name = "--output", aliases = {"-o"}, usage = "Name of output image.", metaVar = "OUTPUT")
+    private String outName = "output.mda";
 
-    @Option(name = "-m", aliases = {"--mu"}, usage = "Regularization level.", metaVar = "MU")
-    private final double mu = 10.0;
+    @Option(name = "--eta", aliases = {"-e"}, usage = "Mean data error.", metaVar = "ETA")
+    private double eta = 1.0;
 
-    @Option(name = "-t", aliases = {"--epsilon"}, usage = "Threshold level.", metaVar = "EPSILON")
-    private final double epsilon = 1.0;
+    @Option(name = "--mu", aliases = {"-m"}, usage = "Regularization level.", metaVar = "MU")
+    private double mu = 10.0;
 
-    @Option(name = "-h", aliases = {"-?", "--help"}, usage = "Display help.")
+    @Option(name = "--epsilon", aliases = {"-t"}, usage = "Threshold level.", metaVar = "EPSILON")
+    private double epsilon = 1.0;
+
+    @Option(name = "--gatol", usage = "Absolute gradient tolerance for the convergence.", metaVar = "GATOL")
+    private double gatol = 0.0;
+
+    @Option(name = "--grtol", usage = "Relative gradient tolerance for the convergence.", metaVar = "GRTOL")
+    private double grtol = 1e-3;
+
+    @Option(name = "--lbfgs", usage = "Use LBFGS method with M saved steps.", metaVar = "M")
+    private int limitedMemorySize = 0;
+
+    @Option(name = "--xmin", usage = "Lower bound for the variables.", metaVar = "VALUE")
+    private double lowerBound = Double.NEGATIVE_INFINITY;
+
+    @Option(name = "--xmax", usage = "Upper bound for the variables.", metaVar = "VALUE")
+    private double upperBound = Double.POSITIVE_INFINITY;
+
+    @Option(name = "--help", aliases = {"-h", "-?"}, usage = "Display help.")
     private boolean help;
 
-    @Option(name = "-v", aliases = {"--verbose"}, usage = "Verbose mode.")
-    private final boolean verbose = false;
+    @Option(name = "--verbose", aliases = {"-v"}, usage = "Verbose mode.")
+    private boolean verbose = false;
 
-    @Option(name = "-d", aliases = {"--debug"}, usage = "Debug mode.")
-    private final boolean debug = false;
+    @Option(name = "--debug", aliases = {"-d"}, usage = "Debug mode.")
+    private boolean debug = false;
+
+    @Option(name = "--maxiter", aliases = {"-l"}, usage = "Maximum number of iterations, -1 for no limits.")
+    private int maxiter = 200;
 
     @Argument
     private List<String> arguments;
 
-    private int maxIter = -1;
+    public DoubleArray data = null;
+    public DoubleArray psf = null;
+    public DoubleArray result = null;
 
-    DoubleArray data = null;
-    DoubleArray psf = null;
-    DoubleArray result = null;
-
+    private boolean run = true;
+    
     public TotalVariationDeconvolution() {
     }
 
+    public void setVerboseMode(boolean value) {
+        verbose = value;
+    }
+    public void setDebugMode(boolean value) {
+        debug = value;
+    }
+    public void setOutputName(String name) {
+        outName = name;
+    }
+    public void setMaximumIterations(int value) {
+        maxiter = value;
+    }
+    public void setLimitedMemorySize(int value) {
+        limitedMemorySize = value;
+    }
+    public void setTargetError(double value) {
+        eta = value;
+    }
+    public void setRegularizationWeight(double value) {
+        mu = value;
+    }
+    public void setRegularizationThreshold(double value) {
+        epsilon = value;
+    }
+    public void setAbsoluteTolerance(double value) {
+        gatol = value;
+    }
+    public void setRelativeTolerance(double value) {
+        grtol = value;
+    }
+    public void setLowerBound(double value) {
+        lowerBound = value;
+    }
+    public void setUpperBound(double value) {
+        upperBound = value;
+    }
+    public void stop(){
+        run = false;
+    }
     //private static double parseDouble(String option, String arg) {
     //    try {
     //        return Double.parseDouble(arg);
@@ -113,7 +180,7 @@ public class TotalVariationDeconvolution {
         CmdLineParser parser = new CmdLineParser(job);
         try {
             parser.parseArgument(args);
-            if (job.mu <= 0.0) {
+            if (job.mu < 0.0) {
                 System.err.format("Regularization level MU must be strictly positive.\n");
                 System.exit(1);
             }
@@ -135,10 +202,6 @@ public class TotalVariationDeconvolution {
             parser.setUsageWidth(80);
             parser.printUsage(System.err);
         }
-        job.maxIter = 200;
-
-        String inputName;
-        String psfName;
 
         // Deal with remaining arguments.
         int size = (job.arguments == null ? 0 : job.arguments.size());
@@ -146,11 +209,13 @@ public class TotalVariationDeconvolution {
             System.err.format("Too %s arguments.\n", (size < 2 ? "few" : "many"));
             System.exit(1);
         }
-        inputName = job.arguments.get(0);
-        psfName = job.arguments.get(1);
+        String inputName = job.arguments.get(0);
+        String psfName = job.arguments.get(1);
 
-        System.out.format("mu: %.2g, threshold: %.2g, output: %s\n",
-                job.mu, job.epsilon, job.outName);
+        if (job.debug){
+            System.out.format("mu: %.2g, threshold: %.2g, output: %s\n",
+                    job.mu, job.epsilon, job.outName);
+        }
 
         // Read the blurred image and the PSF.
         job.data = readImage(inputName, ArrayUtils.GRAY, "input image");;
@@ -166,27 +231,10 @@ public class TotalVariationDeconvolution {
             System.err.format("Failed to write output image.\n");
             System.exit(1);
         }
-        System.out.println("Done!");
-        System.exit(0);
-    }
-
-    private static DoubleArray readImage(String fileName, int colorModel, String description) {
-        DoubleArray img = null;
-        int format = DataFormat.guessFormat(fileName);
-        try {
-            if (format == DataFormat.FMT_MDA) {
-                img = MdaFormat.load(fileName).toDouble();
-            } else {
-                img = ArrayUtils.imageAsDouble(ImageIO.read(new File(fileName)), colorModel);
-            }
-        } catch (Exception e) {
-            if (e instanceof IOException || e instanceof DataFormatException || e instanceof RecoverableFormatException) {
-                fatal("Error while reading " + description + "(" + e.getMessage() +").");
-            } else {
-                throw new IllegalArgumentException(e.getMessage());
-            }
+        if (job.verbose){
+            System.out.println("Done!");
         }
-        return img;
+        System.exit(0);
     }
 
     private static void fatal(String reason) {
@@ -199,34 +247,46 @@ public class TotalVariationDeconvolution {
         if (data == null) {
             fatal("Input data not specified.");
         }
-        if (data.getRank() != 2) {
-            fatal("Expecting 2D array as input image.");
-        }
-        int width = data.getDimension(0);
-        int height = data.getDimension(1);
+        int[] shape = data.cloneShape();
+        int rank = data.getRank();
 
         // Check the PSF.
         if (psf == null) {
             fatal("PSF not specified.");
         }
-        if (psf.getRank() != 2) {
-            fatal("Expecting 2D array as PSF.");
+        if (psf.getRank() != rank) {
+            fatal("PSF must have same rank as data.");
         }
-        if (psf.getDimension(0) != width || psf.getDimension(1) != height) {
-            fatal("The dimensions of the PSF must match those of the input image.");
+        for (int k = 0; k < rank; ++k) {
+            if (psf.getDimension(k) != shape[k]) {
+                fatal("The dimensions of the PSF must match those of the input image.");
+            }
         }
 
         // Initialize a vector space and populate it with workspace vectors.
-        int[] shape = {width, height};
         DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
         RealComplexFFT FFT = new RealComplexFFT(space);
         LinearOperator W = null; // new LinearOperator(space);
+        double[] tmp = psf.flatten();
+        DoubleShapedVector x = space.create();
         DoubleShapedVector y = space.wrap(data.flatten());
-        DoubleShapedVector x = y.clone();
-        DoubleShapedVector h = space.wrap(psf.flatten());
+        DoubleShapedVector h = space.wrap(tmp);
+        double psf_sum = 0.0;
+        for (int j = 0; j < tmp.length; ++j) {
+            psf_sum += tmp[j];
+        }
+        if (psf_sum != 1.0) {
+            if (psf_sum != 0.0) {
+                space.axpby(0.0, x, 1.0/psf_sum, y, x);
+            } else {
+                x.fill(0.0);
+            }
+        }
         ConvolutionOperator H = new ConvolutionOperator(FFT, h);
         result = ArrayFactory.wrap(x.getData(), x.cloneShape(), false);
-        System.out.println("Vector space initialization complete.");
+        if (debug) {
+            System.out.println("Vector space initialization complete.");
+        }
 
         // Build the cost functions
         QuadraticCost fdata = new QuadraticCost(H, y, W);
@@ -234,30 +294,92 @@ public class TotalVariationDeconvolution {
         CompositeDifferentiableCostFunction cost = new CompositeDifferentiableCostFunction(1.0, fdata, mu, fprior);
         double fcost = 0.0;
         DoubleShapedVector gcost = space.create();
-        System.out.println("Cost function initialization complete.");
+        if (debug) {
+            System.out.println("Cost function initialization complete.");
+        }
 
         // Initialize the non linear conjugate gradient
-        MoreThuenteLineSearch lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
-        int iter = -1;
-        int eval = 0;
-        int method = NonLinearConjugateGradient.DEFAULT_METHOD;
-        NonLinearConjugateGradient minimizer = new NonLinearConjugateGradient(space, method, lineSearch);
-        System.out.println("Non linear conjugate gradient initialization complete.");
+        LineSearch lineSearch = null;
+        LBFGS lbfgs = null;
+        LBFGSB lbfgsb = null;
+        NonLinearConjugateGradient nlcg = null;
+        ReverseCommunicationOptimizer minimizer = null;
+        BoundProjector projector = null;
+        int bounded = 0;
+        if (lowerBound != Double.NEGATIVE_INFINITY) {
+            bounded |= 1;
+        }
+        if (upperBound != Double.POSITIVE_INFINITY) {
+            bounded |= 2;
+        }
+        if (bounded == 0) {
+            /* No bounds have been specified. */
+            lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
+            if (limitedMemorySize > 0) {
+                lbfgs = new LBFGS(space, limitedMemorySize, lineSearch);
+                lbfgs.setAbsoluteTolerance(gatol);
+                lbfgs.setRelativeTolerance(grtol);
+                minimizer = lbfgs;
+            } else {
+                int method = NonLinearConjugateGradient.DEFAULT_METHOD;
+                nlcg = new NonLinearConjugateGradient(space, method, lineSearch);
+                nlcg.setAbsoluteTolerance(gatol);
+                nlcg.setRelativeTolerance(grtol);
+                minimizer = nlcg;
+            }
+        } else {
+            /* Some bounds have been specified. */
+            lineSearch = new ArmijoLineSearch(0.5, 0.1);
+            if (bounded == 1) {
+                /* Only a lower bound has been specified. */
+                projector = new SimpleLowerBound(space, lowerBound);
+            } else if (bounded == 2) {
+                /* Only an upper bound has been specified. */
+                projector = new SimpleUpperBound(space, upperBound);
+            } else {
+                /* Both a lower and an upper bounds have been specified. */
+                projector = new SimpleBounds(space, lowerBound, upperBound);
+            }
+            int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
+            lbfgsb = new LBFGSB(space, projector, m, lineSearch);
+            lbfgsb.setAbsoluteTolerance(gatol);
+            lbfgsb.setRelativeTolerance(grtol);
+            minimizer = lbfgsb;
+            projector.apply(x, x);
+
+        }
+        //System.err.format("MU = %g, EPSILON = %g, BOUNDED = %d\n", mu, epsilon, bounded);
+        if (debug) {
+            System.out.println("Optimization method initialization complete.");
+        }
 
         // Launch the non linear conjugate gradient
-        int task = minimizer.start();
-        while (true) {
-            if (task == NonLinearConjugateGradient.TASK_COMPUTE_FG) {
+        OptimTask task = minimizer.start();
+        while (run) {
+            if (task == OptimTask.COMPUTE_FG) {
                 fcost = cost.computeCostAndGradient(0.1, x, gcost, true);
-                ++eval;
-            } else if (task == NonLinearConjugateGradient.TASK_NEW_X ||
-                    task == NonLinearConjugateGradient.TASK_FINAL_X) {
-                ++iter;
-                System.out.format("iter %4d, eval %4d: |xn| = %.2g    fn = %.15g   |gn| = %.2g\n",
-                        iter, eval, space.norm2(x), fcost, space.norm2(gcost));
-                if (task == NonLinearConjugateGradient.TASK_FINAL_X ||
-                        maxIter >= 0 && iter >= maxIter) {
-                    System.out.println("in " + iter + " iterations, " + eval +" function calls and gradient calls");
+            } else if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
+                if (verbose) {
+                    double threshold;
+                    if (minimizer == lbfgs) {
+                        threshold = lbfgs.getGradientThreshold();
+                    } else if (minimizer == lbfgsb) {
+                        threshold = lbfgsb.getGradientThreshold();
+                    } else if (minimizer == nlcg) {
+                        threshold = nlcg.getGradientThreshold();
+                    } else {
+                        threshold = 0.0;
+                    }
+                    System.out.format("iter: %4d    eval: %4d    fx = %21.15g    |gx| = %8.2g (%.2g)\n",
+                            minimizer.getIterations(), minimizer.getEvaluations(),
+                            fcost, gcost.norm2(), threshold);
+                }
+                boolean stop = (task == OptimTask.FINAL_X);
+                if (! stop && maxiter >= 0 && minimizer.getIterations() >= maxiter) {
+                    System.err.format("Warning: too many iterations (%d).\n", maxiter);
+                    stop = true;
+                }
+                if (stop) {
                     break;
                 }
             } else {
@@ -266,29 +388,14 @@ public class TotalVariationDeconvolution {
             }
             task = minimizer.iterate(x, fcost, gcost);
         }
-        System.out.println("Max : " + ArrayOps.getMax(x.getData()));
-        System.out.println("Min : " + ArrayOps.getMin(x.getData()));
+        if (verbose) {
+            System.out.format("min(x) = %g\n", ArrayOps.getMin(x.getData()));
+            System.out.format("max(x) = %g\n", ArrayOps.getMax(x.getData()));
+        }
     }
 
 
     /* ************************ FONCTIONS UTILES   ************************* */
-
-    /**
-     * FONCTIONS UTILES : randInt()
-     * @param min
-     * @param max
-     * @param taille
-     * @return
-     */
-    public static int[] randInt(int min, int max, int taille) {
-        int tabInd[] = new int[taille];
-        for (int i = 0; i < taille; i++){
-            Random rand = new Random();
-            int randomNum = rand.nextInt((max - min) + 1) + min;
-            tabInd[i] = randomNum;
-        }
-        return tabInd;
-    }
 
     /**
      * FONCTIONS UTILES : writeImage()
@@ -307,24 +414,21 @@ public class TotalVariationDeconvolution {
         int format = DataFormat.guessFormat(fileName);
         String formatName = null;
         switch (format) {
-        case DataFormat.FMT_PNM:
-            formatName = "PNM";
-            break;
+        //case DataFormat.FMT_PNM:
         case DataFormat.FMT_JPEG:
-            formatName = "JPEG";
-            break;
         case DataFormat.FMT_PNG:
-            formatName = "PNG";
-            break;
-        case DataFormat.FMT_TIFF:
-            formatName = "TIFF";
-            break;
         case DataFormat.FMT_GIF:
-            formatName = "GIF";
+        case DataFormat.FMT_BMP:
+        case DataFormat.FMT_WBMP:
+            //case DataFormat.FMT_TIFF:
+            //case DataFormat.FMT_FITS:
+            formatName = DataFormat.getFormatName(format);
             break;
         case DataFormat.FMT_MDA:
             MdaFormat.save(img, fileName);
             return;
+        default:
+            formatName = null;
         }
         if (formatName == null) {
             fatal("Unknown/unsupported format name.");
@@ -348,6 +452,22 @@ public class TotalVariationDeconvolution {
         BufferedImage buf = ArrayUtils.doubleAsBuffered(data, depth, width, height, opts);
         ImageIO.write(buf, formatName, new File(fileName));
     }
+
+    private static DoubleArray readImage(String fileName, int colorModel, String description) {
+        DoubleArray img = null;
+        int format = DataFormat.guessFormat(fileName);
+        try {
+            if (format == DataFormat.FMT_MDA) {
+                img = MdaFormat.load(fileName).toDouble();
+            } else {
+                img = ArrayUtils.imageAsDouble(ImageIO.read(new File(fileName)), colorModel);
+            }
+        } catch (Exception e) {
+            fatal("Error while reading " + description + "(" + e.getMessage() +").");
+        }
+        return img;
+    }
+
 }
 
 /*
