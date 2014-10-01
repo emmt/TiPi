@@ -29,9 +29,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.LocalDateTime;
-
 import mitiv.invpb.LinearDeconvolver;
 import mitiv.linalg.LinearConjugateGradient;
 import mitiv.linalg.shaped.DoubleShapedVector;
@@ -287,13 +284,14 @@ public class Deconvolution{
      */
     private ArrayList<BufferedImage> firstDeconvolutionSimple3D(double alpha){
         image1D = utils.image3DToArray1D(true);
-        psf1D = utils.psf3DToArray1D(true);
+        //psf1D = utils.psf3DToArray1D(true);
+        psf1D = utils.shiftPsf3DToArray1D(true);
         utils.FFT3D(image1D);
         utils.FFT3D(psf1D);
         double[] out = wiener.wiener3D(alpha, psf1D, image1D,utils.sizeZ,utils.width,utils.height);
         //double[] out = Arrays.copyOf(image1D, image1D.length);
         utils.IFFT3D(out);
-        return utils.arrayToImage3D(out, correction,true);
+        return utils.arrayToIcyImage3D(out, correction,true);
     }
 
     /**
@@ -307,7 +305,7 @@ public class Deconvolution{
         double[] out = wiener.wiener3D(alpha);
         //double[] out = Arrays.copyOf(image1D, image1D.length);
         utils.IFFT3D(out);
-        return utils.arrayToImage3D(out, correction, true);
+        return utils.arrayToIcyImage3D(out, correction, true);
     }
 
     private BufferedImage firstDeconvolutionVector(double alpha){
@@ -457,13 +455,13 @@ public class Deconvolution{
      */
     private ArrayList<BufferedImage> firstDeconvolutionQuad3D(double alpha){
         image1D = utils.image3DToArray1D(true);
-        psf1D = utils.psf3DToArray1D(true);
+        psf1D = utils.shiftPsf3DToArray1D(true);
         utils.FFT3D(image1D);
         utils.FFT3D(psf1D);
         double[] out = wiener.wienerQuad3D(alpha, psf1D, image1D,utils.sizeZ,utils.width,utils.height,utils.sizePadding);
         //double[] out = Arrays.copyOf(image1D, image1D.length);
         utils.IFFT3D(out);
-        return utils.arrayToImage3D(out, correction,true);
+        return utils.arrayToIcyImage3D(out, correction,true);
     }
 
     /**
@@ -477,7 +475,7 @@ public class Deconvolution{
         double[] out = wiener.wienerQuad3D(alpha);
         //double[] out = Arrays.copyOf(image1D, image1D.length);
         utils.IFFT3D(out);
-        return(utils.arrayToImage3D(out, correction,true));
+        return(utils.arrayToIcyImage3D(out, correction,true));
     }
 
     private BufferedImage firstDeconvolutionQuadVector(double alpha){
@@ -633,18 +631,34 @@ public class Deconvolution{
     }
 
     private ArrayList<BufferedImage> firstDeconvolutionCG3D(double alpha){
+        CommonUtils.printTimeNow("DEBUT");
         space = new DoubleShapedVectorSpace(utils.width, utils.height,utils.sizeZ);
-        vector_psf = space.wrap(utils.psf3DToArray1D(false));
+        vector_psf = space.wrap(utils.shiftPsf3DToArray1D(false));
         vector_image = space.wrap(utils.image3DToArray1D(false));
 
         x = space.create(0);
-        //w = space.create(1);
+        //WeightGenerator weightGen = new WeightGenerator();
+        //Creation of a weight map
+        w = space.create(1);
+        int pad = utils.sizePadding/2;
+        for (int k = 0; k < utils.sizeZ; k++) {
+            for (int j = 0; j < utils.height; j++) {
+                for (int i = 0; i < utils.width; i++) {
+                    if ((i > pad && i < (utils.width-pad)) || (j > pad && j < (utils.height - pad))) {
+                        w.getData()[i+j*utils.width+k*utils.height*utils.width] = 1;
+                    }
+                }
+            }
+        }
+        //End of weight map generation
+
         maxIter = 50;
         linDeconv = new LinearDeconvolver(
-                space.cloneShape(), vector_image.getData(), vector_psf.getData(), null, alpha);
+                space.cloneShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
         outputValue = linDeconv.solve(x.getData(), maxIter, false);
         parseOuputCG(outputValue); //print nothing if good, print in err else
-        return (utils.arrayToImage3D(x.getData(), correction,false));
+        CommonUtils.printTimeNow("FIN");
+        return (utils.arrayToIcyImage3D(x.getData(), correction,false));
     }
 
     private ArrayList<BufferedImage> nextDeconvolutionCG3D(double alpha){
@@ -655,7 +669,7 @@ public class Deconvolution{
         if (verbose) {
             parseOuputCG(outputValue); //print nothing if good, print in err else
         }
-        return(utils.arrayToImage3D(x.getData(), correction,false));
+        return(utils.arrayToIcyImage3D(x.getData(), correction,false));
     }
 
     /**

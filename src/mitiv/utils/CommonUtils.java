@@ -331,10 +331,14 @@ public class CommonUtils {
         int width = image.getWidth();
         WritableRaster raster = image.getRaster();
         double []out;
+        int size = width*height;
         if (isComplex) {
-            out = new double[width*2*height];
+            out = new double[2*size];
+            for (int i = 0; i < size; i++) {
+                out[size+i] = 0;
+            }
         } else {
-            out = new double[width*height];
+            out = new double[size];
         }
         int[] tmp = new int[raster.getNumBands()];
         for(int j=0;j<height;j++){
@@ -1026,10 +1030,10 @@ public class CommonUtils {
         return (max-min) > prev ? (max-min) : prev;
     }
 
-    private static BufferedImage createZeroBufferedImmage(int width, int height){
-        BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+    private static BufferedImage createZeroBufferedImage(int width, int height){
+        BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
         WritableRaster rasterImage = out.getRaster();
-        int[] tmp = new int[]{0};
+        int[] tmp = new int[]{0,0,0};
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
                 rasterImage.setPixel(i,j,tmp);
@@ -1064,7 +1068,8 @@ public class CommonUtils {
         ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
         int width = image.get(0).getWidth();
         int height = image.get(0).getHeight();
-        BufferedImage zero = createNewBufferedImage(width+sizePSF, height+sizePSF);
+        //BufferedImage zero = createNewBufferedImage(width+sizePSF, height+sizePSF);
+        BufferedImage zero = createZeroBufferedImage(width+sizePSF, height+sizePSF);
         for (int i = 0; i < image.size()/2; i++) {
             out.add(zero);
         }
@@ -1074,6 +1079,7 @@ public class CommonUtils {
         for (int i = 0; i < image.size()/2; i++) {
             out.add(zero);
         }
+
         return out;
     }
 
@@ -1093,13 +1099,16 @@ public class CommonUtils {
 
     public static ArrayList<BufferedImage> imageUnPad(ArrayList<BufferedImage> image, int sizePSF) {
         ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
-        for (int i = (image.size()*3)/4; i < image.size(); i++) {
+        for (int i = image.size()/4; i < (image.size()*3)/4; i++) {
+            out.add(imageUnPad(image.get(i), sizePSF));
+        }
+
+        /*for (int i = (image.size()*3)/4; i < image.size(); i++) {
             out.add(imageUnPad(image.get(i), sizePSF));
         }
         for (int i = 0; i < image.size()/4; i++) {
             out.add(imageUnPad(image.get(i), sizePSF));
-        }
-
+        }*/
         return out;
     }
 
@@ -1258,6 +1267,115 @@ public class CommonUtils {
             }
         }
         return imageout;
+    }
+
+    /**
+     * Here we are padding a cube, no scale only padding
+     * 
+     * Cube : 
+     *     H
+     *    /
+     *   /
+     *  o---- W
+     *  |
+     *  |
+     *  Z
+     *  
+     * Front:
+     *  1 2
+     *  3 4
+     *  
+     *  back:
+     *  5 6
+     *  7 8
+     *  
+     *  1<=>8
+     *  3<=>6
+     *  2<=>7
+     *  4<=>5
+     * Bloc X to Y
+     * 
+     * dest( pos(Y) ) = in( pos(X) )
+     * 
+     * @param psfOut
+     * @param psfIn
+     * @param psfWidth
+     * @param psfHeight
+     * @param psfZ
+     * @return
+     */
+    public static double[] psf3DPadding1D(double[] psfOut, double[] psfIn, int psfWidth, int psfHeight, int psfZ) {
+        int demiPsfW = psfWidth/2;
+        int demiPsfH = psfHeight/2;
+        int demiPsfZ = psfZ/2;
+        int strideJ = psfWidth;
+        int strideK = psfWidth*psfHeight;
+        //Bloc 8 to 1
+        for (int k = 0; k < demiPsfZ; k++) {
+            for(int j = 0; j < demiPsfH; j++){
+                for(int i = 0; i < demiPsfW; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(demiPsfW+i)+(demiPsfH+j)*strideJ+(demiPsfZ+k)*strideK];
+                }
+            }
+        }
+        //Bloc 1 to 8
+        for (int k = demiPsfZ; k < psfZ; k++) {
+            for(int j = demiPsfH; j < psfHeight; j++){
+                for(int i = demiPsfW; i < psfWidth; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(i-demiPsfW)+(j-demiPsfH)*strideJ+(k-demiPsfZ)*strideK];
+                }
+            }
+        }
+        //bloc 7 to 2
+        for (int k = 0; k < demiPsfZ; k++) {
+            for(int j = 0; j < demiPsfH; j++){
+                for(int i = demiPsfW; i < psfWidth ; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(i-demiPsfW)+(demiPsfH+j)*strideJ+(demiPsfZ+k)*strideK];
+                }
+            }
+        }
+        //bloc 2 to 7
+        for (int k = demiPsfZ; k < psfZ; k++) {
+            for(int j = demiPsfH; j < psfHeight; j++){
+                for(int i = 0; i < demiPsfW ; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(demiPsfW+i)+(j-demiPsfH)*strideJ+(k-demiPsfZ)*strideK];
+                }
+            }
+        }
+        //bloc 6 to 3
+        for (int k = demiPsfZ; k < psfZ; k++) {
+            for(int j = 0; j < demiPsfH; j++){
+                for(int i = 0; i < demiPsfW; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(demiPsfW+i)+(demiPsfH+j)*strideJ+(k-demiPsfZ)*strideK];
+                }
+            }
+        }
+        //bloc 3 to 6
+        for (int k = 0; k < demiPsfZ; k++) {
+            for(int j = demiPsfH; j < psfHeight; j++){
+                for(int i = demiPsfW; i < psfWidth; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(i-demiPsfW)+(j-demiPsfH)*strideJ+(demiPsfZ+k)*strideK];
+                }
+            }
+        }
+        //bloc 5 to 4
+        for (int k = demiPsfZ; k < psfZ; k++) {
+            for(int j = 0; j < demiPsfH; j++){
+                for(int i = demiPsfW; i < psfWidth; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(i-demiPsfW)+(demiPsfH+j)*strideJ+(k-demiPsfZ)*strideK];
+                }
+            }
+        }
+
+        //bloc 4 to 5
+        for (int k = 0; k < demiPsfZ; k++) {
+            for(int j = demiPsfH; j < psfHeight; j++){
+                for(int i = 0; i < demiPsfW; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(demiPsfW+i)+(j-demiPsfH)*strideJ+(demiPsfZ+k)*strideK];
+                }
+            }
+        }
+        return psfOut;
     }
 
     /**
@@ -1462,10 +1580,22 @@ public class CommonUtils {
         BufferedImage I = arrayToImage1D(A, W, H, false);
         saveBufferedImage(I, name);
     }
-    
-    public static void printTimeNow(){
+    private static String printTime(){
         LocalDateTime now = LocalDateTime.now();
-        System.out.println(now.get(DateTimeFieldType.hourOfDay())+"h "+now.getMinuteOfHour()+"min "+now.getSecondOfMinute()+"sec");
+        return now.get(DateTimeFieldType.hourOfDay())+"h "+now.getMinuteOfHour()+"min "+now.getSecondOfMinute()+"sec";
+
+    }
+
+    public static void printTimeNow(){
+        System.out.println(printTime());
+    }
+
+    public static void printTimeNow(String before){
+        System.out.println(before +" "+printTime());
+    }
+
+    public static void printTimeNow(String before, String after){
+        System.out.println(before +" "+printTime()+" "+after);
     }
 }
 

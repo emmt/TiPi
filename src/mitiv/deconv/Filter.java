@@ -122,9 +122,6 @@ public class Filter{
     public double[] wiener3D(double alpha) {
         double a,b,c,d,q;
         double[]out = new double[2*sizeZ*width*height];
-        /*for(int i = 0; i < FFT_Image1D.length; i++){
-            out[i] = FFT_Image1D[i];
-        }*/
         int pos;
         for(int i = 0; i < sizeZ*width*height; i++){
             pos = 2*i;
