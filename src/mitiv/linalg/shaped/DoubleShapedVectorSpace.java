@@ -114,6 +114,22 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
     }
 
     @Override
+    protected void _swap(Vector x, Vector y) {
+        _copy((DoubleShapedVector)x, (DoubleShapedVector)y);
+    }
+
+    protected void _swap(DoubleShapedVector vx, DoubleShapedVector vy) {
+        double[] x = vx.getData();
+        double[] y = vy.getData();
+        int n = vx.getNumber();
+        for (int j = 0; j < n; ++j) {
+            double a = x[j];
+            x[j] = y[j];
+            y[j] = a;
+        }
+    }
+
+    @Override
     protected void _fill(Vector x, double alpha) {
         ArrayOps.fill(number, ((DoubleShapedVector) x).getData(), alpha);
     }

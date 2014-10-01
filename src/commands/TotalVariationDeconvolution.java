@@ -161,6 +161,7 @@ public class TotalVariationDeconvolution {
     public void stop(){
         run = false;
     }
+    
     //private static double parseDouble(String option, String arg) {
     //    try {
     //        return Double.parseDouble(arg);
@@ -348,7 +349,7 @@ public class TotalVariationDeconvolution {
             projector.apply(x, x);
 
         }
-        //System.err.format("MU = %g, EPSILON = %g, BOUNDED = %d\n", mu, epsilon, bounded);
+
         if (debug) {
             System.out.println("Optimization method initialization complete.");
         }

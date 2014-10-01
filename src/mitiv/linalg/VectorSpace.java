@@ -189,6 +189,22 @@ public abstract class VectorSpace {
 
     protected abstract double _normInf(Vector x);
 
+
+    /**
+     * Multiply the values of the vector by a constant factor.
+     *
+     * @param alpha - The scale factor.
+     */
+    public void scale(Vector v, double alpha) {
+        check(v);
+        _scale(v, alpha);
+    }
+
+    protected void _scale(Vector v, double alpha) {
+        _axpby(alpha, v, 0.0, v, v);
+
+    }
+
     /**
      * Compute a linear combination of two vectors.
      *
@@ -333,10 +349,27 @@ public abstract class VectorSpace {
         }
     }
 
-    protected void _copy(Vector src, Vector dst)
-            throws IncorrectSpaceException {
+    protected void _copy(Vector src, Vector dst) {
         _axpby(1.0, src, 0.0, dst);
     }
+
+    /**
+     * Exchange the contents of two vectors.
+     *
+     * @param x - A Vector.
+     * @param y - Another vector
+     * @throws IncorrectSpaceException the two vectors must belong to this vector space.
+     */
+    public final void swap(Vector x, Vector y)
+            throws IncorrectSpaceException {
+        check(x);
+        if (y != x) {
+            check(y);
+            _swap(x, y);
+        }
+    }
+
+    protected abstract void _swap(Vector x, Vector y);
 
     /**
      * Create a new vector as a clone of another vector.
