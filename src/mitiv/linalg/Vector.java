@@ -180,6 +180,20 @@ public abstract class Vector {
     }
 
     /**
+     * Exchange the contents of the vector with that of another one.
+     *
+     * @param v - The other vector.
+     * @throws IncorrectSpaceException {@code dst} must belong to the same vector space.
+     */
+    public final void swap(Vector v)
+            throws IncorrectSpaceException {
+        if (v != this) {
+            space.check(v);
+            space._swap(this, v);
+        }
+    }
+
+    /**
      * Multiply the values of the vector by a constant factor.
      *
      * @param alpha - The scale factor.
