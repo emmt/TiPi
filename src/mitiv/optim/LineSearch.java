@@ -440,6 +440,42 @@ public abstract class LineSearch {
     {
         return (status != SEARCH);
     }
+
+    /**
+     * Check line search convergence conditions.
+     * @param alpha - The current step length.
+     * @param f     - The current function value.
+     * @param g     - The current directional directional derivative.
+     * @param finit - The function value at the start of the line search.
+     * @param ginit - The directional derivative at the start of the line
+     *                search (must be strictly negative).
+     * @param ftol  - The function tolerance parameter.
+     * @param gtol  - The derivative tolerance.
+     * 
+     * @return 0 if the first Wolfe condition does not hold; 1 if the first
+     *         condition holds but not the second one; 2 if the first and
+     *         second weak Wolfe condition hold; 3 if the strong conditions
+     *         hold.
+     */
+    static int checkWolfeConditions(double alpha, double f, double g, double finit, double ginit, double ftol, double gtol) {
+        /* Check for first Wolfe condition. */
+        if (f - finit > ftol*ginit*alpha) {
+            return 0;
+        }
+        /* Check for second Wolfe conditions. */
+        double gtest = gtol*ginit;
+        if (g < gtest) {
+            /* Only the first Wolfe condition is satisfied. */
+            return 1;
+        }
+        if (Math.abs(g) > -gtest) {
+            /* Only the weak second Wolfe condition is satisfied. */
+            return 2;
+        } else {
+            return 3;
+        }
+    }
+
 }
 
 /*
