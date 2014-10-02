@@ -42,12 +42,15 @@ import javax.swing.JPanel;
  */
 public class ZernikeWindowSlim implements  Runnable {
     
-    double [][][] psf;
+    double[] psf;
     double PSFXZ[][][];
     boolean[] rpp;
-    
+    int Nx;
+    int Ny;
+
     IcyFrame test;
-    MicroscopyModelPSF pupil;
+    MicroscopyModelPSF_1D pupil;
+    
     /**
      * Take a psf and a image, and give the method used to compute the solution
      * 
@@ -55,9 +58,12 @@ public class ZernikeWindowSlim implements  Runnable {
      * @param pathImage Can be a string, icyimage, bufferedImage
      * @param quadratic Boolean to enble the use quadatric computation method
      */
-    public ZernikeWindowSlim(MicroscopyModelPSF pupil,  boolean[] rpp){
+    public ZernikeWindowSlim(MicroscopyModelPSF_1D pupil, int Nx, int Ny, boolean[] rpp)
+    {
         this.pupil = pupil;
         this.rpp = rpp;
+        this.Nx = Nx;
+        this.Ny = Ny;
     }
 
     @Override
@@ -68,19 +74,19 @@ public class ZernikeWindowSlim implements  Runnable {
         middle.setLayout(new FlowLayout());
         if (rpp[0]) {
             JLabel rholabel = new JLabel();
-            rholabel.setIcon(new ImageIcon(CommonUtils.array2BuffI(pupil.getRho())));
+            rholabel.setIcon(new ImageIcon(CommonUtils.arrayToImage1D(pupil.getRho(), Nx, Ny, false)));
             middle.add("label",new JLabel("RHO"));
             middle.add("image",rholabel);
         }
         if (rpp[1]) {
             JLabel philabel = new JLabel();
-            philabel.setIcon(new ImageIcon(CommonUtils.array2BuffI(pupil.getPhi())));
+            philabel.setIcon(new ImageIcon(CommonUtils.arrayToImage1D(pupil.getPhi(), Nx, Ny, false)));
             middle.add("label",new JLabel("PHI"));
             middle.add("image",philabel);
         }
         if (rpp[2]) {
             JLabel psylabel = new JLabel();
-            psylabel.setIcon(new ImageIcon(CommonUtils.array2BuffI(pupil.getPsi())));
+            psylabel.setIcon(new ImageIcon(CommonUtils.arrayToImage1D(pupil.getPsi(), Nx, Ny, false)));
             middle.add("label",new JLabel("PSI"));
             middle.add("image",psylabel);
             

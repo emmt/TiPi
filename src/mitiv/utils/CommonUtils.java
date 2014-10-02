@@ -61,7 +61,7 @@ public class CommonUtils {
      * 
      * */
     public static final int LOWER_LEFT = 0;
-    
+
     /** 
      * padding options: Nothing is done 
      * _______
@@ -71,7 +71,7 @@ public class CommonUtils {
      * 
      * */
     public static final int CENTERED = 1;
-    
+
     /** 
      * padding options: Nothing is done 
      * _______
@@ -137,7 +137,7 @@ public class CommonUtils {
     {
         return (int) ArrayUtils.colorToGrey(r, g, b);
     }
-    
+
     public static int colorToGrey(int[]rgb)
     {
         if (rgb.length == 3) {
@@ -864,17 +864,53 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the buffered image
      */
-    public static BufferedImage arrayToImage1D(double[] array, int width, int height, boolean isComplex){
+    public static BufferedImage arrayToImage1D_3D(double[] array, int width, int height, int depth, boolean isComplex)
+    {
         BufferedImage imageout = createNewBufferedImage(width,height);
+        WritableRaster raster = imageout.getRaster();
+        int grey;
+        int[] tmp = new int[3];
+        for(int k = 0; k < depth; k++)
+        {
+            for(int j = 0; j < height; j++)
+            {
+                for(int i = 0; i < width; i++)
+                {
+                    if (isComplex) {
+                        grey = (int)array[2*(i+j*width + k*width*height)];
+                    }
+                    else
+                    {
+                        grey = (int)array[i+j*width + + k*width*height];
+                    }
+                    tmp[0]=tmp[1]=tmp[2]=grey;
+                    raster.setPixel(i, j, tmp);
+                }
+            }
+        }
+        return imageout;
+    }
+
+    /**
+     * Create a buffered image, simply copy array to buffered image.
+     *
+     * @param array the array
+     * @param width the width
+     * @param height the height
+     * @param isComplex the is complex
+     * @return the buffered image
+     */
+    public static BufferedImage arrayToImage1D(double[] array, int width, int height, boolean isComplex){
+        BufferedImage imageout = createNewBufferedImage(width, height);
         WritableRaster raster = imageout.getRaster();
         int grey;
         int[] tmp = new int[3];
         for(int j = 0; j<imageout.getHeight(); j++){
             for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
-                    grey = (int)array[2*(i+j*imageout.getWidth())];
+                    grey = (int)array[2*(i+j*imageout.getHeight())];
                 } else {
-                    grey = (int)array[(i+j*imageout.getWidth())];
+                    grey = (int)array[(i+j*imageout.getHeight())];
                 }
                 tmp[0]=tmp[1]=tmp[2]=grey;
                 raster.setPixel(i, j, tmp);
@@ -882,7 +918,7 @@ public class CommonUtils {
         }
         return imageout;
     }
-
+    
     /**
      * Create a buffered image, simply copy array to buffered image.
      *
