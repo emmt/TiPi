@@ -30,12 +30,25 @@ import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 
 /**
- * Multivariate non-linear optimization by L-BFGS/VMLM method.
+ * Multivariate non-linear optimization with simple bound constraints by
+ * L-BFGS-B/VMLM-B method.
+ * 
+ * <p>There are some differences compared to {@link LBFGS}, the unconstrained
+ * version of the algorithm:
+ * <ol>
+ * <li>The initial variables must be feasible.  This is easily achieved by
+ *     applying the projector on the initial variables.</li>
+ * <li>The gradients computed by the caller are projected.  This means
+ *     that they are not left unchanged.</li>
+ * <li>The line search procedure should only implement a sufficient decrease
+ *     test (<i>e.g.</i> first Wolfe condition).</li>
+ * </ol>
+ * </p>
  * 
  * @author Éric Thiébaut.
  *
  */
-public class LBFGS implements ReverseCommunicationOptimizer {
+public class LBFGSB implements ReverseCommunicationOptimizer {
 
     public static int NO_PROBLEM = 0;
     public static int BAD_H0 = 1; /* H0 is not positive definite */
@@ -63,7 +76,9 @@ public class LBFGS implements ReverseCommunicationOptimizer {
     to GTEST the norm of the initial gradient) for convergence. */
     protected double gatol;  /* Absolute threshold for the norm or the gradient for
     convergence. */
-    protected double gtest;  /* Norm or the initial gradient. */
+
+    /** Norm or the initial projected gradient. */
+    protected double gtest;
 
     protected double stpmin = 1e-20;
     protected double stpmax = 1e6;
@@ -80,7 +95,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
     /** Function value at X0. */
     protected  double f0 = 0.0;
 
-    /** Gradient at X0. */
+    /** Projected gradient at X0. */
     protected Vector g0 = null;
 
     /**
@@ -97,20 +112,24 @@ public class LBFGS implements ReverseCommunicationOptimizer {
     /** Directional derivative at X0. */
     protected  double dg0 = 0.0;
 
-    /** Euclidean norm of the gradient at the last accepted step. */
+    /** Euclidean norm of the projected gradient at the last accepted step. */
     protected double g1norm = 0.0;
 
-    /** Euclidean norm of the gradient at X0. */
-    protected  double g0norm = 0.0;
+    /** Euclidean norm of the projected gradient at X0. */
+    protected double g0norm = 0.0;
 
 
-    public LBFGS(VectorSpace vsp, int m, LineSearch ls) {
+    protected final BoundProjector projector;
+
+    public LBFGSB(VectorSpace vsp, BoundProjector bp, int m, LineSearch ls) {
         H = new LBFGSOperator(vsp, m);
+        projector = bp;
         lnsrch = ls;
     }
 
-    public LBFGS(LinearOperator H0, int m, LineSearch ls) {
+    public LBFGSB(LinearOperator H0, BoundProjector bp, int m, LineSearch ls) {
         H = new LBFGSOperator(H0, m);
+        projector = bp;
         lnsrch = ls;
     }
 
@@ -171,6 +190,10 @@ public class LBFGS implements ReverseCommunicationOptimizer {
         if (task == OptimTask.COMPUTE_FG) {
 
             ++evaluations;
+            //System.err.format("eval=%d, |x1|=%g, f1=%.15g, |g1|=%g",
+            //        evaluations, x1.norm2(), f1, g1.norm2());
+            projector.projectGradient(x1, g1, g1);
+            //System.err.format(", |g1p|=%g\n", g1.norm2());
             if (evaluations > 1) {
                 /* A line search is in progress.  Compute directional
                  * derivative and check whether line search has converged. */
@@ -216,6 +239,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
             }
             while (true) {
                 H.apply(g1, p);
+                projector.projectGradient(x1, p, p);
                 pnorm = p.norm2(); // FIXME: in some cases, can be just GNORM*GAMMA
                 double pg = p.dot(g1);
                 if (pg >= epsilon*pnorm*g1norm) {
@@ -279,6 +303,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
     private OptimTask nextStep(Vector x1) {
         alpha = lnsrch.getStep();
         x1.axpby(1.0, x0, -alpha, p);
+        projector.apply(x1, x1);
         reason = NO_PROBLEM;
         task = OptimTask.COMPUTE_FG;
         return task;

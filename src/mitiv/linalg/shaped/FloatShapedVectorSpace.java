@@ -111,6 +111,22 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
     }
 
     @Override
+    protected void _swap(Vector x, Vector y) {
+        _copy(x, y);
+    }
+
+    protected void _swap(FloatShapedVector vx, FloatShapedVector vy) {
+        float[] x = vx.getData();
+        float[] y = vy.getData();
+        int n = vx.getNumber();
+        for (int j = 0; j < n; ++j) {
+            float a = x[j];
+            x[j] = y[j];
+            y[j] = a;
+        }
+    }
+
+    @Override
     protected void _fill(Vector x, double alpha) {
         ArrayOps.fill(number, ((FloatShapedVector) x).getData(), alpha);
     }
