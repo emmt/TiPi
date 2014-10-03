@@ -23,58 +23,20 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.optim;
+package mitiv.invpb;
 
-/**
- * Values returned by the reverse communication version of optimization
- * algorithms.
- *
- * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
- */
-public enum OptimTask {
-    /** An error has occurred. */
-    ERROR (-1, "An error has occurred."),
+public class SimpleViewer implements ReconstructionViewer {
 
-    /** Caller shall compute {@code f(x)} and {@code g(x)}. */
-    COMPUTE_FG (0, "Caller shall compute f(x) and g(x)."),
-
-    /** A new iterate is available in {@code x}. */
-    NEW_X (1, "A new iterate is available in x."),
-
-    /** Algorithm has converged, solution is available in {@code x}. */
-    FINAL_X (2, "Algorithm has converged, solution is available in x."),
-
-    /** Algorithm terminated with a warning. */
-    WARNING (3, "Algorithm terminated with a warning."),
-
-    /** Caller shall compute {@code f(x)}. */
-    COMPUTE_F (4, "Caller shall compute f(x)."),
-
-    /** Caller shall project workspace vector {@code v} to the feasible set. */
-    PROJECT_V (5, "Caller shall project v to the feasible set.");
-
-    private final String description;
-    private final int code;
-
-    OptimTask(int code, String description) {
-        this.code = code;
-        this.description = description;
+    public SimpleViewer() {
     }
 
-    /**
-     * Query the description of the optimization task.
-     */
     @Override
-    public String toString(){
-        return description;
+    public void display(ReconstructionJob job) {
+        System.out.format("iter: %4d    eval: %4d    fx = %22.16e    |gx| = %8.2e\n",
+                job.getIterations(), job.getEvaluations(),
+                job.getCost(), job.getGradientNorm2());
     }
 
-    /**
-     * Get a numerical code corresponding to the optimization task.
-     */
-    public int getCode() {
-        return code;
-    }
 }
 
 /*

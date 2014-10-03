@@ -1,5 +1,4 @@
 /*
- * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
  * developed by the MitiV project.
  *
  * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
@@ -25,8 +24,11 @@
 
 package mitiv.deconv;
 
+import icy.image.IcyBufferedImage;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -38,6 +40,7 @@ import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 import mitiv.utils.CommonUtils;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_1D;
 
 /**
@@ -51,7 +54,7 @@ public class DeconvUtils {
     private BufferedImage image_psf;
     private DoubleFFT_1D fft1D;
     private FloatFFT_1D fft1DFloat;
-    private int sizePadding = -1;
+    public int sizePadding = -1;
 
     //Vector part
     private ShapedVector imageVect;
@@ -60,6 +63,12 @@ public class DeconvUtils {
     private ShapedVectorSpace imageSpaceComplex;
     private boolean single = true;
     boolean isComplex;
+
+    //3D
+    ArrayList<BufferedImage> listImage;
+    ArrayList<BufferedImage> listPSF;
+    public int sizeZ;
+    private DoubleFFT_3D fft3D;
 
     /**
      * Job to compute with the wiener filter
@@ -107,6 +116,28 @@ public class DeconvUtils {
             e.printStackTrace();
             System.err.println("Wrong path given");
         }
+    }
+
+    /**
+     * Open the images and store them
+     * @param image 
+     * @param PSF 
+     */
+    public void readImage(ArrayList<BufferedImage> image, ArrayList<BufferedImage> PSF) {
+        //IMPORTANT WE PAD AS WE COMPUTE
+        //FIXME here padding
+        int max = Math.max(PSF.get(0).getHeight(), PSF.get(0).getWidth());
+        //sizePadding = max;
+        sizePadding = 0;
+        double coef = (double)(sizePadding+max)/max;
+        ArrayList<BufferedImage> listImagePad = CommonUtils.imagePad(image, coef, false);
+        ArrayList<BufferedImage> listPSFPad = CommonUtils.imagePad(PSF, coef, true);
+        this.listImage = listImagePad;
+        this.listPSF = listPSFPad;
+        sizeZ = listImagePad.size();
+        width = listImagePad.get(0).getWidth();
+        height = listImagePad.get(0).getHeight();
+        //System.out.format("W %d H %d Z %d coef %f\n",width,height,sizeZ,coef);
     }
 
     /**
@@ -166,15 +197,10 @@ public class DeconvUtils {
         readImageVect(image, PSF, false, singlePrecision,true);
     }
 
-    /**
-     * Open the images and store them as vectors
-     * 
-     * @param image
-     * @param PSF
-     * @param padding Do we zero pad the image ?
-     * @param singlePrecision Double or Float ?
-     * @param isComplex is the input of size 2*size image ?
-     */
+    public void readImageVect(ArrayList<BufferedImage>image, ArrayList<BufferedImage> PSF, boolean singlePrecision) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
     public void readImageVect(BufferedImage image, BufferedImage PSF, Boolean padding, boolean singlePrecision, boolean isComplex) {
         //For now, no padding option: TODO add padding option
         if (singlePrecision) {
@@ -215,6 +241,10 @@ public class DeconvUtils {
         return imageVect.getSpace().clone(imageVect);
     }
 
+    public ShapedVector getImageVect(){
+        return imageVect;
+    }
+
     /**
      * Clone the PSF
      * 
@@ -224,6 +254,9 @@ public class DeconvUtils {
         return imagePsfVect.getSpace().clone(imagePsfVect);
     }
 
+    public ShapedVector getPSfVect(){
+        return imagePsfVect;
+    }
     /**
      * Pad the PSF and return a vector
      * 
@@ -273,6 +306,57 @@ public class DeconvUtils {
     }
 
     /**
+     * Convert a stack of image to a 1D array
+     * @param isComplex 
+     * 
+     * @return A 1D array
+     */
+    public double[] image3DToArray1D(boolean isComplex) {
+        return CommonUtils.image3DToArray1D(listImage, width, height, sizeZ, isComplex);
+    }
+    /**
+     * Convert the PSF to a 1D array
+     * @param isComplex 
+     * 
+     * @return A 1D array
+     */
+    public double[] psf3DToArray1D(boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[sizeZ*width*height*2];
+        } else {
+            out = new double[sizeZ*width*height];
+        }
+        for (int j = 0; j < sizeZ; j++) {
+            double[] tmp = CommonUtils.psfPadding1D(listImage.get(j), listPSF.get(j), false);
+            for (int i = 0; i < tmp.length; i++) {
+                out[i+j*tmp.length] = tmp[i];
+            }
+        }
+        return out;
+    }
+
+    public double[] psf3DToArray1Dexp(boolean isComplex) {
+        return CommonUtils.image3DToArray1D(listPSF, width, height, sizeZ, isComplex);
+    }
+
+    public double[] shiftPsf3DToArray1D(boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[width*height*sizeZ*2];
+        } else {
+            out = new double[width*height*sizeZ];
+        }
+        double[] psfIn = psf3DToArray1Dexp(isComplex);
+        if (psfIn.length != out.length) {
+            System.err.println("Bad size for psf and output deconvutil l356");
+        }
+        CommonUtils.fftShift3D(psfIn,out, width, height, sizeZ);
+        //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
+        return out;
+    }
+
+    /**
      * Convert image to float 1D array
      * 
      * @param isComplex is the input of size 2*size image ?
@@ -306,6 +390,58 @@ public class DeconvUtils {
         return CommonUtils.arrayToImage1D(array, job, image.getWidth(), image.getHeight(), isComplex);
     }
 
+    public ArrayList<BufferedImage> arrayToImage3D(double[] array, int job, boolean isComplex){
+        ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
+        if (isComplex) {
+            double[] tmp = new double[width*height*2];
+            for (int j = 0; j < sizeZ; j++) {
+                for (int i = 0; i < width*height*2; i++) {
+                    tmp[i] = array[i+2*j*height*width];
+                }
+                out.add(CommonUtils.arrayToImage1D(tmp, job, width, height, true));
+            }
+        }else{
+            double[] tmp = new double[width*height];
+            for (int j = 0; j < sizeZ; j++) {
+                for (int i = 0; i < width*height; i++) {
+                    tmp[i] = array[i+j*height*width];
+                }
+                out.add(CommonUtils.arrayToImage1D(tmp, job, width, height, false));
+            }
+        }
+        //IMPORTANT WE DEPAD AS WE COMPUTE OR NOT ...
+        //return CommonUtils.imageUnPad(out, sizePadding);
+        return out;
+        //FIXME pad option
+    }
+
+
+    public ArrayList<BufferedImage> arrayToIcyImage3D(double[] array, int job, boolean isComplex){
+        ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
+        if (isComplex) {
+            for (int k = 0; k < sizeZ; k++) {
+                double[] tmp = new double[width*height];
+                for (int j = 0; j < height; j++) {
+                    for (int i = 0; i < width; i++) {
+                        tmp[i+j*width] = array[2*i+2*j*width+2*k*height*width];
+                    }
+                }
+                out.add(new IcyBufferedImage(width, height, tmp));
+            }
+        }else{
+            for (int j = 0; j < sizeZ; j++) {
+                double[] tmp = new double[width*height];
+                for (int i = 0; i < width*height; i++) {
+                    tmp[i] = array[i+j*height*width];
+                }
+                out.add(new IcyBufferedImage(width, height, tmp));
+            }
+        }
+        //IMPORTANT WE DEPAD AS WE COMPUTE OR NOT ...
+        //return CommonUtils.imageUnPad(out, sizePadding);
+        return out;
+    }
+
     /********************************** FFT PART **********************************/
 
     private void scale(double[] array){
@@ -332,6 +468,31 @@ public class DeconvUtils {
             fft1D = new DoubleFFT_1D(width*height);
         }
         fft1D.realForwardFull(array);
+    }
+    
+    public void FFT1DComplex(double[] array) {
+        if(fft1D == null){
+            fft1D = new DoubleFFT_1D(width*height);
+        }
+        fft1D.complexForward(array);
+    }
+
+    public void FFT3D(double[] array) {
+        if(fft3D == null){
+            fft3D = new DoubleFFT_3D(sizeZ,height,width);
+        }
+        fft3D.realForwardFull(array);
+    }
+
+    public void FFT3DComplex(double[] array) {
+        if(fft3D == null){
+            fft3D = new DoubleFFT_3D(sizeZ,height,width);
+        }
+        fft3D.complexForward(array);
+    }
+
+    public void IFFT3D(double[] array) {
+        fft3D.complexInverse(array, true);
     }
 
     /**

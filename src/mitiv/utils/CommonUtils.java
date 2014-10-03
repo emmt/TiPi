@@ -25,16 +25,21 @@
 
 package mitiv.utils;
 
+import icy.image.IcyBufferedImage;
+
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.LocalDateTime;
 
 import mitiv.array.ArrayUtils;
 import mitiv.linalg.shaped.DoubleShapedVector;
@@ -61,7 +66,7 @@ public class CommonUtils {
      * 
      * */
     public static final int LOWER_LEFT = 0;
-    
+
     /** 
      * padding options: Nothing is done 
      * _______
@@ -71,7 +76,7 @@ public class CommonUtils {
      * 
      * */
     public static final int CENTERED = 1;
-    
+
     /** 
      * padding options: Nothing is done 
      * _______
@@ -137,7 +142,7 @@ public class CommonUtils {
     {
         return (int) ArrayUtils.colorToGrey(r, g, b);
     }
-    
+
     public static int colorToGrey(int[]rgb)
     {
         if (rgb.length == 3) {
@@ -327,10 +332,14 @@ public class CommonUtils {
         int width = image.getWidth();
         WritableRaster raster = image.getRaster();
         double []out;
+        int size = width*height;
         if (isComplex) {
-            out = new double[width*2*height];
+            out = new double[2*size];
+            for (int i = 0; i < size; i++) {
+                out[size+i] = 0;
+            }
         } else {
-            out = new double[width*height];
+            out = new double[size];
         }
         int[] tmp = new int[raster.getNumBands()];
         for(int j=0;j<height;j++){
@@ -390,6 +399,91 @@ public class CommonUtils {
         return out;
     }
 
+    public static double[] image3DToArray1D(ArrayList<BufferedImage>listImage, int width,int height, int sizeZ, boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[2*sizeZ*width*height];
+            int strideW = width;
+            int strideH = width*height;
+            for (int k = 0; k < sizeZ; k++) {
+                double[] tmp = CommonUtils.imageToArray1D(listImage.get(k), false);
+                for (int j = 0; j < height; j++) {
+                    for (int i = 0; i < width; i++) {
+                        out[2*i+2*j*strideW+2*k*strideH] = tmp[i+j*strideW];
+                    }
+                }
+            }
+        } else {
+            out = new double[sizeZ*width*height];
+            for (int j = 0; j < sizeZ; j++) {
+                double[] tmp = CommonUtils.imageToArray1D(listImage.get(j), false);
+                for (int i = 0; i < tmp.length; i++) {
+                    out[i+j*tmp.length] = tmp[i];
+                }
+            }
+        }
+
+        return out;
+    }
+
+    public static double[] icyImage3DToArray1D(ArrayList<IcyBufferedImage>listImage, int width,int height,int sizeZ, boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[2*sizeZ*width*height];
+            int strideW = width;
+            int strideH = width*height;
+            int strideZ = sizeZ*width*height;
+            for (int k = 0; k < sizeZ; k++) {
+                double[] tmp = CommonUtils.imageToArray1D(listImage.get(k), false);
+                for (int j = 0; j < height; j++) {
+                    for (int i = 0; i < width; i++) {
+                        out[2*i+2*j*strideW+2*k*strideH] = tmp[i+j*strideW];
+                    }
+                }
+            }
+        } else {
+            out = new double[sizeZ*width*height];
+            for (int j = 0; j < sizeZ; j++) {
+                double[] tmp = CommonUtils.imageToArray1D(listImage.get(j), false);
+                for (int i = 0; i < tmp.length; i++) {
+                    out[i+j*tmp.length] = tmp[i];
+                }
+            }
+        }
+        return out;
+    }
+    
+    public static double[] shiftPsf3DToArray1D(ArrayList<BufferedImage>listPSF,int width, int height, int sizeZ,  boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[width*height*sizeZ*2];
+        } else {
+            out = new double[width*height*sizeZ];
+        }
+        double[] psfIn = CommonUtils.image3DToArray1D(listPSF, width, height, sizeZ, isComplex);
+        if (psfIn.length != out.length) {
+            throw new IllegalArgumentException("The PSF and the output should be of same size");
+        }
+        fftShift3D(psfIn,out, width, height, sizeZ);
+        //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
+        return out;
+    }
+    
+    public static double[] shiftIcyPsf3DToArray1D(ArrayList<IcyBufferedImage>listPSF,int width, int height, int sizeZ,  boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[width*height*sizeZ*2];
+        } else {
+            out = new double[width*height*sizeZ];
+        }
+        double[] psfIn = CommonUtils.icyImage3DToArray1D(listPSF, width, height, sizeZ, isComplex);
+        if (psfIn.length != out.length) {
+            System.err.println("Bad size for psf and output deconvutil l356");
+        }
+        CommonUtils.fftShift3D(psfIn,out, width, height, sizeZ);
+        //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
+        return out;
+    }
     /**
      * Convert an image to a vector.
      *
@@ -861,24 +955,32 @@ public class CommonUtils {
      * @param array the array
      * @param width the width
      * @param height the height
+     * @param depth 
      * @param isComplex the is complex
      * @return the buffered image
      */
-    public static BufferedImage arrayToImage1D(double[] array, int width, int height, boolean isComplex){
-        //BufferedImage imageout = createNewBufferedImage(width,height);
-        BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+    public static BufferedImage arrayToImage1D_3D(double[] array, int width, int height, int depth, boolean isComplex)
+    {
+        BufferedImage imageout = createNewBufferedImage(width,height);
         WritableRaster raster = imageout.getRaster();
         int grey;
         int[] tmp = new int[3];
-        for(int j = 0; j<imageout.getHeight(); j++){
-            for(int i = 0; i<imageout.getWidth(); i++){
-                if (isComplex) {
-                    grey = (int)array[2*(i+j*imageout.getWidth())];
-                } else {
-                    grey = (int)array[(i+j*imageout.getWidth())];
+        for(int k = 0; k < depth; k++)
+        {
+            for(int j = 0; j < height; j++)
+            {
+                for(int i = 0; i < width; i++)
+                {
+                    if (isComplex) {
+                        grey = (int)array[2*(i+j*width + k*width*height)];
+                    }
+                    else
+                    {
+                        grey = (int)array[i+j*width + + k*width*height];
+                    }
+                    tmp[0]=tmp[1]=tmp[2]=grey;
+                    raster.setPixel(i, j, tmp);
                 }
-                tmp[0]=tmp[1]=tmp[2]=grey;
-                raster.setPixel(i, j, tmp);
             }
         }
         return imageout;
@@ -893,9 +995,37 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the buffered image
      */
+    public static BufferedImage arrayToImage1D(double[] array, int width, int height, boolean isComplex){
+        BufferedImage imageout = createNewBufferedImage(width, height);
+        WritableRaster raster = imageout.getRaster();
+        int grey;
+        int[] tmp = new int[3];
+        for(int j = 0; j<imageout.getHeight(); j++){
+            for(int i = 0; i<imageout.getWidth(); i++){
+                if (isComplex) {
+                    grey = (int)array[2*(i+j*imageout.getHeight())];
+                } else {
+                    grey = (int)array[(i+j*imageout.getHeight())];
+                }
+                tmp[0]=tmp[1]=tmp[2]=grey;
+                raster.setPixel(i, j, tmp);
+            }
+        }
+        return imageout;
+    }
+    
+    /**
+     * Create a buffered image, simply copy array to buffered image.
+     *
+     * @param array the array
+     * @param width the width
+     * @param height the height
+     * @param isComplex the is complex
+     * @return the buffered image
+     */
     public static BufferedImage arrayToImage1D(float[] array, int width, int height, boolean isComplex){
         //BufferedImage imageout = createNewBufferedImage(width, height);
-        BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
         WritableRaster raster = imageout.getRaster();
         int grey;
         int[] tmp = new int[3];
@@ -1022,26 +1152,58 @@ public class CommonUtils {
         return (max-min) > prev ? (max-min) : prev;
     }
 
+    private static BufferedImage createZeroBufferedImage(int width, int height){
+        BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+        WritableRaster rasterImage = out.getRaster();
+        int[] tmp = new int[]{0,0,0};
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                rasterImage.setPixel(i,j,tmp);
+            }
+        }
+        return out;
+    }
+
     /**
      * Zero pad an image with the new size:<br>
      * WidthOutput = WidthInput + sizePSF<br>
      * HeightOutput = HeightInput +sizePSF.
      *
      * @param image the image
-     * @param sizePSF the size psf
+     * @param coef 
      * @return the buffered image
      */
-    public static BufferedImage imagePad(BufferedImage image, int sizePSF) {
-        BufferedImage pad = new BufferedImage(image.getWidth()+sizePSF, image.getHeight()+sizePSF, image.getType());
-        Raster rasterImage = image.getData();
+    public static BufferedImage imagePad(BufferedImage image, double coef) {
+        BufferedImage pad = createZeroBufferedImage((int)(image.getWidth()*coef), (int)(image.getHeight()*coef));
+        //BufferedImage pad = new BufferedImage(image.getWidth()+sizePading, image.getHeight()+sizePading, BufferedImage.TYPE_USHORT_GRAY);
+        WritableRaster rasterImage = image.getRaster();
         WritableRaster rasterPad = pad.getRaster();
-        int hlf = sizePSF/2;
+        int padW = (int)(image.getWidth()*coef-image.getWidth())/2;
+        int padH = (int)(image.getHeight()*coef-image.getHeight())/2;
         for (int j = 0; j < image.getHeight(); j++) {
             for (int i = 0; i < image.getWidth(); i++) {
-                rasterPad.setPixel(i+hlf,j+hlf , rasterImage.getPixel(i,j, (int[])null));
+                rasterPad.setPixel(padW+i,padH+j , rasterImage.getPixel(i,j, (int[])null));
             }
         }
         return pad;
+    }
+
+    public static ArrayList<BufferedImage> imagePad(ArrayList<BufferedImage> image, double coef,boolean isPsf) {
+        ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
+        int width = image.get(0).getWidth();
+        int height = image.get(0).getHeight();
+        int size = image.size();
+        //BufferedImage zero = createNewBufferedImage(width+sizePSF, height+sizePSF);
+        BufferedImage zero = createZeroBufferedImage((int)(width*coef), (int)(height*coef));
+        double sizePad = size*coef-size;
+        //isPsf = false;
+        for (int i = 0; i < size; i++) {
+            out.add(imagePad(image.get(i), coef));
+        }
+        for (int i = 0; i < (int)sizePad; i++) {
+            out.add(zero);
+        }
+        return out;
     }
 
     /**
@@ -1056,6 +1218,21 @@ public class CommonUtils {
     public static BufferedImage imageUnPad(BufferedImage image, int sizePSF) {
         int hlf = sizePSF/2;
         return image.getSubimage(hlf, hlf, image.getWidth()-sizePSF, image.getHeight()-sizePSF);
+    }
+
+    public static ArrayList<BufferedImage> imageUnPad(ArrayList<BufferedImage> image, int sizePSF) {
+        ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
+        for (int i = image.size()/4; i < (image.size()*3)/4; i++) {
+            out.add(imageUnPad(image.get(i), sizePSF));
+        }
+
+        /*for (int i = (image.size()*3)/4; i < image.size(); i++) {
+            out.add(imageUnPad(image.get(i), sizePSF));
+        }
+        for (int i = 0; i < image.size()/4; i++) {
+            out.add(imageUnPad(image.get(i), sizePSF));
+        }*/
+        return out;
     }
 
     /**
@@ -1213,6 +1390,155 @@ public class CommonUtils {
             }
         }
         return imageout;
+    }
+
+    /**
+     * Shift zero-frequency component to center of spectrum for a 3D array.
+     *
+     * @param psf the a
+     * @param out 
+     * @param w the width
+     * @param h the height
+     * @param d the depth
+     * @return the double[]
+     */
+    public static double[] fftShift3D(double[] psf, double[] out, int w, int h, int d)
+    {   
+        int wh = w*h;
+        for (int k = 0; k < d/2; k++)
+        {
+            for(int j = 0; j < h/2; j++)
+            {
+                for(int i = 0; i < w/2; i++)
+                {
+                    //Le coté face
+                    //0,0,0-->w,h,d ou bas gauche face en haut droit fond
+                    out[w - w/2 + i + w*(h - h/2 + j) + wh*(d - d/2 + k)] = psf[i + w*j + k*wh];
+                    //w/2,0,0-->0,h/2,d/2 ou bas droite face en haut gauche fond
+                    out[i + w*(h - h/2 + j) + wh*(d - d/2 + k)] = psf[i + w/2 + w*j + k*wh];
+                    //haut gauche face en bas droite fond
+                    out[w - w/2 + i + w*j + wh*(d - d/2 + k)] = psf[i + w*(j + h/2) + k*wh];
+                    //haut droit face en bas gauche fond
+                    out[i + w*j+ wh*(d - d/2 + k)] = psf[i + w/2 + w*(j + h/2) + k*wh];
+
+                    //le coté fond en face
+                    out[w - w/2 + i + w*(h - h/2 + j) + k*wh] = psf[i + w*j + wh*(d - d/2 + k)];
+                    out[i + w*(h - h/2 + j) + k*wh] = psf[i + w/2 + w*j + wh*(d - d/2 + k)];
+                    out[w - w/2 + i + w*j + k*wh] = psf[i + w*(j + h/2) + wh*(d - d/2 + k)];
+                    out[i + w*j+ k*wh] = psf[i + w/2 + w*(j + h/2) + wh*(d - d/2 + k)];
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Here we are padding a cube, no scale only padding
+     * 
+     * Cube : 
+     *     H
+     *    /
+     *   /
+     *  o---- W
+     *  |
+     *  |
+     *  Z
+     *  
+     * Front:
+     *  1 2
+     *  3 4
+     *  
+     *  back:
+     *  5 6
+     *  7 8
+     *  
+     *  1<=>8
+     *  3<=>6
+     *  2<=>7
+     *  4<=>5
+     * Bloc X to Y
+     * 
+     * dest( pos(Y) ) = in( pos(X) )
+     * 
+     * @param psfOut
+     * @param psfIn
+     * @param psfWidth
+     * @param psfHeight
+     * @param psfZ
+     * @return
+     */
+    public static double[] psf3DPadding1D(double[] psfOut, double[] psfIn, int psfWidth, int psfHeight, int psfZ) {
+        int demiPsfW = psfWidth/2;
+        int demiPsfH = psfHeight/2;
+        int demiPsfZ = psfZ/2;
+        int strideJ = psfWidth;
+        int strideK = psfWidth*psfHeight;
+        //Bloc 8 to 1
+        for (int k = 0; k < demiPsfZ; k++) {
+            for(int j = 0; j < demiPsfH; j++){
+                for(int i = 0; i < demiPsfW; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(demiPsfW+i)+(demiPsfH+j)*strideJ+(demiPsfZ+k)*strideK];
+                }
+            }
+        }
+        //Bloc 1 to 8
+        for (int k = demiPsfZ; k < psfZ; k++) {
+            for(int j = demiPsfH; j < psfHeight; j++){
+                for(int i = demiPsfW; i < psfWidth; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(i-demiPsfW)+(j-demiPsfH)*strideJ+(k-demiPsfZ)*strideK];
+                }
+            }
+        }
+        //bloc 7 to 2
+        for (int k = 0; k < demiPsfZ; k++) {
+            for(int j = 0; j < demiPsfH; j++){
+                for(int i = demiPsfW; i < psfWidth ; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(i-demiPsfW)+(demiPsfH+j)*strideJ+(demiPsfZ+k)*strideK];
+                }
+            }
+        }
+        //bloc 2 to 7
+        for (int k = demiPsfZ; k < psfZ; k++) {
+            for(int j = demiPsfH; j < psfHeight; j++){
+                for(int i = 0; i < demiPsfW ; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(demiPsfW+i)+(j-demiPsfH)*strideJ+(k-demiPsfZ)*strideK];
+                }
+            }
+        }
+        //bloc 6 to 3
+        for (int k = demiPsfZ; k < psfZ; k++) {
+            for(int j = 0; j < demiPsfH; j++){
+                for(int i = 0; i < demiPsfW; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(demiPsfW+i)+(demiPsfH+j)*strideJ+(k-demiPsfZ)*strideK];
+                }
+            }
+        }
+        //bloc 3 to 6
+        for (int k = 0; k < demiPsfZ; k++) {
+            for(int j = demiPsfH; j < psfHeight; j++){
+                for(int i = demiPsfW; i < psfWidth; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(i-demiPsfW)+(j-demiPsfH)*strideJ+(demiPsfZ+k)*strideK];
+                }
+            }
+        }
+        //bloc 5 to 4
+        for (int k = demiPsfZ; k < psfZ; k++) {
+            for(int j = 0; j < demiPsfH; j++){
+                for(int i = demiPsfW; i < psfWidth; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(i-demiPsfW)+(demiPsfH+j)*strideJ+(k-demiPsfZ)*strideK];
+                }
+            }
+        }
+
+        //bloc 4 to 5
+        for (int k = 0; k < demiPsfZ; k++) {
+            for(int j = demiPsfH; j < psfHeight; j++){
+                for(int i = 0; i < demiPsfW; i++){
+                    psfOut[i+j*strideJ+k*strideK] = psfIn[(demiPsfW+i)+(j-demiPsfH)*strideJ+(demiPsfZ+k)*strideK];
+                }
+            }
+        }
+        return psfOut;
     }
 
     /**
@@ -1416,6 +1742,23 @@ public class CommonUtils {
         int H = A.length/W;
         BufferedImage I = arrayToImage1D(A, W, H, false);
         saveBufferedImage(I, name);
+    }
+    private static String printTime(){
+        LocalDateTime now = LocalDateTime.now();
+        return now.get(DateTimeFieldType.hourOfDay())+"h "+now.getMinuteOfHour()+"min "+now.getSecondOfMinute()+"sec";
+
+    }
+
+    public static void printTimeNow(){
+        System.out.println(printTime());
+    }
+
+    public static void printTimeNow(String before){
+        System.out.println(before +" "+printTime());
+    }
+
+    public static void printTimeNow(String before, String after){
+        System.out.println(before +" "+printTime()+" "+after);
     }
 }
 

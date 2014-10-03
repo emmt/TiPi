@@ -27,6 +27,7 @@ package plugins.mitiv.deconv;
 
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JSlider;
@@ -142,6 +143,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         }
     }
 
+    //FIXME return arraylist bufferedImage and use this for both 3D and 1D
     private BufferedImage firstJob(int job){
         thread = new ThreadCG(this);
         thread.start();
@@ -149,11 +151,11 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         switch (job) {
         //First value correspond to next job with alpha = 0, not all are equal to 1
         case DeconvUtils.JOB_WIENER: 
-            return (deconvolution.firstDeconvolution(muMin, isSplitted));
+            return (deconvolution.firstDeconvolution(muMin, isSplitted)).get(0);
         case DeconvUtils.JOB_QUAD:
-            return (deconvolution.firstDeconvolutionQuad(muMin, isSplitted));
+            return (deconvolution.firstDeconvolutionQuad(muMin, isSplitted).get(0));
         case DeconvUtils.JOB_CG:
-            return (deconvolution.firstDeconvolutionCG(muMin, isSplitted));
+            return (deconvolution.firstDeconvolutionCG(muMin, isSplitted).get(0));
         default:
             throw new IllegalArgumentException("Invalid Job");
         }
@@ -167,19 +169,81 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         double mult = 1E9; //HACK While the data uniformization is not done...
         switch (job) {
         case DeconvUtils.JOB_WIENER:
-            return (deconvolution.nextDeconvolution(mu));
+            return (deconvolution.nextDeconvolution(mu).get(0));
 
         case DeconvUtils.JOB_QUAD:
-            return (deconvolution.nextDeconvolutionQuad(mu*mult));
+            return (deconvolution.nextDeconvolutionQuad(mu*mult).get(0));
 
         case DeconvUtils.JOB_CG:
-            return (deconvolution.nextDeconvolutionCG(mu*mult));
+            return (deconvolution.nextDeconvolutionCG(mu*mult).get(0));
 
         default:
             throw new IllegalArgumentException("Invalid Job");
         }
     }
 
+    private void firstJob3D(int job){
+        thread = new ThreadCG(this);
+        thread.compute3D();
+        thread.start();
+        boolean isSplitted = false;
+        ArrayList<BufferedImage>tmp;
+        switch (job) {
+        //First value correspond to next job with alpha = 0, not all are equal to 1
+        case DeconvUtils.JOB_WIENER: 
+            tmp = deconvolution.firstDeconvolution(muMin,Deconvolution.PROCESSING_3D,isSplitted);
+            for (int i = 0; i < tmp.size(); i++) {
+                myseq.setImage(0, i, tmp.get(i));
+            }
+            break;
+        case DeconvUtils.JOB_QUAD:
+            tmp = deconvolution.firstDeconvolutionQuad(muMin,Deconvolution.PROCESSING_3D,isSplitted);
+            for (int i = 0; i < tmp.size(); i++) {
+                myseq.setImage(0, i, tmp.get(i));
+            }
+            break;
+        case DeconvUtils.JOB_CG:
+            tmp = deconvolution.firstDeconvolutionCG(muMin,Deconvolution.PROCESSING_3D,isSplitted);
+            for (int i = 0; i < tmp.size(); i++) {
+                myseq.setImage(0, i, tmp.get(i));
+            }
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid Job");
+        }
+    }
+
+    public void nextJob3D(int slidervalue, int job){
+        double mu = sliderToRegularizationWeight(slidervalue);
+        if (!isHeadLess()) {
+            updateLabel(mu);
+        }
+        double mult = 1E9; //HACK While the data uniformization is not done...
+        ArrayList<BufferedImage>tmp;
+        switch (job) {
+        case DeconvUtils.JOB_WIENER:
+            tmp = deconvolution.nextDeconvolution(mu,Deconvolution.PROCESSING_3D);
+            for (int i = 0; i < tmp.size(); i++) {
+                myseq.setImage(0, i, tmp.get(i));
+            }
+            break;
+        case DeconvUtils.JOB_QUAD:
+            tmp = deconvolution.nextDeconvolutionQuad(mu*mult,Deconvolution.PROCESSING_3D);
+            for (int i = 0; i < tmp.size(); i++) {
+                myseq.setImage(0, i, tmp.get(i));
+            }
+            break;
+        case DeconvUtils.JOB_CG:
+            tmp = deconvolution.nextDeconvolutionCG(mu*mult,Deconvolution.PROCESSING_3D);
+            for (int i = 0; i < tmp.size(); i++) {
+                myseq.setImage(0, i, tmp.get(i));
+            }
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid Job");
+        }
+    }
+    
     @Override
     protected void initialize()
     {
@@ -224,9 +288,8 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         if (myseq != null) {
             myseq.close();
         }
-
+        //If there is a missing parameter we notify the user with the missing parameter as information
         if(sequenceImage.getValue() == null || sequencePSF.getValue() == null){
-            //If there is a missing parameter we notify the user with the missing parameter as information
             String message = "You have forgotten to give ";
             String messageEnd = "";
             if (sequenceImage.getValue() == null) {
@@ -240,36 +303,61 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
             }
             new AnnounceFrame(message+messageEnd);
         }else{
-            try {
-                deconvolution = new Deconvolution(sequenceImage.getValue().getFirstNonNullImage(),
-                        sequencePSF.getValue().getFirstNonNullImage(),correct);
-                myseq = new Sequence();
-                myseq.addImage(0,firstJob(job));
-                myseq.addListener(this); 
-                myseq.setName("");
-                if (isHeadLess()) {
-                    double value = valueBlock.getValue();
-                    updateImage(nextJob((int)value, job), (int)value);
+            //try {
+                Sequence seqIm = sequenceImage.getValue();
+                Sequence seqPsf = sequencePSF.getValue();
+                if (seqIm.getSizeZ() == 1 && seqPsf.getSizeZ() == 1) {
+                    deconvolution = new Deconvolution(seqIm.getFirstNonNullImage(), seqPsf.getFirstNonNullImage(),correct);
+                    myseq = new Sequence();
+                    myseq.addImage(0,firstJob(job));
+                    myseq.addListener(this); 
+                    myseq.setName("");
+                    if (isHeadLess()) {
+                        double value = valueBlock.getValue();
+                        updateImage(nextJob((int)value, job), (int)value);
+                    } else {
+                        addSequence(myseq);
+                        slider.setEnabled(true);
+                        slider.addChangeListener(new ChangeListener(){
+                            public void stateChanged(ChangeEvent event){
+                                //getUI().setProgressBarMessage("Computation in progress");
+                                int sliderValue =(((JSlider)event.getSource()).getValue());
+                                updateProgressBarMessage("Computing");
+                                thread.prepareNextJob(sliderValue, job);
+                                //OMEXMLMetadataImpl metaData = new OMEXMLMetadataImpl();
+                                //myseq.setMetaData(metaData);
+                                //updateImage(buffered, tmp);
+                            }
+                        });  
+                        //Beware, need to be called at the END
+                        slider.setValue(0);
+                    }
                 } else {
-                    addSequence(myseq);
-                    slider.setEnabled(true);
-                    slider.addChangeListener(new ChangeListener(){
-                        public void stateChanged(ChangeEvent event){
-                            //getUI().setProgressBarMessage("Computation in progress");
-                            int sliderValue =(((JSlider)event.getSource()).getValue());
-                            updateProgressBarMessage("Computing");
-                            thread.prepareNextJob(sliderValue, job);
-                            //OMEXMLMetadataImpl metaData = new OMEXMLMetadataImpl();
-                            //myseq.setMetaData(metaData);
-                            //updateImage(buffered, tmp);
-                        }
-                    });  
-                    //Beware, need to be called at the END
-                    slider.setValue(0);
+                    deconvolution = new Deconvolution(seqIm.getAllImage(), seqPsf.getAllImage(),correct);
+                    myseq = new Sequence();
+                    myseq.addListener(this); 
+                    myseq.setName("");
+                    firstJob3D(job);
+                    if (isHeadLess()) {
+                        //TODO pour 3D verifier
+                        double value = valueBlock.getValue();
+                        updateImage(nextJob((int)value, job), (int)value);
+                    } else {
+                        addSequence(myseq);
+                        slider.setEnabled(true);
+                        slider.setValue(0);
+                        slider.addChangeListener(new ChangeListener(){
+                            public void stateChanged(ChangeEvent event){
+                                int sliderValue =(((JSlider)event.getSource()).getValue());
+                                updateProgressBarMessage("Computing");
+                                thread.prepareNextJob(sliderValue, job);
+                            }
+                        });
+                    }
                 }
-            } catch (Exception e) {
-                new AnnounceFrame("Oops, Error: "+e.getMessage());
-            }
+            //} catch (Exception e) {
+            //    new AnnounceFrame("Oops, Error: "+e.getMessage());
+            //}
         }
     }
 
