@@ -26,7 +26,6 @@
 package mitiv.utils;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
@@ -395,6 +394,34 @@ public class CommonUtils {
                 }
             }
         }
+        return out;
+    }
+
+    public static double[] image3DToArray1D(ArrayList<BufferedImage>listImage, int sizeZ, int width,int height, boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[2*sizeZ*width*height];
+            int strideW = width;
+            int strideH = width*height;
+            int strideZ = sizeZ*width*height;
+            for (int k = 0; k < sizeZ; k++) {
+                double[] tmp = CommonUtils.imageToArray1D(listImage.get(k), false);
+                for (int j = 0; j < height; j++) {
+                    for (int i = 0; i < width; i++) {
+                        out[2*i+2*j*strideW+2*k*strideH] = tmp[i+j*strideW];
+                    }
+                }
+            }
+        } else {
+            out = new double[sizeZ*width*height];
+            for (int j = 0; j < sizeZ; j++) {
+                double[] tmp = CommonUtils.imageToArray1D(listImage.get(j), false);
+                for (int i = 0; i < tmp.length; i++) {
+                    out[i+j*tmp.length] = tmp[i];
+                }
+            }
+        }
+
         return out;
     }
 
@@ -1031,7 +1058,7 @@ public class CommonUtils {
     }
 
     private static BufferedImage createZeroBufferedImage(int width, int height){
-        BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+        BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
         WritableRaster rasterImage = out.getRaster();
         int[] tmp = new int[]{0,0,0};
         for (int j = 0; j < height; j++) {
@@ -1048,38 +1075,39 @@ public class CommonUtils {
      * HeightOutput = HeightInput +sizePSF.
      *
      * @param image the image
-     * @param sizePading the size psf
+     * @param coef 
      * @return the buffered image
      */
-    public static BufferedImage imagePad(BufferedImage image, int sizePading) {
-        BufferedImage pad = new BufferedImage(image.getWidth()+sizePading, image.getHeight()+sizePading, BufferedImage.TYPE_USHORT_GRAY);
+    public static BufferedImage imagePad(BufferedImage image, double coef) {
+        BufferedImage pad = createZeroBufferedImage((int)(image.getWidth()*coef), (int)(image.getHeight()*coef));
+        //BufferedImage pad = new BufferedImage(image.getWidth()+sizePading, image.getHeight()+sizePading, BufferedImage.TYPE_USHORT_GRAY);
         WritableRaster rasterImage = image.getRaster();
         WritableRaster rasterPad = pad.getRaster();
-        int hlf = sizePading/2;
+        int padW = (int)(image.getWidth()*coef-image.getWidth())/2;
+        int padH = (int)(image.getHeight()*coef-image.getHeight())/2;
         for (int j = 0; j < image.getHeight(); j++) {
             for (int i = 0; i < image.getWidth(); i++) {
-                rasterPad.setPixel(i+hlf,j+hlf , rasterImage.getPixel(i,j, (int[])null));
+                rasterPad.setPixel(padW+i,padH+j , rasterImage.getPixel(i,j, (int[])null));
             }
         }
         return pad;
     }
 
-    public static ArrayList<BufferedImage> imagePad(ArrayList<BufferedImage> image, int sizePSF) {
+    public static ArrayList<BufferedImage> imagePad(ArrayList<BufferedImage> image, double coef,boolean isPsf) {
         ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
         int width = image.get(0).getWidth();
         int height = image.get(0).getHeight();
+        int size = image.size();
         //BufferedImage zero = createNewBufferedImage(width+sizePSF, height+sizePSF);
-        BufferedImage zero = createZeroBufferedImage(width+sizePSF, height+sizePSF);
-        for (int i = 0; i < image.size()/2; i++) {
+        BufferedImage zero = createZeroBufferedImage((int)(width*coef), (int)(height*coef));
+        double sizePad = size*coef-size;
+        //isPsf = false;
+        for (int i = 0; i < size; i++) {
+            out.add(imagePad(image.get(i), coef));
+        }
+        for (int i = 0; i < (int)sizePad; i++) {
             out.add(zero);
         }
-        for (BufferedImage tmp : image) {
-            out.add(imagePad(tmp, sizePSF));
-        }
-        for (int i = 0; i < image.size()/2; i++) {
-            out.add(zero);
-        }
-
         return out;
     }
 
@@ -1267,6 +1295,46 @@ public class CommonUtils {
             }
         }
         return imageout;
+    }
+
+    /**
+     * Shift zero-frequency component to center of spectrum for a 3D array.
+     *
+     * @param psf the a
+     * @param out 
+     * @param w the width
+     * @param h the height
+     * @param d the depth
+     * @return the double[]
+     */
+    public static double[] fftShift3D(double[] psf, double[] out, int w, int h, int d)
+    {   
+        int wh = w*h;
+        for (int k = 0; k < d/2; k++)
+        {
+            for(int j = 0; j < h/2; j++)
+            {
+                for(int i = 0; i < w/2; i++)
+                {
+                    //Le coté face
+                    //0,0,0-->w,h,d ou bas gauche face en haut droit fond
+                    out[w - w/2 + i + w*(h - h/2 + j) + wh*(d - d/2 + k)] = psf[i + w*j + k*wh];
+                    //w/2,0,0-->0,h/2,d/2 ou bas droite face en haut gauche fond
+                    out[i + w*(h - h/2 + j) + wh*(d - d/2 + k)] = psf[i + w/2 + w*j + k*wh];
+                    //haut gauche face en bas droite fond
+                    out[w - w/2 + i + w*j + wh*(d - d/2 + k)] = psf[i + w*(j + h/2) + k*wh];
+                    //haut droit face en bas gauche fond
+                    out[i + w*j+ wh*(d - d/2 + k)] = psf[i + w/2 + w*(j + h/2) + k*wh];
+
+                    //le coté fond en face
+                    out[w - w/2 + i + w*(h - h/2 + j) + k*wh] = psf[i + w*j + wh*(d - d/2 + k)];
+                    out[i + w*(h - h/2 + j) + k*wh] = psf[i + w/2 + w*j + wh*(d - d/2 + k)];
+                    out[w - w/2 + i + w*j + k*wh] = psf[i + w*(j + h/2) + wh*(d - d/2 + k)];
+                    out[i + w*j+ k*wh] = psf[i + w/2 + w*(j + h/2) + wh*(d - d/2 + k)];
+                }
+            }
+        }
+        return out;
     }
 
     /**
