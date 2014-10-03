@@ -256,6 +256,16 @@ public abstract class Vector {
         space._axpby(alpha, x, beta, y, this);
     }
 
+    public final void axpbypcz(double alpha, Vector x,
+            double beta, Vector y,
+            double gamma, Vector z)
+                    throws IncorrectSpaceException {
+        space.check(x);
+        space.check(y);
+        space.check(z);
+        space._axpbypcz(alpha, x, beta, y, gamma, z, this);
+    }
+
     /**
      * Make a string representation of the vector contents.
      */

@@ -33,81 +33,18 @@ import mitiv.linalg.VectorSpace;
  * Abstract class for bound projection.
  *
  * <p>
- * A BoundProjector can be used to implement bound constraints.  It has also
- * the ability to project the gradient, that is to generate (the opposite) of
- * a feasible steepest descent direction.</p>
- *
- * <h3>Properties</h3>
- * <p>
- * Although it operates on a vector space, a BoundProjector is not a linear
- * operator.  It is an idempotent endomorphism and can be applied <i>in-place</i>
- * that is with the same input and output vector.</p>
+ * A BoundProjector can be used to implement bound constraints.  Compared
+ * to a {@link ConvexSetProjector}, it has also the ability to project the
+ * gradient, that is to generate (the opposite) of a feasible steepest
+ * descent direction.</p>
  *
  * @author Éric Thiébaut.
  */
-public abstract class BoundProjector {
-    final private VectorSpace space;
+public abstract class BoundProjector extends ConvexSetProjector {
 
     protected BoundProjector(VectorSpace vsp) {
-        space = vsp;
+        super(vsp);
     }
-
-    public VectorSpace getInputSpace() {
-        return space;
-    }
-    public VectorSpace getOutputSpace() {
-        return space;
-    }
-
-    /**
-     * Apply the projector.
-     * 
-     * <p>
-     * Given input variables <i>x</i>, the projection produces feasible
-     * output variables <i>xp</i> that are within the bounds.  The input
-     * and output variables can be stored in the same vector (<i>i.e.</i>
-     * the method can be applied <i>in-place</i>).
-     * </p>
-     * @param x  - The source.
-     * @param xp - The destination.
-     * @throws IncorrectSpaceException if its arguments do not belong to the
-     *         correct vector space.
-     */
-    public void apply(Vector x, Vector xp) {
-        if (x == null || ! x.belongsTo(space) ||
-                xp == null || ! xp.belongsTo(space)) {
-            throw new IncorrectSpaceException();
-        }
-        _apply(x, xp);
-    }
-
-    /**
-     * Apply the projector (in-place version).
-     * 
-     * @param x  - On entry, the unconstrained variables; on exit, the
-     *             projected variables.
-     * @throws IncorrectSpaceException if its arguments do not belong to the
-     *         correct vector space.
-     */
-    public void apply(Vector x) {
-        if (x == null || ! x.belongsTo(space)) {
-            throw new IncorrectSpaceException();
-        }
-        _apply(x, x);
-    }
-
-    /**
-     * Protected method to apply the projector to the variables.
-     * 
-     * <p>
-     * This abstract method must be overridden by instantiable sub-classes,
-     * it is guaranteed to be called with checked arguments.  The input and
-     * output vectors can be the same.
-     * </p>
-     * @param x  - The source.
-     * @param xp - The destination.
-     */
-    protected abstract void _apply(Vector x, Vector xp);
 
     /**
      * Project the gradient of bounded variables.
@@ -170,26 +107,6 @@ public abstract class BoundProjector {
      * @param gp - The projected gradient.
      */
     protected abstract void _projectGradient(Vector x, Vector g, Vector gp);
-
-    /** Get the minimum of two single precision floating point values. */
-    protected static final float min(float a, float b) {
-        return (a <= b ? a : b);
-    }
-
-    /** Get the maximum of two single precision floating point values. */
-    protected static final float max(float a, float b) {
-        return (a >= b ? a : b);
-    }
-
-    /** Get the minimum of two double precision floating point values. */
-    protected static final double min(double a, double b) {
-        return (a <= b ? a : b);
-    }
-
-    /** Get the maximum of two double precision floating point values. */
-    protected static final double max(double a, double b) {
-        return (a >= b ? a : b);
-    }
 
 }
 

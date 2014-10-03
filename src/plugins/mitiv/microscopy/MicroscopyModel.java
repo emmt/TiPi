@@ -66,7 +66,9 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
     EzVarDouble deltay;
     EzVarDouble alpha;
     EzVarDouble beta;
-    
+    EzVarDouble zdepth;
+    EzVarDouble use_depth_scaling;
+
     EzVarBoolean rho;
     EzVarBoolean phi;
     EzVarBoolean psi;
@@ -77,14 +79,18 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
     JLabel label;
     //Zernike part
 
-    double [][][] psf;
+    double [] psf;
     double PSFXZ[][][];    
-    MicroscopyModelPSF pupil;
+    MicroscopyModelPSF_1D pupil;
     double[] args;
     boolean[] rpp;
     //icy part
     Sequence myseq;
     ZernikeWindowSlim zernSlim;
+    int Nx;
+    int Ny;
+    int Nz;
+
     @Override
     protected void initialize()
     {
@@ -102,6 +108,8 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
         deltay = new EzVarDouble("Defocus along lateral Y-dimension");
         alpha = new EzVarDouble("Zernike coefficients: Alpha");
         beta = new EzVarDouble("Zernike coefficients: Beta");
+        zdepth = new EzVarDouble("Depth of a light located in the specimen layer");
+        use_depth_scaling = new EzVarDouble("caca");
 
         rho = new EzVarBoolean("Show rho", false);
         phi = new EzVarBoolean("Show phi", false);
@@ -122,30 +130,34 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
         deltay.setValue(0.0);
         alpha.setValue(1.0);
         beta.setValue(1.0);
-
+        zdepth.setValue(0.);
         slider = new JSlider(0,100,0);
         slider.setEnabled(false);
         label = new JLabel("               ");
 
-        super.addEzComponent(na);
-        super.addEzComponent(lambda);
-        super.addEzComponent(ni);
-        super.addEzComponent(dxy);
-        super.addEzComponent(dz);
-        super.addEzComponent(nx);
-        super.addEzComponent(ny);
-        super.addEzComponent(nz);
-        super.addEzComponent(j);
-        super.addEzComponent(deltax);
-        super.addEzComponent(deltay);
-        super.addEzComponent(alpha);
-        super.addEzComponent(beta);
+        Nx = 256;
+        Ny = 256;
+        Nz = 64;
+        addEzComponent(na);
+        addEzComponent(lambda);
+        addEzComponent(ni);
+        addEzComponent(dxy);
+        addEzComponent(dz);
+        addEzComponent(nx);
+        addEzComponent(ny);
+        addEzComponent(nz);
+        addEzComponent(j);
+        addEzComponent(deltax);
+        addEzComponent(deltay);
+        addEzComponent(alpha);
+        addEzComponent(beta);
+        addEzComponent(zdepth);
+        addEzComponent(use_depth_scaling);
+        addEzComponent(rho);
+        addEzComponent(phi);
+        addEzComponent(psi);
 
-        super.addEzComponent(rho);
-        super.addEzComponent(phi);
-        super.addEzComponent(psi);
-
-        super.addEzComponent(xz);
+        addEzComponent(xz);
 
         super.addComponent(slider);
         super.addComponent(label);
@@ -154,24 +166,6 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
     @Override
     protected void execute()
     {
-        args = new double[16];
-        args[0] = na.getValue();
-        args[1] = lambda.getValue()*1e-9;
-        args[2] = ni.getValue();
-        args[3] = dxy.getValue()*1e-9;
-        args[4] = dz.getValue()*1e-6;
-        args[5] = nx.getValue();
-        args[6] = ny.getValue();
-        args[7] = nz.getValue();
-        args[8] = j.getValue();
-        args[9] = deltax.getValue();
-        args[10] = deltay.getValue();
-        args[11] = alpha.getValue();
-        args[12] = beta.getValue();
-        args[13] = beta.getValue();
-        args[14] = beta.getValue();
-        args[15] = beta.getValue();
-        
         rpp = new boolean[4];
         rpp[0] = rho.getValue();
         rpp[1] = phi.getValue();
@@ -184,56 +178,74 @@ public class MicroscopyModel extends EzPlug implements EzStoppable
         EventQueue.invokeLater(zern);
         prev = zern;*/
 
-        psf = new double[(int)args[7]][(int)args[6]][(int)args[5]];
-        //MicroscopyModelPSF pupil = new MicroscopyModelPSF(NA, lambda, ni, ns, zdepth, dxy, dz, nx, ny, nz, nzern, use_depth_scaling);
-        //pupil.computePSF(psf, alpha, beta, deltaX, deltaY, zdepth);
-        pupil = new MicroscopyModelPSF(args[0], args[1], args[2], 0, 0, args[3], args[4], (int)args[5], (int)args[6], (int)args[7], (int)args[8], 0);
-        pupil.computePSF(psf, new double[]{args[11]}, new double[]{args[12]}, args[9], args[10], 0);
-        PSFXZ = MathUtils.XY2XZ(psf);
+        //MicroscopyModelPSF_1D(double NA, double lambda, double ni,double ns,
+        //        double zdepth, double dxy, double dz, int Nx, int Ny, int Nz, int Nzern, int use_depth_scaling)
+        // pupil = new MicroscopyModelPSF_1D(args[0], args[1], args[2], 0, 0, args[3], args[4], (int)args[5], (int)args[6], (int)args[7], (int)args[8], 0);
+        pupil = new MicroscopyModelPSF_1D(na.getValue(), lambda.getValue(), ni.getValue(), ns.getValue(),
+                zdepth.getValue(), dxy.getValue(), dz.getValue(), nx.getValue().intValue(), ny.getValue().intValue(),
+                nz.getValue().intValue(), j.getValue().intValue(), use_depth_scaling.getValue().intValue());
 
-        if (myseq != null) {
+        pupil.computePSF(new double[]{alpha.getValue()}, new double[]{beta.getValue()},
+                deltax.getValue(), deltay.getValue(), 0.0);
+        //MathUtils.pli2(pupil.getPSF(0), 256, 256, 1);
+        //computePSF(final double[] alpha, final double[] beta, double deltaX, double deltaY, double zdepth)
+        //PSFXZ = MathUtils.XY2XZ(psf);
+
+        if (myseq != null)
+        {
             myseq.close();
         }
         myseq = new Sequence();
         //If we show the xz visualization
-        if (rpp[3]) {
-            for (int i = 0; i < (int)args[6]-1; i++) {
-                myseq.setImage(i,0,CommonUtils.array2BuffI(PSFXZ[i]));
+        if (rpp[3])
+        {
+            for (int i = 0; i < (int)args[6]-1; i++)
+            {
+                //myseq.setImage(i,0,CommonUtils.arrayToImage1D(PSFXZ, Nx, Ny, i, false));
             }
-            
+
         }else{
-            for (int i = 0; i < (int)args[7]-1; i++) {
-                myseq.setImage(i,0,CommonUtils.array2BuffI(psf[i]));
+            for (int i = 0; i < nz.getValue().intValue(); i++)
+            {
+                //myseq.setImage(i,0,CommonUtils.arrayToImage1D_3D(pupil.getPSF(), Nx, Ny, i, false));
+                myseq.setImage(i,0,CommonUtils.arrayToImage1D(pupil.getPSF(i), nx.getValue().intValue(), ny.getValue().intValue(), false));
             }
-            
         }
         addSequence(myseq);
 
-        slider.addChangeListener(new ChangeListener(){
-            public void stateChanged(ChangeEvent event){
+        slider.addChangeListener(new ChangeListener()
+        {
+            public void stateChanged(ChangeEvent event)
+            {
                 int tmp =(((JSlider)event.getSource()).getValue());
 
-                if (rpp[3]) {
-                    myseq.setImage(0,0,CommonUtils.array2BuffI(PSFXZ[tmp]));
-                }else{
-                    myseq.setImage(0,0,CommonUtils.array2BuffI(psf[tmp]));
+                if (rpp[3])
+                {
+                    //myseq.setImage(0,0,CommonUtils.arrayToImage1D(PSFXZ, Nx, Ny, tmp, false));
+                }else
+                {
+                    //myseq.setImage(0,0,CommonUtils.arrayToImage1D_3D(pupil.getPSF(), Nx, Ny, tmp, false));
+                    myseq.setImage(0,0,CommonUtils.arrayToImage1D(pupil.getPSF(0), Nx, Ny, false));
                 }
 
                 label.setText( "Actual value : "+tmp);
             }
         });
         //some slider adjustement
-        if (rpp[3]) {
+        if (rpp[3])
+        {
             slider.setMaximum((int)args[6]-1);
-        }else{
-            slider.setMaximum((int)args[7]-1);
+        }else
+        {
+            slider.setMaximum(nz.getValue().intValue());
         }
         //Show rho phi psi
-        if (zernSlim != null) {
+        if (zernSlim != null)
+        {
             zernSlim.close();
         }
         if (rpp[0] || rpp[1] || rpp[2]) {
-            zernSlim = new ZernikeWindowSlim(pupil, rpp);
+            zernSlim = new ZernikeWindowSlim(pupil, Nx, Ny, rpp);
             EventQueue.invokeLater(zernSlim); 
         }
         slider.setEnabled(true);

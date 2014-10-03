@@ -277,7 +277,8 @@ public class LBFGSB implements ReverseCommunicationOptimizer {
 
             /* Estimate the length of the first step, start the line search
              * and take the first step along the search direction. */
-            if (H.mp >= 1 || H.scaling == LBFGSOperator.USER_SCALING) {
+            if (H.mp >= 1 || H.rule == InverseHessianApproximation.NONE
+                    || H.rule == InverseHessianApproximation.BY_USER) {
                 alpha = 1.0;
             } else if (0.0 < tiny && tiny < 1.0) {
                 double xnorm = x1.norm2();

@@ -25,6 +25,8 @@
 
 package mitiv.utils;
 
+import icy.image.IcyBufferedImage;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -397,7 +399,34 @@ public class CommonUtils {
         return out;
     }
 
-    public static double[] image3DToArray1D(ArrayList<BufferedImage>listImage, int sizeZ, int width,int height, boolean isComplex) {
+    public static double[] image3DToArray1D(ArrayList<BufferedImage>listImage, int width,int height, int sizeZ, boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[2*sizeZ*width*height];
+            int strideW = width;
+            int strideH = width*height;
+            for (int k = 0; k < sizeZ; k++) {
+                double[] tmp = CommonUtils.imageToArray1D(listImage.get(k), false);
+                for (int j = 0; j < height; j++) {
+                    for (int i = 0; i < width; i++) {
+                        out[2*i+2*j*strideW+2*k*strideH] = tmp[i+j*strideW];
+                    }
+                }
+            }
+        } else {
+            out = new double[sizeZ*width*height];
+            for (int j = 0; j < sizeZ; j++) {
+                double[] tmp = CommonUtils.imageToArray1D(listImage.get(j), false);
+                for (int i = 0; i < tmp.length; i++) {
+                    out[i+j*tmp.length] = tmp[i];
+                }
+            }
+        }
+
+        return out;
+    }
+
+    public static double[] icyImage3DToArray1D(ArrayList<IcyBufferedImage>listImage, int width,int height,int sizeZ, boolean isComplex) {
         double[] out;
         if (isComplex) {
             out = new double[2*sizeZ*width*height];
@@ -421,10 +450,40 @@ public class CommonUtils {
                 }
             }
         }
-
         return out;
     }
-
+    
+    public static double[] shiftPsf3DToArray1D(ArrayList<BufferedImage>listPSF,int width, int height, int sizeZ,  boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[width*height*sizeZ*2];
+        } else {
+            out = new double[width*height*sizeZ];
+        }
+        double[] psfIn = CommonUtils.image3DToArray1D(listPSF, width, height, sizeZ, isComplex);
+        if (psfIn.length != out.length) {
+            throw new IllegalArgumentException("The PSF and the output should be of same size");
+        }
+        fftShift3D(psfIn,out, width, height, sizeZ);
+        //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
+        return out;
+    }
+    
+    public static double[] shiftIcyPsf3DToArray1D(ArrayList<IcyBufferedImage>listPSF,int width, int height, int sizeZ,  boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[width*height*sizeZ*2];
+        } else {
+            out = new double[width*height*sizeZ];
+        }
+        double[] psfIn = CommonUtils.icyImage3DToArray1D(listPSF, width, height, sizeZ, isComplex);
+        if (psfIn.length != out.length) {
+            System.err.println("Bad size for psf and output deconvutil l356");
+        }
+        CommonUtils.fftShift3D(psfIn,out, width, height, sizeZ);
+        //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
+        return out;
+    }
     /**
      * Convert an image to a vector.
      *
@@ -896,21 +955,57 @@ public class CommonUtils {
      * @param array the array
      * @param width the width
      * @param height the height
+     * @param depth 
+     * @param isComplex the is complex
+     * @return the buffered image
+     */
+    public static BufferedImage arrayToImage1D_3D(double[] array, int width, int height, int depth, boolean isComplex)
+    {
+        BufferedImage imageout = createNewBufferedImage(width,height);
+        WritableRaster raster = imageout.getRaster();
+        int grey;
+        int[] tmp = new int[3];
+        for(int k = 0; k < depth; k++)
+        {
+            for(int j = 0; j < height; j++)
+            {
+                for(int i = 0; i < width; i++)
+                {
+                    if (isComplex) {
+                        grey = (int)array[2*(i+j*width + k*width*height)];
+                    }
+                    else
+                    {
+                        grey = (int)array[i+j*width + + k*width*height];
+                    }
+                    tmp[0]=tmp[1]=tmp[2]=grey;
+                    raster.setPixel(i, j, tmp);
+                }
+            }
+        }
+        return imageout;
+    }
+
+    /**
+     * Create a buffered image, simply copy array to buffered image.
+     *
+     * @param array the array
+     * @param width the width
+     * @param height the height
      * @param isComplex the is complex
      * @return the buffered image
      */
     public static BufferedImage arrayToImage1D(double[] array, int width, int height, boolean isComplex){
-        //BufferedImage imageout = createNewBufferedImage(width,height);
-        BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+        BufferedImage imageout = createNewBufferedImage(width, height);
         WritableRaster raster = imageout.getRaster();
         int grey;
         int[] tmp = new int[3];
         for(int j = 0; j<imageout.getHeight(); j++){
             for(int i = 0; i<imageout.getWidth(); i++){
                 if (isComplex) {
-                    grey = (int)array[2*(i+j*imageout.getWidth())];
+                    grey = (int)array[2*(i+j*imageout.getHeight())];
                 } else {
-                    grey = (int)array[(i+j*imageout.getWidth())];
+                    grey = (int)array[(i+j*imageout.getHeight())];
                 }
                 tmp[0]=tmp[1]=tmp[2]=grey;
                 raster.setPixel(i, j, tmp);
@@ -918,7 +1013,7 @@ public class CommonUtils {
         }
         return imageout;
     }
-
+    
     /**
      * Create a buffered image, simply copy array to buffered image.
      *

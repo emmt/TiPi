@@ -27,12 +27,11 @@ package mitiv.deconv;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import mitiv.invpb.LinearDeconvolver;
 import mitiv.linalg.LinearConjugateGradient;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
+import mitiv.linalg.shaped.RealComplexFFT;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.utils.CommonUtils;
 
@@ -71,12 +70,14 @@ public class Deconvolution{
 
     //CG needs
     DoubleShapedVectorSpace space;
+    DoubleShapedVectorSpace complexSpace;
     DoubleShapedVector x;
     DoubleShapedVector w;
+    RealComplexFFT fft;
     LinearDeconvolver linDeconv;
     int outputValue = LinearConjugateGradient.CONVERGED;
     int maxIter = 20;
-    
+
     static boolean forceVectorUsage = false;
 
     /**
@@ -258,6 +259,7 @@ public class Deconvolution{
         }
         utils.FFT1D(image1D);
         utils.FFT1D(psf1D);
+        System.out.println("3D 1D");
         double[] out = wiener.wiener1D(alpha, psf1D, image1D,utils.width,utils.height);
         utils.IFFT1D(out);
         return(utils.arrayToImage1D(out, correction, true));
@@ -271,7 +273,7 @@ public class Deconvolution{
      * @return The bufferedImage for the input value given
      */
     private BufferedImage nextDeconvolutionSimple1D(double alpha){
-        double[] out = wiener.wiener1D(alpha);
+        double[] out = wiener.wiener3D(alpha);
         utils.IFFT1D(out);
         return(utils.arrayToImage1D(out, correction,true));
     }
@@ -283,15 +285,26 @@ public class Deconvolution{
      * @return The bufferedImage for the input value given
      */
     private ArrayList<BufferedImage> firstDeconvolutionSimple3D(double alpha){
-        image1D = utils.image3DToArray1D(true);
-        //psf1D = utils.psf3DToArray1D(true);
-        psf1D = utils.shiftPsf3DToArray1D(true);
-        utils.FFT3D(image1D);
-        utils.FFT3D(psf1D);
-        double[] out = wiener.wiener3D(alpha, psf1D, image1D,utils.sizeZ,utils.width,utils.height);
-        //double[] out = Arrays.copyOf(image1D, image1D.length);
-        utils.IFFT3D(out);
-        return utils.arrayToIcyImage3D(out, correction,true);
+        space = new DoubleShapedVectorSpace(utils.width, utils.height,utils.sizeZ);
+        fft = new RealComplexFFT(space);
+        complexSpace = (DoubleShapedVectorSpace) fft.getOutputSpace();
+
+        //vector_psf = space.wrap(utils.shiftPsf3DToArray1D(false));
+        //vector_image = space.wrap(utils.image3DToArray1D(false));
+
+        vector_image = space.wrap(CommonUtils.image3DToArray1D(utils.listImage, utils.width, utils.height, utils.sizeZ, false));
+        vector_psf = space.wrap(CommonUtils.shiftPsf3DToArray1D(utils.listPSF, utils.width, utils.height, utils.sizeZ, false));
+
+        DoubleShapedVector imgComplex = complexSpace.create(0);
+        DoubleShapedVector psfComplex = complexSpace.create(0);
+        fft.apply(vector_psf, psfComplex);
+        fft.apply(vector_image, imgComplex);
+        vector_psf = psfComplex;
+        vector_image = imgComplex;
+        DoubleShapedVector out = complexSpace.wrap(wiener.wiener3D(alpha, psfComplex.getData(), imgComplex.getData(),utils.width,utils.height, utils.sizeZ));
+        DoubleShapedVector outReal = space.create();
+        fft.apply(out, outReal,RealComplexFFT.ADJOINT);
+        return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
     }
 
     /**
@@ -302,10 +315,10 @@ public class Deconvolution{
      * @return The bufferedImage for the input value given
      */
     private ArrayList<BufferedImage> nextDeconvolutionSimple3D(double alpha){
-        double[] out = wiener.wiener3D(alpha);
-        //double[] out = Arrays.copyOf(image1D, image1D.length);
-        utils.IFFT3D(out);
-        return utils.arrayToIcyImage3D(out, correction, true);
+        DoubleShapedVector out = complexSpace.wrap(wiener.wiener3D(alpha));
+        DoubleShapedVector outReal = space.create();
+        fft.apply(out, outReal,RealComplexFFT.ADJOINT);
+        return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
     }
 
     private BufferedImage firstDeconvolutionVector(double alpha){
@@ -454,14 +467,25 @@ public class Deconvolution{
      * @return The bufferedImage for the input value given
      */
     private ArrayList<BufferedImage> firstDeconvolutionQuad3D(double alpha){
-        image1D = utils.image3DToArray1D(true);
-        psf1D = utils.shiftPsf3DToArray1D(true);
-        utils.FFT3D(image1D);
-        utils.FFT3D(psf1D);
-        double[] out = wiener.wienerQuad3D(alpha, psf1D, image1D,utils.sizeZ,utils.width,utils.height,utils.sizePadding);
-        //double[] out = Arrays.copyOf(image1D, image1D.length);
-        utils.IFFT3D(out);
-        return utils.arrayToIcyImage3D(out, correction,true);
+        space = new DoubleShapedVectorSpace(utils.width, utils.height,utils.sizeZ);
+        fft = new RealComplexFFT(space);
+        complexSpace = (DoubleShapedVectorSpace) fft.getOutputSpace();
+
+        vector_image = space.wrap(CommonUtils.image3DToArray1D(utils.listImage, utils.width, utils.height, utils.sizeZ, false));
+        vector_psf = space.wrap(CommonUtils.shiftPsf3DToArray1D(utils.listPSF, utils.width, utils.height, utils.sizeZ, false));
+
+        DoubleShapedVector imgComplex = complexSpace.create(0);
+        DoubleShapedVector psfComplex = complexSpace.create(0);
+
+        fft.apply(vector_psf, psfComplex);
+        fft.apply(vector_image, imgComplex);
+        vector_psf = psfComplex;
+        vector_image = imgComplex;
+
+        DoubleShapedVector out = complexSpace.wrap(wiener.wienerQuad3D(alpha, psfComplex.getData(), imgComplex.getData(),utils.width,utils.height, utils.sizeZ,utils.sizePadding));
+        DoubleShapedVector outReal = space.create();
+        fft.apply(out, outReal,RealComplexFFT.ADJOINT);
+        return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
     }
 
     /**
@@ -472,10 +496,10 @@ public class Deconvolution{
      * @return The bufferedImage for the input value given
      */
     private ArrayList<BufferedImage> nextDeconvolutionQuad3D(double alpha){
-        double[] out = wiener.wienerQuad3D(alpha);
-        //double[] out = Arrays.copyOf(image1D, image1D.length);
-        utils.IFFT3D(out);
-        return(utils.arrayToIcyImage3D(out, correction,true));
+        DoubleShapedVector out = complexSpace.wrap(wiener.wienerQuad3D(alpha));
+        DoubleShapedVector outReal = space.create();
+        fft.apply(out, outReal,RealComplexFFT.ADJOINT);
+        return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
     }
 
     private BufferedImage firstDeconvolutionQuadVector(double alpha){
@@ -631,10 +655,10 @@ public class Deconvolution{
     }
 
     private ArrayList<BufferedImage> firstDeconvolutionCG3D(double alpha){
-        CommonUtils.printTimeNow("DEBUT");
         space = new DoubleShapedVectorSpace(utils.width, utils.height,utils.sizeZ);
-        vector_psf = space.wrap(utils.shiftPsf3DToArray1D(false));
-        vector_image = space.wrap(utils.image3DToArray1D(false));
+
+        vector_image = space.wrap(CommonUtils.image3DToArray1D(utils.listImage, utils.width, utils.height, utils.sizeZ, false));
+        vector_psf = space.wrap(CommonUtils.shiftPsf3DToArray1D(utils.listPSF, utils.width, utils.height, utils.sizeZ, false));
 
         x = space.create(0);
         //WeightGenerator weightGen = new WeightGenerator();
@@ -657,7 +681,6 @@ public class Deconvolution{
                 space.cloneShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
         outputValue = linDeconv.solve(x.getData(), maxIter, false);
         parseOuputCG(outputValue); //print nothing if good, print in err else
-        CommonUtils.printTimeNow("FIN");
         return (utils.arrayToIcyImage3D(x.getData(), correction,false));
     }
 

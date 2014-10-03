@@ -44,6 +44,9 @@ import mitiv.cost.CompositeDifferentiableCostFunction;
 import mitiv.cost.HyperbolicTotalVariation;
 import mitiv.cost.QuadraticCost;
 import mitiv.deconv.ConvolutionOperator;
+import mitiv.invpb.ReconstructionJob;
+import mitiv.invpb.ReconstructionViewer;
+import mitiv.invpb.SimpleViewer;
 import mitiv.io.DataFormat;
 import mitiv.io.MdaFormat;
 import mitiv.linalg.ArrayOps;
@@ -69,7 +72,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-public class TotalVariationDeconvolution {
+public class TotalVariationDeconvolution implements ReconstructionJob {
 
     @Option(name = "--output", aliases = {"-o"}, usage = "Name of output image.", metaVar = "OUTPUT")
     private String outName = "output.mda";
@@ -113,9 +116,46 @@ public class TotalVariationDeconvolution {
     @Argument
     private List<String> arguments;
 
-    public DoubleArray data = null;
-    public DoubleArray psf = null;
-    public DoubleArray result = null;
+    private DoubleArray data = null;
+    private DoubleArray psf = null;
+    private DoubleArray result = null;
+    private double fcost = 0.0;
+    private DoubleShapedVector gcost = null;
+
+    public DoubleArray getData() {
+        return data;
+    }
+    public void setData(DoubleArray data) {
+        this.data = data;
+    }
+    public DoubleArray getPsf() {
+        return psf;
+    }
+    public void setPsf(DoubleArray psf) {
+        this.psf = psf;
+    }
+    @Override
+    public DoubleArray getResult() {
+        /* Nothing else to do because the actual result is in a vector
+         * which shares the contents of the ShapedArray.  Otherwise,
+         * some kind of synchronization is needed. */
+        return result;
+    }
+
+    public void setResult(DoubleArray result) {
+        this.result = result;
+    }
+
+    private ReverseCommunicationOptimizer minimizer = null;
+
+    private ReconstructionViewer viewer = null;
+
+    public ReconstructionViewer getViewer() {
+        return viewer;
+    }
+    public void setViewer(ReconstructionViewer rv) {
+        viewer = rv;
+    }
 
     private boolean run = true;
     
@@ -213,6 +253,10 @@ public class TotalVariationDeconvolution {
         String inputName = job.arguments.get(0);
         String psfName = job.arguments.get(1);
 
+        if (job.verbose) {
+            job.setViewer(new SimpleViewer());
+        }
+
         if (job.debug){
             System.out.format("mu: %.2g, threshold: %.2g, output: %s\n",
                     job.mu, job.epsilon, job.outName);
@@ -293,8 +337,8 @@ public class TotalVariationDeconvolution {
         QuadraticCost fdata = new QuadraticCost(H, y, W);
         HyperbolicTotalVariation fprior = new HyperbolicTotalVariation(space, epsilon);
         CompositeDifferentiableCostFunction cost = new CompositeDifferentiableCostFunction(1.0, fdata, mu, fprior);
-        double fcost = 0.0;
-        DoubleShapedVector gcost = space.create();
+        fcost = 0.0;
+        gcost = space.create();
         if (debug) {
             System.out.println("Cost function initialization complete.");
         }
@@ -304,7 +348,6 @@ public class TotalVariationDeconvolution {
         LBFGS lbfgs = null;
         LBFGSB lbfgsb = null;
         NonLinearConjugateGradient nlcg = null;
-        ReverseCommunicationOptimizer minimizer = null;
         BoundProjector projector = null;
         int bounded = 0;
         if (lowerBound != Double.NEGATIVE_INFINITY) {
@@ -360,21 +403,24 @@ public class TotalVariationDeconvolution {
             if (task == OptimTask.COMPUTE_FG) {
                 fcost = cost.computeCostAndGradient(0.1, x, gcost, true);
             } else if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
-                if (verbose) {
-                    double threshold;
-                    if (minimizer == lbfgs) {
-                        threshold = lbfgs.getGradientThreshold();
-                    } else if (minimizer == lbfgsb) {
-                        threshold = lbfgsb.getGradientThreshold();
-                    } else if (minimizer == nlcg) {
-                        threshold = nlcg.getGradientThreshold();
-                    } else {
-                        threshold = 0.0;
-                    }
-                    System.out.format("iter: %4d    eval: %4d    fx = %21.15g    |gx| = %8.2g (%.2g)\n",
-                            minimizer.getIterations(), minimizer.getEvaluations(),
-                            fcost, gcost.norm2(), threshold);
+                if (viewer != null) {
+                    viewer.display(this);
                 }
+                //if (verbose) {
+                //    double threshold;
+                //    if (minimizer == lbfgs) {
+                //        threshold = lbfgs.getGradientThreshold();
+                //    } else if (minimizer == lbfgsb) {
+                //        threshold = lbfgsb.getGradientThreshold();
+                //    } else if (minimizer == nlcg) {
+                //        threshold = nlcg.getGradientThreshold();
+                //    } else {
+                //        threshold = 0.0;
+                //    }
+                //    System.out.format("iter: %4d    eval: %4d    fx = %21.15g    |gx| = %8.2g (%.2g)\n",
+                //            minimizer.getIterations(), minimizer.getEvaluations(),
+                //            fcost, gcost.norm2(), threshold);
+                //}
                 boolean stop = (task == OptimTask.FINAL_X);
                 if (! stop && maxiter >= 0 && minimizer.getIterations() >= maxiter) {
                     System.err.format("Warning: too many iterations (%d).\n", maxiter);
@@ -467,6 +513,38 @@ public class TotalVariationDeconvolution {
             fatal("Error while reading " + description + "(" + e.getMessage() +").");
         }
         return img;
+    }
+
+    /* Below are all methods required for a RecosntructionJob. */
+
+    @Override
+    public int getIterations() {
+        return (minimizer == null ? 0 : minimizer.getIterations());
+    }
+
+    @Override
+    public int getEvaluations() {
+        return (minimizer == null ? 0 : minimizer.getEvaluations());
+    }
+
+    @Override
+    public double getCost() {
+        return fcost;
+    }
+
+    @Override
+    public double getGradientNorm2() {
+        return (gcost == null ? 0.0 : gcost.norm2());
+    }
+
+    @Override
+    public double getGradientNorm1() {
+        return (gcost == null ? 0.0 : gcost.norm1());
+    }
+
+    @Override
+    public double getGradientNormInf() {
+        return (gcost == null ? 0.0 : gcost.normInf());
     }
 
 }

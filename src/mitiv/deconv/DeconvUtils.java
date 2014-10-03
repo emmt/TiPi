@@ -126,21 +126,18 @@ public class DeconvUtils {
     public void readImage(ArrayList<BufferedImage> image, ArrayList<BufferedImage> PSF) {
         //IMPORTANT WE PAD AS WE COMPUTE
         //FIXME here padding
-        sizePadding = Math.max(PSF.get(0).getHeight(), PSF.get(0).getWidth());
-        ArrayList<BufferedImage> listPSFPad = CommonUtils.imagePad(PSF, sizePadding);
-        ArrayList<BufferedImage> listImagePad = CommonUtils.imagePad(image, sizePadding);
+        int max = Math.max(PSF.get(0).getHeight(), PSF.get(0).getWidth());
+        //sizePadding = max;
+        sizePadding = 0;
+        double coef = (double)(sizePadding+max)/max;
+        ArrayList<BufferedImage> listImagePad = CommonUtils.imagePad(image, coef, false);
+        ArrayList<BufferedImage> listPSFPad = CommonUtils.imagePad(PSF, coef, true);
         this.listImage = listImagePad;
         this.listPSF = listPSFPad;
         sizeZ = listImagePad.size();
         width = listImagePad.get(0).getWidth();
         height = listImagePad.get(0).getHeight();
-        /*
-        this.listImage = image;
-        this.listPSF = PSF;
-        sizeZ = image.size();
-        width = image.get(0).getWidth();
-        height = image.get(0).getHeight();
-        */
+        //System.out.format("W %d H %d Z %d coef %f\n",width,height,sizeZ,coef);
     }
 
     /**
@@ -315,19 +312,7 @@ public class DeconvUtils {
      * @return A 1D array
      */
     public double[] image3DToArray1D(boolean isComplex) {
-        double[] out;
-        if (isComplex) {
-            out = new double[2*sizeZ*width*height];
-        } else {
-            out = new double[sizeZ*width*height];
-        }
-        for (int j = 0; j < sizeZ; j++) {
-            double[] tmp = CommonUtils.imageToArray1D(listImage.get(j), false);
-            for (int i = 0; i < tmp.length; i++) {
-                out[i+j*tmp.length] = tmp[i];
-            }
-        }
-        return out;
+        return CommonUtils.image3DToArray1D(listImage, width, height, sizeZ, isComplex);
     }
     /**
      * Convert the PSF to a 1D array
@@ -352,20 +337,7 @@ public class DeconvUtils {
     }
 
     public double[] psf3DToArray1Dexp(boolean isComplex) {
-        double[] out;
-        if (isComplex) {
-            out = new double[sizeZ*width*height*2];
-        }else{
-            out = new double[sizeZ*width*height];
-        }
-        for (int j = 0; j < sizeZ; j++) {
-            double[] tmp = CommonUtils.imageToArray1D(listPSF.get(j), false);
-            for (int i = 0; i < tmp.length; i++) {
-                out[i+j*tmp.length] = tmp[i];
-            }
-        }
-
-        return out;
+        return CommonUtils.image3DToArray1D(listPSF, width, height, sizeZ, isComplex);
     }
 
     public double[] shiftPsf3DToArray1D(boolean isComplex) {
@@ -379,7 +351,8 @@ public class DeconvUtils {
         if (psfIn.length != out.length) {
             System.err.println("Bad size for psf and output deconvutil l356");
         }
-        CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ/2);
+        CommonUtils.fftShift3D(psfIn,out, width, height, sizeZ);
+        //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
         return out;
     }
 
@@ -437,8 +410,8 @@ public class DeconvUtils {
             }
         }
         //IMPORTANT WE DEPAD AS WE COMPUTE OR NOT ...
-        return CommonUtils.imageUnPad(out, sizePadding);
-        //return out;
+        //return CommonUtils.imageUnPad(out, sizePadding);
+        return out;
         //FIXME pad option
     }
 
@@ -446,10 +419,12 @@ public class DeconvUtils {
     public ArrayList<BufferedImage> arrayToIcyImage3D(double[] array, int job, boolean isComplex){
         ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
         if (isComplex) {
-            for (int j = 0; j < sizeZ; j++) {
+            for (int k = 0; k < sizeZ; k++) {
                 double[] tmp = new double[width*height];
-                for (int i = 0; i < width*height; i++) {
-                    tmp[i] = array[2*i+2*j*height*width];
+                for (int j = 0; j < height; j++) {
+                    for (int i = 0; i < width; i++) {
+                        tmp[i+j*width] = array[2*i+2*j*width+2*k*height*width];
+                    }
                 }
                 out.add(new IcyBufferedImage(width, height, tmp));
             }
@@ -493,6 +468,13 @@ public class DeconvUtils {
             fft1D = new DoubleFFT_1D(width*height);
         }
         fft1D.realForwardFull(array);
+    }
+    
+    public void FFT1DComplex(double[] array) {
+        if(fft1D == null){
+            fft1D = new DoubleFFT_1D(width*height);
+        }
+        fft1D.complexForward(array);
     }
 
     public void FFT3D(double[] array) {

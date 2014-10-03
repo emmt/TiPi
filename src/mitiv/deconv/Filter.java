@@ -102,13 +102,13 @@ public class Filter{
         return out;
     }
 
-    public double[] wiener3D(double alpha, double[] FFT_PSF,double[] FFTImage, int sizeZ ,int Width, int Height) {
+    public double[] wiener3D(double alpha, double[] FFT_PSF,double[] FFTImage, int Width, int Height, int sizeZ) {
         this.FFT_PSF1D = FFT_PSF;
         this.FFT_Image1D = FFTImage;
         this.sizeZ = sizeZ;
         width = Width;
         height = Height;
-        cc = FFT_PSF1D[0]*FFT_PSF1D[0]+FFT_PSF1D[2*width]*FFT_PSF1D[2*width];
+        cc = FFT_PSF1D[0]*FFT_PSF1D[0];
         return wiener3D(alpha);
     }
 
@@ -133,7 +133,8 @@ public class Filter{
             out[pos  ] = (a*c + b*d)*q;
             out[pos+1] = (a*d - b*c)*q;
         }
-        /*for (int k = 0; k < sizeZ; k++) {
+        /*
+        for (int k = 0; k < sizeZ; k++) {
             for(int j = 0; j < height; j++){
                 for(int i = 0; i < width; i++){
                     a = FFT_PSF1D[2*i    +2*j*width+2*k*width*height];
@@ -145,7 +146,7 @@ public class Filter{
                     out[2*i+1 +2*j*width+2*k*width*height] = (a*d - b*c)*q;
                 }
             }
-        }*/
+        */
         return out;
     }
 
@@ -235,7 +236,7 @@ public class Filter{
         return out;
     }
 
-    public double[] wienerQuad3D(double alpha, double[] FFT_PSF,double[] FFTImage, int sizeZ, int Width, int Height, int sizePading) {
+    public double[] wienerQuad3D(double alpha, double[] FFT_PSF,double[] FFTImage, int Width, int Height, int sizeZ, int sizePading) {
         this.FFT_PSF1D = FFT_PSF;
         this.FFT_Image1D = FFTImage;
         width = Height;
@@ -243,7 +244,7 @@ public class Filter{
         this.sizeZ = sizeZ;
         double e,f;
         tabcc1D = new double[width*height];
-        int halfPad  = sizePading/2;
+        //int halfPad  = sizePading/2;
         for(int j = 0; j < height; j++){
             for(int i = 0; i < width; i++){
                 if(j<=height/2){
