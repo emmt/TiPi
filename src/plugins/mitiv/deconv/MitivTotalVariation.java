@@ -177,11 +177,19 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener {
             if (sizeZ == 1) {
                 shape = new int[]{width, height};
                 imgArray =  Double2D.wrap(CommonUtils.imageToArray1D(img, false), shape);
-                psfArray =  Double2D.wrap(CommonUtils.psfPadding1D(img, psf, false), shape);
+                if (psfSplitted) {
+                    psfArray =  Double2D.wrap(CommonUtils.imageToArray1D(psf, false), shape);
+                } else {
+                    psfArray =  Double2D.wrap(CommonUtils.psfPadding1D(img, psf, false), shape);
+                }
             } else {
                 shape = new int[]{width, height, sizeZ};
                 imgArray =  Double3D.wrap(CommonUtils.icyImage3DToArray1D(listImg, width, height, sizeZ, false), shape);
-                psfArray =  Double3D.wrap(CommonUtils.shiftIcyPsf3DToArray1D(listPSf, width, height, sizeZ, false), shape);
+                if (psfSplitted) {
+                    psfArray =  Double3D.wrap(CommonUtils.icyImage3DToArray1D(listPSf, width, height, sizeZ, false), shape);
+                } else {
+                    psfArray =  Double3D.wrap(CommonUtils.shiftIcyPsf3DToArray1D(listPSf, width, height, sizeZ, false), shape);
+                }
             }
             tvDec.setData(imgArray);
             tvDec.setPsf(psfArray);
