@@ -45,6 +45,7 @@ import mitiv.cost.HyperbolicTotalVariation;
 import mitiv.cost.QuadraticCost;
 import mitiv.deconv.ConvolutionOperator;
 import mitiv.invpb.ReconstructionJob;
+import mitiv.invpb.ReconstructionSynchronizer;
 import mitiv.invpb.ReconstructionViewer;
 import mitiv.invpb.SimpleViewer;
 import mitiv.io.DataFormat;
@@ -147,14 +148,34 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     }
 
     private ReverseCommunicationOptimizer minimizer = null;
-
     private ReconstructionViewer viewer = null;
+    private ReconstructionSynchronizer synchronizer = null;
+    private double[] synchronizedParameters = {0.0, 0.0};
+    private boolean[] change = {false, false};
+    private String[] synchronizedParameterNames = {"Regularization Level", "Relaxation Threshold"};
 
     public ReconstructionViewer getViewer() {
         return viewer;
     }
     public void setViewer(ReconstructionViewer rv) {
         viewer = rv;
+    }
+    public ReconstructionSynchronizer getSynchronizer() {
+        return synchronizer;
+    }
+    public void createSynchronizer() {
+        if (synchronizer == null) {
+            synchronizedParameters[0] = mu;
+            synchronizedParameters[1] = epsilon;
+            synchronizer = new ReconstructionSynchronizer(synchronizedParameters);
+        }
+    }
+    public void deleteSynchronizer() {
+        synchronizer = null;
+    }
+    // FIXME: names should be part of the synchronizer...
+    public String getSynchronizedParameterName(int i) {
+        return synchronizedParameterNames[i];
     }
 
     public TotalVariationDeconvolution() {
@@ -427,6 +448,23 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             } else {
                 System.err.println("error/warning: " + task);
                 break;
+            }
+            if (synchronizer != null) {
+                /* FIXME: check the values, suspend/resume, restart the algorithm, etc. */
+                if (synchronizer.getTask() == ReconstructionSynchronizer.STOP) {
+                    break;
+                }
+                synchronizedParameters[0] = mu;
+                synchronizedParameters[1] = epsilon;
+                if (synchronizer.updateParameters(synchronizedParameters, change)) {
+                    if (change[0]) {
+                        mu = synchronizedParameters[0];
+                    }
+                    if (change[1]) {
+                        epsilon = synchronizedParameters[1];
+                    }
+                    // FIXME: restart!!!
+                }
             }
             task = minimizer.iterate(x, fcost, gcost);
         }
