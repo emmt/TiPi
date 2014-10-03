@@ -60,7 +60,7 @@ public class LBFGSOperator extends LinearOperator {
     protected double alpha[];
     protected LinearOperator H0; // crude approximation of inverse
     // Hessian (preconditioner)
-    protected int scaling;
+    protected InverseHessianApproximation rule;
     private Vector tmp; // temporary vector for the apply() method
 
     /**
@@ -79,7 +79,7 @@ public class LBFGSOperator extends LinearOperator {
         super(space);
         this.m = m;
         this.H0 = null;
-        scaling = SCALING_BY_SY_OVER_YY;
+        rule = InverseHessianApproximation.BY_STY_OVER_YTY;
         allocateWorkspace();
     }
 
@@ -100,7 +100,7 @@ public class LBFGSOperator extends LinearOperator {
         super(H0.getInputSpace(), H0.getOutputSpace());
         this.m = m;
         this.H0 = H0;
-        scaling = NO_SCALING;
+        rule = InverseHessianApproximation.NONE;
         allocateWorkspace();
     }
 
@@ -128,64 +128,24 @@ public class LBFGSOperator extends LinearOperator {
         gamma = 1.0;
     }
 
-    /** No scaling is ever applied. */
-    public static final int NO_SCALING = 0;
-
-    /**
-     * The initial approximation of the inverse Hessian (that is the
-     * preconditioner {@code H0}, or the identity if no preconditioner is
-     * given) is scaled by the initial value of {@code gamma = s'.y/y'.y}
-     */
-    public static final int SCALING_BY_INITIAL_SY_OVER_YY = 1;
-
-    /**
-     * The initial approximation of the inverse Hessian (that is the
-     * preconditioner {@code H0}, or the identity if no preconditioner is
-     * given) is scaled by the initial value of {@code gamma = s'.s/s'.y}
-     */
-    public static final int SCALING_BY_INITIAL_SS_OVER_SY = 2;
-
-    /**
-     * The initial approximation of the inverse Hessian (that is the
-     * preconditioner {@code H0}, or the identity if no preconditioner is
-     * given) is scaled by the last value of {@code gamma = s'.y/y'.y}
-     */
-    public static final int SCALING_BY_SY_OVER_YY = 3;
-
-    /**
-     * The initial approximation of the inverse Hessian (that is the
-     * preconditioner {@code H0}, or the identity if no preconditioner is
-     * given) is scaled by the last value of {@code gamma = s'.s/s'.y}
-     */
-    public static final int SCALING_BY_SS_OVER_SY = 4;
-
-
-    /**
-     * The initial approximation of the inverse Hessian (that is the
-     * preconditioner {@code H0} or the identity if no preconditioner is
-     * given) is scaled by the value of {@code gamma} as set by {@link
-     * #setScale}.
-     */
-    public static final int USER_SCALING = 4;
-
     /**
      * Set the scaling of the initial approximation of the inverse Hessian.
      * 
-     * The best scaling strategy is probably {@link #SCALING_BY_SY_OVER_YY}
+     * The best scaling strategy is probably {@link #InverseHessianApproximation.BY_SY_OVER_YY}
      * when no preconditioner {@code H0} is provided.
      *
      * @param id - The strategy to use.
      */
-    public void setScaling(int id) {
-        scaling = id;
+    public void setScaling(InverseHessianApproximation value) {
+        rule = value;
     }
 
     /**
      * Get the current scaling strategy.
      * @return The identifier of the current strategy.
      */
-    public int getScaling() {
-        return scaling;
+    public InverseHessianApproximation getScaling() {
+        return rule;
     }
 
     /**
@@ -196,7 +156,7 @@ public class LBFGSOperator extends LinearOperator {
      */
     public void setScale(double value) {
         gamma = value;
-        scaling = USER_SCALING;
+        rule = InverseHessianApproximation.BY_USER;
     }
 
     /**
@@ -268,7 +228,7 @@ public class LBFGSOperator extends LinearOperator {
         } else {
             q = r;
         }
-        if (scaling != NO_SCALING && gamma != 1.0) {
+        if (rule != InverseHessianApproximation.NONE && gamma != 1.0) {
             q.scale(gamma);
         }
 
@@ -316,20 +276,20 @@ public class LBFGSOperator extends LinearOperator {
         /* Compute RHO[j] and GAMMA.  If the update formula for GAMMA does
          * not yield a strictly positive value, the strategy is to keep the
          * previous value. */
-        double sy = s[j].dot(y[j]);
-        if (sy > 0.0) {
-            rho[j] = 1.0/sy;
-            if (scaling == SCALING_BY_SY_OVER_YY
-                    || (scaling == SCALING_BY_INITIAL_SY_OVER_YY && (mp == 0 || gamma == 1.0))) {
-                double yy = y[j].dot(y[j]);
-                if (yy > 0.0) {
-                    gamma = sy/yy;
+        double sty = s[j].dot(y[j]);
+        if (sty > 0.0) {
+            rho[j] = 1.0/sty;
+            if (rule == InverseHessianApproximation.BY_STY_OVER_YTY
+                    || (rule == InverseHessianApproximation.BY_INITIAL_STY_OVER_YTY && (mp == 0 || gamma == 1.0))) {
+                double yty = y[j].dot(y[j]);
+                if (yty > 0.0) {
+                    gamma = sty/yty;
                 }
-            } else if (scaling == SCALING_BY_SS_OVER_SY
-                    || (scaling == SCALING_BY_INITIAL_SS_OVER_SY && (mp == 0 || gamma == 1.0))) {
+            } else if (rule == InverseHessianApproximation.BY_STS_OVER_STY
+                    || (rule == InverseHessianApproximation.BY_INITIAL_STS_OVER_STY && (mp == 0 || gamma == 1.0))) {
                 double ss = s[j].dot(s[j]);
                 if (ss > 0.0) {
-                    gamma = ss/sy;
+                    gamma = ss/sty;
                 }
             }
         } else {

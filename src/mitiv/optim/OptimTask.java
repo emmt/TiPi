@@ -42,11 +42,16 @@ public enum OptimTask {
     NEW_X (1, "A new iterate is available in x."),
 
     /** Algorithm has converged, solution is available in {@code x}. */
-
     FINAL_X (2, "Algorithm has converged, solution is available in x."),
 
     /** Algorithm terminated with a warning. */
-    WARNING (3, "Algorithm terminated with a warning.");
+    WARNING (3, "Algorithm terminated with a warning."),
+
+    /** Caller shall compute {@code f(x)}. */
+    COMPUTE_F (4, "Caller shall compute f(x)."),
+
+    /** Caller shall project workspace vector {@code v} to the feasible set. */
+    PROJECT_V (5, "Caller shall project v to the feasible set.");
 
     private final String description;
     private final int code;
