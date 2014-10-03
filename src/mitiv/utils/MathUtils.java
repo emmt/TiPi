@@ -1563,14 +1563,14 @@ public class MathUtils {
     }
 
 
-    public static double[][] img_pad(double img[][], int newW, int newH, String just)
+    public static double[][] img_pad(double img[][], int newW, int newH, int just)
     {   
         int oldH = img.length; // hauteur
         int oldW = img[0].length; // largeur
         double New[][] = new double[newH][newW];
         switch (just)
         {
-        case "0":
+        case 0:
             /* image will not be centered */
             for(int i = 0; i < oldH; i++)
             {
@@ -1580,7 +1580,7 @@ public class MathUtils {
                 }
             }
             break;
-        case "1":
+        case 1:
             /* image will be centered */
             int i1 = (newW - oldW)/2;
             int i2 = (newH - oldH)/2;
@@ -1592,7 +1592,7 @@ public class MathUtils {
                 }
             }
             break;
-        case "-1":
+        case -1:
             /* preserve FFT indexing */
             int oldW2 = oldW/2;
             int oldH2 = oldH/2;
@@ -1643,19 +1643,19 @@ public class MathUtils {
     }
 
     
-    public static double[] img_pad1d(double img[], int oldH, int oldW, int newW, int newH, String just)
+    public static double[] img_pad1d(double img[], int oldH, int oldW, int newW, int newH, int just)
     {   int L = img.length;
     double New[] = new double[newH*newW];
     switch (just)
     {
-    case "0":
+    case 0:
         /* image will not be centered */
         for(int i = 0; i < L; i++)
         {
             New[i] = img[i];
         }
         break;
-    case "1":
+    case 1:
         /* image will be centered */
         int i1 = (newW - oldW)/2;
         int i2 = (newH - oldH)/2;
@@ -1667,7 +1667,7 @@ public class MathUtils {
             }
         }
         break;
-    case "-1":
+    case -1:
         /* preserve FFT indexing */
         int oldW2 = oldW/2;
         int oldH2 = oldH/2;

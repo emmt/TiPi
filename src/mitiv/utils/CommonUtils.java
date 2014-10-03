@@ -38,9 +38,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.LocalDateTime;
-
 import mitiv.array.ArrayUtils;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
@@ -1742,23 +1739,6 @@ public class CommonUtils {
         int H = A.length/W;
         BufferedImage I = arrayToImage1D(A, W, H, false);
         saveBufferedImage(I, name);
-    }
-    private static String printTime(){
-        LocalDateTime now = LocalDateTime.now();
-        return now.get(DateTimeFieldType.hourOfDay())+"h "+now.getMinuteOfHour()+"min "+now.getSecondOfMinute()+"sec";
-
-    }
-
-    public static void printTimeNow(){
-        System.out.println(printTime());
-    }
-
-    public static void printTimeNow(String before){
-        System.out.println(before +" "+printTime());
-    }
-
-    public static void printTimeNow(String before, String after){
-        System.out.println(before +" "+printTime()+" "+after);
     }
 }
 
