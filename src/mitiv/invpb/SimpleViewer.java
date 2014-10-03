@@ -25,14 +25,52 @@
 
 package mitiv.invpb;
 
+import java.io.PrintStream;
+
+/**
+ * Implement a simple viewer for displaying information during an iterative
+ * reconstruction.
+ * 
+ * @author Éric and Jonathan
+ */
 public class SimpleViewer implements ReconstructionViewer {
 
+    private PrintStream stream;
+
+    /**
+     * Create a simple viewer which prints to the standard output stream.
+     */
     public SimpleViewer() {
+        this(null);
+    }
+
+    /**
+     * Create a simple viewer which prints to a given output stream.
+     */
+    public SimpleViewer(PrintStream output) {
+        setOutput(output);
+    }
+
+    /**
+     * Set the output stream of the viewer.
+     * 
+     *  @param ouput - The output stream to use, {@code null} to
+     *                 use the standard output stream.
+     */
+    public void setOutput(PrintStream output) {
+        stream = (output == null ? System.out : output);
+    }
+
+    /**
+     * get the output stream of the viewer.
+     */
+    public PrintStream getOutput() {
+        return stream;
     }
 
     @Override
     public void display(ReconstructionJob job) {
-        System.out.format("iter: %4d    eval: %4d    fx = %22.16e    |gx| = %8.2e\n",
+        stream.format("iter: %4d    eval: %4d    fx = %22.16e    |gx| = %8.2e\n",
                 job.getIterations(), job.getEvaluations(),
                 job.getCost(), job.getGradientNorm2());
     }

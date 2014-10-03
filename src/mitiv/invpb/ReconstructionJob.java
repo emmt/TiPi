@@ -27,20 +27,33 @@ package mitiv.invpb;
 
 import mitiv.array.ShapedArray;
 
+/**
+ * Interface to allow external viewers display information during an
+ * iterative reconstruction.
+ * 
+ * @author Éric and Jonathan
+ */
 public interface ReconstructionJob {
 
+    /** Get the current reconstruction result. */
     public abstract ShapedArray getResult();
 
+    /** Get the current number of iterations. */
     public abstract int getIterations();
 
+    /** Get the current number of function evaluations. */
     public abstract int getEvaluations();
 
+    /** Get the current value of the objective function. */
     public abstract double getCost();
 
+    /** Get the Euclidean (L2) norm of the current gradient of the objective function. */
     public abstract double getGradientNorm2();
 
+    /** Get the L1 norm of the current gradient of the objective function. */
     public abstract double getGradientNorm1();
 
+    /** Get the infinite norm of the current gradient of the objective function. */
     public abstract double getGradientNormInf();
 
 }

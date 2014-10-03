@@ -25,7 +25,17 @@
 
 package mitiv.invpb;
 
+/**
+ * Interface implemented by external viewers for displaying information during
+ * an iterative reconstruction.
+ * 
+ * @author Éric and Jonathan
+ */
 public interface ReconstructionViewer {
+    /**
+     * Display or print information of the iterative reconstruction.
+     * @param job - The reconstruction running task.
+     * */
     public abstract void display(ReconstructionJob job);
 }
 
