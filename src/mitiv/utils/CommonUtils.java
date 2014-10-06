@@ -1201,10 +1201,10 @@ public class CommonUtils {
         return out;
     }
 
-    public static double[] imagePad(double[] input, int width, int height, int sizeZ, double coef) {
-        int sizePadW = (int)(width*coef-width);
-        int sizePadH = (int)(height*coef-height);
-        int sizePadZ = (int)(sizeZ*coef-sizeZ);
+    public static double[] imagePad(double[] input, int width, int height, int sizeZ, double coefWH, double coefZ) {
+        int sizePadW = (int)(width*coefWH-width);
+        int sizePadH = (int)(height*coefWH-height);
+        int sizePadZ = (int)(sizeZ*coefZ-sizeZ);
 
         int halfSizePadW = sizePadW/2;
         int halfSizePadH = sizePadH/2;
@@ -1226,6 +1226,12 @@ public class CommonUtils {
             }
         }
         return output;
+        
+        
+    }
+    
+    public static double[] imagePad(double[] input, int width, int height, int sizeZ, double coef) {
+        return imagePad(input, width, height, sizeZ, coef, coef);
     }
 
     /**

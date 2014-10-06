@@ -25,9 +25,10 @@
 
 package plugins.mitiv.deconv;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import mitiv.array.Double2D;
 import mitiv.array.Double3D;
 import mitiv.array.DoubleArray;
 import mitiv.invpb.ReconstructionJob;
@@ -39,13 +40,14 @@ import icy.sequence.Sequence;
 import icy.sequence.SequenceEvent;
 import icy.sequence.SequenceListener;
 import commands.TotalVariationDeconvolution;
+import plugins.adufour.ezplug.EzButton;
 import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzVarBoolean;
 import plugins.adufour.ezplug.EzVarDouble;
 import plugins.adufour.ezplug.EzVarInteger;
 import plugins.adufour.ezplug.EzVarSequence;
 
-public class MitivTotalVariation extends EzPlug implements SequenceListener {
+public class MitivTotalVariation extends EzPlug implements SequenceListener, ActionListener {
 
     public class tvViewer implements ReconstructionViewer{
 
@@ -67,7 +69,7 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener {
     private boolean goodInput = true;
     private boolean psfSplitted = false;
     private boolean computeNew = true;
-    
+
     private int width = -1;
     private int height = -1;
     private int sizeZ = -1;
@@ -79,6 +81,7 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener {
     private EzVarDouble eZepsilon = new EzVarDouble("Epsilon", 0, Double.MAX_VALUE, 1);
     private EzVarDouble eZgrtol = new EzVarDouble("grtol", 0, 1, 0.1);
     private EzVarInteger eZmaxIter = new EzVarInteger("Max Iterations", -1, Integer.MAX_VALUE, 1);
+    private EzButton stopButton = new EzButton("Stop Computation", this);
 
     IcyBufferedImage img;
     IcyBufferedImage psf;
@@ -103,7 +106,7 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener {
         addEzComponent(eZepsilon);
         addEzComponent(eZgrtol);
         addEzComponent(eZmaxIter);
-
+        addEzComponent(stopButton);
     }
 
     @Override
@@ -174,23 +177,48 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener {
             //3D
             DoubleArray imgArray, psfArray;
             int[] shape;
+            double coef = 2.0;
+            
             if (sizeZ == 1) {
-                shape = new int[]{width, height};
-                imgArray =  Double2D.wrap(CommonUtils.imageToArray1D(img, false), shape);
+                double[] image = CommonUtils.imageToArray1D(listImg.get(0), false);
+                double[] psfIm =  CommonUtils.imageToArray1D(listPSf.get(0), false);
+                
+                int psfBorder = psf.getWidth();
+                
+                image = CommonUtils.imagePad(image, width, height, sizeZ, coef);
+                psfIm = CommonUtils.imagePad(psfIm, psfBorder, psfBorder, sizeZ, ((double)width/psfBorder)*coef ,coef);
+
+                shape = new int[]{(int)(width*coef), (int)(height*coef), (int)(sizeZ*coef)};
+                
+                //addImage(image, "Image", shape[0], shape[1], shape[2]);
+                
+                imgArray =  Double3D.wrap(image, shape);
                 if (psfSplitted) {
-                    psfArray =  Double2D.wrap(CommonUtils.imageToArray1D(psf, false), shape);
+                    psfArray =  Double3D.wrap(psfIm, shape);
                 } else {
-                    psfArray =  Double2D.wrap(CommonUtils.psfPadding1D(img, psf, false), shape);
+                    double[] psfShift = new double[shape[0]*shape[1]*shape[2]];
+                    CommonUtils.fftShift3D(psfIm, psfShift , shape[0], shape[1], shape[2]);
+                    psfArray =  Double3D.wrap(psfShift, shape);
                 }
             } else {
-                shape = new int[]{width, height, sizeZ};
-                imgArray =  Double3D.wrap(CommonUtils.icyImage3DToArray1D(listImg, width, height, sizeZ, false), shape);
+                double[] image = CommonUtils.icyImage3DToArray1D(listImg, width, height, sizeZ, false);
+                double[] psf = CommonUtils.icyImage3DToArray1D(listPSf, width, height, sizeZ, false);
+                image = CommonUtils.imagePad(image, width, height, sizeZ, coef);
+                psf = CommonUtils.imagePad(psf, width, height, sizeZ, coef);
+                shape = new int[]{(int)(width*coef), (int)(height*coef), (int)(sizeZ*coef)};
+                
+                imgArray =  Double3D.wrap(image, shape);
                 if (psfSplitted) {
-                    psfArray =  Double3D.wrap(CommonUtils.icyImage3DToArray1D(listPSf, width, height, sizeZ, false), shape);
+                    psfArray =  Double3D.wrap(psf, shape);
                 } else {
-                    psfArray =  Double3D.wrap(CommonUtils.shiftIcyPsf3DToArray1D(listPSf, width, height, sizeZ, false), shape);
+                    double[] psfShift = new double[shape[0]*shape[1]*shape[2]];
+                    CommonUtils.fftShift3D(psf, psfShift , shape[0], shape[1], shape[2]);
+                    psfArray =  Double3D.wrap(psfShift, shape);
                 }
             }
+            width = (int)(width*coef);
+            height = (int)(height*coef);
+            sizeZ = (int)(sizeZ*coef);
             tvDec.setData(imgArray);
             tvDec.setPsf(psfArray);
 
@@ -202,6 +230,20 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener {
         }
     }
 
+    @SuppressWarnings("unused")
+    private void addImage(double[] in, String name, int width, int height, int sizeZ){
+        Sequence tmpSeq = new Sequence();
+        for (int j = 0; j < sizeZ; j++) {
+            double[] temp = new double[width*height];
+            for (int i = 0; i < width*height; i++) {
+                temp[i] = in[i+j*width*height];
+            }
+            tmpSeq.setImage(0,j, new IcyBufferedImage(width, height, temp));
+        }
+        tmpSeq.setName(name);
+        addSequence(tmpSeq);
+    }
+
     private void setResult(){
         if (sequence == null || computeNew == true) {
             sequence = new Sequence();
@@ -209,6 +251,7 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener {
             addSequence(sequence);
             computeNew = false;
         }
+        sequence.beginUpdate();
         double[] in = tvDec.getResult().flatten();
         for (int j = 0; j < sizeZ; j++) {
             double[] temp = new double[width*height];
@@ -218,6 +261,7 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener {
             sequence.setImage(0,j, new IcyBufferedImage(width, height, temp));
         }
         sequence.setName("TV mu:"+mu);
+        sequence.endUpdate();
     }
 
     @Override
@@ -228,7 +272,6 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener {
         if (tvDec != null) {
             tvDec.stop();
         }
-
     }
 
     @Override
@@ -238,6 +281,13 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener {
     @Override
     public void sequenceClosed(Sequence seq) {
         computeNew = true;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (tvDec != null) {
+            tvDec.stop();
+        }
     }
 
 
