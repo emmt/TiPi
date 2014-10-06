@@ -32,7 +32,7 @@ import mitiv.base.Shaped;
  *
  * @author Éric Thiébaut.
  */
-public abstract class Array8D implements Shaped {
+public abstract class Array8D implements ShapedArray {
     static protected final int rank = 8;
     protected final int dim1;
     protected final int dim2;
