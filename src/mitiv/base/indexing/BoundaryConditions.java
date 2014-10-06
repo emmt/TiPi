@@ -23,23 +23,45 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.cost;
+package mitiv.base.indexing;
 
 /**
  * Manage different boundaries conditions.
  * 
  * @author Éric Thiébaut.
- *
  */
-public class BoundaryConditions {
+public enum BoundaryConditions {
     /** Ordinary boundary conditions amounts to propagate leftmost or rightmost values. */
-    public static final int NORMAL = 0;
+    NORMAL(0, "propagate leftmost or rightmost value"),
 
     /** Periodic boundary conditions. */
-    public static final int PERIODIC = 1;
+    PERIODIC(1, "periodic boundary conditions"),
 
     /** Mirror boundary conditions. */
-    public static final int MIRROR = 2;
+    MIRROR(2, "mirror boundary conditions");
+
+    private final int identifier;
+    private final String description;
+    private BoundaryConditions(int id, String descr) {
+        identifier = id;
+        description = descr;
+    }
+
+    /** Get a unique numerical identifier of the boundary conditions. */
+    public int getIdentifier() {
+        return identifier;
+    }
+
+    /** Get the description of the boundary conditions. */
+    public String toDescription() {
+        return description;
+    }
+
+    /** Get a string representation of the boundary conditions. */
+    @Override
+    public String toString() {
+        return description;
+    }
 
     /**
      * Store index values with given offset and boundary conditions.
@@ -58,7 +80,7 @@ public class BoundaryConditions {
      * @param condition - The boundary conditions ({@link #PERIODIC}, or {@link #MIRROR},
      *                    otherwise {@link #NORMAL}).
      */
-    public static final void buildIndex(int[] index, int offset, int condition) {
+    public static final void buildIndex(int[] index, int offset, BoundaryConditions condition) {
         int n = index.length;
         if (condition == PERIODIC) {
             for (int j = 0; j < n; ++j) {
@@ -116,7 +138,7 @@ public class BoundaryConditions {
      *                    otherwise {@link #NORMAL}).
      * @return An array of indexes in the set <tt>&#123;0, 1, ..., length-1&#125;</tt>.
      */
-    public static final int[] buildIndex(int length, int offset, int condition) {
+    public static final int[] buildIndex(int length, int offset, BoundaryConditions condition) {
         int[] index = new int[length];
         buildIndex(index, offset, condition);
         return index;
