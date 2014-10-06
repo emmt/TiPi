@@ -157,7 +157,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     private String[] synchronizedParameterNames = {"Regularization Level", "Relaxation Threshold"};
 
     private double[] weights = null;
-    
+
     public ReconstructionViewer getViewer() {
         return viewer;
     }
@@ -232,7 +232,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     public void setWeight(double[] W){
         this.weights = W;
     }
-   
+
     //private static double parseDouble(String option, String arg) {
     //    try {
     //        return Double.parseDouble(arg);
@@ -355,23 +355,23 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         RealComplexFFT FFT = new RealComplexFFT(space);
         LinearOperator W = null;
         if (weights != null) {
+            // FIXME: for now the weights are stored as a simple Java vector.
+            if (weights.length != data.getNumber()) {
+                throw new IllegalArgumentException("Error weights and input data size don't match");
+            }
             W = new LinearOperator(space) {
-                
                 @Override
                 protected void privApply(Vector src, Vector dst, int job)
                         throws IncorrectSpaceException {
-                        double[] in = ((DoubleShapedVector)src).getData();
-                        double[] out = ((DoubleShapedVector)dst).getData();
-                        if (in.length != weights.length) {
-                            throw new IllegalArgumentException("Error weights and input data size don't match");
-                        }
-                        for (int i = 0; i < in.length; i++) {
-                            out[i] = in[i]*weights[i];
-                        }
+                    double[] inp = ((DoubleShapedVector)src).getData();
+                    double[] out = ((DoubleShapedVector)dst).getData();
+                    int number = src.getNumber();
+                    for (int i = 0; i < number; ++i) {
+                        out[i] = inp[i]*weights[i];
+                    }
                 }
             };
         }
-        
         double[] tmp = psf.flatten();
         DoubleShapedVector y = space.wrap(data.flatten());
         DoubleShapedVector h = space.wrap(tmp);
