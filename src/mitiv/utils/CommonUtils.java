@@ -419,7 +419,6 @@ public class CommonUtils {
                 }
             }
         }
-
         return out;
     }
 
@@ -429,7 +428,6 @@ public class CommonUtils {
             out = new double[2*sizeZ*width*height];
             int strideW = width;
             int strideH = width*height;
-            int strideZ = sizeZ*width*height;
             for (int k = 0; k < sizeZ; k++) {
                 double[] tmp = CommonUtils.imageToArray1D(listImage.get(k), false);
                 for (int j = 0; j < height; j++) {
@@ -449,7 +447,7 @@ public class CommonUtils {
         }
         return out;
     }
-    
+
     public static double[] shiftPsf3DToArray1D(ArrayList<BufferedImage>listPSF,int width, int height, int sizeZ,  boolean isComplex) {
         double[] out;
         if (isComplex) {
@@ -465,7 +463,7 @@ public class CommonUtils {
         //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
         return out;
     }
-    
+
     public static double[] shiftIcyPsf3DToArray1D(ArrayList<IcyBufferedImage>listPSF,int width, int height, int sizeZ,  boolean isComplex) {
         double[] out;
         if (isComplex) {
@@ -1010,7 +1008,7 @@ public class CommonUtils {
         }
         return imageout;
     }
-    
+
     /**
      * Create a buffered image, simply copy array to buffered image.
      *
@@ -1201,6 +1199,33 @@ public class CommonUtils {
             out.add(zero);
         }
         return out;
+    }
+
+    public static double[] imagePad(double[] input, int width, int height, int sizeZ, double coef) {
+        int sizePadW = (int)(width*coef-width);
+        int sizePadH = (int)(height*coef-height);
+        int sizePadZ = (int)(sizeZ*coef-sizeZ);
+
+        int halfSizePadW = sizePadW/2;
+        int halfSizePadH = sizePadH/2;
+        int halfSizePadZ = sizePadZ/2;
+
+        double[] output = new double[(width+sizePadW)*(height+sizePadH)*(sizeZ+sizePadZ)];
+        for (int i = 0; i < output.length; i++) {
+            output[i] = 0;
+        }
+        for (int k = 0; k < sizeZ; k++) {
+            for (int j = 0; j < height; j++) {
+                for (int i = 0; i < width; i++) {
+                    double temp = input[i+j*width+k*width*height];
+                    output[
+                           (i+halfSizePadW)+
+                           (j+halfSizePadH)*(width+sizePadW)+
+                           (k+halfSizePadZ)*(width+sizePadW)*(height+sizePadH)] = temp;
+                }
+            }
+        }
+        return output;
     }
 
     /**
