@@ -89,7 +89,7 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
     private EzVarDouble eZgrtol = new EzVarDouble("grtol", 0, 1, 0.1);
     private EzVarDouble eZcoef = new EzVarDouble("Padding multiplication", 1.0, 10, 0.1);
     private EzVarInteger eZmaxIter = new EzVarInteger("Max Iterations", -1, Integer.MAX_VALUE, 1);
-    private EzVarBoolean eZrestart = new EzVarBoolean("Restart with previous state", true);
+    private EzVarBoolean eZrestart = new EzVarBoolean("Restart with previous result", true);
     private EzButton stopButton = new EzButton("Stop Computation", this);
 
     IcyBufferedImage img;
