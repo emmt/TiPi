@@ -31,8 +31,12 @@ import java.util.ArrayList;
 
 import mitiv.array.Double3D;
 import mitiv.array.DoubleArray;
+import mitiv.exception.IncorrectSpaceException;
 import mitiv.invpb.ReconstructionJob;
 import mitiv.invpb.ReconstructionViewer;
+import mitiv.linalg.LinearOperator;
+import mitiv.linalg.Vector;
+import mitiv.linalg.WeightGenerator;
 import mitiv.utils.CommonUtils;
 import icy.gui.frame.progress.AnnounceFrame;
 import icy.image.IcyBufferedImage;
@@ -69,18 +73,23 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
     private boolean goodInput = true;
     private boolean psfSplitted = false;
     private boolean computeNew = true;
+    private boolean reuse = true;
 
     private int width = -1;
     private int height = -1;
     private int sizeZ = -1;
-
+    private double coef = 1.0;
+    private int[] shape;
+    
     private EzVarSequence psfSequence = new EzVarSequence("PSF");
     private EzVarSequence imageSequence = new EzVarSequence("Image");
     private EzVarBoolean eZpsfSplitted = new EzVarBoolean("Is the psf splitted ?", psfSplitted);
     private EzVarDouble eZmu = new EzVarDouble("Mu", 0, Double.MAX_VALUE, 0.1);
     private EzVarDouble eZepsilon = new EzVarDouble("Epsilon", 0, Double.MAX_VALUE, 1);
     private EzVarDouble eZgrtol = new EzVarDouble("grtol", 0, 1, 0.1);
+    private EzVarDouble eZcoef = new EzVarDouble("Padding multiplication", 1.0, 10, 0.1);
     private EzVarInteger eZmaxIter = new EzVarInteger("Max Iterations", -1, Integer.MAX_VALUE, 1);
+    private EzVarBoolean eZrestart = new EzVarBoolean("Restart with previous state", true);
     private EzButton stopButton = new EzButton("Stop Computation", this);
 
     IcyBufferedImage img;
@@ -98,6 +107,7 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
         eZepsilon.setValue(epsilon);
         eZgrtol.setValue(grtol);
         eZmaxIter.setValue(maxIter);
+        eZcoef.setValue(coef);
 
         addEzComponent(psfSequence);
         addEzComponent(imageSequence);
@@ -106,6 +116,8 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
         addEzComponent(eZepsilon);
         addEzComponent(eZgrtol);
         addEzComponent(eZmaxIter);
+        addEzComponent(eZcoef);
+        addEzComponent(eZrestart);
         addEzComponent(stopButton);
     }
 
@@ -118,6 +130,8 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
         grtol = eZgrtol.getValue();
         maxIter = eZmaxIter.getValue();
         psfSplitted = eZpsfSplitted.getValue();
+        coef = eZcoef.getValue();
+        reuse = eZrestart.getValue();
         //Testing epsilon and grtol
         if (mu < 0) {
             message("Regularization level MU must be strictly positive");
@@ -158,75 +172,76 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
             }
         }
         if (goodInput) {
-            //Launching computation
-            tvDec = new TotalVariationDeconvolution();
-            tvDec.setRegularizationWeight(mu);
-            tvDec.setRegularizationThreshold(epsilon);
-            tvDec.setRelativeTolerance(grtol);
-            tvDec.setAbsoluteTolerance(gatol);
-            tvDec.setMaximumIterations(maxIter);
-            tvDec.setViewer(new tvViewer());
-
-            // Read the blurred image and the PSF.
-            width = img.getWidth();
-            height = img.getHeight();
-            sizeZ = imageSequence.getValue().getSizeZ();
-
-            ArrayList<IcyBufferedImage> listImg = imageSequence.getValue().getAllImage();
-            ArrayList<IcyBufferedImage> listPSf= psfSequence.getValue().getAllImage();
-            //3D
-            DoubleArray imgArray, psfArray;
-            int[] shape;
-            double coef = 2.0;
-            
-            if (sizeZ == 1) {
-                double[] image = CommonUtils.imageToArray1D(listImg.get(0), false);
-                double[] psfIm =  CommonUtils.imageToArray1D(listPSf.get(0), false);
-                
-                int psfBorder = psf.getWidth();
-                
-                image = CommonUtils.imagePad(image, width, height, sizeZ, coef);
-                psfIm = CommonUtils.imagePad(psfIm, psfBorder, psfBorder, sizeZ, ((double)width/psfBorder)*coef ,coef);
-
-                shape = new int[]{(int)(width*coef), (int)(height*coef), (int)(sizeZ*coef)};
-                
-                //addImage(image, "Image", shape[0], shape[1], shape[2]);
-                
-                imgArray =  Double3D.wrap(image, shape);
-                if (psfSplitted) {
-                    psfArray =  Double3D.wrap(psfIm, shape);
-                } else {
-                    double[] psfShift = new double[shape[0]*shape[1]*shape[2]];
-                    CommonUtils.fftShift3D(psfIm, psfShift , shape[0], shape[1], shape[2]);
-                    psfArray =  Double3D.wrap(psfShift, shape);
-                }
+            if (reuse && tvDec != null) {
+                System.out.println("Relaunch from previous "+sequence.getName());
+                tvDec.setRegularizationWeight(mu);
+                tvDec.setRegularizationThreshold(epsilon);
+                tvDec.setRelativeTolerance(grtol);
+                tvDec.setMaximumIterations(maxIter);
+                //Computation HERE
+                tvDec.deconvolve();
+                //Getting the results
+                setResult();
+                computeNew = true;
             } else {
+                //Launching computation
+                tvDec = new TotalVariationDeconvolution();
+                tvDec.setRegularizationWeight(mu);
+                tvDec.setRegularizationThreshold(epsilon);
+                tvDec.setRelativeTolerance(grtol);
+                tvDec.setAbsoluteTolerance(gatol);
+                tvDec.setMaximumIterations(maxIter);
+                tvDec.setViewer(new tvViewer());
+
+                // Read the blurred image and the PSF.
+                width = img.getWidth();
+                height = img.getHeight();
+                sizeZ = imageSequence.getValue().getSizeZ();
+
+                ArrayList<IcyBufferedImage> listImg = imageSequence.getValue().getAllImage();
+                ArrayList<IcyBufferedImage> listPSf= psfSequence.getValue().getAllImage();
+                //3D
+                DoubleArray imgArray, psfArray;
                 double[] image = CommonUtils.icyImage3DToArray1D(listImg, width, height, sizeZ, false);
-                double[] psf = CommonUtils.icyImage3DToArray1D(listPSf, width, height, sizeZ, false);
+                double[] psfTmp = CommonUtils.icyImage3DToArray1D(listPSf, psf.getWidth(), psf.getHeight(), sizeZ, false);
                 image = CommonUtils.imagePad(image, width, height, sizeZ, coef);
-                psf = CommonUtils.imagePad(psf, width, height, sizeZ, coef);
-                shape = new int[]{(int)(width*coef), (int)(height*coef), (int)(sizeZ*coef)};
+                if (psf.getWidth() == width && psf.getHeight() == height) {
+                    psfTmp = CommonUtils.imagePad(psfTmp, width, height, sizeZ, coef);
+                } else {
+                    psfTmp = CommonUtils.imagePad(psfTmp, psf.getWidth(), psf.getHeight(), sizeZ, ((double)width/psf.getWidth())*coef ,coef);
+                }
                 
+                shape = new int[]{(int)(width*coef), (int)(height*coef), (int)(sizeZ*coef)};
+
                 imgArray =  Double3D.wrap(image, shape);
                 if (psfSplitted) {
-                    psfArray =  Double3D.wrap(psf, shape);
+                    psfArray =  Double3D.wrap(psfTmp, shape);
                 } else {
                     double[] psfShift = new double[shape[0]*shape[1]*shape[2]];
-                    CommonUtils.fftShift3D(psf, psfShift , shape[0], shape[1], shape[2]);
+                    CommonUtils.fftShift3D(psfTmp, psfShift , shape[0], shape[1], shape[2]);
                     psfArray =  Double3D.wrap(psfShift, shape);
                 }
-            }
-            width = (int)(width*coef);
-            height = (int)(height*coef);
-            sizeZ = (int)(sizeZ*coef);
-            tvDec.setData(imgArray);
-            tvDec.setPsf(psfArray);
+                //WeightGenerator weightGen = new WeightGenerator();
+                double[] weight = new double[width*height*sizeZ];
+                for (int i = 0; i < weight.length; i++) {
+                    weight[i] = 1;
+                }
+                weight = CommonUtils.imagePad(weight, width, height, sizeZ, coef);
+                width = (int)(width*coef);
+                height = (int)(height*coef);
+                sizeZ = (int)(sizeZ*coef);
+                tvDec.setWeight(weight);
+                tvDec.setData(imgArray);
+                tvDec.setPsf(psfArray);
 
-            //Compution HERE
-            tvDec.deconvolve();
-            //Getting the results
-            setResult();
-            computeNew = true;
+                //Computation HERE
+                tvDec.deconvolve();
+                //Getting the results
+                setResult();
+                computeNew = true;
+                
+            }
+            tvDec.setResult(tvDec.getResult());
         }
     }
 
@@ -260,7 +275,7 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
             }
             sequence.setImage(0,j, new IcyBufferedImage(width, height, temp));
         }
-        sequence.setName("TV mu:"+mu);
+        sequence.setName("TV mu:"+mu+" Iteration:"+tvDec.getIterations()+" grToll: "+tvDec.getRelativeTolerance());
         sequence.endUpdate();
     }
 
@@ -280,7 +295,7 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
 
     @Override
     public void sequenceClosed(Sequence seq) {
-        computeNew = true;
+        //computeNew = true;
     }
 
     @Override
