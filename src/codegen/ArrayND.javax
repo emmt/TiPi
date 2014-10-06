@@ -34,7 +34,7 @@ import mitiv.base.Shaped;
  *
  * @author Éric Thiébaut.
  */
-public abstract class ${className} implements Shaped {
+public abstract class ${className} implements ShapedArray {
     //# def scope = protected final
     static ${scope} int rank = ${rank};
     //# def productOfDimensions = dim1
