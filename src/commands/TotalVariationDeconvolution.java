@@ -183,7 +183,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     }
 
     private boolean run = true;
-    
+
     public TotalVariationDeconvolution() {
     }
 
@@ -232,7 +232,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     public void setWeight(double[] W){
         this.weights = W;
     }
-    
+   
     //private static double parseDouble(String option, String arg) {
     //    try {
     //        return Double.parseDouble(arg);
@@ -338,6 +338,17 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                 fatal("The dimensions of the PSF must match those of the input image.");
             }
         }
+        if (result != null) {
+            /* We try to keep the previous result, at least its dimensions
+             * must match. */
+            for (int k = 0; k < rank; ++k) {
+                if (result.getDimension(k) != data.getDimension(k)) {
+                    result = null;
+                    break;
+                }
+            }
+        }
+
 
         // Initialize a vector space and populate it with workspace vectors.
         DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
@@ -362,22 +373,27 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         }
         
         double[] tmp = psf.flatten();
-        DoubleShapedVector x = space.create();
         DoubleShapedVector y = space.wrap(data.flatten());
         DoubleShapedVector h = space.wrap(tmp);
-        double psf_sum = 0.0;
-        for (int j = 0; j < tmp.length; ++j) {
-            psf_sum += tmp[j];
-        }
-        if (psf_sum != 1.0) {
-            if (psf_sum != 0.0) {
-                space.axpby(0.0, x, 1.0/psf_sum, y, x);
-            } else {
-                x.fill(0.0);
+        DoubleShapedVector x = null;
+        if (result != null) {
+            x = space.wrap(result.flatten());
+        } else {
+            double psf_sum = 0.0;
+            for (int j = 0; j < tmp.length; ++j) {
+                psf_sum += tmp[j];
+            }
+            x = space.create();
+            if (psf_sum != 1.0) {
+                if (psf_sum != 0.0) {
+                    x.axpby(0.0, x, 1.0/psf_sum, y);
+                } else {
+                    x.fill(0.0);
+                }
             }
         }
+        result = ArrayFactory.wrap(x.getData(), shape, false);
         ConvolutionOperator H = new ConvolutionOperator(FFT, h);
-        result = ArrayFactory.wrap(x.getData(), x.cloneShape(), false);
         if (debug) {
             System.out.println("Vector space initialization complete.");
         }

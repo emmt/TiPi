@@ -181,16 +181,14 @@ public abstract class ${className} implements Shaped {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static ${Type}Array wrap(${type}[] data, int[] shape, boolean cloneShape) {
-        int rank = (shape == null ? 0 : shape.length);
-        //#     def rank = 1
-        if (rank == ${rank}) {
+        switch (shape == null ? 0 : shape.length) {
+        //# def rank = 0
+        //# while ${rank} < 9
+        //#     eval rank += 1
+        case ${rank}:
             return ${Type}${rank}D.wrap(data, shape, cloneShape);
-            //# while ${rank} < 9
-            //#     eval rank += 1
-        } else if (rank == ${rank}) {
-            return ${Type}${rank}D.wrap(data, shape, cloneShape);
-            //# done
-        } else {
+        //# done
+        default:
             throw new IllegalArgumentException("Invalid shape.");
         }
     }

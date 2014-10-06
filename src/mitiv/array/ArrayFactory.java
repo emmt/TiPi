@@ -650,26 +650,26 @@ public abstract class ArrayFactory implements Shaped {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static ByteArray wrap(byte[] data, int[] shape, boolean cloneShape) {
-        int rank = (shape == null ? 0 : shape.length);
-        if (rank == 1) {
+        switch (shape == null ? 0 : shape.length) {
+        case 1:
             return Byte1D.wrap(data, shape, cloneShape);
-        } else if (rank == 2) {
+        case 2:
             return Byte2D.wrap(data, shape, cloneShape);
-        } else if (rank == 3) {
+        case 3:
             return Byte3D.wrap(data, shape, cloneShape);
-        } else if (rank == 4) {
+        case 4:
             return Byte4D.wrap(data, shape, cloneShape);
-        } else if (rank == 5) {
+        case 5:
             return Byte5D.wrap(data, shape, cloneShape);
-        } else if (rank == 6) {
+        case 6:
             return Byte6D.wrap(data, shape, cloneShape);
-        } else if (rank == 7) {
+        case 7:
             return Byte7D.wrap(data, shape, cloneShape);
-        } else if (rank == 8) {
+        case 8:
             return Byte8D.wrap(data, shape, cloneShape);
-        } else if (rank == 9) {
+        case 9:
             return Byte9D.wrap(data, shape, cloneShape);
-        } else {
+        default:
             throw new IllegalArgumentException("Invalid shape.");
         }
     }
@@ -900,26 +900,26 @@ public abstract class ArrayFactory implements Shaped {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static ShortArray wrap(short[] data, int[] shape, boolean cloneShape) {
-        int rank = (shape == null ? 0 : shape.length);
-        if (rank == 1) {
+        switch (shape == null ? 0 : shape.length) {
+        case 1:
             return Short1D.wrap(data, shape, cloneShape);
-        } else if (rank == 2) {
+        case 2:
             return Short2D.wrap(data, shape, cloneShape);
-        } else if (rank == 3) {
+        case 3:
             return Short3D.wrap(data, shape, cloneShape);
-        } else if (rank == 4) {
+        case 4:
             return Short4D.wrap(data, shape, cloneShape);
-        } else if (rank == 5) {
+        case 5:
             return Short5D.wrap(data, shape, cloneShape);
-        } else if (rank == 6) {
+        case 6:
             return Short6D.wrap(data, shape, cloneShape);
-        } else if (rank == 7) {
+        case 7:
             return Short7D.wrap(data, shape, cloneShape);
-        } else if (rank == 8) {
+        case 8:
             return Short8D.wrap(data, shape, cloneShape);
-        } else if (rank == 9) {
+        case 9:
             return Short9D.wrap(data, shape, cloneShape);
-        } else {
+        default:
             throw new IllegalArgumentException("Invalid shape.");
         }
     }
@@ -1150,26 +1150,26 @@ public abstract class ArrayFactory implements Shaped {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static IntArray wrap(int[] data, int[] shape, boolean cloneShape) {
-        int rank = (shape == null ? 0 : shape.length);
-        if (rank == 1) {
+        switch (shape == null ? 0 : shape.length) {
+        case 1:
             return Int1D.wrap(data, shape, cloneShape);
-        } else if (rank == 2) {
+        case 2:
             return Int2D.wrap(data, shape, cloneShape);
-        } else if (rank == 3) {
+        case 3:
             return Int3D.wrap(data, shape, cloneShape);
-        } else if (rank == 4) {
+        case 4:
             return Int4D.wrap(data, shape, cloneShape);
-        } else if (rank == 5) {
+        case 5:
             return Int5D.wrap(data, shape, cloneShape);
-        } else if (rank == 6) {
+        case 6:
             return Int6D.wrap(data, shape, cloneShape);
-        } else if (rank == 7) {
+        case 7:
             return Int7D.wrap(data, shape, cloneShape);
-        } else if (rank == 8) {
+        case 8:
             return Int8D.wrap(data, shape, cloneShape);
-        } else if (rank == 9) {
+        case 9:
             return Int9D.wrap(data, shape, cloneShape);
-        } else {
+        default:
             throw new IllegalArgumentException("Invalid shape.");
         }
     }
@@ -1400,26 +1400,26 @@ public abstract class ArrayFactory implements Shaped {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static LongArray wrap(long[] data, int[] shape, boolean cloneShape) {
-        int rank = (shape == null ? 0 : shape.length);
-        if (rank == 1) {
+        switch (shape == null ? 0 : shape.length) {
+        case 1:
             return Long1D.wrap(data, shape, cloneShape);
-        } else if (rank == 2) {
+        case 2:
             return Long2D.wrap(data, shape, cloneShape);
-        } else if (rank == 3) {
+        case 3:
             return Long3D.wrap(data, shape, cloneShape);
-        } else if (rank == 4) {
+        case 4:
             return Long4D.wrap(data, shape, cloneShape);
-        } else if (rank == 5) {
+        case 5:
             return Long5D.wrap(data, shape, cloneShape);
-        } else if (rank == 6) {
+        case 6:
             return Long6D.wrap(data, shape, cloneShape);
-        } else if (rank == 7) {
+        case 7:
             return Long7D.wrap(data, shape, cloneShape);
-        } else if (rank == 8) {
+        case 8:
             return Long8D.wrap(data, shape, cloneShape);
-        } else if (rank == 9) {
+        case 9:
             return Long9D.wrap(data, shape, cloneShape);
-        } else {
+        default:
             throw new IllegalArgumentException("Invalid shape.");
         }
     }
@@ -1650,26 +1650,26 @@ public abstract class ArrayFactory implements Shaped {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static FloatArray wrap(float[] data, int[] shape, boolean cloneShape) {
-        int rank = (shape == null ? 0 : shape.length);
-        if (rank == 1) {
+        switch (shape == null ? 0 : shape.length) {
+        case 1:
             return Float1D.wrap(data, shape, cloneShape);
-        } else if (rank == 2) {
+        case 2:
             return Float2D.wrap(data, shape, cloneShape);
-        } else if (rank == 3) {
+        case 3:
             return Float3D.wrap(data, shape, cloneShape);
-        } else if (rank == 4) {
+        case 4:
             return Float4D.wrap(data, shape, cloneShape);
-        } else if (rank == 5) {
+        case 5:
             return Float5D.wrap(data, shape, cloneShape);
-        } else if (rank == 6) {
+        case 6:
             return Float6D.wrap(data, shape, cloneShape);
-        } else if (rank == 7) {
+        case 7:
             return Float7D.wrap(data, shape, cloneShape);
-        } else if (rank == 8) {
+        case 8:
             return Float8D.wrap(data, shape, cloneShape);
-        } else if (rank == 9) {
+        case 9:
             return Float9D.wrap(data, shape, cloneShape);
-        } else {
+        default:
             throw new IllegalArgumentException("Invalid shape.");
         }
     }
@@ -1900,26 +1900,26 @@ public abstract class ArrayFactory implements Shaped {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static DoubleArray wrap(double[] data, int[] shape, boolean cloneShape) {
-        int rank = (shape == null ? 0 : shape.length);
-        if (rank == 1) {
+        switch (shape == null ? 0 : shape.length) {
+        case 1:
             return Double1D.wrap(data, shape, cloneShape);
-        } else if (rank == 2) {
+        case 2:
             return Double2D.wrap(data, shape, cloneShape);
-        } else if (rank == 3) {
+        case 3:
             return Double3D.wrap(data, shape, cloneShape);
-        } else if (rank == 4) {
+        case 4:
             return Double4D.wrap(data, shape, cloneShape);
-        } else if (rank == 5) {
+        case 5:
             return Double5D.wrap(data, shape, cloneShape);
-        } else if (rank == 6) {
+        case 6:
             return Double6D.wrap(data, shape, cloneShape);
-        } else if (rank == 7) {
+        case 7:
             return Double7D.wrap(data, shape, cloneShape);
-        } else if (rank == 8) {
+        case 8:
             return Double8D.wrap(data, shape, cloneShape);
-        } else if (rank == 9) {
+        case 9:
             return Double9D.wrap(data, shape, cloneShape);
-        } else {
+        default:
             throw new IllegalArgumentException("Invalid shape.");
         }
     }
