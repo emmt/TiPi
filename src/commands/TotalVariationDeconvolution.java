@@ -44,6 +44,7 @@ import mitiv.cost.CompositeDifferentiableCostFunction;
 import mitiv.cost.HyperbolicTotalVariation;
 import mitiv.cost.QuadraticCost;
 import mitiv.deconv.ConvolutionOperator;
+import mitiv.exception.IncorrectSpaceException;
 import mitiv.invpb.ReconstructionJob;
 import mitiv.invpb.ReconstructionSynchronizer;
 import mitiv.invpb.ReconstructionViewer;
@@ -52,6 +53,7 @@ import mitiv.io.DataFormat;
 import mitiv.io.MdaFormat;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.LinearOperator;
+import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
@@ -154,6 +156,8 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     private boolean[] change = {false, false};
     private String[] synchronizedParameterNames = {"Regularization Level", "Relaxation Threshold"};
 
+    private double[] weights = null;
+    
     public ReconstructionViewer getViewer() {
         return viewer;
     }
@@ -213,6 +217,9 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     public void setRelativeTolerance(double value) {
         grtol = value;
     }
+    public double getRelativeTolerance() {
+        return grtol;
+    }
     public void setLowerBound(double value) {
         lowerBound = value;
     }
@@ -221,6 +228,9 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     }
     public void stop(){
         run = false;
+    }
+    public void setWeight(double[] W){
+        this.weights = W;
     }
     
     //private static double parseDouble(String option, String arg) {
@@ -332,7 +342,25 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         // Initialize a vector space and populate it with workspace vectors.
         DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
         RealComplexFFT FFT = new RealComplexFFT(space);
-        LinearOperator W = null; // new LinearOperator(space);
+        LinearOperator W = null;
+        if (weights != null) {
+            W = new LinearOperator(space) {
+                
+                @Override
+                protected void privApply(Vector src, Vector dst, int job)
+                        throws IncorrectSpaceException {
+                        double[] in = ((DoubleShapedVector)src).getData();
+                        double[] out = ((DoubleShapedVector)dst).getData();
+                        if (in.length != weights.length) {
+                            throw new IllegalArgumentException("Error weights and input data size don't match");
+                        }
+                        for (int i = 0; i < in.length; i++) {
+                            out[i] = in[i]*weights[i];
+                        }
+                }
+            };
+        }
+        
         double[] tmp = psf.flatten();
         DoubleShapedVector x = space.create();
         DoubleShapedVector y = space.wrap(data.flatten());
