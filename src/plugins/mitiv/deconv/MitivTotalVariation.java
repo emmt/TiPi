@@ -29,13 +29,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import mitiv.array.Double1D;
 import mitiv.array.Double3D;
 import mitiv.array.DoubleArray;
-import mitiv.exception.IncorrectSpaceException;
+import mitiv.array.ShapedArray;
 import mitiv.invpb.ReconstructionJob;
 import mitiv.invpb.ReconstructionViewer;
-import mitiv.linalg.LinearOperator;
-import mitiv.linalg.Vector;
 import mitiv.linalg.WeightGenerator;
 import mitiv.utils.CommonUtils;
 import icy.gui.frame.progress.AnnounceFrame;
@@ -45,13 +44,17 @@ import icy.sequence.SequenceEvent;
 import icy.sequence.SequenceListener;
 import commands.TotalVariationDeconvolution;
 import plugins.adufour.ezplug.EzButton;
+import plugins.adufour.ezplug.EzGroup;
 import plugins.adufour.ezplug.EzPlug;
+import plugins.adufour.ezplug.EzVar;
 import plugins.adufour.ezplug.EzVarBoolean;
 import plugins.adufour.ezplug.EzVarDouble;
 import plugins.adufour.ezplug.EzVarInteger;
+import plugins.adufour.ezplug.EzVarListener;
 import plugins.adufour.ezplug.EzVarSequence;
+import plugins.adufour.ezplug.EzVarText;
 
-public class MitivTotalVariation extends EzPlug implements SequenceListener, ActionListener {
+public class MitivTotalVariation extends EzPlug implements SequenceListener, ActionListener, EzVarListener<String> {
 
     public class tvViewer implements ReconstructionViewer{
 
@@ -80,7 +83,7 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
     private int sizeZ = -1;
     private double coef = 1.0;
     private int[] shape;
-    
+
     private EzVarSequence psfSequence = new EzVarSequence("PSF");
     private EzVarSequence imageSequence = new EzVarSequence("Image");
     private EzVarBoolean eZpsfSplitted = new EzVarBoolean("Is the psf splitted ?", psfSplitted);
@@ -91,6 +94,20 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
     private EzVarInteger eZmaxIter = new EzVarInteger("Max Iterations", -1, Integer.MAX_VALUE, 1);
     private EzVarBoolean eZrestart = new EzVarBoolean("Restart with previous result", true);
     private EzButton stopButton = new EzButton("Stop Computation", this);
+
+    private String weightOption1 = new String("None");
+    private String weightOption2 = new String("Personnalized weightMap");
+    private String weightOption3 = new String("Variance map");
+    private String weightOption4 = new String("Computed Variance");
+
+    private EzVarText options = new EzVarText("Options", new String[] { weightOption1, weightOption2, weightOption3, weightOption4}, 0, false);
+    private EzVarSequence weightMap = new EzVarSequence("Weight Map");
+    private EzVarSequence varianceMap = new EzVarSequence("Variance Map");
+    private EzVarBoolean showPixMap = new EzVarBoolean("Pixel Map ?", false);
+    private EzVarSequence deadPixel = new EzVarSequence("Dead pixel map");
+    private EzVarDouble alpha = new EzVarDouble("Gain e-/lvl");
+    private EzVarDouble beta = new EzVarDouble("Readout noise e-/pxl");
+    private EzGroup groupWeighting = new EzGroup("Weighting", options, weightMap, varianceMap, alpha, beta, showPixMap, deadPixel);
 
     IcyBufferedImage img;
     IcyBufferedImage psf;
@@ -108,6 +125,14 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
         eZgrtol.setValue(grtol);
         eZmaxIter.setValue(maxIter);
         eZcoef.setValue(coef);
+        options.addVarChangeListener(this);
+
+        alpha.setVisible(false);
+        alpha.setToolTipText("Hallo");
+        beta.setVisible(false);
+        beta.setToolTipText("BYYE");
+        deadPixel.setVisible(false);
+        showPixMap.addVisibilityTriggerTo(deadPixel, true);
 
         addEzComponent(psfSequence);
         addEzComponent(imageSequence);
@@ -118,6 +143,8 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
         addEzComponent(eZmaxIter);
         addEzComponent(eZcoef);
         addEzComponent(eZrestart);
+
+        addEzComponent(groupWeighting);
         addEzComponent(stopButton);
     }
 
@@ -173,7 +200,6 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
         }
         if (goodInput) {
             if (reuse && tvDec != null) {
-                System.out.println("Relaunch from previous "+sequence.getName());
                 tvDec.setRegularizationWeight(mu);
                 tvDec.setRegularizationThreshold(epsilon);
                 tvDec.setRelativeTolerance(grtol);
@@ -204,13 +230,15 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
                 DoubleArray imgArray, psfArray;
                 double[] image = CommonUtils.icyImage3DToArray1D(listImg, width, height, sizeZ, false);
                 double[] psfTmp = CommonUtils.icyImage3DToArray1D(listPSf, psf.getWidth(), psf.getHeight(), sizeZ, false);
+                double[] weight = createWeight(image);
+                weight = CommonUtils.imagePad(weight, width, height, sizeZ, coef);
                 image = CommonUtils.imagePad(image, width, height, sizeZ, coef);
                 if (psf.getWidth() == width && psf.getHeight() == height) {
                     psfTmp = CommonUtils.imagePad(psfTmp, width, height, sizeZ, coef);
                 } else {
                     psfTmp = CommonUtils.imagePad(psfTmp, psf.getWidth(), psf.getHeight(), sizeZ, ((double)width/psf.getWidth())*coef ,coef);
                 }
-                
+
                 shape = new int[]{(int)(width*coef), (int)(height*coef), (int)(sizeZ*coef)};
 
                 imgArray =  Double3D.wrap(image, shape);
@@ -221,15 +249,12 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
                     CommonUtils.fftShift3D(psfTmp, psfShift , shape[0], shape[1], shape[2]);
                     psfArray =  Double3D.wrap(psfShift, shape);
                 }
-                //WeightGenerator weightGen = new WeightGenerator();
-                double[] weight = new double[width*height*sizeZ];
-                for (int i = 0; i < weight.length; i++) {
-                    weight[i] = 1;
-                }
-                weight = CommonUtils.imagePad(weight, width, height, sizeZ, coef);
+
+                //BEWARE here we change the value to match the new padded image size
                 width = (int)(width*coef);
                 height = (int)(height*coef);
                 sizeZ = (int)(sizeZ*coef);
+                
                 tvDec.setWeight(weight);
                 tvDec.setData(imgArray);
                 tvDec.setPsf(psfArray);
@@ -239,10 +264,53 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
                 //Getting the results
                 setResult();
                 computeNew = true;
-                
+
             }
             tvDec.setResult(tvDec.getResult());
         }
+    }
+
+    private ShapedArray weightMapToArray(EzVarSequence seq){
+        double[] tmp = CommonUtils.icyImage3DToArray1D(seq.getValue().getAllImage(), width, height, sizeZ, false);
+        return Double1D.wrap(tmp, tmp.length);
+    }
+
+    private double[] createWeight(double[] data){
+        WeightGenerator weightGen = new WeightGenerator();
+        String newValue = options.getValue();
+        ShapedArray array;
+        ShapedArray deadPixMap = null;
+        if (showPixMap.getValue() && deadPixel.getValue().getFirstNonNullImage() != null) {
+            deadPixMap = weightMapToArray(deadPixel);
+        }
+        if (newValue == weightOption1) {//No options
+            //First case, we create an array of 1, that correspond to the image
+            double[] weight = new double[width*height*sizeZ];
+            for (int i = 0; i < weight.length; i++) {
+                weight[i] = 1;
+            }
+            weightGen.setWeightMap(Double1D.wrap(weight, weight.length));
+
+        } else if (newValue == weightOption2) {//Weight Map
+            //If the user give a weight map we convert it and give it to weightGen
+            array = weightMapToArray(weightMap);
+            weightGen.setWeightMap(array);
+
+        } else if(newValue == weightOption3) {//Variance map
+            //If the user give a varianceMap map we give it to weightGen
+            array = weightMapToArray(varianceMap);
+            weightGen.setWeightMap(array);//Gain + readOut
+
+        } else if(newValue == weightOption4) {
+            //In the case of computed variance: we give gain, readout noise, and the image
+            array = Double1D.wrap(data, data.length);
+            weightGen.setComputedVariance(array, alpha.getValue(), beta.getValue());
+
+        } else {
+            throw new IllegalArgumentException("Incorrect argument for weightmap");
+        }
+        weightGen.setPixelMap(deadPixMap);
+        return weightGen.getWeightMap().toDouble().flatten();//FIXME WRONG but Good for now
     }
 
     @SuppressWarnings("unused")
@@ -289,15 +357,18 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
         }
     }
 
+    //Sequence listener: if the sequence is changed
     @Override
     public void sequenceChanged(SequenceEvent sequenceEvent) {
     }
 
+    //Sequence listener: if the sequence is closed
     @Override
     public void sequenceClosed(Sequence seq) {
         //computeNew = true;
     }
 
+    //Push button stop: if we need to stop
     @Override
     public void actionPerformed(ActionEvent e) {
         if (tvDec != null) {
@@ -305,11 +376,34 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
         }
     }
 
-
+    //If the value of ezVarText is changed: meaning we want a particular policy for weightmap
+    @Override
+    public void variableChanged(EzVar<String> source, String newValue) {
+        if (newValue == weightOption1) {
+            weightMap.setVisible(false);
+            varianceMap.setVisible(false);
+            alpha.setVisible(false);
+            beta.setVisible(false);
+        } else if(newValue == weightOption2) {
+            weightMap.setVisible(true);
+            varianceMap.setVisible(false);
+            alpha.setVisible(false);
+            beta.setVisible(false);
+        } else if(newValue == weightOption3) {
+            weightMap.setVisible(false);
+            varianceMap.setVisible(true);
+            alpha.setVisible(false);
+            beta.setVisible(false);
+        } else if(newValue == weightOption4) {
+            weightMap.setVisible(false);
+            varianceMap.setVisible(false);
+            alpha.setVisible(true);
+            beta.setVisible(true);
+        } else {
+            throw new IllegalArgumentException("Incorrect argument for weightmap");
+        }
+    }
 }
-
-
-
 
 /*
  * Local Variables:
