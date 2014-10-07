@@ -1317,6 +1317,30 @@ public class MathUtils {
         }
         return A_shift;
     }
+    
+    /**
+     * Shift zero-frequency component to center of spectrum.
+     *
+     * @param A the a
+     * @return the double[][]
+     */
+    public static double[] fftShift1D(double A[], int w, int h)
+    {   
+        double A_shift[] = new double[w*h];
+
+            /* Higher-left to lower-right */
+            for(int j = 0; j < h/2; j++)
+            {
+                for(int i = 0; i < w/2; i++)
+                {
+                    A_shift[w*(h - h/2 + j) + w - w/2 + i] = A[i + w*j];
+                    A_shift[w*(h - h/2 + j) + i] = A[w*j + i + w/2];
+                    A_shift[w*j + w - w/2 + i] = A[w*(j + h/2) + i];
+                    A_shift[i + w*j] = A[w*(j + h/2) + i + w/2];
+                }
+            }
+        return A_shift;
+    }
 
     /**
      * Shift zero-frequency component to center of spectrum for a 3D array.
