@@ -25,7 +25,15 @@
 
 package mitiv.microscopy;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
+import mitiv.array.Double3D;
+import mitiv.array.ShapedArray;
+import mitiv.exception.DataFormatException;
+import mitiv.exception.RecoverableFormatException;
+import mitiv.io.MdaFormat;
 import mitiv.utils.*;
 
 /**
@@ -163,6 +171,7 @@ public class MicroscopyModelPSF_1D
         this.PHASE = new double [Nz*Ny*Nx];
         //this.A = new double[Nz*Ny*2*Nx];
         this.use_depth_scaling = use_depth_scaling;
+        
         this.Z = computeZernike(Nzern, Ny, Nx, radius*dxy*Nx); // Initialise Zernike mod
         this.maskPupil = computeMaskPupil2(Ny, Nx, radius);
         setRho(new double[] {1.});
@@ -234,9 +243,29 @@ public class MicroscopyModelPSF_1D
      */
     private double[] computeZernike(int Nzern, int Nx, int Ny, double radius)
     {
+/*
+            ShapedArray Zer;
+            try {
+                Zer = MdaFormat.load("Zernikes");
+                Z = Zer.toDouble().flatten();
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (DataFormatException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (RecoverableFormatException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            */
         Zernike1D zernike = new Zernike1D(Nx, Ny);
         Z = zernike.zernikePupilMultipleOpt(Nzern, Nx, Ny, radius, NORMALIZED);
         return Z = MathUtils.gram_schmidt_orthonormalization(Z, Nx, Ny, Nzern);
+        //return Z;
     }
 
     /**
