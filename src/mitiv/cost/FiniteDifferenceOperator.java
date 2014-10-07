@@ -25,6 +25,7 @@
 
 package mitiv.cost;
 
+import mitiv.base.indexing.BoundaryConditions;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.linalg.LinearOperator;
 import mitiv.linalg.Vector;
@@ -40,7 +41,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
     private int[][] index;
     final boolean single;
 
-    private static void testDoubleOperator(DoubleGenerator generator, int[] shape, int condition) {
+    private static void testDoubleOperator(DoubleGenerator generator, int[] shape,
+            BoundaryConditions condition) {
         DoubleShapedVectorSpace inp = new DoubleShapedVectorSpace(shape);
         LinearOperator D = new FiniteDifferenceOperator(inp, condition);
         DoubleShapedVectorSpace out = (DoubleShapedVectorSpace) D.getOutputSpace();
@@ -54,7 +56,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
         System.out.println("  relative error = " + D.checkAdjoint(a, b));
     }
 
-    private static void testFloatOperator(FloatGenerator generator, int[] shape, int condition) {
+    private static void testFloatOperator(FloatGenerator generator, int[] shape,
+            BoundaryConditions condition) {
         FloatShapedVectorSpace inp = new FloatShapedVectorSpace(shape);
         LinearOperator D = new FiniteDifferenceOperator(inp, condition);
         FloatShapedVectorSpace out = (FloatShapedVectorSpace) D.getOutputSpace();
@@ -114,13 +117,13 @@ public class FiniteDifferenceOperator extends LinearOperator {
      * differences along each of the {@code n} dimensions.
      * @param inputSpace - The inputs space of the operator (the output space is automatically
      *                     built).
-     * @param bounds     - An array of integers indicating the boundary conditions for
+     * @param bounds     - An array indicating the boundary conditions for
      *                     each dimension.  If {@code null}, normal conditions are assumed for
      *                     all dimensions; otherwise, if shorter than {@code n}, the rank of
      *                     {@code inputSpace}, missing values are assumed to be
      *                     {@link BoundaryConditions#NORMAL}.
      */
-    public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, int[] bounds) {
+    public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, BoundaryConditions[] bounds) {
         super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.cloneShape())));
         buildIndex(inputSpace.cloneShape(), bounds);
         single = false;
@@ -137,7 +140,7 @@ public class FiniteDifferenceOperator extends LinearOperator {
      *                     {@link BoundaryConditions#MIRROR}, otherwise
      *                     {@link BoundaryConditions#NORMAL} is assumed.
      */
-    public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, int bounds) {
+    public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, BoundaryConditions bounds) {
         super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.cloneShape())));
         buildIndex(inputSpace.cloneShape(), bounds);
         single = false;
@@ -166,7 +169,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
      *                     {@code inputSpace}, missing values are assumed to be
      *                     {@link BoundaryConditions#NORMAL}.
      */
-    public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace, int[] bounds) {
+    public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace,
+            BoundaryConditions[] bounds) {
         super(inputSpace, new FloatShapedVectorSpace(buildShape(inputSpace.cloneShape())));
         buildIndex(inputSpace.cloneShape(), bounds);
         single = true;
@@ -183,7 +187,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
      *                     {@link BoundaryConditions#MIRROR}, otherwise
      *                     {@link BoundaryConditions#NORMAL} is assumed.
      */
-    public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace, int bounds) {
+    public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace,
+            BoundaryConditions bounds) {
         super(inputSpace, new FloatShapedVectorSpace(buildShape(inputSpace.cloneShape())));
         buildIndex(inputSpace.cloneShape(), bounds);
         single = true;
@@ -216,19 +221,19 @@ public class FiniteDifferenceOperator extends LinearOperator {
         return outShape;
     }
 
-    private int getBound(int[] arr, int k) {
+    private BoundaryConditions getBoundaryConditions(BoundaryConditions[] arr, int k) {
         return ((arr == null || k < 0 || k >= arr.length) ? BoundaryConditions.NORMAL : arr[k]);
     }
 
-    private void buildIndex(int[] inputShape, int[] bounds) {
+    private void buildIndex(int[] inputShape, BoundaryConditions[] bounds) {
         int rank = inputShape.length;
         index = new int[rank][];
         for (int k =0; k < rank; ++k) {
-            index[k] = BoundaryConditions.buildIndex(inputShape[k], -1, getBound(bounds, k));
+            index[k] = BoundaryConditions.buildIndex(inputShape[k], -1, getBoundaryConditions(bounds, k));
         }
     }
 
-    private void buildIndex(int[] inputShape, int bounds) {
+    private void buildIndex(int[] inputShape, BoundaryConditions bounds) {
         int rank = inputShape.length;
         index = new int[rank][];
         for (int k =0; k < rank; ++k) {

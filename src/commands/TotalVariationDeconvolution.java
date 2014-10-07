@@ -44,6 +44,7 @@ import mitiv.cost.CompositeDifferentiableCostFunction;
 import mitiv.cost.HyperbolicTotalVariation;
 import mitiv.cost.QuadraticCost;
 import mitiv.deconv.ConvolutionOperator;
+import mitiv.exception.IncorrectSpaceException;
 import mitiv.invpb.ReconstructionJob;
 import mitiv.invpb.ReconstructionSynchronizer;
 import mitiv.invpb.ReconstructionViewer;
@@ -52,6 +53,7 @@ import mitiv.io.DataFormat;
 import mitiv.io.MdaFormat;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.LinearOperator;
+import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
@@ -154,6 +156,8 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     private boolean[] change = {false, false};
     private String[] synchronizedParameterNames = {"Regularization Level", "Relaxation Threshold"};
 
+    private double[] weights = null;
+
     public ReconstructionViewer getViewer() {
         return viewer;
     }
@@ -179,7 +183,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     }
 
     private boolean run = true;
-    
+
     public TotalVariationDeconvolution() {
     }
 
@@ -213,6 +217,9 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     public void setRelativeTolerance(double value) {
         grtol = value;
     }
+    public double getRelativeTolerance() {
+        return grtol;
+    }
     public void setLowerBound(double value) {
         lowerBound = value;
     }
@@ -222,7 +229,10 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     public void stop(){
         run = false;
     }
-    
+    public void setWeight(double[] W){
+        this.weights = W;
+    }
+
     //private static double parseDouble(String option, String arg) {
     //    try {
     //        return Double.parseDouble(arg);
@@ -328,28 +338,62 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                 fatal("The dimensions of the PSF must match those of the input image.");
             }
         }
+        if (result != null) {
+            /* We try to keep the previous result, at least its dimensions
+             * must match. */
+            for (int k = 0; k < rank; ++k) {
+                if (result.getDimension(k) != data.getDimension(k)) {
+                    result = null;
+                    break;
+                }
+            }
+        }
+
 
         // Initialize a vector space and populate it with workspace vectors.
         DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
         RealComplexFFT FFT = new RealComplexFFT(space);
-        LinearOperator W = null; // new LinearOperator(space);
+        LinearOperator W = null;
+        if (weights != null) {
+            // FIXME: for now the weights are stored as a simple Java vector.
+            if (weights.length != data.getNumber()) {
+                throw new IllegalArgumentException("Error weights and input data size don't match");
+            }
+            W = new LinearOperator(space) {
+                @Override
+                protected void privApply(Vector src, Vector dst, int job)
+                        throws IncorrectSpaceException {
+                    double[] inp = ((DoubleShapedVector)src).getData();
+                    double[] out = ((DoubleShapedVector)dst).getData();
+                    int number = src.getNumber();
+                    for (int i = 0; i < number; ++i) {
+                        out[i] = inp[i]*weights[i];
+                    }
+                }
+            };
+        }
         double[] tmp = psf.flatten();
-        DoubleShapedVector x = space.create();
         DoubleShapedVector y = space.wrap(data.flatten());
         DoubleShapedVector h = space.wrap(tmp);
-        double psf_sum = 0.0;
-        for (int j = 0; j < tmp.length; ++j) {
-            psf_sum += tmp[j];
-        }
-        if (psf_sum != 1.0) {
-            if (psf_sum != 0.0) {
-                space.axpby(0.0, x, 1.0/psf_sum, y, x);
-            } else {
-                x.fill(0.0);
+        DoubleShapedVector x = null;
+        if (result != null) {
+            x = space.wrap(result.flatten());
+        } else {
+            double psf_sum = 0.0;
+            for (int j = 0; j < tmp.length; ++j) {
+                psf_sum += tmp[j];
+            }
+            x = space.create();
+            if (psf_sum != 1.0) {
+                if (psf_sum != 0.0) {
+                    x.axpby(0.0, x, 1.0/psf_sum, y);
+                } else {
+                    x.fill(0.0);
+                }
             }
         }
+        result = ArrayFactory.wrap(x.getData(), shape, false);
         ConvolutionOperator H = new ConvolutionOperator(FFT, h);
-        result = ArrayFactory.wrap(x.getData(), x.cloneShape(), false);
         if (debug) {
             System.out.println("Vector space initialization complete.");
         }
