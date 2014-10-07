@@ -128,9 +128,9 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
         options.addVarChangeListener(this);
 
         alpha.setVisible(false);
-        alpha.setToolTipText("Hallo");
+        alpha.setToolTipText("The Gain");
         beta.setVisible(false);
-        beta.setToolTipText("BYYE");
+        beta.setToolTipText("The Rms");
         deadPixel.setVisible(false);
         showPixMap.addVisibilityTriggerTo(deadPixel, true);
 
