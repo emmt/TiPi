@@ -155,29 +155,33 @@ public class MicroscopyPSFPlugin extends EzPlug implements EzStoppable
                 Nz.getValue(), NZernike.getValue(), use_depth_scaling.getValue());
 
         pupil.computePSF(alpha.getValue(), beta.getValue(),
-                deltaX.getValue(), deltaY.getValue(), zdepth.getValue());
-       
+               deltaX.getValue(), deltaY.getValue(), zdepth.getValue()*1e-6);
+        /*
+        pupil.setDefocus(new double[] = {};);
+        pupil.setPhi(alpha.getValue());
+        pupil.setRho(beta.getValue());
+        pupil.computePSF();
+        */
         double[] PSF_shift = MathUtils.fftShift3D(pupil.getPSF(), Nx.getValue(), Ny.getValue(), Nz.getValue());
         
         Sequence psf3DSequence = new Sequence();
-        psf3DSequence.setName("Fion");
+        psf3DSequence.setName("PSF");
         for (int k = 0; k < Nz.getValue(); k++)
         {
-            //MathUtils.fftShift1D(pupil.getPSF(k), Nx.getValue(), Ny.getValue(), 1)
-            psf3DSequence.setImage(0, k,
-                    ArrayUtils.doubleAsBuffered(MathUtils.getArray(PSF_shift, Nx.getValue(), Ny.getValue(), k), 1, Nx.getValue(), Ny.getValue()));
-            //psf3DSequence.setImage(0, k, new IcyBufferedImage(Nx.getValue(), Ny.getValue(), pupil.getPSF(k)));
+            //psf3DSequence.setImage(0, k,
+                    //ArrayUtils.doubleAsBuffered(MathUtils.getArray(PSF_shift, Nx.getValue(), Ny.getValue(), k), 1, Nx.getValue(), Ny.getValue()));
+            psf3DSequence.setImage(0, k, new IcyBufferedImage(Nx.getValue(), Ny.getValue(), MathUtils.getArray(PSF_shift, Nx.getValue(), Ny.getValue(), k)));
             //psf3DSequence.addImage(new IcyBufferedImage(Nx.getValue(), Ny.getValue(), pupil.getPSF(k)));
             //System.out.println(MathUtils.max(pupil.getPSF(k)));
 
         }
-        
+        MathUtils.stat(pupil.getPSF());
         addSequence(psf3DSequence);
         
         if( rho.getValue() == true )
         {
            Sequence pupilModulusSequence = new Sequence();
-           pupilModulusSequence.setName("caca");
+           pupilModulusSequence.setName("Modulus");
            //pupilModulusSequence.addImage(ArrayUtils.doubleAsBuffered(MathUtils.fftShift1D(pupil.getRho(), Nx.getValue(), Ny.getValue(), 1),
             //                1, Nx.getValue(), Ny.getValue()));
            pupilModulusSequence.addImage(new IcyBufferedImage(Nx.getValue(), Ny.getValue(), pupil.getRho()));
@@ -187,7 +191,7 @@ public class MicroscopyPSFPlugin extends EzPlug implements EzStoppable
         if( phi.getValue() == true )
         {
            Sequence pupilModulusSequence = new Sequence();
-           pupilModulusSequence.setName("caca");
+           pupilModulusSequence.setName("Phase");
            pupilModulusSequence.addImage(ArrayUtils.doubleAsBuffered(MathUtils.fftShift1D(pupil.getPhi(), Nx.getValue(), Ny.getValue(), 1),
                             1, Nx.getValue(), Ny.getValue()));
            addSequence(pupilModulusSequence);
