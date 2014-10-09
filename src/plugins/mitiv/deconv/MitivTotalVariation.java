@@ -25,8 +25,6 @@
 
 package plugins.mitiv.deconv;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import mitiv.array.Double1D;
@@ -43,9 +41,9 @@ import icy.sequence.Sequence;
 import icy.sequence.SequenceEvent;
 import icy.sequence.SequenceListener;
 import commands.TotalVariationDeconvolution;
-import plugins.adufour.ezplug.EzButton;
 import plugins.adufour.ezplug.EzGroup;
 import plugins.adufour.ezplug.EzPlug;
+import plugins.adufour.ezplug.EzStoppable;
 import plugins.adufour.ezplug.EzVar;
 import plugins.adufour.ezplug.EzVarBoolean;
 import plugins.adufour.ezplug.EzVarDouble;
@@ -54,7 +52,7 @@ import plugins.adufour.ezplug.EzVarListener;
 import plugins.adufour.ezplug.EzVarSequence;
 import plugins.adufour.ezplug.EzVarText;
 
-public class MitivTotalVariation extends EzPlug implements SequenceListener, ActionListener, EzVarListener<String> {
+public class MitivTotalVariation extends EzPlug implements EzStoppable, SequenceListener, EzVarListener<String> {
 
     public class tvViewer implements ReconstructionViewer{
 
@@ -93,7 +91,6 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
     private EzVarDouble eZcoef = new EzVarDouble("Padding multiplication", 1.0, 10, 0.1);
     private EzVarInteger eZmaxIter = new EzVarInteger("Max Iterations", -1, Integer.MAX_VALUE, 1);
     private EzVarBoolean eZrestart = new EzVarBoolean("Restart with previous result", true);
-    private EzButton stopButton = new EzButton("Stop Computation", this);
 
     private String weightOption1 = new String("None");
     private String weightOption2 = new String("Personnalized weightMap");
@@ -119,7 +116,6 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
 
     @Override
     protected void initialize() {
-
         eZmu.setValue(mu);
         eZepsilon.setValue(epsilon);
         eZgrtol.setValue(grtol);
@@ -145,7 +141,6 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
         addEzComponent(eZrestart);
 
         addEzComponent(groupWeighting);
-        addEzComponent(stopButton);
     }
 
     @Override
@@ -368,14 +363,6 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
         //computeNew = true;
     }
 
-    //Push button stop: if we need to stop
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (tvDec != null) {
-            tvDec.stop();
-        }
-    }
-
     //If the value of ezVarText is changed: meaning we want a particular policy for weightmap
     @Override
     public void variableChanged(EzVar<String> source, String newValue) {
@@ -401,6 +388,13 @@ public class MitivTotalVariation extends EzPlug implements SequenceListener, Act
             beta.setVisible(true);
         } else {
             throw new IllegalArgumentException("Incorrect argument for weightmap");
+        }
+    }
+
+    @Override
+    public void stopExecution() {
+        if (tvDec != null) {
+            tvDec.stop();
         }
     }
 }
