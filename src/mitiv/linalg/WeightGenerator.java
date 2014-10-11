@@ -31,7 +31,17 @@ import mitiv.array.ShapedArray;
 public class WeightGenerator {
 
     private double saturationLevel = Double.MAX_VALUE;
-    /**
+    private ShapedArray weightMap = null;
+    private ShapedArray varianceMap = null;
+    private ShapedArray pixelMap = null;
+    private double gain = -1.0;
+    private double readNoise = -1.0;
+    
+    public WeightGenerator() {
+
+    }
+    /*
+    
      * The weight map shaped array should contain:
      * <br>
      * <pre>    0 if the value is not known.</pre>
@@ -39,8 +49,7 @@ public class WeightGenerator {
      * 
      * @param weightMap 
      * @return map The weight map
-     */
-
+     
     public ShapedArray getWeightMap(ShapedArray weightMap){
         double[] dblMap = weightMap.toDouble().flatten();
         for (int i = 0; i < dblMap.length; i++) {
@@ -51,7 +60,7 @@ public class WeightGenerator {
         return weightMap;
     }
 
-    /**
+    
      * The weight map shaped array should contain:
      * <br>
      * <pre>    0 if the value is not known.</pre>
@@ -60,7 +69,7 @@ public class WeightGenerator {
      * @param varianceMap 
      * @param stdMap 
      * @return map The weight map
-     */
+     
     public ShapedArray getWeightMap(ShapedArray varianceMap, double stdMap){
         double[] varMap = varianceMap.toDouble().flatten();
         double out[] = new double[varMap.length];
@@ -70,7 +79,7 @@ public class WeightGenerator {
         return Double1D.wrap(out, out.length);
     }
 
-    /**
+    
      * We build the map from the variance map by using the formula:<br>
      * Xk = 1/var(Yk)<br>
      * X &isin; Map, Y &isin; Variance Map
@@ -79,8 +88,8 @@ public class WeightGenerator {
      * @param stdMap 
      * @param deadPixelMap 
      * @return 
-     */
-    public ShapedArray getWeightMapFromVariance(ShapedArray varianceMap, double stdMap, ShapedArray deadPixelMap){
+     
+    public ShapedArray getWeightMap(ShapedArray varianceMap, double stdMap, ShapedArray deadPixelMap){
         double[] varMap = varianceMap.toDouble().flatten();
         double[] dblBad = deadPixelMap.toDouble().flatten();
         double out[] = new double[varMap.length];
@@ -93,8 +102,48 @@ public class WeightGenerator {
 
         }
         return Double1D.wrap(out, out.length);
-    }
+    }*/
 
+    public ShapedArray getWeightMap(){
+        double[] output = null;
+        if ( weightMap != null) {
+            output = weightMap.toDouble().flatten();//Flatten make a copy so we are sure that we are not braking anything
+            for (int i = 0; i < output.length; i++) {
+                if (output[i] < 0) {
+                    throw new IllegalArgumentException("A weight map can not contain negative values");
+                }
+            }
+        } else if (varianceMap != null) {
+            output = varianceMap.toDouble().flatten();//Bis
+            for (int i = 0; i < output.length; i++) {
+                output[i] = 1.0/(Math.max(output[i], 0.0));
+            }
+        } else if (gain != -1 && readNoise != -1) {
+            output = weightMap.toDouble().flatten();//Ter + We use weightMap BUT it is data that we are using
+            for (int i = 0; i < output.length; i++) {
+                output[i] = 1.0/((Math.max(output[i], 0.0)/gain)+readNoise*readNoise);
+            }
+        } else {
+            throw new IllegalArgumentException("Before getting a weight map you should give something");
+        }
+        applyDeadPixelMapAndVerify(output);
+        return Double1D.wrap(output, output.length);
+    }
+    
+    private void applyDeadPixelMapAndVerify(double[] input){
+        for (int i = 0; i < input.length; i++) {
+            if (input[i] == saturationLevel || Double.isNaN(input[i])) {
+                input[i] = 0.0;
+            }
+        }
+        if (pixelMap != null) {
+            double[] dblBad = pixelMap.toDouble().flatten();
+            for (int i = 0; i < input.length; i++) {
+                input[i] = input[i]*dblBad[i];
+            }
+        }
+    }
+    
     /**
      * In order to be able to detect saturation we have to know a value.
      * Default = Double.MAX_VALUE
@@ -103,6 +152,24 @@ public class WeightGenerator {
      */
     public void setSaturation(double saturation){
         saturationLevel = saturation;
+    }
+    
+    public void setWeightMap(ShapedArray map){
+        weightMap = map;
+    }
+    public void setVarianceMap(ShapedArray map){
+        varianceMap = map;
+    }
+    public void setPixelMap(ShapedArray map){
+        pixelMap = map;
+    }
+    public void setComputedVariance(ShapedArray data, double alpha, double beta){
+        if (alpha < 0 || beta < 0) {
+            throw new IllegalArgumentException("Computed variance canno't be negative");
+        }
+        this.gain = alpha;
+        this.readNoise = beta;
+        this.weightMap = data;//We store the data in the weightMap, to save one variable
     }
 }
 
