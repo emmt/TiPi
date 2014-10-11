@@ -25,9 +25,11 @@
 
 package mitiv.linalg.shaped;
 
+import mitiv.array.ShapedArray;
 import mitiv.base.ArrayDescriptor;
 import mitiv.base.Shaped;
 import mitiv.base.Typed;
+import mitiv.exception.NonConformableArrayException;
 import mitiv.linalg.VectorSpace;
 
 public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, Typed {
@@ -102,6 +104,60 @@ public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, T
         _copy(vec, cpy);
         return cpy;
     }
+
+    /**
+     * Make sure the shape of an array matches that of the vectors in this space.
+     * @param arr - The ShapedArray to check.
+     * @throws NonConformableArrayException
+     */
+    public void checkShape(ShapedArray arr) {
+        int rank = getRank();
+        if (rank != arr.getRank()) {
+            throw new NonConformableArrayException("Shaped array rank mismatch.");
+        }
+        for (int k = 0; k < rank; ++k) {
+            if (getDimension(k) != arr.getDimension(k)) {
+                throw new NonConformableArrayException("Shaped array dimension mismatch.");
+            }
+        }
+    }
+
+    /**
+     * Create a new vector initialized with the contents of an array.
+     * 
+     * <p>
+     * The values of the elements of the returned vector will be copied (or
+     * shared, see below) or converted from those of the input array.  Type
+     * conversion is automatically performed but the shape of the array must
+     * match that of the vectors of this space.
+     * </p><p>
+     * Depending on the array and on the vector storages, the vector and the
+     * array may share the same data but there is no guarantees for that.  To
+     * save memory, the default behavior is to share contents if possible.
+     * If you want to make sure that the two objects have independent
+     * contents, call {@link #create(ShapedArray, boolean)} with second
+     * argument set to {@code true}.
+     * </p><p>
+     * In any cases, if the array data storage is not "<i>flat</i>" or if its
+     * elements type does not match that of the vector, the two contents will
+     * be stored independently.
+     * </p>
+     * @param arr - The input array.
+     * @return A new shaped vector of this space.
+     */
+    public abstract ShapedVector create(ShapedArray arr);
+
+    /**
+     * Create a new vector initialized with the contents of an array.
+     * 
+     * @param arr         - The input array.
+     * @param forceCopy   - A flag to force a copy of the contents if true.
+     *                      See {@link #create(ShapedArray)} for a
+     *                      discussion of that.
+     * @return A new shaped vector of this space.
+     */
+    public abstract ShapedVector create(ShapedArray arr, boolean forceCopy);
+
 }
 
 

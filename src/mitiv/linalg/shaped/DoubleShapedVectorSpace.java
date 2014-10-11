@@ -25,6 +25,8 @@
 
 package mitiv.linalg.shaped;
 
+import mitiv.array.DoubleArray;
+import mitiv.array.ShapedArray;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.Vector;
 
@@ -70,6 +72,50 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
         DoubleShapedVector v = new DoubleShapedVector(this);
         ArrayOps.fill(number, v.getData(), value);
         return v;
+    }
+
+    @Override
+    public DoubleShapedVector create(ShapedArray arr) {
+        return create(arr, false);
+    }
+
+    @Override
+    public DoubleShapedVector create(ShapedArray arr, boolean forceCopy) {
+        /* Verify shape, then convert to correct data type and avoid forcing a
+         * copy if conversion yields a different array. */
+        checkShape(arr);
+        DoubleArray tmp = arr.toDouble();
+        return new DoubleShapedVector(this, tmp.flatten(forceCopy && tmp == arr));
+    }
+
+    /**
+     * Create a new vector initialized with the contents of an array.
+     *
+     * <p>
+     * This is a variant of {@link #create(ShapedArray)} for an array of
+     * known data type.
+     * </p>
+     * @param arr       - A shaped array with elements of type {@code double}.
+     * @return A new FloatShapedVector.
+     */
+    public DoubleShapedVector create(DoubleArray arr) {
+        return create(arr, false);
+    }
+
+    /**
+     * Create a new vector initialized with the contents of an array.
+     *
+     * <p>
+     * This is a variant of {@link #create(ShapedArray, boolean)} for an array of
+     * known data type.
+     * </p>
+     * @param arr       - A shaped array with elements of type {@code double}.
+     * @param forceCopy - A flag to force a copy of the contents if true.
+     * @return A new FloatShapedVector.
+     */
+    public DoubleShapedVector create(DoubleArray arr, boolean forceCopy) {
+        checkShape(arr);
+        return new DoubleShapedVector(this, arr.flatten(forceCopy));
     }
 
     public DoubleShapedVector clone(DoubleShapedVector vec) {

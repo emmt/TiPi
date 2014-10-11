@@ -25,6 +25,7 @@
 
 package mitiv.linalg.shaped;
 
+import mitiv.array.ShapedArray;
 import mitiv.linalg.ArrayOps;
 import mitiv.random.DoubleGenerator;
 
@@ -123,6 +124,15 @@ public class DoubleShapedVector extends ShapedVector {
     @Override
     public DoubleShapedVector clone() {
         return ((DoubleShapedVectorSpace)space)._clone(this);
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        ((ShapedVectorSpace)space).checkShape(arr);
+        double[] arrData = arr.toDouble().flatten();
+        if (arrData != data) {
+            System.arraycopy(arrData, 0, data, 0, getNumber());
+        }
     }
 }
 
