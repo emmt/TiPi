@@ -25,7 +25,7 @@
 
 package mitiv.exception;
 
-public class NonConformableArrayException extends Exception {
+public class NonConformableArrayException extends RuntimeException {
     /*
      * Define a serial version number as this class implements Serializable
      * interface.
