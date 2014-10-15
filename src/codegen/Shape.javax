@@ -1,0 +1,183 @@
+/*
+ * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
+ * developed by the MitiV project.
+ *
+ * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+//# // Get common definitions.
+//# include <common.javax>
+package mitiv.base;
+
+
+/**
+ * A Shape object is unmodifiable and used to store the dimensions of a shaped
+ * object in an efficient way.
+ *
+ * @author Éric Thiébaut
+ */
+public class Shape {
+    private final int rank;
+    private final int number;
+    private final int[] shape;
+
+    /** The shape of any scalar object. */
+    private final static Shape scalarShape = new Shape(new int[]{}, true) {
+        @Override
+        public int shape(int k) {
+            return 1;
+        }
+    };
+
+    /** Factory for shape of scalar objects. */
+    public static Shape make() {
+        return scalarShape;
+    }
+
+    public static Shape make(int[] shape) {
+        return new Shape(shape, false);
+    }
+
+    /**
+     * Make a shape given the dimensions.
+     * @param shape - The list of dimensions.
+     * @param share - The contents of the list of dimensions will never change.
+     * @return A Shape object.
+     */
+    public static Shape make(int[] shape, boolean share) {
+        return new Shape(shape, share);
+    }
+
+    //# def rank = 0
+    //# while ${rank} < 9
+    //#     eval rank += 1
+    /**
+     * Make a ${rank}-D shape
+    //#     def k = 0
+    //#     while ${k} < ${rank}
+    //#         eval k += 1
+    //#         def arg = dim${k}
+    //#         if ${k} == 1
+    //#             def argList = int ${arg}
+    //#             def dimList = ${arg}
+    //#         else
+    //#             def argList = ${argList}, int ${arg}
+    //#             def dimList = ${dimList}, ${arg}
+    //#         end
+    //#         def k_th = ${}{nth_${k}}
+     * @param ${arg} - The ${k_th} dimension.
+    //#     end
+     * @return A Shape object.
+     */
+    public static Shape make(${argList}) {
+        return new Shape(new int[]{${dimList}}, true);
+    }
+    //# end
+
+    /**
+     * Build a Shape object given a list of dimensions.
+     * @param shape - The list of dimensions.
+     * @param share - The contents of the list of dimensions will never change.
+     */
+    protected Shape(int[] shape, boolean share) {
+        rank = shape.length;
+        int number = 1;
+        if (share) {
+            this.shape = shape;
+            for (int k = 0; k < rank; ++k) {
+                int dim = shape[k];
+                if (dim < 1) {
+                    throw new IllegalArgumentException("Invalid dimension(s).");
+                }
+                number *= dim;
+            }
+        } else {
+            this.shape = new int[rank];
+            for (int k = 0; k < rank; ++k) {
+                int dim = shape[k];
+                if (dim < 1) {
+                    throw new IllegalArgumentException("Invalid dimension(s).");
+                }
+                number *= dim;
+                this.shape[k] = dim;
+            }
+        }
+        this.number = number;
+    }
+
+    /**
+     * Get the number of dimensions.
+     * @return The number of dimensions.
+     */
+    public int rank() {
+        return rank;
+    }
+
+    /**
+     * Get the number of elements of an object with that shape.
+     * @return The number of elements of an object with that shape.
+     */
+    public int number() {
+        return number;
+    }
+
+    /**
+     * Get the length of a given dimension.
+     * @param k - The index of the dimension.
+     * @return The length of the {@code (k+1)}-th dimension; {@code 1} if
+     *         {@code k}&nbsp;&ge;&nbsp;{@link #rank()}.
+     */
+    public int shape(int k) {
+        return (k < rank ? shape[k] : 1);
+    }
+
+    /**
+     * Check whether another shape is the same as this one.
+     * @param other - Another shape.
+     * @return A boolean result.
+     */
+    public boolean equals(Shape other) {
+        if (other != this && other.shape != this.shape) {
+            if (this.rank != other.rank) {
+                return false;
+            }
+            for (int k = 0; k < rank; ++k) {
+                if (other.shape[k] != this.shape[k]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+}
+
+/*
+ * Local Variables:
+ * mode: Java
+ * tab-width: 8
+ * indent-tabs-mode: nil
+ * c-basic-offset: 4
+ * fill-column: 78
+ * coding: utf-8
+ * ispell-local-dictionary: "american"
+ * End:
+ */

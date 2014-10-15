@@ -1,0 +1,382 @@
+/*
+ * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
+ * developed by the MitiV project.
+ *
+ * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+//# // Define the implementation prefix and get common definitions.
+//# def implPrefix = Selected
+//# include <commonImpl.javax>
+import mitiv.array.ArrayUtils;
+
+/**
+ * Selected implementation of ${rank}-dimensional arrays of ${type}'s.
+ *
+ * This specific kind of arrays/views are accessed via indirection tables (one
+ * for each dimension).
+ *
+ * @author Éric Thiébaut.
+ */
+public class ${className} extends ${superName} {
+    static final int order = NONSPECIFIC_ORDER;
+    final ${type}[] data;
+    //# def k = 0
+    //# while ${k} < ${rank}
+    //#     eval k += 1
+    final int[] idx${k};
+    //# end
+
+    //# def argList = ${type}[] arr
+    //# def k = 0
+    //# while ${k} < ${rank}
+    //#     eval k += 1
+    //#     def argList = ${argList}, int[] idx${k}
+    //#     if ${k} == 1
+    //#         def dimList = idx${k}.length
+    //#     else
+    //#         def dimList = ${dimList}, idx${k}.length
+    //#     end
+    //# end
+    /**
+     * Create a new instance of a view via lists of selected indices.
+     *
+     * <p>
+     * All lists of selected indices must be immutable as, for efficiency,
+     * a simple reference is kept.
+     * </p>
+     */
+    public ${className}(${argList}) {
+        super(${dimList});
+        this.data = arr;
+        //# def k = 0
+        //# while ${k} < ${rank}
+        //#     eval k += 1
+        this.idx${k} = idx${k};
+        //# end
+    }
+
+    @Override
+    public final void checkSanity() {
+        int offsetMin = 0, offsetMax = 0, indexMin, indexMax;
+        //# def k = 0
+        //# while ${k} < ${rank}
+        //#     eval k += 1
+        indexMin = indexMax = idx${k}[0];
+        for (int i${k} = 1; i${k} < dim${k}; ++i${k}) {
+            int index = idx${k}[i${k}];
+            if (index < indexMin) indexMin = index;
+            if (index > indexMax) indexMax = index;
+        }
+        offsetMin += indexMin;
+        offsetMax += indexMax;
+        //# end
+        if (offsetMin < 0 || offsetMax >= data.length) {
+            throw new IndexOutOfBoundsException("Selected indices are out of bounds.");
+        }
+    }
+
+    //# if ${rank} == 0
+    //#     def decIndexList =
+    //#     def indexExpr = offset
+    //# else
+    //#     def k = 0
+    //#     while ${k} < ${rank}
+    //#         eval k += 1
+    //#         if ${k} == 1
+    //#             def indexExpr = idx${k}[i${k}]
+    //#             def decIndexList = int i${k}
+    //#         else
+    //#             def indexExpr = idx${k}[i${k}] + ${indexExpr}
+    //#             def decIndexList = ${decIndexList}, int i${k}
+    //#         end
+    //#     end
+    //# end
+    final int index(${decIndexList}) {
+        return ${indexExpr};
+    }
+
+    @Override
+    public final ${type} get(${decIndexList}) {
+        return data[${indexExpr}];
+    }
+
+    //# def argList = ${type} value
+    //# if ${rank} >= 1
+    //#     def argList = ${decIndexList}, ${argList}
+    //# end
+    @Override
+    public final void set(${argList}) {
+        data[${indexExpr}] = value;
+    }
+
+    @Override
+    public final int getOrder() {
+        return order;
+    }
+
+    //#
+    //# // Templates for the row-major and column-major loops (will be expanded later).
+    //# def CM1 := int j${j} = idx${j}[i${j}];
+    //# def CM2 := int j${j} = idx${j}[i${j}] + j${jp};
+    //# def RM1 := int j${k} = idx${k}[i${k}];
+    //# def RM2 := int j${k} = idx${k}[i${k}] + j${kp};
+    //# include <commonLoops.javax>
+    //# def loopCode = ${loopColMaj} // only column-major loops are used
+    //#
+    @Override
+    public void fill(${type} value) {
+        //# def loopFirstIndent = ${__INDENT2__}
+        //# def loopBody = data[j1] = value;
+        //# emit ${loopCode}
+    }
+
+    @Override
+    public void fill(${Type}Generator generator) {
+        //# def loopFirstIndent = ${__INDENT2__}
+        //# def loopBody = data[j1] = generator.next${Type}();
+        //# emit ${loopCode}
+    }
+
+    @Override
+    public void increment(${type} value) {
+        //# def loopFirstIndent = ${__INDENT2__}
+        //# def loopBody = data[j1] += value;
+        //# emit ${loopCode}
+    }
+
+    @Override
+    public void decrement(${type} value) {
+        //# def loopFirstIndent = ${__INDENT2__}
+        //# def loopBody = data[j1] -= value;
+        //# emit ${loopCode}
+    }
+
+    @Override
+    public void scale(${type} value) {
+        //# def loopFirstIndent = ${__INDENT2__}
+        //# def loopBody = data[j1] *= value;
+        //# emit ${loopCode}
+    }
+
+    @Override
+    public void map(${Type}Function function) {
+        //# def loopFirstIndent = ${__INDENT2__}
+        //# def loopBody = data[j1] = function.apply(data[j1]);
+        //# emit ${loopCode}
+    }
+
+    @Override
+    public void scan(${Type}Scanner scanner)  {
+        boolean initialized = false;
+        //# def loopFirstIndent = ${__INDENT2__}
+        //# def _ = ${__NEWLINE__}${loopBodyIndent}
+        //# def __ = ${_}${__INDENT__}
+        //# def loopBody = if (initialized) {${__}scanner.update(data[j1]);${_}} else {${__}scanner.initialize(data[j1]);${__}initialized = true;${_}}
+        //# emit ${loopCode}
+    }
+
+    @Override
+    public ${type}[] flatten(boolean forceCopy) {
+        ${type}[] out = new ${type}[number];
+        int j = -1;
+        //# def loopFirstIndent = ${__INDENT2__}
+        //# def loopBody = out[++j] = data[j1];
+        //# emit ${loopCode}
+        return out;
+    }
+
+    //# if ${rank} >= 1
+    @Override
+    public ${reducedSuperName} slice(int idx) {
+        //# if ${rank} == 1
+        //#     def argList = this.data, this.idx1[idx]
+        //# else
+        //#     def argList = this.data
+        //#     def k = 1
+        //#     while ${k} < ${rank}
+        //#         def arg = idx${k}
+        //#         def argList = ${argList}, ${arg}
+        //#         eval k += 1
+        //#     end
+        int[] idx1 = this.idx1;
+        int offset = idx${rank}[idx];
+        if (offset != 0) {
+            /* Add the offset to the first indirection table. */
+            int length = idx1.length;
+            int[] tmp = new int[length];
+            for (int i = 0; i < length; ++i) {
+                tmp[i] = idx1[i] + offset;
+            }
+            idx1 = tmp;
+        }
+        //# end
+        return new ${reducedClassName}(${argList});
+    }
+
+    @Override
+    public ${reducedSuperName} slice(int idx, int dim) {
+        if (dim < 0) {
+            dim += rank;
+        }
+        if (dim != 0) {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        }
+        //# if ${rank} == 1
+        //#     def argList = this.data, this.idx1[idx]
+        //# else
+        //#     def argList = this.data
+        //#     def k = 1
+        //#     while ${k} < ${rank}
+        //#         def arg = idx${k}
+        //#         def argList = ${argList}, ${arg}
+        int[] ${arg};
+        //#         eval k += 1
+        //#     end
+        int offset;
+        switch (dim) {
+        //#     def k = 0
+        //#     while ${k} < ${rank}
+        case ${k}:
+            //#     eval k += 1
+            //#     def j = 0
+            //#     def m = 0
+            //#     while ${j} < ${rank}
+            //#         eval j += 1
+            //#         if ${j} == ${k}
+            offset = this.idx${j}[idx];
+            //#         else
+            //#             eval m += 1
+            idx${m} = this.idx${j};
+            //#         end
+            //#     end
+            break;
+            //# end
+        default:
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        }
+        if (offset != 0) {
+            /* Add the offset to the first indirection table. */
+            int length = idx1.length;
+            int[] tmp = new int[length];
+            for (int i = 0; i < length; ++i) {
+                tmp[i] = offset + idx1[i];
+            }
+            idx1 = tmp;
+        }
+        //# end
+        return new ${reducedClassName}(${argList});
+    }
+
+    //# end
+    //#
+    //# if ${rank} >= 1
+    //#
+    //#     def select = ArrayUtils.select
+    //#
+    //#     def k = 0
+    //#     def argType = Range
+    //#     def argName = rng
+    //#     while ${k} < ${rank}
+    //#         eval k += 1
+    //#         def arg = ${argName}${k}
+    //#         if ${k} == 1
+    //#             def argList = ${arg}
+    //#             def decList = ${argType} ${arg}
+    //#         else
+    //#             def argList = ${argList}, ${arg}
+    //#             def decList = ${decList}, ${argType} ${arg}
+    //#         end
+    //#     end
+    @Override
+    public ${superName} view(${decList}) {
+        //# def k = 0
+        //# def argName = idx
+        //# while ${k} < ${rank}
+        //#     eval k += 1
+        //#     if ${k} == 1
+        //#         def argList = ${argName}${k}
+        //#     else
+        //#         def argList = ${argList}, ${argName}${k}
+        //#     end
+        int[] idx${k} = ${select}(this.idx${k}, rng${k});
+        //# end
+        return new ${className}(this.data, ${argList});
+    }
+
+    //#     def k = 0
+    //#     def argType = int[]
+    //#     def argName = sel
+    //#     while ${k} < ${rank}
+    //#         eval k += 1
+    //#         def arg = ${argName}${k}
+    //#         if ${k} == 1
+    //#             def argList = ${arg}
+    //#             def decList = ${argType} ${arg}
+    //#         else
+    //#             def argList = ${argList}, ${arg}
+    //#             def decList = ${decList}, ${argType} ${arg}
+    //#         end
+    //#     end
+    @Override
+    public ${superName} view(${decList}) {
+        //# def k = 0
+        //# def argName = idx
+        //# while ${k} < ${rank}
+        //#     eval k += 1
+        //#     if ${k} == 1
+        //#         def argList = ${argName}${k}
+        //#     else
+        //#         def argList = ${argList}, ${argName}${k}
+        //#     end
+        int[] idx${k} = ${select}(this.idx${k}, sel${k});
+        //# end
+        return new ${className}(this.data, ${argList});
+    }
+
+    //# end
+    @Override
+    public ${Type}1D as1D() {
+        //# if ${rank} == 1
+        return this;
+        //# else
+        int[] idx = new int[number];
+        int j = -1;
+        //#     def loopFirstIndent = ${__INDENT2__}
+        //#     def loopBody = idx[++j] = j1;
+        //#     emit ${loopCode}
+        return new Selected${Type}1D(data, idx);
+        //# end
+    }
+
+}
+
+/*
+ * Local Variables:
+ * mode: Java
+ * tab-width: 8
+ * indent-tabs-mode: nil
+ * c-basic-offset: 4
+ * fill-column: 78
+ * coding: utf-8
+ * ispell-local-dictionary: "american"
+ * End:
+ */

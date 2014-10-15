@@ -41,8 +41,7 @@ public abstract class ${className} implements Shaped {
      */
     protected ${className}() {}
 
-    //# def dst = ${BYTE}
-    //# while ${dst} <= ${DOUBLE}
+    //# for dst in ${BYTE} : ${DOUBLE}
     //#     def dst_type = ${}{type_${dst}}
     //#     def dst_Type = ${}{Type_${dst}}
     //#     def dst_TYPE = ${}{TYPE_${dst}}
@@ -52,7 +51,7 @@ public abstract class ${className} implements Shaped {
     //#     else
     //#         def a = a
     //#         def A = A
-    //#     endif
+    //#     end
     /**
      * Convert a ShapedArray into ${a} ${dst_Type}Array.
      * <p>
@@ -71,8 +70,7 @@ public abstract class ${className} implements Shaped {
         int number = src.getNumber();
         ${dst_type}[] out = new ${dst_type}[number];
         switch (srcType) {
-            //# def src = ${BYTE}
-            //# while ${src} <= ${DOUBLE}
+            //# for src in ${BYTE} : ${DOUBLE}
             //#     if ${src} != ${dst}
             //#         def src_type = ${}{type_${src}}
             //#         def src_Type = ${}{Type_${src}}
@@ -85,20 +83,17 @@ public abstract class ${className} implements Shaped {
                 }
             }
             break;
-            //#     endif
-            //#     eval src += 1
-            //# done
+            //#     end
+            //# end // loop over SRC type
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
         return wrap(out, src.cloneShape(), false);
     }
 
-    //#     eval dst += 1
-    //# done
+    //# end // loop over DST type
 
-    //# def id = ${BYTE}
-    //# while ${id} <= ${DOUBLE}
+    //# for id in ${BYTE} : ${DOUBLE}
     //#     def type = ${}{type_${id}}
     //#     def Type = ${}{Type_${id}}
     //#     def TYPE = ${}{TYPE_${id}}
@@ -109,9 +104,8 @@ public abstract class ${className} implements Shaped {
     //#     else
     //#         def a = a
     //#         def A = A
-    //#     endif
-    //#     def rank = 1
-    //#     while ${rank} <= 9
+    //#     end
+    //#     for rank in 1 : 9
     //#         def argDimList = dim1
     //#         def declDimList = int dim1
     //#         def k = 1
@@ -119,7 +113,7 @@ public abstract class ${className} implements Shaped {
     //#             eval k += 1
     //#             def argDimList = ${argDimList}, dim${k}
     //#             def declDimList = ${declDimList}, int dim${k}
-    //#         done
+    //#         end
     /**
      * Wrap an array of ${type} values into ${a} ${Type}Array.
      * <p>
@@ -135,15 +129,14 @@ public abstract class ${className} implements Shaped {
      //#             eval k += 1
      //#             def kth = ${}{nth_${k}}
      * @param dim${k} - The ${kth} dimension of the ${rank}D array.
-     //#         done
+     //#         end
      * @return A ${Type}Array wrapped around the source array {@code arr}.
       */
     public static ${Type}${rank}D wrap(${type}[] arr, ${declDimList}) {
         return ${Type}${rank}D.wrap(arr, ${argDimList});
     }
 
-    //#     eval rank += 1
-    //# done
+    //#     end // loop over rank
     /**
      * Wrap ${a} ${TypeArray} object around a simple array of ${type}'s.
      * <p>
@@ -182,19 +175,16 @@ public abstract class ${className} implements Shaped {
      */
     public static ${Type}Array wrap(${type}[] data, int[] shape, boolean cloneShape) {
         switch (shape == null ? 0 : shape.length) {
-        //# def rank = 0
-        //# while ${rank} < 9
-        //#     eval rank += 1
+        //# for rank in 1:9
         case ${rank}:
             return ${Type}${rank}D.wrap(data, shape, cloneShape);
-        //# done
+        //# end
         default:
             throw new IllegalArgumentException("Invalid shape.");
         }
     }
 
-    //#     eval id += 1
-    //# done
+    //# end // loop over types
 }
 
 /*

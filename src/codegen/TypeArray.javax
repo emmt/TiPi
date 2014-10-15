@@ -58,20 +58,20 @@ public interface ${className} extends ShapedArray {
      * Increment all the values of the array of ${type}'s.
      * @param value - The increment.
      */
-    public abstract void incr(${type} value);
+    public abstract void increment(${type} value);
 
 
     /**
      * Decrement all the values of the array of ${type}'s.
      * @param value - The decrement.
      */
-    public abstract void decr(${type} value);
+    public abstract void decrement(${type} value);
 
     /**
      * Multiply all the values of the array of ${type}'s.
      * @param value - The multiplier.
      */
-    public abstract void mult(${type} value);
+    public abstract void scale(${type} value);
 
     /**
      * Map all the values of the array of ${type}'s by a function.
@@ -88,12 +88,14 @@ public interface ${className} extends ShapedArray {
     /**
      * Flatten the array of ${type}'s in a simple array.
      * <p>
-     * The contents of a (multi-dimensional) ${className} can be stored in many
-     * different forms.  This storage details are hidden to the end-user in
-     * favor of a unified and comprehensive interface.  This method returns
-     * the contents of the ${className} object as a simple flat array.  If the
-     * ${className} object is multi-dimensional, the storage of the returned
-     * result is column-major order.
+     * The contents of a (multi-dimensional) ${className} can be stored in
+     * many different forms.  This storage details are hidden to the end-user
+     * in favor of a unified and comprehensive interface.  This method returns
+     * the contents of the ${className} object as a simple <i>flat</i> array,
+     * <i>i.e.</i> successive elements are contiguous and the first element
+     * has {@code 0}-offset.  If the ${className} object is multi-dimensional,
+     * the storage of the returned result is column-major order.
+     * </p>
      * @param forceCopy - Set true to force a copy of the internal data
      *                    even though it can already be in a flat form.
      * @return A simple array of ${type}'s with the contents of
@@ -104,16 +106,18 @@ public interface ${className} extends ShapedArray {
     /**
      * Flatten the contents of ${type}'s in a simple array.
      * <p>
-     * The contents of a (multi-dimensional) ${className} can be stored in many
-     * different forms.  This storage details are hidden to the end-user in
-     * favor of a unified and comprehensive interface.  This method returns
-     * the contents of the ${className} object as a simple flat array.  If the
-     * ${className} object is multi-dimensional, the storage of the returned
-     * result is column-major order.
-     * <p>
+     * The contents of a (multi-dimensional) ${className} can be stored in
+     * many different forms.  This storage details are hidden to the end-user
+     * in favor of a unified and comprehensive interface.  This method returns
+     * the contents of the ${className} object as a simple <i>flat</i> array,
+     * <i>i.e.</i> successive elements are contiguous and the first element
+     * has {@code 0}-offset.  If the ${className} object is multi-dimensional,
+     * the storage of the returned result is column-major order.
+     * </p><p>
      * Depending on the storage layout, the returned array may or may not
      * share the same storage as the ${className} array.  Call {@code
      * flatten(true)} to make sure that the two storage areas are independent.
+     * </p>
      * @return A simple array of ${type}s with the contents of
      *         the ${className} array.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
@@ -130,29 +134,25 @@ public interface ${className} extends ShapedArray {
             //#     eval rank += 1
         } else if (rank == ${rank}) {
             return ${Type}${rank}D.wrap(arr, shape, cloneShape);
-            //# done
+            //# end
         } else {
             throw new IllegalArgumentException("Invalid shape.");
         }
         return null;
     }
 
-    //# def rank = 1
-    //# while ${rank} <= 9
+    //# for rank in 1:9
     //#     def argDimList = dim1
     //#     def declDimList = int dim1
-    //#     def k = 1
-    //#     while ${k} < ${rank}
-    //#         eval k += 1
+    //#     for k in 2:${rank}
     //#         def argDimList = ${argDimList}, dim${k}
     //#         def declDimList = ${declDimList}, int dim${k}
-    //#     done
+    //#     end
     public static ${Type}${rank}D wrap(${type}[] data, ${declDimList}) {
         return ${Type}${rank}D.wrap(data, new int[]{${argDimList}}, false);
     }
-    //#     eval rank += 1
-    //# done
-    //#endif
+    //# end
+    //#end
 }
 
 /*
