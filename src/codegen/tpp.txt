@@ -97,7 +97,16 @@ or
 
     FIRST : LAST : STEP
 
-where FIRST, LAST and STEP are integers,
+where (after macro expansion) FIRST, LAST and STEP are integers.
+Numerical expressions are not yet supported for these fields but you
+can use the '#eval' directive to compute the range parameters.  For
+instance:
+
+    //# eval last = ${x} + 3*${y}
+    //# for i in 0 : ${last}
+    ...
+    //# end
+
 
 Include another source (note that macro expansion is performed on the line):
 
