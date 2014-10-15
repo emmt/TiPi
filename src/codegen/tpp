@@ -156,17 +156,18 @@ namespace eval ::tpp {
       parray MACRO
     }
 
-    # Each nested '#if ... #elif ... #else ... #endif' or '#while ... #done'
-    # increase the depth.  At a given depth, the context is defined by the
-    # 'state' and the 'prevIndex' variables.  The 'prevIndex' variable stores
-    # the line number of the previous branch and the value of the 'state'
-    # variable is one of:
+    # Each nested '#if ... #elif ... #else ... #end', '#for ... #end' or
+    # '#while ... #end' increase the depth.  At a given depth, the context is
+    # defined by the 'state' and the 'prevIndex' variables.  The 'prevIndex'
+    # variable stores the line number of the previous branch and the value of
+    # the 'state' variable is one of:
     #
     #   0 = at the top level
     #   1 = inside the '#if' block of the current level
     #   2 = inside an '#elif' block of the current level
     #   3 = inside the '#else' block of the current level
     #   4 = inside a '#while' block of the current level
+    #   5 = inside a '#for' block of the current level
     #
     set depth 0
     set state 0
@@ -270,14 +271,6 @@ namespace eval ::tpp {
           set code($prevIndex,jump) $index
           set prevIndex $index
         }
-        "endif" {
-          if {$state < 1 || $state > 3} {
-            failure "directive '#${command}' incorrectly nested"
-          }
-          assertEmpty $tail
-          set code($prevIndex,jump) $index
-          popContext
-        }
         "while" {
           pushContext 4; # also set state
           if {$tail eq ""} {
@@ -286,13 +279,28 @@ namespace eval ::tpp {
           set code($index,expression) [assertNonEmpty $tail]
           set prevIndex $index
         }
-        "done" {
-          if {$state != 4} {
+        "for" {
+          pushContext 5; # also set state
+          if {! [regexp -- "^(${VARNAME})\[ \t\]+in\[ \t\]+(.*)\$" \
+                     $tail - name data]} {
+            failure
+          }
+          assertWritable $name
+          set code($index,name) $name
+          set code($index,data) $data
+          set prevIndex $index
+        }
+        "end" {
+          if {$state < 1 || $state > 5} {
             failure "directive '#${command}' incorrectly nested"
           }
           assertEmpty $tail
+          set code($index,state) $state
           set code($prevIndex,jump) $index
-          set code($index,jump) $prevIndex
+          if {$state >= 4} {
+            # Was inside '#while" or '#for' block.
+            set code($index,jump) $prevIndex
+          }
           popContext
         }
         "emit" -
@@ -471,7 +479,7 @@ namespace eval ::tpp {
             set index $code($index,jump)
             set command $code($index,command)
             if {$command ne "elif"} {
-              if {$command ne "else" && $command ne "endif"} {
+              if {$command ne "else" && $command ne "end"} {
                 failure "ouch!"
               }
               break
@@ -480,30 +488,87 @@ namespace eval ::tpp {
         }
         "elif" -
         "else" {
-          while {$command ne "endif"} {
+          while {$command ne "end"} {
             set index $code($index,jump)
             set command $code($index,command)
           }
-        }
-        "endif" {
-          # Nothing to do.
         }
         "while" {
           if {! [evalTest $code($index,expression)]} {
             set index $code($index,jump)
             set command $code($index,command)
-            if {$command ne "done"} {
+            if {$command ne "end"} {
               failure "ouch!"
             }
           }
         }
-        "done" {
-          set prevIndex $code($index,jump)
-          if {[evalTest $code($prevIndex,expression)]} {
-            set index $prevIndex
+        "for" {
+          # Extract argument list.
+          set argument [expandMacros $code($index,data) 2]
+          set iteratorCommand "iterateList"
+          if {[string first ":" $argument] > 0} {
+            if {[scan $argument "%d : %d : %d %\[^\n\]" first last step -] == 3} {
+              if {$step == 0} {
+                failure "invalid 0-step in range"
+              } elseif {($step < 0 && $first < $last) || ($step > 0 && $first > $last)} {
+                failure "wrong step direction in range"
+              }
+              set iteratorCommand "iterateRange"
+            } elseif {[scan $argument "%d : %d %\[^\n\]" first last -] == 2} {
+              if {$first <= $last} {
+                set step 1
+              } else {
+                set step -1
+              }
+              set iteratorCommand "iterateRange"
+            }
+          }
+
+          # Initialize iterator.
+          array unset code $index,iterator,*
+          if {$iteratorCommand eq "iterateRange"} {
+            set code($index,iterator,first) $first
+            set code($index,iterator,last) $last
+            set code($index,iterator,step) $step
+          } else {
+            set code($index,iterator,length) [llength $argument]
+            set code($index,iterator,values) $argument
+          }
+          set code($index,iterator,index) 0
+          set code($index,iterator,command) $iteratorCommand
+
+          # Evaluate iterator a first time.
+          if {! [$iteratorCommand code $index]} {
+            set index $code($index,jump)
             set command $code($index,command)
-            if {$command ne "while"} {
+            if {$command ne "end"} {
               failure "ouch!"
+            }
+          }
+        }
+        "end" {
+          switch -exact -- $code($index,state) {
+            4 {
+              # At the end of a '#while' loop.
+              set prevIndex $code($index,jump)
+              if {[evalTest $code($prevIndex,expression)]} {
+                set index $prevIndex
+                set command $code($index,command)
+                if {$command ne "while"} {
+                  failure "ouch!"
+                }
+              }
+            }
+            5 {
+              # At the end of a '#for' loop.
+              set prevIndex $code($index,jump)
+              if {[$code($prevIndex,iterator,command) code $prevIndex]} {
+                set index $prevIndex
+                set command $code($index,command)
+                if {$command ne "for"} {
+                  failure "ouch!"
+                }
+              }
             }
           }
         }
@@ -551,6 +616,47 @@ namespace eval ::tpp {
         }
       }
     }
+  }
+
+  proc iterateRange {varName index} {
+    upvar $varName code
+    set i $code($index,iterator,index)
+    set first $code($index,iterator,first)
+    set last  $code($index,iterator,last)
+    set step  $code($index,iterator,step)
+    set value [expr {$first + $step*$i}]
+    if {$step > 0} {
+      if {$value > $last} {
+        return false
+      }
+    } else {
+      if {$value < $last} {
+        return false
+      }
+    }
+    set name $code($index,name)
+    incr code($index,iterator,index)
+
+    variable MACRO
+    set MACRO($name) $value
+    unset -nocomplain MACRO(-$name)
+    return true
+  }
+
+  proc iterateList {varName index} {
+    upvar $varName code
+    set i $code($index,iterator,index)
+    if {$i >= $code($index,iterator,length)} {
+      return false
+    }
+    set value [lindex $code($index,iterator,values) $i]
+    set name $code($index,name)
+    incr code($index,iterator,index)
+
+    variable MACRO
+    set MACRO($name) $value
+    unset -nocomplain MACRO(-$name)
+    return true
   }
 
   proc expandExpression {expression} {
