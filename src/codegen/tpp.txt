@@ -97,10 +97,10 @@ or
 
     FIRST : LAST : STEP
 
-where (after macro expansion) FIRST, LAST and STEP are integers.
-Numerical expressions are not yet supported for these fields but you
-can use the '#eval' directive to compute the range parameters.  For
-instance:
+where (after macro expansion) FIRST, LAST and STEP are integers, if
+omitted, STEP equals 1.  A zero-STEP is forbidden.  Numerical
+expressions are not yet supported for these fields but you can use the
+'#eval' directive to compute the range parameters.  For instance:
 
     //# eval last = ${x} + 3*${y}
     //# for i in 0 : ${last}

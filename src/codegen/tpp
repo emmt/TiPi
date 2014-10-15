@@ -510,16 +510,10 @@ namespace eval ::tpp {
             if {[scan $argument "%d : %d : %d %\[^\n\]" first last step -] == 3} {
               if {$step == 0} {
                 failure "invalid 0-step in range"
-              } elseif {($step < 0 && $first < $last) || ($step > 0 && $first > $last)} {
-                failure "wrong step direction in range"
               }
               set iteratorCommand "iterateRange"
             } elseif {[scan $argument "%d : %d %\[^\n\]" first last -] == 2} {
-              if {$first <= $last} {
-                set step 1
-              } else {
-                set step -1
-              }
+              set step 1
               set iteratorCommand "iterateRange"
             }
           }
