@@ -26,14 +26,14 @@
 package mitiv.base;
 
 /**
- * A "typed" object has a primitive type.
+ * A Typed object has a primitive type.
  *
- * @author eric
+ * @author Éric Thiébaut
  *
  */
 public interface Typed extends Traits {
     /**
-     * Query the type of the elements stored by the shaped object.
+     * Query the type of the elements stored by the typed object.
      * @return One of: {@link Traits#BYTE}, {@link Traits#SHORT}, {@link Traits#INT},
      *         {@link Traits#LONG}, {@link Traits#FLOAT}, {@link Traits#DOUBLE},
      *         {@link Traits#BOOLEAN}, {@link Traits#STRING}, or {@link Traits#VOID}.

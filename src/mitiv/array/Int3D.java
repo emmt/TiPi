@@ -25,6 +25,8 @@
 
 package mitiv.array;
 
+import mitiv.array.impl.FlatInt3D;
+import mitiv.array.impl.StriddenInt3D;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
@@ -101,7 +103,7 @@ public abstract class Int3D extends Array3D implements IntArray {
     }
 
     @Override
-    public void incr(int value) {
+    public void increment(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -123,7 +125,7 @@ public abstract class Int3D extends Array3D implements IntArray {
     }
 
     @Override
-    public void decr(int value) {
+    public void decrement(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -145,7 +147,7 @@ public abstract class Int3D extends Array3D implements IntArray {
     }
 
     @Override
-    public void mult(int value) {
+    public void scale(int value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -383,35 +385,19 @@ public abstract class Int3D extends Array3D implements IntArray {
         return Double3D.wrap(out, dim1, dim2, dim3);
     }
 
-    /*=======================================================================*/
-    /* FACTORY */
-
-    /* Inner class instances can only be created from an instance of the outer
-     * class.  For this, we need a static instance of the outer class (to
-     * spare the creation of this instance each time a new instance of the
-     * inner class is needed).  The outer class is however "abstract" and we
-     * must provide a minimal set of methods to make it instantiable.
+    /**
+     * Get the number of elements of a Java array.
+     * @param arr - A Java array (can be {@code null}.
+     * @return {@code 0}, if {@code arr} is {@code null}; {@code arr.length};
+     *         otherwise.
      */
-    private static final Int3D factory = new Int3D(1,1,1) {
-        @Override
-        public final int get(int i1, int i2, int i3) {
-            return 0;
-        }
-        @Override
-        public final void set(int i1, int i2, int i3, int value) {
-        }
-        @Override
-        public final int getOrder() {
-            return COLUMN_MAJOR;
-        }
-        @Override
-        public int[] flatten(boolean forceCopy) {
-            return null;
-        }
-    };
+    public static int numberOf(int[] arr) {
+        return (arr == null ? 0 : arr.length);
+    }
+
 
     /*=======================================================================*/
-    /* FLAT LAYOUT */
+    /* ARRAY FACTORIES */
 
     /**
      * Create a 3D array of int's with given dimensions.
@@ -425,7 +411,7 @@ public abstract class Int3D extends Array3D implements IntArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Int3D create(int dim1, int dim2, int dim3) {
-        return factory.new Flat(dim1,dim2,dim3);
+        return new FlatInt3D(dim1,dim2,dim3);
     }
 
     /**
@@ -441,7 +427,7 @@ public abstract class Int3D extends Array3D implements IntArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Int3D create(int[] shape) {
-        return factory.new Flat(shape, true);
+        return new FlatInt3D(shape, true);
     }
 
     /**
@@ -460,7 +446,7 @@ public abstract class Int3D extends Array3D implements IntArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Int3D create(int[] shape, boolean cloneShape) {
-        return factory.new Flat(shape, cloneShape);
+        return new FlatInt3D(shape, cloneShape);
     }
 
     /**
@@ -478,7 +464,7 @@ public abstract class Int3D extends Array3D implements IntArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Int3D wrap(int[] data, int dim1, int dim2, int dim3) {
-        return factory.new Flat(data, dim1,dim2,dim3);
+        return new FlatInt3D(data, dim1,dim2,dim3);
     }
 
     /**
@@ -496,7 +482,7 @@ public abstract class Int3D extends Array3D implements IntArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Int3D wrap(int[] data, int[] shape) {
-        return factory.new Flat(data, shape, true);
+        return new FlatInt3D(data, shape, true);
     }
 
     /**
@@ -517,73 +503,8 @@ public abstract class Int3D extends Array3D implements IntArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Int3D wrap(int[] data, int[] shape, boolean cloneShape) {
-        return factory.new Flat(data, shape, cloneShape);
+        return new FlatInt3D(data, shape, cloneShape);
     }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 3D array stored in a "flat" (1D) Java array in column-major order.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Flat extends Int3D {
-        private static final int order = COLUMN_MAJOR;
-        private final int[] data;
-        private final int dim1dim2;
-
-        Flat(int dim1, int dim2, int dim3) {
-            super(dim1,dim2,dim3);
-            data = new int[number];
-            dim1dim2 = dim1*dim2;
-        }
-
-        Flat(int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = new int[number];
-            dim1dim2 = dim1*dim2;
-        }
-
-        Flat(int[] arr, int dim1, int dim2, int dim3) {
-            super(dim1,dim2,dim3);
-            data = arr;
-            dim1dim2 = dim1*dim2;
-        }
-
-        Flat(int[] arr, int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = arr;
-            dim1dim2 = dim1*dim2;
-        }
-
-        @Override
-        public final int get(int i1, int i2, int i3) {
-            return data[dim1dim2*i3 + dim1*i2 + i1];
-        }
-
-        @Override
-        public final void set(int i1, int i2, int i3, int value) {
-            data[dim1dim2*i3 + dim1*i2 + i1] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public int[] flatten(boolean forceCopy) {
-            if (! forceCopy) {
-                return data;
-            }
-            int number = getNumber();
-            int[] out = new int[number];
-            System.arraycopy(data, 0, out, 0, number);
-            return out;
-        }
-    }
-
-    /*=======================================================================*/
-    /* STRIDED LAYOUT */
 
     /**
      * Wrap an existing array in a 3D array of int's with given dimensions,
@@ -607,163 +528,7 @@ public abstract class Int3D extends Array3D implements IntArray {
      */
     public static Int3D wrap(int[] data, int dim1, int dim2, int dim3,
             int offset, int stride1, int stride2, int stride3) {
-        return factory.new Strided(data, dim1,dim2,dim3, offset, stride1,stride2,stride3);
-    }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 3D array stored in a "flat" (1D) Java array with offset and strides.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Strided extends Int3D {
-        private final int[] data;
-        private final int order;
-        private final int offset;
-        private final int stride1;
-        private final int stride2;
-        private final int stride3;
-
-        Strided(int[] arr, int dim1, int dim2, int dim3, int offset, int stride1, int stride2, int stride3) {
-            super(dim1,dim2,dim3);
-            this.data = arr;
-            this.offset = offset;
-            this.stride1 = stride1;
-            this.stride2 = stride2;
-            this.stride3 = stride3;
-            this.order = checkViewStrides(arr.length, dim1,dim2,dim3, offset, stride1,stride2,stride3);
-        }
-
-        private final int index(int i1, int i2, int i3) {
-            return offset + stride3*i3 + stride2*i2 + stride1*i1;
-        }
-
-        @Override
-        public final int get(int i1, int i2, int i3) {
-            return data[index(i1,i2,i3)];
-        }
-
-        @Override
-        public final void set(int i1, int i2, int i3, int value) {
-            data[index(i1,i2,i3)] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public int[] flatten(boolean forceCopy) {
-            boolean flat = (stride1 == 1 && stride2 == dim1 && stride3 == stride2*dim2);
-            if (flat && ! forceCopy && offset == 0) {
-                return data;
-            }
-            int[] out;
-            int number = getNumber();
-            out = new int[number];
-            if (flat) {
-                System.arraycopy(data, offset, out, 0, number);
-            } else {
-                /* Must access the output in column-major order. */
-                int i = -1;
-                for (int i3 = 0; i3 < dim3; ++i3) {
-                    for (int i2 = 0; i2 < dim2; ++i2) {
-                        for (int i1 = 0; i1 < dim1; ++i1) {
-                            out[++i] = get(i1,i2,i3);
-                        }
-                    }
-                }
-            }
-            return out;
-        }
-    }
-
-    /*=======================================================================*/
-    /* MULTIDIMENSIONAL (3D) LAYOUT */
-
-    /**
-     * Wrap an existing 3D array of int's in a Int3D array.
-     * <p>
-     * More specifically:
-     * <pre>arr.get(i1,i2,i3) = data[i3][i2][i1]</pre>
-     * with {@code arr} the returned 3D array.
-     * @param data    - The array to wrap in the 3D array.
-     * @return A 3D array sharing the elements of <b>data</b>.
-     */
-    public static Int3D wrap(int[][][] data) {
-        return factory.new Multi3(data);
-    }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 3D array stored in a 3D Java array.  To instantiate such an inner class,
-     * an instance of the outer class must be available (this is the purpose
-     * of the static "factory" instance).
-     */
-    class Multi3 extends Int3D {
-        private static final int order = COLUMN_MAJOR;
-        private final int[][][] data;
-
-        protected Multi3(int[][][] arr) {
-            super(arr[0][0].length, arr[0].length, arr.length);
-            data = arr;
-        }
-        @Override
-        public int getOrder() {
-            return order;
-        }
-        @Override
-        public final int get(int i1, int i2, int i3) {
-            return data[i3][i2][i1];
-        }
-        @Override
-        public final void set(int i1, int i2, int i3, int value) {
-            data[i3][i2][i1] = value;
-        }
-    }
-
-    /*=======================================================================*/
-    /* MULTIDIMENSIONAL (2D) LAYOUT */
-
-    /**
-     * Wrap an existing 2D array of int's in a Int3D array.
-     * <p>
-     * More specifically:
-     * <pre>arr.get(i1,i2,i3) = data[i3][dim1*i2 + i1]</pre>
-     * with {@code arr} the returned 3D array.
-     * @param data    - The array to wrap in the 4D array.
-     * @param dim1    - The 1st dimension of the 3D array.
-     * @param dim2    - The 2nd dimension of the 3D array.
-     * @return A 4D array sharing the elements of <b>data</b>.
-     */
-    public static Int3D wrap(int[][] arr, int dim1, int dim2) {
-        return factory.new Multi2(arr, dim1, dim2);
-    }
-
-    class Multi2 extends Int3D {
-        private static final int order = COLUMN_MAJOR;
-        private final int[][] data;
-
-        protected Multi2(int[][] arr, int dim1, int dim2) {
-            super(dim1, dim2, arr.length);
-            data = arr;
-        }
-
-        @Override
-        public int getOrder() {
-            return order;
-        }
-
-        @Override
-        public final int get(int i1, int i2, int i3) {
-            return data[i3][i2*dim1 + i1];
-        }
-
-        @Override
-        public final void set(int i1, int i2, int i3, int value) {
-            data[i3][i2*dim1 + i1] = value;
-        }
+        return new StriddenInt3D(data, dim1,dim2,dim3, offset, stride1,stride2,stride3);
     }
 
 }

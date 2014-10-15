@@ -56,20 +56,20 @@ public interface ShortArray extends ShapedArray {
      * Increment all the values of the array of short's.
      * @param value - The increment.
      */
-    public abstract void incr(short value);
+    public abstract void increment(short value);
 
 
     /**
      * Decrement all the values of the array of short's.
      * @param value - The decrement.
      */
-    public abstract void decr(short value);
+    public abstract void decrement(short value);
 
     /**
      * Multiply all the values of the array of short's.
      * @param value - The multiplier.
      */
-    public abstract void mult(short value);
+    public abstract void scale(short value);
 
     /**
      * Map all the values of the array of short's by a function.
@@ -86,12 +86,14 @@ public interface ShortArray extends ShapedArray {
     /**
      * Flatten the array of short's in a simple array.
      * <p>
-     * The contents of a (multi-dimensional) ShortArray can be stored in many
-     * different forms.  This storage details are hidden to the end-user in
-     * favor of a unified and comprehensive interface.  This method returns
-     * the contents of the ShortArray object as a simple flat array.  If the
-     * ShortArray object is multi-dimensional, the storage of the returned
-     * result is column-major order.
+     * The contents of a (multi-dimensional) ShortArray can be stored in
+     * many different forms.  This storage details are hidden to the end-user
+     * in favor of a unified and comprehensive interface.  This method returns
+     * the contents of the ShortArray object as a simple <i>flat</i> array,
+     * <i>i.e.</i> successive elements are contiguous and the first element
+     * has {@code 0}-offset.  If the ShortArray object is multi-dimensional,
+     * the storage of the returned result is column-major order.
+     * </p>
      * @param forceCopy - Set true to force a copy of the internal data
      *                    even though it can already be in a flat form.
      * @return A simple array of short's with the contents of
@@ -102,16 +104,18 @@ public interface ShortArray extends ShapedArray {
     /**
      * Flatten the contents of short's in a simple array.
      * <p>
-     * The contents of a (multi-dimensional) ShortArray can be stored in many
-     * different forms.  This storage details are hidden to the end-user in
-     * favor of a unified and comprehensive interface.  This method returns
-     * the contents of the ShortArray object as a simple flat array.  If the
-     * ShortArray object is multi-dimensional, the storage of the returned
-     * result is column-major order.
-     * <p>
+     * The contents of a (multi-dimensional) ShortArray can be stored in
+     * many different forms.  This storage details are hidden to the end-user
+     * in favor of a unified and comprehensive interface.  This method returns
+     * the contents of the ShortArray object as a simple <i>flat</i> array,
+     * <i>i.e.</i> successive elements are contiguous and the first element
+     * has {@code 0}-offset.  If the ShortArray object is multi-dimensional,
+     * the storage of the returned result is column-major order.
+     * </p><p>
      * Depending on the storage layout, the returned array may or may not
      * share the same storage as the ShortArray array.  Call {@code
      * flatten(true)} to make sure that the two storage areas are independent.
+     * </p>
      * @return A simple array of shorts with the contents of
      *         the ShortArray array.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.

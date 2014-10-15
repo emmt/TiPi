@@ -25,6 +25,8 @@
 
 package mitiv.array;
 
+import mitiv.array.impl.FlatFloat1D;
+import mitiv.array.impl.StriddenFloat1D;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
@@ -82,21 +84,21 @@ public abstract class Float1D extends Array1D implements FloatArray {
     }
 
     @Override
-    public void incr(float value) {
+    public void increment(float value) {
         for (int i1 = 0; i1 < dim1; ++i1) {
             set(i1, get(i1) + value);
         }
     }
 
     @Override
-    public void decr(float value) {
+    public void decrement(float value) {
         for (int i1 = 0; i1 < dim1; ++i1) {
             set(i1, get(i1) - value);
         }
     }
 
     @Override
-    public void mult(float value) {
+    public void scale(float value) {
         for (int i1 = 0; i1 < dim1; ++i1) {
             set(i1, get(i1) * value);
         }
@@ -132,7 +134,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
     @Override
     public float[] flatten(boolean forceCopy) {
         /* Copy the elements in column-major order. */
-        float[] out = new float[dim1];
+        float[] out = new float[number];
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[i1] = get(i1);
         }
@@ -155,7 +157,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
      */
     @Override
     public Byte1D toByte() {
-        byte[] out = new byte[dim1];
+        byte[] out = new byte[number];
         int i = -1;
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[++i] = (byte)get(i1);
@@ -173,7 +175,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
      */
     @Override
     public Short1D toShort() {
-        short[] out = new short[dim1];
+        short[] out = new short[number];
         int i = -1;
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[++i] = (short)get(i1);
@@ -191,7 +193,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
      */
     @Override
     public Int1D toInt() {
-        int[] out = new int[dim1];
+        int[] out = new int[number];
         int i = -1;
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[++i] = (int)get(i1);
@@ -209,7 +211,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
      */
     @Override
     public Long1D toLong() {
-        long[] out = new long[dim1];
+        long[] out = new long[number];
         int i = -1;
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[++i] = (long)get(i1);
@@ -240,7 +242,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
      */
     @Override
     public Double1D toDouble() {
-        double[] out = new double[dim1];
+        double[] out = new double[number];
         int i = -1;
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[++i] = (double)get(i1);
@@ -248,35 +250,19 @@ public abstract class Float1D extends Array1D implements FloatArray {
         return Double1D.wrap(out, dim1);
     }
 
-    /*=======================================================================*/
-    /* FACTORY */
-
-    /* Inner class instances can only be created from an instance of the outer
-     * class.  For this, we need a static instance of the outer class (to
-     * spare the creation of this instance each time a new instance of the
-     * inner class is needed).  The outer class is however "abstract" and we
-     * must provide a minimal set of methods to make it instantiable.
+    /**
+     * Get the number of elements of a Java array.
+     * @param arr - A Java array (can be {@code null}.
+     * @return {@code 0}, if {@code arr} is {@code null}; {@code arr.length};
+     *         otherwise.
      */
-    private static final Float1D factory = new Float1D(1) {
-        @Override
-        public final float get(int i1) {
-            return 0.0F;
-        }
-        @Override
-        public final void set(int i1, float value) {
-        }
-        @Override
-        public final int getOrder() {
-            return COLUMN_MAJOR;
-        }
-        @Override
-        public float[] flatten(boolean forceCopy) {
-            return null;
-        }
-    };
+    public static int numberOf(float[] arr) {
+        return (arr == null ? 0 : arr.length);
+    }
+
 
     /*=======================================================================*/
-    /* FLAT LAYOUT */
+    /* ARRAY FACTORIES */
 
     /**
      * Create a 1D array of float's with given dimensions.
@@ -288,7 +274,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Float1D create(int dim1) {
-        return factory.new Flat(dim1);
+        return new FlatFloat1D(dim1);
     }
 
     /**
@@ -304,7 +290,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Float1D create(int[] shape) {
-        return factory.new Flat(shape, true);
+        return new FlatFloat1D(shape, true);
     }
 
     /**
@@ -323,7 +309,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Float1D create(int[] shape, boolean cloneShape) {
-        return factory.new Flat(shape, cloneShape);
+        return new FlatFloat1D(shape, cloneShape);
     }
 
     /**
@@ -339,7 +325,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Float1D wrap(float[] data, int dim1) {
-        return factory.new Flat(data, dim1);
+        return new FlatFloat1D(data, dim1);
     }
 
     /**
@@ -357,7 +343,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Float1D wrap(float[] data, int[] shape) {
-        return factory.new Flat(data, shape, true);
+        return new FlatFloat1D(data, shape, true);
     }
 
     /**
@@ -378,68 +364,8 @@ public abstract class Float1D extends Array1D implements FloatArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Float1D wrap(float[] data, int[] shape, boolean cloneShape) {
-        return factory.new Flat(data, shape, cloneShape);
+        return new FlatFloat1D(data, shape, cloneShape);
     }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 1D array stored in a "flat" (1D) Java array in column-major order.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Flat extends Float1D {
-        private static final int order = COLUMN_MAJOR;
-        private final float[] data;
-
-        Flat(int dim1) {
-            super(dim1);
-            data = new float[dim1];
-        }
-
-        Flat(int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = new float[dim1];
-        }
-
-        Flat(float[] arr, int dim1) {
-            super(dim1);
-            data = arr;
-        }
-
-        Flat(float[] arr, int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = arr;
-        }
-
-        @Override
-        public final float get(int i1) {
-            return data[i1];
-        }
-
-        @Override
-        public final void set(int i1, float value) {
-            data[i1] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public float[] flatten(boolean forceCopy) {
-            if (! forceCopy) {
-                return data;
-            }
-            int number = getNumber();
-            float[] out = new float[dim1];
-            System.arraycopy(data, 0, out, 0, number);
-            return out;
-        }
-    }
-
-    /*=======================================================================*/
-    /* STRIDED LAYOUT */
 
     /**
      * Wrap an existing array in a 1D array of float's with given dimensions,
@@ -459,70 +385,8 @@ public abstract class Float1D extends Array1D implements FloatArray {
      */
     public static Float1D wrap(float[] data, int dim1,
             int offset, int stride1) {
-        return factory.new Strided(data, dim1, offset, stride1);
+        return new StriddenFloat1D(data, dim1, offset, stride1);
     }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 1D array stored in a "flat" (1D) Java array with offset and strides.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Strided extends Float1D {
-        private final float[] data;
-        private final int order;
-        private final int offset;
-        private final int stride1;
-
-        Strided(float[] arr, int dim1, int offset, int stride1) {
-            super(dim1);
-            this.data = arr;
-            this.offset = offset;
-            this.stride1 = stride1;
-            this.order = checkViewStrides(arr.length, dim1, offset, stride1);
-        }
-
-        private final int index(int i1) {
-            return offset + stride1*i1;
-        }
-
-        @Override
-        public final float get(int i1) {
-            return data[index(i1)];
-        }
-
-        @Override
-        public final void set(int i1, float value) {
-            data[index(i1)] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public float[] flatten(boolean forceCopy) {
-            boolean flat = (stride1 == 1);
-            if (flat && ! forceCopy && offset == 0) {
-                return data;
-            }
-            float[] out;
-            int number = getNumber();
-            out = new float[dim1];
-            if (flat) {
-                System.arraycopy(data, offset, out, 0, number);
-            } else {
-                /* Must access the output in column-major order. */
-                int i = -1;
-                for (int i1 = 0; i1 < dim1; ++i1) {
-                    out[++i] = get(i1);
-                }
-            }
-            return out;
-        }
-    }
-
 
 }
 

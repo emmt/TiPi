@@ -96,11 +96,6 @@ public class ArrayDescriptor implements Shaped, Typed {
         return Arrays.copyOf(shape, shape.length);
     }
 
-    /**
-     * Get the length of a given dimension.
-     * @param k  - The index of the dimension.
-     * @return The length of ({@code i}+1)-th dimension, 1 for {@code k} greater or equal the rank.
-     */
     @Override
     public final int getDimension(int k) {
         return (k < rank ? shape[k] : 1);

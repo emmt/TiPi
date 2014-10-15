@@ -25,6 +25,7 @@
 
 package mitiv.array;
 import mitiv.base.Shaped;
+import mitiv.base.indexing.Range;
 
 
 /**
@@ -34,6 +35,8 @@ import mitiv.base.Shaped;
  */
 public abstract class Array8D implements ShapedArray {
     static protected final int rank = 8;
+    protected final int number;
+    protected final int[] shape;
     protected final int dim1;
     protected final int dim2;
     protected final int dim3;
@@ -42,18 +45,17 @@ public abstract class Array8D implements ShapedArray {
     protected final int dim6;
     protected final int dim7;
     protected final int dim8;
-    protected final int number;
-    protected final int[] shape;
 
     /*
      * The following constructors make this class non instantiable, but still
      * let others inherit from this class.
      */
-
     protected Array8D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         if (dim1 < 1 || dim2 < 1 || dim3 < 1 || dim4 < 1 || dim5 < 1 || dim6 < 1 || dim7 < 1 || dim8 < 1) {
             throw new IllegalArgumentException("Bad dimension(s) for 8D array");
         }
+        this.shape = new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8};
+        this.number = dim1*dim2*dim3*dim4*dim5*dim6*dim7*dim8;
         this.dim1 = dim1;
         this.dim2 = dim2;
         this.dim3 = dim3;
@@ -62,8 +64,6 @@ public abstract class Array8D implements ShapedArray {
         this.dim6 = dim6;
         this.dim7 = dim7;
         this.dim8 = dim8;
-        this.number = dim1*dim2*dim3*dim4*dim5*dim6*dim7*dim8;
-        this.shape = new int[]{dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8};
     }
 
     protected Array8D(int[] shape) {
@@ -84,7 +84,7 @@ public abstract class Array8D implements ShapedArray {
         }
         this.number = dim1*dim2*dim3*dim4*dim5*dim6*dim7*dim8;
         if (cloneShape) {
-            this.shape = new int[]{dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8};
+            this.shape = new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8};
         } else {
             this.shape = shape;
         }
@@ -97,7 +97,7 @@ public abstract class Array8D implements ShapedArray {
 
     @Override
     public final int[] cloneShape() {
-        return new int[]{dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8};
+        return new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8};
     }
 
     /**
@@ -125,6 +125,89 @@ public abstract class Array8D implements ShapedArray {
     }
 
     /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.  The same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     * @return A Array7D view on the given slice of the array.
+     */
+    public abstract Array7D slice(int idx);
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.
+     * @param dim - The dimension to slice.  For these two arguments,
+     *              the same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     *
+     * @return A Array7D view on the given slice of the array.
+     */
+    public abstract Array7D slice(int idx, int dim);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param rng1 - The range of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param rng2 - The range of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     * @param rng3 - The range of indices to select along 3rd dimension
+     *               (or {@code null} to select all.
+     * @param rng4 - The range of indices to select along 4th dimension
+     *               (or {@code null} to select all.
+     * @param rng5 - The range of indices to select along 5th dimension
+     *               (or {@code null} to select all.
+     * @param rng6 - The range of indices to select along 6th dimension
+     *               (or {@code null} to select all.
+     * @param rng7 - The range of indices to select along 7th dimension
+     *               (or {@code null} to select all.
+     * @param rng8 - The range of indices to select along 8th dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Array8D view for the given ranges of the array.
+     */
+    public abstract Array8D view(Range rng1, Range rng2, Range rng3, Range rng4, Range rng5, Range rng6, Range rng7, Range rng8);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param idx1 - The list of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param idx2 - The list of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     * @param idx3 - The list of indices to select along 3rd dimension
+     *               (or {@code null} to select all.
+     * @param idx4 - The list of indices to select along 4th dimension
+     *               (or {@code null} to select all.
+     * @param idx5 - The list of indices to select along 5th dimension
+     *               (or {@code null} to select all.
+     * @param idx6 - The list of indices to select along 6th dimension
+     *               (or {@code null} to select all.
+     * @param idx7 - The list of indices to select along 7th dimension
+     *               (or {@code null} to select all.
+     * @param idx8 - The list of indices to select along 8th dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Array8D view for the given index selections of the
+     *         array.
+     */
+    public abstract Array8D view(int[] idx1, int[] idx2, int[] idx3, int[] idx4, int[] idx5, int[] idx6, int[] idx7, int[] idx8);
+
+    /**
+     * Get a view of the array as a 1D array.
+     *
+     * @return A 1D view of the array.
+     */
+    public abstract Array1D as1D();
+
+    /**
      * Check the parameters of a 8D view with strides and get ordering.
      * @param number  - The number of elements in the wrapped array.
      * @param dim1    - The 1st dimension of the 8D view.
@@ -146,8 +229,9 @@ public abstract class Array8D implements ShapedArray {
      * @param stride8 - The stride along the 8th dimension.
      * @return The ordering: {@link Shaped#COLUMN_MAJOR},
      *         {@link Shaped#ROW_MAJOR}, or {@link Shaped#NONSPECIFIC_ORDER}.
+     * @throws IndexOutOfBoundsException
      */
-    protected static int checkViewStrides(int number, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8,
+    public static int checkViewStrides(int number, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8,
             int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int stride8) {
         int imin, imax, itmp;
         itmp = (dim1 - 1)*stride1;

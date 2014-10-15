@@ -27,9 +27,10 @@ package mitiv.base;
 
 
 /**
- * A Shape object is immutable and used to store the dimensions of a shaped object.
- * @author Éric Thiébaut
+ * A Shape object is unmodifiable and used to store the dimensions of a shaped
+ * object in an efficient way.
  *
+ * @author Éric Thiébaut
  */
 public class Shape {
     private final int rank;
@@ -65,13 +66,12 @@ public class Shape {
 
     /**
      * Make a 1-D shape
-     * @param dim1 - The dimension.
+     * @param dim1 - The 1st dimension.
      * @return A Shape object.
      */
     public static Shape make(int dim1) {
         return new Shape(new int[]{dim1}, true);
     }
-
     /**
      * Make a 2-D shape
      * @param dim1 - The 1st dimension.
@@ -81,7 +81,6 @@ public class Shape {
     public static Shape make(int dim1, int dim2) {
         return new Shape(new int[]{dim1, dim2}, true);
     }
-
     /**
      * Make a 3-D shape
      * @param dim1 - The 1st dimension.
@@ -92,7 +91,6 @@ public class Shape {
     public static Shape make(int dim1, int dim2, int dim3) {
         return new Shape(new int[]{dim1, dim2, dim3}, true);
     }
-
     /**
      * Make a 4-D shape
      * @param dim1 - The 1st dimension.
@@ -104,7 +102,6 @@ public class Shape {
     public static Shape make(int dim1, int dim2, int dim3, int dim4) {
         return new Shape(new int[]{dim1, dim2, dim3, dim4}, true);
     }
-
     /**
      * Make a 5-D shape
      * @param dim1 - The 1st dimension.
@@ -117,7 +114,6 @@ public class Shape {
     public static Shape make(int dim1, int dim2, int dim3, int dim4, int dim5) {
         return new Shape(new int[]{dim1, dim2, dim3, dim4, dim5}, true);
     }
-
     /**
      * Make a 6-D shape
      * @param dim1 - The 1st dimension.
@@ -131,7 +127,6 @@ public class Shape {
     public static Shape make(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return new Shape(new int[]{dim1, dim2, dim3, dim4, dim5, dim6}, true);
     }
-
     /**
      * Make a 7-D shape
      * @param dim1 - The 1st dimension.
@@ -146,7 +141,6 @@ public class Shape {
     public static Shape make(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return new Shape(new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7}, true);
     }
-
     /**
      * Make a 8-D shape
      * @param dim1 - The 1st dimension.
@@ -162,7 +156,6 @@ public class Shape {
     public static Shape make(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return new Shape(new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8}, true);
     }
-
     /**
      * Make a 9-D shape
      * @param dim1 - The 1st dimension.
@@ -180,6 +173,11 @@ public class Shape {
         return new Shape(new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9}, true);
     }
 
+    /**
+     * Build a Shape object given a list of dimensions.
+     * @param shape - The list of dimensions.
+     * @param share - The contents of the list of dimensions will never change.
+     */
     protected Shape(int[] shape, boolean share) {
         rank = shape.length;
         int number = 1;

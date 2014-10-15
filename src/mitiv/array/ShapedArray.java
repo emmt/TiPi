@@ -45,42 +45,55 @@ public interface ShapedArray extends Shaped, Typed {
      * @return A {@link ByteArray} object which may be the object itself
      *         if it is already a ByteArray.
      */
-    public ByteArray toByte();
+    public abstract ByteArray toByte();
 
     /**
      * Convert array elements to type {@code short}.
      * @return A {@link ShortArray} object which may be the object itself
      *         if it is already a ShortArray.
      */
-    public ShortArray toShort();
+    public abstract ShortArray toShort();
 
     /**
      * Convert array elements to type {@code int}.
      * @return A {@link IntArray} object which may be the object itself
      *         if it is already an IntArray.
      */
-    public IntArray toInt();
+    public abstract IntArray toInt();
 
     /**
      * Convert array elements to type {@code long}.
      * @return A {@link LongArray} object which may be the object itself
      *         if it is already a LongArray.
      */
-    public LongArray toLong();
+    public abstract LongArray toLong();
 
     /**
      * Convert array elements to type {@code float}.
      * @return A {@link FloatArray} object which may be the object itself
      *         if it is already a FloatArray.
      */
-    public FloatArray toFloat();
+    public abstract FloatArray toFloat();
 
     /**
      * Convert array elements to type {@code double}.
      * @return A {@link DoubleArray} object which may be the object itself
      *         if it is already a DoubleArray.
      */
-    public DoubleArray toDouble();
+    public abstract DoubleArray toDouble();
+
+    /**
+     * Perform some sanity tests.
+     * 
+     * <p>
+     * For performance reasons, not all errors are checked by TiPi code.
+     * This means that arguments may be simply trusted for being correct.
+     * This method can be used for debugging and tracking incorrect
+     * parameters/arguments.  It throws runtime exception(s) if some
+     * errors or inconsistencies are discovered.
+     * </p>
+     */
+    public abstract void checkSanity();
 }
 
 /*

@@ -25,6 +25,8 @@
 
 package mitiv.array;
 
+import mitiv.array.impl.FlatLong7D;
+import mitiv.array.impl.StriddenLong7D;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
@@ -125,7 +127,7 @@ public abstract class Long7D extends Array7D implements LongArray {
     }
 
     @Override
-    public void incr(long value) {
+    public void increment(long value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -163,7 +165,7 @@ public abstract class Long7D extends Array7D implements LongArray {
     }
 
     @Override
-    public void decr(long value) {
+    public void decrement(long value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -201,7 +203,7 @@ public abstract class Long7D extends Array7D implements LongArray {
     }
 
     @Override
-    public void mult(long value) {
+    public void scale(long value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -551,35 +553,19 @@ public abstract class Long7D extends Array7D implements LongArray {
         return Double7D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
-    /*=======================================================================*/
-    /* FACTORY */
-
-    /* Inner class instances can only be created from an instance of the outer
-     * class.  For this, we need a static instance of the outer class (to
-     * spare the creation of this instance each time a new instance of the
-     * inner class is needed).  The outer class is however "abstract" and we
-     * must provide a minimal set of methods to make it instantiable.
+    /**
+     * Get the number of elements of a Java array.
+     * @param arr - A Java array (can be {@code null}.
+     * @return {@code 0}, if {@code arr} is {@code null}; {@code arr.length};
+     *         otherwise.
      */
-    private static final Long7D factory = new Long7D(1,1,1,1,1,1,1) {
-        @Override
-        public final long get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-            return 0;
-        }
-        @Override
-        public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, long value) {
-        }
-        @Override
-        public final int getOrder() {
-            return COLUMN_MAJOR;
-        }
-        @Override
-        public long[] flatten(boolean forceCopy) {
-            return null;
-        }
-    };
+    public static int numberOf(long[] arr) {
+        return (arr == null ? 0 : arr.length);
+    }
+
 
     /*=======================================================================*/
-    /* FLAT LAYOUT */
+    /* ARRAY FACTORIES */
 
     /**
      * Create a 7D array of long's with given dimensions.
@@ -597,7 +583,7 @@ public abstract class Long7D extends Array7D implements LongArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Long7D create(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        return factory.new Flat(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
+        return new FlatLong7D(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
     }
 
     /**
@@ -613,7 +599,7 @@ public abstract class Long7D extends Array7D implements LongArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Long7D create(int[] shape) {
-        return factory.new Flat(shape, true);
+        return new FlatLong7D(shape, true);
     }
 
     /**
@@ -632,7 +618,7 @@ public abstract class Long7D extends Array7D implements LongArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Long7D create(int[] shape, boolean cloneShape) {
-        return factory.new Flat(shape, cloneShape);
+        return new FlatLong7D(shape, cloneShape);
     }
 
     /**
@@ -654,7 +640,7 @@ public abstract class Long7D extends Array7D implements LongArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Long7D wrap(long[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        return factory.new Flat(data, dim1,dim2,dim3,dim4,dim5,dim6,dim7);
+        return new FlatLong7D(data, dim1,dim2,dim3,dim4,dim5,dim6,dim7);
     }
 
     /**
@@ -672,7 +658,7 @@ public abstract class Long7D extends Array7D implements LongArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Long7D wrap(long[] data, int[] shape) {
-        return factory.new Flat(data, shape, true);
+        return new FlatLong7D(data, shape, true);
     }
 
     /**
@@ -693,93 +679,8 @@ public abstract class Long7D extends Array7D implements LongArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Long7D wrap(long[] data, int[] shape, boolean cloneShape) {
-        return factory.new Flat(data, shape, cloneShape);
+        return new FlatLong7D(data, shape, cloneShape);
     }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 7D array stored in a "flat" (1D) Java array in column-major order.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Flat extends Long7D {
-        private static final int order = COLUMN_MAJOR;
-        private final long[] data;
-        private final int dim1dim2;
-        private final int dim1dim2dim3;
-        private final int dim1dim2dim3dim4;
-        private final int dim1dim2dim3dim4dim5;
-        private final int dim1dim2dim3dim4dim5dim6;
-
-        Flat(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-            super(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
-            data = new long[number];
-            dim1dim2 = dim1*dim2;
-            dim1dim2dim3 = dim1dim2*dim3;
-            dim1dim2dim3dim4 = dim1dim2dim3*dim4;
-            dim1dim2dim3dim4dim5 = dim1dim2dim3dim4*dim5;
-            dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
-        }
-
-        Flat(int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = new long[number];
-            dim1dim2 = dim1*dim2;
-            dim1dim2dim3 = dim1dim2*dim3;
-            dim1dim2dim3dim4 = dim1dim2dim3*dim4;
-            dim1dim2dim3dim4dim5 = dim1dim2dim3dim4*dim5;
-            dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
-        }
-
-        Flat(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-            super(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
-            data = arr;
-            dim1dim2 = dim1*dim2;
-            dim1dim2dim3 = dim1dim2*dim3;
-            dim1dim2dim3dim4 = dim1dim2dim3*dim4;
-            dim1dim2dim3dim4dim5 = dim1dim2dim3dim4*dim5;
-            dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
-        }
-
-        Flat(long[] arr, int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = arr;
-            dim1dim2 = dim1*dim2;
-            dim1dim2dim3 = dim1dim2*dim3;
-            dim1dim2dim3dim4 = dim1dim2dim3*dim4;
-            dim1dim2dim3dim4dim5 = dim1dim2dim3dim4*dim5;
-            dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
-        }
-
-        @Override
-        public final long get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-            return data[dim1dim2dim3dim4dim5dim6*i7 + dim1dim2dim3dim4dim5*i6 + dim1dim2dim3dim4*i5 + dim1dim2dim3*i4 + dim1dim2*i3 + dim1*i2 + i1];
-        }
-
-        @Override
-        public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, long value) {
-            data[dim1dim2dim3dim4dim5dim6*i7 + dim1dim2dim3dim4dim5*i6 + dim1dim2dim3dim4*i5 + dim1dim2dim3*i4 + dim1dim2*i3 + dim1*i2 + i1] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public long[] flatten(boolean forceCopy) {
-            if (! forceCopy) {
-                return data;
-            }
-            int number = getNumber();
-            long[] out = new long[number];
-            System.arraycopy(data, 0, out, 0, number);
-            return out;
-        }
-    }
-
-    /*=======================================================================*/
-    /* STRIDED LAYOUT */
 
     /**
      * Wrap an existing array in a 7D array of long's with given dimensions,
@@ -811,136 +712,7 @@ public abstract class Long7D extends Array7D implements LongArray {
      */
     public static Long7D wrap(long[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7,
             int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7) {
-        return factory.new Strided(data, dim1,dim2,dim3,dim4,dim5,dim6,dim7, offset, stride1,stride2,stride3,stride4,stride5,stride6,stride7);
-    }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 7D array stored in a "flat" (1D) Java array with offset and strides.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Strided extends Long7D {
-        private final long[] data;
-        private final int order;
-        private final int offset;
-        private final int stride1;
-        private final int stride2;
-        private final int stride3;
-        private final int stride4;
-        private final int stride5;
-        private final int stride6;
-        private final int stride7;
-
-        Strided(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7) {
-            super(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
-            this.data = arr;
-            this.offset = offset;
-            this.stride1 = stride1;
-            this.stride2 = stride2;
-            this.stride3 = stride3;
-            this.stride4 = stride4;
-            this.stride5 = stride5;
-            this.stride6 = stride6;
-            this.stride7 = stride7;
-            this.order = checkViewStrides(arr.length, dim1,dim2,dim3,dim4,dim5,dim6,dim7, offset, stride1,stride2,stride3,stride4,stride5,stride6,stride7);
-        }
-
-        private final int index(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-            return offset + stride7*i7 + stride6*i6 + stride5*i5 + stride4*i4 + stride3*i3 + stride2*i2 + stride1*i1;
-        }
-
-        @Override
-        public final long get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-            return data[index(i1,i2,i3,i4,i5,i6,i7)];
-        }
-
-        @Override
-        public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, long value) {
-            data[index(i1,i2,i3,i4,i5,i6,i7)] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public long[] flatten(boolean forceCopy) {
-            boolean flat = (stride1 == 1 && stride2 == dim1 && stride3 == stride2*dim2 && stride4 == stride3*dim3 && stride5 == stride4*dim4 && stride6 == stride5*dim5 && stride7 == stride6*dim6);
-            if (flat && ! forceCopy && offset == 0) {
-                return data;
-            }
-            long[] out;
-            int number = getNumber();
-            out = new long[number];
-            if (flat) {
-                System.arraycopy(data, offset, out, 0, number);
-            } else {
-                /* Must access the output in column-major order. */
-                int i = -1;
-                for (int i7 = 0; i7 < dim7; ++i7) {
-                    for (int i6 = 0; i6 < dim6; ++i6) {
-                        for (int i5 = 0; i5 < dim5; ++i5) {
-                            for (int i4 = 0; i4 < dim4; ++i4) {
-                                for (int i3 = 0; i3 < dim3; ++i3) {
-                                    for (int i2 = 0; i2 < dim2; ++i2) {
-                                        for (int i1 = 0; i1 < dim1; ++i1) {
-                                            out[++i] = get(i1,i2,i3,i4,i5,i6,i7);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return out;
-        }
-    }
-
-    /*=======================================================================*/
-    /* MULTIDIMENSIONAL (7D) LAYOUT */
-
-    /**
-     * Wrap an existing 7D array of long's in a Long7D array.
-     * <p>
-     * More specifically:
-     * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7) = data[i7][i6][i5][i4][i3][i2][i1]</pre>
-     * with {@code arr} the returned 7D array.
-     * @param data    - The array to wrap in the 7D array.
-     * @return A 7D array sharing the elements of <b>data</b>.
-     */
-    public static Long7D wrap(long[][][][][][][] data) {
-        return factory.new Multi7(data);
-    }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 7D array stored in a 7D Java array.  To instantiate such an inner class,
-     * an instance of the outer class must be available (this is the purpose
-     * of the static "factory" instance).
-     */
-    class Multi7 extends Long7D {
-        private static final int order = COLUMN_MAJOR;
-        private final long[][][][][][][] data;
-
-        protected Multi7(long[][][][][][][] arr) {
-            super(arr[0][0][0][0][0][0].length, arr[0][0][0][0][0].length, arr[0][0][0][0].length, arr[0][0][0].length, arr[0][0].length, arr[0].length, arr.length);
-            data = arr;
-        }
-        @Override
-        public int getOrder() {
-            return order;
-        }
-        @Override
-        public final long get(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-            return data[i7][i6][i5][i4][i3][i2][i1];
-        }
-        @Override
-        public final void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, long value) {
-            data[i7][i6][i5][i4][i3][i2][i1] = value;
-        }
+        return new StriddenLong7D(data, dim1,dim2,dim3,dim4,dim5,dim6,dim7, offset, stride1,stride2,stride3,stride4,stride5,stride6,stride7);
     }
 
 }

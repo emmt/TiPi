@@ -30,12 +30,12 @@ package mitiv.base;
  * 
  * <p>
  * Here "rectangular" means that the lengths of each dimension are the same everywhere.
- * <p>
+ * </p><p>
  * For a multi-dimensional object (i.e. with a rank > 1), the preferred storage is column-major
  * order, that is the first (resp. the last) dimension is the minor (resp. the major) dimension.
- * <p>
+ * </p><p>
  * Like in Yorick extra trailing dimensions can be assumed to be equal to 1.
- *
+ * </p>
  * @author Éric Thiébaut.
  */
 public interface Shaped {
@@ -87,7 +87,7 @@ public interface Shaped {
      *            dimension).
      * @return The length of the {@code k}-th dimension.  If {@code k} is greater or
      *         equal the rank of the shaped object, {@code 1} is returned.  If {@code k}
-     *         is less than zero, the exception IndexOutOfBoundsException is thrown.
+     *         is less than zero, the exception {@link IndexOutOfBoundsException} is thrown.
      */
     public int getDimension(int k);
 

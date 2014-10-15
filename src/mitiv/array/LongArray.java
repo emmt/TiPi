@@ -56,20 +56,20 @@ public interface LongArray extends ShapedArray {
      * Increment all the values of the array of long's.
      * @param value - The increment.
      */
-    public abstract void incr(long value);
+    public abstract void increment(long value);
 
 
     /**
      * Decrement all the values of the array of long's.
      * @param value - The decrement.
      */
-    public abstract void decr(long value);
+    public abstract void decrement(long value);
 
     /**
      * Multiply all the values of the array of long's.
      * @param value - The multiplier.
      */
-    public abstract void mult(long value);
+    public abstract void scale(long value);
 
     /**
      * Map all the values of the array of long's by a function.
@@ -86,12 +86,14 @@ public interface LongArray extends ShapedArray {
     /**
      * Flatten the array of long's in a simple array.
      * <p>
-     * The contents of a (multi-dimensional) LongArray can be stored in many
-     * different forms.  This storage details are hidden to the end-user in
-     * favor of a unified and comprehensive interface.  This method returns
-     * the contents of the LongArray object as a simple flat array.  If the
-     * LongArray object is multi-dimensional, the storage of the returned
-     * result is column-major order.
+     * The contents of a (multi-dimensional) LongArray can be stored in
+     * many different forms.  This storage details are hidden to the end-user
+     * in favor of a unified and comprehensive interface.  This method returns
+     * the contents of the LongArray object as a simple <i>flat</i> array,
+     * <i>i.e.</i> successive elements are contiguous and the first element
+     * has {@code 0}-offset.  If the LongArray object is multi-dimensional,
+     * the storage of the returned result is column-major order.
+     * </p>
      * @param forceCopy - Set true to force a copy of the internal data
      *                    even though it can already be in a flat form.
      * @return A simple array of long's with the contents of
@@ -102,16 +104,18 @@ public interface LongArray extends ShapedArray {
     /**
      * Flatten the contents of long's in a simple array.
      * <p>
-     * The contents of a (multi-dimensional) LongArray can be stored in many
-     * different forms.  This storage details are hidden to the end-user in
-     * favor of a unified and comprehensive interface.  This method returns
-     * the contents of the LongArray object as a simple flat array.  If the
-     * LongArray object is multi-dimensional, the storage of the returned
-     * result is column-major order.
-     * <p>
+     * The contents of a (multi-dimensional) LongArray can be stored in
+     * many different forms.  This storage details are hidden to the end-user
+     * in favor of a unified and comprehensive interface.  This method returns
+     * the contents of the LongArray object as a simple <i>flat</i> array,
+     * <i>i.e.</i> successive elements are contiguous and the first element
+     * has {@code 0}-offset.  If the LongArray object is multi-dimensional,
+     * the storage of the returned result is column-major order.
+     * </p><p>
      * Depending on the storage layout, the returned array may or may not
      * share the same storage as the LongArray array.  Call {@code
      * flatten(true)} to make sure that the two storage areas are independent.
+     * </p>
      * @return A simple array of longs with the contents of
      *         the LongArray array.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.

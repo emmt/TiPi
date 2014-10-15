@@ -67,12 +67,13 @@ package mitiv.base.indexing;
  * @author Éric Thiébaut.
  */
 public class Range {
+    /* The members of a range are publicly accessible. */
     /* If strictly negative, 'first' and 'last' are relative to the end of the available space.
      * If 'step' is zero, it means that it is automatically determined from the endpoints of the range.
      */
-    protected int first;
-    protected int last;
-    protected int step;
+    public int first;
+    public int last;
+    public int step;
 
     /** First element along a dimension. */
     final public static int FIRST = 0;

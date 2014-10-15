@@ -25,6 +25,8 @@
 
 package mitiv.array;
 
+import mitiv.array.impl.FlatShort2D;
+import mitiv.array.impl.StriddenShort2D;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
@@ -95,7 +97,7 @@ public abstract class Short2D extends Array2D implements ShortArray {
     }
 
     @Override
-    public void incr(short value) {
+    public void increment(short value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -113,7 +115,7 @@ public abstract class Short2D extends Array2D implements ShortArray {
     }
 
     @Override
-    public void decr(short value) {
+    public void decrement(short value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -131,7 +133,7 @@ public abstract class Short2D extends Array2D implements ShortArray {
     }
 
     @Override
-    public void mult(short value) {
+    public void scale(short value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -341,35 +343,19 @@ public abstract class Short2D extends Array2D implements ShortArray {
         return Double2D.wrap(out, dim1, dim2);
     }
 
-    /*=======================================================================*/
-    /* FACTORY */
-
-    /* Inner class instances can only be created from an instance of the outer
-     * class.  For this, we need a static instance of the outer class (to
-     * spare the creation of this instance each time a new instance of the
-     * inner class is needed).  The outer class is however "abstract" and we
-     * must provide a minimal set of methods to make it instantiable.
+    /**
+     * Get the number of elements of a Java array.
+     * @param arr - A Java array (can be {@code null}.
+     * @return {@code 0}, if {@code arr} is {@code null}; {@code arr.length};
+     *         otherwise.
      */
-    private static final Short2D factory = new Short2D(1,1) {
-        @Override
-        public final short get(int i1, int i2) {
-            return 0;
-        }
-        @Override
-        public final void set(int i1, int i2, short value) {
-        }
-        @Override
-        public final int getOrder() {
-            return COLUMN_MAJOR;
-        }
-        @Override
-        public short[] flatten(boolean forceCopy) {
-            return null;
-        }
-    };
+    public static int numberOf(short[] arr) {
+        return (arr == null ? 0 : arr.length);
+    }
+
 
     /*=======================================================================*/
-    /* FLAT LAYOUT */
+    /* ARRAY FACTORIES */
 
     /**
      * Create a 2D array of short's with given dimensions.
@@ -382,7 +368,7 @@ public abstract class Short2D extends Array2D implements ShortArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Short2D create(int dim1, int dim2) {
-        return factory.new Flat(dim1,dim2);
+        return new FlatShort2D(dim1,dim2);
     }
 
     /**
@@ -398,7 +384,7 @@ public abstract class Short2D extends Array2D implements ShortArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Short2D create(int[] shape) {
-        return factory.new Flat(shape, true);
+        return new FlatShort2D(shape, true);
     }
 
     /**
@@ -417,7 +403,7 @@ public abstract class Short2D extends Array2D implements ShortArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Short2D create(int[] shape, boolean cloneShape) {
-        return factory.new Flat(shape, cloneShape);
+        return new FlatShort2D(shape, cloneShape);
     }
 
     /**
@@ -434,7 +420,7 @@ public abstract class Short2D extends Array2D implements ShortArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Short2D wrap(short[] data, int dim1, int dim2) {
-        return factory.new Flat(data, dim1,dim2);
+        return new FlatShort2D(data, dim1,dim2);
     }
 
     /**
@@ -452,7 +438,7 @@ public abstract class Short2D extends Array2D implements ShortArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Short2D wrap(short[] data, int[] shape) {
-        return factory.new Flat(data, shape, true);
+        return new FlatShort2D(data, shape, true);
     }
 
     /**
@@ -473,68 +459,8 @@ public abstract class Short2D extends Array2D implements ShortArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Short2D wrap(short[] data, int[] shape, boolean cloneShape) {
-        return factory.new Flat(data, shape, cloneShape);
+        return new FlatShort2D(data, shape, cloneShape);
     }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 2D array stored in a "flat" (1D) Java array in column-major order.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Flat extends Short2D {
-        private static final int order = COLUMN_MAJOR;
-        private final short[] data;
-
-        Flat(int dim1, int dim2) {
-            super(dim1,dim2);
-            data = new short[number];
-        }
-
-        Flat(int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = new short[number];
-        }
-
-        Flat(short[] arr, int dim1, int dim2) {
-            super(dim1,dim2);
-            data = arr;
-        }
-
-        Flat(short[] arr, int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = arr;
-        }
-
-        @Override
-        public final short get(int i1, int i2) {
-            return data[dim1*i2 + i1];
-        }
-
-        @Override
-        public final void set(int i1, int i2, short value) {
-            data[dim1*i2 + i1] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public short[] flatten(boolean forceCopy) {
-            if (! forceCopy) {
-                return data;
-            }
-            int number = getNumber();
-            short[] out = new short[number];
-            System.arraycopy(data, 0, out, 0, number);
-            return out;
-        }
-    }
-
-    /*=======================================================================*/
-    /* STRIDED LAYOUT */
 
     /**
      * Wrap an existing array in a 2D array of short's with given dimensions,
@@ -556,116 +482,7 @@ public abstract class Short2D extends Array2D implements ShortArray {
      */
     public static Short2D wrap(short[] data, int dim1, int dim2,
             int offset, int stride1, int stride2) {
-        return factory.new Strided(data, dim1,dim2, offset, stride1,stride2);
-    }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 2D array stored in a "flat" (1D) Java array with offset and strides.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Strided extends Short2D {
-        private final short[] data;
-        private final int order;
-        private final int offset;
-        private final int stride1;
-        private final int stride2;
-
-        Strided(short[] arr, int dim1, int dim2, int offset, int stride1, int stride2) {
-            super(dim1,dim2);
-            this.data = arr;
-            this.offset = offset;
-            this.stride1 = stride1;
-            this.stride2 = stride2;
-            this.order = checkViewStrides(arr.length, dim1,dim2, offset, stride1,stride2);
-        }
-
-        private final int index(int i1, int i2) {
-            return offset + stride2*i2 + stride1*i1;
-        }
-
-        @Override
-        public final short get(int i1, int i2) {
-            return data[index(i1,i2)];
-        }
-
-        @Override
-        public final void set(int i1, int i2, short value) {
-            data[index(i1,i2)] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public short[] flatten(boolean forceCopy) {
-            boolean flat = (stride1 == 1 && stride2 == dim1);
-            if (flat && ! forceCopy && offset == 0) {
-                return data;
-            }
-            short[] out;
-            int number = getNumber();
-            out = new short[number];
-            if (flat) {
-                System.arraycopy(data, offset, out, 0, number);
-            } else {
-                /* Must access the output in column-major order. */
-                int i = -1;
-                for (int i2 = 0; i2 < dim2; ++i2) {
-                    for (int i1 = 0; i1 < dim1; ++i1) {
-                        out[++i] = get(i1,i2);
-                    }
-                }
-            }
-            return out;
-        }
-    }
-
-    /*=======================================================================*/
-    /* MULTIDIMENSIONAL (2D) LAYOUT */
-
-    /**
-     * Wrap an existing 2D array of short's in a Short2D array.
-     * <p>
-     * More specifically:
-     * <pre>arr.get(i1,i2) = data[i2][i1]</pre>
-     * with {@code arr} the returned 2D array.
-     * @param data    - The array to wrap in the 2D array.
-     * @return A 2D array sharing the elements of <b>data</b>.
-     */
-    public static Short2D wrap(short[][] data) {
-        return factory.new Multi2(data);
-    }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 2D array stored in a 2D Java array.  To instantiate such an inner class,
-     * an instance of the outer class must be available (this is the purpose
-     * of the static "factory" instance).
-     */
-    class Multi2 extends Short2D {
-        private static final int order = COLUMN_MAJOR;
-        private final short[][] data;
-
-        protected Multi2(short[][] arr) {
-            super(arr[0].length, arr.length);
-            data = arr;
-        }
-        @Override
-        public int getOrder() {
-            return order;
-        }
-        @Override
-        public final short get(int i1, int i2) {
-            return data[i2][i1];
-        }
-        @Override
-        public final void set(int i1, int i2, short value) {
-            data[i2][i1] = value;
-        }
+        return new StriddenShort2D(data, dim1,dim2, offset, stride1,stride2);
     }
 
 }

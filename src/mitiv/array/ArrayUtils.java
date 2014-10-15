@@ -33,9 +33,87 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import mitiv.base.Shaped;
+import mitiv.base.indexing.Range;
 import mitiv.linalg.shaped.DoubleShapedVector;
 
 public class ArrayUtils {
+
+    /*=======================================================================*/
+    /* SELECTION */
+
+    private static void badStepDirection() {
+        throw new IllegalArgumentException("Bad step direction.");
+    }
+
+    private static void badEndPoints() {
+        throw new IndexOutOfBoundsException("Range endpoints outside bounds.");
+    }
+
+    /**
+     * Select a sub-list of values by range.
+     * @param src - The initial list of values.
+     * @param rng - The range to select.
+     * @return A sub-list of values from {@code src}.
+     */
+    public static int[] select(int[] src, Range rng) {
+        if (rng == null) {
+            return src;
+        }
+        int length = src.length;
+        int first = rng.getFirst(length);
+        int last = rng.getLast(length);
+        int step = rng.step;
+        if (first <= last) {
+            if (step < 0) {
+                badStepDirection();
+            }
+            if (step == 0) {
+                step = 1;
+            }
+            if (first == 0 && last == length - 1 && step == 1) {
+                return src;
+            }
+            if (first < 0 || last >= length) {
+                badEndPoints();
+            }
+            length = (last - first + 1)/step;
+        } else {
+            if (step > 0) {
+                badStepDirection();
+            }
+            if (step == 0) {
+                step = -1;
+            }
+            if (last < 0 || first >= length) {
+                badEndPoints();
+            }
+            length = (first - last + 1)/(-step);
+        }
+        int[] idx = new int[length];
+        for (int j = 0, k = first; j < length; ++j, k += step) {
+            idx[j] = src[k];
+        }
+        return idx;
+    }
+
+    /**
+     * Select a sub-list of values by indices.
+     * @param src - The initial list of values.
+     * @param sel - The list of indices to select.
+     * @return A sub-list of values from {@code src}.
+     */
+    public static int[] select(int[] src, int[] sel) {
+        if (sel == null) {
+            return src;
+        }
+        int length = sel.length;
+        int[] idx = new int[length];
+        for (int j = 0; j < length; ++j) {
+            idx[j] = src[sel[j]];
+        }
+        return idx;
+    }
+
 
     /*=======================================================================*/
     /* COLORS */
@@ -377,10 +455,10 @@ public class ArrayUtils {
         }
         return number;
     }
-    
+
     /*=======================================================================*/
     /* FUNCTIONS TO BUFFERED */
-    
+
     public static BufferedImage doubleAsBuffered(DoubleArray img) {
         int[] dims = getImageDimensions(img);
         return doubleAsBuffered(img.flatten(), dims[0], dims[1], dims[2]);
@@ -458,7 +536,7 @@ public class ArrayUtils {
         }
         return buf;
     }
-    
+
     private static void writeImage(BufferedImage buf, String fileName){
         String type = "png"; // FIXME: guess from extension
         try {

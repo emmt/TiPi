@@ -25,6 +25,8 @@
 
 package mitiv.array;
 
+import mitiv.array.impl.FlatInt1D;
+import mitiv.array.impl.StriddenInt1D;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
@@ -82,21 +84,21 @@ public abstract class Int1D extends Array1D implements IntArray {
     }
 
     @Override
-    public void incr(int value) {
+    public void increment(int value) {
         for (int i1 = 0; i1 < dim1; ++i1) {
             set(i1, get(i1) + value);
         }
     }
 
     @Override
-    public void decr(int value) {
+    public void decrement(int value) {
         for (int i1 = 0; i1 < dim1; ++i1) {
             set(i1, get(i1) - value);
         }
     }
 
     @Override
-    public void mult(int value) {
+    public void scale(int value) {
         for (int i1 = 0; i1 < dim1; ++i1) {
             set(i1, get(i1) * value);
         }
@@ -132,7 +134,7 @@ public abstract class Int1D extends Array1D implements IntArray {
     @Override
     public int[] flatten(boolean forceCopy) {
         /* Copy the elements in column-major order. */
-        int[] out = new int[dim1];
+        int[] out = new int[number];
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[i1] = get(i1);
         }
@@ -155,7 +157,7 @@ public abstract class Int1D extends Array1D implements IntArray {
      */
     @Override
     public Byte1D toByte() {
-        byte[] out = new byte[dim1];
+        byte[] out = new byte[number];
         int i = -1;
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[++i] = (byte)get(i1);
@@ -173,7 +175,7 @@ public abstract class Int1D extends Array1D implements IntArray {
      */
     @Override
     public Short1D toShort() {
-        short[] out = new short[dim1];
+        short[] out = new short[number];
         int i = -1;
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[++i] = (short)get(i1);
@@ -204,7 +206,7 @@ public abstract class Int1D extends Array1D implements IntArray {
      */
     @Override
     public Long1D toLong() {
-        long[] out = new long[dim1];
+        long[] out = new long[number];
         int i = -1;
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[++i] = (long)get(i1);
@@ -222,7 +224,7 @@ public abstract class Int1D extends Array1D implements IntArray {
      */
     @Override
     public Float1D toFloat() {
-        float[] out = new float[dim1];
+        float[] out = new float[number];
         int i = -1;
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[++i] = (float)get(i1);
@@ -240,7 +242,7 @@ public abstract class Int1D extends Array1D implements IntArray {
      */
     @Override
     public Double1D toDouble() {
-        double[] out = new double[dim1];
+        double[] out = new double[number];
         int i = -1;
         for (int i1 = 0; i1 < dim1; ++i1) {
             out[++i] = (double)get(i1);
@@ -248,35 +250,19 @@ public abstract class Int1D extends Array1D implements IntArray {
         return Double1D.wrap(out, dim1);
     }
 
-    /*=======================================================================*/
-    /* FACTORY */
-
-    /* Inner class instances can only be created from an instance of the outer
-     * class.  For this, we need a static instance of the outer class (to
-     * spare the creation of this instance each time a new instance of the
-     * inner class is needed).  The outer class is however "abstract" and we
-     * must provide a minimal set of methods to make it instantiable.
+    /**
+     * Get the number of elements of a Java array.
+     * @param arr - A Java array (can be {@code null}.
+     * @return {@code 0}, if {@code arr} is {@code null}; {@code arr.length};
+     *         otherwise.
      */
-    private static final Int1D factory = new Int1D(1) {
-        @Override
-        public final int get(int i1) {
-            return 0;
-        }
-        @Override
-        public final void set(int i1, int value) {
-        }
-        @Override
-        public final int getOrder() {
-            return COLUMN_MAJOR;
-        }
-        @Override
-        public int[] flatten(boolean forceCopy) {
-            return null;
-        }
-    };
+    public static int numberOf(int[] arr) {
+        return (arr == null ? 0 : arr.length);
+    }
+
 
     /*=======================================================================*/
-    /* FLAT LAYOUT */
+    /* ARRAY FACTORIES */
 
     /**
      * Create a 1D array of int's with given dimensions.
@@ -288,7 +274,7 @@ public abstract class Int1D extends Array1D implements IntArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Int1D create(int dim1) {
-        return factory.new Flat(dim1);
+        return new FlatInt1D(dim1);
     }
 
     /**
@@ -304,7 +290,7 @@ public abstract class Int1D extends Array1D implements IntArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Int1D create(int[] shape) {
-        return factory.new Flat(shape, true);
+        return new FlatInt1D(shape, true);
     }
 
     /**
@@ -323,7 +309,7 @@ public abstract class Int1D extends Array1D implements IntArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Int1D create(int[] shape, boolean cloneShape) {
-        return factory.new Flat(shape, cloneShape);
+        return new FlatInt1D(shape, cloneShape);
     }
 
     /**
@@ -339,7 +325,7 @@ public abstract class Int1D extends Array1D implements IntArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Int1D wrap(int[] data, int dim1) {
-        return factory.new Flat(data, dim1);
+        return new FlatInt1D(data, dim1);
     }
 
     /**
@@ -357,7 +343,7 @@ public abstract class Int1D extends Array1D implements IntArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Int1D wrap(int[] data, int[] shape) {
-        return factory.new Flat(data, shape, true);
+        return new FlatInt1D(data, shape, true);
     }
 
     /**
@@ -378,68 +364,8 @@ public abstract class Int1D extends Array1D implements IntArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Int1D wrap(int[] data, int[] shape, boolean cloneShape) {
-        return factory.new Flat(data, shape, cloneShape);
+        return new FlatInt1D(data, shape, cloneShape);
     }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 1D array stored in a "flat" (1D) Java array in column-major order.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Flat extends Int1D {
-        private static final int order = COLUMN_MAJOR;
-        private final int[] data;
-
-        Flat(int dim1) {
-            super(dim1);
-            data = new int[dim1];
-        }
-
-        Flat(int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = new int[dim1];
-        }
-
-        Flat(int[] arr, int dim1) {
-            super(dim1);
-            data = arr;
-        }
-
-        Flat(int[] arr, int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = arr;
-        }
-
-        @Override
-        public final int get(int i1) {
-            return data[i1];
-        }
-
-        @Override
-        public final void set(int i1, int value) {
-            data[i1] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public int[] flatten(boolean forceCopy) {
-            if (! forceCopy) {
-                return data;
-            }
-            int number = getNumber();
-            int[] out = new int[dim1];
-            System.arraycopy(data, 0, out, 0, number);
-            return out;
-        }
-    }
-
-    /*=======================================================================*/
-    /* STRIDED LAYOUT */
 
     /**
      * Wrap an existing array in a 1D array of int's with given dimensions,
@@ -459,70 +385,8 @@ public abstract class Int1D extends Array1D implements IntArray {
      */
     public static Int1D wrap(int[] data, int dim1,
             int offset, int stride1) {
-        return factory.new Strided(data, dim1, offset, stride1);
+        return new StriddenInt1D(data, dim1, offset, stride1);
     }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 1D array stored in a "flat" (1D) Java array with offset and strides.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Strided extends Int1D {
-        private final int[] data;
-        private final int order;
-        private final int offset;
-        private final int stride1;
-
-        Strided(int[] arr, int dim1, int offset, int stride1) {
-            super(dim1);
-            this.data = arr;
-            this.offset = offset;
-            this.stride1 = stride1;
-            this.order = checkViewStrides(arr.length, dim1, offset, stride1);
-        }
-
-        private final int index(int i1) {
-            return offset + stride1*i1;
-        }
-
-        @Override
-        public final int get(int i1) {
-            return data[index(i1)];
-        }
-
-        @Override
-        public final void set(int i1, int value) {
-            data[index(i1)] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public int[] flatten(boolean forceCopy) {
-            boolean flat = (stride1 == 1);
-            if (flat && ! forceCopy && offset == 0) {
-                return data;
-            }
-            int[] out;
-            int number = getNumber();
-            out = new int[dim1];
-            if (flat) {
-                System.arraycopy(data, offset, out, 0, number);
-            } else {
-                /* Must access the output in column-major order. */
-                int i = -1;
-                for (int i1 = 0; i1 < dim1; ++i1) {
-                    out[++i] = get(i1);
-                }
-            }
-            return out;
-        }
-    }
-
 
 }
 
