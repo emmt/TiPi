@@ -27,6 +27,7 @@ package mitiv.array;
 
 import mitiv.array.impl.FlatDouble1D;
 import mitiv.array.impl.StriddenDouble1D;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
@@ -44,12 +45,12 @@ public abstract class Double1D extends Array1D implements DoubleArray {
         super(dim1);
     }
 
-    protected Double1D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    protected Double1D(int[] dims) {
+        super(dims);
     }
 
-    protected Double1D(int[] shape) {
-        super(shape, true);
+    protected Double1D(Shape shape) {
+        super(shape);
     }
 
     @Override
@@ -250,16 +251,6 @@ public abstract class Double1D extends Array1D implements DoubleArray {
         return this;
     }
 
-    /**
-     * Get the number of elements of a Java array.
-     * @param arr - A Java array (can be {@code null}.
-     * @return {@code 0}, if {@code arr} is {@code null}; {@code arr.length};
-     *         otherwise.
-     */
-    public static int numberOf(double[] arr) {
-        return (arr == null ? 0 : arr.length);
-    }
-
 
     /*=======================================================================*/
     /* ARRAY FACTORIES */
@@ -282,15 +273,15 @@ public abstract class Double1D extends Array1D implements DoubleArray {
      * <p>
      * This method creates a 1D array of double's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape - The list of dimensions of the 1D array (all dimensions
-     *                must at least 1).  This argument is not referenced by
-     *                the returned object and its contents can be modified
-     *                after calling this method.
+     * @param dims - The list of dimensions of the 1D array (all dimensions
+     *               must at least 1).  This argument is not referenced by
+     *               the returned object and its contents can be modified
+     *               after calling this method.
      * @return A new 1D array of double's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Double1D create(int[] shape) {
-        return new FlatDouble1D(shape, true);
+    public static Double1D create(int[] dims) {
+        return new FlatDouble1D(dims);
     }
 
     /**
@@ -298,8 +289,7 @@ public abstract class Double1D extends Array1D implements DoubleArray {
      * <p>
      * This method creates a 1D array of double's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape      - The list of dimensions of the 1D array (all
-     *                     dimensions must at least 1).
+     * @param shape      - The shape of the 1D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -308,8 +298,8 @@ public abstract class Double1D extends Array1D implements DoubleArray {
      * @return A new 1D array of double's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Double1D create(int[] shape, boolean cloneShape) {
-        return new FlatDouble1D(shape, cloneShape);
+    public static Double1D create(Shape shape) {
+        return new FlatDouble1D(shape);
     }
 
     /**
@@ -336,14 +326,14 @@ public abstract class Double1D extends Array1D implements DoubleArray {
      * <pre>arr.get(i1) = data[i1]</pre>
      * with {@code arr} the returned 1D array.
      * @param data - The data to wrap in the 1D array.
-     * @param shape - The list of dimensions of the 1D array.  This argument is
+     * @param dims - The list of dimensions of the 1D array.  This argument is
      *                not referenced by the returned object and its contents
      *                can be modified after the call to this method.
      * @return A new 1D array of double's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Double1D wrap(double[] data, int[] shape) {
-        return new FlatDouble1D(data, shape, true);
+    public static Double1D wrap(double[] data, int[] dims) {
+        return new FlatDouble1D(data, dims);
     }
 
     /**
@@ -354,7 +344,7 @@ public abstract class Double1D extends Array1D implements DoubleArray {
      * <pre>arr.get(i1) = data[i1]</pre>
      * with {@code arr} the returned 1D array.
      * @param data       - The data to wrap in the 1D array.
-     * @param shape      - The list of dimensions of the 1D array.
+     * @param shape      - The shape of the 1D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -363,8 +353,8 @@ public abstract class Double1D extends Array1D implements DoubleArray {
      * @return A new 1D array of double's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Double1D wrap(double[] data, int[] shape, boolean cloneShape) {
-        return new FlatDouble1D(data, shape, cloneShape);
+    public static Double1D wrap(double[] data, Shape shape) {
+        return new FlatDouble1D(data, shape);
     }
 
     /**

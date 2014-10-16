@@ -27,6 +27,7 @@ package mitiv.array;
 
 import mitiv.array.impl.FlatLong8D;
 import mitiv.array.impl.StriddenLong8D;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
@@ -44,12 +45,12 @@ public abstract class Long8D extends Array8D implements LongArray {
         super(dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8);
     }
 
-    protected Long8D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    protected Long8D(int[] dims) {
+        super(dims);
     }
 
-    protected Long8D(int[] shape) {
-        super(shape, true);
+    protected Long8D(Shape shape) {
+        super(shape);
     }
 
     @Override
@@ -595,16 +596,6 @@ public abstract class Long8D extends Array8D implements LongArray {
         return Double8D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
-    /**
-     * Get the number of elements of a Java array.
-     * @param arr - A Java array (can be {@code null}.
-     * @return {@code 0}, if {@code arr} is {@code null}; {@code arr.length};
-     *         otherwise.
-     */
-    public static int numberOf(long[] arr) {
-        return (arr == null ? 0 : arr.length);
-    }
-
 
     /*=======================================================================*/
     /* ARRAY FACTORIES */
@@ -634,15 +625,15 @@ public abstract class Long8D extends Array8D implements LongArray {
      * <p>
      * This method creates a 8D array of long's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape - The list of dimensions of the 8D array (all dimensions
-     *                must at least 1).  This argument is not referenced by
-     *                the returned object and its contents can be modified
-     *                after calling this method.
+     * @param dims - The list of dimensions of the 8D array (all dimensions
+     *               must at least 1).  This argument is not referenced by
+     *               the returned object and its contents can be modified
+     *               after calling this method.
      * @return A new 8D array of long's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long8D create(int[] shape) {
-        return new FlatLong8D(shape, true);
+    public static Long8D create(int[] dims) {
+        return new FlatLong8D(dims);
     }
 
     /**
@@ -650,8 +641,7 @@ public abstract class Long8D extends Array8D implements LongArray {
      * <p>
      * This method creates a 8D array of long's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape      - The list of dimensions of the 8D array (all
-     *                     dimensions must at least 1).
+     * @param shape      - The shape of the 8D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -660,8 +650,8 @@ public abstract class Long8D extends Array8D implements LongArray {
      * @return A new 8D array of long's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long8D create(int[] shape, boolean cloneShape) {
-        return new FlatLong8D(shape, cloneShape);
+    public static Long8D create(Shape shape) {
+        return new FlatLong8D(shape);
     }
 
     /**
@@ -695,14 +685,14 @@ public abstract class Long8D extends Array8D implements LongArray {
      * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7,i8) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*(i4 + shape[3]*(i5 + shape[4]*(i6 + shape[5]*(i7 + shape[6]*i8))))))]</pre>
      * with {@code arr} the returned 8D array.
      * @param data - The data to wrap in the 8D array.
-     * @param shape - The list of dimensions of the 8D array.  This argument is
+     * @param dims - The list of dimensions of the 8D array.  This argument is
      *                not referenced by the returned object and its contents
      *                can be modified after the call to this method.
      * @return A new 8D array of long's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long8D wrap(long[] data, int[] shape) {
-        return new FlatLong8D(data, shape, true);
+    public static Long8D wrap(long[] data, int[] dims) {
+        return new FlatLong8D(data, dims);
     }
 
     /**
@@ -713,7 +703,7 @@ public abstract class Long8D extends Array8D implements LongArray {
      * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7,i8) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*(i4 + shape[3]*(i5 + shape[4]*(i6 + shape[5]*(i7 + shape[6]*i8))))))]</pre>
      * with {@code arr} the returned 8D array.
      * @param data       - The data to wrap in the 8D array.
-     * @param shape      - The list of dimensions of the 8D array.
+     * @param shape      - The shape of the 8D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -722,8 +712,8 @@ public abstract class Long8D extends Array8D implements LongArray {
      * @return A new 8D array of long's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long8D wrap(long[] data, int[] shape, boolean cloneShape) {
-        return new FlatLong8D(data, shape, cloneShape);
+    public static Long8D wrap(long[] data, Shape shape) {
+        return new FlatLong8D(data, shape);
     }
 
     /**

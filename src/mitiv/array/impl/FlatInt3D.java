@@ -32,6 +32,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
 import mitiv.random.IntGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -46,26 +47,39 @@ public class FlatInt3D extends Int3D {
     final int dim1dim2;
 
     public FlatInt3D(int dim1, int dim2, int dim3) {
-        super(dim1,dim2,dim3);
+        super(dim1, dim2, dim3);
         data = new int[number];
         dim1dim2 = dim1*dim2;
     }
 
-    public FlatInt3D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatInt3D(int[] dims) {
+        super(dims);
+        data = new int[number];
+        dim1dim2 = dim1*dim2;
+    }
+
+    public FlatInt3D(Shape shape) {
+        super(shape);
         data = new int[number];
         dim1dim2 = dim1*dim2;
     }
 
     public FlatInt3D(int[] arr, int dim1, int dim2, int dim3) {
-        super(dim1,dim2,dim3);
+        super(dim1, dim2, dim3);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
     }
 
-    public FlatInt3D(int[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatInt3D(int[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+        dim1dim2 = dim1*dim2;
+    }
+
+    public FlatInt3D(int[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
@@ -144,7 +158,7 @@ public class FlatInt3D extends Int3D {
     @Override
     public void map(IntFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

@@ -26,6 +26,7 @@
 //# include <common.javax>       // Get common definitions.
 //# def className = ArrayFactory // Define the name of the class.
 package ${package};
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.Traits;
 
@@ -88,7 +89,7 @@ public abstract class ${className} implements Shaped {
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
-        return wrap(out, src.cloneShape(), false);
+        return wrap(out, src.getShape());
     }
 
     //# end // loop over DST type
@@ -145,15 +146,15 @@ public abstract class ${className} implements Shaped {
      * {@link #${Type}2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param arr  - The input array.
+     * @param dims - The dimension list of the result.
      *
      * @return An instance of ${TypeArray} sharing its data with the input array
      *         {@code arr}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static ${TypeArray} wrap(${type}[] arr, int[] shape) {
-        return wrap(arr, shape, true);
+    public static ${TypeArray} wrap(${type}[] arr, int[] dims) {
+        return wrap(arr, Shape.make(dims));
     }
 
     /**
@@ -165,7 +166,7 @@ public abstract class ${className} implements Shaped {
      * {@code shape}.
      *
      * @param data   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param shape  - The shape of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
@@ -173,11 +174,11 @@ public abstract class ${className} implements Shaped {
      *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static ${Type}Array wrap(${type}[] data, int[] shape, boolean cloneShape) {
-        switch (shape == null ? 0 : shape.length) {
+    public static ${Type}Array wrap(${type}[] data, Shape shape) {
+        switch (shape.rank()) {
         //# for rank in 1:9
         case ${rank}:
-            return ${Type}${rank}D.wrap(data, shape, cloneShape);
+            return ${Type}${rank}D.wrap(data, shape);
         //# end
         default:
             throw new IllegalArgumentException("Invalid shape.");

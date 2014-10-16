@@ -49,9 +49,9 @@ public class StriddenFloat6D extends Float6D {
     final int stride5;
     final int stride6;
 
-    public StriddenFloat6D(float[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenFloat6D(float[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 6) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

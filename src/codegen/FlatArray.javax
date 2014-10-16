@@ -26,6 +26,7 @@
 //# // Define the implementation prefix and get common definitions.
 //# def implPrefix = Flat
 //# include <commonImpl.javax>
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 //#
 //# // A few macros for the names of the strides.  It is not
@@ -63,24 +64,45 @@ import mitiv.exception.NonConformableArrayException;
 public class ${className} extends ${superName} {
     static final int order = COLUMN_MAJOR;
     final ${type}[] data;
+    //#
+    //# // Declaration of strides and building of the following macros:
+    //# //
+    //# // ----------------------------------------------------------------
+    //# // Macro        Description (Example)
+    //# // ----------------------------------------------------------------
+    //# // strideInit   initialization of strides
+    //# // indexList    list of indices (i1, i2, ...)
+    //# // indexDecl    declaration of indices (int i1, int i2, ...)
+    //# // indexExpr    fast index expression (i1 + dim1*i2 + ...)
+    //# // dimList      list of dimensions (dim1, dim2, ...)
+    //# // dimDecl      declaration of dimensions (int dim1, int dim2, ...)
+    //# // ----------------------------------------------------------------
+    //#
     //# def indent := ${__INDENT2__}
     //# def strideInit =
     //# if ${rank} == 0
     //#     def indexExpr = 0
     //#     def indexList =
     //#     def indexDecl =
+    //#     def dimList =
+    //#     def dimDecl =
     //# else
     //#     def strideName =
     //#     for k in 1:${rank}
     //#         def indexName = i${k}
+    //#         def dimensionName = dim${k}
     //#         if ${k} == 1
     //#             def indexExpr = ${indexName}
     //#             def indexList = ${indexName}
     //#             def indexDecl = int ${indexName}
+    //#             def dimList = ${dimensionName}
+    //#             def dimDecl = int ${dimensionName}
     //#         else
     //#             def indexExpr = ${strideName}*${indexName} + ${indexExpr}
     //#             def indexList = ${indexList}, ${indexName}
     //#             def indexDecl = ${indexDecl}, int ${indexName}
+    //#             def dimList = ${dimList}, ${dimensionName}
+    //#             def dimDecl = ${dimDecl}, int ${dimensionName}
     //#         end
     //#         if ${k} > 2
     final int ${strideName};
@@ -96,7 +118,7 @@ public class ${className} extends ${superName} {
     //#     end
     //# end
 
-    public ${className}(${declDimList}) {
+    public ${className}(${dimDecl}) {
         super(${dimList});
         data = new ${type}[number];
         //# if ${rank} > 2
@@ -104,8 +126,16 @@ public class ${className} extends ${superName} {
         //# end
     }
 
-    public ${className}(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public ${className}(int[] dims) {
+        super(dims);
+        data = new ${type}[number];
+        //# if ${rank} > 2
+        //#     emit ${strideInit}
+        //# end
+    }
+
+    public ${className}(Shape shape) {
+        super(shape);
         data = new ${type}[number];
         //# if ${rank} > 2
         //#     emit ${strideInit}
@@ -114,7 +144,7 @@ public class ${className} extends ${superName} {
 
     //# def argList = ${type}[] arr
     //# if ${rank} >= 1
-    //#     def argList = ${argList}, ${declDimList}
+    //#     def argList = ${argList}, ${dimDecl}
     //# end
     public ${className}(${argList}) {
         super(${dimList});
@@ -125,8 +155,17 @@ public class ${className} extends ${superName} {
         //# end
     }
 
-    public ${className}(${type}[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public ${className}(${type}[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+        //# if ${rank} > 2
+        //#     emit ${strideInit}
+        //# end
+    }
+
+    public ${className}(${type}[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
         //# if ${rank} > 2
@@ -155,13 +194,13 @@ public class ${className} extends ${superName} {
     }
 
     @Override
-    public final ${type} get(${declIndexList}) {
+    public final ${type} get(${indexDecl}) {
         return data[${indexExpr}];
     }
 
     //# def argList = ${type} value
     //# if ${rank} >= 1
-    //#     def argList = ${declIndexList}, ${argList}
+    //#     def argList = ${indexDecl}, ${argList}
     //# end
     @Override
     public final void set(${argList}) {
@@ -260,7 +299,7 @@ public class ${className} extends ${superName} {
     @Override
     public void map(${Type}Function function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

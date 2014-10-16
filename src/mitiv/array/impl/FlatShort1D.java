@@ -31,6 +31,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
 import mitiv.random.ShortGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -48,8 +49,13 @@ public class FlatShort1D extends Short1D {
         data = new short[number];
     }
 
-    public FlatShort1D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatShort1D(int[] dims) {
+        super(dims);
+        data = new short[number];
+    }
+
+    public FlatShort1D(Shape shape) {
+        super(shape);
         data = new short[number];
     }
 
@@ -59,8 +65,14 @@ public class FlatShort1D extends Short1D {
         data = arr;
     }
 
-    public FlatShort1D(short[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatShort1D(short[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+    }
+
+    public FlatShort1D(short[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
     }
@@ -138,7 +150,7 @@ public class FlatShort1D extends Short1D {
     @Override
     public void map(ShortFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

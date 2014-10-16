@@ -31,6 +31,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
 import mitiv.random.FloatGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -48,8 +49,13 @@ public class FlatFloat1D extends Float1D {
         data = new float[number];
     }
 
-    public FlatFloat1D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatFloat1D(int[] dims) {
+        super(dims);
+        data = new float[number];
+    }
+
+    public FlatFloat1D(Shape shape) {
+        super(shape);
         data = new float[number];
     }
 
@@ -59,8 +65,14 @@ public class FlatFloat1D extends Float1D {
         data = arr;
     }
 
-    public FlatFloat1D(float[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatFloat1D(float[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+    }
+
+    public FlatFloat1D(float[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
     }
@@ -138,7 +150,7 @@ public class FlatFloat1D extends Float1D {
     @Override
     public void map(FloatFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

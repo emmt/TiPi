@@ -52,9 +52,9 @@ public class StriddenLong9D extends Long9D {
     final int stride8;
     final int stride9;
 
-    public StriddenLong9D(long[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenLong9D(long[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 9) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

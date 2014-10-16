@@ -24,6 +24,7 @@
  */
 
 package mitiv.array;
+import mitiv.base.Shape;
 
 
 /**
@@ -32,9 +33,8 @@ package mitiv.array;
  * @author Éric Thiébaut.
  */
 public abstract class Scalar implements ShapedArray {
-    static protected final int rank = 0;
+    static protected final Shape shape = Shape.make();
     static protected final int number = 1;
-    static protected final int[] shape = new int[0];
 
     /*
      * The following constructors make this class non instantiable, but still
@@ -43,37 +43,23 @@ public abstract class Scalar implements ShapedArray {
     protected Scalar() {
     }
 
-    protected Scalar(int[] shape) {
-        this(shape, true);
+    protected Scalar(int[] dims) {
+        this(Shape.make(dims));
     }
 
-    protected Scalar(int[] shape, boolean cloneShape) {
-        if (shape == null || shape.length != rank) {
-            throw new IllegalArgumentException("Bad shape for 0D array");
+    protected Scalar(Shape shape) {
+        if (shape.rank() != 0) {
+            throw new IllegalArgumentException("Bad number of dimensions for 0-D array.");
         }
     }
 
     @Override
     public final int getRank() {
-        return rank;
+        return 0;
     }
 
     @Override
-    public final int[] cloneShape() {
-        return new int[]{};
-    }
-
-    /**
-     * Get the shape (that is the list of dimensions) of the shaped object.
-     * <p>
-     * The result returned by this method must be considered as
-     * <b><i>read-only</i></b>.  This is why the visibility of this method is
-     * limited to the package. Use {@link #cloneShape} to get a copy of the
-     * dimension list.
-     *
-     * @return A list of dimensions.
-     */
-    int[] getShape() {
+    public final Shape getShape() {
         return shape;
     }
 
@@ -84,7 +70,7 @@ public abstract class Scalar implements ShapedArray {
 
     @Override
     public final int getDimension(int k) {
-        return 1;
+        return shape.dimension(k);
     }
 
     /**

@@ -44,9 +44,9 @@ public class StriddenInt2D extends Int2D {
     final int stride1;
     final int stride2;
 
-    public StriddenInt2D(int[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenInt2D(int[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 2) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

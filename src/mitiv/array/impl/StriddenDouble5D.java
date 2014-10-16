@@ -48,9 +48,9 @@ public class StriddenDouble5D extends Double5D {
     final int stride4;
     final int stride5;
 
-    public StriddenDouble5D(double[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenDouble5D(double[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 5) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

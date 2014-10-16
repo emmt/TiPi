@@ -43,9 +43,9 @@ public class StriddenLong1D extends Long1D {
     final int offset;
     final int stride1;
 
-    public StriddenLong1D(long[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenLong1D(long[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 1) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

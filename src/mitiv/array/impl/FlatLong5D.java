@@ -32,6 +32,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.random.LongGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -48,15 +49,23 @@ public class FlatLong5D extends Long5D {
     final int dim1dim2dim3dim4;
 
     public FlatLong5D(int dim1, int dim2, int dim3, int dim4, int dim5) {
-        super(dim1,dim2,dim3,dim4,dim5);
+        super(dim1, dim2, dim3, dim4, dim5);
         data = new long[number];
         dim1dim2 = dim1*dim2;
         dim1dim2dim3 = dim1dim2*dim3;
         dim1dim2dim3dim4 = dim1dim2dim3*dim4;
     }
 
-    public FlatLong5D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatLong5D(int[] dims) {
+        super(dims);
+        data = new long[number];
+        dim1dim2 = dim1*dim2;
+        dim1dim2dim3 = dim1dim2*dim3;
+        dim1dim2dim3dim4 = dim1dim2dim3*dim4;
+    }
+
+    public FlatLong5D(Shape shape) {
+        super(shape);
         data = new long[number];
         dim1dim2 = dim1*dim2;
         dim1dim2dim3 = dim1dim2*dim3;
@@ -64,7 +73,7 @@ public class FlatLong5D extends Long5D {
     }
 
     public FlatLong5D(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
-        super(dim1,dim2,dim3,dim4,dim5);
+        super(dim1, dim2, dim3, dim4, dim5);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
@@ -72,8 +81,17 @@ public class FlatLong5D extends Long5D {
         dim1dim2dim3dim4 = dim1dim2dim3*dim4;
     }
 
-    public FlatLong5D(long[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatLong5D(long[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+        dim1dim2 = dim1*dim2;
+        dim1dim2dim3 = dim1dim2*dim3;
+        dim1dim2dim3dim4 = dim1dim2dim3*dim4;
+    }
+
+    public FlatLong5D(long[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
@@ -154,7 +172,7 @@ public class FlatLong5D extends Long5D {
     @Override
     public void map(LongFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

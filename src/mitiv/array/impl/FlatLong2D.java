@@ -31,6 +31,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.random.LongGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -44,23 +45,34 @@ public class FlatLong2D extends Long2D {
     final long[] data;
 
     public FlatLong2D(int dim1, int dim2) {
-        super(dim1,dim2);
+        super(dim1, dim2);
         data = new long[number];
     }
 
-    public FlatLong2D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatLong2D(int[] dims) {
+        super(dims);
+        data = new long[number];
+    }
+
+    public FlatLong2D(Shape shape) {
+        super(shape);
         data = new long[number];
     }
 
     public FlatLong2D(long[] arr, int dim1, int dim2) {
-        super(dim1,dim2);
+        super(dim1, dim2);
         checkSize(arr);
         data = arr;
     }
 
-    public FlatLong2D(long[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatLong2D(long[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+    }
+
+    public FlatLong2D(long[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
     }
@@ -138,7 +150,7 @@ public class FlatLong2D extends Long2D {
     @Override
     public void map(LongFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

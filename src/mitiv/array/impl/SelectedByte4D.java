@@ -70,7 +70,7 @@ public class SelectedByte4D extends Byte4D {
     @Override
     public final void checkSanity() {
         int offsetMin = 0, offsetMax = 0, indexMin, indexMax;
-        indexMin = indexMax = idx1[0];
+         indexMin = indexMax = idx1[0];
         for (int i1 = 1; i1 < dim1; ++i1) {
             int index = idx1[i1];
             if (index < indexMin) indexMin = index;
@@ -78,7 +78,7 @@ public class SelectedByte4D extends Byte4D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx2[0];
+         indexMin = indexMax = idx2[0];
         for (int i2 = 1; i2 < dim2; ++i2) {
             int index = idx2[i2];
             if (index < indexMin) indexMin = index;
@@ -86,7 +86,7 @@ public class SelectedByte4D extends Byte4D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx3[0];
+         indexMin = indexMax = idx3[0];
         for (int i3 = 1; i3 < dim3; ++i3) {
             int index = idx3[i3];
             if (index < indexMin) indexMin = index;
@@ -94,7 +94,7 @@ public class SelectedByte4D extends Byte4D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx4[0];
+         indexMin = indexMax = idx4[0];
         for (int i4 = 1; i4 < dim4; ++i4) {
             int index = idx4[i4];
             if (index < indexMin) indexMin = index;
@@ -290,7 +290,8 @@ public class SelectedByte4D extends Byte4D {
     @Override
     public Byte3D slice(int idx, int dim) {
         if (dim < 0) {
-            dim += rank;
+            /* A negative index is taken with respect to the end. */
+            dim += 4;
         }
         if (dim != 0) {
             throw new IndexOutOfBoundsException("Dimension index out of bounds.");
@@ -345,7 +346,11 @@ public class SelectedByte4D extends Byte4D {
         int[] idx2 = ArrayUtils.select(this.idx2, rng2);
         int[] idx3 = ArrayUtils.select(this.idx3, rng3);
         int[] idx4 = ArrayUtils.select(this.idx4, rng4);
-        return new SelectedByte4D(this.data, idx1, idx2, idx3, idx4);
+        if (idx1 == this.idx1 && idx2 == this.idx2 && idx3 == this.idx3 && idx4 == this.idx4) {
+            return this;
+        } else {
+            return new SelectedByte4D(this.data, idx1, idx2, idx3, idx4);
+        }
     }
 
     @Override
@@ -354,7 +359,11 @@ public class SelectedByte4D extends Byte4D {
         int[] idx2 = ArrayUtils.select(this.idx2, sel2);
         int[] idx3 = ArrayUtils.select(this.idx3, sel3);
         int[] idx4 = ArrayUtils.select(this.idx4, sel4);
-        return new SelectedByte4D(this.data, idx1, idx2, idx3, idx4);
+        if (idx1 == this.idx1 && idx2 == this.idx2 && idx3 == this.idx3 && idx4 == this.idx4) {
+            return this;
+        } else {
+            return new SelectedByte4D(this.data, idx1, idx2, idx3, idx4);
+        }
     }
 
     @Override

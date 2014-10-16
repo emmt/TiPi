@@ -78,7 +78,7 @@ public class SelectedShort8D extends Short8D {
     @Override
     public final void checkSanity() {
         int offsetMin = 0, offsetMax = 0, indexMin, indexMax;
-        indexMin = indexMax = idx1[0];
+         indexMin = indexMax = idx1[0];
         for (int i1 = 1; i1 < dim1; ++i1) {
             int index = idx1[i1];
             if (index < indexMin) indexMin = index;
@@ -86,7 +86,7 @@ public class SelectedShort8D extends Short8D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx2[0];
+         indexMin = indexMax = idx2[0];
         for (int i2 = 1; i2 < dim2; ++i2) {
             int index = idx2[i2];
             if (index < indexMin) indexMin = index;
@@ -94,7 +94,7 @@ public class SelectedShort8D extends Short8D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx3[0];
+         indexMin = indexMax = idx3[0];
         for (int i3 = 1; i3 < dim3; ++i3) {
             int index = idx3[i3];
             if (index < indexMin) indexMin = index;
@@ -102,7 +102,7 @@ public class SelectedShort8D extends Short8D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx4[0];
+         indexMin = indexMax = idx4[0];
         for (int i4 = 1; i4 < dim4; ++i4) {
             int index = idx4[i4];
             if (index < indexMin) indexMin = index;
@@ -110,7 +110,7 @@ public class SelectedShort8D extends Short8D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx5[0];
+         indexMin = indexMax = idx5[0];
         for (int i5 = 1; i5 < dim5; ++i5) {
             int index = idx5[i5];
             if (index < indexMin) indexMin = index;
@@ -118,7 +118,7 @@ public class SelectedShort8D extends Short8D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx6[0];
+         indexMin = indexMax = idx6[0];
         for (int i6 = 1; i6 < dim6; ++i6) {
             int index = idx6[i6];
             if (index < indexMin) indexMin = index;
@@ -126,7 +126,7 @@ public class SelectedShort8D extends Short8D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx7[0];
+         indexMin = indexMax = idx7[0];
         for (int i7 = 1; i7 < dim7; ++i7) {
             int index = idx7[i7];
             if (index < indexMin) indexMin = index;
@@ -134,7 +134,7 @@ public class SelectedShort8D extends Short8D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx8[0];
+         indexMin = indexMax = idx8[0];
         for (int i8 = 1; i8 < dim8; ++i8) {
             int index = idx8[i8];
             if (index < indexMin) indexMin = index;
@@ -426,7 +426,8 @@ public class SelectedShort8D extends Short8D {
     @Override
     public Short7D slice(int idx, int dim) {
         if (dim < 0) {
-            dim += rank;
+            /* A negative index is taken with respect to the end. */
+            dim += 8;
         }
         if (dim != 0) {
             throw new IndexOutOfBoundsException("Dimension index out of bounds.");
@@ -545,7 +546,11 @@ public class SelectedShort8D extends Short8D {
         int[] idx6 = ArrayUtils.select(this.idx6, rng6);
         int[] idx7 = ArrayUtils.select(this.idx7, rng7);
         int[] idx8 = ArrayUtils.select(this.idx8, rng8);
-        return new SelectedShort8D(this.data, idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8);
+        if (idx1 == this.idx1 && idx2 == this.idx2 && idx3 == this.idx3 && idx4 == this.idx4 && idx5 == this.idx5 && idx6 == this.idx6 && idx7 == this.idx7 && idx8 == this.idx8) {
+            return this;
+        } else {
+            return new SelectedShort8D(this.data, idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8);
+        }
     }
 
     @Override
@@ -558,7 +563,11 @@ public class SelectedShort8D extends Short8D {
         int[] idx6 = ArrayUtils.select(this.idx6, sel6);
         int[] idx7 = ArrayUtils.select(this.idx7, sel7);
         int[] idx8 = ArrayUtils.select(this.idx8, sel8);
-        return new SelectedShort8D(this.data, idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8);
+        if (idx1 == this.idx1 && idx2 == this.idx2 && idx3 == this.idx3 && idx4 == this.idx4 && idx5 == this.idx5 && idx6 == this.idx6 && idx7 == this.idx7 && idx8 == this.idx8) {
+            return this;
+        } else {
+            return new SelectedShort8D(this.data, idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8);
+        }
     }
 
     @Override

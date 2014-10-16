@@ -51,9 +51,9 @@ public class StriddenInt8D extends Int8D {
     final int stride7;
     final int stride8;
 
-    public StriddenInt8D(int[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenInt8D(int[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 8) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

@@ -27,6 +27,7 @@ package mitiv.array;
 
 import mitiv.array.impl.FlatLong2D;
 import mitiv.array.impl.StriddenLong2D;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
@@ -44,12 +45,12 @@ public abstract class Long2D extends Array2D implements LongArray {
         super(dim1,dim2);
     }
 
-    protected Long2D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    protected Long2D(int[] dims) {
+        super(dims);
     }
 
-    protected Long2D(int[] shape) {
-        super(shape, true);
+    protected Long2D(Shape shape) {
+        super(shape);
     }
 
     @Override
@@ -343,16 +344,6 @@ public abstract class Long2D extends Array2D implements LongArray {
         return Double2D.wrap(out, dim1, dim2);
     }
 
-    /**
-     * Get the number of elements of a Java array.
-     * @param arr - A Java array (can be {@code null}.
-     * @return {@code 0}, if {@code arr} is {@code null}; {@code arr.length};
-     *         otherwise.
-     */
-    public static int numberOf(long[] arr) {
-        return (arr == null ? 0 : arr.length);
-    }
-
 
     /*=======================================================================*/
     /* ARRAY FACTORIES */
@@ -376,15 +367,15 @@ public abstract class Long2D extends Array2D implements LongArray {
      * <p>
      * This method creates a 2D array of long's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape - The list of dimensions of the 2D array (all dimensions
-     *                must at least 1).  This argument is not referenced by
-     *                the returned object and its contents can be modified
-     *                after calling this method.
+     * @param dims - The list of dimensions of the 2D array (all dimensions
+     *               must at least 1).  This argument is not referenced by
+     *               the returned object and its contents can be modified
+     *               after calling this method.
      * @return A new 2D array of long's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D create(int[] shape) {
-        return new FlatLong2D(shape, true);
+    public static Long2D create(int[] dims) {
+        return new FlatLong2D(dims);
     }
 
     /**
@@ -392,8 +383,7 @@ public abstract class Long2D extends Array2D implements LongArray {
      * <p>
      * This method creates a 2D array of long's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape      - The list of dimensions of the 2D array (all
-     *                     dimensions must at least 1).
+     * @param shape      - The shape of the 2D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -402,8 +392,8 @@ public abstract class Long2D extends Array2D implements LongArray {
      * @return A new 2D array of long's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D create(int[] shape, boolean cloneShape) {
-        return new FlatLong2D(shape, cloneShape);
+    public static Long2D create(Shape shape) {
+        return new FlatLong2D(shape);
     }
 
     /**
@@ -431,14 +421,14 @@ public abstract class Long2D extends Array2D implements LongArray {
      * <pre>arr.get(i1,i2) = data[i1 + shape[0]*i2]</pre>
      * with {@code arr} the returned 2D array.
      * @param data - The data to wrap in the 2D array.
-     * @param shape - The list of dimensions of the 2D array.  This argument is
+     * @param dims - The list of dimensions of the 2D array.  This argument is
      *                not referenced by the returned object and its contents
      *                can be modified after the call to this method.
      * @return A new 2D array of long's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D wrap(long[] data, int[] shape) {
-        return new FlatLong2D(data, shape, true);
+    public static Long2D wrap(long[] data, int[] dims) {
+        return new FlatLong2D(data, dims);
     }
 
     /**
@@ -449,7 +439,7 @@ public abstract class Long2D extends Array2D implements LongArray {
      * <pre>arr.get(i1,i2) = data[i1 + shape[0]*i2]</pre>
      * with {@code arr} the returned 2D array.
      * @param data       - The data to wrap in the 2D array.
-     * @param shape      - The list of dimensions of the 2D array.
+     * @param shape      - The shape of the 2D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -458,8 +448,8 @@ public abstract class Long2D extends Array2D implements LongArray {
      * @return A new 2D array of long's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D wrap(long[] data, int[] shape, boolean cloneShape) {
-        return new FlatLong2D(data, shape, cloneShape);
+    public static Long2D wrap(long[] data, Shape shape) {
+        return new FlatLong2D(data, shape);
     }
 
     /**

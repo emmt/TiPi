@@ -32,6 +32,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
 import mitiv.random.FloatGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -46,26 +47,39 @@ public class FlatFloat3D extends Float3D {
     final int dim1dim2;
 
     public FlatFloat3D(int dim1, int dim2, int dim3) {
-        super(dim1,dim2,dim3);
+        super(dim1, dim2, dim3);
         data = new float[number];
         dim1dim2 = dim1*dim2;
     }
 
-    public FlatFloat3D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatFloat3D(int[] dims) {
+        super(dims);
+        data = new float[number];
+        dim1dim2 = dim1*dim2;
+    }
+
+    public FlatFloat3D(Shape shape) {
+        super(shape);
         data = new float[number];
         dim1dim2 = dim1*dim2;
     }
 
     public FlatFloat3D(float[] arr, int dim1, int dim2, int dim3) {
-        super(dim1,dim2,dim3);
+        super(dim1, dim2, dim3);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
     }
 
-    public FlatFloat3D(float[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatFloat3D(float[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+        dim1dim2 = dim1*dim2;
+    }
+
+    public FlatFloat3D(float[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
@@ -144,7 +158,7 @@ public class FlatFloat3D extends Float3D {
     @Override
     public void map(FloatFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

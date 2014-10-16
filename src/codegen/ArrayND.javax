@@ -33,6 +33,7 @@
 //#     def className = Array${rank}D
 //# end
 package ${package};
+import mitiv.base.Shape;
 //# if ${rank} >= 1
 import mitiv.base.Shaped;
 import mitiv.base.indexing.Range;
@@ -53,13 +54,12 @@ import mitiv.base.indexing.Range;
  */
 public abstract class ${className} implements ShapedArray {
     //# def scope = protected final
-    static ${scope} int rank = ${rank};
     //# if ${rank} == 0
+    static ${scope} Shape shape = Shape.make();
     static ${scope} int number = 1;
-    static ${scope} int[] shape = new int[0];
     //# else
+    ${scope} Shape shape;
     ${scope} int number;
-    ${scope} int[] shape;
     //#     for k in 1 : ${rank}
     ${scope} int dim${k};
     //#         if ${k} == 1
@@ -78,78 +78,57 @@ public abstract class ${className} implements ShapedArray {
     //# def argName = dim
     //# def dimList =
     //# def argList =
-    //# def badDims =
     //# for k in 1 : ${rank}
     //#     def arg = ${argName}${k}
     //#     if ${k} == 1
     //#         def dimList = ${arg}
     //#         def argList = ${argType} ${arg}
-    //#         def badDims = ${arg} < 1
     //#     else
     //#         def dimList = ${dimList}, ${arg}
     //#         def argList = ${argList}, ${argType} ${arg}
-    //#         def badDims = ${badDims} || ${arg} < 1
     //#     end
     //# end
     protected ${className}(${argList}) {
         //# if ${rank} >= 1
-        if (${badDims}) {
-            throw new IllegalArgumentException("Bad dimension(s) for ${rank}D array");
+        shape = Shape.make(${dimList});
+        if (shape.number() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Total number of elements is too large.");
         }
-        this.shape = new int[]{${dimList}};
-        this.number = ${productOfDimensions};
-        //# end
-        //#
-        //# for k in 1 : ${rank}
+        number = (int)shape.number();
+        //#     for k in 1 : ${rank}
         this.dim${k} = dim${k};
+        //#     end
         //# end
     }
 
-    protected ${className}(int[] shape) {
-        this(shape, true);
+    protected ${className}(int[] dims) {
+        this(Shape.make(dims));
     }
 
-    protected ${className}(int[] shape, boolean cloneShape) {
-        //# def badShape = shape == null || shape.length != rank
-        //# def or = ||${__NEWLINE__}${__INDENT4__}
-        //# for k in 1 : ${rank}
-        //#     eval j = ${k} - 1
-        //#     def badShape = ${badShape} ${or}(dim${k} = shape[${j}]) < 1
-        //# end
-        if (${badShape}) {
-            throw new IllegalArgumentException("Bad shape for ${rank}D array");
+    protected ${className}(Shape shape) {
+        if (shape.rank() != ${rank}) {
+            throw new IllegalArgumentException("Bad number of dimensions for ${rank}-D array.");
         }
         //# if ${rank} >= 1
-        this.number = ${productOfDimensions};
-        if (cloneShape) {
-            this.shape = new int[]{${dimList}};
-        } else {
-            this.shape = shape;
+        if (shape.number() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Total number of elements is too large.");
         }
+        this.number = (int)shape.number();
+        this.shape = shape;
+        //#     for k in 1 : ${rank}
+        //#         eval j = ${k} - 1
+        this.dim${k} = shape.dimension(${j});
+        //#     end
         //# end
     }
 
     @Override
     public final int getRank() {
-        return rank;
+        return ${rank};
     }
 
     @Override
-    public final int[] cloneShape() {
-        return new int[]{${dimList}};
-    }
-
-    /**
-     * Get the shape (that is the list of dimensions) of the shaped object.
-     * <p>
-     * The result returned by this method must be considered as
-     * <b><i>read-only</i></b>.  This is why the visibility of this method is
-     * limited to the package. Use {@link #cloneShape} to get a copy of the
-     * dimension list.
-     *
-     * @return A list of dimensions.
-     */
-    int[] getShape() {
+    public final Shape getShape() {
         return shape;
     }
 
@@ -160,11 +139,7 @@ public abstract class ${className} implements ShapedArray {
 
     @Override
     public final int getDimension(int k) {
-        //# if ${rank} == 0
-        return 1;
-        //# else
-        return (k < rank ? shape[k] : 1);
-        //# end
+        return shape.dimension(k);
     }
 
     //# if ${rank} >= 1

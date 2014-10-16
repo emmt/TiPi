@@ -31,6 +31,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
 import mitiv.random.FloatGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -44,23 +45,34 @@ public class FlatFloat2D extends Float2D {
     final float[] data;
 
     public FlatFloat2D(int dim1, int dim2) {
-        super(dim1,dim2);
+        super(dim1, dim2);
         data = new float[number];
     }
 
-    public FlatFloat2D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatFloat2D(int[] dims) {
+        super(dims);
+        data = new float[number];
+    }
+
+    public FlatFloat2D(Shape shape) {
+        super(shape);
         data = new float[number];
     }
 
     public FlatFloat2D(float[] arr, int dim1, int dim2) {
-        super(dim1,dim2);
+        super(dim1, dim2);
         checkSize(arr);
         data = arr;
     }
 
-    public FlatFloat2D(float[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatFloat2D(float[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+    }
+
+    public FlatFloat2D(float[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
     }
@@ -138,7 +150,7 @@ public class FlatFloat2D extends Float2D {
     @Override
     public void map(FloatFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

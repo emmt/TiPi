@@ -27,6 +27,7 @@ package mitiv.array;
 
 import mitiv.array.impl.FlatInt9D;
 import mitiv.array.impl.StriddenInt9D;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
@@ -44,12 +45,12 @@ public abstract class Int9D extends Array9D implements IntArray {
         super(dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8,dim9);
     }
 
-    protected Int9D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    protected Int9D(int[] dims) {
+        super(dims);
     }
 
-    protected Int9D(int[] shape) {
-        super(shape, true);
+    protected Int9D(Shape shape) {
+        super(shape);
     }
 
     @Override
@@ -637,16 +638,6 @@ public abstract class Int9D extends Array9D implements IntArray {
         return Double9D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
-    /**
-     * Get the number of elements of a Java array.
-     * @param arr - A Java array (can be {@code null}.
-     * @return {@code 0}, if {@code arr} is {@code null}; {@code arr.length};
-     *         otherwise.
-     */
-    public static int numberOf(int[] arr) {
-        return (arr == null ? 0 : arr.length);
-    }
-
 
     /*=======================================================================*/
     /* ARRAY FACTORIES */
@@ -677,15 +668,15 @@ public abstract class Int9D extends Array9D implements IntArray {
      * <p>
      * This method creates a 9D array of int's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape - The list of dimensions of the 9D array (all dimensions
-     *                must at least 1).  This argument is not referenced by
-     *                the returned object and its contents can be modified
-     *                after calling this method.
+     * @param dims - The list of dimensions of the 9D array (all dimensions
+     *               must at least 1).  This argument is not referenced by
+     *               the returned object and its contents can be modified
+     *               after calling this method.
      * @return A new 9D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Int9D create(int[] shape) {
-        return new FlatInt9D(shape, true);
+    public static Int9D create(int[] dims) {
+        return new FlatInt9D(dims);
     }
 
     /**
@@ -693,8 +684,7 @@ public abstract class Int9D extends Array9D implements IntArray {
      * <p>
      * This method creates a 9D array of int's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape      - The list of dimensions of the 9D array (all
-     *                     dimensions must at least 1).
+     * @param shape      - The shape of the 9D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -703,8 +693,8 @@ public abstract class Int9D extends Array9D implements IntArray {
      * @return A new 9D array of int's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Int9D create(int[] shape, boolean cloneShape) {
-        return new FlatInt9D(shape, cloneShape);
+    public static Int9D create(Shape shape) {
+        return new FlatInt9D(shape);
     }
 
     /**
@@ -739,14 +729,14 @@ public abstract class Int9D extends Array9D implements IntArray {
      * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7,i8,i9) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*(i4 + shape[3]*(i5 + shape[4]*(i6 + shape[5]*(i7 + shape[6]*(i8 + shape[7]*i9)))))))]</pre>
      * with {@code arr} the returned 9D array.
      * @param data - The data to wrap in the 9D array.
-     * @param shape - The list of dimensions of the 9D array.  This argument is
+     * @param dims - The list of dimensions of the 9D array.  This argument is
      *                not referenced by the returned object and its contents
      *                can be modified after the call to this method.
      * @return A new 9D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Int9D wrap(int[] data, int[] shape) {
-        return new FlatInt9D(data, shape, true);
+    public static Int9D wrap(int[] data, int[] dims) {
+        return new FlatInt9D(data, dims);
     }
 
     /**
@@ -757,7 +747,7 @@ public abstract class Int9D extends Array9D implements IntArray {
      * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7,i8,i9) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*(i4 + shape[3]*(i5 + shape[4]*(i6 + shape[5]*(i7 + shape[6]*(i8 + shape[7]*i9)))))))]</pre>
      * with {@code arr} the returned 9D array.
      * @param data       - The data to wrap in the 9D array.
-     * @param shape      - The list of dimensions of the 9D array.
+     * @param shape      - The shape of the 9D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -766,8 +756,8 @@ public abstract class Int9D extends Array9D implements IntArray {
      * @return A new 9D array of int's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Int9D wrap(int[] data, int[] shape, boolean cloneShape) {
-        return new FlatInt9D(data, shape, cloneShape);
+    public static Int9D wrap(int[] data, Shape shape) {
+        return new FlatInt9D(data, shape);
     }
 
     /**

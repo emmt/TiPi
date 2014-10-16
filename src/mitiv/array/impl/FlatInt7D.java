@@ -32,6 +32,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
 import mitiv.random.IntGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -50,7 +51,7 @@ public class FlatInt7D extends Int7D {
     final int dim1dim2dim3dim4dim5dim6;
 
     public FlatInt7D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        super(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
+        super(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
         data = new int[number];
         dim1dim2 = dim1*dim2;
         dim1dim2dim3 = dim1dim2*dim3;
@@ -59,8 +60,18 @@ public class FlatInt7D extends Int7D {
         dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
     }
 
-    public FlatInt7D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatInt7D(int[] dims) {
+        super(dims);
+        data = new int[number];
+        dim1dim2 = dim1*dim2;
+        dim1dim2dim3 = dim1dim2*dim3;
+        dim1dim2dim3dim4 = dim1dim2dim3*dim4;
+        dim1dim2dim3dim4dim5 = dim1dim2dim3dim4*dim5;
+        dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
+    }
+
+    public FlatInt7D(Shape shape) {
+        super(shape);
         data = new int[number];
         dim1dim2 = dim1*dim2;
         dim1dim2dim3 = dim1dim2*dim3;
@@ -70,7 +81,7 @@ public class FlatInt7D extends Int7D {
     }
 
     public FlatInt7D(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        super(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
+        super(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
@@ -80,8 +91,19 @@ public class FlatInt7D extends Int7D {
         dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
     }
 
-    public FlatInt7D(int[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatInt7D(int[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+        dim1dim2 = dim1*dim2;
+        dim1dim2dim3 = dim1dim2*dim3;
+        dim1dim2dim3dim4 = dim1dim2dim3*dim4;
+        dim1dim2dim3dim4dim5 = dim1dim2dim3dim4*dim5;
+        dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
+    }
+
+    public FlatInt7D(int[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
@@ -164,7 +186,7 @@ public class FlatInt7D extends Int7D {
     @Override
     public void map(IntFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

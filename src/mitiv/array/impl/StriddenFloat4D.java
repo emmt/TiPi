@@ -47,9 +47,9 @@ public class StriddenFloat4D extends Float4D {
     final int stride3;
     final int stride4;
 
-    public StriddenFloat4D(float[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenFloat4D(float[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 4) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

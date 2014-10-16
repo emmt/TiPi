@@ -32,6 +32,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -47,29 +48,44 @@ public class FlatDouble4D extends Double4D {
     final int dim1dim2dim3;
 
     public FlatDouble4D(int dim1, int dim2, int dim3, int dim4) {
-        super(dim1,dim2,dim3,dim4);
+        super(dim1, dim2, dim3, dim4);
         data = new double[number];
         dim1dim2 = dim1*dim2;
         dim1dim2dim3 = dim1dim2*dim3;
     }
 
-    public FlatDouble4D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatDouble4D(int[] dims) {
+        super(dims);
+        data = new double[number];
+        dim1dim2 = dim1*dim2;
+        dim1dim2dim3 = dim1dim2*dim3;
+    }
+
+    public FlatDouble4D(Shape shape) {
+        super(shape);
         data = new double[number];
         dim1dim2 = dim1*dim2;
         dim1dim2dim3 = dim1dim2*dim3;
     }
 
     public FlatDouble4D(double[] arr, int dim1, int dim2, int dim3, int dim4) {
-        super(dim1,dim2,dim3,dim4);
+        super(dim1, dim2, dim3, dim4);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
         dim1dim2dim3 = dim1dim2*dim3;
     }
 
-    public FlatDouble4D(double[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatDouble4D(double[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+        dim1dim2 = dim1*dim2;
+        dim1dim2dim3 = dim1dim2*dim3;
+    }
+
+    public FlatDouble4D(double[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
@@ -149,7 +165,7 @@ public class FlatDouble4D extends Double4D {
     @Override
     public void map(DoubleFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

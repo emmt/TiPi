@@ -145,22 +145,6 @@ public class Range {
         this.step = step;
     }
 
-    /**
-     * Engrave the range given the length of the dimension of interest.
-     * 
-     * <p>
-     * This method must be used to apply the conventions for range
-     * settings (in particular negative values to indicate indexing
-     * from the end) and validate them.
-     * </p>
-     * @param length - The number of elements along the dimension
-     *                 of interest.
-     * @return A checked range.
-     */
-    final public EngravedRange engrave(int length) {
-        return new EngravedRange(this, length);
-    }
-
     /** Get the first position of the range. */
     final public int getFirst() {
         return first;

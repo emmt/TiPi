@@ -32,6 +32,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
 import mitiv.random.FloatGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -50,7 +51,7 @@ public class FlatFloat7D extends Float7D {
     final int dim1dim2dim3dim4dim5dim6;
 
     public FlatFloat7D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        super(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
+        super(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
         data = new float[number];
         dim1dim2 = dim1*dim2;
         dim1dim2dim3 = dim1dim2*dim3;
@@ -59,8 +60,18 @@ public class FlatFloat7D extends Float7D {
         dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
     }
 
-    public FlatFloat7D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatFloat7D(int[] dims) {
+        super(dims);
+        data = new float[number];
+        dim1dim2 = dim1*dim2;
+        dim1dim2dim3 = dim1dim2*dim3;
+        dim1dim2dim3dim4 = dim1dim2dim3*dim4;
+        dim1dim2dim3dim4dim5 = dim1dim2dim3dim4*dim5;
+        dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
+    }
+
+    public FlatFloat7D(Shape shape) {
+        super(shape);
         data = new float[number];
         dim1dim2 = dim1*dim2;
         dim1dim2dim3 = dim1dim2*dim3;
@@ -70,7 +81,7 @@ public class FlatFloat7D extends Float7D {
     }
 
     public FlatFloat7D(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        super(dim1,dim2,dim3,dim4,dim5,dim6,dim7);
+        super(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
@@ -80,8 +91,19 @@ public class FlatFloat7D extends Float7D {
         dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
     }
 
-    public FlatFloat7D(float[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatFloat7D(float[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+        dim1dim2 = dim1*dim2;
+        dim1dim2dim3 = dim1dim2*dim3;
+        dim1dim2dim3dim4 = dim1dim2dim3*dim4;
+        dim1dim2dim3dim4dim5 = dim1dim2dim3dim4*dim5;
+        dim1dim2dim3dim4dim5dim6 = dim1dim2dim3dim4dim5*dim6;
+    }
+
+    public FlatFloat7D(float[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
@@ -164,7 +186,7 @@ public class FlatFloat7D extends Float7D {
     @Override
     public void map(FloatFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

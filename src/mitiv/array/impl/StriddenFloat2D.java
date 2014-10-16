@@ -44,9 +44,9 @@ public class StriddenFloat2D extends Float2D {
     final int stride1;
     final int stride2;
 
-    public StriddenFloat2D(float[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenFloat2D(float[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 2) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

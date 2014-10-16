@@ -63,7 +63,7 @@ public class SelectedByte1D extends Byte1D {
     @Override
     public final void checkSanity() {
         int offsetMin = 0, offsetMax = 0, indexMin, indexMax;
-        indexMin = indexMax = idx1[0];
+         indexMin = indexMax = idx1[0];
         for (int i1 = 1; i1 < dim1; ++i1) {
             int index = idx1[i1];
             if (index < indexMin) indexMin = index;
@@ -176,7 +176,8 @@ public class SelectedByte1D extends Byte1D {
     @Override
     public ByteScalar slice(int idx, int dim) {
         if (dim < 0) {
-            dim += rank;
+            /* A negative index is taken with respect to the end. */
+            dim += 1;
         }
         if (dim != 0) {
             throw new IndexOutOfBoundsException("Dimension index out of bounds.");
@@ -187,13 +188,21 @@ public class SelectedByte1D extends Byte1D {
     @Override
     public Byte1D view(Range rng1) {
         int[] idx1 = ArrayUtils.select(this.idx1, rng1);
-        return new SelectedByte1D(this.data, idx1);
+        if (idx1 == this.idx1) {
+            return this;
+        } else {
+            return new SelectedByte1D(this.data, idx1);
+        }
     }
 
     @Override
     public Byte1D view(int[] sel1) {
         int[] idx1 = ArrayUtils.select(this.idx1, sel1);
-        return new SelectedByte1D(this.data, idx1);
+        if (idx1 == this.idx1) {
+            return this;
+        } else {
+            return new SelectedByte1D(this.data, idx1);
+        }
     }
 
     @Override

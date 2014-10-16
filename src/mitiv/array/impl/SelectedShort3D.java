@@ -68,7 +68,7 @@ public class SelectedShort3D extends Short3D {
     @Override
     public final void checkSanity() {
         int offsetMin = 0, offsetMax = 0, indexMin, indexMax;
-        indexMin = indexMax = idx1[0];
+         indexMin = indexMax = idx1[0];
         for (int i1 = 1; i1 < dim1; ++i1) {
             int index = idx1[i1];
             if (index < indexMin) indexMin = index;
@@ -76,7 +76,7 @@ public class SelectedShort3D extends Short3D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx2[0];
+         indexMin = indexMax = idx2[0];
         for (int i2 = 1; i2 < dim2; ++i2) {
             int index = idx2[i2];
             if (index < indexMin) indexMin = index;
@@ -84,7 +84,7 @@ public class SelectedShort3D extends Short3D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx3[0];
+         indexMin = indexMax = idx3[0];
         for (int i3 = 1; i3 < dim3; ++i3) {
             int index = idx3[i3];
             if (index < indexMin) indexMin = index;
@@ -256,7 +256,8 @@ public class SelectedShort3D extends Short3D {
     @Override
     public Short2D slice(int idx, int dim) {
         if (dim < 0) {
-            dim += rank;
+            /* A negative index is taken with respect to the end. */
+            dim += 3;
         }
         if (dim != 0) {
             throw new IndexOutOfBoundsException("Dimension index out of bounds.");
@@ -300,7 +301,11 @@ public class SelectedShort3D extends Short3D {
         int[] idx1 = ArrayUtils.select(this.idx1, rng1);
         int[] idx2 = ArrayUtils.select(this.idx2, rng2);
         int[] idx3 = ArrayUtils.select(this.idx3, rng3);
-        return new SelectedShort3D(this.data, idx1, idx2, idx3);
+        if (idx1 == this.idx1 && idx2 == this.idx2 && idx3 == this.idx3) {
+            return this;
+        } else {
+            return new SelectedShort3D(this.data, idx1, idx2, idx3);
+        }
     }
 
     @Override
@@ -308,7 +313,11 @@ public class SelectedShort3D extends Short3D {
         int[] idx1 = ArrayUtils.select(this.idx1, sel1);
         int[] idx2 = ArrayUtils.select(this.idx2, sel2);
         int[] idx3 = ArrayUtils.select(this.idx3, sel3);
-        return new SelectedShort3D(this.data, idx1, idx2, idx3);
+        if (idx1 == this.idx1 && idx2 == this.idx2 && idx3 == this.idx3) {
+            return this;
+        } else {
+            return new SelectedShort3D(this.data, idx1, idx2, idx3);
+        }
     }
 
     @Override

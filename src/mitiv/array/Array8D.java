@@ -24,6 +24,7 @@
  */
 
 package mitiv.array;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.indexing.Range;
 
@@ -34,9 +35,8 @@ import mitiv.base.indexing.Range;
  * @author Éric Thiébaut.
  */
 public abstract class Array8D implements ShapedArray {
-    static protected final int rank = 8;
+    protected final Shape shape;
     protected final int number;
-    protected final int[] shape;
     protected final int dim1;
     protected final int dim2;
     protected final int dim3;
@@ -51,11 +51,11 @@ public abstract class Array8D implements ShapedArray {
      * let others inherit from this class.
      */
     protected Array8D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
-        if (dim1 < 1 || dim2 < 1 || dim3 < 1 || dim4 < 1 || dim5 < 1 || dim6 < 1 || dim7 < 1 || dim8 < 1) {
-            throw new IllegalArgumentException("Bad dimension(s) for 8D array");
+        shape = Shape.make(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+        if (shape.number() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Total number of elements is too large.");
         }
-        this.shape = new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8};
-        this.number = dim1*dim2*dim3*dim4*dim5*dim6*dim7*dim8;
+        number = (int)shape.number();
         this.dim1 = dim1;
         this.dim2 = dim2;
         this.dim3 = dim3;
@@ -66,51 +66,36 @@ public abstract class Array8D implements ShapedArray {
         this.dim8 = dim8;
     }
 
-    protected Array8D(int[] shape) {
-        this(shape, true);
+    protected Array8D(int[] dims) {
+        this(Shape.make(dims));
     }
 
-    protected Array8D(int[] shape, boolean cloneShape) {
-        if (shape == null || shape.length != rank ||
-                (dim1 = shape[0]) < 1 ||
-                (dim2 = shape[1]) < 1 ||
-                (dim3 = shape[2]) < 1 ||
-                (dim4 = shape[3]) < 1 ||
-                (dim5 = shape[4]) < 1 ||
-                (dim6 = shape[5]) < 1 ||
-                (dim7 = shape[6]) < 1 ||
-                (dim8 = shape[7]) < 1) {
-            throw new IllegalArgumentException("Bad shape for 8D array");
+    protected Array8D(Shape shape) {
+        if (shape.rank() != 8) {
+            throw new IllegalArgumentException("Bad number of dimensions for 8-D array.");
         }
-        this.number = dim1*dim2*dim3*dim4*dim5*dim6*dim7*dim8;
-        if (cloneShape) {
-            this.shape = new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8};
-        } else {
-            this.shape = shape;
+        if (shape.number() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Total number of elements is too large.");
         }
+        this.number = (int)shape.number();
+        this.shape = shape;
+        this.dim1 = shape.dimension(0);
+        this.dim2 = shape.dimension(1);
+        this.dim3 = shape.dimension(2);
+        this.dim4 = shape.dimension(3);
+        this.dim5 = shape.dimension(4);
+        this.dim6 = shape.dimension(5);
+        this.dim7 = shape.dimension(6);
+        this.dim8 = shape.dimension(7);
     }
 
     @Override
     public final int getRank() {
-        return rank;
+        return 8;
     }
 
     @Override
-    public final int[] cloneShape() {
-        return new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8};
-    }
-
-    /**
-     * Get the shape (that is the list of dimensions) of the shaped object.
-     * <p>
-     * The result returned by this method must be considered as
-     * <b><i>read-only</i></b>.  This is why the visibility of this method is
-     * limited to the package. Use {@link #cloneShape} to get a copy of the
-     * dimension list.
-     *
-     * @return A list of dimensions.
-     */
-    int[] getShape() {
+    public final Shape getShape() {
         return shape;
     }
 
@@ -121,7 +106,7 @@ public abstract class Array8D implements ShapedArray {
 
     @Override
     public final int getDimension(int k) {
-        return (k < rank ? shape[k] : 1);
+        return shape.dimension(k);
     }
 
     /**

@@ -43,9 +43,9 @@ public class StriddenInt1D extends Int1D {
     final int offset;
     final int stride1;
 
-    public StriddenInt1D(int[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenInt1D(int[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 1) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

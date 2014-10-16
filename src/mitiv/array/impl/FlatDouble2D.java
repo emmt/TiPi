@@ -31,6 +31,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -44,23 +45,34 @@ public class FlatDouble2D extends Double2D {
     final double[] data;
 
     public FlatDouble2D(int dim1, int dim2) {
-        super(dim1,dim2);
+        super(dim1, dim2);
         data = new double[number];
     }
 
-    public FlatDouble2D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatDouble2D(int[] dims) {
+        super(dims);
+        data = new double[number];
+    }
+
+    public FlatDouble2D(Shape shape) {
+        super(shape);
         data = new double[number];
     }
 
     public FlatDouble2D(double[] arr, int dim1, int dim2) {
-        super(dim1,dim2);
+        super(dim1, dim2);
         checkSize(arr);
         data = arr;
     }
 
-    public FlatDouble2D(double[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatDouble2D(double[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+    }
+
+    public FlatDouble2D(double[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
     }
@@ -138,7 +150,7 @@ public class FlatDouble2D extends Double2D {
     @Override
     public void map(DoubleFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

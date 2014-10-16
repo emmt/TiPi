@@ -31,6 +31,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
 import mitiv.random.IntGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -48,8 +49,13 @@ public class FlatInt1D extends Int1D {
         data = new int[number];
     }
 
-    public FlatInt1D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatInt1D(int[] dims) {
+        super(dims);
+        data = new int[number];
+    }
+
+    public FlatInt1D(Shape shape) {
+        super(shape);
         data = new int[number];
     }
 
@@ -59,8 +65,14 @@ public class FlatInt1D extends Int1D {
         data = arr;
     }
 
-    public FlatInt1D(int[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatInt1D(int[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+    }
+
+    public FlatInt1D(int[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
     }
@@ -138,7 +150,7 @@ public class FlatInt1D extends Int1D {
     @Override
     public void map(IntFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

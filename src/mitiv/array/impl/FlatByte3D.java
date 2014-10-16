@@ -32,6 +32,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -46,26 +47,39 @@ public class FlatByte3D extends Byte3D {
     final int dim1dim2;
 
     public FlatByte3D(int dim1, int dim2, int dim3) {
-        super(dim1,dim2,dim3);
+        super(dim1, dim2, dim3);
         data = new byte[number];
         dim1dim2 = dim1*dim2;
     }
 
-    public FlatByte3D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatByte3D(int[] dims) {
+        super(dims);
+        data = new byte[number];
+        dim1dim2 = dim1*dim2;
+    }
+
+    public FlatByte3D(Shape shape) {
+        super(shape);
         data = new byte[number];
         dim1dim2 = dim1*dim2;
     }
 
     public FlatByte3D(byte[] arr, int dim1, int dim2, int dim3) {
-        super(dim1,dim2,dim3);
+        super(dim1, dim2, dim3);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
     }
 
-    public FlatByte3D(byte[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatByte3D(byte[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+        dim1dim2 = dim1*dim2;
+    }
+
+    public FlatByte3D(byte[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
@@ -144,7 +158,7 @@ public class FlatByte3D extends Byte3D {
     @Override
     public void map(ByteFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

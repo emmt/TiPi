@@ -25,6 +25,7 @@
 
 package mitiv.cost;
 
+import mitiv.base.Shape;
 import mitiv.base.indexing.BoundaryConditions;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.linalg.LinearOperator;
@@ -124,8 +125,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
      *                     {@link BoundaryConditions#NORMAL}.
      */
     public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, BoundaryConditions[] bounds) {
-        super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.cloneShape())));
-        buildIndex(inputSpace.cloneShape(), bounds);
+        super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.getShape())));
+        buildIndex(inputSpace.getShape(), bounds);
         single = false;
     }
 
@@ -141,8 +142,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
      *                     {@link BoundaryConditions#NORMAL} is assumed.
      */
     public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, BoundaryConditions bounds) {
-        super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.cloneShape())));
-        buildIndex(inputSpace.cloneShape(), bounds);
+        super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.getShape())));
+        buildIndex(inputSpace.getShape(), bounds);
         single = false;
     }
 
@@ -171,8 +172,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
      */
     public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace,
             BoundaryConditions[] bounds) {
-        super(inputSpace, new FloatShapedVectorSpace(buildShape(inputSpace.cloneShape())));
-        buildIndex(inputSpace.cloneShape(), bounds);
+        super(inputSpace, new FloatShapedVectorSpace(buildShape(inputSpace.getShape())));
+        buildIndex(inputSpace.getShape(), bounds);
         single = true;
     }
 
@@ -189,8 +190,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
      */
     public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace,
             BoundaryConditions bounds) {
-        super(inputSpace, new FloatShapedVectorSpace(buildShape(inputSpace.cloneShape())));
-        buildIndex(inputSpace.cloneShape(), bounds);
+        super(inputSpace, new FloatShapedVectorSpace(buildShape(inputSpace.getShape())));
+        buildIndex(inputSpace.getShape(), bounds);
         single = true;
     }
 
@@ -206,38 +207,40 @@ public class FiniteDifferenceOperator extends LinearOperator {
     }
 
 
-    private static int[] buildShape(int[] inputShape) {
-        int[] outShape;
-        int rank = inputShape.length;
+    private static Shape buildShape(Shape inputShape) {
+        int rank = inputShape.rank();
         if (rank == 1) {
-            outShape = new int[] {inputShape[0]};
+            return inputShape;
         } else {
-            outShape = new int[rank + 1];
-            outShape[0] = rank;
+            int[] outDims = new int[rank + 1];
+            outDims[0] = rank;
             for (int k = 0; k < rank; ++k) {
-                outShape[k + 1] = inputShape[k];
+                outDims[k + 1] = inputShape.dimension(k);
             }
+            return Shape.make(outDims);
+
         }
-        return outShape;
     }
 
     private BoundaryConditions getBoundaryConditions(BoundaryConditions[] arr, int k) {
         return ((arr == null || k < 0 || k >= arr.length) ? BoundaryConditions.NORMAL : arr[k]);
     }
 
-    private void buildIndex(int[] inputShape, BoundaryConditions[] bounds) {
-        int rank = inputShape.length;
+    private void buildIndex(Shape inputShape, BoundaryConditions[] bounds) {
+        int rank = inputShape.rank();
         index = new int[rank][];
         for (int k =0; k < rank; ++k) {
-            index[k] = BoundaryConditions.buildIndex(inputShape[k], -1, getBoundaryConditions(bounds, k));
+            index[k] = BoundaryConditions.buildIndex(inputShape.dimension(k),
+                    -1, getBoundaryConditions(bounds, k));
         }
     }
 
-    private void buildIndex(int[] inputShape, BoundaryConditions bounds) {
-        int rank = inputShape.length;
+    private void buildIndex(Shape inputShape, BoundaryConditions bounds) {
+        int rank = inputShape.rank();
         index = new int[rank][];
         for (int k =0; k < rank; ++k) {
-            index[k] = BoundaryConditions.buildIndex(inputShape[k], -1, bounds);
+            index[k] = BoundaryConditions.buildIndex(inputShape.dimension(k),
+                    -1, bounds);
         }
     }
 

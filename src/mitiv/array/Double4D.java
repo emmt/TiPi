@@ -27,6 +27,7 @@ package mitiv.array;
 
 import mitiv.array.impl.FlatDouble4D;
 import mitiv.array.impl.StriddenDouble4D;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
@@ -44,12 +45,12 @@ public abstract class Double4D extends Array4D implements DoubleArray {
         super(dim1,dim2,dim3,dim4);
     }
 
-    protected Double4D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    protected Double4D(int[] dims) {
+        super(dims);
     }
 
-    protected Double4D(int[] shape) {
-        super(shape, true);
+    protected Double4D(Shape shape) {
+        super(shape);
     }
 
     @Override
@@ -427,16 +428,6 @@ public abstract class Double4D extends Array4D implements DoubleArray {
         return this;
     }
 
-    /**
-     * Get the number of elements of a Java array.
-     * @param arr - A Java array (can be {@code null}.
-     * @return {@code 0}, if {@code arr} is {@code null}; {@code arr.length};
-     *         otherwise.
-     */
-    public static int numberOf(double[] arr) {
-        return (arr == null ? 0 : arr.length);
-    }
-
 
     /*=======================================================================*/
     /* ARRAY FACTORIES */
@@ -462,15 +453,15 @@ public abstract class Double4D extends Array4D implements DoubleArray {
      * <p>
      * This method creates a 4D array of double's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape - The list of dimensions of the 4D array (all dimensions
-     *                must at least 1).  This argument is not referenced by
-     *                the returned object and its contents can be modified
-     *                after calling this method.
+     * @param dims - The list of dimensions of the 4D array (all dimensions
+     *               must at least 1).  This argument is not referenced by
+     *               the returned object and its contents can be modified
+     *               after calling this method.
      * @return A new 4D array of double's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Double4D create(int[] shape) {
-        return new FlatDouble4D(shape, true);
+    public static Double4D create(int[] dims) {
+        return new FlatDouble4D(dims);
     }
 
     /**
@@ -478,8 +469,7 @@ public abstract class Double4D extends Array4D implements DoubleArray {
      * <p>
      * This method creates a 4D array of double's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape      - The list of dimensions of the 4D array (all
-     *                     dimensions must at least 1).
+     * @param shape      - The shape of the 4D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -488,8 +478,8 @@ public abstract class Double4D extends Array4D implements DoubleArray {
      * @return A new 4D array of double's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Double4D create(int[] shape, boolean cloneShape) {
-        return new FlatDouble4D(shape, cloneShape);
+    public static Double4D create(Shape shape) {
+        return new FlatDouble4D(shape);
     }
 
     /**
@@ -519,14 +509,14 @@ public abstract class Double4D extends Array4D implements DoubleArray {
      * <pre>arr.get(i1,i2,i3,i4) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*i4))]</pre>
      * with {@code arr} the returned 4D array.
      * @param data - The data to wrap in the 4D array.
-     * @param shape - The list of dimensions of the 4D array.  This argument is
+     * @param dims - The list of dimensions of the 4D array.  This argument is
      *                not referenced by the returned object and its contents
      *                can be modified after the call to this method.
      * @return A new 4D array of double's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Double4D wrap(double[] data, int[] shape) {
-        return new FlatDouble4D(data, shape, true);
+    public static Double4D wrap(double[] data, int[] dims) {
+        return new FlatDouble4D(data, dims);
     }
 
     /**
@@ -537,7 +527,7 @@ public abstract class Double4D extends Array4D implements DoubleArray {
      * <pre>arr.get(i1,i2,i3,i4) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*i4))]</pre>
      * with {@code arr} the returned 4D array.
      * @param data       - The data to wrap in the 4D array.
-     * @param shape      - The list of dimensions of the 4D array.
+     * @param shape      - The shape of the 4D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -546,8 +536,8 @@ public abstract class Double4D extends Array4D implements DoubleArray {
      * @return A new 4D array of double's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Double4D wrap(double[] data, int[] shape, boolean cloneShape) {
-        return new FlatDouble4D(data, shape, cloneShape);
+    public static Double4D wrap(double[] data, Shape shape) {
+        return new FlatDouble4D(data, shape);
     }
 
     /**

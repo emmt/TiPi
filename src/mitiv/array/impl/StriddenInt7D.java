@@ -50,9 +50,9 @@ public class StriddenInt7D extends Int7D {
     final int stride6;
     final int stride7;
 
-    public StriddenInt7D(int[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenInt7D(int[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 7) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

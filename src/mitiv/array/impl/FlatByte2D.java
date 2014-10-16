@@ -31,6 +31,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -44,23 +45,34 @@ public class FlatByte2D extends Byte2D {
     final byte[] data;
 
     public FlatByte2D(int dim1, int dim2) {
-        super(dim1,dim2);
+        super(dim1, dim2);
         data = new byte[number];
     }
 
-    public FlatByte2D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatByte2D(int[] dims) {
+        super(dims);
+        data = new byte[number];
+    }
+
+    public FlatByte2D(Shape shape) {
+        super(shape);
         data = new byte[number];
     }
 
     public FlatByte2D(byte[] arr, int dim1, int dim2) {
-        super(dim1,dim2);
+        super(dim1, dim2);
         checkSize(arr);
         data = arr;
     }
 
-    public FlatByte2D(byte[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatByte2D(byte[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+    }
+
+    public FlatByte2D(byte[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
     }
@@ -138,7 +150,7 @@ public class FlatByte2D extends Byte2D {
     @Override
     public void map(ByteFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

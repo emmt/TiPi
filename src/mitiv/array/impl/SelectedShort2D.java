@@ -65,7 +65,7 @@ public class SelectedShort2D extends Short2D {
     @Override
     public final void checkSanity() {
         int offsetMin = 0, offsetMax = 0, indexMin, indexMax;
-        indexMin = indexMax = idx1[0];
+         indexMin = indexMax = idx1[0];
         for (int i1 = 1; i1 < dim1; ++i1) {
             int index = idx1[i1];
             if (index < indexMin) indexMin = index;
@@ -73,7 +73,7 @@ public class SelectedShort2D extends Short2D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-        indexMin = indexMax = idx2[0];
+         indexMin = indexMax = idx2[0];
         for (int i2 = 1; i2 < dim2; ++i2) {
             int index = idx2[i2];
             if (index < indexMin) indexMin = index;
@@ -221,7 +221,8 @@ public class SelectedShort2D extends Short2D {
     @Override
     public Short1D slice(int idx, int dim) {
         if (dim < 0) {
-            dim += rank;
+            /* A negative index is taken with respect to the end. */
+            dim += 2;
         }
         if (dim != 0) {
             throw new IndexOutOfBoundsException("Dimension index out of bounds.");
@@ -256,14 +257,22 @@ public class SelectedShort2D extends Short2D {
     public Short2D view(Range rng1, Range rng2) {
         int[] idx1 = ArrayUtils.select(this.idx1, rng1);
         int[] idx2 = ArrayUtils.select(this.idx2, rng2);
-        return new SelectedShort2D(this.data, idx1, idx2);
+        if (idx1 == this.idx1 && idx2 == this.idx2) {
+            return this;
+        } else {
+            return new SelectedShort2D(this.data, idx1, idx2);
+        }
     }
 
     @Override
     public Short2D view(int[] sel1, int[] sel2) {
         int[] idx1 = ArrayUtils.select(this.idx1, sel1);
         int[] idx2 = ArrayUtils.select(this.idx2, sel2);
-        return new SelectedShort2D(this.data, idx1, idx2);
+        if (idx1 == this.idx1 && idx2 == this.idx2) {
+            return this;
+        } else {
+            return new SelectedShort2D(this.data, idx1, idx2);
+        }
     }
 
     @Override

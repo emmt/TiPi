@@ -63,7 +63,7 @@ public class SelectedLong1D extends Long1D {
     @Override
     public final void checkSanity() {
         int offsetMin = 0, offsetMax = 0, indexMin, indexMax;
-        indexMin = indexMax = idx1[0];
+         indexMin = indexMax = idx1[0];
         for (int i1 = 1; i1 < dim1; ++i1) {
             int index = idx1[i1];
             if (index < indexMin) indexMin = index;
@@ -176,7 +176,8 @@ public class SelectedLong1D extends Long1D {
     @Override
     public LongScalar slice(int idx, int dim) {
         if (dim < 0) {
-            dim += rank;
+            /* A negative index is taken with respect to the end. */
+            dim += 1;
         }
         if (dim != 0) {
             throw new IndexOutOfBoundsException("Dimension index out of bounds.");
@@ -187,13 +188,21 @@ public class SelectedLong1D extends Long1D {
     @Override
     public Long1D view(Range rng1) {
         int[] idx1 = ArrayUtils.select(this.idx1, rng1);
-        return new SelectedLong1D(this.data, idx1);
+        if (idx1 == this.idx1) {
+            return this;
+        } else {
+            return new SelectedLong1D(this.data, idx1);
+        }
     }
 
     @Override
     public Long1D view(int[] sel1) {
         int[] idx1 = ArrayUtils.select(this.idx1, sel1);
-        return new SelectedLong1D(this.data, idx1);
+        if (idx1 == this.idx1) {
+            return this;
+        } else {
+            return new SelectedLong1D(this.data, idx1);
+        }
     }
 
     @Override

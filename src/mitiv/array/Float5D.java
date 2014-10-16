@@ -27,6 +27,7 @@ package mitiv.array;
 
 import mitiv.array.impl.FlatFloat5D;
 import mitiv.array.impl.StriddenFloat5D;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
@@ -44,12 +45,12 @@ public abstract class Float5D extends Array5D implements FloatArray {
         super(dim1,dim2,dim3,dim4,dim5);
     }
 
-    protected Float5D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    protected Float5D(int[] dims) {
+        super(dims);
     }
 
-    protected Float5D(int[] shape) {
-        super(shape, true);
+    protected Float5D(Shape shape) {
+        super(shape);
     }
 
     @Override
@@ -469,16 +470,6 @@ public abstract class Float5D extends Array5D implements FloatArray {
         return Double5D.wrap(out, dim1, dim2, dim3, dim4, dim5);
     }
 
-    /**
-     * Get the number of elements of a Java array.
-     * @param arr - A Java array (can be {@code null}.
-     * @return {@code 0}, if {@code arr} is {@code null}; {@code arr.length};
-     *         otherwise.
-     */
-    public static int numberOf(float[] arr) {
-        return (arr == null ? 0 : arr.length);
-    }
-
 
     /*=======================================================================*/
     /* ARRAY FACTORIES */
@@ -505,15 +496,15 @@ public abstract class Float5D extends Array5D implements FloatArray {
      * <p>
      * This method creates a 5D array of float's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape - The list of dimensions of the 5D array (all dimensions
-     *                must at least 1).  This argument is not referenced by
-     *                the returned object and its contents can be modified
-     *                after calling this method.
+     * @param dims - The list of dimensions of the 5D array (all dimensions
+     *               must at least 1).  This argument is not referenced by
+     *               the returned object and its contents can be modified
+     *               after calling this method.
      * @return A new 5D array of float's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Float5D create(int[] shape) {
-        return new FlatFloat5D(shape, true);
+    public static Float5D create(int[] dims) {
+        return new FlatFloat5D(dims);
     }
 
     /**
@@ -521,8 +512,7 @@ public abstract class Float5D extends Array5D implements FloatArray {
      * <p>
      * This method creates a 5D array of float's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape      - The list of dimensions of the 5D array (all
-     *                     dimensions must at least 1).
+     * @param shape      - The shape of the 5D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -531,8 +521,8 @@ public abstract class Float5D extends Array5D implements FloatArray {
      * @return A new 5D array of float's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Float5D create(int[] shape, boolean cloneShape) {
-        return new FlatFloat5D(shape, cloneShape);
+    public static Float5D create(Shape shape) {
+        return new FlatFloat5D(shape);
     }
 
     /**
@@ -563,14 +553,14 @@ public abstract class Float5D extends Array5D implements FloatArray {
      * <pre>arr.get(i1,i2,i3,i4,i5) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*(i4 + shape[3]*i5)))]</pre>
      * with {@code arr} the returned 5D array.
      * @param data - The data to wrap in the 5D array.
-     * @param shape - The list of dimensions of the 5D array.  This argument is
+     * @param dims - The list of dimensions of the 5D array.  This argument is
      *                not referenced by the returned object and its contents
      *                can be modified after the call to this method.
      * @return A new 5D array of float's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Float5D wrap(float[] data, int[] shape) {
-        return new FlatFloat5D(data, shape, true);
+    public static Float5D wrap(float[] data, int[] dims) {
+        return new FlatFloat5D(data, dims);
     }
 
     /**
@@ -581,7 +571,7 @@ public abstract class Float5D extends Array5D implements FloatArray {
      * <pre>arr.get(i1,i2,i3,i4,i5) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*(i4 + shape[3]*i5)))]</pre>
      * with {@code arr} the returned 5D array.
      * @param data       - The data to wrap in the 5D array.
-     * @param shape      - The list of dimensions of the 5D array.
+     * @param shape      - The shape of the 5D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -590,8 +580,8 @@ public abstract class Float5D extends Array5D implements FloatArray {
      * @return A new 5D array of float's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Float5D wrap(float[] data, int[] shape, boolean cloneShape) {
-        return new FlatFloat5D(data, shape, cloneShape);
+    public static Float5D wrap(float[] data, Shape shape) {
+        return new FlatFloat5D(data, shape);
     }
 
     /**

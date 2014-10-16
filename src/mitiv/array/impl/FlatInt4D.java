@@ -32,6 +32,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
 import mitiv.random.IntGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -47,29 +48,44 @@ public class FlatInt4D extends Int4D {
     final int dim1dim2dim3;
 
     public FlatInt4D(int dim1, int dim2, int dim3, int dim4) {
-        super(dim1,dim2,dim3,dim4);
+        super(dim1, dim2, dim3, dim4);
         data = new int[number];
         dim1dim2 = dim1*dim2;
         dim1dim2dim3 = dim1dim2*dim3;
     }
 
-    public FlatInt4D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatInt4D(int[] dims) {
+        super(dims);
+        data = new int[number];
+        dim1dim2 = dim1*dim2;
+        dim1dim2dim3 = dim1dim2*dim3;
+    }
+
+    public FlatInt4D(Shape shape) {
+        super(shape);
         data = new int[number];
         dim1dim2 = dim1*dim2;
         dim1dim2dim3 = dim1dim2*dim3;
     }
 
     public FlatInt4D(int[] arr, int dim1, int dim2, int dim3, int dim4) {
-        super(dim1,dim2,dim3,dim4);
+        super(dim1, dim2, dim3, dim4);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
         dim1dim2dim3 = dim1dim2*dim3;
     }
 
-    public FlatInt4D(int[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatInt4D(int[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+        dim1dim2 = dim1*dim2;
+        dim1dim2dim3 = dim1dim2*dim3;
+    }
+
+    public FlatInt4D(int[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
@@ -149,7 +165,7 @@ public class FlatInt4D extends Int4D {
     @Override
     public void map(IntFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

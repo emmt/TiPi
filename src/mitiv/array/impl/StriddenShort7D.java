@@ -50,9 +50,9 @@ public class StriddenShort7D extends Short7D {
     final int stride6;
     final int stride7;
 
-    public StriddenShort7D(short[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenShort7D(short[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 7) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

@@ -49,9 +49,9 @@ public class StriddenDouble6D extends Double6D {
     final int stride5;
     final int stride6;
 
-    public StriddenDouble6D(double[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenDouble6D(double[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 6) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

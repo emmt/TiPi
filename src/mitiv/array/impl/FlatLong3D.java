@@ -32,6 +32,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.random.LongGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -46,26 +47,39 @@ public class FlatLong3D extends Long3D {
     final int dim1dim2;
 
     public FlatLong3D(int dim1, int dim2, int dim3) {
-        super(dim1,dim2,dim3);
+        super(dim1, dim2, dim3);
         data = new long[number];
         dim1dim2 = dim1*dim2;
     }
 
-    public FlatLong3D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatLong3D(int[] dims) {
+        super(dims);
+        data = new long[number];
+        dim1dim2 = dim1*dim2;
+    }
+
+    public FlatLong3D(Shape shape) {
+        super(shape);
         data = new long[number];
         dim1dim2 = dim1*dim2;
     }
 
     public FlatLong3D(long[] arr, int dim1, int dim2, int dim3) {
-        super(dim1,dim2,dim3);
+        super(dim1, dim2, dim3);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
     }
 
-    public FlatLong3D(long[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatLong3D(long[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+        dim1dim2 = dim1*dim2;
+    }
+
+    public FlatLong3D(long[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
         dim1dim2 = dim1*dim2;
@@ -144,7 +158,7 @@ public class FlatLong3D extends Long3D {
     @Override
     public void map(LongFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 

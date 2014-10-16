@@ -39,16 +39,13 @@ import mitiv.array.ArrayUtils;
 public class ${className} extends ${superName} {
     static final int order = NONSPECIFIC_ORDER;
     final ${type}[] data;
-    //# def k = 0
-    //# while ${k} < ${rank}
-    //#     eval k += 1
+    //# for k in 1:${rank}
     final int[] idx${k};
     //# end
 
     //# def argList = ${type}[] arr
-    //# def k = 0
-    //# while ${k} < ${rank}
-    //#     eval k += 1
+    //# def dimList =
+    //# for k in 1:${rank}
     //#     def argList = ${argList}, int[] idx${k}
     //#     if ${k} == 1
     //#         def dimList = idx${k}.length
@@ -67,9 +64,7 @@ public class ${className} extends ${superName} {
     public ${className}(${argList}) {
         super(${dimList});
         this.data = arr;
-        //# def k = 0
-        //# while ${k} < ${rank}
-        //#     eval k += 1
+        //# for k in 1:${rank}
         this.idx${k} = idx${k};
         //# end
     }
@@ -77,10 +72,8 @@ public class ${className} extends ${superName} {
     @Override
     public final void checkSanity() {
         int offsetMin = 0, offsetMax = 0, indexMin, indexMax;
-        //# def k = 0
-        //# while ${k} < ${rank}
-        //#     eval k += 1
-        indexMin = indexMax = idx${k}[0];
+        //# for k in 1:${rank}
+         indexMin = indexMax = idx${k}[0];
         for (int i${k} = 1; i${k} < dim${k}; ++i${k}) {
             int index = idx${k}[i${k}];
             if (index < indexMin) indexMin = index;
@@ -94,34 +87,27 @@ public class ${className} extends ${superName} {
         }
     }
 
-    //# if ${rank} == 0
-    //#     def decIndexList =
-    //#     def indexExpr = offset
-    //# else
-    //#     def k = 0
-    //#     while ${k} < ${rank}
-    //#         eval k += 1
-    //#         if ${k} == 1
-    //#             def indexExpr = idx${k}[i${k}]
-    //#             def decIndexList = int i${k}
-    //#         else
-    //#             def indexExpr = idx${k}[i${k}] + ${indexExpr}
-    //#             def decIndexList = ${decIndexList}, int i${k}
-    //#         end
+    //# for k in 1:${rank}
+    //#     if ${k} == 1
+    //#         def indexExpr = idx${k}[i${k}]
+    //#         def indexDecl = int i${k}
+    //#     else
+    //#         def indexExpr = idx${k}[i${k}] + ${indexExpr}
+    //#         def indexDecl = ${indexDecl}, int i${k}
     //#     end
     //# end
-    final int index(${decIndexList}) {
+    final int index(${indexDecl}) {
         return ${indexExpr};
     }
 
     @Override
-    public final ${type} get(${decIndexList}) {
+    public final ${type} get(${indexDecl}) {
         return data[${indexExpr}];
     }
 
     //# def argList = ${type} value
     //# if ${rank} >= 1
-    //#     def argList = ${decIndexList}, ${argList}
+    //#     def argList = ${indexDecl}, ${argList}
     //# end
     @Override
     public final void set(${argList}) {
@@ -134,7 +120,8 @@ public class ${className} extends ${superName} {
     }
 
     //#
-    //# // Templates for the row-major and column-major loops (will be expanded later).
+    //# // Templates for the row-major and column-major loops (to be
+    //# // expanded in commonLoops.javax).
     //# def CM1 := int j${j} = idx${j}[i${j}];
     //# def CM2 := int j${j} = idx${j}[i${j}] + j${jp};
     //# def RM1 := int j${k} = idx${k}[i${k}];
@@ -204,18 +191,14 @@ public class ${className} extends ${superName} {
         return out;
     }
 
-    //# if ${rank} >= 1
     @Override
     public ${reducedSuperName} slice(int idx) {
         //# if ${rank} == 1
         //#     def argList = this.data, this.idx1[idx]
         //# else
         //#     def argList = this.data
-        //#     def k = 1
-        //#     while ${k} < ${rank}
-        //#         def arg = idx${k}
-        //#         def argList = ${argList}, ${arg}
-        //#         eval k += 1
+        //#     for k in 1:${reducedRank}
+        //#         def argList = ${argList}, idx${k}
         //#     end
         int[] idx1 = this.idx1;
         int offset = idx${rank}[idx];
@@ -235,7 +218,8 @@ public class ${className} extends ${superName} {
     @Override
     public ${reducedSuperName} slice(int idx, int dim) {
         if (dim < 0) {
-            dim += rank;
+            /* A negative index is taken with respect to the end. */
+            dim += ${rank};
         }
         if (dim != 0) {
             throw new IndexOutOfBoundsException("Dimension index out of bounds.");
@@ -286,73 +270,56 @@ public class ${className} extends ${superName} {
         return new ${reducedClassName}(${argList});
     }
 
-    //# end
-    //#
-    //# if ${rank} >= 1
-    //#
-    //#     def select = ArrayUtils.select
-    //#
-    //#     def k = 0
-    //#     def argType = Range
-    //#     def argName = rng
-    //#     while ${k} < ${rank}
-    //#         eval k += 1
-    //#         def arg = ${argName}${k}
-    //#         if ${k} == 1
-    //#             def argList = ${arg}
-    //#             def decList = ${argType} ${arg}
-    //#         else
-    //#             def argList = ${argList}, ${arg}
-    //#             def decList = ${decList}, ${argType} ${arg}
-    //#         end
+    //# def argList = this.data
+    //# def noChanges =
+    //# for k in 1:${rank}
+    //#     def arg =
+    //#     def argList = ${argList}, idx${k}
+    //#     if ${k} == 1
+    //#         def decList = Range rng${k}
+    //#         def noChanges = idx${k} == this.idx${k}
+    //#     else
+    //#         def decList = ${decList}, Range rng${k}
+    //#         def noChanges = ${noChanges} && idx${k} == this.idx${k}
     //#     end
+    //# end
     @Override
     public ${superName} view(${decList}) {
-        //# def k = 0
-        //# def argName = idx
-        //# while ${k} < ${rank}
-        //#     eval k += 1
-        //#     if ${k} == 1
-        //#         def argList = ${argName}${k}
-        //#     else
-        //#         def argList = ${argList}, ${argName}${k}
-        //#     end
-        int[] idx${k} = ${select}(this.idx${k}, rng${k});
+        //# for k in 1:${rank}
+        int[] idx${k} = ArrayUtils.select(this.idx${k}, rng${k});
         //# end
-        return new ${className}(this.data, ${argList});
+        if (${noChanges}) {
+            return this;
+        } else {
+            return new ${className}(${argList});
+        }
     }
 
-    //#     def k = 0
-    //#     def argType = int[]
-    //#     def argName = sel
-    //#     while ${k} < ${rank}
-    //#         eval k += 1
-    //#         def arg = ${argName}${k}
-    //#         if ${k} == 1
-    //#             def argList = ${arg}
-    //#             def decList = ${argType} ${arg}
-    //#         else
-    //#             def argList = ${argList}, ${arg}
-    //#             def decList = ${decList}, ${argType} ${arg}
-    //#         end
+    //# def argList = this.data
+    //# def noChanges =
+    //# for k in 1:${rank}
+    //#     def arg =
+    //#     def argList = ${argList}, idx${k}
+    //#     if ${k} == 1
+    //#         def decList = int[] sel${k}
+    //#         def noChanges = idx${k} == this.idx${k}
+    //#     else
+    //#         def decList = ${decList}, int[] sel${k}
+    //#         def noChanges = ${noChanges} && idx${k} == this.idx${k}
     //#     end
+    //# end
     @Override
     public ${superName} view(${decList}) {
-        //# def k = 0
-        //# def argName = idx
-        //# while ${k} < ${rank}
-        //#     eval k += 1
-        //#     if ${k} == 1
-        //#         def argList = ${argName}${k}
-        //#     else
-        //#         def argList = ${argList}, ${argName}${k}
-        //#     end
-        int[] idx${k} = ${select}(this.idx${k}, sel${k});
+        //# for k in 1:${rank}
+        int[] idx${k} = ArrayUtils.select(this.idx${k}, sel${k});
         //# end
-        return new ${className}(this.data, ${argList});
+        if (${noChanges}) {
+            return this;
+        } else {
+            return new ${className}(${argList});
+        }
     }
 
-    //# end
     @Override
     public ${Type}1D as1D() {
         //# if ${rank} == 1

@@ -44,9 +44,9 @@ public class StriddenLong2D extends Long2D {
     final int stride1;
     final int stride2;
 
-    public StriddenLong2D(long[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenLong2D(long[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 2) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

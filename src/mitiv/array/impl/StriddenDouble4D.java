@@ -47,9 +47,9 @@ public class StriddenDouble4D extends Double4D {
     final int stride3;
     final int stride4;
 
-    public StriddenDouble4D(double[] arr, int offset, int[] stride, int[] shape) {
-        super(shape, true);
-        if (stride.length != rank) {
+    public StriddenDouble4D(double[] arr, int offset, int[] stride, int[] dims) {
+        super(dims);
+        if (stride.length != 4) {
             throw new IllegalArgumentException("There must be as many strides as the rank.");
         }
         this.data = arr;

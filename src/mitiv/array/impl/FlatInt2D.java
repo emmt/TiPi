@@ -31,6 +31,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
 import mitiv.random.IntGenerator;
+import mitiv.base.Shape;
 import mitiv.exception.NonConformableArrayException;
 
 
@@ -44,23 +45,34 @@ public class FlatInt2D extends Int2D {
     final int[] data;
 
     public FlatInt2D(int dim1, int dim2) {
-        super(dim1,dim2);
+        super(dim1, dim2);
         data = new int[number];
     }
 
-    public FlatInt2D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatInt2D(int[] dims) {
+        super(dims);
+        data = new int[number];
+    }
+
+    public FlatInt2D(Shape shape) {
+        super(shape);
         data = new int[number];
     }
 
     public FlatInt2D(int[] arr, int dim1, int dim2) {
-        super(dim1,dim2);
+        super(dim1, dim2);
         checkSize(arr);
         data = arr;
     }
 
-    public FlatInt2D(int[] arr, int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    public FlatInt2D(int[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+    }
+
+    public FlatInt2D(int[] arr, Shape shape) {
+        super(shape);
         checkSize(arr);
         data = arr;
     }
@@ -138,7 +150,7 @@ public class FlatInt2D extends Int2D {
     @Override
     public void map(IntFunction function) {
         for (int j = 0; j < number; ++j) {
-            data[j] *= function.apply(data[j]);
+            data[j] = function.apply(data[j]);
         }
     }
 
