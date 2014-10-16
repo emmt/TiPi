@@ -37,8 +37,8 @@ package mitiv.base;
  * @author Éric Thiébaut
  */
 public class Shape {
+    private final long number;
     private final int rank;
-    private final int number;
     private final int[] shape;
 
     /** The shape of any scalar object. */
@@ -64,6 +64,21 @@ public class Shape {
             return scalarShape;
         } else {
             return new Shape(shape, false);
+        }
+    }
+
+    /**
+     * Make a shape given the dimensions.
+     * @param shape - The list of dimensions ({@code null} is the same as
+     *                an array of length equals to {@code 0} and yields the
+     *                shape of a scalar object).
+     * @return A new shape built from the given dimensions.
+     */
+    public static Shape make(long[] shape) {
+        if (shape == null || shape.length == 0) {
+            return scalarShape;
+        } else {
+            return new Shape(shape);
         }
     }
 
@@ -196,7 +211,7 @@ public class Shape {
      * Get the number of elements of an object with that shape.
      * @return The number of elements of an object with that shape.
      */
-    public final int number() {
+    public final long number() {
         return number;
     }
 
@@ -231,7 +246,7 @@ public class Shape {
     /**
      * Build a Shape object given a list of dimensions.
      * <p>
-     * The only constructor of the class is private to prevent any
+     * The only constructors of the class are private to prevent any
      * uncontrolled construction.
      * <p>
      * @param shape - The list of dimensions.
@@ -239,14 +254,18 @@ public class Shape {
      *                dimensions will never change.
      */
     private Shape(int[] shape, boolean share) {
-        int number = 1;
+        final long LONG_MAX = Long.MAX_VALUE;
+        long number = 1L;
         rank = shape.length;
         if (share) {
             this.shape = shape;
             for (int k = 0; k < rank; ++k) {
                 int dim = shape[k];
                 if (dim < 1) {
-                    badDim();
+                    dimensionTooSmall();
+                }
+                if (dim > LONG_MAX/number) {
+                    numberOverflow();
                 }
                 number *= dim;
             }
@@ -255,7 +274,10 @@ public class Shape {
             for (int k = 0; k < rank; ++k) {
                 int dim = shape[k];
                 if (dim < 1) {
-                    badDim();
+                    dimensionTooSmall();
+                }
+                if (dim > LONG_MAX/number) {
+                    numberOverflow();
                 }
                 number *= dim;
                 this.shape[k] = dim;
@@ -264,8 +286,47 @@ public class Shape {
         this.number = number;
     }
 
-    private static void badDim() {
-        throw new IllegalArgumentException("Invalid dimension(s).");
+    /**
+     * Build a Shape object given a list of dimensions.
+     * <p>
+     * The only constructors of the class are private to prevent any
+     * uncontrolled construction.
+     * <p>
+     * @param shape - The list of dimensions.
+     */
+    private Shape(long[] shape) {
+        final long LONG_MAX = Long.MAX_VALUE;
+        final long INT_MAX = Integer.MAX_VALUE;
+        long number = 1L;
+        rank = shape.length;
+        this.shape = new int[rank];
+        for (int k = 0; k < rank; ++k) {
+            long dim = shape[k];
+            if (dim < 1L) {
+                dimensionTooSmall();
+            }
+            if (dim > INT_MAX) {
+                dimensionTooLarge();
+            }
+            if (dim > LONG_MAX/number) {
+                numberOverflow();
+            }
+            number *= dim;
+            this.shape[k] = (int)dim;
+        }
+        this.number = number;
+    }
+
+    private static void dimensionTooSmall() {
+        throw new IllegalArgumentException("Dimensions must be at least 1.");
+    }
+
+    private static void dimensionTooLarge() {
+        throw new IllegalArgumentException("Dimensions must be at most Integer.MAX_VALUE.");
+    }
+
+    private static void numberOverflow() {
+        throw new IllegalArgumentException("Total number of elements is too large.");
     }
 
 }
