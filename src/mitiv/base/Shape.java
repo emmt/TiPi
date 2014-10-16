@@ -28,7 +28,7 @@ package mitiv.base;
 
 
 /**
- * Shape object to store dimesnions list.
+ * Shape object to store list of dimensions.
  * <p>
  * A Shape object is unmodifiable and is used to store the dimensions of a
  * shaped object in an efficient way.  To preserve its properties, Shape
