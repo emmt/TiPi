@@ -25,26 +25,18 @@
 
 package mitiv.base;
 
-import java.util.Arrays;
-
 public class ArrayDescriptor implements Shaped, Typed {
     final int type;
-    final int rank;
-    final int[] shape;
     final int number;
+    final Shape shape;
 
     public ArrayDescriptor(int type, int[] shape, boolean copyShape) {
-        this.number = computeNumber(shape);
         this.type = type;
-        this.rank = shape.length;
-        if (copyShape) {
-            this.shape = new int[rank];
-            for (int r = 0; r < rank; ++r) {
-                this.shape[r] = shape[r];
-            }
-        } else {
-            this.shape = shape;
+        this.shape = Shape.make(shape);
+        if (this.shape.number() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Total number of elements is too large.");
         }
+        this.number = (int)this.shape.number();
     }
 
     /**
@@ -83,7 +75,7 @@ public class ArrayDescriptor implements Shaped, Typed {
 
     @Override
     public final int getRank() {
-        return rank;
+        return shape.rank();
     }
 
     @Override
@@ -92,13 +84,14 @@ public class ArrayDescriptor implements Shaped, Typed {
     }
 
     @Override
-    public final int[] cloneShape() {
-        return Arrays.copyOf(shape, shape.length);
+    public final int getDimension(int k) {
+        return shape.shape(k);
     }
 
     @Override
-    public final int getDimension(int k) {
-        return (k < rank ? shape[k] : 1);
+    public int[] cloneShape() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
