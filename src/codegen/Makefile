@@ -28,7 +28,9 @@ TYPED_OUTPUTS = $(ARRAY)@TYPE@Array.java $(ARRAY)@TYPE@Scalar.java \
                 $(foreach RANK,$(RANKS),$(ARRAY_IMPL)Selected@TYPE@$(RANK)D.java) \
                 $(foreach RANK,$(RANKS),$(ARRAY_IMPL)Stridden@TYPE@$(RANK)D.java)
 
-MISC_OUTPUTS = $(ARRAY)ArrayFactory.java $(BASE)Shape.java
+MISC_OUTPUTS = $(ARRAY)ArrayFactory.java \
+               $(ARRAY)ArrayUtils.java \
+               $(BASE)Shape.java
 
 BYTE_OUTPUTS = $(subst @TYPE@,Byte,$(TYPED_OUTPUTS))
 
@@ -78,6 +80,9 @@ $(ARRAY)ArrayFactory.java: ArrayFactory.javax
 	$(CODGER) -Dpackage=mitiv.array $< $@
 
 $(BASE)Shape.java: Shape.javax
+	$(CODGER) -Dpackage=mitiv.array $< $@
+
+$(ARRAY)ArrayUtils.java: ArrayUtils.javax common.javax
 	$(CODGER) -Dpackage=mitiv.array $< $@
 
 #-----------------------------------------------------------------------------
