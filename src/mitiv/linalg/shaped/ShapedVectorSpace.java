@@ -27,6 +27,7 @@ package mitiv.linalg.shaped;
 
 import mitiv.array.ShapedArray;
 import mitiv.base.ArrayDescriptor;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.Typed;
 import mitiv.exception.NonConformableArrayException;
@@ -40,28 +41,48 @@ public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, T
         this.descr = descr;
     }
 
-    ShapedVectorSpace(int type, int[] shape, boolean copyShape) {
-        this(new ArrayDescriptor(type, shape, copyShape));
+    ShapedVectorSpace(int type, Shape shape) {
+        this(new ArrayDescriptor(type, shape));
     }
 
     ShapedVectorSpace(int type, int[] shape) {
-        this(type, shape, true);
+        this(new ArrayDescriptor(type, shape));
     }
 
     ShapedVectorSpace(int type, int dim1) {
-        this(type, new int[]{dim1}, false);
+        this(type, Shape.make(dim1));
     }
 
     ShapedVectorSpace(int type, int dim1, int dim2) {
-        this(type, new int[]{dim1, dim2}, false);
+        this(type, Shape.make(dim1, dim2));
     }
 
     ShapedVectorSpace(int type, int dim1, int dim2, int dim3) {
-        this(type, new int[]{dim1, dim2, dim3}, false);
+        this(type, Shape.make(dim1, dim2, dim3));
     }
 
     ShapedVectorSpace(int type, int dim1, int dim2, int dim3, int dim4) {
-        this(type, new int[]{dim1, dim2, dim3, dim4}, false);
+        this(type, Shape.make(dim1, dim2, dim3, dim4));
+    }
+
+    ShapedVectorSpace(int type, int dim1, int dim2, int dim3, int dim4, int dim5) {
+        this(type, Shape.make(dim1, dim2, dim3, dim4, dim5));
+    }
+
+    ShapedVectorSpace(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
+        this(type, Shape.make(dim1, dim2, dim3, dim4, dim5, dim6));
+    }
+
+    ShapedVectorSpace(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
+        this(type, Shape.make(dim1, dim2, dim3, dim4, dim5, dim6, dim7));
+    }
+
+    ShapedVectorSpace(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
+        this(type, Shape.make(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8));
+    }
+
+    ShapedVectorSpace(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
+        this(type, Shape.make(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9));
     }
 
     @Override
@@ -80,8 +101,8 @@ public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, T
     }
 
     @Override
-    public final int[] cloneShape() {
-        return descr.cloneShape();
+    public final Shape getShape() {
+        return descr.getShape();
     }
 
     @Override

@@ -27,6 +27,7 @@ package mitiv.linalg.shaped;
 
 import mitiv.array.DoubleArray;
 import mitiv.array.ShapedArray;
+import mitiv.base.Shape;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.Vector;
 
@@ -38,12 +39,12 @@ import mitiv.linalg.Vector;
  */
 public class DoubleShapedVectorSpace extends ShapedVectorSpace {
 
-    public DoubleShapedVectorSpace(int[] shape, boolean copyShape) {
-        super(DOUBLE, shape, copyShape);
+    public DoubleShapedVectorSpace(Shape shape) {
+        super(DOUBLE, shape);
     }
 
-    public DoubleShapedVectorSpace(int[] shape) {
-        super(DOUBLE, shape);
+    public DoubleShapedVectorSpace(int[] dims) {
+        super(DOUBLE, dims);
     }
 
     public DoubleShapedVectorSpace(int dim1) {

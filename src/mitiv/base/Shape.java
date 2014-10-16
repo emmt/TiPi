@@ -39,7 +39,7 @@ package mitiv.base;
 public class Shape {
     private final long number;
     private final int rank;
-    private final int[] shape;
+    private final int[] dims;
 
     /** The shape of any scalar object. */
     private final static Shape scalarShape = new Shape(new int[]{}, true);
@@ -54,31 +54,31 @@ public class Shape {
 
     /**
      * Make a shape given the dimensions.
-     * @param shape - The list of dimensions ({@code null} is the same as
-     *                an array of length equals to {@code 0} and yields the
-     *                shape of a scalar object).
+     * @param dims - The list of dimensions ({@code null} is the same as
+     *               an array of length equals to {@code 0} and yields the
+     *               shape of a scalar object).
      * @return A new shape built from the given dimensions.
      */
-    public static Shape make(int[] shape) {
-        if (shape == null || shape.length == 0) {
+    public static Shape make(int[] dims) {
+        if (dims == null || dims.length == 0) {
             return scalarShape;
         } else {
-            return new Shape(shape, false);
+            return new Shape(dims, false);
         }
     }
 
     /**
      * Make a shape given the dimensions.
-     * @param shape - The list of dimensions ({@code null} is the same as
-     *                an array of length equals to {@code 0} and yields the
-     *                shape of a scalar object).
+     * @param dims - The list of dimensions ({@code null} is the same as
+     *               an array of length equals to {@code 0} and yields the
+     *               shape of a scalar object).
      * @return A new shape built from the given dimensions.
      */
-    public static Shape make(long[] shape) {
-        if (shape == null || shape.length == 0) {
+    public static Shape make(long[] dims) {
+        if (dims == null || dims.length == 0) {
             return scalarShape;
         } else {
-            return new Shape(shape);
+            return new Shape(dims);
         }
     }
 
@@ -220,8 +220,24 @@ public class Shape {
      * @param k - The index of the dimension.
      * @return The length of the {@code (k+1)}-th dimension.
      */
-    public final int shape(int k) {
-        return shape[k];
+    public final int dimension(int k) {
+        return dims[k];
+    }
+
+    /**
+     * Copy the dimension list.
+     * @return A copy of the dimension list.
+     */
+    public final int[] copyDimensions() {
+        if (rank == 0) {
+            return dims;
+        } else {
+            int[] copy = new int[rank];
+            for (int k = 0; k < rank; ++k) {
+                copy[k] = dims[k];
+            }
+            return copy;
+        }
     }
 
     /**
@@ -230,12 +246,12 @@ public class Shape {
      * @return A boolean result.
      */
     public final boolean equals(Shape other) {
-        if (other != this && other.shape != this.shape) {
+        if (other != this && other.dims != this.dims) {
             if (this.rank != other.rank) {
                 return false;
             }
             for (int k = 0; k < rank; ++k) {
-                if (other.shape[k] != this.shape[k]) {
+                if (other.dims[k] != this.dims[k]) {
                     return false;
                 }
             }
@@ -249,18 +265,18 @@ public class Shape {
      * The only constructors of the class are private to prevent any
      * uncontrolled construction.
      * <p>
-     * @param shape - The list of dimensions.
+     * @param dims  - The list of dimensions.
      * @param share - The caller guarantees that the contents of the list of
      *                dimensions will never change.
      */
-    private Shape(int[] shape, boolean share) {
+    private Shape(int[] dims, boolean share) {
         final long LONG_MAX = Long.MAX_VALUE;
         long number = 1L;
-        rank = shape.length;
+        rank = dims.length;
         if (share) {
-            this.shape = shape;
+            this.dims = dims;
             for (int k = 0; k < rank; ++k) {
-                int dim = shape[k];
+                int dim = dims[k];
                 if (dim < 1) {
                     dimensionTooSmall();
                 }
@@ -270,9 +286,9 @@ public class Shape {
                 number *= dim;
             }
         } else {
-            this.shape = new int[rank];
+            this.dims = new int[rank];
             for (int k = 0; k < rank; ++k) {
-                int dim = shape[k];
+                int dim = dims[k];
                 if (dim < 1) {
                     dimensionTooSmall();
                 }
@@ -280,7 +296,7 @@ public class Shape {
                     numberOverflow();
                 }
                 number *= dim;
-                this.shape[k] = dim;
+                this.dims[k] = dim;
             }
         }
         this.number = number;
@@ -292,16 +308,16 @@ public class Shape {
      * The only constructors of the class are private to prevent any
      * uncontrolled construction.
      * <p>
-     * @param shape - The list of dimensions.
+     * @param dims - The list of dimensions.
      */
-    private Shape(long[] shape) {
+    private Shape(long[] dims) {
         final long LONG_MAX = Long.MAX_VALUE;
         final long INT_MAX = Integer.MAX_VALUE;
         long number = 1L;
-        rank = shape.length;
-        this.shape = new int[rank];
+        rank = dims.length;
+        this.dims = new int[rank];
         for (int k = 0; k < rank; ++k) {
-            long dim = shape[k];
+            long dim = dims[k];
             if (dim < 1L) {
                 dimensionTooSmall();
             }
@@ -312,7 +328,7 @@ public class Shape {
                 numberOverflow();
             }
             number *= dim;
-            this.shape[k] = (int)dim;
+            this.dims[k] = (int)dim;
         }
         this.number = number;
     }

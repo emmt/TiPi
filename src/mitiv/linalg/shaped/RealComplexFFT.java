@@ -24,6 +24,7 @@
  */
 
 package mitiv.linalg.shaped;
+import mitiv.base.Shape;
 import mitiv.linalg.LinearOperator;
 import mitiv.linalg.Vector;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
@@ -45,14 +46,14 @@ public class RealComplexFFT extends ShapedLinearOperator {
     private float[] tempFloat = null;
     private final int number; // number of values in the direct space
     private final int rank; // number of dimensions
-    private final int[] shape; // shape in the direct space
+    private final Shape shape; // shape in the direct space
     private final boolean single;
     public boolean useSystemArrayCopy = false;
 
     public RealComplexFFT(ShapedVectorSpace space) {
         super(space, complexSpace(space));
         this.number = space.getNumber();
-        this.shape = space.cloneShape();
+        this.shape = space.getShape();
         single = (space.getType() == FLOAT);
         this.rank = space.getRank();
         if (this.rank < 1 || this.rank > 3) {
@@ -62,13 +63,18 @@ public class RealComplexFFT extends ShapedLinearOperator {
 
     static private ShapedVectorSpace complexSpace(ShapedVectorSpace realSpace) {
         ShapedVectorSpace complexSpace;
-        int[] complexShape = realSpace.cloneShape();
-        complexShape[0] *= 2;
+        Shape realShape =realSpace.getShape();
+        if (realSpace.getRank() < 1) {
+            throw new IllegalArgumentException("Rank must be at least 1 for the FFT.");
+        }
+        int[] complexDims = realShape.copyDimensions();
+        complexDims[0] *= 2;
+        Shape complexShape = Shape.make(complexDims);
         int type = realSpace.getType();
         if (type == FLOAT) {
-            complexSpace = new FloatShapedVectorSpace(complexShape, false);
+            complexSpace = new FloatShapedVectorSpace(complexShape);
         } else if (type == DOUBLE) {
-            complexSpace = new DoubleShapedVectorSpace(complexShape, false);
+            complexSpace = new DoubleShapedVectorSpace(complexShape);
         } else {
             throw new IllegalArgumentException("Only float or double supported");
         }
@@ -82,11 +88,11 @@ public class RealComplexFFT extends ShapedLinearOperator {
             if (xform == null) {
                 /* Create low-level FFT operator. */
                 if (rank == 1) {
-                    xform = new FloatFFT_1D(shape[0]);
+                    xform = new FloatFFT_1D(shape.dimension(0));
                 } else if (rank == 2) {
-                    xform = new FloatFFT_2D(shape[1], shape[0]);
+                    xform = new FloatFFT_2D(shape.dimension(1), shape.dimension(0));
                 } else {
-                    xform = new FloatFFT_3D(shape[2], shape[1], shape[0]);
+                    xform = new FloatFFT_3D(shape.dimension(2), shape.dimension(1), shape.dimension(0));
                 }
             }
             if (tempFloat == null) {
@@ -152,11 +158,11 @@ public class RealComplexFFT extends ShapedLinearOperator {
             if (xform == null) {
                 /* Create low-level FFT operator. */
                 if (rank == 1) {
-                    xform = new DoubleFFT_1D(shape[0]);
+                    xform = new DoubleFFT_1D(shape.dimension(0));
                 } else if (rank == 2) {
-                    xform = new DoubleFFT_2D(shape[1], shape[0]);
+                    xform = new DoubleFFT_2D(shape.dimension(1), shape.dimension(0));
                 } else {
-                    xform = new DoubleFFT_3D(shape[2], shape[1], shape[0]);
+                    xform = new DoubleFFT_3D(shape.dimension(2), shape.dimension(1), shape.dimension(0));
                 }
             }
             if (tempDouble == null) {

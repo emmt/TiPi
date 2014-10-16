@@ -30,9 +30,23 @@ public class ArrayDescriptor implements Shaped, Typed {
     final int number;
     final Shape shape;
 
-    public ArrayDescriptor(int type, int[] shape, boolean copyShape) {
+    /**
+     * Create array descriptor.
+     * @param type - The element type of the array.
+     * @param shape - The dimension list of the array.
+     */
+    public ArrayDescriptor(int type, int[] shape) {
+        this(type, Shape.make(shape));
+    }
+
+    /**
+     * Create array descriptor.
+     * @param type - The element type of the array.
+     * @param shape - The shape of the array.
+     */
+    public ArrayDescriptor(int type, Shape shape) {
         this.type = type;
-        this.shape = Shape.make(shape);
+        this.shape = shape;
         if (this.shape.number() > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Total number of elements is too large.");
         }
@@ -85,13 +99,12 @@ public class ArrayDescriptor implements Shaped, Typed {
 
     @Override
     public final int getDimension(int k) {
-        return shape.shape(k);
+        return shape.dimension(k);
     }
 
     @Override
-    public int[] cloneShape() {
-        // TODO Auto-generated method stub
-        return null;
+    public final Shape getShape() {
+        return shape;
     }
 
 }

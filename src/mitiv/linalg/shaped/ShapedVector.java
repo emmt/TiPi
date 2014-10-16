@@ -27,6 +27,7 @@ package mitiv.linalg.shaped;
 
 import mitiv.array.ShapedArray;
 import mitiv.base.ArrayDescriptor;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.Typed;
 import mitiv.linalg.Vector;
@@ -66,8 +67,8 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
     }
 
     @Override
-    public final int[] cloneShape() {
-        return descr.cloneShape();
+    public final Shape getShape() {
+        return descr.getShape();
     }
 
     @Override

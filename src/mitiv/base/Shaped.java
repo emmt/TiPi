@@ -92,11 +92,11 @@ public interface Shaped {
     public int getDimension(int k);
 
     /**
-     * Get a copy of the shape (that is the list of dimensions) of the shaped object.
+     * Get the shape of the shaped object.
      *
-     * @return A list of dimensions.
+     * @return The shape of the object.
      */
-    public int[] cloneShape();
+    public Shape getShape();
 
 }
 
