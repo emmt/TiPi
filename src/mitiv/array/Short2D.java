@@ -31,6 +31,7 @@ import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.ShortGenerator;
 
 
@@ -342,6 +343,22 @@ public abstract class Short2D extends Array2D implements ShortArray {
             }
         }
         return Double2D.wrap(out, dim1, dim2);
+    }
+
+    @Override
+    public Short2D copy() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        // TODO
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        // TODO
     }
 
 

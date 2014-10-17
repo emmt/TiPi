@@ -31,6 +31,7 @@ import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.DoubleGenerator;
 
 
@@ -552,6 +553,22 @@ public abstract class Double7D extends Array7D implements DoubleArray {
     @Override
     public Double7D toDouble() {
         return this;
+    }
+
+    @Override
+    public Double7D copy() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        // TODO
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        // TODO
     }
 
 

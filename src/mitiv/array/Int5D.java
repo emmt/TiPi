@@ -31,6 +31,7 @@ import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.IntGenerator;
 
 
@@ -468,6 +469,22 @@ public abstract class Int5D extends Array5D implements IntArray {
             }
         }
         return Double5D.wrap(out, dim1, dim2, dim3, dim4, dim5);
+    }
+
+    @Override
+    public Int5D copy() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        // TODO
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        // TODO
     }
 
 

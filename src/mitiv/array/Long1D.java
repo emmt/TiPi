@@ -31,6 +31,7 @@ import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.LongGenerator;
 
 
@@ -249,6 +250,22 @@ public abstract class Long1D extends Array1D implements LongArray {
             out[++i] = (double)get(i1);
         }
         return Double1D.wrap(out, dim1);
+    }
+
+    @Override
+    public Long1D copy() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        // TODO
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        // TODO
     }
 
 

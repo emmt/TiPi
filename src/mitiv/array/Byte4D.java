@@ -31,6 +31,7 @@ import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.ByteGenerator;
 
 
@@ -426,6 +427,22 @@ public abstract class Byte4D extends Array4D implements ByteArray {
             }
         }
         return Double4D.wrap(out, dim1, dim2, dim3, dim4);
+    }
+
+    @Override
+    public Byte4D copy() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        // TODO
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        // TODO
     }
 
 

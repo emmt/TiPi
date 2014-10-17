@@ -52,6 +52,7 @@ import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.${Type}Function;
 import mitiv.base.mapping.${Type}Scanner;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.${Type}Generator;
 
 //# def k = 1
@@ -307,6 +308,22 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
     }
     //#     eval dst += 1
     //# end
+
+    @Override
+    public ${className} copy() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        // TODO
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        // TODO
+    }
 
 
     /*=======================================================================*/

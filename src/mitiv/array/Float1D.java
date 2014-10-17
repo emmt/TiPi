@@ -31,6 +31,7 @@ import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.FloatGenerator;
 
 
@@ -249,6 +250,22 @@ public abstract class Float1D extends Array1D implements FloatArray {
             out[++i] = (double)get(i1);
         }
         return Double1D.wrap(out, dim1);
+    }
+
+    @Override
+    public Float1D copy() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        // TODO
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        // TODO
     }
 
 

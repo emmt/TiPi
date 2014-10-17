@@ -31,6 +31,7 @@ import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.IntGenerator;
 
 
@@ -342,6 +343,22 @@ public abstract class Int2D extends Array2D implements IntArray {
             }
         }
         return Double2D.wrap(out, dim1, dim2);
+    }
+
+    @Override
+    public Int2D copy() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        // TODO
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        // TODO
     }
 
 

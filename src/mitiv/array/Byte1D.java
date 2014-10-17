@@ -31,6 +31,7 @@ import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.ByteGenerator;
 
 
@@ -249,6 +250,22 @@ public abstract class Byte1D extends Array1D implements ByteArray {
             out[++i] = (double)get(i1);
         }
         return Double1D.wrap(out, dim1);
+    }
+
+    @Override
+    public Byte1D copy() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        // TODO
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        // TODO
     }
 
 

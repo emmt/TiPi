@@ -31,6 +31,7 @@ import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.LongGenerator;
 
 
@@ -594,6 +595,22 @@ public abstract class Long8D extends Array8D implements LongArray {
             }
         }
         return Double8D.wrap(out, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+    }
+
+    @Override
+    public Long8D copy() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        // TODO
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        // TODO
     }
 
 

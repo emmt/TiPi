@@ -31,6 +31,7 @@ import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.DoubleGenerator;
 
 
@@ -426,6 +427,22 @@ public abstract class Double4D extends Array4D implements DoubleArray {
     @Override
     public Double4D toDouble() {
         return this;
+    }
+
+    @Override
+    public Double4D copy() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        // TODO
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        // TODO
     }
 
 

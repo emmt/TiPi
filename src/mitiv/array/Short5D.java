@@ -31,6 +31,7 @@ import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.ShortGenerator;
 
 
@@ -468,6 +469,22 @@ public abstract class Short5D extends Array5D implements ShortArray {
             }
         }
         return Double5D.wrap(out, dim1, dim2, dim3, dim4, dim5);
+    }
+
+    @Override
+    public Short5D copy() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        // TODO
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        // TODO
     }
 
 
