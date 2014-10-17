@@ -218,7 +218,6 @@ public class FiniteDifferenceOperator extends LinearOperator {
                 outDims[k + 1] = inputShape.dimension(k);
             }
             return Shape.make(outDims);
-
         }
     }
 
