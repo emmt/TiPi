@@ -228,8 +228,7 @@ public abstract class Array9D implements ShapedArray {
      *         {@link Shaped#ROW_MAJOR}, or {@link Shaped#NONSPECIFIC_ORDER}.
      * @throws IndexOutOfBoundsException
      */
-    public static int checkViewStrides(int number, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9,
-            int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int stride8, int stride9) {
+    public static int checkViewStrides(int number, int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int stride8, int stride9, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         int imin, imax, itmp;
         itmp = (dim1 - 1)*stride1;
         if (itmp >= 0) {

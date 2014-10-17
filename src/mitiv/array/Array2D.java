@@ -165,8 +165,7 @@ public abstract class Array2D implements ShapedArray {
      *         {@link Shaped#ROW_MAJOR}, or {@link Shaped#NONSPECIFIC_ORDER}.
      * @throws IndexOutOfBoundsException
      */
-    public static int checkViewStrides(int number, int dim1, int dim2,
-            int offset, int stride1, int stride2) {
+    public static int checkViewStrides(int number, int offset, int stride1, int stride2, int dim1, int dim2) {
         int imin, imax, itmp;
         itmp = (dim1 - 1)*stride1;
         if (itmp >= 0) {
