@@ -240,58 +240,190 @@ public class FlatFloat9D extends Float9D {
 
     @Override
     public Float8D slice(int idx, int dim) {
+        int sliceOffset;
+        int sliceStride1, sliceStride2, sliceStride3, sliceStride4, sliceStride5, sliceStride6, sliceStride7, sliceStride8;
+        int sliceDim1, sliceDim2, sliceDim3, sliceDim4, sliceDim5, sliceDim6, sliceDim7, sliceDim8;
         if (dim < 0) {
             /* A negative index is taken with respect to the end. */
             dim += 9;
         }
-        switch (dim) {
-        case 0:
-            return new StriddenFloat8D(data,
-                    idx, // offset
-                    dim1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4, dim1dim2dim3dim4dim5, dim1dim2dim3dim4dim5dim6, dim1dim2dim3dim4dim5dim6dim7, dim1dim2dim3dim4dim5dim6dim7dim8, // strides
-                    dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9); // dimensions
-        case 1:
-            return new StriddenFloat8D(data,
-                    dim1*idx, // offset
-                    1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4, dim1dim2dim3dim4dim5, dim1dim2dim3dim4dim5dim6, dim1dim2dim3dim4dim5dim6dim7, dim1dim2dim3dim4dim5dim6dim7dim8, // strides
-                    dim1, dim3, dim4, dim5, dim6, dim7, dim8, dim9); // dimensions
-        case 2:
-            return new StriddenFloat8D(data,
-                    dim1dim2*idx, // offset
-                    1, dim1, dim1dim2dim3, dim1dim2dim3dim4, dim1dim2dim3dim4dim5, dim1dim2dim3dim4dim5dim6, dim1dim2dim3dim4dim5dim6dim7, dim1dim2dim3dim4dim5dim6dim7dim8, // strides
-                    dim1, dim2, dim4, dim5, dim6, dim7, dim8, dim9); // dimensions
-        case 3:
-            return new StriddenFloat8D(data,
-                    dim1dim2dim3*idx, // offset
-                    1, dim1, dim1dim2, dim1dim2dim3dim4, dim1dim2dim3dim4dim5, dim1dim2dim3dim4dim5dim6, dim1dim2dim3dim4dim5dim6dim7, dim1dim2dim3dim4dim5dim6dim7dim8, // strides
-                    dim1, dim2, dim3, dim5, dim6, dim7, dim8, dim9); // dimensions
-        case 4:
-            return new StriddenFloat8D(data,
-                    dim1dim2dim3dim4*idx, // offset
-                    1, dim1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4dim5, dim1dim2dim3dim4dim5dim6, dim1dim2dim3dim4dim5dim6dim7, dim1dim2dim3dim4dim5dim6dim7dim8, // strides
-                    dim1, dim2, dim3, dim4, dim6, dim7, dim8, dim9); // dimensions
-        case 5:
-            return new StriddenFloat8D(data,
-                    dim1dim2dim3dim4dim5*idx, // offset
-                    1, dim1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4, dim1dim2dim3dim4dim5dim6, dim1dim2dim3dim4dim5dim6dim7, dim1dim2dim3dim4dim5dim6dim7dim8, // strides
-                    dim1, dim2, dim3, dim4, dim5, dim7, dim8, dim9); // dimensions
-        case 6:
-            return new StriddenFloat8D(data,
-                    dim1dim2dim3dim4dim5dim6*idx, // offset
-                    1, dim1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4, dim1dim2dim3dim4dim5, dim1dim2dim3dim4dim5dim6dim7, dim1dim2dim3dim4dim5dim6dim7dim8, // strides
-                    dim1, dim2, dim3, dim4, dim5, dim6, dim8, dim9); // dimensions
-        case 7:
-            return new StriddenFloat8D(data,
-                    dim1dim2dim3dim4dim5dim6dim7*idx, // offset
-                    1, dim1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4, dim1dim2dim3dim4dim5, dim1dim2dim3dim4dim5dim6, dim1dim2dim3dim4dim5dim6dim7dim8, // strides
-                    dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim9); // dimensions
-        case 8:
-            return new StriddenFloat8D(data,
-                    dim1dim2dim3dim4dim5dim6dim7dim8*idx, // offset
-                    1, dim1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4, dim1dim2dim3dim4dim5, dim1dim2dim3dim4dim5dim6, dim1dim2dim3dim4dim5dim6dim7, // strides
-                    dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8); // dimensions
+        if (dim == 0) {
+            /* Slice along 1st dimension. */
+            sliceOffset = idx;
+            sliceStride1 = dim1;
+            sliceStride2 = dim1dim2;
+            sliceStride3 = dim1dim2dim3;
+            sliceStride4 = dim1dim2dim3dim4;
+            sliceStride5 = dim1dim2dim3dim4dim5;
+            sliceStride6 = dim1dim2dim3dim4dim5dim6;
+            sliceStride7 = dim1dim2dim3dim4dim5dim6dim7;
+            sliceStride8 = dim1dim2dim3dim4dim5dim6dim7dim8;
+            sliceDim1 = dim2;
+            sliceDim2 = dim3;
+            sliceDim3 = dim4;
+            sliceDim4 = dim5;
+            sliceDim5 = dim6;
+            sliceDim6 = dim7;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 1) {
+            /* Slice along 2nd dimension. */
+            sliceOffset = dim1*idx;
+            sliceStride1 = 1;
+            sliceStride2 = dim1dim2;
+            sliceStride3 = dim1dim2dim3;
+            sliceStride4 = dim1dim2dim3dim4;
+            sliceStride5 = dim1dim2dim3dim4dim5;
+            sliceStride6 = dim1dim2dim3dim4dim5dim6;
+            sliceStride7 = dim1dim2dim3dim4dim5dim6dim7;
+            sliceStride8 = dim1dim2dim3dim4dim5dim6dim7dim8;
+            sliceDim1 = dim1;
+            sliceDim2 = dim3;
+            sliceDim3 = dim4;
+            sliceDim4 = dim5;
+            sliceDim5 = dim6;
+            sliceDim6 = dim7;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 2) {
+            /* Slice along 3rd dimension. */
+            sliceOffset = dim1dim2*idx;
+            sliceStride1 = 1;
+            sliceStride2 = dim1;
+            sliceStride3 = dim1dim2dim3;
+            sliceStride4 = dim1dim2dim3dim4;
+            sliceStride5 = dim1dim2dim3dim4dim5;
+            sliceStride6 = dim1dim2dim3dim4dim5dim6;
+            sliceStride7 = dim1dim2dim3dim4dim5dim6dim7;
+            sliceStride8 = dim1dim2dim3dim4dim5dim6dim7dim8;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim4;
+            sliceDim4 = dim5;
+            sliceDim5 = dim6;
+            sliceDim6 = dim7;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 3) {
+            /* Slice along 4th dimension. */
+            sliceOffset = dim1dim2dim3*idx;
+            sliceStride1 = 1;
+            sliceStride2 = dim1;
+            sliceStride3 = dim1dim2;
+            sliceStride4 = dim1dim2dim3dim4;
+            sliceStride5 = dim1dim2dim3dim4dim5;
+            sliceStride6 = dim1dim2dim3dim4dim5dim6;
+            sliceStride7 = dim1dim2dim3dim4dim5dim6dim7;
+            sliceStride8 = dim1dim2dim3dim4dim5dim6dim7dim8;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim5;
+            sliceDim5 = dim6;
+            sliceDim6 = dim7;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 4) {
+            /* Slice along 5th dimension. */
+            sliceOffset = dim1dim2dim3dim4*idx;
+            sliceStride1 = 1;
+            sliceStride2 = dim1;
+            sliceStride3 = dim1dim2;
+            sliceStride4 = dim1dim2dim3;
+            sliceStride5 = dim1dim2dim3dim4dim5;
+            sliceStride6 = dim1dim2dim3dim4dim5dim6;
+            sliceStride7 = dim1dim2dim3dim4dim5dim6dim7;
+            sliceStride8 = dim1dim2dim3dim4dim5dim6dim7dim8;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim4;
+            sliceDim5 = dim6;
+            sliceDim6 = dim7;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 5) {
+            /* Slice along 6th dimension. */
+            sliceOffset = dim1dim2dim3dim4dim5*idx;
+            sliceStride1 = 1;
+            sliceStride2 = dim1;
+            sliceStride3 = dim1dim2;
+            sliceStride4 = dim1dim2dim3;
+            sliceStride5 = dim1dim2dim3dim4;
+            sliceStride6 = dim1dim2dim3dim4dim5dim6;
+            sliceStride7 = dim1dim2dim3dim4dim5dim6dim7;
+            sliceStride8 = dim1dim2dim3dim4dim5dim6dim7dim8;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim4;
+            sliceDim5 = dim5;
+            sliceDim6 = dim7;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 6) {
+            /* Slice along 7th dimension. */
+            sliceOffset = dim1dim2dim3dim4dim5dim6*idx;
+            sliceStride1 = 1;
+            sliceStride2 = dim1;
+            sliceStride3 = dim1dim2;
+            sliceStride4 = dim1dim2dim3;
+            sliceStride5 = dim1dim2dim3dim4;
+            sliceStride6 = dim1dim2dim3dim4dim5;
+            sliceStride7 = dim1dim2dim3dim4dim5dim6dim7;
+            sliceStride8 = dim1dim2dim3dim4dim5dim6dim7dim8;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim4;
+            sliceDim5 = dim5;
+            sliceDim6 = dim6;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 7) {
+            /* Slice along 8th dimension. */
+            sliceOffset = dim1dim2dim3dim4dim5dim6dim7*idx;
+            sliceStride1 = 1;
+            sliceStride2 = dim1;
+            sliceStride3 = dim1dim2;
+            sliceStride4 = dim1dim2dim3;
+            sliceStride5 = dim1dim2dim3dim4;
+            sliceStride6 = dim1dim2dim3dim4dim5;
+            sliceStride7 = dim1dim2dim3dim4dim5dim6;
+            sliceStride8 = dim1dim2dim3dim4dim5dim6dim7dim8;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim4;
+            sliceDim5 = dim5;
+            sliceDim6 = dim6;
+            sliceDim7 = dim7;
+            sliceDim8 = dim9;
+        } else if (dim == 8) {
+            /* Slice along 9th dimension. */
+            sliceOffset = dim1dim2dim3dim4dim5dim6dim7dim8*idx;
+            sliceStride1 = 1;
+            sliceStride2 = dim1;
+            sliceStride3 = dim1dim2;
+            sliceStride4 = dim1dim2dim3;
+            sliceStride5 = dim1dim2dim3dim4;
+            sliceStride6 = dim1dim2dim3dim4dim5;
+            sliceStride7 = dim1dim2dim3dim4dim5dim6;
+            sliceStride8 = dim1dim2dim3dim4dim5dim6dim7;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim4;
+            sliceDim5 = dim5;
+            sliceDim6 = dim6;
+            sliceDim7 = dim7;
+            sliceDim8 = dim8;
+        } else {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
         }
-        throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        return new StriddenFloat8D(data, sliceOffset,
+                sliceStride1, sliceStride2, sliceStride3, sliceStride4, sliceStride5, sliceStride6, sliceStride7, sliceStride8,
+                sliceDim1, sliceDim2, sliceDim3, sliceDim4, sliceDim5, sliceDim6, sliceDim7, sliceDim8);
     }
 
     @Override

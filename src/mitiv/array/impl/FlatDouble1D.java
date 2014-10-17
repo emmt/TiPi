@@ -183,14 +183,18 @@ public class FlatDouble1D extends Double1D {
 
     @Override
     public DoubleScalar slice(int idx, int dim) {
+        int sliceOffset;
         if (dim < 0) {
             /* A negative index is taken with respect to the end. */
             dim += 1;
         }
         if (dim == 0) {
-            return new DoubleScalar(data, idx);
+            /* Slice along 1st dimension. */
+            sliceOffset = idx;
+        } else {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
         }
-        throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        return new DoubleScalar(data, sliceOffset);
     }
 
     @Override

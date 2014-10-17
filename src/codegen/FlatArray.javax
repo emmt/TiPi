@@ -354,46 +354,65 @@ public class ${className} extends ${superName} {
 
     @Override
     public ${reducedSuperName} slice(int idx, int dim) {
+        //# for k in 1:${reducedRank}
+        //#     if ${k} == 1
+        //#         def reducedDimList = sliceDim${k}
+        //#         def reducedStrideList = sliceStride${k}
+        //#     else
+        //#         def reducedDimList = ${reducedDimList}, sliceDim${k}
+        //#         def reducedStrideList = ${reducedStrideList}, sliceStride${k}
+        //#     end
+        //# end
+        int sliceOffset;
+        //# if ${reducedRank} >= 1
+        int ${reducedStrideList};
+        int ${reducedDimList};
+        //# end
         if (dim < 0) {
             /* A negative index is taken with respect to the end. */
             dim += ${rank};
         }
-        //# if ${rank} == 1
-        if (dim == 0) {
-            return new ${reducedSuperName}(data, idx);
-        }
-        //# else
-        switch (dim) {
-            //# for k in 1:${rank}
-            //#     eval km1 = ${k} - 1
-        case ${km1}:
+        //#     for k in 1:${rank}
+        //#         eval km1 = ${k} - 1
+        //#         def k_th = ${}{nth_${k}}
+        //#         if ${k} == 1
+        if (dim == ${km1}) {
+            //#     else
+        } else if (dim == ${km1}) {
+            //#     end
+            /* Slice along ${k_th} dimension. */
+            //#     if ${k} == 1
+            //#         def sliceOffset = idx
+            //#     else
+            //#         def sliceOffset = ${}{stride${k}}*idx
+            //#     end
+            sliceOffset = ${sliceOffset};
             //#     def m = 0
-            //#     def multiplier =
             //#     for j in 1:${rank}
-            //#         def stride = ${}{stride${j}}
-            //#         if ${j} == ${k}
-            //#             if ${j} > 1
-            //#                 def multiplier = ${stride}*
-            //#             end
-            //#         else
+            //#         if ${j} != ${k}
             //#             eval m += 1
-            //#             if ${m} == 1
-            //#                 def reducedDimList = dim${j}
-            //#                 def reducedStrideList = ${stride}
-            //#             else
-            //#                 def reducedDimList = ${reducedDimList}, dim${j}
-            //#                 def reducedStrideList = ${reducedStrideList}, ${stride}
-            //#             end
+            //#             def sliceStride = ${}{stride${j}}
+            sliceStride${m} = ${sliceStride};
             //#         end
             //#     end
-            return new Stridden${Type}${reducedRank}D(data,
-                    ${multiplier}idx, // offset
-                    ${reducedStrideList}, // strides
-                    ${reducedDimList}); // dimensions
+            //#     def m = 0
+            //#     for j in 1:${rank}
+            //#         if ${j} != ${k}
+            //#             eval m += 1
+            sliceDim${m} = dim${j};
+            //#         end
+            //#     end
             //# end
+        } else {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
         }
+        //# if ${reducedRank} == 0
+        return new ${reducedSuperName}(data, sliceOffset);
+        //# else
+        return new Stridden${Type}${reducedRank}D(data, sliceOffset,
+                ${reducedStrideList},
+                ${reducedDimList});
         //# end
-        throw new IndexOutOfBoundsException("Dimension index out of bounds.");
     }
 
     //# for k in 1:${rank}

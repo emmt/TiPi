@@ -212,38 +212,74 @@ public class FlatFloat5D extends Float5D {
 
     @Override
     public Float4D slice(int idx, int dim) {
+        int sliceOffset;
+        int sliceStride1, sliceStride2, sliceStride3, sliceStride4;
+        int sliceDim1, sliceDim2, sliceDim3, sliceDim4;
         if (dim < 0) {
             /* A negative index is taken with respect to the end. */
             dim += 5;
         }
-        switch (dim) {
-        case 0:
-            return new StriddenFloat4D(data,
-                    idx, // offset
-                    dim1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4, // strides
-                    dim2, dim3, dim4, dim5); // dimensions
-        case 1:
-            return new StriddenFloat4D(data,
-                    dim1*idx, // offset
-                    1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4, // strides
-                    dim1, dim3, dim4, dim5); // dimensions
-        case 2:
-            return new StriddenFloat4D(data,
-                    dim1dim2*idx, // offset
-                    1, dim1, dim1dim2dim3, dim1dim2dim3dim4, // strides
-                    dim1, dim2, dim4, dim5); // dimensions
-        case 3:
-            return new StriddenFloat4D(data,
-                    dim1dim2dim3*idx, // offset
-                    1, dim1, dim1dim2, dim1dim2dim3dim4, // strides
-                    dim1, dim2, dim3, dim5); // dimensions
-        case 4:
-            return new StriddenFloat4D(data,
-                    dim1dim2dim3dim4*idx, // offset
-                    1, dim1, dim1dim2, dim1dim2dim3, // strides
-                    dim1, dim2, dim3, dim4); // dimensions
+        if (dim == 0) {
+            /* Slice along 1st dimension. */
+            sliceOffset = idx;
+            sliceStride1 = dim1;
+            sliceStride2 = dim1dim2;
+            sliceStride3 = dim1dim2dim3;
+            sliceStride4 = dim1dim2dim3dim4;
+            sliceDim1 = dim2;
+            sliceDim2 = dim3;
+            sliceDim3 = dim4;
+            sliceDim4 = dim5;
+        } else if (dim == 1) {
+            /* Slice along 2nd dimension. */
+            sliceOffset = dim1*idx;
+            sliceStride1 = 1;
+            sliceStride2 = dim1dim2;
+            sliceStride3 = dim1dim2dim3;
+            sliceStride4 = dim1dim2dim3dim4;
+            sliceDim1 = dim1;
+            sliceDim2 = dim3;
+            sliceDim3 = dim4;
+            sliceDim4 = dim5;
+        } else if (dim == 2) {
+            /* Slice along 3rd dimension. */
+            sliceOffset = dim1dim2*idx;
+            sliceStride1 = 1;
+            sliceStride2 = dim1;
+            sliceStride3 = dim1dim2dim3;
+            sliceStride4 = dim1dim2dim3dim4;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim4;
+            sliceDim4 = dim5;
+        } else if (dim == 3) {
+            /* Slice along 4th dimension. */
+            sliceOffset = dim1dim2dim3*idx;
+            sliceStride1 = 1;
+            sliceStride2 = dim1;
+            sliceStride3 = dim1dim2;
+            sliceStride4 = dim1dim2dim3dim4;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim5;
+        } else if (dim == 4) {
+            /* Slice along 5th dimension. */
+            sliceOffset = dim1dim2dim3dim4*idx;
+            sliceStride1 = 1;
+            sliceStride2 = dim1;
+            sliceStride3 = dim1dim2;
+            sliceStride4 = dim1dim2dim3;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim4;
+        } else {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
         }
-        throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        return new StriddenFloat4D(data, sliceOffset,
+                sliceStride1, sliceStride2, sliceStride3, sliceStride4,
+                sliceDim1, sliceDim2, sliceDim3, sliceDim4);
     }
 
     @Override

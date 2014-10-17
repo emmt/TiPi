@@ -183,14 +183,18 @@ public class FlatShort1D extends Short1D {
 
     @Override
     public ShortScalar slice(int idx, int dim) {
+        int sliceOffset;
         if (dim < 0) {
             /* A negative index is taken with respect to the end. */
             dim += 1;
         }
         if (dim == 0) {
-            return new ShortScalar(data, idx);
+            /* Slice along 1st dimension. */
+            sliceOffset = idx;
+        } else {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
         }
-        throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        return new ShortScalar(data, sliceOffset);
     }
 
     @Override

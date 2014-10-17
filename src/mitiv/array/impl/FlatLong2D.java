@@ -190,23 +190,29 @@ public class FlatLong2D extends Long2D {
 
     @Override
     public Long1D slice(int idx, int dim) {
+        int sliceOffset;
+        int sliceStride1;
+        int sliceDim1;
         if (dim < 0) {
             /* A negative index is taken with respect to the end. */
             dim += 2;
         }
-        switch (dim) {
-        case 0:
-            return new StriddenLong1D(data,
-                    idx, // offset
-                    dim1, // strides
-                    dim2); // dimensions
-        case 1:
-            return new StriddenLong1D(data,
-                    dim1*idx, // offset
-                    1, // strides
-                    dim1); // dimensions
+        if (dim == 0) {
+            /* Slice along 1st dimension. */
+            sliceOffset = idx;
+            sliceStride1 = dim1;
+            sliceDim1 = dim2;
+        } else if (dim == 1) {
+            /* Slice along 2nd dimension. */
+            sliceOffset = dim1*idx;
+            sliceStride1 = 1;
+            sliceDim1 = dim1;
+        } else {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
         }
-        throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        return new StriddenLong1D(data, sliceOffset,
+                sliceStride1,
+                sliceDim1);
     }
 
     @Override
