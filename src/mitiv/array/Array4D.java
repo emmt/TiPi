@@ -97,6 +97,9 @@ public abstract class Array4D implements ShapedArray {
         return shape.dimension(k);
     }
 
+    @Override
+    public abstract Array4D copy();
+
     /**
      * Get a slice of the array.
      *

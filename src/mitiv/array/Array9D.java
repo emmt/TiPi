@@ -112,6 +112,9 @@ public abstract class Array9D implements ShapedArray {
         return shape.dimension(k);
     }
 
+    @Override
+    public abstract Array9D copy();
+
     /**
      * Get a slice of the array.
      *

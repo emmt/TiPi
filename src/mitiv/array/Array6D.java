@@ -103,6 +103,9 @@ public abstract class Array6D implements ShapedArray {
         return shape.dimension(k);
     }
 
+    @Override
+    public abstract Array6D copy();
+
     /**
      * Get a slice of the array.
      *

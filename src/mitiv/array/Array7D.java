@@ -106,6 +106,9 @@ public abstract class Array7D implements ShapedArray {
         return shape.dimension(k);
     }
 
+    @Override
+    public abstract Array7D copy();
+
     /**
      * Get a slice of the array.
      *

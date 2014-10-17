@@ -100,6 +100,9 @@ public abstract class Array5D implements ShapedArray {
         return shape.dimension(k);
     }
 
+    @Override
+    public abstract Array5D copy();
+
     /**
      * Get a slice of the array.
      *

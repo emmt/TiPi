@@ -142,6 +142,9 @@ public abstract class ${className} implements ShapedArray {
         return shape.dimension(k);
     }
 
+    @Override
+    public abstract ${className} copy();
+
     //# if ${rank} >= 1
     //#    eval reducedRank = ${rank} - 1
     //#    if ${reducedRank} == 0
@@ -244,25 +247,20 @@ public abstract class ${className} implements ShapedArray {
     /**
      * Check the parameters of a ${rank}D view with strides and get ordering.
      * @param number  - The number of elements in the wrapped array.
-     //# def k = 1
-     //# while ${k} <= ${rank}
-     //#   def kth = ${}{nth_${k}}
-     * @param dim${k}    - The ${kth} dimension of the ${rank}D view.
-     //#   eval k += 1
+     //# for k in 1:${rank}
+     //#   def k_th = ${}{nth_${k}}
+     * @param dim${k}    - The ${k_th} dimension of the ${rank}D view.
      //# end
      * @param offset  - The offset of element (${zeroList}) of the ${rank}D view.
-     //# def k = 1
-     //# while ${k} <= ${rank}
-     //#   def kth = ${}{nth_${k}}
-     * @param stride${k} - The stride along the ${kth} dimension.
-     //#   eval k += 1
+     //# for k in 1:${rank}
+     //#   def k_th = ${}{nth_${k}}
+     * @param stride${k} - The stride along the ${k_th} dimension.
      //# end
      * @return The ordering: {@link Shaped#COLUMN_MAJOR},
      *         {@link Shaped#ROW_MAJOR}, or {@link Shaped#NONSPECIFIC_ORDER}.
      * @throws IndexOutOfBoundsException
      */
-    public static int checkViewStrides(int number, ${declDimList},
-            int offset, ${declStrideList}) {
+    public static int checkViewStrides(int number, int offset, ${declStrideList}, ${declDimList}) {
         int imin, imax, itmp;
         //# for k in 1 : ${rank}
         itmp = (dim${k} - 1)*stride${k};

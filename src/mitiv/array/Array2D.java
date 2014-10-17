@@ -91,6 +91,9 @@ public abstract class Array2D implements ShapedArray {
         return shape.dimension(k);
     }
 
+    @Override
+    public abstract Array2D copy();
+
     /**
      * Get a slice of the array.
      *
