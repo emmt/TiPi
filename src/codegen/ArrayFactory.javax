@@ -58,7 +58,7 @@ public abstract class ${className} implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return ${A} ${dst_Type}Array whose values has been converted into ${dst_type}'s
      *         from those of {@code src}.

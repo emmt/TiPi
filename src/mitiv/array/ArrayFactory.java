@@ -45,7 +45,7 @@ public abstract class ArrayFactory implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return A ByteArray whose values has been converted into byte's
      *         from those of {@code src}.
@@ -109,7 +109,7 @@ public abstract class ArrayFactory implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return A ShortArray whose values has been converted into short's
      *         from those of {@code src}.
@@ -173,7 +173,7 @@ public abstract class ArrayFactory implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return An IntArray whose values has been converted into int's
      *         from those of {@code src}.
@@ -237,7 +237,7 @@ public abstract class ArrayFactory implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return A LongArray whose values has been converted into long's
      *         from those of {@code src}.
@@ -301,7 +301,7 @@ public abstract class ArrayFactory implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return A FloatArray whose values has been converted into float's
      *         from those of {@code src}.
@@ -365,7 +365,7 @@ public abstract class ArrayFactory implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return A DoubleArray whose values has been converted into double's
      *         from those of {@code src}.
