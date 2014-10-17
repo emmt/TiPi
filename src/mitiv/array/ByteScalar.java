@@ -25,16 +25,22 @@
 
 package mitiv.array;
 
+import mitiv.array.impl.FlatByte1D;
+import mitiv.array.impl.StriddenByte1D;
+import mitiv.base.Traits;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.ByteGenerator;
 
 /**
- * Selected implementation of 0-dimensional arrays of byte's.
- *
- * This specific kind of arrays/views are accessed via indirection tables (one
- * for each dimension).
- *
+ * Selected implementation of 0-dimensional byte arrays (i.e. scalars).
+ * <p>
+ * This specific kind of scalar values can be used to <i>view</i> a single
+ * element of another multi-dimensional array.
+ * </p>
  * @author Éric Thiébaut.
  */
 public class ByteScalar extends Scalar implements ByteArray {
@@ -73,6 +79,11 @@ public class ByteScalar extends Scalar implements ByteArray {
     }
 
     @Override
+    public final int getType() {
+        return type;
+    }
+
+    @Override
     public final int getOrder() {
         return COLUMN_MAJOR;
     }
@@ -90,97 +101,133 @@ public class ByteScalar extends Scalar implements ByteArray {
     }
 
     @Override
-    public void fill(byte value) {
+    public final void fill(byte value) {
         data[offset] = value;
     }
 
     @Override
-    public void fill(ByteGenerator generator) {
+    public final void fill(ByteGenerator generator) {
         data[offset] = generator.nextByte();
     }
 
     @Override
-    public void increment(byte value) {
+    public final void increment(byte value) {
         data[offset] += value;
     }
 
     @Override
-    public void decrement(byte value) {
+    public final void decrement(byte value) {
         data[offset] -= value;
     }
 
     @Override
-    public void scale(byte value) {
+    public final void scale(byte value) {
         data[offset] *= value;
     }
 
     @Override
-    public void map(ByteFunction function) {
+    public final void map(ByteFunction function) {
         data[offset] = function.apply(data[offset]);
     }
 
     @Override
-    public void scan(ByteScanner scanner)  {
+    public final void scan(ByteScanner scanner)  {
         scanner.initialize(data[offset]);
     }
 
     @Override
-    public byte[] flatten() {
+    public final byte[] flatten() {
         return flatten(false);
     }
 
     @Override
-    public byte[] flatten(boolean forceCopy) {
-        if (! forceCopy && offset == 0 && data.length == number) {
+    public final byte[] flatten(boolean forceCopy) {
+        if (! forceCopy && offset == 0 && data.length == 1) {
             return data;
         }
-        byte[] out = new byte[number];
-        out[0] = data[offset];
-        return out;
+        return new byte[]{data[offset]};
     }
 
     @Override
-    public ByteArray toByte() {
+    public final ByteArray toByte() {
         return this;
     }
 
     @Override
-    public ShortArray toShort() {
+    public final ShortArray toShort() {
         return new ShortScalar((short)data[offset]);
     }
 
     @Override
-    public IntArray toInt() {
+    public final IntArray toInt() {
         return new IntScalar((int)data[offset]);
     }
 
     @Override
-    public LongArray toLong() {
+    public final LongArray toLong() {
         return new LongScalar((long)data[offset]);
     }
 
     @Override
-    public FloatArray toFloat() {
+    public final FloatArray toFloat() {
         return new FloatScalar((float)data[offset]);
     }
 
     @Override
-    public DoubleArray toDouble() {
+    public final DoubleArray toDouble() {
         return new DoubleScalar((double)data[offset]);
     }
 
     @Override
-    public int getType() {
-        return type;
+    public final Byte1D as1D() {
+        if (offset == 0) {
+            return new FlatByte1D(data, 1);
+        } else {
+            return new StriddenByte1D(data, offset, 0, 1);
+        }
     }
 
     @Override
-    public Byte1D as1D() {
-        // TODO Auto-generated method stub
-        // FOXME: return a stridden 1D array
-        return null;
+    public final void assign(ShapedArray src) {
+        if (! shape.equals(src.getShape())) {
+            throw new NonConformableArrayException();
+        }
+        switch (src.getType()) {
+        case Traits.BYTE:
+            data[offset] = (byte)((ByteScalar)src).get();
+            break;
+        case Traits.SHORT:
+            data[offset] = (byte)((ShortScalar)src).get();
+            break;
+        case Traits.INT:
+            data[offset] = (byte)((IntScalar)src).get();
+            break;
+        case Traits.LONG:
+            data[offset] = (byte)((LongScalar)src).get();
+            break;
+        case Traits.FLOAT:
+            data[offset] = (byte)((FloatScalar)src).get();
+            break;
+        case Traits.DOUBLE:
+            data[offset] = (byte)((DoubleScalar)src).get();
+            break;
+        default:
+            throw new IllegalTypeException();
+        }
     }
 
+    @Override
+    public final void assign(ShapedVector src) {
+        if (! shape.equals(src.getShape())) {
+            throw new NonConformableArrayException();
+        }
+        data[offset] = (byte)src.get(0);
+    }
+
+    @Override
+    public final ByteScalar copy() {
+        return new ByteScalar(data[offset]);
+    }
 }
 
 /*

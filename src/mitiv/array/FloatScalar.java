@@ -25,16 +25,22 @@
 
 package mitiv.array;
 
+import mitiv.array.impl.FlatFloat1D;
+import mitiv.array.impl.StriddenFloat1D;
+import mitiv.base.Traits;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.FloatGenerator;
 
 /**
- * Selected implementation of 0-dimensional arrays of float's.
- *
- * This specific kind of arrays/views are accessed via indirection tables (one
- * for each dimension).
- *
+ * Selected implementation of 0-dimensional float arrays (i.e. scalars).
+ * <p>
+ * This specific kind of scalar values can be used to <i>view</i> a single
+ * element of another multi-dimensional array.
+ * </p>
  * @author Éric Thiébaut.
  */
 public class FloatScalar extends Scalar implements FloatArray {
@@ -73,6 +79,11 @@ public class FloatScalar extends Scalar implements FloatArray {
     }
 
     @Override
+    public final int getType() {
+        return type;
+    }
+
+    @Override
     public final int getOrder() {
         return COLUMN_MAJOR;
     }
@@ -90,97 +101,133 @@ public class FloatScalar extends Scalar implements FloatArray {
     }
 
     @Override
-    public void fill(float value) {
+    public final void fill(float value) {
         data[offset] = value;
     }
 
     @Override
-    public void fill(FloatGenerator generator) {
+    public final void fill(FloatGenerator generator) {
         data[offset] = generator.nextFloat();
     }
 
     @Override
-    public void increment(float value) {
+    public final void increment(float value) {
         data[offset] += value;
     }
 
     @Override
-    public void decrement(float value) {
+    public final void decrement(float value) {
         data[offset] -= value;
     }
 
     @Override
-    public void scale(float value) {
+    public final void scale(float value) {
         data[offset] *= value;
     }
 
     @Override
-    public void map(FloatFunction function) {
+    public final void map(FloatFunction function) {
         data[offset] = function.apply(data[offset]);
     }
 
     @Override
-    public void scan(FloatScanner scanner)  {
+    public final void scan(FloatScanner scanner)  {
         scanner.initialize(data[offset]);
     }
 
     @Override
-    public float[] flatten() {
+    public final float[] flatten() {
         return flatten(false);
     }
 
     @Override
-    public float[] flatten(boolean forceCopy) {
-        if (! forceCopy && offset == 0 && data.length == number) {
+    public final float[] flatten(boolean forceCopy) {
+        if (! forceCopy && offset == 0 && data.length == 1) {
             return data;
         }
-        float[] out = new float[number];
-        out[0] = data[offset];
-        return out;
+        return new float[]{data[offset]};
     }
 
     @Override
-    public ByteArray toByte() {
+    public final ByteArray toByte() {
         return new ByteScalar((byte)data[offset]);
     }
 
     @Override
-    public ShortArray toShort() {
+    public final ShortArray toShort() {
         return new ShortScalar((short)data[offset]);
     }
 
     @Override
-    public IntArray toInt() {
+    public final IntArray toInt() {
         return new IntScalar((int)data[offset]);
     }
 
     @Override
-    public LongArray toLong() {
+    public final LongArray toLong() {
         return new LongScalar((long)data[offset]);
     }
 
     @Override
-    public FloatArray toFloat() {
+    public final FloatArray toFloat() {
         return this;
     }
 
     @Override
-    public DoubleArray toDouble() {
+    public final DoubleArray toDouble() {
         return new DoubleScalar((double)data[offset]);
     }
 
     @Override
-    public int getType() {
-        return type;
+    public final Float1D as1D() {
+        if (offset == 0) {
+            return new FlatFloat1D(data, 1);
+        } else {
+            return new StriddenFloat1D(data, offset, 0, 1);
+        }
     }
 
     @Override
-    public Float1D as1D() {
-        // TODO Auto-generated method stub
-        // FOXME: return a stridden 1D array
-        return null;
+    public final void assign(ShapedArray src) {
+        if (! shape.equals(src.getShape())) {
+            throw new NonConformableArrayException();
+        }
+        switch (src.getType()) {
+        case Traits.BYTE:
+            data[offset] = (float)((ByteScalar)src).get();
+            break;
+        case Traits.SHORT:
+            data[offset] = (float)((ShortScalar)src).get();
+            break;
+        case Traits.INT:
+            data[offset] = (float)((IntScalar)src).get();
+            break;
+        case Traits.LONG:
+            data[offset] = (float)((LongScalar)src).get();
+            break;
+        case Traits.FLOAT:
+            data[offset] = (float)((FloatScalar)src).get();
+            break;
+        case Traits.DOUBLE:
+            data[offset] = (float)((DoubleScalar)src).get();
+            break;
+        default:
+            throw new IllegalTypeException();
+        }
     }
 
+    @Override
+    public final void assign(ShapedVector src) {
+        if (! shape.equals(src.getShape())) {
+            throw new NonConformableArrayException();
+        }
+        data[offset] = (float)src.get(0);
+    }
+
+    @Override
+    public final FloatScalar copy() {
+        return new FloatScalar(data[offset]);
+    }
 }
 
 /*

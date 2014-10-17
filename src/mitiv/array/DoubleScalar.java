@@ -25,16 +25,22 @@
 
 package mitiv.array;
 
+import mitiv.array.impl.FlatDouble1D;
+import mitiv.array.impl.StriddenDouble1D;
+import mitiv.base.Traits;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.DoubleGenerator;
 
 /**
- * Selected implementation of 0-dimensional arrays of double's.
- *
- * This specific kind of arrays/views are accessed via indirection tables (one
- * for each dimension).
- *
+ * Selected implementation of 0-dimensional double arrays (i.e. scalars).
+ * <p>
+ * This specific kind of scalar values can be used to <i>view</i> a single
+ * element of another multi-dimensional array.
+ * </p>
  * @author Éric Thiébaut.
  */
 public class DoubleScalar extends Scalar implements DoubleArray {
@@ -73,6 +79,11 @@ public class DoubleScalar extends Scalar implements DoubleArray {
     }
 
     @Override
+    public final int getType() {
+        return type;
+    }
+
+    @Override
     public final int getOrder() {
         return COLUMN_MAJOR;
     }
@@ -90,97 +101,133 @@ public class DoubleScalar extends Scalar implements DoubleArray {
     }
 
     @Override
-    public void fill(double value) {
+    public final void fill(double value) {
         data[offset] = value;
     }
 
     @Override
-    public void fill(DoubleGenerator generator) {
+    public final void fill(DoubleGenerator generator) {
         data[offset] = generator.nextDouble();
     }
 
     @Override
-    public void increment(double value) {
+    public final void increment(double value) {
         data[offset] += value;
     }
 
     @Override
-    public void decrement(double value) {
+    public final void decrement(double value) {
         data[offset] -= value;
     }
 
     @Override
-    public void scale(double value) {
+    public final void scale(double value) {
         data[offset] *= value;
     }
 
     @Override
-    public void map(DoubleFunction function) {
+    public final void map(DoubleFunction function) {
         data[offset] = function.apply(data[offset]);
     }
 
     @Override
-    public void scan(DoubleScanner scanner)  {
+    public final void scan(DoubleScanner scanner)  {
         scanner.initialize(data[offset]);
     }
 
     @Override
-    public double[] flatten() {
+    public final double[] flatten() {
         return flatten(false);
     }
 
     @Override
-    public double[] flatten(boolean forceCopy) {
-        if (! forceCopy && offset == 0 && data.length == number) {
+    public final double[] flatten(boolean forceCopy) {
+        if (! forceCopy && offset == 0 && data.length == 1) {
             return data;
         }
-        double[] out = new double[number];
-        out[0] = data[offset];
-        return out;
+        return new double[]{data[offset]};
     }
 
     @Override
-    public ByteArray toByte() {
+    public final ByteArray toByte() {
         return new ByteScalar((byte)data[offset]);
     }
 
     @Override
-    public ShortArray toShort() {
+    public final ShortArray toShort() {
         return new ShortScalar((short)data[offset]);
     }
 
     @Override
-    public IntArray toInt() {
+    public final IntArray toInt() {
         return new IntScalar((int)data[offset]);
     }
 
     @Override
-    public LongArray toLong() {
+    public final LongArray toLong() {
         return new LongScalar((long)data[offset]);
     }
 
     @Override
-    public FloatArray toFloat() {
+    public final FloatArray toFloat() {
         return new FloatScalar((float)data[offset]);
     }
 
     @Override
-    public DoubleArray toDouble() {
+    public final DoubleArray toDouble() {
         return this;
     }
 
     @Override
-    public int getType() {
-        return type;
+    public final Double1D as1D() {
+        if (offset == 0) {
+            return new FlatDouble1D(data, 1);
+        } else {
+            return new StriddenDouble1D(data, offset, 0, 1);
+        }
     }
 
     @Override
-    public Double1D as1D() {
-        // TODO Auto-generated method stub
-        // FOXME: return a stridden 1D array
-        return null;
+    public final void assign(ShapedArray src) {
+        if (! shape.equals(src.getShape())) {
+            throw new NonConformableArrayException();
+        }
+        switch (src.getType()) {
+        case Traits.BYTE:
+            data[offset] = (double)((ByteScalar)src).get();
+            break;
+        case Traits.SHORT:
+            data[offset] = (double)((ShortScalar)src).get();
+            break;
+        case Traits.INT:
+            data[offset] = (double)((IntScalar)src).get();
+            break;
+        case Traits.LONG:
+            data[offset] = (double)((LongScalar)src).get();
+            break;
+        case Traits.FLOAT:
+            data[offset] = (double)((FloatScalar)src).get();
+            break;
+        case Traits.DOUBLE:
+            data[offset] = (double)((DoubleScalar)src).get();
+            break;
+        default:
+            throw new IllegalTypeException();
+        }
     }
 
+    @Override
+    public final void assign(ShapedVector src) {
+        if (! shape.equals(src.getShape())) {
+            throw new NonConformableArrayException();
+        }
+        data[offset] = (double)src.get(0);
+    }
+
+    @Override
+    public final DoubleScalar copy() {
+        return new DoubleScalar(data[offset]);
+    }
 }
 
 /*

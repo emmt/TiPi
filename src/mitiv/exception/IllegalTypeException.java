@@ -23,66 +23,24 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.array;
-import mitiv.base.Shape;
+package mitiv.exception;
 
-
-/**
- * Define abstract class for scalar arrays of rank 0.
- *
- * @author Éric Thiébaut.
- */
-public abstract class Scalar implements ShapedArray {
-    static protected final Shape shape = Shape.make();
-    static protected final int number = 1;
-
+public class IllegalTypeException extends RuntimeException {
     /*
-     * The following constructors make this class non instantiable, but still
-     * let others inherit from this class.
+     * Define a serial version number as this class implements Serializable
+     * interface.
      */
-    protected Scalar() {
+    private static final long serialVersionUID = 1L;
+
+    private static final String defaultMessage = "Illegal element type.";
+
+    public IllegalTypeException(String message) {
+        super(message);
     }
 
-    protected Scalar(int[] dims) {
-        this(Shape.make(dims));
+    public IllegalTypeException() {
+        super(defaultMessage);
     }
-
-    protected Scalar(Shape shape) {
-        if (shape.rank() != 0) {
-            throw new IllegalArgumentException("Bad number of dimensions for 0-D array.");
-        }
-    }
-
-    @Override
-    public final int getRank() {
-        return 0;
-    }
-
-    @Override
-    public final Shape getShape() {
-        return shape;
-    }
-
-    @Override
-    public final int getNumber() {
-        return number;
-    }
-
-    @Override
-    public final int getDimension(int k) {
-        return shape.dimension(k);
-    }
-
-    @Override
-    public abstract Scalar copy();
-
-    /**
-     * Get a view of the scalar as a 1D array.
-     *
-     * @return A 1D view of the scalar.
-     */
-    public abstract Array1D as1D();
-
 }
 
 /*
