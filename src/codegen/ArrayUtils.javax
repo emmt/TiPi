@@ -88,6 +88,29 @@ public class ArrayUtils {
     }
 
     /**
+     * Select indices from a stridden dimension.
+     * @param offset - The offset for the dimension of interest.
+     * @param stride - The stepping along the dimension of interest.
+     * @param dim    - The number of elements along the dimension of interest.
+     * @param sel    - The indices to select.
+     * @return A sub-list of indices: {@code offset + stride*sel[j]}.
+     * @throws IndexOutOfBoundsException if any of {@code sel[j]} is less than
+     *         zero or greater or equal {@code dim}.
+     */
+    public static int[] select(int offset, int stride, int dim, int[] sel) {
+        int length = sel.length;
+        int[] result = new int[length];
+        for (int j = 0; j < length; ++j) {
+            int index = sel[j];
+            if (index < 0 || index >= dim) {
+                throw new IndexOutOfBoundsException("Selection index outside bounds.");
+            }
+            result[j] = offset + stride*index;
+        }
+        return result;
+    }
+
+    /**
      * Select a sub-list of values by range.
      * @param src - The initial list of values.
      * @param rng - The range to select.
