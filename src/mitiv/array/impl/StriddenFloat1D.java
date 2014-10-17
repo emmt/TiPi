@@ -31,7 +31,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
 import mitiv.random.FloatGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.IllegalRangeException;
 
@@ -207,7 +206,7 @@ public class StriddenFloat1D extends Float1D {
 
     @Override
     public Float1D view(int[] sel1) {
-        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
+        int[] idx1 = Helper.select(offset, stride1, dim1, sel1);
         return new SelectedFloat1D(this.data, idx1);
     }
 

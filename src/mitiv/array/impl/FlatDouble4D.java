@@ -32,7 +32,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
@@ -193,6 +192,7 @@ public class FlatDouble4D extends Double4D {
 
     @Override
     public Double3D slice(int idx) {
+        idx = Helper.fixIndex(idx, dim4);
         if (idx == 0) {
             return new FlatDouble3D(data, dim1, dim2, dim3);
         } else {
@@ -208,13 +208,10 @@ public class FlatDouble4D extends Double4D {
         int sliceOffset;
         int sliceStride1, sliceStride2, sliceStride3;
         int sliceDim1, sliceDim2, sliceDim3;
-        if (dim < 0) {
-            /* A negative index is taken with respect to the end. */
-            dim += 4;
-        }
+        dim = Helper.fixSliceIndex(dim, 4);
         if (dim == 0) {
             /* Slice along 1st dimension. */
-            sliceOffset = idx;
+            sliceOffset = Helper.fixIndex(idx, dim1);
             sliceStride1 = dim1;
             sliceStride2 = dim1dim2;
             sliceStride3 = dim1dim2dim3;
@@ -223,7 +220,7 @@ public class FlatDouble4D extends Double4D {
             sliceDim3 = dim4;
         } else if (dim == 1) {
             /* Slice along 2nd dimension. */
-            sliceOffset = dim1*idx;
+            sliceOffset = dim1*Helper.fixIndex(idx, dim2);
             sliceStride1 = 1;
             sliceStride2 = dim1dim2;
             sliceStride3 = dim1dim2dim3;
@@ -232,24 +229,22 @@ public class FlatDouble4D extends Double4D {
             sliceDim3 = dim4;
         } else if (dim == 2) {
             /* Slice along 3rd dimension. */
-            sliceOffset = dim1dim2*idx;
+            sliceOffset = dim1dim2*Helper.fixIndex(idx, dim3);
             sliceStride1 = 1;
             sliceStride2 = dim1;
             sliceStride3 = dim1dim2dim3;
             sliceDim1 = dim1;
             sliceDim2 = dim2;
             sliceDim3 = dim4;
-        } else if (dim == 3) {
+        } else {
             /* Slice along 4th dimension. */
-            sliceOffset = dim1dim2dim3*idx;
+            sliceOffset = dim1dim2dim3*Helper.fixIndex(idx, dim4);
             sliceStride1 = 1;
             sliceStride2 = dim1;
             sliceStride3 = dim1dim2;
             sliceDim1 = dim1;
             sliceDim2 = dim2;
             sliceDim3 = dim3;
-        } else {
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
         }
         return new StriddenDouble3D(data, sliceOffset,
                 sliceStride1, sliceStride2, sliceStride3,
@@ -276,10 +271,10 @@ public class FlatDouble4D extends Double4D {
 
     @Override
     public Double4D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4) {
-        int[] idx1 = ArrayUtils.select(0, 1, dim1, sel1);
-        int[] idx2 = ArrayUtils.select(0, dim1, dim2, sel2);
-        int[] idx3 = ArrayUtils.select(0, dim1dim2, dim3, sel3);
-        int[] idx4 = ArrayUtils.select(0, dim1dim2dim3, dim4, sel4);
+        int[] idx1 = Helper.select(0, 1, dim1, sel1);
+        int[] idx2 = Helper.select(0, dim1, dim2, sel2);
+        int[] idx3 = Helper.select(0, dim1dim2, dim3, sel3);
+        int[] idx4 = Helper.select(0, dim1dim2dim3, dim4, sel4);
         return new SelectedDouble4D(this.data, idx1, idx2, idx3, idx4);
     }
 

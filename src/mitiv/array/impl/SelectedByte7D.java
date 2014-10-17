@@ -32,7 +32,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
-import mitiv.array.ArrayUtils;
+
 
 /**
  * Selected implementation of 7-dimensional arrays of byte's.
@@ -376,7 +376,7 @@ public class SelectedByte7D extends Byte7D {
     @Override
     public Byte6D slice(int idx) {
         int[] idx1 = this.idx1;
-        int offset = idx7[idx];
+        int offset = idx7[Helper.fixIndex(idx, dim7)];
         if (offset != 0) {
             /* Add the offset to the first indirection table. */
             int length = idx1.length;
@@ -391,13 +391,7 @@ public class SelectedByte7D extends Byte7D {
 
     @Override
     public Byte6D slice(int idx, int dim) {
-        if (dim < 0) {
-            /* A negative index is taken with respect to the end. */
-            dim += 7;
-        }
-        if (dim != 0) {
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
-        }
+        dim = Helper.fixSliceIndex(dim, 7);
         int[] idx1;
         int[] idx2;
         int[] idx3;
@@ -407,7 +401,7 @@ public class SelectedByte7D extends Byte7D {
         int offset;
         switch (dim) {
         case 0:
-            offset = this.idx1[idx];
+            offset = this.idx1[Helper.fixIndex(idx, dim1)];
             idx1 = this.idx2;
             idx2 = this.idx3;
             idx3 = this.idx4;
@@ -417,7 +411,7 @@ public class SelectedByte7D extends Byte7D {
             break;
         case 1:
             idx1 = this.idx1;
-            offset = this.idx2[idx];
+            offset = this.idx2[Helper.fixIndex(idx, dim2)];
             idx2 = this.idx3;
             idx3 = this.idx4;
             idx4 = this.idx5;
@@ -427,7 +421,7 @@ public class SelectedByte7D extends Byte7D {
         case 2:
             idx1 = this.idx1;
             idx2 = this.idx2;
-            offset = this.idx3[idx];
+            offset = this.idx3[Helper.fixIndex(idx, dim3)];
             idx3 = this.idx4;
             idx4 = this.idx5;
             idx5 = this.idx6;
@@ -437,7 +431,7 @@ public class SelectedByte7D extends Byte7D {
             idx1 = this.idx1;
             idx2 = this.idx2;
             idx3 = this.idx3;
-            offset = this.idx4[idx];
+            offset = this.idx4[Helper.fixIndex(idx, dim4)];
             idx4 = this.idx5;
             idx5 = this.idx6;
             idx6 = this.idx7;
@@ -447,7 +441,7 @@ public class SelectedByte7D extends Byte7D {
             idx2 = this.idx2;
             idx3 = this.idx3;
             idx4 = this.idx4;
-            offset = this.idx5[idx];
+            offset = this.idx5[Helper.fixIndex(idx, dim5)];
             idx5 = this.idx6;
             idx6 = this.idx7;
             break;
@@ -457,7 +451,7 @@ public class SelectedByte7D extends Byte7D {
             idx3 = this.idx3;
             idx4 = this.idx4;
             idx5 = this.idx5;
-            offset = this.idx6[idx];
+            offset = this.idx6[Helper.fixIndex(idx, dim6)];
             idx6 = this.idx7;
             break;
         case 6:
@@ -467,7 +461,7 @@ public class SelectedByte7D extends Byte7D {
             idx4 = this.idx4;
             idx5 = this.idx5;
             idx6 = this.idx6;
-            offset = this.idx7[idx];
+            offset = this.idx7[Helper.fixIndex(idx, dim7)];
             break;
         default:
             throw new IndexOutOfBoundsException("Dimension index out of bounds.");
@@ -486,13 +480,13 @@ public class SelectedByte7D extends Byte7D {
 
     @Override
     public Byte7D view(Range rng1, Range rng2, Range rng3, Range rng4, Range rng5, Range rng6, Range rng7) {
-        int[] idx1 = ArrayUtils.select(this.idx1, rng1);
-        int[] idx2 = ArrayUtils.select(this.idx2, rng2);
-        int[] idx3 = ArrayUtils.select(this.idx3, rng3);
-        int[] idx4 = ArrayUtils.select(this.idx4, rng4);
-        int[] idx5 = ArrayUtils.select(this.idx5, rng5);
-        int[] idx6 = ArrayUtils.select(this.idx6, rng6);
-        int[] idx7 = ArrayUtils.select(this.idx7, rng7);
+        int[] idx1 = Helper.select(this.idx1, rng1);
+        int[] idx2 = Helper.select(this.idx2, rng2);
+        int[] idx3 = Helper.select(this.idx3, rng3);
+        int[] idx4 = Helper.select(this.idx4, rng4);
+        int[] idx5 = Helper.select(this.idx5, rng5);
+        int[] idx6 = Helper.select(this.idx6, rng6);
+        int[] idx7 = Helper.select(this.idx7, rng7);
         if (idx1 == this.idx1 && idx2 == this.idx2 && idx3 == this.idx3 && idx4 == this.idx4 && idx5 == this.idx5 && idx6 == this.idx6 && idx7 == this.idx7) {
             return this;
         } else {
@@ -502,13 +496,13 @@ public class SelectedByte7D extends Byte7D {
 
     @Override
     public Byte7D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4, int[] sel5, int[] sel6, int[] sel7) {
-        int[] idx1 = ArrayUtils.select(this.idx1, sel1);
-        int[] idx2 = ArrayUtils.select(this.idx2, sel2);
-        int[] idx3 = ArrayUtils.select(this.idx3, sel3);
-        int[] idx4 = ArrayUtils.select(this.idx4, sel4);
-        int[] idx5 = ArrayUtils.select(this.idx5, sel5);
-        int[] idx6 = ArrayUtils.select(this.idx6, sel6);
-        int[] idx7 = ArrayUtils.select(this.idx7, sel7);
+        int[] idx1 = Helper.select(this.idx1, sel1);
+        int[] idx2 = Helper.select(this.idx2, sel2);
+        int[] idx3 = Helper.select(this.idx3, sel3);
+        int[] idx4 = Helper.select(this.idx4, sel4);
+        int[] idx5 = Helper.select(this.idx5, sel5);
+        int[] idx6 = Helper.select(this.idx6, sel6);
+        int[] idx7 = Helper.select(this.idx7, sel7);
         if (idx1 == this.idx1 && idx2 == this.idx2 && idx3 == this.idx3 && idx4 == this.idx4 && idx5 == this.idx5 && idx6 == this.idx6 && idx7 == this.idx7) {
             return this;
         } else {

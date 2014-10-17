@@ -32,7 +32,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
@@ -200,6 +199,7 @@ public class FlatDouble5D extends Double5D {
 
     @Override
     public Double4D slice(int idx) {
+        idx = Helper.fixIndex(idx, dim5);
         if (idx == 0) {
             return new FlatDouble4D(data, dim1, dim2, dim3, dim4);
         } else {
@@ -215,13 +215,10 @@ public class FlatDouble5D extends Double5D {
         int sliceOffset;
         int sliceStride1, sliceStride2, sliceStride3, sliceStride4;
         int sliceDim1, sliceDim2, sliceDim3, sliceDim4;
-        if (dim < 0) {
-            /* A negative index is taken with respect to the end. */
-            dim += 5;
-        }
+        dim = Helper.fixSliceIndex(dim, 5);
         if (dim == 0) {
             /* Slice along 1st dimension. */
-            sliceOffset = idx;
+            sliceOffset = Helper.fixIndex(idx, dim1);
             sliceStride1 = dim1;
             sliceStride2 = dim1dim2;
             sliceStride3 = dim1dim2dim3;
@@ -232,7 +229,7 @@ public class FlatDouble5D extends Double5D {
             sliceDim4 = dim5;
         } else if (dim == 1) {
             /* Slice along 2nd dimension. */
-            sliceOffset = dim1*idx;
+            sliceOffset = dim1*Helper.fixIndex(idx, dim2);
             sliceStride1 = 1;
             sliceStride2 = dim1dim2;
             sliceStride3 = dim1dim2dim3;
@@ -243,7 +240,7 @@ public class FlatDouble5D extends Double5D {
             sliceDim4 = dim5;
         } else if (dim == 2) {
             /* Slice along 3rd dimension. */
-            sliceOffset = dim1dim2*idx;
+            sliceOffset = dim1dim2*Helper.fixIndex(idx, dim3);
             sliceStride1 = 1;
             sliceStride2 = dim1;
             sliceStride3 = dim1dim2dim3;
@@ -254,7 +251,7 @@ public class FlatDouble5D extends Double5D {
             sliceDim4 = dim5;
         } else if (dim == 3) {
             /* Slice along 4th dimension. */
-            sliceOffset = dim1dim2dim3*idx;
+            sliceOffset = dim1dim2dim3*Helper.fixIndex(idx, dim4);
             sliceStride1 = 1;
             sliceStride2 = dim1;
             sliceStride3 = dim1dim2;
@@ -263,9 +260,9 @@ public class FlatDouble5D extends Double5D {
             sliceDim2 = dim2;
             sliceDim3 = dim3;
             sliceDim4 = dim5;
-        } else if (dim == 4) {
+        } else {
             /* Slice along 5th dimension. */
-            sliceOffset = dim1dim2dim3dim4*idx;
+            sliceOffset = dim1dim2dim3dim4*Helper.fixIndex(idx, dim5);
             sliceStride1 = 1;
             sliceStride2 = dim1;
             sliceStride3 = dim1dim2;
@@ -274,8 +271,6 @@ public class FlatDouble5D extends Double5D {
             sliceDim2 = dim2;
             sliceDim3 = dim3;
             sliceDim4 = dim4;
-        } else {
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
         }
         return new StriddenDouble4D(data, sliceOffset,
                 sliceStride1, sliceStride2, sliceStride3, sliceStride4,
@@ -303,11 +298,11 @@ public class FlatDouble5D extends Double5D {
 
     @Override
     public Double5D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4, int[] sel5) {
-        int[] idx1 = ArrayUtils.select(0, 1, dim1, sel1);
-        int[] idx2 = ArrayUtils.select(0, dim1, dim2, sel2);
-        int[] idx3 = ArrayUtils.select(0, dim1dim2, dim3, sel3);
-        int[] idx4 = ArrayUtils.select(0, dim1dim2dim3, dim4, sel4);
-        int[] idx5 = ArrayUtils.select(0, dim1dim2dim3dim4, dim5, sel5);
+        int[] idx1 = Helper.select(0, 1, dim1, sel1);
+        int[] idx2 = Helper.select(0, dim1, dim2, sel2);
+        int[] idx3 = Helper.select(0, dim1dim2, dim3, sel3);
+        int[] idx4 = Helper.select(0, dim1dim2dim3, dim4, sel4);
+        int[] idx5 = Helper.select(0, dim1dim2dim3dim4, dim5, sel5);
         return new SelectedDouble5D(this.data, idx1, idx2, idx3, idx4, idx5);
     }
 

@@ -26,7 +26,7 @@
 //# // Define the implementation prefix and get common definitions.
 //# def implPrefix = Selected
 //# include <commonImpl.javax>
-import mitiv.array.ArrayUtils;
+
 
 /**
  * Selected implementation of ${rank}-dimensional arrays of ${type}'s.
@@ -201,7 +201,7 @@ public class ${className} extends ${superName} {
         //#         def argList = ${argList}, idx${k}
         //#     end
         int[] idx1 = this.idx1;
-        int offset = idx${rank}[idx];
+        int offset = idx${rank}[Helper.fixIndex(idx, dim${rank})];
         if (offset != 0) {
             /* Add the offset to the first indirection table. */
             int length = idx1.length;
@@ -217,15 +217,12 @@ public class ${className} extends ${superName} {
 
     @Override
     public ${reducedSuperName} slice(int idx, int dim) {
-        if (dim < 0) {
-            /* A negative index is taken with respect to the end. */
-            dim += ${rank};
-        }
+        dim = Helper.fixSliceIndex(dim, ${rank});
         //# if ${rank} == 1
         //#     def argList = this.data, this.idx1[idx]
         //# else
         //#     def argList = this.data
-        //#     for ${k} in 1:${reducedRank}
+        //#     for k in 1:${reducedRank}
         //#         def arg = idx${k}
         //#         def argList = ${argList}, ${arg}
         int[] ${arg};
@@ -238,7 +235,7 @@ public class ${className} extends ${superName} {
             //#     def m = 0
             //#     for j in 1:${rank}
             //#         if ${j} == ${k}
-            offset = this.idx${j}[idx];
+            offset = this.idx${j}[Helper.fixIndex(idx, dim${j})];
             //#         else
             //#             eval m += 1
             idx${m} = this.idx${j};
@@ -278,7 +275,7 @@ public class ${className} extends ${superName} {
     @Override
     public ${superName} view(${argDecl}) {
         //# for k in 1:${rank}
-        int[] idx${k} = ArrayUtils.select(this.idx${k}, rng${k});
+        int[] idx${k} = Helper.select(this.idx${k}, rng${k});
         //# end
         if (${noChanges}) {
             return this;
@@ -303,7 +300,7 @@ public class ${className} extends ${superName} {
     @Override
     public ${superName} view(${argDecl}) {
         //# for k in 1:${rank}
-        int[] idx${k} = ArrayUtils.select(this.idx${k}, sel${k});
+        int[] idx${k} = Helper.select(this.idx${k}, sel${k});
         //# end
         if (${noChanges}) {
             return this;

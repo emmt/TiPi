@@ -32,7 +32,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.random.LongGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.IllegalRangeException;
 
@@ -836,15 +835,15 @@ public class StriddenLong9D extends Long9D {
 
     @Override
     public Long9D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4, int[] sel5, int[] sel6, int[] sel7, int[] sel8, int[] sel9) {
-        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
-        int[] idx2 = ArrayUtils.select(0, stride2, dim2, sel2);
-        int[] idx3 = ArrayUtils.select(0, stride3, dim3, sel3);
-        int[] idx4 = ArrayUtils.select(0, stride4, dim4, sel4);
-        int[] idx5 = ArrayUtils.select(0, stride5, dim5, sel5);
-        int[] idx6 = ArrayUtils.select(0, stride6, dim6, sel6);
-        int[] idx7 = ArrayUtils.select(0, stride7, dim7, sel7);
-        int[] idx8 = ArrayUtils.select(0, stride8, dim8, sel8);
-        int[] idx9 = ArrayUtils.select(0, stride9, dim9, sel9);
+        int[] idx1 = Helper.select(offset, stride1, dim1, sel1);
+        int[] idx2 = Helper.select(0, stride2, dim2, sel2);
+        int[] idx3 = Helper.select(0, stride3, dim3, sel3);
+        int[] idx4 = Helper.select(0, stride4, dim4, sel4);
+        int[] idx5 = Helper.select(0, stride5, dim5, sel5);
+        int[] idx6 = Helper.select(0, stride6, dim6, sel6);
+        int[] idx7 = Helper.select(0, stride7, dim7, sel7);
+        int[] idx8 = Helper.select(0, stride8, dim8, sel8);
+        int[] idx9 = Helper.select(0, stride9, dim9, sel9);
         return new SelectedLong9D(this.data, idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8, idx9);
     }
 

@@ -32,7 +32,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.IllegalRangeException;
 
@@ -524,11 +523,11 @@ public class StriddenDouble5D extends Double5D {
 
     @Override
     public Double5D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4, int[] sel5) {
-        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
-        int[] idx2 = ArrayUtils.select(0, stride2, dim2, sel2);
-        int[] idx3 = ArrayUtils.select(0, stride3, dim3, sel3);
-        int[] idx4 = ArrayUtils.select(0, stride4, dim4, sel4);
-        int[] idx5 = ArrayUtils.select(0, stride5, dim5, sel5);
+        int[] idx1 = Helper.select(offset, stride1, dim1, sel1);
+        int[] idx2 = Helper.select(0, stride2, dim2, sel2);
+        int[] idx3 = Helper.select(0, stride3, dim3, sel3);
+        int[] idx4 = Helper.select(0, stride4, dim4, sel4);
+        int[] idx5 = Helper.select(0, stride5, dim5, sel5);
         return new SelectedDouble5D(this.data, idx1, idx2, idx3, idx4, idx5);
     }
 

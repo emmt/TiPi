@@ -32,7 +32,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
 import mitiv.random.IntGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.IllegalRangeException;
 
@@ -392,9 +391,9 @@ public class StriddenInt3D extends Int3D {
 
     @Override
     public Int3D view(int[] sel1, int[] sel2, int[] sel3) {
-        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
-        int[] idx2 = ArrayUtils.select(0, stride2, dim2, sel2);
-        int[] idx3 = ArrayUtils.select(0, stride3, dim3, sel3);
+        int[] idx1 = Helper.select(offset, stride1, dim1, sel1);
+        int[] idx2 = Helper.select(0, stride2, dim2, sel2);
+        int[] idx3 = Helper.select(0, stride3, dim3, sel3);
         return new SelectedInt3D(this.data, idx1, idx2, idx3);
     }
 

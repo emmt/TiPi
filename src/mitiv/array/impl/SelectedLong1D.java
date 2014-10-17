@@ -31,7 +31,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.random.LongGenerator;
-import mitiv.array.ArrayUtils;
+
 
 /**
  * Selected implementation of 1-dimensional arrays of long's.
@@ -175,19 +175,13 @@ public class SelectedLong1D extends Long1D {
 
     @Override
     public LongScalar slice(int idx, int dim) {
-        if (dim < 0) {
-            /* A negative index is taken with respect to the end. */
-            dim += 1;
-        }
-        if (dim != 0) {
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
-        }
+        dim = Helper.fixSliceIndex(dim, 1);
         return new LongScalar(this.data, this.idx1[idx]);
     }
 
     @Override
     public Long1D view(Range rng1) {
-        int[] idx1 = ArrayUtils.select(this.idx1, rng1);
+        int[] idx1 = Helper.select(this.idx1, rng1);
         if (idx1 == this.idx1) {
             return this;
         } else {
@@ -197,7 +191,7 @@ public class SelectedLong1D extends Long1D {
 
     @Override
     public Long1D view(int[] sel1) {
-        int[] idx1 = ArrayUtils.select(this.idx1, sel1);
+        int[] idx1 = Helper.select(this.idx1, sel1);
         if (idx1 == this.idx1) {
             return this;
         } else {

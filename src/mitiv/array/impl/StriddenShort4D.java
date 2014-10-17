@@ -32,7 +32,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
 import mitiv.random.ShortGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.IllegalRangeException;
 
@@ -456,10 +455,10 @@ public class StriddenShort4D extends Short4D {
 
     @Override
     public Short4D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4) {
-        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
-        int[] idx2 = ArrayUtils.select(0, stride2, dim2, sel2);
-        int[] idx3 = ArrayUtils.select(0, stride3, dim3, sel3);
-        int[] idx4 = ArrayUtils.select(0, stride4, dim4, sel4);
+        int[] idx1 = Helper.select(offset, stride1, dim1, sel1);
+        int[] idx2 = Helper.select(0, stride2, dim2, sel2);
+        int[] idx3 = Helper.select(0, stride3, dim3, sel3);
+        int[] idx4 = Helper.select(0, stride4, dim4, sel4);
         return new SelectedShort4D(this.data, idx1, idx2, idx3, idx4);
     }
 

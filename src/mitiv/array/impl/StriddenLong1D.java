@@ -31,7 +31,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.random.LongGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.IllegalRangeException;
 
@@ -207,7 +206,7 @@ public class StriddenLong1D extends Long1D {
 
     @Override
     public Long1D view(int[] sel1) {
-        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
+        int[] idx1 = Helper.select(offset, stride1, dim1, sel1);
         return new SelectedLong1D(this.data, idx1);
     }
 

@@ -32,7 +32,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
 import mitiv.random.FloatGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
@@ -186,6 +185,7 @@ public class FlatFloat3D extends Float3D {
 
     @Override
     public Float2D slice(int idx) {
+        idx = Helper.fixIndex(idx, dim3);
         if (idx == 0) {
             return new FlatFloat2D(data, dim1, dim2);
         } else {
@@ -201,33 +201,28 @@ public class FlatFloat3D extends Float3D {
         int sliceOffset;
         int sliceStride1, sliceStride2;
         int sliceDim1, sliceDim2;
-        if (dim < 0) {
-            /* A negative index is taken with respect to the end. */
-            dim += 3;
-        }
+        dim = Helper.fixSliceIndex(dim, 3);
         if (dim == 0) {
             /* Slice along 1st dimension. */
-            sliceOffset = idx;
+            sliceOffset = Helper.fixIndex(idx, dim1);
             sliceStride1 = dim1;
             sliceStride2 = dim1dim2;
             sliceDim1 = dim2;
             sliceDim2 = dim3;
         } else if (dim == 1) {
             /* Slice along 2nd dimension. */
-            sliceOffset = dim1*idx;
+            sliceOffset = dim1*Helper.fixIndex(idx, dim2);
             sliceStride1 = 1;
             sliceStride2 = dim1dim2;
             sliceDim1 = dim1;
             sliceDim2 = dim3;
-        } else if (dim == 2) {
+        } else {
             /* Slice along 3rd dimension. */
-            sliceOffset = dim1dim2*idx;
+            sliceOffset = dim1dim2*Helper.fixIndex(idx, dim3);
             sliceStride1 = 1;
             sliceStride2 = dim1;
             sliceDim1 = dim1;
             sliceDim2 = dim2;
-        } else {
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
         }
         return new StriddenFloat2D(data, sliceOffset,
                 sliceStride1, sliceStride2,
@@ -253,9 +248,9 @@ public class FlatFloat3D extends Float3D {
 
     @Override
     public Float3D view(int[] sel1, int[] sel2, int[] sel3) {
-        int[] idx1 = ArrayUtils.select(0, 1, dim1, sel1);
-        int[] idx2 = ArrayUtils.select(0, dim1, dim2, sel2);
-        int[] idx3 = ArrayUtils.select(0, dim1dim2, dim3, sel3);
+        int[] idx1 = Helper.select(0, 1, dim1, sel1);
+        int[] idx2 = Helper.select(0, dim1, dim2, sel2);
+        int[] idx3 = Helper.select(0, dim1dim2, dim3, sel3);
         return new SelectedFloat3D(this.data, idx1, idx2, idx3);
     }
 

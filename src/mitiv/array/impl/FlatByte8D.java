@@ -32,7 +32,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
@@ -221,6 +220,7 @@ public class FlatByte8D extends Byte8D {
 
     @Override
     public Byte7D slice(int idx) {
+        idx = Helper.fixIndex(idx, dim8);
         if (idx == 0) {
             return new FlatByte7D(data, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
         } else {
@@ -236,13 +236,10 @@ public class FlatByte8D extends Byte8D {
         int sliceOffset;
         int sliceStride1, sliceStride2, sliceStride3, sliceStride4, sliceStride5, sliceStride6, sliceStride7;
         int sliceDim1, sliceDim2, sliceDim3, sliceDim4, sliceDim5, sliceDim6, sliceDim7;
-        if (dim < 0) {
-            /* A negative index is taken with respect to the end. */
-            dim += 8;
-        }
+        dim = Helper.fixSliceIndex(dim, 8);
         if (dim == 0) {
             /* Slice along 1st dimension. */
-            sliceOffset = idx;
+            sliceOffset = Helper.fixIndex(idx, dim1);
             sliceStride1 = dim1;
             sliceStride2 = dim1dim2;
             sliceStride3 = dim1dim2dim3;
@@ -259,7 +256,7 @@ public class FlatByte8D extends Byte8D {
             sliceDim7 = dim8;
         } else if (dim == 1) {
             /* Slice along 2nd dimension. */
-            sliceOffset = dim1*idx;
+            sliceOffset = dim1*Helper.fixIndex(idx, dim2);
             sliceStride1 = 1;
             sliceStride2 = dim1dim2;
             sliceStride3 = dim1dim2dim3;
@@ -276,7 +273,7 @@ public class FlatByte8D extends Byte8D {
             sliceDim7 = dim8;
         } else if (dim == 2) {
             /* Slice along 3rd dimension. */
-            sliceOffset = dim1dim2*idx;
+            sliceOffset = dim1dim2*Helper.fixIndex(idx, dim3);
             sliceStride1 = 1;
             sliceStride2 = dim1;
             sliceStride3 = dim1dim2dim3;
@@ -293,7 +290,7 @@ public class FlatByte8D extends Byte8D {
             sliceDim7 = dim8;
         } else if (dim == 3) {
             /* Slice along 4th dimension. */
-            sliceOffset = dim1dim2dim3*idx;
+            sliceOffset = dim1dim2dim3*Helper.fixIndex(idx, dim4);
             sliceStride1 = 1;
             sliceStride2 = dim1;
             sliceStride3 = dim1dim2;
@@ -310,7 +307,7 @@ public class FlatByte8D extends Byte8D {
             sliceDim7 = dim8;
         } else if (dim == 4) {
             /* Slice along 5th dimension. */
-            sliceOffset = dim1dim2dim3dim4*idx;
+            sliceOffset = dim1dim2dim3dim4*Helper.fixIndex(idx, dim5);
             sliceStride1 = 1;
             sliceStride2 = dim1;
             sliceStride3 = dim1dim2;
@@ -327,7 +324,7 @@ public class FlatByte8D extends Byte8D {
             sliceDim7 = dim8;
         } else if (dim == 5) {
             /* Slice along 6th dimension. */
-            sliceOffset = dim1dim2dim3dim4dim5*idx;
+            sliceOffset = dim1dim2dim3dim4dim5*Helper.fixIndex(idx, dim6);
             sliceStride1 = 1;
             sliceStride2 = dim1;
             sliceStride3 = dim1dim2;
@@ -344,7 +341,7 @@ public class FlatByte8D extends Byte8D {
             sliceDim7 = dim8;
         } else if (dim == 6) {
             /* Slice along 7th dimension. */
-            sliceOffset = dim1dim2dim3dim4dim5dim6*idx;
+            sliceOffset = dim1dim2dim3dim4dim5dim6*Helper.fixIndex(idx, dim7);
             sliceStride1 = 1;
             sliceStride2 = dim1;
             sliceStride3 = dim1dim2;
@@ -359,9 +356,9 @@ public class FlatByte8D extends Byte8D {
             sliceDim5 = dim5;
             sliceDim6 = dim6;
             sliceDim7 = dim8;
-        } else if (dim == 7) {
+        } else {
             /* Slice along 8th dimension. */
-            sliceOffset = dim1dim2dim3dim4dim5dim6dim7*idx;
+            sliceOffset = dim1dim2dim3dim4dim5dim6dim7*Helper.fixIndex(idx, dim8);
             sliceStride1 = 1;
             sliceStride2 = dim1;
             sliceStride3 = dim1dim2;
@@ -376,8 +373,6 @@ public class FlatByte8D extends Byte8D {
             sliceDim5 = dim5;
             sliceDim6 = dim6;
             sliceDim7 = dim7;
-        } else {
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
         }
         return new StriddenByte7D(data, sliceOffset,
                 sliceStride1, sliceStride2, sliceStride3, sliceStride4, sliceStride5, sliceStride6, sliceStride7,
@@ -408,14 +403,14 @@ public class FlatByte8D extends Byte8D {
 
     @Override
     public Byte8D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4, int[] sel5, int[] sel6, int[] sel7, int[] sel8) {
-        int[] idx1 = ArrayUtils.select(0, 1, dim1, sel1);
-        int[] idx2 = ArrayUtils.select(0, dim1, dim2, sel2);
-        int[] idx3 = ArrayUtils.select(0, dim1dim2, dim3, sel3);
-        int[] idx4 = ArrayUtils.select(0, dim1dim2dim3, dim4, sel4);
-        int[] idx5 = ArrayUtils.select(0, dim1dim2dim3dim4, dim5, sel5);
-        int[] idx6 = ArrayUtils.select(0, dim1dim2dim3dim4dim5, dim6, sel6);
-        int[] idx7 = ArrayUtils.select(0, dim1dim2dim3dim4dim5dim6, dim7, sel7);
-        int[] idx8 = ArrayUtils.select(0, dim1dim2dim3dim4dim5dim6dim7, dim8, sel8);
+        int[] idx1 = Helper.select(0, 1, dim1, sel1);
+        int[] idx2 = Helper.select(0, dim1, dim2, sel2);
+        int[] idx3 = Helper.select(0, dim1dim2, dim3, sel3);
+        int[] idx4 = Helper.select(0, dim1dim2dim3, dim4, sel4);
+        int[] idx5 = Helper.select(0, dim1dim2dim3dim4, dim5, sel5);
+        int[] idx6 = Helper.select(0, dim1dim2dim3dim4dim5, dim6, sel6);
+        int[] idx7 = Helper.select(0, dim1dim2dim3dim4dim5dim6, dim7, sel7);
+        int[] idx8 = Helper.select(0, dim1dim2dim3dim4dim5dim6dim7, dim8, sel8);
         return new SelectedByte8D(this.data, idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8);
     }
 

@@ -32,7 +32,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.IllegalRangeException;
 
@@ -672,13 +671,13 @@ public class StriddenByte7D extends Byte7D {
 
     @Override
     public Byte7D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4, int[] sel5, int[] sel6, int[] sel7) {
-        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
-        int[] idx2 = ArrayUtils.select(0, stride2, dim2, sel2);
-        int[] idx3 = ArrayUtils.select(0, stride3, dim3, sel3);
-        int[] idx4 = ArrayUtils.select(0, stride4, dim4, sel4);
-        int[] idx5 = ArrayUtils.select(0, stride5, dim5, sel5);
-        int[] idx6 = ArrayUtils.select(0, stride6, dim6, sel6);
-        int[] idx7 = ArrayUtils.select(0, stride7, dim7, sel7);
+        int[] idx1 = Helper.select(offset, stride1, dim1, sel1);
+        int[] idx2 = Helper.select(0, stride2, dim2, sel2);
+        int[] idx3 = Helper.select(0, stride3, dim3, sel3);
+        int[] idx4 = Helper.select(0, stride4, dim4, sel4);
+        int[] idx5 = Helper.select(0, stride5, dim5, sel5);
+        int[] idx6 = Helper.select(0, stride6, dim6, sel6);
+        int[] idx7 = Helper.select(0, stride7, dim7, sel7);
         return new SelectedByte7D(this.data, idx1, idx2, idx3, idx4, idx5, idx6, idx7);
     }
 

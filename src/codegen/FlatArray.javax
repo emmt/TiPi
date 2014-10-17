@@ -26,7 +26,6 @@
 //# // Define the implementation prefix and get common definitions.
 //# def implPrefix = Flat
 //# include <commonImpl.javax>
-import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
@@ -322,6 +321,7 @@ public class ${className} extends ${superName} {
 
     @Override
     public ${reducedSuperName} slice(int idx) {
+        idx = Helper.fixIndex(idx, dim${rank});
         //# if ${reducedRank} == 0
         return new ${reducedSuperName}(data, idx);
         //# else
@@ -363,30 +363,31 @@ public class ${className} extends ${superName} {
         //#         def reducedStrideList = ${reducedStrideList}, sliceStride${k}
         //#     end
         //# end
+        //# if ${reducedRank} == 0
+        Helper.fixSliceIndex(dim, ${rank});
+        return new ${reducedSuperName}(data, Helper.fixIndex(idx, dim1));
+        //# else
         int sliceOffset;
-        //# if ${reducedRank} >= 1
         int ${reducedStrideList};
         int ${reducedDimList};
-        //# end
-        if (dim < 0) {
-            /* A negative index is taken with respect to the end. */
-            dim += ${rank};
-        }
+        dim = Helper.fixSliceIndex(dim, ${rank});
         //#     for k in 1:${rank}
         //#         eval km1 = ${k} - 1
         //#         def k_th = ${}{nth_${k}}
         //#         if ${k} == 1
         if (dim == ${km1}) {
-            //#     else
+            //#     elif ${k} < ${rank}
         } else if (dim == ${km1}) {
+            //#     else
+        } else {
             //#     end
             /* Slice along ${k_th} dimension. */
             //#     if ${k} == 1
-            //#         def sliceOffset = idx
+            //#         def multiplier =
             //#     else
-            //#         def sliceOffset = ${}{stride${k}}*idx
+            //#         def multiplier = ${}{stride${k}}*
             //#     end
-            sliceOffset = ${sliceOffset};
+            sliceOffset = ${multiplier}Helper.fixIndex(idx, dim${k});
             //#     def m = 0
             //#     for j in 1:${rank}
             //#         if ${j} != ${k}
@@ -403,12 +404,7 @@ public class ${className} extends ${superName} {
             //#         end
             //#     end
             //# end
-        } else {
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
         }
-        //# if ${reducedRank} == 0
-        return new ${reducedSuperName}(data, sliceOffset);
-        //# else
         return new Stridden${Type}${reducedRank}D(data, sliceOffset,
                 ${reducedStrideList},
                 ${reducedDimList});
@@ -464,7 +460,7 @@ public class ${className} extends ${superName} {
     public ${superName} view(${argDecl}) {
         //# for k in 1:${rank}
         //#     def stride = ${}{stride${k}}
-        int[] idx${k} = ArrayUtils.select(0, ${stride}, dim${k}, sel${k});
+        int[] idx${k} = Helper.select(0, ${stride}, dim${k}, sel${k});
         //# end
         return new Selected${superName}(${argList});
     }

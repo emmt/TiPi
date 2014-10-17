@@ -32,7 +32,7 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
-import mitiv.array.ArrayUtils;
+
 
 /**
  * Selected implementation of 4-dimensional arrays of double's.
@@ -274,7 +274,7 @@ public class SelectedDouble4D extends Double4D {
     @Override
     public Double3D slice(int idx) {
         int[] idx1 = this.idx1;
-        int offset = idx4[idx];
+        int offset = idx4[Helper.fixIndex(idx, dim4)];
         if (offset != 0) {
             /* Add the offset to the first indirection table. */
             int length = idx1.length;
@@ -289,41 +289,35 @@ public class SelectedDouble4D extends Double4D {
 
     @Override
     public Double3D slice(int idx, int dim) {
-        if (dim < 0) {
-            /* A negative index is taken with respect to the end. */
-            dim += 4;
-        }
-        if (dim != 0) {
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
-        }
+        dim = Helper.fixSliceIndex(dim, 4);
         int[] idx1;
         int[] idx2;
         int[] idx3;
         int offset;
         switch (dim) {
         case 0:
-            offset = this.idx1[idx];
+            offset = this.idx1[Helper.fixIndex(idx, dim1)];
             idx1 = this.idx2;
             idx2 = this.idx3;
             idx3 = this.idx4;
             break;
         case 1:
             idx1 = this.idx1;
-            offset = this.idx2[idx];
+            offset = this.idx2[Helper.fixIndex(idx, dim2)];
             idx2 = this.idx3;
             idx3 = this.idx4;
             break;
         case 2:
             idx1 = this.idx1;
             idx2 = this.idx2;
-            offset = this.idx3[idx];
+            offset = this.idx3[Helper.fixIndex(idx, dim3)];
             idx3 = this.idx4;
             break;
         case 3:
             idx1 = this.idx1;
             idx2 = this.idx2;
             idx3 = this.idx3;
-            offset = this.idx4[idx];
+            offset = this.idx4[Helper.fixIndex(idx, dim4)];
             break;
         default:
             throw new IndexOutOfBoundsException("Dimension index out of bounds.");
@@ -342,10 +336,10 @@ public class SelectedDouble4D extends Double4D {
 
     @Override
     public Double4D view(Range rng1, Range rng2, Range rng3, Range rng4) {
-        int[] idx1 = ArrayUtils.select(this.idx1, rng1);
-        int[] idx2 = ArrayUtils.select(this.idx2, rng2);
-        int[] idx3 = ArrayUtils.select(this.idx3, rng3);
-        int[] idx4 = ArrayUtils.select(this.idx4, rng4);
+        int[] idx1 = Helper.select(this.idx1, rng1);
+        int[] idx2 = Helper.select(this.idx2, rng2);
+        int[] idx3 = Helper.select(this.idx3, rng3);
+        int[] idx4 = Helper.select(this.idx4, rng4);
         if (idx1 == this.idx1 && idx2 == this.idx2 && idx3 == this.idx3 && idx4 == this.idx4) {
             return this;
         } else {
@@ -355,10 +349,10 @@ public class SelectedDouble4D extends Double4D {
 
     @Override
     public Double4D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4) {
-        int[] idx1 = ArrayUtils.select(this.idx1, sel1);
-        int[] idx2 = ArrayUtils.select(this.idx2, sel2);
-        int[] idx3 = ArrayUtils.select(this.idx3, sel3);
-        int[] idx4 = ArrayUtils.select(this.idx4, sel4);
+        int[] idx1 = Helper.select(this.idx1, sel1);
+        int[] idx2 = Helper.select(this.idx2, sel2);
+        int[] idx3 = Helper.select(this.idx3, sel3);
+        int[] idx4 = Helper.select(this.idx4, sel4);
         if (idx1 == this.idx1 && idx2 == this.idx2 && idx3 == this.idx3 && idx4 == this.idx4) {
             return this;
         } else {

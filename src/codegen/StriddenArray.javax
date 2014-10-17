@@ -26,7 +26,6 @@
 //# // Define the implementation prefix and get common definitions.
 //# def implPrefix = Stridden
 //# include <commonImpl.javax>
-import mitiv.array.ArrayUtils;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.IllegalRangeException;
 
@@ -431,7 +430,7 @@ public class ${className} extends ${superName} {
         //#      else
         //#         def offset = 0
         //#      end
-        int[] idx${k} = ArrayUtils.select(${offset}, stride${k}, dim${k}, sel${k});
+        int[] idx${k} = Helper.select(${offset}, stride${k}, dim${k}, sel${k});
         //# end
         return new Selected${superName}(${argList});
     }

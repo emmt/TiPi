@@ -31,7 +31,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
 import mitiv.random.FloatGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
@@ -178,23 +177,14 @@ public class FlatFloat1D extends Float1D {
 
     @Override
     public FloatScalar slice(int idx) {
+        idx = Helper.fixIndex(idx, dim1);
         return new FloatScalar(data, idx);
     }
 
     @Override
     public FloatScalar slice(int idx, int dim) {
-        int sliceOffset;
-        if (dim < 0) {
-            /* A negative index is taken with respect to the end. */
-            dim += 1;
-        }
-        if (dim == 0) {
-            /* Slice along 1st dimension. */
-            sliceOffset = idx;
-        } else {
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
-        }
-        return new FloatScalar(data, sliceOffset);
+        Helper.fixSliceIndex(dim, 1);
+        return new FloatScalar(data, Helper.fixIndex(idx, dim1));
     }
 
     @Override
@@ -214,7 +204,7 @@ public class FlatFloat1D extends Float1D {
 
     @Override
     public Float1D view(int[] sel1) {
-        int[] idx1 = ArrayUtils.select(0, 1, dim1, sel1);
+        int[] idx1 = Helper.select(0, 1, dim1, sel1);
         return new SelectedFloat1D(this.data, idx1);
     }
 

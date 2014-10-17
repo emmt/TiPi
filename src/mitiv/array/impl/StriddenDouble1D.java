@@ -31,7 +31,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.IllegalRangeException;
 
@@ -207,7 +206,7 @@ public class StriddenDouble1D extends Double1D {
 
     @Override
     public Double1D view(int[] sel1) {
-        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
+        int[] idx1 = Helper.select(offset, stride1, dim1, sel1);
         return new SelectedDouble1D(this.data, idx1);
     }
 

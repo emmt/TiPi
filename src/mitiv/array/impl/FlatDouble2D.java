@@ -31,7 +31,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
@@ -178,6 +177,7 @@ public class FlatDouble2D extends Double2D {
 
     @Override
     public Double1D slice(int idx) {
+        idx = Helper.fixIndex(idx, dim2);
         if (idx == 0) {
             return new FlatDouble1D(data, dim1);
         } else {
@@ -193,22 +193,17 @@ public class FlatDouble2D extends Double2D {
         int sliceOffset;
         int sliceStride1;
         int sliceDim1;
-        if (dim < 0) {
-            /* A negative index is taken with respect to the end. */
-            dim += 2;
-        }
+        dim = Helper.fixSliceIndex(dim, 2);
         if (dim == 0) {
             /* Slice along 1st dimension. */
-            sliceOffset = idx;
+            sliceOffset = Helper.fixIndex(idx, dim1);
             sliceStride1 = dim1;
             sliceDim1 = dim2;
-        } else if (dim == 1) {
+        } else {
             /* Slice along 2nd dimension. */
-            sliceOffset = dim1*idx;
+            sliceOffset = dim1*Helper.fixIndex(idx, dim2);
             sliceStride1 = 1;
             sliceDim1 = dim1;
-        } else {
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
         }
         return new StriddenDouble1D(data, sliceOffset,
                 sliceStride1,
@@ -233,8 +228,8 @@ public class FlatDouble2D extends Double2D {
 
     @Override
     public Double2D view(int[] sel1, int[] sel2) {
-        int[] idx1 = ArrayUtils.select(0, 1, dim1, sel1);
-        int[] idx2 = ArrayUtils.select(0, dim1, dim2, sel2);
+        int[] idx1 = Helper.select(0, 1, dim1, sel1);
+        int[] idx2 = Helper.select(0, dim1, dim2, sel2);
         return new SelectedDouble2D(this.data, idx1, idx2);
     }
 

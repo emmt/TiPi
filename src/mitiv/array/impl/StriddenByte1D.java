@@ -31,7 +31,6 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
-import mitiv.array.ArrayUtils;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.IllegalRangeException;
 
@@ -207,7 +206,7 @@ public class StriddenByte1D extends Byte1D {
 
     @Override
     public Byte1D view(int[] sel1) {
-        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
+        int[] idx1 = Helper.select(offset, stride1, dim1, sel1);
         return new SelectedByte1D(this.data, idx1);
     }
 
