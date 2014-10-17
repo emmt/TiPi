@@ -31,6 +31,9 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
+import mitiv.array.ArrayUtils;
+import mitiv.base.indexing.CompiledRange;
+import mitiv.exception.IllegalRangeException;
 
 /**
  * Stridden implementation of 1-dimensional arrays of double's.
@@ -51,7 +54,7 @@ public class StriddenDouble1D extends Double1D {
         this.data = arr;
         this.offset = offset;
         stride1 = stride[0];
-        this.order = Double1D.checkViewStrides(data.length, dim1, offset, stride1);
+        this.order = Double1D.checkViewStrides(data.length, offset, stride1, dim1);
     }
 
     public StriddenDouble1D(double[] arr, int offset, int stride1, int dim1) {
@@ -59,12 +62,12 @@ public class StriddenDouble1D extends Double1D {
         this.data = arr;
         this.offset = offset;
         this.stride1 = stride1;
-        this.order = Double1D.checkViewStrides(data.length, dim1, offset, stride1);
+        this.order = Double1D.checkViewStrides(data.length, offset, stride1, dim1);
     }
 
     @Override
     public void checkSanity() {
-        Double1D.checkViewStrides(data.length, dim1, offset, stride1);
+        Double1D.checkViewStrides(data.length, offset, stride1, dim1);
     }
 
     private boolean isFlat() {
@@ -165,28 +168,47 @@ public class StriddenDouble1D extends Double1D {
         }
         return out;
     }
+
     @Override
     public DoubleScalar slice(int idx) {
-        // TODO Auto-generated method stub
-        return null;
+        return new DoubleScalar(data, offset + stride1*idx);
     }
 
     @Override
     public DoubleScalar slice(int idx, int dim) {
-        // TODO Auto-generated method stub
-        return null;
+        int sliceOffset;
+        if (dim < 0) {
+            /* A negative index is taken with respect to the end. */
+            dim += 1;
+        }
+        if (dim == 0) {
+            /* Slice along 1st dimension. */
+            sliceOffset = offset + stride1*idx;
+        } else {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        }
+        return new DoubleScalar(data, sliceOffset);
     }
 
     @Override
     public Double1D view(Range rng1) {
-        // TODO Auto-generated method stub
-        return null;
+        CompiledRange cr1 = new CompiledRange(rng1, dim1, offset, stride1);
+        if (cr1.doesNothing()) {
+            return this;
+        }
+        if (cr1.getNumber() == 0) {
+            throw new IllegalRangeException("Empty range.");
+        }
+        return new StriddenDouble1D(this.data,
+                cr1.getOffset(),
+                cr1.getStride(),
+                cr1.getNumber());
     }
 
     @Override
-    public Double1D view(int[] idx1) {
-        // TODO Auto-generated method stub
-        return null;
+    public Double1D view(int[] sel1) {
+        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
+        return new SelectedDouble1D(this.data, idx1);
     }
 
     @Override

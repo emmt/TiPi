@@ -32,6 +32,9 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
 import mitiv.random.FloatGenerator;
+import mitiv.array.ArrayUtils;
+import mitiv.base.indexing.CompiledRange;
+import mitiv.exception.IllegalRangeException;
 
 /**
  * Stridden implementation of 9-dimensional arrays of float's.
@@ -68,10 +71,10 @@ public class StriddenFloat9D extends Float9D {
         stride7 = stride[6];
         stride8 = stride[7];
         stride9 = stride[8];
-        this.order = Float9D.checkViewStrides(data.length, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9, offset, stride1, stride2, stride3, stride4, stride5, stride6, stride7, stride8, stride9);
+        this.order = Float9D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, stride5, stride6, stride7, stride8, stride9, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
-    public StriddenFloat9D(float[] arr, int offset, int stride1, int dim1, int stride2, int dim2, int stride3, int dim3, int stride4, int dim4, int stride5, int dim5, int stride6, int dim6, int stride7, int dim7, int stride8, int dim8, int stride9, int dim9) {
+    public StriddenFloat9D(float[] arr, int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int stride8, int stride9, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         super(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
         this.data = arr;
         this.offset = offset;
@@ -84,12 +87,12 @@ public class StriddenFloat9D extends Float9D {
         this.stride7 = stride7;
         this.stride8 = stride8;
         this.stride9 = stride9;
-        this.order = Float9D.checkViewStrides(data.length, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9, offset, stride1, stride2, stride3, stride4, stride5, stride6, stride7, stride8, stride9);
+        this.order = Float9D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, stride5, stride6, stride7, stride8, stride9, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     @Override
     public void checkSanity() {
-        Float9D.checkViewStrides(data.length, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9, offset, stride1, stride2, stride3, stride4, stride5, stride6, stride7, stride8, stride9);
+        Float9D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, stride5, stride6, stride7, stride8, stride9, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     private boolean isFlat() {
@@ -611,34 +614,244 @@ public class StriddenFloat9D extends Float9D {
         }
         return out;
     }
+
     @Override
     public Float8D slice(int idx) {
-        // TODO Auto-generated method stub
-        return null;
+        return new StriddenFloat8D(data,
+               offset + stride9*idx, // offset
+               stride1, stride2, stride3, stride4, stride5, stride6, stride7, stride8, // strides
+               dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8); // dimensions
     }
 
     @Override
     public Float8D slice(int idx, int dim) {
-        // TODO Auto-generated method stub
-        return null;
+        int sliceOffset;
+        int sliceStride1, sliceStride2, sliceStride3, sliceStride4, sliceStride5, sliceStride6, sliceStride7, sliceStride8;
+        int sliceDim1, sliceDim2, sliceDim3, sliceDim4, sliceDim5, sliceDim6, sliceDim7, sliceDim8;
+        if (dim < 0) {
+            /* A negative index is taken with respect to the end. */
+            dim += 9;
+        }
+        if (dim == 0) {
+            /* Slice along 1st dimension. */
+            sliceOffset = offset + stride1*idx;
+            sliceStride1 = stride2;
+            sliceStride2 = stride3;
+            sliceStride3 = stride4;
+            sliceStride4 = stride5;
+            sliceStride5 = stride6;
+            sliceStride6 = stride7;
+            sliceStride7 = stride8;
+            sliceStride8 = stride9;
+            sliceDim1 = dim2;
+            sliceDim2 = dim3;
+            sliceDim3 = dim4;
+            sliceDim4 = dim5;
+            sliceDim5 = dim6;
+            sliceDim6 = dim7;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 1) {
+            /* Slice along 2nd dimension. */
+            sliceOffset = offset + stride2*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride3;
+            sliceStride3 = stride4;
+            sliceStride4 = stride5;
+            sliceStride5 = stride6;
+            sliceStride6 = stride7;
+            sliceStride7 = stride8;
+            sliceStride8 = stride9;
+            sliceDim1 = dim1;
+            sliceDim2 = dim3;
+            sliceDim3 = dim4;
+            sliceDim4 = dim5;
+            sliceDim5 = dim6;
+            sliceDim6 = dim7;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 2) {
+            /* Slice along 3rd dimension. */
+            sliceOffset = offset + stride3*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride2;
+            sliceStride3 = stride4;
+            sliceStride4 = stride5;
+            sliceStride5 = stride6;
+            sliceStride6 = stride7;
+            sliceStride7 = stride8;
+            sliceStride8 = stride9;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim4;
+            sliceDim4 = dim5;
+            sliceDim5 = dim6;
+            sliceDim6 = dim7;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 3) {
+            /* Slice along 4th dimension. */
+            sliceOffset = offset + stride4*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride2;
+            sliceStride3 = stride3;
+            sliceStride4 = stride5;
+            sliceStride5 = stride6;
+            sliceStride6 = stride7;
+            sliceStride7 = stride8;
+            sliceStride8 = stride9;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim5;
+            sliceDim5 = dim6;
+            sliceDim6 = dim7;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 4) {
+            /* Slice along 5th dimension. */
+            sliceOffset = offset + stride5*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride2;
+            sliceStride3 = stride3;
+            sliceStride4 = stride4;
+            sliceStride5 = stride6;
+            sliceStride6 = stride7;
+            sliceStride7 = stride8;
+            sliceStride8 = stride9;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim4;
+            sliceDim5 = dim6;
+            sliceDim6 = dim7;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 5) {
+            /* Slice along 6th dimension. */
+            sliceOffset = offset + stride6*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride2;
+            sliceStride3 = stride3;
+            sliceStride4 = stride4;
+            sliceStride5 = stride5;
+            sliceStride6 = stride7;
+            sliceStride7 = stride8;
+            sliceStride8 = stride9;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim4;
+            sliceDim5 = dim5;
+            sliceDim6 = dim7;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 6) {
+            /* Slice along 7th dimension. */
+            sliceOffset = offset + stride7*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride2;
+            sliceStride3 = stride3;
+            sliceStride4 = stride4;
+            sliceStride5 = stride5;
+            sliceStride6 = stride6;
+            sliceStride7 = stride8;
+            sliceStride8 = stride9;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim4;
+            sliceDim5 = dim5;
+            sliceDim6 = dim6;
+            sliceDim7 = dim8;
+            sliceDim8 = dim9;
+        } else if (dim == 7) {
+            /* Slice along 8th dimension. */
+            sliceOffset = offset + stride8*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride2;
+            sliceStride3 = stride3;
+            sliceStride4 = stride4;
+            sliceStride5 = stride5;
+            sliceStride6 = stride6;
+            sliceStride7 = stride7;
+            sliceStride8 = stride9;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim4;
+            sliceDim5 = dim5;
+            sliceDim6 = dim6;
+            sliceDim7 = dim7;
+            sliceDim8 = dim9;
+        } else if (dim == 8) {
+            /* Slice along 9th dimension. */
+            sliceOffset = offset + stride9*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride2;
+            sliceStride3 = stride3;
+            sliceStride4 = stride4;
+            sliceStride5 = stride5;
+            sliceStride6 = stride6;
+            sliceStride7 = stride7;
+            sliceStride8 = stride8;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+            sliceDim4 = dim4;
+            sliceDim5 = dim5;
+            sliceDim6 = dim6;
+            sliceDim7 = dim7;
+            sliceDim8 = dim8;
+        } else {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        }
+        return new StriddenFloat8D(data, sliceOffset,
+                sliceStride1, sliceStride2, sliceStride3, sliceStride4, sliceStride5, sliceStride6, sliceStride7, sliceStride8,
+                sliceDim1, sliceDim2, sliceDim3, sliceDim4, sliceDim5, sliceDim6, sliceDim7, sliceDim8);
     }
 
     @Override
     public Float9D view(Range rng1, Range rng2, Range rng3, Range rng4, Range rng5, Range rng6, Range rng7, Range rng8, Range rng9) {
-        // TODO Auto-generated method stub
-        return null;
+        CompiledRange cr1 = new CompiledRange(rng1, dim1, offset, stride1);
+        CompiledRange cr2 = new CompiledRange(rng2, dim2, 0, stride2);
+        CompiledRange cr3 = new CompiledRange(rng3, dim3, 0, stride3);
+        CompiledRange cr4 = new CompiledRange(rng4, dim4, 0, stride4);
+        CompiledRange cr5 = new CompiledRange(rng5, dim5, 0, stride5);
+        CompiledRange cr6 = new CompiledRange(rng6, dim6, 0, stride6);
+        CompiledRange cr7 = new CompiledRange(rng7, dim7, 0, stride7);
+        CompiledRange cr8 = new CompiledRange(rng8, dim8, 0, stride8);
+        CompiledRange cr9 = new CompiledRange(rng9, dim9, 0, stride9);
+        if (cr1.doesNothing() && cr2.doesNothing() && cr3.doesNothing() && cr4.doesNothing() && cr5.doesNothing() && cr6.doesNothing() && cr7.doesNothing() && cr8.doesNothing() && cr9.doesNothing()) {
+            return this;
+        }
+        if (cr1.getNumber() == 0 || cr2.getNumber() == 0 || cr3.getNumber() == 0 || cr4.getNumber() == 0 || cr5.getNumber() == 0 || cr6.getNumber() == 0 || cr7.getNumber() == 0 || cr8.getNumber() == 0 || cr9.getNumber() == 0) {
+            throw new IllegalRangeException("Empty range.");
+        }
+        return new StriddenFloat9D(this.data,
+                cr1.getOffset() + cr2.getOffset() + cr3.getOffset() + cr4.getOffset() + cr5.getOffset() + cr6.getOffset() + cr7.getOffset() + cr8.getOffset() + cr9.getOffset(),
+                cr1.getStride(), cr2.getStride(), cr3.getStride(), cr4.getStride(), cr5.getStride(), cr6.getStride(), cr7.getStride(), cr8.getStride(), cr9.getStride(),
+                cr1.getNumber(), cr2.getNumber(), cr3.getNumber(), cr4.getNumber(), cr5.getNumber(), cr6.getNumber(), cr7.getNumber(), cr8.getNumber(), cr9.getNumber());
     }
 
     @Override
-    public Float9D view(int[] idx1, int[] idx2, int[] idx3, int[] idx4, int[] idx5, int[] idx6, int[] idx7, int[] idx8, int[] idx9) {
-        // TODO Auto-generated method stub
-        return null;
+    public Float9D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4, int[] sel5, int[] sel6, int[] sel7, int[] sel8, int[] sel9) {
+        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
+        int[] idx2 = ArrayUtils.select(0, stride2, dim2, sel2);
+        int[] idx3 = ArrayUtils.select(0, stride3, dim3, sel3);
+        int[] idx4 = ArrayUtils.select(0, stride4, dim4, sel4);
+        int[] idx5 = ArrayUtils.select(0, stride5, dim5, sel5);
+        int[] idx6 = ArrayUtils.select(0, stride6, dim6, sel6);
+        int[] idx7 = ArrayUtils.select(0, stride7, dim7, sel7);
+        int[] idx8 = ArrayUtils.select(0, stride8, dim8, sel8);
+        int[] idx9 = ArrayUtils.select(0, stride9, dim9, sel9);
+        return new SelectedFloat9D(this.data, idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8, idx9);
     }
 
     @Override
     public Float1D as1D() {
-        // TODO Auto-generated method stub
-        return null;
+        // FIXME: may already be contiguous
+        return new FlatFloat1D(flatten(), number);
     }
 
 }

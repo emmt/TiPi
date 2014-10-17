@@ -32,6 +32,9 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
+import mitiv.array.ArrayUtils;
+import mitiv.base.indexing.CompiledRange;
+import mitiv.exception.IllegalRangeException;
 
 /**
  * Stridden implementation of 3-dimensional arrays of byte's.
@@ -56,22 +59,22 @@ public class StriddenByte3D extends Byte3D {
         stride1 = stride[0];
         stride2 = stride[1];
         stride3 = stride[2];
-        this.order = Byte3D.checkViewStrides(data.length, dim1, dim2, dim3, offset, stride1, stride2, stride3);
+        this.order = Byte3D.checkViewStrides(data.length, offset, stride1, stride2, stride3, dim1, dim2, dim3);
     }
 
-    public StriddenByte3D(byte[] arr, int offset, int stride1, int dim1, int stride2, int dim2, int stride3, int dim3) {
+    public StriddenByte3D(byte[] arr, int offset, int stride1, int stride2, int stride3, int dim1, int dim2, int dim3) {
         super(dim1, dim2, dim3);
         this.data = arr;
         this.offset = offset;
         this.stride1 = stride1;
         this.stride2 = stride2;
         this.stride3 = stride3;
-        this.order = Byte3D.checkViewStrides(data.length, dim1, dim2, dim3, offset, stride1, stride2, stride3);
+        this.order = Byte3D.checkViewStrides(data.length, offset, stride1, stride2, stride3, dim1, dim2, dim3);
     }
 
     @Override
     public void checkSanity() {
-        Byte3D.checkViewStrides(data.length, dim1, dim2, dim3, offset, stride1, stride2, stride3);
+        Byte3D.checkViewStrides(data.length, offset, stride1, stride2, stride3, dim1, dim2, dim3);
     }
 
     private boolean isFlat() {
@@ -323,34 +326,82 @@ public class StriddenByte3D extends Byte3D {
         }
         return out;
     }
+
     @Override
     public Byte2D slice(int idx) {
-        // TODO Auto-generated method stub
-        return null;
+        return new StriddenByte2D(data,
+               offset + stride3*idx, // offset
+               stride1, stride2, // strides
+               dim1, dim2); // dimensions
     }
 
     @Override
     public Byte2D slice(int idx, int dim) {
-        // TODO Auto-generated method stub
-        return null;
+        int sliceOffset;
+        int sliceStride1, sliceStride2;
+        int sliceDim1, sliceDim2;
+        if (dim < 0) {
+            /* A negative index is taken with respect to the end. */
+            dim += 3;
+        }
+        if (dim == 0) {
+            /* Slice along 1st dimension. */
+            sliceOffset = offset + stride1*idx;
+            sliceStride1 = stride2;
+            sliceStride2 = stride3;
+            sliceDim1 = dim2;
+            sliceDim2 = dim3;
+        } else if (dim == 1) {
+            /* Slice along 2nd dimension. */
+            sliceOffset = offset + stride2*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride3;
+            sliceDim1 = dim1;
+            sliceDim2 = dim3;
+        } else if (dim == 2) {
+            /* Slice along 3rd dimension. */
+            sliceOffset = offset + stride3*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride2;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+        } else {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        }
+        return new StriddenByte2D(data, sliceOffset,
+                sliceStride1, sliceStride2,
+                sliceDim1, sliceDim2);
     }
 
     @Override
     public Byte3D view(Range rng1, Range rng2, Range rng3) {
-        // TODO Auto-generated method stub
-        return null;
+        CompiledRange cr1 = new CompiledRange(rng1, dim1, offset, stride1);
+        CompiledRange cr2 = new CompiledRange(rng2, dim2, 0, stride2);
+        CompiledRange cr3 = new CompiledRange(rng3, dim3, 0, stride3);
+        if (cr1.doesNothing() && cr2.doesNothing() && cr3.doesNothing()) {
+            return this;
+        }
+        if (cr1.getNumber() == 0 || cr2.getNumber() == 0 || cr3.getNumber() == 0) {
+            throw new IllegalRangeException("Empty range.");
+        }
+        return new StriddenByte3D(this.data,
+                cr1.getOffset() + cr2.getOffset() + cr3.getOffset(),
+                cr1.getStride(), cr2.getStride(), cr3.getStride(),
+                cr1.getNumber(), cr2.getNumber(), cr3.getNumber());
     }
 
     @Override
-    public Byte3D view(int[] idx1, int[] idx2, int[] idx3) {
-        // TODO Auto-generated method stub
-        return null;
+    public Byte3D view(int[] sel1, int[] sel2, int[] sel3) {
+        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
+        int[] idx2 = ArrayUtils.select(0, stride2, dim2, sel2);
+        int[] idx3 = ArrayUtils.select(0, stride3, dim3, sel3);
+        return new SelectedByte3D(this.data, idx1, idx2, idx3);
     }
 
     @Override
     public Byte1D as1D() {
-        // TODO Auto-generated method stub
-        return null;
+        // FIXME: may already be contiguous
+        return new FlatByte1D(flatten(), number);
     }
 
 }

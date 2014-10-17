@@ -31,6 +31,9 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
 import mitiv.random.IntGenerator;
+import mitiv.array.ArrayUtils;
+import mitiv.base.indexing.CompiledRange;
+import mitiv.exception.IllegalRangeException;
 
 /**
  * Stridden implementation of 2-dimensional arrays of int's.
@@ -53,21 +56,21 @@ public class StriddenInt2D extends Int2D {
         this.offset = offset;
         stride1 = stride[0];
         stride2 = stride[1];
-        this.order = Int2D.checkViewStrides(data.length, dim1, dim2, offset, stride1, stride2);
+        this.order = Int2D.checkViewStrides(data.length, offset, stride1, stride2, dim1, dim2);
     }
 
-    public StriddenInt2D(int[] arr, int offset, int stride1, int dim1, int stride2, int dim2) {
+    public StriddenInt2D(int[] arr, int offset, int stride1, int stride2, int dim1, int dim2) {
         super(dim1, dim2);
         this.data = arr;
         this.offset = offset;
         this.stride1 = stride1;
         this.stride2 = stride2;
-        this.order = Int2D.checkViewStrides(data.length, dim1, dim2, offset, stride1, stride2);
+        this.order = Int2D.checkViewStrides(data.length, offset, stride1, stride2, dim1, dim2);
     }
 
     @Override
     public void checkSanity() {
-        Int2D.checkViewStrides(data.length, dim1, dim2, offset, stride1, stride2);
+        Int2D.checkViewStrides(data.length, offset, stride1, stride2, dim1, dim2);
     }
 
     private boolean isFlat() {
@@ -274,34 +277,69 @@ public class StriddenInt2D extends Int2D {
         }
         return out;
     }
+
     @Override
     public Int1D slice(int idx) {
-        // TODO Auto-generated method stub
-        return null;
+        return new StriddenInt1D(data,
+               offset + stride2*idx, // offset
+               stride1, // strides
+               dim1); // dimensions
     }
 
     @Override
     public Int1D slice(int idx, int dim) {
-        // TODO Auto-generated method stub
-        return null;
+        int sliceOffset;
+        int sliceStride1;
+        int sliceDim1;
+        if (dim < 0) {
+            /* A negative index is taken with respect to the end. */
+            dim += 2;
+        }
+        if (dim == 0) {
+            /* Slice along 1st dimension. */
+            sliceOffset = offset + stride1*idx;
+            sliceStride1 = stride2;
+            sliceDim1 = dim2;
+        } else if (dim == 1) {
+            /* Slice along 2nd dimension. */
+            sliceOffset = offset + stride2*idx;
+            sliceStride1 = stride1;
+            sliceDim1 = dim1;
+        } else {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        }
+        return new StriddenInt1D(data, sliceOffset,
+                sliceStride1,
+                sliceDim1);
     }
 
     @Override
     public Int2D view(Range rng1, Range rng2) {
-        // TODO Auto-generated method stub
-        return null;
+        CompiledRange cr1 = new CompiledRange(rng1, dim1, offset, stride1);
+        CompiledRange cr2 = new CompiledRange(rng2, dim2, 0, stride2);
+        if (cr1.doesNothing() && cr2.doesNothing()) {
+            return this;
+        }
+        if (cr1.getNumber() == 0 || cr2.getNumber() == 0) {
+            throw new IllegalRangeException("Empty range.");
+        }
+        return new StriddenInt2D(this.data,
+                cr1.getOffset() + cr2.getOffset(),
+                cr1.getStride(), cr2.getStride(),
+                cr1.getNumber(), cr2.getNumber());
     }
 
     @Override
-    public Int2D view(int[] idx1, int[] idx2) {
-        // TODO Auto-generated method stub
-        return null;
+    public Int2D view(int[] sel1, int[] sel2) {
+        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
+        int[] idx2 = ArrayUtils.select(0, stride2, dim2, sel2);
+        return new SelectedInt2D(this.data, idx1, idx2);
     }
 
     @Override
     public Int1D as1D() {
-        // TODO Auto-generated method stub
-        return null;
+        // FIXME: may already be contiguous
+        return new FlatInt1D(flatten(), number);
     }
 
 }

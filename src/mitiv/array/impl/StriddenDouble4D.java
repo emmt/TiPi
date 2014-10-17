@@ -32,6 +32,9 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
+import mitiv.array.ArrayUtils;
+import mitiv.base.indexing.CompiledRange;
+import mitiv.exception.IllegalRangeException;
 
 /**
  * Stridden implementation of 4-dimensional arrays of double's.
@@ -58,10 +61,10 @@ public class StriddenDouble4D extends Double4D {
         stride2 = stride[1];
         stride3 = stride[2];
         stride4 = stride[3];
-        this.order = Double4D.checkViewStrides(data.length, dim1, dim2, dim3, dim4, offset, stride1, stride2, stride3, stride4);
+        this.order = Double4D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, dim1, dim2, dim3, dim4);
     }
 
-    public StriddenDouble4D(double[] arr, int offset, int stride1, int dim1, int stride2, int dim2, int stride3, int dim3, int stride4, int dim4) {
+    public StriddenDouble4D(double[] arr, int offset, int stride1, int stride2, int stride3, int stride4, int dim1, int dim2, int dim3, int dim4) {
         super(dim1, dim2, dim3, dim4);
         this.data = arr;
         this.offset = offset;
@@ -69,12 +72,12 @@ public class StriddenDouble4D extends Double4D {
         this.stride2 = stride2;
         this.stride3 = stride3;
         this.stride4 = stride4;
-        this.order = Double4D.checkViewStrides(data.length, dim1, dim2, dim3, dim4, offset, stride1, stride2, stride3, stride4);
+        this.order = Double4D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, dim1, dim2, dim3, dim4);
     }
 
     @Override
     public void checkSanity() {
-        Double4D.checkViewStrides(data.length, dim1, dim2, dim3, dim4, offset, stride1, stride2, stride3, stride4);
+        Double4D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, dim1, dim2, dim3, dim4);
     }
 
     private boolean isFlat() {
@@ -371,34 +374,99 @@ public class StriddenDouble4D extends Double4D {
         }
         return out;
     }
+
     @Override
     public Double3D slice(int idx) {
-        // TODO Auto-generated method stub
-        return null;
+        return new StriddenDouble3D(data,
+               offset + stride4*idx, // offset
+               stride1, stride2, stride3, // strides
+               dim1, dim2, dim3); // dimensions
     }
 
     @Override
     public Double3D slice(int idx, int dim) {
-        // TODO Auto-generated method stub
-        return null;
+        int sliceOffset;
+        int sliceStride1, sliceStride2, sliceStride3;
+        int sliceDim1, sliceDim2, sliceDim3;
+        if (dim < 0) {
+            /* A negative index is taken with respect to the end. */
+            dim += 4;
+        }
+        if (dim == 0) {
+            /* Slice along 1st dimension. */
+            sliceOffset = offset + stride1*idx;
+            sliceStride1 = stride2;
+            sliceStride2 = stride3;
+            sliceStride3 = stride4;
+            sliceDim1 = dim2;
+            sliceDim2 = dim3;
+            sliceDim3 = dim4;
+        } else if (dim == 1) {
+            /* Slice along 2nd dimension. */
+            sliceOffset = offset + stride2*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride3;
+            sliceStride3 = stride4;
+            sliceDim1 = dim1;
+            sliceDim2 = dim3;
+            sliceDim3 = dim4;
+        } else if (dim == 2) {
+            /* Slice along 3rd dimension. */
+            sliceOffset = offset + stride3*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride2;
+            sliceStride3 = stride4;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim4;
+        } else if (dim == 3) {
+            /* Slice along 4th dimension. */
+            sliceOffset = offset + stride4*idx;
+            sliceStride1 = stride1;
+            sliceStride2 = stride2;
+            sliceStride3 = stride3;
+            sliceDim1 = dim1;
+            sliceDim2 = dim2;
+            sliceDim3 = dim3;
+        } else {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        }
+        return new StriddenDouble3D(data, sliceOffset,
+                sliceStride1, sliceStride2, sliceStride3,
+                sliceDim1, sliceDim2, sliceDim3);
     }
 
     @Override
     public Double4D view(Range rng1, Range rng2, Range rng3, Range rng4) {
-        // TODO Auto-generated method stub
-        return null;
+        CompiledRange cr1 = new CompiledRange(rng1, dim1, offset, stride1);
+        CompiledRange cr2 = new CompiledRange(rng2, dim2, 0, stride2);
+        CompiledRange cr3 = new CompiledRange(rng3, dim3, 0, stride3);
+        CompiledRange cr4 = new CompiledRange(rng4, dim4, 0, stride4);
+        if (cr1.doesNothing() && cr2.doesNothing() && cr3.doesNothing() && cr4.doesNothing()) {
+            return this;
+        }
+        if (cr1.getNumber() == 0 || cr2.getNumber() == 0 || cr3.getNumber() == 0 || cr4.getNumber() == 0) {
+            throw new IllegalRangeException("Empty range.");
+        }
+        return new StriddenDouble4D(this.data,
+                cr1.getOffset() + cr2.getOffset() + cr3.getOffset() + cr4.getOffset(),
+                cr1.getStride(), cr2.getStride(), cr3.getStride(), cr4.getStride(),
+                cr1.getNumber(), cr2.getNumber(), cr3.getNumber(), cr4.getNumber());
     }
 
     @Override
-    public Double4D view(int[] idx1, int[] idx2, int[] idx3, int[] idx4) {
-        // TODO Auto-generated method stub
-        return null;
+    public Double4D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4) {
+        int[] idx1 = ArrayUtils.select(offset, stride1, dim1, sel1);
+        int[] idx2 = ArrayUtils.select(0, stride2, dim2, sel2);
+        int[] idx3 = ArrayUtils.select(0, stride3, dim3, sel3);
+        int[] idx4 = ArrayUtils.select(0, stride4, dim4, sel4);
+        return new SelectedDouble4D(this.data, idx1, idx2, idx3, idx4);
     }
 
     @Override
     public Double1D as1D() {
-        // TODO Auto-generated method stub
-        return null;
+        // FIXME: may already be contiguous
+        return new FlatDouble1D(flatten(), number);
     }
 
 }

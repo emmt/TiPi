@@ -26,6 +26,9 @@
 //# // Define the implementation prefix and get common definitions.
 //# def implPrefix = Stridden
 //# include <commonImpl.javax>
+import mitiv.array.ArrayUtils;
+import mitiv.base.indexing.CompiledRange;
+import mitiv.exception.IllegalRangeException;
 
 /**
  * Stridden implementation of ${rank}-dimensional arrays of ${type}'s.
@@ -39,27 +42,24 @@ public class ${className} extends ${superName} {
     //# for k in 1:${rank}
     final int stride${k};
     //# end
-
+    //#
     //# // Build a piece of code to check strides.
     //#
-    //# def argList = data.length
-    //# if ${rank} >= 1
-    //#     for k in 1:${rank}
-    //#         if ${k} == 1
-    //#             def dimList = dim${k}
-    //#             def strideList = stride${k}
-    //#         else
-    //#             def dimList = ${dimList}, dim${k}
-    //#             def strideList = ${strideList}, stride${k}
-    //#         end
+    //# for k in 1:${rank}
+    //#     if ${k} == 1
+    //#         def dimList = dim${k}
+    //#         def dimDecl = int dim${k}
+    //#         def strideList = stride${k}
+    //#         def strideDecl = int stride${k}
+    //#     else
+    //#         def dimList = ${dimList}, dim${k}
+    //#         def dimDecl = ${dimDecl}, int dim${k}
+    //#         def strideList = ${strideList}, stride${k}
+    //#         def strideDecl = ${strideDecl}, int stride${k}
     //#     end
-    //#     def argList = ${argList}, ${dimList}, offset, ${strideList}
-    //# else
-    //#     def argList = ${argList}, offset
     //# end
-    //# def checkStrides = ${superName}.checkViewStrides(${argList})
-    //#
-    //#
+    //# def checkStrides = ${superName}.checkViewStrides(data.length, offset, ${strideList}, ${dimList})
+
     public ${className}(${type}[] arr, int offset, int[] stride, int[] dims) {
         super(dims);
         if (stride.length != ${rank}) {
@@ -74,16 +74,7 @@ public class ${className} extends ${superName} {
         this.order = ${checkStrides};
     }
 
-    //# def argList = ${type}[] arr, int offset
-    //# for k in 1:${rank}
-    //#     def argList = ${argList}, int stride${k}, int dim${k}
-    //#     if ${k} == 1
-    //#         def dimList = dim${k}
-    //#     else
-    //#         def dimList = ${dimList}, dim${k}
-    //#     end
-    //# end
-    public ${className}(${argList}) {
+    public ${className}(${type}[] arr, int offset, ${strideDecl}, ${dimDecl}) {
         super(${dimList});
         this.data = arr;
         this.offset = offset;
@@ -303,59 +294,146 @@ public class ${className} extends ${superName} {
         //# emit ${loopColMaj}
         return out;
     }
-    //#
-    //# if ${rank} >= 1
-    //#
+
     @Override
     public ${reducedSuperName} slice(int idx) {
-        // TODO Auto-generated method stub
-        return null;
+        //# if ${reducedRank} == 0
+        return new ${reducedSuperName}(data, offset + stride1*idx);
+        //# else
+        //#     for k in 1:${reducedRank}
+        //#         if ${k} == 1
+        //#             def reducedDimList = dim${k}
+        //#             def reducedStrideList = stride${k}
+        //#         else
+        //#             def reducedDimList = ${reducedDimList}, dim${k}
+        //#             def reducedStrideList = ${reducedStrideList}, stride${k}
+        //#         end
+        //#     end
+        //#     def offsetExpr = offset + stride${rank}*idx
+        return new Stridden${Type}${reducedRank}D(data,
+               ${offsetExpr}, // offset
+               ${reducedStrideList}, // strides
+               ${reducedDimList}); // dimensions
+        //# end
     }
 
     @Override
     public ${reducedSuperName} slice(int idx, int dim) {
-        // TODO Auto-generated method stub
-        return null;
+        //# for k in 1:${reducedRank}
+        //#     if ${k} == 1
+        //#         def reducedDimList = sliceDim${k}
+        //#         def reducedStrideList = sliceStride${k}
+        //#     else
+        //#         def reducedDimList = ${reducedDimList}, sliceDim${k}
+        //#         def reducedStrideList = ${reducedStrideList}, sliceStride${k}
+        //#     end
+        //# end
+        int sliceOffset;
+        //# if ${reducedRank} >= 1
+        int ${reducedStrideList};
+        int ${reducedDimList};
+        //# end
+        if (dim < 0) {
+            /* A negative index is taken with respect to the end. */
+            dim += ${rank};
+        }
+        //#     for k in 1:${rank}
+        //#         eval km1 = ${k} - 1
+        //#         def k_th = ${}{nth_${k}}
+        //#         if ${k} == 1
+        if (dim == ${km1}) {
+            //#     else
+        } else if (dim == ${km1}) {
+            //#     end
+            /* Slice along ${k_th} dimension. */
+            sliceOffset = offset + stride${k}*idx;
+            //#     def m = 0
+            //#     for j in 1:${rank}
+            //#         if ${j} != ${k}
+            //#             eval m += 1
+            sliceStride${m} = stride${j};
+            //#         end
+            //#     end
+            //#     def m = 0
+            //#     for j in 1:${rank}
+            //#         if ${j} != ${k}
+            //#             eval m += 1
+            sliceDim${m} = dim${j};
+            //#         end
+            //#     end
+            //# end
+        } else {
+            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        }
+        //# if ${reducedRank} == 0
+        return new ${reducedSuperName}(data, sliceOffset);
+        //# else
+        return new Stridden${Type}${reducedRank}D(data, sliceOffset,
+                ${reducedStrideList},
+                ${reducedDimList});
+        //# end
     }
 
-    //#     def k = 0
-    //#     def argType = Range
-    //#     def argName = rng
-    //#     while ${k} < ${rank}
-    //#         eval k += 1
-    //#         def arg = ${argName}${k}
-    //#         if ${k} == 1
-    //#             def argList = ${arg}
-    //#             def decList = ${argType} ${arg}
-    //#         else
-    //#             def argList = ${argList}, ${arg}
-    //#             def decList = ${decList}, ${argType} ${arg}
-    //#         end
+    //# for k in 1:${rank}
+    //#     if ${k} == 1
+    //#         def argDecl = Range rng${k}
+    //#         def strideList = cr${k}.getStride()
+    //#         def numberList = cr${k}.getNumber()
+    //#         def noChanges = cr${k}.doesNothing()
+    //#         def anyEmpty = cr${k}.getNumber() == 0
+    //#         def offsetExpr = cr${k}.getOffset()
+    //#     else
+    //#         def argDecl = ${argDecl}, Range rng${k}
+    //#         def strideList = ${strideList}, cr${k}.getStride()
+    //#         def numberList = ${numberList}, cr${k}.getNumber()
+    //#         def noChanges = ${noChanges} && cr${k}.doesNothing()
+    //#         def anyEmpty = ${anyEmpty} || cr${k}.getNumber() == 0
+    //#         def offsetExpr = ${offsetExpr} + cr${k}.getOffset()
     //#     end
+    //# end
     @Override
-    public ${superName} view(${decList}) {
-        // TODO Auto-generated method stub
-        return null;
+    public ${superName} view(${argDecl}) {
+        //# for k in 1:${rank}
+        //#     if ${k} == 1
+        //#         def offset = offset
+        //#      else
+        //#         def offset = 0
+        //#      end
+        CompiledRange cr${k} = new CompiledRange(rng${k}, dim${k}, ${offset}, stride${k});
+        //# end
+        if (${noChanges}) {
+            return this;
+        }
+        if (${anyEmpty}) {
+            throw new IllegalRangeException("Empty range.");
+        }
+        return new Stridden${superName}(this.data,
+                ${offsetExpr},
+                ${strideList},
+                ${numberList});
     }
 
-    //#     def k = 0
-    //#     def argType = int[]
-    //#     def argName = idx
-    //#     while ${k} < ${rank}
-    //#         eval k += 1
-    //#         def arg = ${argName}${k}
-    //#         if ${k} == 1
-    //#             def argList = ${arg}
-    //#             def decList = ${argType} ${arg}
-    //#         else
-    //#             def argList = ${argList}, ${arg}
-    //#             def decList = ${decList}, ${argType} ${arg}
-    //#         end
+    //# def argList = this.data
+    //# def noChanges =
+    //# for k in 1:${rank}
+    //#     def argList = ${argList}, idx${k}
+    //#     if ${k} == 1
+    //#         def argDecl = int[] sel${k}
+    //#     else
+    //#         def argDecl = ${argDecl}, int[] sel${k}
     //#     end
+    //# end
     @Override
-    public ${superName} view(${decList}) {
-        // TODO Auto-generated method stub
-        return null;
+    public ${superName} view(${argDecl}) {
+        //# for k in 1:${rank}
+        //#     if ${k} == 1
+        //#         def offset = offset
+        //#      else
+        //#         def offset = 0
+        //#      end
+        int[] idx${k} = ArrayUtils.select(${offset}, stride${k}, dim${k}, sel${k});
+        //# end
+        return new Selected${superName}(${argList});
     }
 
     @Override
@@ -363,11 +441,10 @@ public class ${className} extends ${superName} {
         //#     if ${rank} == 1
         return this;
         //#     else
-        // TODO Auto-generated method stub
-        return null;
+        // FIXME: may already be contiguous
+        return new Flat${Type}1D(flatten(), number);
         //#     end
     }
-    //# end
 
 }
 
