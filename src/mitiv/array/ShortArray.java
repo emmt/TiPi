@@ -122,6 +122,9 @@ public interface ShortArray extends ShapedArray {
      */
     public abstract short[] flatten();
 
+    @Override
+    public abstract ShortArray copy();
+
 }
 
 /*

@@ -122,6 +122,9 @@ public interface FloatArray extends ShapedArray {
      */
     public abstract float[] flatten();
 
+    @Override
+    public abstract FloatArray copy();
+
 }
 
 /*

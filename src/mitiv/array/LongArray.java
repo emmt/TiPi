@@ -122,6 +122,9 @@ public interface LongArray extends ShapedArray {
      */
     public abstract long[] flatten();
 
+    @Override
+    public abstract LongArray copy();
+
 }
 
 /*

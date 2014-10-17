@@ -122,6 +122,9 @@ public interface ByteArray extends ShapedArray {
      */
     public abstract byte[] flatten();
 
+    @Override
+    public abstract ByteArray copy();
+
 }
 
 /*

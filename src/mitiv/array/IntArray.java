@@ -122,6 +122,9 @@ public interface IntArray extends ShapedArray {
      */
     public abstract int[] flatten();
 
+    @Override
+    public abstract IntArray copy();
+
 }
 
 /*
