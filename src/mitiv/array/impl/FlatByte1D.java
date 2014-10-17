@@ -31,8 +31,11 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
+import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
+import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.exception.IllegalRangeException;
 
 
 /**
@@ -165,35 +168,50 @@ public class FlatByte1D extends Byte1D {
     @Override
     public byte[] flatten(boolean forceCopy) {
         if (forceCopy) {
-            byte[] out = new byte[number];
-            System.arraycopy(data, 0, out, 0, number);
-            return out;
+            byte[] result = new byte[number];
+            System.arraycopy(data, 0, result, 0, number);
+            return result;
         } else {
             return data;
         }
     }
+
     @Override
     public ByteScalar slice(int idx) {
-        // TODO Auto-generated method stub
-        return null;
+        return new ByteScalar(data, idx);
     }
 
     @Override
     public ByteScalar slice(int idx, int dim) {
-        // TODO Auto-generated method stub
-        return null;
+        if (dim < 0) {
+            /* A negative index is taken with respect to the end. */
+            dim += 1;
+        }
+        if (dim == 0) {
+            return new ByteScalar(data, idx);
+        }
+        throw new IndexOutOfBoundsException("Dimension index out of bounds.");
     }
 
     @Override
     public Byte1D view(Range rng1) {
-        // TODO Auto-generated method stub
-        return null;
+        CompiledRange cr1 = new CompiledRange(rng1, dim1, 0, 1);
+        if (cr1.doesNothing()) {
+            return this;
+        }
+        if (cr1.getNumber() == 0) {
+            throw new IllegalRangeException("Empty range.");
+        }
+        return new StriddenByte1D(this.data,
+                cr1.getOffset(),
+                cr1.getStride(),
+                cr1.getNumber());
     }
 
-   @Override
-    public Byte1D view(int[] idx1) {
-        // TODO Auto-generated method stub
-        return null;
+    @Override
+    public Byte1D view(int[] sel1) {
+        int[] idx1 = ArrayUtils.select(0, 1, dim1, sel1);
+        return new SelectedByte1D(this.data, idx1);
     }
 
     @Override

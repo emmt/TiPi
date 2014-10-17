@@ -32,8 +32,11 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
 import mitiv.random.FloatGenerator;
+import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
+import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.exception.IllegalRangeException;
 
 
 /**
@@ -173,35 +176,75 @@ public class FlatFloat3D extends Float3D {
     @Override
     public float[] flatten(boolean forceCopy) {
         if (forceCopy) {
-            float[] out = new float[number];
-            System.arraycopy(data, 0, out, 0, number);
-            return out;
+            float[] result = new float[number];
+            System.arraycopy(data, 0, result, 0, number);
+            return result;
         } else {
             return data;
         }
     }
+
     @Override
     public Float2D slice(int idx) {
-        // TODO Auto-generated method stub
-        return null;
+        if (idx == 0) {
+            return new FlatFloat2D(data, dim1, dim2);
+        } else {
+            return new StriddenFloat2D(data,
+                    dim1dim2*idx, // offset
+                    1, dim1, // strides
+                    dim1, dim2); // dimensions
+        }
     }
 
     @Override
     public Float2D slice(int idx, int dim) {
-        // TODO Auto-generated method stub
-        return null;
+        if (dim < 0) {
+            /* A negative index is taken with respect to the end. */
+            dim += 3;
+        }
+        switch (dim) {
+        case 0:
+            return new StriddenFloat2D(data,
+                    idx, // offset
+                    dim1, dim1dim2, // strides
+                    dim2, dim3); // dimensions
+        case 1:
+            return new StriddenFloat2D(data,
+                    dim1*idx, // offset
+                    1, dim1dim2, // strides
+                    dim1, dim3); // dimensions
+        case 2:
+            return new StriddenFloat2D(data,
+                    dim1dim2*idx, // offset
+                    1, dim1, // strides
+                    dim1, dim2); // dimensions
+        }
+        throw new IndexOutOfBoundsException("Dimension index out of bounds.");
     }
 
     @Override
     public Float3D view(Range rng1, Range rng2, Range rng3) {
-        // TODO Auto-generated method stub
-        return null;
+        CompiledRange cr1 = new CompiledRange(rng1, dim1, 0, 1);
+        CompiledRange cr2 = new CompiledRange(rng2, dim2, 0, dim1);
+        CompiledRange cr3 = new CompiledRange(rng3, dim3, 0, dim1dim2);
+        if (cr1.doesNothing() && cr2.doesNothing() && cr3.doesNothing()) {
+            return this;
+        }
+        if (cr1.getNumber() == 0 || cr2.getNumber() == 0 || cr3.getNumber() == 0) {
+            throw new IllegalRangeException("Empty range.");
+        }
+        return new StriddenFloat3D(this.data,
+                cr1.getOffset() + cr2.getOffset() + cr3.getOffset(),
+                cr1.getStride(), cr2.getStride(), cr3.getStride(),
+                cr1.getNumber(), cr2.getNumber(), cr3.getNumber());
     }
 
-   @Override
-    public Float3D view(int[] idx1, int[] idx2, int[] idx3) {
-        // TODO Auto-generated method stub
-        return null;
+    @Override
+    public Float3D view(int[] sel1, int[] sel2, int[] sel3) {
+        int[] idx1 = ArrayUtils.select(0, 1, dim1, sel1);
+        int[] idx2 = ArrayUtils.select(0, dim1, dim2, sel2);
+        int[] idx3 = ArrayUtils.select(0, dim1dim2, dim3, sel3);
+        return new SelectedFloat3D(this.data, idx1, idx2, idx3);
     }
 
     @Override

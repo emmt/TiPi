@@ -26,14 +26,17 @@
 //# // Define the implementation prefix and get common definitions.
 //# def implPrefix = Flat
 //# include <commonImpl.javax>
+import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
+import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.exception.IllegalRangeException;
 //#
 //# // A few macros for the names of the strides.  It is not
 //# // really possible to generate them as variables names
 //# // in '#def' and '#eval' directives are literal (no
 //# // macro expansion).
-//# def stride1 =
+//# def stride1 = 1
 //# def stride2 = dim1
 //# def stride3 = ${stride2}dim2
 //# def stride4 = ${stride3}dim3
@@ -42,15 +45,6 @@ import mitiv.exception.NonConformableArrayException;
 //# def stride7 = ${stride6}dim6
 //# def stride8 = ${stride7}dim7
 //# def stride9 = ${stride8}dim8
-//# def offset1 = ${}{i1}
-//# def offset2 = ${stride2}*${}{i2}
-//# def offset3 = ${stride3}*${}{i3}
-//# def offset4 = ${stride4}*${}{i4}
-//# def offset5 = ${stride5}*${}{i5}
-//# def offset6 = ${stride6}*${}{i6}
-//# def offset7 = ${stride7}*${}{i7}
-//# def offset8 = ${stride8}*${}{i8}
-//# def offset9 = ${stride9}*${}{i9}
 //# if ${rank} > 9
 //#     error expand definitions for higher ranks
 //# end
@@ -314,70 +308,146 @@ public class ${className} extends ${superName} {
     @Override
     public ${type}[] flatten(boolean forceCopy) {
         if (forceCopy) {
-            ${type}[] out = new ${type}[number];
+            ${type}[] result = new ${type}[number];
             //# if ${rank} >= 1
-            System.arraycopy(data, 0, out, 0, number);
+            System.arraycopy(data, 0, result, 0, number);
             //# else
-            out[0] = data[0];
+            result[0] = data[0];
             //# end
-            return out;
+            return result;
         } else {
             return data;
         }
     }
-    //#
-    //# if ${rank} >= 1
-    //#
+
     @Override
     public ${reducedSuperName} slice(int idx) {
-        // TODO Auto-generated method stub
-        return null;
+        //# if ${reducedRank} == 0
+        return new ${reducedSuperName}(data, idx);
+        //# else
+        //#     for k in 1:${reducedRank}
+        //#         def stride = ${}{stride${k}}
+        //#         if ${k} == 1
+        //#             def reducedDimList = dim${k}
+        //#             def reducedStrideList = ${stride}
+        //#         else
+        //#             def reducedDimList = ${reducedDimList}, dim${k}
+        //#             def reducedStrideList = ${reducedStrideList}, ${stride}
+        //#         end
+        //#     end
+        //#     if ${rank} == 1
+        //#         def offsetExpr = idx
+        //#     else
+        //#         def stride = ${}{stride${rank}}
+        //#         def offsetExpr = ${stride}*idx
+        //#     end
+        if (idx == 0) {
+            return new Flat${Type}${reducedRank}D(data, ${reducedDimList});
+        } else {
+            return new Stridden${Type}${reducedRank}D(data,
+                    ${offsetExpr}, // offset
+                    ${reducedStrideList}, // strides
+                    ${reducedDimList}); // dimensions
+        }
+        //# end
     }
 
     @Override
     public ${reducedSuperName} slice(int idx, int dim) {
-        // TODO Auto-generated method stub
-        return null;
+        if (dim < 0) {
+            /* A negative index is taken with respect to the end. */
+            dim += ${rank};
+        }
+        //# if ${rank} == 1
+        if (dim == 0) {
+            return new ${reducedSuperName}(data, idx);
+        }
+        //# else
+        switch (dim) {
+            //# for k in 1:${rank}
+            //#     eval km1 = ${k} - 1
+        case ${km1}:
+            //#     def m = 0
+            //#     def multiplier =
+            //#     for j in 1:${rank}
+            //#         def stride = ${}{stride${j}}
+            //#         if ${j} == ${k}
+            //#             if ${j} > 1
+            //#                 def multiplier = ${stride}*
+            //#             end
+            //#         else
+            //#             eval m += 1
+            //#             if ${m} == 1
+            //#                 def reducedDimList = dim${j}
+            //#                 def reducedStrideList = ${stride}
+            //#             else
+            //#                 def reducedDimList = ${reducedDimList}, dim${j}
+            //#                 def reducedStrideList = ${reducedStrideList}, ${stride}
+            //#             end
+            //#         end
+            //#     end
+            return new Stridden${Type}${reducedRank}D(data,
+                    ${multiplier}idx, // offset
+                    ${reducedStrideList}, // strides
+                    ${reducedDimList}); // dimensions
+            //# end
+        }
+        //# end
+        throw new IndexOutOfBoundsException("Dimension index out of bounds.");
     }
 
-    //#     def k = 0
-    //#     def argType = Range
-    //#     def argName = rng
-    //#     while ${k} < ${rank}
-    //#         eval k += 1
-    //#         def arg = ${argName}${k}
-    //#         if ${k} == 1
-    //#             def argList = ${arg}
-    //#             def decList = ${argType} ${arg}
-    //#         else
-    //#             def argList = ${argList}, ${arg}
-    //#             def decList = ${decList}, ${argType} ${arg}
-    //#         end
+    //# for k in 1:${rank}
+    //#     if ${k} == 1
+    //#         def argDecl = Range rng${k}
+    //#         def strideList = cr${k}.getStride()
+    //#         def numberList = cr${k}.getNumber()
+    //#         def noChanges = cr${k}.doesNothing()
+    //#         def anyEmpty = cr${k}.getNumber() == 0
+    //#         def offsetExpr = cr${k}.getOffset()
+    //#     else
+    //#         def argDecl = ${argDecl}, Range rng${k}
+    //#         def strideList = ${strideList}, cr${k}.getStride()
+    //#         def numberList = ${numberList}, cr${k}.getNumber()
+    //#         def noChanges = ${noChanges} && cr${k}.doesNothing()
+    //#         def anyEmpty = ${anyEmpty} || cr${k}.getNumber() == 0
+    //#         def offsetExpr = ${offsetExpr} + cr${k}.getOffset()
     //#     end
+    //# end
     @Override
-    public ${superName} view(${decList}) {
-        // TODO Auto-generated method stub
-        return null;
+    public ${superName} view(${argDecl}) {
+        //# for k in 1:${rank}
+        //#     def stride = ${}{stride${k}}
+        CompiledRange cr${k} = new CompiledRange(rng${k}, dim${k}, 0, ${stride});
+        //# end
+        if (${noChanges}) {
+            return this;
+        }
+        if (${anyEmpty}) {
+            throw new IllegalRangeException("Empty range.");
+        }
+        return new Stridden${superName}(this.data,
+                ${offsetExpr},
+                ${strideList},
+                ${numberList});
     }
 
-    //#     def k = 0
-    //#     def argType = int[]
-    //#     def argName = idx
-    //#     while ${k} < ${rank}
-    //#         eval k += 1
-    //#         def arg = ${argName}${k}
-    //#         if ${k} == 1
-    //#             def argList = ${arg}
-    //#             def decList = ${argType} ${arg}
-    //#         else
-    //#             def argList = ${argList}, ${arg}
-    //#             def decList = ${decList}, ${argType} ${arg}
-    //#         end
+    //# def argList = this.data
+    //# def noChanges =
+    //# for k in 1:${rank}
+    //#     def argList = ${argList}, idx${k}
+    //#     if ${k} == 1
+    //#         def argDecl = int[] sel${k}
+    //#     else
+    //#         def argDecl = ${argDecl}, int[] sel${k}
     //#     end
-   @Override
-    public ${superName} view(${decList}) {
-        // TODO Auto-generated method stub
-        return null;
+    //# end
+    @Override
+    public ${superName} view(${argDecl}) {
+        //# for k in 1:${rank}
+        //#     def stride = ${}{stride${k}}
+        int[] idx${k} = ArrayUtils.select(0, ${stride}, dim${k}, sel${k});
+        //# end
+        return new Selected${superName}(${argList});
     }
 
     @Override
@@ -388,7 +458,6 @@ public class ${className} extends ${superName} {
         return new Flat${Type}1D(data, number);
         //#     end
     }
-    //# end
 
 }
 

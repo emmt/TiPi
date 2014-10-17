@@ -32,8 +32,11 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.random.LongGenerator;
+import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
+import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.exception.IllegalRangeException;
 
 
 /**
@@ -194,35 +197,96 @@ public class FlatLong6D extends Long6D {
     @Override
     public long[] flatten(boolean forceCopy) {
         if (forceCopy) {
-            long[] out = new long[number];
-            System.arraycopy(data, 0, out, 0, number);
-            return out;
+            long[] result = new long[number];
+            System.arraycopy(data, 0, result, 0, number);
+            return result;
         } else {
             return data;
         }
     }
+
     @Override
     public Long5D slice(int idx) {
-        // TODO Auto-generated method stub
-        return null;
+        if (idx == 0) {
+            return new FlatLong5D(data, dim1, dim2, dim3, dim4, dim5);
+        } else {
+            return new StriddenLong5D(data,
+                    dim1dim2dim3dim4dim5*idx, // offset
+                    1, dim1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4, // strides
+                    dim1, dim2, dim3, dim4, dim5); // dimensions
+        }
     }
 
     @Override
     public Long5D slice(int idx, int dim) {
-        // TODO Auto-generated method stub
-        return null;
+        if (dim < 0) {
+            /* A negative index is taken with respect to the end. */
+            dim += 6;
+        }
+        switch (dim) {
+        case 0:
+            return new StriddenLong5D(data,
+                    idx, // offset
+                    dim1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4, dim1dim2dim3dim4dim5, // strides
+                    dim2, dim3, dim4, dim5, dim6); // dimensions
+        case 1:
+            return new StriddenLong5D(data,
+                    dim1*idx, // offset
+                    1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4, dim1dim2dim3dim4dim5, // strides
+                    dim1, dim3, dim4, dim5, dim6); // dimensions
+        case 2:
+            return new StriddenLong5D(data,
+                    dim1dim2*idx, // offset
+                    1, dim1, dim1dim2dim3, dim1dim2dim3dim4, dim1dim2dim3dim4dim5, // strides
+                    dim1, dim2, dim4, dim5, dim6); // dimensions
+        case 3:
+            return new StriddenLong5D(data,
+                    dim1dim2dim3*idx, // offset
+                    1, dim1, dim1dim2, dim1dim2dim3dim4, dim1dim2dim3dim4dim5, // strides
+                    dim1, dim2, dim3, dim5, dim6); // dimensions
+        case 4:
+            return new StriddenLong5D(data,
+                    dim1dim2dim3dim4*idx, // offset
+                    1, dim1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4dim5, // strides
+                    dim1, dim2, dim3, dim4, dim6); // dimensions
+        case 5:
+            return new StriddenLong5D(data,
+                    dim1dim2dim3dim4dim5*idx, // offset
+                    1, dim1, dim1dim2, dim1dim2dim3, dim1dim2dim3dim4, // strides
+                    dim1, dim2, dim3, dim4, dim5); // dimensions
+        }
+        throw new IndexOutOfBoundsException("Dimension index out of bounds.");
     }
 
     @Override
     public Long6D view(Range rng1, Range rng2, Range rng3, Range rng4, Range rng5, Range rng6) {
-        // TODO Auto-generated method stub
-        return null;
+        CompiledRange cr1 = new CompiledRange(rng1, dim1, 0, 1);
+        CompiledRange cr2 = new CompiledRange(rng2, dim2, 0, dim1);
+        CompiledRange cr3 = new CompiledRange(rng3, dim3, 0, dim1dim2);
+        CompiledRange cr4 = new CompiledRange(rng4, dim4, 0, dim1dim2dim3);
+        CompiledRange cr5 = new CompiledRange(rng5, dim5, 0, dim1dim2dim3dim4);
+        CompiledRange cr6 = new CompiledRange(rng6, dim6, 0, dim1dim2dim3dim4dim5);
+        if (cr1.doesNothing() && cr2.doesNothing() && cr3.doesNothing() && cr4.doesNothing() && cr5.doesNothing() && cr6.doesNothing()) {
+            return this;
+        }
+        if (cr1.getNumber() == 0 || cr2.getNumber() == 0 || cr3.getNumber() == 0 || cr4.getNumber() == 0 || cr5.getNumber() == 0 || cr6.getNumber() == 0) {
+            throw new IllegalRangeException("Empty range.");
+        }
+        return new StriddenLong6D(this.data,
+                cr1.getOffset() + cr2.getOffset() + cr3.getOffset() + cr4.getOffset() + cr5.getOffset() + cr6.getOffset(),
+                cr1.getStride(), cr2.getStride(), cr3.getStride(), cr4.getStride(), cr5.getStride(), cr6.getStride(),
+                cr1.getNumber(), cr2.getNumber(), cr3.getNumber(), cr4.getNumber(), cr5.getNumber(), cr6.getNumber());
     }
 
-   @Override
-    public Long6D view(int[] idx1, int[] idx2, int[] idx3, int[] idx4, int[] idx5, int[] idx6) {
-        // TODO Auto-generated method stub
-        return null;
+    @Override
+    public Long6D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4, int[] sel5, int[] sel6) {
+        int[] idx1 = ArrayUtils.select(0, 1, dim1, sel1);
+        int[] idx2 = ArrayUtils.select(0, dim1, dim2, sel2);
+        int[] idx3 = ArrayUtils.select(0, dim1dim2, dim3, sel3);
+        int[] idx4 = ArrayUtils.select(0, dim1dim2dim3, dim4, sel4);
+        int[] idx5 = ArrayUtils.select(0, dim1dim2dim3dim4, dim5, sel5);
+        int[] idx6 = ArrayUtils.select(0, dim1dim2dim3dim4dim5, dim6, sel6);
+        return new SelectedLong6D(this.data, idx1, idx2, idx3, idx4, idx5, idx6);
     }
 
     @Override

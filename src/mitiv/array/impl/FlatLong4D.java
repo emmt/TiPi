@@ -32,8 +32,11 @@ import mitiv.base.indexing.Range;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.random.LongGenerator;
+import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
+import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.exception.IllegalRangeException;
 
 
 /**
@@ -180,35 +183,82 @@ public class FlatLong4D extends Long4D {
     @Override
     public long[] flatten(boolean forceCopy) {
         if (forceCopy) {
-            long[] out = new long[number];
-            System.arraycopy(data, 0, out, 0, number);
-            return out;
+            long[] result = new long[number];
+            System.arraycopy(data, 0, result, 0, number);
+            return result;
         } else {
             return data;
         }
     }
+
     @Override
     public Long3D slice(int idx) {
-        // TODO Auto-generated method stub
-        return null;
+        if (idx == 0) {
+            return new FlatLong3D(data, dim1, dim2, dim3);
+        } else {
+            return new StriddenLong3D(data,
+                    dim1dim2dim3*idx, // offset
+                    1, dim1, dim1dim2, // strides
+                    dim1, dim2, dim3); // dimensions
+        }
     }
 
     @Override
     public Long3D slice(int idx, int dim) {
-        // TODO Auto-generated method stub
-        return null;
+        if (dim < 0) {
+            /* A negative index is taken with respect to the end. */
+            dim += 4;
+        }
+        switch (dim) {
+        case 0:
+            return new StriddenLong3D(data,
+                    idx, // offset
+                    dim1, dim1dim2, dim1dim2dim3, // strides
+                    dim2, dim3, dim4); // dimensions
+        case 1:
+            return new StriddenLong3D(data,
+                    dim1*idx, // offset
+                    1, dim1dim2, dim1dim2dim3, // strides
+                    dim1, dim3, dim4); // dimensions
+        case 2:
+            return new StriddenLong3D(data,
+                    dim1dim2*idx, // offset
+                    1, dim1, dim1dim2dim3, // strides
+                    dim1, dim2, dim4); // dimensions
+        case 3:
+            return new StriddenLong3D(data,
+                    dim1dim2dim3*idx, // offset
+                    1, dim1, dim1dim2, // strides
+                    dim1, dim2, dim3); // dimensions
+        }
+        throw new IndexOutOfBoundsException("Dimension index out of bounds.");
     }
 
     @Override
     public Long4D view(Range rng1, Range rng2, Range rng3, Range rng4) {
-        // TODO Auto-generated method stub
-        return null;
+        CompiledRange cr1 = new CompiledRange(rng1, dim1, 0, 1);
+        CompiledRange cr2 = new CompiledRange(rng2, dim2, 0, dim1);
+        CompiledRange cr3 = new CompiledRange(rng3, dim3, 0, dim1dim2);
+        CompiledRange cr4 = new CompiledRange(rng4, dim4, 0, dim1dim2dim3);
+        if (cr1.doesNothing() && cr2.doesNothing() && cr3.doesNothing() && cr4.doesNothing()) {
+            return this;
+        }
+        if (cr1.getNumber() == 0 || cr2.getNumber() == 0 || cr3.getNumber() == 0 || cr4.getNumber() == 0) {
+            throw new IllegalRangeException("Empty range.");
+        }
+        return new StriddenLong4D(this.data,
+                cr1.getOffset() + cr2.getOffset() + cr3.getOffset() + cr4.getOffset(),
+                cr1.getStride(), cr2.getStride(), cr3.getStride(), cr4.getStride(),
+                cr1.getNumber(), cr2.getNumber(), cr3.getNumber(), cr4.getNumber());
     }
 
-   @Override
-    public Long4D view(int[] idx1, int[] idx2, int[] idx3, int[] idx4) {
-        // TODO Auto-generated method stub
-        return null;
+    @Override
+    public Long4D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4) {
+        int[] idx1 = ArrayUtils.select(0, 1, dim1, sel1);
+        int[] idx2 = ArrayUtils.select(0, dim1, dim2, sel2);
+        int[] idx3 = ArrayUtils.select(0, dim1dim2, dim3, sel3);
+        int[] idx4 = ArrayUtils.select(0, dim1dim2dim3, dim4, sel4);
+        return new SelectedLong4D(this.data, idx1, idx2, idx3, idx4);
     }
 
     @Override
