@@ -183,7 +183,7 @@ public class FlatLong1D extends Long1D {
 
     @Override
     public LongScalar slice(int idx, int dim) {
-        Helper.fixSliceIndex(dim, 1);
+        Helper.fixSliceIndex(dim, 1); // throws an exception if dim != 0
         return new LongScalar(data, Helper.fixIndex(idx, dim1));
     }
 

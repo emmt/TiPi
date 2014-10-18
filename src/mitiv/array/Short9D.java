@@ -29,8 +29,13 @@ import mitiv.array.impl.FlatShort9D;
 import mitiv.array.impl.StriddenShort9D;
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.ShortGenerator;
 
@@ -372,8 +377,7 @@ public abstract class Short9D extends Array9D implements ShortArray {
 
     @Override
     public void scan(ShortScanner scanner)  {
-        boolean skip = true;
-        scanner.initialize(get(0,0,0,0,0,0,0,0,0));
+        boolean initialized = false;
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -384,7 +388,12 @@ public abstract class Short9D extends Array9D implements ShortArray {
                                     for (int i7 = 0; i7 < dim7; ++i7) {
                                         for (int i8 = 0; i8 < dim8; ++i8) {
                                             for (int i9 = 0; i9 < dim9; ++i9) {
-                                                if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4,i5,i6,i7,i8,i9));
+                                                if (initialized) {
+                                                    scanner.update(get(i1,i2,i3,i4,i5,i6,i7,i8,i9));
+                                                } else {
+                                                    scanner.initialize(get(i1,i2,i3,i4,i5,i6,i7,i8,i9));
+                                                    initialized = true;
+                                                }
                                             }
                                         }
                                     }
@@ -405,7 +414,12 @@ public abstract class Short9D extends Array9D implements ShortArray {
                                     for (int i3 = 0; i3 < dim3; ++i3) {
                                         for (int i2 = 0; i2 < dim2; ++i2) {
                                             for (int i1 = 0; i1 < dim1; ++i1) {
-                                                if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4,i5,i6,i7,i8,i9));
+                                                if (initialized) {
+                                                    scanner.update(get(i1,i2,i3,i4,i5,i6,i7,i8,i9));
+                                                } else {
+                                                    scanner.initialize(get(i1,i2,i3,i4,i5,i6,i7,i8,i9));
+                                                    initialized = true;
+                                                }
                                             }
                                         }
                                     }
@@ -641,18 +655,117 @@ public abstract class Short9D extends Array9D implements ShortArray {
 
     @Override
     public Short9D copy() {
-        // TODO
-        return null;
+        return new FlatShort9D(flatten(true), shape);
     }
 
     @Override
     public void assign(ShapedArray arr) {
-        // TODO
+        Short9D src;
+        if (! getShape().equals(arr.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        if (arr.getType() == Traits.SHORT) {
+            src = (Short9D)arr;
+        } else {
+            src = (Short9D)arr.toShort();
+        }
+        // FIXME: do assignation and conversion at the same time
+        if (getOrder() == ROW_MAJOR && src.getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i6 = 0; i6 < dim6; ++i6) {
+                                    for (int i7 = 0; i7 < dim7; ++i7) {
+                                        for (int i8 = 0; i8 < dim8; ++i8) {
+                                            for (int i9 = 0; i9 < dim9; ++i9) {
+                                                set(i1,i2,i3,i4,i5,i6,i7,i8,i9, src.get(i1,i2,i3,i4,i5,i6,i7,i8,i9));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i9 = 0; i9 < dim9; ++i9) {
+                for (int i8 = 0; i8 < dim8; ++i8) {
+                    for (int i7 = 0; i7 < dim7; ++i7) {
+                        for (int i6 = 0; i6 < dim6; ++i6) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i4 = 0; i4 < dim4; ++i4) {
+                                    for (int i3 = 0; i3 < dim3; ++i3) {
+                                        for (int i2 = 0; i2 < dim2; ++i2) {
+                                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                                set(i1,i2,i3,i4,i5,i6,i7,i8,i9, src.get(i1,i2,i3,i4,i5,i6,i7,i8,i9));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void assign(ShapedVector vec) {
-        // TODO
+        if (! getShape().equals(vec.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        // FIXME: much too slow and may be skipped if data are identical (and array is flat)
+        int i = -1;
+        if (vec.getType() == Traits.DOUBLE) {
+            DoubleShapedVector src = (DoubleShapedVector)vec;
+            for (int i9 = 0; i9 < dim9; ++i9) {
+                for (int i8 = 0; i8 < dim8; ++i8) {
+                    for (int i7 = 0; i7 < dim7; ++i7) {
+                        for (int i6 = 0; i6 < dim6; ++i6) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i4 = 0; i4 < dim4; ++i4) {
+                                    for (int i3 = 0; i3 < dim3; ++i3) {
+                                        for (int i2 = 0; i2 < dim2; ++i2) {
+                                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                                set(i1,i2,i3,i4,i5,i6,i7,i8,i9, (short)src.get(++i));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (vec.getType() == Traits.FLOAT) {
+            FloatShapedVector src = (FloatShapedVector)vec;
+            for (int i9 = 0; i9 < dim9; ++i9) {
+                for (int i8 = 0; i8 < dim8; ++i8) {
+                    for (int i7 = 0; i7 < dim7; ++i7) {
+                        for (int i6 = 0; i6 < dim6; ++i6) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i4 = 0; i4 < dim4; ++i4) {
+                                    for (int i3 = 0; i3 < dim3; ++i3) {
+                                        for (int i2 = 0; i2 < dim2; ++i2) {
+                                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                                set(i1,i2,i3,i4,i5,i6,i7,i8,i9, (short)src.get(++i));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            throw new IllegalTypeException();
+        }
     }
 
 
@@ -787,15 +900,6 @@ public abstract class Short9D extends Array9D implements ShortArray {
      * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7,i8,i9) = data[offset + stride1*i1 + stride2*i2 + stride3*i3 + stride4*i4 + stride5*i5 + stride6*i6 + stride7*i7 + stride8*i8 + stride9*i9]</pre>
      * with {@code arr} the returned 9D array.
      * @param data    - The array to wrap in the 9D array.
-     * @param dim1    - The 1st dimension of the 9D array.
-     * @param dim2    - The 2nd dimension of the 9D array.
-     * @param dim3    - The 3rd dimension of the 9D array.
-     * @param dim4    - The 4th dimension of the 9D array.
-     * @param dim5    - The 5th dimension of the 9D array.
-     * @param dim6    - The 6th dimension of the 9D array.
-     * @param dim7    - The 7th dimension of the 9D array.
-     * @param dim8    - The 8th dimension of the 9D array.
-     * @param dim9    - The 9th dimension of the 9D array.
      * @param offset  - The offset in {@code data} of element (0,0,0,0,0,0,0,0,0) of
      *                  the 9D array.
      * @param stride1 - The stride along the 1st dimension.
@@ -807,11 +911,20 @@ public abstract class Short9D extends Array9D implements ShortArray {
      * @param stride7 - The stride along the 7th dimension.
      * @param stride8 - The stride along the 8th dimension.
      * @param stride9 - The stride along the 9th dimension.
+     * @param dim1    - The 1st dimension of the 9D array.
+     * @param dim2    - The 2nd dimension of the 9D array.
+     * @param dim3    - The 3rd dimension of the 9D array.
+     * @param dim4    - The 4th dimension of the 9D array.
+     * @param dim5    - The 5th dimension of the 9D array.
+     * @param dim6    - The 6th dimension of the 9D array.
+     * @param dim7    - The 7th dimension of the 9D array.
+     * @param dim8    - The 8th dimension of the 9D array.
+     * @param dim9    - The 9th dimension of the 9D array.
      * @return A 9D array sharing the elements of <b>data</b>.
      */
-    public static Short9D wrap(short[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9,
-            int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int stride8, int stride9) {
-        return new StriddenShort9D(data, dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8,dim9, offset, stride1,stride2,stride3,stride4,stride5,stride6,stride7,stride8,stride9);
+    public static Short9D wrap(short[] data,
+            int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int stride8, int stride9, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
+        return new StriddenShort9D(data, offset, stride1,stride2,stride3,stride4,stride5,stride6,stride7,stride8,stride9, dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8,dim9);
     }
 
 }

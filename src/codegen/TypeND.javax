@@ -50,8 +50,13 @@ import mitiv.array.impl.Flat${className};
 import mitiv.array.impl.Stridden${className};
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.${Type}Function;
 import mitiv.base.mapping.${Type}Scanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.${Type}Generator;
 
@@ -140,53 +145,75 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
      * and "get" methods. */
 
     //# // Build the row-major and column-major loop structures.
-    //# def rowMajorTemplate := ${alignLoop}for (int i${k} = 0; i${k} < dim${k}; ++i${k}) {
-    //# def colMajorTemplate := ${alignLoop}for (int i${j} = 0; i${j} < dim${j}; ++i${j}) {
-    //# suspend loopPrefix loopBody // will be interpolated later
-    //# def alignLoop := ${loopPrefix}
-    //# eval k = 1
-    //# eval j = ${rank}
-    //# def closeLoop    = ${alignLoop}}
-    //# def rowMajorLoop = ${rowMajorTemplate}
-    //# def colMajorLoop = ${colMajorTemplate}
-    //# while ${k} < ${rank}
-    //#     eval k += 1
-    //#     eval j -= 1
-    //#     def alignLoop   := ${alignLoop}${__INDENT__}
-    //#     def rowMajorLoop = ${rowMajorLoop}${__NEWLINE__}${rowMajorTemplate}
-    //#     def colMajorLoop = ${colMajorLoop}${__NEWLINE__}${colMajorTemplate}
-    //#     def closeLoop    = ${alignLoop}}${__NEWLINE__}${closeLoop}
-    //# end
-    //# def alignLoop   := ${alignLoop}${__INDENT__}
-    //# def colMajorLoop = ${colMajorLoop}${__NEWLINE__}${alignLoop}${loopBody}${__NEWLINE__}${closeLoop}
-    //# def rowMajorLoop = ${rowMajorLoop}${__NEWLINE__}${alignLoop}${loopBody}${__NEWLINE__}${closeLoop}
-    //# undef closeLoop
-    //# //debug ${colMajorLoop}
-    //# //debug ${rowMajorLoop}
     //#
+    //# def loop =              // complete loop structure
+    //# def colMajLoopBegin =   // begining of colum-major loops
+    //# def rowMajLoopBegin =   // begining of row-major loops
+    //# def loopBody =          // loop body
+    //# def loopEnd =           // ending of loops
+    //# def loopFirstIndent =   // indentation of the first line of the loop
+    //# def loopBodyIndent =    // indentation for the body of the loop
+    //# def colMajLoop =        // code for colum-major loops
+    //# def rowMajLoop =        // code for row-major loops
+    //#
+    //# // The following macros must be defined just before emitting the code.
+    //# suspend loopFirstIndent loopBody
+    //#
+    //# // Templates for the row-major and column-major loops (will be expanded later).
+    //# def rowMajTemplate := for (int i${k} = 0; i${k} < dim${k}; ++i${k}) {
+    //# def colMajTemplate := for (int i${j} = 0; i${j} < dim${j}; ++i${j}) {
+    //#
+    //# // Build the loops.
+    //# def indent = ${loopFirstIndent}
+    //# if ${rank} > 1
+    //#     def indent = ${indent}${__INDENT__}
+    //# end
+    //# for k in 1 : ${rank}
+    //#     eval j = ${rank} + 1 - ${k}
+    //#     if ${k} == 1
+    //#         def loopEnd = ${indent}}
+    //#     else
+    //#         def loopEnd = ${indent}}${__NEWLINE__}${loopEnd}
+    //#     end
+    //#     if ${k} == 1
+    //#         def colMajLoopBegin = ${indent}${colMajTemplate}
+    //#         def rowMajLoopBegin = ${indent}${rowMajTemplate}
+    //#     else
+    //#         def colMajLoopBegin = ${colMajLoopBegin}${__NEWLINE__}${indent}${colMajTemplate}
+    //#         def rowMajLoopBegin = ${rowMajLoopBegin}${__NEWLINE__}${indent}${rowMajTemplate}
+    //#     end
+    //#     def indent = ${indent}${__INDENT__}
+    //#     if ${k} == ${rank}
+    //#         def loopBodyIndent = ${indent}
+    //#     end
+    //# end
+    //# def colMajLoop = ${colMajLoopBegin}${__NEWLINE__}${loopBodyIndent}${loopBody}${__NEWLINE__}${loopEnd}
+    //# def rowMajLoop = ${rowMajLoopBegin}${__NEWLINE__}${loopBodyIndent}${loopBody}${__NEWLINE__}${loopEnd}
+    //#
+    //# // Cleanup and define complete loop construction optimized according to ordering
+    //# // (there are only column-major loops when rank is 1).
+    //# undef indent j k
     //# if ${rank} == 1
-    //#     def loopIndent := ${__INDENT2__}
-    //#     def loopPrefix := ${__INDENT2__}
-    //#     def loop = ${colMajorLoop}
+    //#     def loop = ${colMajLoop}
+    //#     undef rowMajLoop rowMajLoopBegin
     //# else
-    //#     def loopIndent := ${__INDENT2__}
-    //#     def loopPrefix := ${__INDENT3__}
-    //#     def loop = ${loopIndent}if (getOrder() == ROW_MAJOR) {
-    //#     def loop = ${loop}${__NEWLINE__}${rowMajorLoop}
-    //#     def loop = ${loop}${__NEWLINE__}${loopIndent}} else {
-    //#     def loop = ${loop}${__NEWLINE__}${loopPrefix}/* Assume column-major order. */
-    //#     def loop = ${loop}${__NEWLINE__}${colMajorLoop}
-    //#     def loop = ${loop}${__NEWLINE__}${loopIndent}}
+    //#     def loop = ${loopFirstIndent}if (getOrder() == ROW_MAJOR) {
+    //#     def loop = ${loop}${__NEWLINE__}${rowMajLoop}
+    //#     def loop = ${loop}${__NEWLINE__}${loopFirstIndent}} else {
+    //#     def loop = ${loop}${__NEWLINE__}${loopFirstIndent}${__INDENT__}/* Assume column-major order. */
+    //#     def loop = ${loop}${__NEWLINE__}${colMajLoop}
+    //#     def loop = ${loop}${__NEWLINE__}${loopFirstIndent}}
     //# end
     //# //debug ${loop}
-    //#
     @Override
     public void fill(${type} value) {
+        //# def loopFirstIndent = ${__INDENT2__}
         //# def loopBody = set(${indexList}, value);
         //# emit ${loop}
     }
 
     //# suspend loopOperator
+    //# def loopFirstIndent = ${__INDENT2__}
     //# def loopExpr = get(${indexList}) ${loopOperator} value
     //# if ${type_id} <= 1
     //#     def loopExpr = (${type})(${loopExpr})
@@ -232,10 +259,11 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
             scanner.update(get(i1));
         }
         //# else
-        boolean skip = true;
-        scanner.initialize(get(${zeroList}));
-        //# def loopBody = if (skip) skip = false; else scanner.update(get(${indexList}));
-        //# emit ${loop}
+        boolean initialized = false;
+        //# def _ = ${__NEWLINE__}${loopBodyIndent}
+        //# def __ = ${_}${__INDENT__}
+        //# def loopBody = if (initialized) {${__}scanner.update(get(${indexList}));${_}} else {${__}scanner.initialize(get(${indexList}));${__}initialized = true;${_}}
+        //#     emit ${loop}
         //# end
     }
 
@@ -254,9 +282,9 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
         }
         //# else
         int i = -1;
-        //#     def loopPrefix := ${__INDENT2__}
+        //#     def loopFirstIndent := ${__INDENT1__}
         //#     def loopBody = out[++i] = get(${indexList});
-        //#     emit ${colMajorLoop}
+        //#     emit ${colMajLoop}
         //# end
         return out;
     }
@@ -300,9 +328,13 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
         //# else
         ${dst_type}[] out = new ${dst_type}[number];
         int i = -1;
-        //#     def loopPrefix := ${__INDENT2__}
+        //#     if ${rank} == 1
+        //#         def loopFirstIndent := ${__INDENT2__}
+        //#     else
+        //#         def loopFirstIndent := ${__INDENT1__}
+        //#     end
         //#     def loopBody = out[++i] = (${dst_type})get(${indexList});
-        //#     emit ${colMajorLoop}
+        //#     emit ${colMajLoop}
         return ${dst_Type}${rank}D.wrap(out, ${argDimList});
         //# end
     }
@@ -311,18 +343,60 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
 
     @Override
     public ${className} copy() {
-        // TODO
-        return null;
+        return new Flat${className}(flatten(true), shape);
     }
 
     @Override
     public void assign(ShapedArray arr) {
-        // TODO
+        ${className} src;
+        if (! getShape().equals(arr.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        if (arr.getType() == Traits.${TYPE}) {
+            src = (${className})arr;
+        } else {
+            src = (${className})arr.to${Type}();
+        }
+        // FIXME: do assignation and conversion at the same time
+        //# if ${rank} == 1
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            set(i1, src.get(i1));
+        }
+        //# else
+        //#     def loopFirstIndent := ${__INDENT2__}
+        //#     def loopBody = set(${indexList}, src.get(${indexList}));
+        if (getOrder() == ROW_MAJOR && src.getOrder() == ROW_MAJOR) {
+            //# emit ${rowMajLoop}
+        } else {
+            /* Assume column-major order. */
+            //# emit ${colMajLoop}
+        }
+        //# end
     }
 
     @Override
     public void assign(ShapedVector vec) {
-        // TODO
+        if (! getShape().equals(vec.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        // FIXME: much too slow and may be skipped if data are identical (and array is flat)
+        //# if ${rank} == 1
+        //#     def loopFirstIndent := ${__INDENT3__}
+        //#     def loopBody = set(${indexList}, (${type})src.get(${indexList}));
+        //# else
+        //#     def loopFirstIndent := ${__INDENT2__}
+        //#     def loopBody = set(${indexList}, (${type})src.get(++i));
+        int i = -1;
+        //# end
+        if (vec.getType() == Traits.DOUBLE) {
+            DoubleShapedVector src = (DoubleShapedVector)vec;
+            //# emit ${colMajLoop}
+        } else if (vec.getType() == Traits.FLOAT) {
+            FloatShapedVector src = (FloatShapedVector)vec;
+            //# emit ${colMajLoop}
+        } else {
+            throw new IllegalTypeException();
+        }
     }
 
 
@@ -451,25 +525,21 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
      * <pre>arr.get(${indexList}) = data[${strideIndexDoc}]</pre>
      * with {@code arr} the returned ${rank}D array.
      * @param data    - The array to wrap in the ${rank}D array.
-     //# def k = 1
-     //# while ${k} <= ${rank}
-     //#   def kth = ${}{nth_${k}}
-     * @param dim${k}    - The ${kth} dimension of the ${rank}D array.
-     //#   eval k += 1
-     //# end
      * @param offset  - The offset in {@code data} of element (${zeroList}) of
      *                  the ${rank}D array.
-     //# def k = 1
-     //# while ${k} <= ${rank}
+     //# for k in 1:${rank}
      //#   def kth = ${}{nth_${k}}
      * @param stride${k} - The stride along the ${kth} dimension.
-     //#   eval k += 1
+     //# end
+     //# for k in 1:${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param dim${k}    - The ${kth} dimension of the ${rank}D array.
      //# end
      * @return A ${rank}D array sharing the elements of <b>data</b>.
      */
-    public static ${className} wrap(${type}[] data, ${declDimList},
-            int offset, ${declStrideList}) {
-        return new Stridden${className}(data, ${dimList}, offset, ${strideList});
+    public static ${className} wrap(${type}[] data,
+            int offset, ${declStrideList}, ${declDimList}) {
+        return new Stridden${className}(data, offset, ${strideList}, ${dimList});
     }
 
 }

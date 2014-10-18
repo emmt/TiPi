@@ -183,7 +183,7 @@ public class FlatByte1D extends Byte1D {
 
     @Override
     public ByteScalar slice(int idx, int dim) {
-        Helper.fixSliceIndex(dim, 1);
+        Helper.fixSliceIndex(dim, 1); // throws an exception if dim != 0
         return new ByteScalar(data, Helper.fixIndex(idx, dim1));
     }
 

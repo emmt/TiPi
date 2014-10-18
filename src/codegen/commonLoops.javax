@@ -32,14 +32,14 @@
 //# // are used to initialize the offsets at the inner loops of the column-major
 //# // and row-major loops respectively.
 //#
-//# def loopColMajBegin =   // the begining of the colum-major loops
-//# def loopRowMajBegin =   // the begining of the row-major loops
-//# def loopBody =          // the loop body
-//# def loopEnd =           // the ending of the loop
-//# def loopFirstIndent =   // the indentation of the first line of the loop
-//# def loopBodyIndent =    // the indentation for the body of the loop
-//# def loopColMaj =        // the code for colum-major loops
-//# def loopRowMaj =        // the code for row-major loops
+//# def loopColMajBegin =   // begining of colum-major loops
+//# def loopRowMajBegin =   // begining of row-major loops
+//# def loopBody =          // loop body
+//# def loopEnd =           // ending of loops
+//# def loopFirstIndent =   // indentation of the first line of the loop
+//# def loopBodyIndent =    // indentation for the body of the loop
+//# def loopColMaj =        // code for colum-major loops
+//# def loopRowMaj =        // code for row-major loops
 //#
 //# // The following macros must be defined just before emitting the code.
 //# suspend loopFirstIndent loopBody

@@ -63,7 +63,7 @@ public class SelectedFloat1D extends Float1D {
     @Override
     public final void checkSanity() {
         int offsetMin = 0, offsetMax = 0, indexMin, indexMax;
-         indexMin = indexMax = idx1[0];
+        indexMin = indexMax = idx1[0];
         for (int i1 = 1; i1 < dim1; ++i1) {
             int index = idx1[i1];
             if (index < indexMin) indexMin = index;
@@ -170,32 +170,32 @@ public class SelectedFloat1D extends Float1D {
 
     @Override
     public FloatScalar slice(int idx) {
-        return new FloatScalar(this.data, this.idx1[idx]);
+        return new FloatScalar(data, idx1[Helper.fixIndex(idx, dim1)]);
     }
 
     @Override
     public FloatScalar slice(int idx, int dim) {
-        dim = Helper.fixSliceIndex(dim, 1);
-        return new FloatScalar(this.data, this.idx1[idx]);
+        Helper.fixSliceIndex(dim, 1); // throws an exception if dim != 0
+        return new FloatScalar(data, Helper.fixIndex(idx, dim1));
     }
 
     @Override
     public Float1D view(Range rng1) {
-        int[] idx1 = Helper.select(this.idx1, rng1);
-        if (idx1 == this.idx1) {
+        int[] viewIndex1 = Helper.select(idx1, rng1);
+        if (viewIndex1 == idx1) {
             return this;
         } else {
-            return new SelectedFloat1D(this.data, idx1);
+            return new SelectedFloat1D(data, viewIndex1);
         }
     }
 
     @Override
     public Float1D view(int[] sel1) {
-        int[] idx1 = Helper.select(this.idx1, sel1);
-        if (idx1 == this.idx1) {
+        int[] viewIndex1 = Helper.select(idx1, sel1);
+        if (viewIndex1 == idx1) {
             return this;
         } else {
-            return new SelectedFloat1D(this.data, idx1);
+            return new SelectedFloat1D(data, viewIndex1);
         }
     }
 

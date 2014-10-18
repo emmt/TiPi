@@ -63,7 +63,7 @@ public class SelectedShort1D extends Short1D {
     @Override
     public final void checkSanity() {
         int offsetMin = 0, offsetMax = 0, indexMin, indexMax;
-         indexMin = indexMax = idx1[0];
+        indexMin = indexMax = idx1[0];
         for (int i1 = 1; i1 < dim1; ++i1) {
             int index = idx1[i1];
             if (index < indexMin) indexMin = index;
@@ -170,32 +170,32 @@ public class SelectedShort1D extends Short1D {
 
     @Override
     public ShortScalar slice(int idx) {
-        return new ShortScalar(this.data, this.idx1[idx]);
+        return new ShortScalar(data, idx1[Helper.fixIndex(idx, dim1)]);
     }
 
     @Override
     public ShortScalar slice(int idx, int dim) {
-        dim = Helper.fixSliceIndex(dim, 1);
-        return new ShortScalar(this.data, this.idx1[idx]);
+        Helper.fixSliceIndex(dim, 1); // throws an exception if dim != 0
+        return new ShortScalar(data, Helper.fixIndex(idx, dim1));
     }
 
     @Override
     public Short1D view(Range rng1) {
-        int[] idx1 = Helper.select(this.idx1, rng1);
-        if (idx1 == this.idx1) {
+        int[] viewIndex1 = Helper.select(idx1, rng1);
+        if (viewIndex1 == idx1) {
             return this;
         } else {
-            return new SelectedShort1D(this.data, idx1);
+            return new SelectedShort1D(data, viewIndex1);
         }
     }
 
     @Override
     public Short1D view(int[] sel1) {
-        int[] idx1 = Helper.select(this.idx1, sel1);
-        if (idx1 == this.idx1) {
+        int[] viewIndex1 = Helper.select(idx1, sel1);
+        if (viewIndex1 == idx1) {
             return this;
         } else {
-            return new SelectedShort1D(this.data, idx1);
+            return new SelectedShort1D(data, viewIndex1);
         }
     }
 

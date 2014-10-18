@@ -29,8 +29,13 @@ import mitiv.array.impl.FlatInt2D;
 import mitiv.array.impl.StriddenInt2D;
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.IntGenerator;
 
@@ -190,19 +195,28 @@ public abstract class Int2D extends Array2D implements IntArray {
 
     @Override
     public void scan(IntScanner scanner)  {
-        boolean skip = true;
-        scanner.initialize(get(0,0));
+        boolean initialized = false;
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
-                    if (skip) skip = false; else scanner.update(get(i1,i2));
+                    if (initialized) {
+                        scanner.update(get(i1,i2));
+                    } else {
+                        scanner.initialize(get(i1,i2));
+                        initialized = true;
+                    }
                 }
             }
         } else {
             /* Assume column-major order. */
             for (int i2 = 0; i2 < dim2; ++i2) {
                 for (int i1 = 0; i1 < dim1; ++i1) {
-                    if (skip) skip = false; else scanner.update(get(i1,i2));
+                    if (initialized) {
+                        scanner.update(get(i1,i2));
+                    } else {
+                        scanner.initialize(get(i1,i2));
+                        initialized = true;
+                    }
                 }
             }
         }
@@ -347,18 +361,61 @@ public abstract class Int2D extends Array2D implements IntArray {
 
     @Override
     public Int2D copy() {
-        // TODO
-        return null;
+        return new FlatInt2D(flatten(true), shape);
     }
 
     @Override
     public void assign(ShapedArray arr) {
-        // TODO
+        Int2D src;
+        if (! getShape().equals(arr.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        if (arr.getType() == Traits.INT) {
+            src = (Int2D)arr;
+        } else {
+            src = (Int2D)arr.toInt();
+        }
+        // FIXME: do assignation and conversion at the same time
+        if (getOrder() == ROW_MAJOR && src.getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    set(i1,i2, src.get(i1,i2));
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    set(i1,i2, src.get(i1,i2));
+                }
+            }
+        }
     }
 
     @Override
     public void assign(ShapedVector vec) {
-        // TODO
+        if (! getShape().equals(vec.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        // FIXME: much too slow and may be skipped if data are identical (and array is flat)
+        int i = -1;
+        if (vec.getType() == Traits.DOUBLE) {
+            DoubleShapedVector src = (DoubleShapedVector)vec;
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    set(i1,i2, (int)src.get(++i));
+                }
+            }
+        } else if (vec.getType() == Traits.FLOAT) {
+            FloatShapedVector src = (FloatShapedVector)vec;
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    set(i1,i2, (int)src.get(++i));
+                }
+            }
+        } else {
+            throw new IllegalTypeException();
+        }
     }
 
 
@@ -479,17 +536,17 @@ public abstract class Int2D extends Array2D implements IntArray {
      * <pre>arr.get(i1,i2) = data[offset + stride1*i1 + stride2*i2]</pre>
      * with {@code arr} the returned 2D array.
      * @param data    - The array to wrap in the 2D array.
-     * @param dim1    - The 1st dimension of the 2D array.
-     * @param dim2    - The 2nd dimension of the 2D array.
      * @param offset  - The offset in {@code data} of element (0,0) of
      *                  the 2D array.
      * @param stride1 - The stride along the 1st dimension.
      * @param stride2 - The stride along the 2nd dimension.
+     * @param dim1    - The 1st dimension of the 2D array.
+     * @param dim2    - The 2nd dimension of the 2D array.
      * @return A 2D array sharing the elements of <b>data</b>.
      */
-    public static Int2D wrap(int[] data, int dim1, int dim2,
-            int offset, int stride1, int stride2) {
-        return new StriddenInt2D(data, dim1,dim2, offset, stride1,stride2);
+    public static Int2D wrap(int[] data,
+            int offset, int stride1, int stride2, int dim1, int dim2) {
+        return new StriddenInt2D(data, offset, stride1,stride2, dim1,dim2);
     }
 
 }

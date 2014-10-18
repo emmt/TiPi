@@ -183,7 +183,7 @@ public class FlatInt1D extends Int1D {
 
     @Override
     public IntScalar slice(int idx, int dim) {
-        Helper.fixSliceIndex(dim, 1);
+        Helper.fixSliceIndex(dim, 1); // throws an exception if dim != 0
         return new IntScalar(data, Helper.fixIndex(idx, dim1));
     }
 

@@ -65,7 +65,7 @@ public class SelectedByte2D extends Byte2D {
     @Override
     public final void checkSanity() {
         int offsetMin = 0, offsetMax = 0, indexMin, indexMax;
-         indexMin = indexMax = idx1[0];
+        indexMin = indexMax = idx1[0];
         for (int i1 = 1; i1 < dim1; ++i1) {
             int index = idx1[i1];
             if (index < indexMin) indexMin = index;
@@ -73,7 +73,7 @@ public class SelectedByte2D extends Byte2D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-         indexMin = indexMax = idx2[0];
+        indexMin = indexMax = idx2[0];
         for (int i2 = 1; i2 < dim2; ++i2) {
             int index = idx2[i2];
             if (index < indexMin) indexMin = index;
@@ -204,68 +204,65 @@ public class SelectedByte2D extends Byte2D {
 
     @Override
     public Byte1D slice(int idx) {
-        int[] idx1 = this.idx1;
-        int offset = idx2[Helper.fixIndex(idx, dim2)];
-        if (offset != 0) {
+        int[] sliceIndex1;
+        int sliceOffset = idx2[Helper.fixIndex(idx, dim2)];
+        if (sliceOffset == 0) {
+            sliceIndex1 = idx1;
+        } else {
             /* Add the offset to the first indirection table. */
-            int length = idx1.length;
-            int[] tmp = new int[length];
-            for (int i = 0; i < length; ++i) {
-                tmp[i] = idx1[i] + offset;
+            sliceIndex1 = new int[dim1];
+            for (int i = 0; i < dim1; ++i) {
+                sliceIndex1[i] = idx1[i] + sliceOffset;
             }
-            idx1 = tmp;
         }
-        return new SelectedByte1D(this.data, idx1);
+        return new SelectedByte1D(data, sliceIndex1);
     }
 
     @Override
     public Byte1D slice(int idx, int dim) {
+        int sliceOffset;
+        int[] sliceIndex1;
         dim = Helper.fixSliceIndex(dim, 2);
-        int[] idx1;
-        int offset;
-        switch (dim) {
-        case 0:
-            offset = this.idx1[Helper.fixIndex(idx, dim1)];
-            idx1 = this.idx2;
-            break;
-        case 1:
-            idx1 = this.idx1;
-            offset = this.idx2[Helper.fixIndex(idx, dim2)];
-            break;
-        default:
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        if (dim == 0) {
+            /* Slice along 1st dimension. */
+            sliceOffset = idx1[Helper.fixIndex(idx, dim1)];
+            sliceIndex1 = idx2;
+        } else {
+            /* Slice along 2nd dimension. */
+            sliceIndex1 = idx1;
+            sliceOffset = idx2[Helper.fixIndex(idx, dim2)];
         }
-        if (offset != 0) {
+        if (sliceOffset != 0) {
             /* Add the offset to the first indirection table. */
-            int length = idx1.length;
-            int[] tmp = new int[length];
+            int length = sliceIndex1.length;
+            int[] tempIndex = new int[length];
             for (int i = 0; i < length; ++i) {
-                tmp[i] = offset + idx1[i];
+                tempIndex[i] = sliceOffset + sliceIndex1[i];
             }
-            idx1 = tmp;
+            sliceIndex1 = tempIndex;
         }
-        return new SelectedByte1D(this.data, idx1);
+        return new SelectedByte1D(data, sliceIndex1);
     }
 
     @Override
     public Byte2D view(Range rng1, Range rng2) {
-        int[] idx1 = Helper.select(this.idx1, rng1);
-        int[] idx2 = Helper.select(this.idx2, rng2);
-        if (idx1 == this.idx1 && idx2 == this.idx2) {
+        int[] viewIndex1 = Helper.select(idx1, rng1);
+        int[] viewIndex2 = Helper.select(idx2, rng2);
+        if (viewIndex1 == idx1 && viewIndex2 == idx2) {
             return this;
         } else {
-            return new SelectedByte2D(this.data, idx1, idx2);
+            return new SelectedByte2D(data, viewIndex1, viewIndex2);
         }
     }
 
     @Override
     public Byte2D view(int[] sel1, int[] sel2) {
-        int[] idx1 = Helper.select(this.idx1, sel1);
-        int[] idx2 = Helper.select(this.idx2, sel2);
-        if (idx1 == this.idx1 && idx2 == this.idx2) {
+        int[] viewIndex1 = Helper.select(idx1, sel1);
+        int[] viewIndex2 = Helper.select(idx2, sel2);
+        if (viewIndex1 == idx1 && viewIndex2 == idx2) {
             return this;
         } else {
-            return new SelectedByte2D(this.data, idx1, idx2);
+            return new SelectedByte2D(data, viewIndex1, viewIndex2);
         }
     }
 

@@ -80,7 +80,7 @@ public class SelectedLong9D extends Long9D {
     @Override
     public final void checkSanity() {
         int offsetMin = 0, offsetMax = 0, indexMin, indexMax;
-         indexMin = indexMax = idx1[0];
+        indexMin = indexMax = idx1[0];
         for (int i1 = 1; i1 < dim1; ++i1) {
             int index = idx1[i1];
             if (index < indexMin) indexMin = index;
@@ -88,7 +88,7 @@ public class SelectedLong9D extends Long9D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-         indexMin = indexMax = idx2[0];
+        indexMin = indexMax = idx2[0];
         for (int i2 = 1; i2 < dim2; ++i2) {
             int index = idx2[i2];
             if (index < indexMin) indexMin = index;
@@ -96,7 +96,7 @@ public class SelectedLong9D extends Long9D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-         indexMin = indexMax = idx3[0];
+        indexMin = indexMax = idx3[0];
         for (int i3 = 1; i3 < dim3; ++i3) {
             int index = idx3[i3];
             if (index < indexMin) indexMin = index;
@@ -104,7 +104,7 @@ public class SelectedLong9D extends Long9D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-         indexMin = indexMax = idx4[0];
+        indexMin = indexMax = idx4[0];
         for (int i4 = 1; i4 < dim4; ++i4) {
             int index = idx4[i4];
             if (index < indexMin) indexMin = index;
@@ -112,7 +112,7 @@ public class SelectedLong9D extends Long9D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-         indexMin = indexMax = idx5[0];
+        indexMin = indexMax = idx5[0];
         for (int i5 = 1; i5 < dim5; ++i5) {
             int index = idx5[i5];
             if (index < indexMin) indexMin = index;
@@ -120,7 +120,7 @@ public class SelectedLong9D extends Long9D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-         indexMin = indexMax = idx6[0];
+        indexMin = indexMax = idx6[0];
         for (int i6 = 1; i6 < dim6; ++i6) {
             int index = idx6[i6];
             if (index < indexMin) indexMin = index;
@@ -128,7 +128,7 @@ public class SelectedLong9D extends Long9D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-         indexMin = indexMax = idx7[0];
+        indexMin = indexMax = idx7[0];
         for (int i7 = 1; i7 < dim7; ++i7) {
             int index = idx7[i7];
             if (index < indexMin) indexMin = index;
@@ -136,7 +136,7 @@ public class SelectedLong9D extends Long9D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-         indexMin = indexMax = idx8[0];
+        indexMin = indexMax = idx8[0];
         for (int i8 = 1; i8 < dim8; ++i8) {
             int index = idx8[i8];
             if (index < indexMin) indexMin = index;
@@ -144,7 +144,7 @@ public class SelectedLong9D extends Long9D {
         }
         offsetMin += indexMin;
         offsetMax += indexMax;
-         indexMin = indexMax = idx9[0];
+        indexMin = indexMax = idx9[0];
         for (int i9 = 1; i9 < dim9; ++i9) {
             int index = idx9[i9];
             if (index < indexMin) indexMin = index;
@@ -443,180 +443,177 @@ public class SelectedLong9D extends Long9D {
 
     @Override
     public Long8D slice(int idx) {
-        int[] idx1 = this.idx1;
-        int offset = idx9[Helper.fixIndex(idx, dim9)];
-        if (offset != 0) {
+        int[] sliceIndex1;
+        int sliceOffset = idx9[Helper.fixIndex(idx, dim9)];
+        if (sliceOffset == 0) {
+            sliceIndex1 = idx1;
+        } else {
             /* Add the offset to the first indirection table. */
-            int length = idx1.length;
-            int[] tmp = new int[length];
-            for (int i = 0; i < length; ++i) {
-                tmp[i] = idx1[i] + offset;
+            sliceIndex1 = new int[dim1];
+            for (int i = 0; i < dim1; ++i) {
+                sliceIndex1[i] = idx1[i] + sliceOffset;
             }
-            idx1 = tmp;
         }
-        return new SelectedLong8D(this.data, idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8);
+        return new SelectedLong8D(data, sliceIndex1, idx2, idx3, idx4, idx5, idx6, idx7, idx8);
     }
 
     @Override
     public Long8D slice(int idx, int dim) {
+        int sliceOffset;
+        int[] sliceIndex1;
+        int[] sliceIndex2;
+        int[] sliceIndex3;
+        int[] sliceIndex4;
+        int[] sliceIndex5;
+        int[] sliceIndex6;
+        int[] sliceIndex7;
+        int[] sliceIndex8;
         dim = Helper.fixSliceIndex(dim, 9);
-        int[] idx1;
-        int[] idx2;
-        int[] idx3;
-        int[] idx4;
-        int[] idx5;
-        int[] idx6;
-        int[] idx7;
-        int[] idx8;
-        int offset;
-        switch (dim) {
-        case 0:
-            offset = this.idx1[Helper.fixIndex(idx, dim1)];
-            idx1 = this.idx2;
-            idx2 = this.idx3;
-            idx3 = this.idx4;
-            idx4 = this.idx5;
-            idx5 = this.idx6;
-            idx6 = this.idx7;
-            idx7 = this.idx8;
-            idx8 = this.idx9;
-            break;
-        case 1:
-            idx1 = this.idx1;
-            offset = this.idx2[Helper.fixIndex(idx, dim2)];
-            idx2 = this.idx3;
-            idx3 = this.idx4;
-            idx4 = this.idx5;
-            idx5 = this.idx6;
-            idx6 = this.idx7;
-            idx7 = this.idx8;
-            idx8 = this.idx9;
-            break;
-        case 2:
-            idx1 = this.idx1;
-            idx2 = this.idx2;
-            offset = this.idx3[Helper.fixIndex(idx, dim3)];
-            idx3 = this.idx4;
-            idx4 = this.idx5;
-            idx5 = this.idx6;
-            idx6 = this.idx7;
-            idx7 = this.idx8;
-            idx8 = this.idx9;
-            break;
-        case 3:
-            idx1 = this.idx1;
-            idx2 = this.idx2;
-            idx3 = this.idx3;
-            offset = this.idx4[Helper.fixIndex(idx, dim4)];
-            idx4 = this.idx5;
-            idx5 = this.idx6;
-            idx6 = this.idx7;
-            idx7 = this.idx8;
-            idx8 = this.idx9;
-            break;
-        case 4:
-            idx1 = this.idx1;
-            idx2 = this.idx2;
-            idx3 = this.idx3;
-            idx4 = this.idx4;
-            offset = this.idx5[Helper.fixIndex(idx, dim5)];
-            idx5 = this.idx6;
-            idx6 = this.idx7;
-            idx7 = this.idx8;
-            idx8 = this.idx9;
-            break;
-        case 5:
-            idx1 = this.idx1;
-            idx2 = this.idx2;
-            idx3 = this.idx3;
-            idx4 = this.idx4;
-            idx5 = this.idx5;
-            offset = this.idx6[Helper.fixIndex(idx, dim6)];
-            idx6 = this.idx7;
-            idx7 = this.idx8;
-            idx8 = this.idx9;
-            break;
-        case 6:
-            idx1 = this.idx1;
-            idx2 = this.idx2;
-            idx3 = this.idx3;
-            idx4 = this.idx4;
-            idx5 = this.idx5;
-            idx6 = this.idx6;
-            offset = this.idx7[Helper.fixIndex(idx, dim7)];
-            idx7 = this.idx8;
-            idx8 = this.idx9;
-            break;
-        case 7:
-            idx1 = this.idx1;
-            idx2 = this.idx2;
-            idx3 = this.idx3;
-            idx4 = this.idx4;
-            idx5 = this.idx5;
-            idx6 = this.idx6;
-            idx7 = this.idx7;
-            offset = this.idx8[Helper.fixIndex(idx, dim8)];
-            idx8 = this.idx9;
-            break;
-        case 8:
-            idx1 = this.idx1;
-            idx2 = this.idx2;
-            idx3 = this.idx3;
-            idx4 = this.idx4;
-            idx5 = this.idx5;
-            idx6 = this.idx6;
-            idx7 = this.idx7;
-            idx8 = this.idx8;
-            offset = this.idx9[Helper.fixIndex(idx, dim9)];
-            break;
-        default:
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+        if (dim == 0) {
+            /* Slice along 1st dimension. */
+            sliceOffset = idx1[Helper.fixIndex(idx, dim1)];
+            sliceIndex1 = idx2;
+            sliceIndex2 = idx3;
+            sliceIndex3 = idx4;
+            sliceIndex4 = idx5;
+            sliceIndex5 = idx6;
+            sliceIndex6 = idx7;
+            sliceIndex7 = idx8;
+            sliceIndex8 = idx9;
+        } else if (dim == 1) {
+            /* Slice along 2nd dimension. */
+            sliceIndex1 = idx1;
+            sliceOffset = idx2[Helper.fixIndex(idx, dim2)];
+            sliceIndex2 = idx3;
+            sliceIndex3 = idx4;
+            sliceIndex4 = idx5;
+            sliceIndex5 = idx6;
+            sliceIndex6 = idx7;
+            sliceIndex7 = idx8;
+            sliceIndex8 = idx9;
+        } else if (dim == 2) {
+            /* Slice along 3rd dimension. */
+            sliceIndex1 = idx1;
+            sliceIndex2 = idx2;
+            sliceOffset = idx3[Helper.fixIndex(idx, dim3)];
+            sliceIndex3 = idx4;
+            sliceIndex4 = idx5;
+            sliceIndex5 = idx6;
+            sliceIndex6 = idx7;
+            sliceIndex7 = idx8;
+            sliceIndex8 = idx9;
+        } else if (dim == 3) {
+            /* Slice along 4th dimension. */
+            sliceIndex1 = idx1;
+            sliceIndex2 = idx2;
+            sliceIndex3 = idx3;
+            sliceOffset = idx4[Helper.fixIndex(idx, dim4)];
+            sliceIndex4 = idx5;
+            sliceIndex5 = idx6;
+            sliceIndex6 = idx7;
+            sliceIndex7 = idx8;
+            sliceIndex8 = idx9;
+        } else if (dim == 4) {
+            /* Slice along 5th dimension. */
+            sliceIndex1 = idx1;
+            sliceIndex2 = idx2;
+            sliceIndex3 = idx3;
+            sliceIndex4 = idx4;
+            sliceOffset = idx5[Helper.fixIndex(idx, dim5)];
+            sliceIndex5 = idx6;
+            sliceIndex6 = idx7;
+            sliceIndex7 = idx8;
+            sliceIndex8 = idx9;
+        } else if (dim == 5) {
+            /* Slice along 6th dimension. */
+            sliceIndex1 = idx1;
+            sliceIndex2 = idx2;
+            sliceIndex3 = idx3;
+            sliceIndex4 = idx4;
+            sliceIndex5 = idx5;
+            sliceOffset = idx6[Helper.fixIndex(idx, dim6)];
+            sliceIndex6 = idx7;
+            sliceIndex7 = idx8;
+            sliceIndex8 = idx9;
+        } else if (dim == 6) {
+            /* Slice along 7th dimension. */
+            sliceIndex1 = idx1;
+            sliceIndex2 = idx2;
+            sliceIndex3 = idx3;
+            sliceIndex4 = idx4;
+            sliceIndex5 = idx5;
+            sliceIndex6 = idx6;
+            sliceOffset = idx7[Helper.fixIndex(idx, dim7)];
+            sliceIndex7 = idx8;
+            sliceIndex8 = idx9;
+        } else if (dim == 7) {
+            /* Slice along 8th dimension. */
+            sliceIndex1 = idx1;
+            sliceIndex2 = idx2;
+            sliceIndex3 = idx3;
+            sliceIndex4 = idx4;
+            sliceIndex5 = idx5;
+            sliceIndex6 = idx6;
+            sliceIndex7 = idx7;
+            sliceOffset = idx8[Helper.fixIndex(idx, dim8)];
+            sliceIndex8 = idx9;
+        } else {
+            /* Slice along 9th dimension. */
+            sliceIndex1 = idx1;
+            sliceIndex2 = idx2;
+            sliceIndex3 = idx3;
+            sliceIndex4 = idx4;
+            sliceIndex5 = idx5;
+            sliceIndex6 = idx6;
+            sliceIndex7 = idx7;
+            sliceIndex8 = idx8;
+            sliceOffset = idx9[Helper.fixIndex(idx, dim9)];
         }
-        if (offset != 0) {
+        if (sliceOffset != 0) {
             /* Add the offset to the first indirection table. */
-            int length = idx1.length;
-            int[] tmp = new int[length];
+            int length = sliceIndex1.length;
+            int[] tempIndex = new int[length];
             for (int i = 0; i < length; ++i) {
-                tmp[i] = offset + idx1[i];
+                tempIndex[i] = sliceOffset + sliceIndex1[i];
             }
-            idx1 = tmp;
+            sliceIndex1 = tempIndex;
         }
-        return new SelectedLong8D(this.data, idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8);
+        return new SelectedLong8D(data, sliceIndex1, sliceIndex2, sliceIndex3, sliceIndex4, sliceIndex5, sliceIndex6, sliceIndex7, sliceIndex8);
     }
 
     @Override
     public Long9D view(Range rng1, Range rng2, Range rng3, Range rng4, Range rng5, Range rng6, Range rng7, Range rng8, Range rng9) {
-        int[] idx1 = Helper.select(this.idx1, rng1);
-        int[] idx2 = Helper.select(this.idx2, rng2);
-        int[] idx3 = Helper.select(this.idx3, rng3);
-        int[] idx4 = Helper.select(this.idx4, rng4);
-        int[] idx5 = Helper.select(this.idx5, rng5);
-        int[] idx6 = Helper.select(this.idx6, rng6);
-        int[] idx7 = Helper.select(this.idx7, rng7);
-        int[] idx8 = Helper.select(this.idx8, rng8);
-        int[] idx9 = Helper.select(this.idx9, rng9);
-        if (idx1 == this.idx1 && idx2 == this.idx2 && idx3 == this.idx3 && idx4 == this.idx4 && idx5 == this.idx5 && idx6 == this.idx6 && idx7 == this.idx7 && idx8 == this.idx8 && idx9 == this.idx9) {
+        int[] viewIndex1 = Helper.select(idx1, rng1);
+        int[] viewIndex2 = Helper.select(idx2, rng2);
+        int[] viewIndex3 = Helper.select(idx3, rng3);
+        int[] viewIndex4 = Helper.select(idx4, rng4);
+        int[] viewIndex5 = Helper.select(idx5, rng5);
+        int[] viewIndex6 = Helper.select(idx6, rng6);
+        int[] viewIndex7 = Helper.select(idx7, rng7);
+        int[] viewIndex8 = Helper.select(idx8, rng8);
+        int[] viewIndex9 = Helper.select(idx9, rng9);
+        if (viewIndex1 == idx1 && viewIndex2 == idx2 && viewIndex3 == idx3 && viewIndex4 == idx4 && viewIndex5 == idx5 && viewIndex6 == idx6 && viewIndex7 == idx7 && viewIndex8 == idx8 && viewIndex9 == idx9) {
             return this;
         } else {
-            return new SelectedLong9D(this.data, idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8, idx9);
+            return new SelectedLong9D(data, viewIndex1, viewIndex2, viewIndex3, viewIndex4, viewIndex5, viewIndex6, viewIndex7, viewIndex8, viewIndex9);
         }
     }
 
     @Override
     public Long9D view(int[] sel1, int[] sel2, int[] sel3, int[] sel4, int[] sel5, int[] sel6, int[] sel7, int[] sel8, int[] sel9) {
-        int[] idx1 = Helper.select(this.idx1, sel1);
-        int[] idx2 = Helper.select(this.idx2, sel2);
-        int[] idx3 = Helper.select(this.idx3, sel3);
-        int[] idx4 = Helper.select(this.idx4, sel4);
-        int[] idx5 = Helper.select(this.idx5, sel5);
-        int[] idx6 = Helper.select(this.idx6, sel6);
-        int[] idx7 = Helper.select(this.idx7, sel7);
-        int[] idx8 = Helper.select(this.idx8, sel8);
-        int[] idx9 = Helper.select(this.idx9, sel9);
-        if (idx1 == this.idx1 && idx2 == this.idx2 && idx3 == this.idx3 && idx4 == this.idx4 && idx5 == this.idx5 && idx6 == this.idx6 && idx7 == this.idx7 && idx8 == this.idx8 && idx9 == this.idx9) {
+        int[] viewIndex1 = Helper.select(idx1, sel1);
+        int[] viewIndex2 = Helper.select(idx2, sel2);
+        int[] viewIndex3 = Helper.select(idx3, sel3);
+        int[] viewIndex4 = Helper.select(idx4, sel4);
+        int[] viewIndex5 = Helper.select(idx5, sel5);
+        int[] viewIndex6 = Helper.select(idx6, sel6);
+        int[] viewIndex7 = Helper.select(idx7, sel7);
+        int[] viewIndex8 = Helper.select(idx8, sel8);
+        int[] viewIndex9 = Helper.select(idx9, sel9);
+        if (viewIndex1 == idx1 && viewIndex2 == idx2 && viewIndex3 == idx3 && viewIndex4 == idx4 && viewIndex5 == idx5 && viewIndex6 == idx6 && viewIndex7 == idx7 && viewIndex8 == idx8 && viewIndex9 == idx9) {
             return this;
         } else {
-            return new SelectedLong9D(this.data, idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8, idx9);
+            return new SelectedLong9D(data, viewIndex1, viewIndex2, viewIndex3, viewIndex4, viewIndex5, viewIndex6, viewIndex7, viewIndex8, viewIndex9);
         }
     }
 

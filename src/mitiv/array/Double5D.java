@@ -29,8 +29,13 @@ import mitiv.array.impl.FlatDouble5D;
 import mitiv.array.impl.StriddenDouble5D;
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.DoubleGenerator;
 
@@ -268,15 +273,19 @@ public abstract class Double5D extends Array5D implements DoubleArray {
 
     @Override
     public void scan(DoubleScanner scanner)  {
-        boolean skip = true;
-        scanner.initialize(get(0,0,0,0,0));
+        boolean initialized = false;
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i4 = 0; i4 < dim4; ++i4) {
                             for (int i5 = 0; i5 < dim5; ++i5) {
-                                if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4,i5));
+                                if (initialized) {
+                                    scanner.update(get(i1,i2,i3,i4,i5));
+                                } else {
+                                    scanner.initialize(get(i1,i2,i3,i4,i5));
+                                    initialized = true;
+                                }
                             }
                         }
                     }
@@ -289,7 +298,12 @@ public abstract class Double5D extends Array5D implements DoubleArray {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i2 = 0; i2 < dim2; ++i2) {
                             for (int i1 = 0; i1 < dim1; ++i1) {
-                                if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4,i5));
+                                if (initialized) {
+                                    scanner.update(get(i1,i2,i3,i4,i5));
+                                } else {
+                                    scanner.initialize(get(i1,i2,i3,i4,i5));
+                                    initialized = true;
+                                }
                             }
                         }
                     }
@@ -473,18 +487,85 @@ public abstract class Double5D extends Array5D implements DoubleArray {
 
     @Override
     public Double5D copy() {
-        // TODO
-        return null;
+        return new FlatDouble5D(flatten(true), shape);
     }
 
     @Override
     public void assign(ShapedArray arr) {
-        // TODO
+        Double5D src;
+        if (! getShape().equals(arr.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        if (arr.getType() == Traits.DOUBLE) {
+            src = (Double5D)arr;
+        } else {
+            src = (Double5D)arr.toDouble();
+        }
+        // FIXME: do assignation and conversion at the same time
+        if (getOrder() == ROW_MAJOR && src.getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                set(i1,i2,i3,i4,i5, src.get(i1,i2,i3,i4,i5));
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                set(i1,i2,i3,i4,i5, src.get(i1,i2,i3,i4,i5));
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void assign(ShapedVector vec) {
-        // TODO
+        if (! getShape().equals(vec.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        // FIXME: much too slow and may be skipped if data are identical (and array is flat)
+        int i = -1;
+        if (vec.getType() == Traits.DOUBLE) {
+            DoubleShapedVector src = (DoubleShapedVector)vec;
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                set(i1,i2,i3,i4,i5, (double)src.get(++i));
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (vec.getType() == Traits.FLOAT) {
+            FloatShapedVector src = (FloatShapedVector)vec;
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                set(i1,i2,i3,i4,i5, (double)src.get(++i));
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            throw new IllegalTypeException();
+        }
     }
 
 
@@ -611,11 +692,6 @@ public abstract class Double5D extends Array5D implements DoubleArray {
      * <pre>arr.get(i1,i2,i3,i4,i5) = data[offset + stride1*i1 + stride2*i2 + stride3*i3 + stride4*i4 + stride5*i5]</pre>
      * with {@code arr} the returned 5D array.
      * @param data    - The array to wrap in the 5D array.
-     * @param dim1    - The 1st dimension of the 5D array.
-     * @param dim2    - The 2nd dimension of the 5D array.
-     * @param dim3    - The 3rd dimension of the 5D array.
-     * @param dim4    - The 4th dimension of the 5D array.
-     * @param dim5    - The 5th dimension of the 5D array.
      * @param offset  - The offset in {@code data} of element (0,0,0,0,0) of
      *                  the 5D array.
      * @param stride1 - The stride along the 1st dimension.
@@ -623,11 +699,16 @@ public abstract class Double5D extends Array5D implements DoubleArray {
      * @param stride3 - The stride along the 3rd dimension.
      * @param stride4 - The stride along the 4th dimension.
      * @param stride5 - The stride along the 5th dimension.
+     * @param dim1    - The 1st dimension of the 5D array.
+     * @param dim2    - The 2nd dimension of the 5D array.
+     * @param dim3    - The 3rd dimension of the 5D array.
+     * @param dim4    - The 4th dimension of the 5D array.
+     * @param dim5    - The 5th dimension of the 5D array.
      * @return A 5D array sharing the elements of <b>data</b>.
      */
-    public static Double5D wrap(double[] data, int dim1, int dim2, int dim3, int dim4, int dim5,
-            int offset, int stride1, int stride2, int stride3, int stride4, int stride5) {
-        return new StriddenDouble5D(data, dim1,dim2,dim3,dim4,dim5, offset, stride1,stride2,stride3,stride4,stride5);
+    public static Double5D wrap(double[] data,
+            int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int dim1, int dim2, int dim3, int dim4, int dim5) {
+        return new StriddenDouble5D(data, offset, stride1,stride2,stride3,stride4,stride5, dim1,dim2,dim3,dim4,dim5);
     }
 
 }

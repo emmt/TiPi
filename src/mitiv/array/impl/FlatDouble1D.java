@@ -183,7 +183,7 @@ public class FlatDouble1D extends Double1D {
 
     @Override
     public DoubleScalar slice(int idx, int dim) {
-        Helper.fixSliceIndex(dim, 1);
+        Helper.fixSliceIndex(dim, 1); // throws an exception if dim != 0
         return new DoubleScalar(data, Helper.fixIndex(idx, dim1));
     }
 

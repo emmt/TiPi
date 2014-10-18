@@ -33,7 +33,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import mitiv.base.Shaped;
-import mitiv.base.indexing.Range;
 import mitiv.linalg.shaped.DoubleShapedVector;
 
 public class ArrayUtils {

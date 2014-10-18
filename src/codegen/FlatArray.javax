@@ -364,7 +364,7 @@ public class ${className} extends ${superName} {
         //#     end
         //# end
         //# if ${reducedRank} == 0
-        Helper.fixSliceIndex(dim, ${rank});
+        Helper.fixSliceIndex(dim, ${rank}); // throws an exception if dim != 0
         return new ${reducedSuperName}(data, Helper.fixIndex(idx, dim1));
         //# else
         int sliceOffset;

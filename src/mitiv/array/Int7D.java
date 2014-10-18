@@ -29,8 +29,13 @@ import mitiv.array.impl.FlatInt7D;
 import mitiv.array.impl.StriddenInt7D;
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.IntGenerator;
 
@@ -320,8 +325,7 @@ public abstract class Int7D extends Array7D implements IntArray {
 
     @Override
     public void scan(IntScanner scanner)  {
-        boolean skip = true;
-        scanner.initialize(get(0,0,0,0,0,0,0));
+        boolean initialized = false;
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -330,7 +334,12 @@ public abstract class Int7D extends Array7D implements IntArray {
                             for (int i5 = 0; i5 < dim5; ++i5) {
                                 for (int i6 = 0; i6 < dim6; ++i6) {
                                     for (int i7 = 0; i7 < dim7; ++i7) {
-                                        if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4,i5,i6,i7));
+                                        if (initialized) {
+                                            scanner.update(get(i1,i2,i3,i4,i5,i6,i7));
+                                        } else {
+                                            scanner.initialize(get(i1,i2,i3,i4,i5,i6,i7));
+                                            initialized = true;
+                                        }
                                     }
                                 }
                             }
@@ -347,7 +356,12 @@ public abstract class Int7D extends Array7D implements IntArray {
                             for (int i3 = 0; i3 < dim3; ++i3) {
                                 for (int i2 = 0; i2 < dim2; ++i2) {
                                     for (int i1 = 0; i1 < dim1; ++i1) {
-                                        if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4,i5,i6,i7));
+                                        if (initialized) {
+                                            scanner.update(get(i1,i2,i3,i4,i5,i6,i7));
+                                        } else {
+                                            scanner.initialize(get(i1,i2,i3,i4,i5,i6,i7));
+                                            initialized = true;
+                                        }
                                     }
                                 }
                             }
@@ -557,18 +571,101 @@ public abstract class Int7D extends Array7D implements IntArray {
 
     @Override
     public Int7D copy() {
-        // TODO
-        return null;
+        return new FlatInt7D(flatten(true), shape);
     }
 
     @Override
     public void assign(ShapedArray arr) {
-        // TODO
+        Int7D src;
+        if (! getShape().equals(arr.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        if (arr.getType() == Traits.INT) {
+            src = (Int7D)arr;
+        } else {
+            src = (Int7D)arr.toInt();
+        }
+        // FIXME: do assignation and conversion at the same time
+        if (getOrder() == ROW_MAJOR && src.getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i6 = 0; i6 < dim6; ++i6) {
+                                    for (int i7 = 0; i7 < dim7; ++i7) {
+                                        set(i1,i2,i3,i4,i5,i6,i7, src.get(i1,i2,i3,i4,i5,i6,i7));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i7 = 0; i7 < dim7; ++i7) {
+                for (int i6 = 0; i6 < dim6; ++i6) {
+                    for (int i5 = 0; i5 < dim5; ++i5) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i3 = 0; i3 < dim3; ++i3) {
+                                for (int i2 = 0; i2 < dim2; ++i2) {
+                                    for (int i1 = 0; i1 < dim1; ++i1) {
+                                        set(i1,i2,i3,i4,i5,i6,i7, src.get(i1,i2,i3,i4,i5,i6,i7));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void assign(ShapedVector vec) {
-        // TODO
+        if (! getShape().equals(vec.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        // FIXME: much too slow and may be skipped if data are identical (and array is flat)
+        int i = -1;
+        if (vec.getType() == Traits.DOUBLE) {
+            DoubleShapedVector src = (DoubleShapedVector)vec;
+            for (int i7 = 0; i7 < dim7; ++i7) {
+                for (int i6 = 0; i6 < dim6; ++i6) {
+                    for (int i5 = 0; i5 < dim5; ++i5) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i3 = 0; i3 < dim3; ++i3) {
+                                for (int i2 = 0; i2 < dim2; ++i2) {
+                                    for (int i1 = 0; i1 < dim1; ++i1) {
+                                        set(i1,i2,i3,i4,i5,i6,i7, (int)src.get(++i));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (vec.getType() == Traits.FLOAT) {
+            FloatShapedVector src = (FloatShapedVector)vec;
+            for (int i7 = 0; i7 < dim7; ++i7) {
+                for (int i6 = 0; i6 < dim6; ++i6) {
+                    for (int i5 = 0; i5 < dim5; ++i5) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i3 = 0; i3 < dim3; ++i3) {
+                                for (int i2 = 0; i2 < dim2; ++i2) {
+                                    for (int i1 = 0; i1 < dim1; ++i1) {
+                                        set(i1,i2,i3,i4,i5,i6,i7, (int)src.get(++i));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            throw new IllegalTypeException();
+        }
     }
 
 
@@ -699,13 +796,6 @@ public abstract class Int7D extends Array7D implements IntArray {
      * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7) = data[offset + stride1*i1 + stride2*i2 + stride3*i3 + stride4*i4 + stride5*i5 + stride6*i6 + stride7*i7]</pre>
      * with {@code arr} the returned 7D array.
      * @param data    - The array to wrap in the 7D array.
-     * @param dim1    - The 1st dimension of the 7D array.
-     * @param dim2    - The 2nd dimension of the 7D array.
-     * @param dim3    - The 3rd dimension of the 7D array.
-     * @param dim4    - The 4th dimension of the 7D array.
-     * @param dim5    - The 5th dimension of the 7D array.
-     * @param dim6    - The 6th dimension of the 7D array.
-     * @param dim7    - The 7th dimension of the 7D array.
      * @param offset  - The offset in {@code data} of element (0,0,0,0,0,0,0) of
      *                  the 7D array.
      * @param stride1 - The stride along the 1st dimension.
@@ -715,11 +805,18 @@ public abstract class Int7D extends Array7D implements IntArray {
      * @param stride5 - The stride along the 5th dimension.
      * @param stride6 - The stride along the 6th dimension.
      * @param stride7 - The stride along the 7th dimension.
+     * @param dim1    - The 1st dimension of the 7D array.
+     * @param dim2    - The 2nd dimension of the 7D array.
+     * @param dim3    - The 3rd dimension of the 7D array.
+     * @param dim4    - The 4th dimension of the 7D array.
+     * @param dim5    - The 5th dimension of the 7D array.
+     * @param dim6    - The 6th dimension of the 7D array.
+     * @param dim7    - The 7th dimension of the 7D array.
      * @return A 7D array sharing the elements of <b>data</b>.
      */
-    public static Int7D wrap(int[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7,
-            int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7) {
-        return new StriddenInt7D(data, dim1,dim2,dim3,dim4,dim5,dim6,dim7, offset, stride1,stride2,stride3,stride4,stride5,stride6,stride7);
+    public static Int7D wrap(int[] data,
+            int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
+        return new StriddenInt7D(data, offset, stride1,stride2,stride3,stride4,stride5,stride6,stride7, dim1,dim2,dim3,dim4,dim5,dim6,dim7);
     }
 
 }

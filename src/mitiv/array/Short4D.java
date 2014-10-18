@@ -29,8 +29,13 @@ import mitiv.array.impl.FlatShort4D;
 import mitiv.array.impl.StriddenShort4D;
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.ShortGenerator;
 
@@ -242,14 +247,18 @@ public abstract class Short4D extends Array4D implements ShortArray {
 
     @Override
     public void scan(ShortScanner scanner)  {
-        boolean skip = true;
-        scanner.initialize(get(0,0,0,0));
+        boolean initialized = false;
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i4 = 0; i4 < dim4; ++i4) {
-                            if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4));
+                            if (initialized) {
+                                scanner.update(get(i1,i2,i3,i4));
+                            } else {
+                                scanner.initialize(get(i1,i2,i3,i4));
+                                initialized = true;
+                            }
                         }
                     }
                 }
@@ -260,7 +269,12 @@ public abstract class Short4D extends Array4D implements ShortArray {
                 for (int i3 = 0; i3 < dim3; ++i3) {
                     for (int i2 = 0; i2 < dim2; ++i2) {
                         for (int i1 = 0; i1 < dim1; ++i1) {
-                            if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4));
+                            if (initialized) {
+                                scanner.update(get(i1,i2,i3,i4));
+                            } else {
+                                scanner.initialize(get(i1,i2,i3,i4));
+                                initialized = true;
+                            }
                         }
                     }
                 }
@@ -431,18 +445,77 @@ public abstract class Short4D extends Array4D implements ShortArray {
 
     @Override
     public Short4D copy() {
-        // TODO
-        return null;
+        return new FlatShort4D(flatten(true), shape);
     }
 
     @Override
     public void assign(ShapedArray arr) {
-        // TODO
+        Short4D src;
+        if (! getShape().equals(arr.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        if (arr.getType() == Traits.SHORT) {
+            src = (Short4D)arr;
+        } else {
+            src = (Short4D)arr.toShort();
+        }
+        // FIXME: do assignation and conversion at the same time
+        if (getOrder() == ROW_MAJOR && src.getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            set(i1,i2,i3,i4, src.get(i1,i2,i3,i4));
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            set(i1,i2,i3,i4, src.get(i1,i2,i3,i4));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void assign(ShapedVector vec) {
-        // TODO
+        if (! getShape().equals(vec.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        // FIXME: much too slow and may be skipped if data are identical (and array is flat)
+        int i = -1;
+        if (vec.getType() == Traits.DOUBLE) {
+            DoubleShapedVector src = (DoubleShapedVector)vec;
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            set(i1,i2,i3,i4, (short)src.get(++i));
+                        }
+                    }
+                }
+            }
+        } else if (vec.getType() == Traits.FLOAT) {
+            FloatShapedVector src = (FloatShapedVector)vec;
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            set(i1,i2,i3,i4, (short)src.get(++i));
+                        }
+                    }
+                }
+            }
+        } else {
+            throw new IllegalTypeException();
+        }
     }
 
 
@@ -567,21 +640,21 @@ public abstract class Short4D extends Array4D implements ShortArray {
      * <pre>arr.get(i1,i2,i3,i4) = data[offset + stride1*i1 + stride2*i2 + stride3*i3 + stride4*i4]</pre>
      * with {@code arr} the returned 4D array.
      * @param data    - The array to wrap in the 4D array.
-     * @param dim1    - The 1st dimension of the 4D array.
-     * @param dim2    - The 2nd dimension of the 4D array.
-     * @param dim3    - The 3rd dimension of the 4D array.
-     * @param dim4    - The 4th dimension of the 4D array.
      * @param offset  - The offset in {@code data} of element (0,0,0,0) of
      *                  the 4D array.
      * @param stride1 - The stride along the 1st dimension.
      * @param stride2 - The stride along the 2nd dimension.
      * @param stride3 - The stride along the 3rd dimension.
      * @param stride4 - The stride along the 4th dimension.
+     * @param dim1    - The 1st dimension of the 4D array.
+     * @param dim2    - The 2nd dimension of the 4D array.
+     * @param dim3    - The 3rd dimension of the 4D array.
+     * @param dim4    - The 4th dimension of the 4D array.
      * @return A 4D array sharing the elements of <b>data</b>.
      */
-    public static Short4D wrap(short[] data, int dim1, int dim2, int dim3, int dim4,
-            int offset, int stride1, int stride2, int stride3, int stride4) {
-        return new StriddenShort4D(data, dim1,dim2,dim3,dim4, offset, stride1,stride2,stride3,stride4);
+    public static Short4D wrap(short[] data,
+            int offset, int stride1, int stride2, int stride3, int stride4, int dim1, int dim2, int dim3, int dim4) {
+        return new StriddenShort4D(data, offset, stride1,stride2,stride3,stride4, dim1,dim2,dim3,dim4);
     }
 
 }

@@ -29,8 +29,13 @@ import mitiv.array.impl.FlatLong1D;
 import mitiv.array.impl.StriddenLong1D;
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.LongGenerator;
 
@@ -254,18 +259,45 @@ public abstract class Long1D extends Array1D implements LongArray {
 
     @Override
     public Long1D copy() {
-        // TODO
-        return null;
+        return new FlatLong1D(flatten(true), shape);
     }
 
     @Override
     public void assign(ShapedArray arr) {
-        // TODO
+        Long1D src;
+        if (! getShape().equals(arr.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        if (arr.getType() == Traits.LONG) {
+            src = (Long1D)arr;
+        } else {
+            src = (Long1D)arr.toLong();
+        }
+        // FIXME: do assignation and conversion at the same time
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            set(i1, src.get(i1));
+        }
     }
 
     @Override
     public void assign(ShapedVector vec) {
-        // TODO
+        if (! getShape().equals(vec.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        // FIXME: much too slow and may be skipped if data are identical (and array is flat)
+        if (vec.getType() == Traits.DOUBLE) {
+            DoubleShapedVector src = (DoubleShapedVector)vec;
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                set(i1, (long)src.get(i1));
+            }
+        } else if (vec.getType() == Traits.FLOAT) {
+            FloatShapedVector src = (FloatShapedVector)vec;
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                set(i1, (long)src.get(i1));
+            }
+        } else {
+            throw new IllegalTypeException();
+        }
     }
 
 
@@ -384,15 +416,15 @@ public abstract class Long1D extends Array1D implements LongArray {
      * <pre>arr.get(i1) = data[offset + stride1*i1]</pre>
      * with {@code arr} the returned 1D array.
      * @param data    - The array to wrap in the 1D array.
-     * @param dim1    - The 1st dimension of the 1D array.
      * @param offset  - The offset in {@code data} of element (0) of
      *                  the 1D array.
      * @param stride1 - The stride along the 1st dimension.
+     * @param dim1    - The 1st dimension of the 1D array.
      * @return A 1D array sharing the elements of <b>data</b>.
      */
-    public static Long1D wrap(long[] data, int dim1,
-            int offset, int stride1) {
-        return new StriddenLong1D(data, dim1, offset, stride1);
+    public static Long1D wrap(long[] data,
+            int offset, int stride1, int dim1) {
+        return new StriddenLong1D(data, offset, stride1, dim1);
     }
 
 }
