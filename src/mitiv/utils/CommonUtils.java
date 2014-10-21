@@ -39,6 +39,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import mitiv.array.ArrayUtils;
+import mitiv.base.Shape;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
@@ -324,6 +325,7 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the double[]
      */
+    @Deprecated
     public static double[] imageToArray1D(BufferedImage image, boolean isComplex) {
         int height = image.getHeight();
         int width = image.getWidth();
@@ -359,6 +361,7 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the float[]
      */
+    @Deprecated
     public static float[] imageToArray1DFloat(BufferedImage image, boolean isComplex) {
         int height = image.getHeight();
         int width = image.getWidth();
@@ -395,7 +398,8 @@ public class CommonUtils {
         }
         return out;
     }
-
+    
+    @Deprecated
     public static double[] image3DToArray1D(ArrayList<BufferedImage>listImage, int width,int height, int sizeZ, boolean isComplex) {
         double[] out;
         if (isComplex) {
@@ -422,6 +426,7 @@ public class CommonUtils {
         return out;
     }
 
+    @Deprecated
     public static double[] icyImage3DToArray1D(ArrayList<IcyBufferedImage>listImage, int width,int height,int sizeZ, boolean isComplex) {
         double[] out;
         if (isComplex) {
@@ -479,6 +484,7 @@ public class CommonUtils {
         //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
         return out;
     }
+    
     /**
      * Convert an image to a vector.
      *
@@ -488,6 +494,7 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the shaped vector
      */
+    @Deprecated
     public static ShapedVector imageToVector(ShapedVectorSpace outputSpace, BufferedImage image, boolean singlePrecision ,boolean isComplex){
         if (singlePrecision) {
             FloatShapedVectorSpace space = (FloatShapedVectorSpace)outputSpace;
@@ -510,19 +517,20 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the buffered image
      */
+    @Deprecated
     public static BufferedImage vectorToImage(ShapedVectorSpace outputSpace, ShapedVector vector, int job, boolean singlePrecision ,boolean isComplex){
+        Shape shape = outputSpace.getShape();
         if (singlePrecision) {
-            int[] shape = outputSpace.cloneShape();
+
             if (!(outputSpace.getRank() == 2)) {
                 throw new IllegalArgumentException("The vector should be of rank 2 to create an image");
             }
-            return arrayToImage1D(((FloatShapedVector)vector).getData(), job, shape[1], shape[0], isComplex);
+            return arrayToImage1D(((FloatShapedVector)vector).getData(), job, shape.dimension(1), shape.dimension(0), isComplex);
         } else {
-            int[] shape = outputSpace.cloneShape();
             if (!(outputSpace.getRank() == 2)) {
                 throw new IllegalArgumentException("The vector should be of rank 2 to create an image");
             }
-            return arrayToImage1D(((DoubleShapedVector)vector).getData(), job, shape[1], shape[0], isComplex);
+            return arrayToImage1D(((DoubleShapedVector)vector).getData(), job, shape.dimension(1), shape.dimension(0), isComplex);
         }
     }
 
@@ -954,6 +962,7 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the buffered image
      */
+    @Deprecated
     public static BufferedImage arrayToImage1D_3D(double[] array, int width, int height, int depth, boolean isComplex)
     {
         BufferedImage imageout = createNewBufferedImage(width,height);
@@ -990,6 +999,7 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the buffered image
      */
+    @Deprecated
     public static BufferedImage arrayToImage1D(double[] array, int width, int height, boolean isComplex){
         BufferedImage imageout = createNewBufferedImage(width, height);
         WritableRaster raster = imageout.getRaster();
@@ -1018,6 +1028,7 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the buffered image
      */
+    @Deprecated
     public static BufferedImage arrayToImage1D(float[] array, int width, int height, boolean isComplex){
         //BufferedImage imageout = createNewBufferedImage(width, height);
         BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
@@ -1334,10 +1345,10 @@ public class CommonUtils {
             if (!(spaceFloat.getRank() == 2)) {
                 throw new IllegalArgumentException("The rank of vector must be 2");
             }
-            int[] shape = spaceFloat.cloneShape();
-            int[] shapePsf = ((FloatShapedVectorSpace)imagePsf.getSpace()).cloneShape();
-            float[] psfPad = psfPadding1D(spaceFloat.create().getData(),shape[1],
-                    shape[0],vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
+            Shape shape = spaceFloat.getShape();
+            Shape shapePsf = ((FloatShapedVectorSpace)imagePsf.getSpace()).getShape();
+            float[] psfPad = psfPadding1D(spaceFloat.create().getData(),shape.dimension(1),
+                    shape.dimension(0),vectorPsf.getData(),shapePsf.dimension(1),shapePsf.dimension(0),isComplex);
             return spaceFloat.wrap(psfPad);
         } else {
             DoubleShapedVectorSpace spaceDoubleOut = (DoubleShapedVectorSpace)outputSpace;
@@ -1346,10 +1357,10 @@ public class CommonUtils {
             if (!(spaceDoubleOut.getRank() == 2)) {
                 throw new IllegalArgumentException("The rank of vector must be 2");
             }
-            int[] shape = spaceDoubleIn.cloneShape();
-            int[] shapePsf = ((DoubleShapedVectorSpace)imagePsf.getSpace()).cloneShape();
-            double[] psfPad = psfPadding1D(spaceDoubleOut.create().getData(),shape[1],
-                    shape[0], vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
+            Shape shape = spaceDoubleIn.getShape();
+            Shape shapePsf = ((DoubleShapedVectorSpace)imagePsf.getSpace()).getShape();
+            double[] psfPad = psfPadding1D(spaceDoubleOut.create().getData(),shape.dimension(1),
+                    shape.dimension(0), vectorPsf.getData(),shapePsf.dimension(1),shapePsf.dimension(0),isComplex);
             return spaceDoubleOut.wrap(psfPad);
         }
     }
@@ -1495,7 +1506,7 @@ public class CommonUtils {
      * @param psfZ
      * @return
      */
-    public static double[] psf3DPadding1D(double[] psfOut, double[] psfIn, int psfWidth, int psfHeight, int psfZ) {
+    public static double[] psf3DPadding1D(double[] psfIn, double[] psfOut, int psfWidth, int psfHeight, int psfZ) {
         int demiPsfW = psfWidth/2;
         int demiPsfH = psfHeight/2;
         int demiPsfZ = psfZ/2;
@@ -1714,6 +1725,7 @@ public class CommonUtils {
      *
      * @param I the i
      */
+    @Deprecated
     public static void showBufferedImage(BufferedImage I)
     {
         JFrame frame = new JFrame();
@@ -1731,6 +1743,7 @@ public class CommonUtils {
      * @param I the i
      * @param name the name
      */
+    @Deprecated
     public static void saveBufferedImage(BufferedImage I, String name)
     {
         try
@@ -1748,6 +1761,7 @@ public class CommonUtils {
      * @param path the path
      * @return the buffered image
      */
+    @Deprecated
     public static BufferedImage openAsBufferedImage(String path) {
         BufferedImage I = null;
         try {
@@ -1765,6 +1779,7 @@ public class CommonUtils {
      * @param W the w
      * @param name the name
      */
+    @Deprecated
     public static void saveArrayToImage(double[] A, int W, String name)
     {
         int H = A.length/W;

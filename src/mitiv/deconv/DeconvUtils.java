@@ -67,6 +67,9 @@ public class DeconvUtils {
     //3D
     ArrayList<BufferedImage> listImage;
     ArrayList<BufferedImage> listPSF;
+    ArrayList<IcyBufferedImage> listImageIcy;
+    
+    ArrayList<IcyBufferedImage> listPSFIcy;
     public int sizeZ;
     private DoubleFFT_3D fft3D;
 
@@ -117,29 +120,7 @@ public class DeconvUtils {
             System.err.println("Wrong path given");
         }
     }
-
-    /**
-     * Open the images and store them
-     * @param image 
-     * @param PSF 
-     */
-    public void readImage(ArrayList<BufferedImage> image, ArrayList<BufferedImage> PSF) {
-        //IMPORTANT WE PAD AS WE COMPUTE
-        //FIXME here padding
-        int max = Math.max(PSF.get(0).getHeight(), PSF.get(0).getWidth());
-        //sizePadding = max;
-        sizePadding = 0;
-        double coef = (double)(sizePadding+max)/max;
-        ArrayList<BufferedImage> listImagePad = CommonUtils.imagePad(image, coef, false);
-        ArrayList<BufferedImage> listPSFPad = CommonUtils.imagePad(PSF, coef, true);
-        this.listImage = listImagePad;
-        this.listPSF = listPSFPad;
-        sizeZ = listImagePad.size();
-        width = listImagePad.get(0).getWidth();
-        height = listImagePad.get(0).getHeight();
-        //System.out.format("W %d H %d Z %d coef %f\n",width,height,sizeZ,coef);
-    }
-
+    
     /**
      * Open the images and store them
      * 
@@ -168,7 +149,26 @@ public class DeconvUtils {
         this.image_psf = PSF;
         setValue();
     }
+    
+    private ArrayList<BufferedImage> fromIcy(ArrayList<IcyBufferedImage> list){
+        ArrayList<BufferedImage> out = new java.util.ArrayList<BufferedImage>();
+        for (int i = 0; i < list.size(); i++) {
+            out.add(list.get(i));
+        }
+        return out;
+    }
 
+    public void readImage(ArrayList<IcyBufferedImage> imgList, ArrayList<IcyBufferedImage> psfList) {
+        this.listImageIcy = imgList;
+        this.listPSFIcy = psfList;
+        this.listImage = fromIcy(imgList);
+        this.listPSF = fromIcy(psfList);
+        BufferedImage tmp = imgList.get(0);
+        
+        this.width = tmp.getWidth();
+        this.height = tmp.getHeight();
+        this.sizeZ = imgList.size();
+    }
     /********************************** Read image vector **********************************/
 
     /**
@@ -202,7 +202,7 @@ public class DeconvUtils {
     }
 
     public void readImageVect(BufferedImage image, BufferedImage PSF, Boolean padding, boolean singlePrecision, boolean isComplex) {
-        //For now, no padding option: TODO add padding option
+        //For now, no padding option
         if (singlePrecision) {
             imageSpace = new FloatShapedVectorSpace(image.getHeight(), image.getWidth());
             FloatShapedVectorSpace psfSpace = new FloatShapedVectorSpace(PSF.getWidth(), PSF.getHeight());
@@ -230,6 +230,31 @@ public class DeconvUtils {
         this.isComplex = isComplex;
     }
 
+    /********************************** Pad image **********************************/
+    public void PadImageAndPSF(){
+        //IMPORTANT WE PAD AS WE COMPUTE
+        //FIXME here padding
+        int max = Math.max(listPSF.get(0).getHeight(), listPSF.get(0).getWidth());
+        sizePadding = max;
+        //sizePadding = 0;
+        double coef = (double)(sizePadding+max)/max;
+        ArrayList<BufferedImage> listImagePad = CommonUtils.imagePad(listImage, coef, false);
+        ArrayList<BufferedImage> listPSFPad = CommonUtils.imagePad(listPSF, coef, true);
+        this.listImage = listImagePad;
+        this.listPSF = listPSFPad;
+        sizeZ = listImagePad.size();
+        width = listImagePad.get(0).getWidth();
+        height = listImagePad.get(0).getHeight();        
+    }
+    
+    public void PadImageAndPSF(double coef){
+        //IMPORTANT WE PAD AS WE COMPUTE
+        //FIXME here padding
+        sizeZ = (int)(sizeZ*coef);
+        width = (int)(width*coef);
+        height = (int)(height*coef);        
+    }
+    
     /********************************** Vector quick util **********************************/
 
     /**
@@ -602,6 +627,38 @@ public class DeconvUtils {
      */
     public int getImagePadding(){
         return sizePadding;
+    }
+    
+    public ArrayList<BufferedImage> getListImage() {
+        return listImage;
+    }
+
+    public void setListImage(ArrayList<BufferedImage> listImage) {
+        this.listImage = listImage;
+    }
+
+    public ArrayList<BufferedImage> getListPSF() {
+        return listPSF;
+    }
+
+    public void setListPSF(ArrayList<BufferedImage> listPSF) {
+        this.listPSF = listPSF;
+    }
+
+    public ArrayList<IcyBufferedImage> getListImageIcy() {
+        return listImageIcy;
+    }
+
+    public void setListImageIcy(ArrayList<IcyBufferedImage> listImageIcy) {
+        this.listImageIcy = listImageIcy;
+    }
+
+    public ArrayList<IcyBufferedImage> getListPSFIcy() {
+        return listPSFIcy;
+    }
+
+    public void setListPSFIcy(ArrayList<IcyBufferedImage> listPSFIcy) {
+        this.listPSFIcy = listPSFIcy;
     }
 }
 
