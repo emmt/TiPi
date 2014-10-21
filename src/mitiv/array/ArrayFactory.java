@@ -27,6 +27,7 @@ package mitiv.array;
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.Traits;
+import mitiv.exception.IllegalTypeException;
 
 
 /**
@@ -34,11 +35,640 @@ import mitiv.base.Traits;
  *
  * @author Éric Thiébaut & Jonathan Léger.
  */
-public abstract class ArrayFactory implements Shaped {
+public class ArrayFactory {
     /**
      * This class is not instantiable.
      */
     protected ArrayFactory() {}
+
+    /**
+     * Instance of ArrayFactory which can be used to build shaped array objects.
+     */
+    public static final ArrayFactory factory = new ArrayFactory();
+
+
+    /* ROUTINES FOR ARRAY CREATION ========================================= */
+
+    /**
+     * Create a new Scalar object with given type.
+     *
+     * @param type - The type of the element of the result.
+     *
+     * @return A new Scalar object.
+     */
+    public static Scalar create(int type) {
+        switch (type) {
+            case Traits.BYTE:
+                return ByteScalar.create();
+            case Traits.SHORT:
+                return ShortScalar.create();
+            case Traits.INT:
+                return IntScalar.create();
+            case Traits.LONG:
+                return LongScalar.create();
+            case Traits.FLOAT:
+                return FloatScalar.create();
+            case Traits.DOUBLE:
+                return DoubleScalar.create();
+            default:
+                throw new IllegalTypeException();
+        }
+    }
+
+    /**
+     * Create a new Array1D object with given type and dimension.
+     *
+     * @param type - The type of the elements of the result.
+     * @param dim1 - The 1st dimension of the 1D array.
+     * @return A new Array1D object.
+     */
+    public static Array1D create(int type, int dim1) {
+        switch (type) {
+            case Traits.BYTE:
+                return Byte1D.create(dim1);
+            case Traits.SHORT:
+                return Short1D.create(dim1);
+            case Traits.INT:
+                return Int1D.create(dim1);
+            case Traits.LONG:
+                return Long1D.create(dim1);
+            case Traits.FLOAT:
+                return Float1D.create(dim1);
+            case Traits.DOUBLE:
+                return Double1D.create(dim1);
+            default:
+                throw new IllegalTypeException();
+        }
+    }
+
+    /**
+     * Create a new Array2D object with given type and dimensions.
+     *
+     * @param type - The type of the elements of the result.
+     * @param dim1 - The 1st dimension of the 2D array.
+     * @param dim2 - The 2nd dimension of the 2D array.
+     * @return A new Array2D object.
+     */
+    public static Array2D create(int type, int dim1, int dim2) {
+        switch (type) {
+            case Traits.BYTE:
+                return Byte2D.create(dim1, dim2);
+            case Traits.SHORT:
+                return Short2D.create(dim1, dim2);
+            case Traits.INT:
+                return Int2D.create(dim1, dim2);
+            case Traits.LONG:
+                return Long2D.create(dim1, dim2);
+            case Traits.FLOAT:
+                return Float2D.create(dim1, dim2);
+            case Traits.DOUBLE:
+                return Double2D.create(dim1, dim2);
+            default:
+                throw new IllegalTypeException();
+        }
+    }
+
+    /**
+     * Create a new Array3D object with given type and dimensions.
+     *
+     * @param type - The type of the elements of the result.
+     * @param dim1 - The 1st dimension of the 3D array.
+     * @param dim2 - The 2nd dimension of the 3D array.
+     * @param dim3 - The 3rd dimension of the 3D array.
+     * @return A new Array3D object.
+     */
+    public static Array3D create(int type, int dim1, int dim2, int dim3) {
+        switch (type) {
+            case Traits.BYTE:
+                return Byte3D.create(dim1, dim2, dim3);
+            case Traits.SHORT:
+                return Short3D.create(dim1, dim2, dim3);
+            case Traits.INT:
+                return Int3D.create(dim1, dim2, dim3);
+            case Traits.LONG:
+                return Long3D.create(dim1, dim2, dim3);
+            case Traits.FLOAT:
+                return Float3D.create(dim1, dim2, dim3);
+            case Traits.DOUBLE:
+                return Double3D.create(dim1, dim2, dim3);
+            default:
+                throw new IllegalTypeException();
+        }
+    }
+
+    /**
+     * Create a new Array4D object with given type and dimensions.
+     *
+     * @param type - The type of the elements of the result.
+     * @param dim1 - The 1st dimension of the 4D array.
+     * @param dim2 - The 2nd dimension of the 4D array.
+     * @param dim3 - The 3rd dimension of the 4D array.
+     * @param dim4 - The 4th dimension of the 4D array.
+     * @return A new Array4D object.
+     */
+    public static Array4D create(int type, int dim1, int dim2, int dim3, int dim4) {
+        switch (type) {
+            case Traits.BYTE:
+                return Byte4D.create(dim1, dim2, dim3, dim4);
+            case Traits.SHORT:
+                return Short4D.create(dim1, dim2, dim3, dim4);
+            case Traits.INT:
+                return Int4D.create(dim1, dim2, dim3, dim4);
+            case Traits.LONG:
+                return Long4D.create(dim1, dim2, dim3, dim4);
+            case Traits.FLOAT:
+                return Float4D.create(dim1, dim2, dim3, dim4);
+            case Traits.DOUBLE:
+                return Double4D.create(dim1, dim2, dim3, dim4);
+            default:
+                throw new IllegalTypeException();
+        }
+    }
+
+    /**
+     * Create a new Array5D object with given type and dimensions.
+     *
+     * @param type - The type of the elements of the result.
+     * @param dim1 - The 1st dimension of the 5D array.
+     * @param dim2 - The 2nd dimension of the 5D array.
+     * @param dim3 - The 3rd dimension of the 5D array.
+     * @param dim4 - The 4th dimension of the 5D array.
+     * @param dim5 - The 5th dimension of the 5D array.
+     * @return A new Array5D object.
+     */
+    public static Array5D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5) {
+        switch (type) {
+            case Traits.BYTE:
+                return Byte5D.create(dim1, dim2, dim3, dim4, dim5);
+            case Traits.SHORT:
+                return Short5D.create(dim1, dim2, dim3, dim4, dim5);
+            case Traits.INT:
+                return Int5D.create(dim1, dim2, dim3, dim4, dim5);
+            case Traits.LONG:
+                return Long5D.create(dim1, dim2, dim3, dim4, dim5);
+            case Traits.FLOAT:
+                return Float5D.create(dim1, dim2, dim3, dim4, dim5);
+            case Traits.DOUBLE:
+                return Double5D.create(dim1, dim2, dim3, dim4, dim5);
+            default:
+                throw new IllegalTypeException();
+        }
+    }
+
+    /**
+     * Create a new Array6D object with given type and dimensions.
+     *
+     * @param type - The type of the elements of the result.
+     * @param dim1 - The 1st dimension of the 6D array.
+     * @param dim2 - The 2nd dimension of the 6D array.
+     * @param dim3 - The 3rd dimension of the 6D array.
+     * @param dim4 - The 4th dimension of the 6D array.
+     * @param dim5 - The 5th dimension of the 6D array.
+     * @param dim6 - The 6th dimension of the 6D array.
+     * @return A new Array6D object.
+     */
+    public static Array6D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
+        switch (type) {
+            case Traits.BYTE:
+                return Byte6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
+            case Traits.SHORT:
+                return Short6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
+            case Traits.INT:
+                return Int6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
+            case Traits.LONG:
+                return Long6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
+            case Traits.FLOAT:
+                return Float6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
+            case Traits.DOUBLE:
+                return Double6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
+            default:
+                throw new IllegalTypeException();
+        }
+    }
+
+    /**
+     * Create a new Array7D object with given type and dimensions.
+     *
+     * @param type - The type of the elements of the result.
+     * @param dim1 - The 1st dimension of the 7D array.
+     * @param dim2 - The 2nd dimension of the 7D array.
+     * @param dim3 - The 3rd dimension of the 7D array.
+     * @param dim4 - The 4th dimension of the 7D array.
+     * @param dim5 - The 5th dimension of the 7D array.
+     * @param dim6 - The 6th dimension of the 7D array.
+     * @param dim7 - The 7th dimension of the 7D array.
+     * @return A new Array7D object.
+     */
+    public static Array7D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
+        switch (type) {
+            case Traits.BYTE:
+                return Byte7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+            case Traits.SHORT:
+                return Short7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+            case Traits.INT:
+                return Int7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+            case Traits.LONG:
+                return Long7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+            case Traits.FLOAT:
+                return Float7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+            case Traits.DOUBLE:
+                return Double7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+            default:
+                throw new IllegalTypeException();
+        }
+    }
+
+    /**
+     * Create a new Array8D object with given type and dimensions.
+     *
+     * @param type - The type of the elements of the result.
+     * @param dim1 - The 1st dimension of the 8D array.
+     * @param dim2 - The 2nd dimension of the 8D array.
+     * @param dim3 - The 3rd dimension of the 8D array.
+     * @param dim4 - The 4th dimension of the 8D array.
+     * @param dim5 - The 5th dimension of the 8D array.
+     * @param dim6 - The 6th dimension of the 8D array.
+     * @param dim7 - The 7th dimension of the 8D array.
+     * @param dim8 - The 8th dimension of the 8D array.
+     * @return A new Array8D object.
+     */
+    public static Array8D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
+        switch (type) {
+            case Traits.BYTE:
+                return Byte8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+            case Traits.SHORT:
+                return Short8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+            case Traits.INT:
+                return Int8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+            case Traits.LONG:
+                return Long8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+            case Traits.FLOAT:
+                return Float8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+            case Traits.DOUBLE:
+                return Double8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+            default:
+                throw new IllegalTypeException();
+        }
+    }
+
+    /**
+     * Create a new Array9D object with given type and dimensions.
+     *
+     * @param type - The type of the elements of the result.
+     * @param dim1 - The 1st dimension of the 9D array.
+     * @param dim2 - The 2nd dimension of the 9D array.
+     * @param dim3 - The 3rd dimension of the 9D array.
+     * @param dim4 - The 4th dimension of the 9D array.
+     * @param dim5 - The 5th dimension of the 9D array.
+     * @param dim6 - The 6th dimension of the 9D array.
+     * @param dim7 - The 7th dimension of the 9D array.
+     * @param dim8 - The 8th dimension of the 9D array.
+     * @param dim9 - The 9th dimension of the 9D array.
+     * @return A new Array9D object.
+     */
+    public static Array9D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
+        switch (type) {
+            case Traits.BYTE:
+                return Byte9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+            case Traits.SHORT:
+                return Short9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+            case Traits.INT:
+                return Int9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+            case Traits.LONG:
+                return Long9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+            case Traits.FLOAT:
+                return Float9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+            case Traits.DOUBLE:
+                return Double9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+            default:
+                throw new IllegalTypeException();
+        }
+    }
+
+    /**
+     * Create a new ShapedArray object with given type and dimensions.
+     *
+     * @param type - The type of the elements of the result.
+     * @param dims - The dimension list of the result.
+     *
+     * @return A new ShapedArray object.
+     */
+    public static ShapedArray create(int type, int[] dims) {
+        int rank = dims.length;
+        switch (type) {
+            case Traits.BYTE:
+                switch (rank) {
+                    case 0:
+                        return ByteScalar.create();
+                    case 1:
+                        return Byte1D.create(dims);
+                    case 2:
+                        return Byte2D.create(dims);
+                    case 3:
+                        return Byte3D.create(dims);
+                    case 4:
+                        return Byte4D.create(dims);
+                    case 5:
+                        return Byte5D.create(dims);
+                    case 6:
+                        return Byte6D.create(dims);
+                    case 7:
+                        return Byte7D.create(dims);
+                    case 8:
+                        return Byte8D.create(dims);
+                    case 9:
+                        return Byte9D.create(dims);
+                }
+                break;
+            case Traits.SHORT:
+                switch (rank) {
+                    case 0:
+                        return ShortScalar.create();
+                    case 1:
+                        return Short1D.create(dims);
+                    case 2:
+                        return Short2D.create(dims);
+                    case 3:
+                        return Short3D.create(dims);
+                    case 4:
+                        return Short4D.create(dims);
+                    case 5:
+                        return Short5D.create(dims);
+                    case 6:
+                        return Short6D.create(dims);
+                    case 7:
+                        return Short7D.create(dims);
+                    case 8:
+                        return Short8D.create(dims);
+                    case 9:
+                        return Short9D.create(dims);
+                }
+                break;
+            case Traits.INT:
+                switch (rank) {
+                    case 0:
+                        return IntScalar.create();
+                    case 1:
+                        return Int1D.create(dims);
+                    case 2:
+                        return Int2D.create(dims);
+                    case 3:
+                        return Int3D.create(dims);
+                    case 4:
+                        return Int4D.create(dims);
+                    case 5:
+                        return Int5D.create(dims);
+                    case 6:
+                        return Int6D.create(dims);
+                    case 7:
+                        return Int7D.create(dims);
+                    case 8:
+                        return Int8D.create(dims);
+                    case 9:
+                        return Int9D.create(dims);
+                }
+                break;
+            case Traits.LONG:
+                switch (rank) {
+                    case 0:
+                        return LongScalar.create();
+                    case 1:
+                        return Long1D.create(dims);
+                    case 2:
+                        return Long2D.create(dims);
+                    case 3:
+                        return Long3D.create(dims);
+                    case 4:
+                        return Long4D.create(dims);
+                    case 5:
+                        return Long5D.create(dims);
+                    case 6:
+                        return Long6D.create(dims);
+                    case 7:
+                        return Long7D.create(dims);
+                    case 8:
+                        return Long8D.create(dims);
+                    case 9:
+                        return Long9D.create(dims);
+                }
+                break;
+            case Traits.FLOAT:
+                switch (rank) {
+                    case 0:
+                        return FloatScalar.create();
+                    case 1:
+                        return Float1D.create(dims);
+                    case 2:
+                        return Float2D.create(dims);
+                    case 3:
+                        return Float3D.create(dims);
+                    case 4:
+                        return Float4D.create(dims);
+                    case 5:
+                        return Float5D.create(dims);
+                    case 6:
+                        return Float6D.create(dims);
+                    case 7:
+                        return Float7D.create(dims);
+                    case 8:
+                        return Float8D.create(dims);
+                    case 9:
+                        return Float9D.create(dims);
+                }
+                break;
+            case Traits.DOUBLE:
+                switch (rank) {
+                    case 0:
+                        return DoubleScalar.create();
+                    case 1:
+                        return Double1D.create(dims);
+                    case 2:
+                        return Double2D.create(dims);
+                    case 3:
+                        return Double3D.create(dims);
+                    case 4:
+                        return Double4D.create(dims);
+                    case 5:
+                        return Double5D.create(dims);
+                    case 6:
+                        return Double6D.create(dims);
+                    case 7:
+                        return Double7D.create(dims);
+                    case 8:
+                        return Double8D.create(dims);
+                    case 9:
+                        return Double9D.create(dims);
+                }
+                break;
+            default:
+                throw new IllegalTypeException();
+        }
+        throw new IllegalArgumentException("Invalid rank in shape.");
+    }
+
+    /**
+     * Create a new ShapedArray object with given type and shape.
+     *
+     * @param type - The type of the elements of the result.
+     * @param shape  - The shape of the result.
+     *
+     * @return A new ShapedArray object.
+     */
+    public static ShapedArray create(int type, Shape shape) {
+        int rank = shape.rank();
+        switch (type) {
+            case Traits.BYTE:
+                switch (rank) {
+                    case 0:
+                        return ByteScalar.create();
+                    case 1:
+                        return Byte1D.create(shape);
+                    case 2:
+                        return Byte2D.create(shape);
+                    case 3:
+                        return Byte3D.create(shape);
+                    case 4:
+                        return Byte4D.create(shape);
+                    case 5:
+                        return Byte5D.create(shape);
+                    case 6:
+                        return Byte6D.create(shape);
+                    case 7:
+                        return Byte7D.create(shape);
+                    case 8:
+                        return Byte8D.create(shape);
+                    case 9:
+                        return Byte9D.create(shape);
+                }
+                break;
+            case Traits.SHORT:
+                switch (rank) {
+                    case 0:
+                        return ShortScalar.create();
+                    case 1:
+                        return Short1D.create(shape);
+                    case 2:
+                        return Short2D.create(shape);
+                    case 3:
+                        return Short3D.create(shape);
+                    case 4:
+                        return Short4D.create(shape);
+                    case 5:
+                        return Short5D.create(shape);
+                    case 6:
+                        return Short6D.create(shape);
+                    case 7:
+                        return Short7D.create(shape);
+                    case 8:
+                        return Short8D.create(shape);
+                    case 9:
+                        return Short9D.create(shape);
+                }
+                break;
+            case Traits.INT:
+                switch (rank) {
+                    case 0:
+                        return IntScalar.create();
+                    case 1:
+                        return Int1D.create(shape);
+                    case 2:
+                        return Int2D.create(shape);
+                    case 3:
+                        return Int3D.create(shape);
+                    case 4:
+                        return Int4D.create(shape);
+                    case 5:
+                        return Int5D.create(shape);
+                    case 6:
+                        return Int6D.create(shape);
+                    case 7:
+                        return Int7D.create(shape);
+                    case 8:
+                        return Int8D.create(shape);
+                    case 9:
+                        return Int9D.create(shape);
+                }
+                break;
+            case Traits.LONG:
+                switch (rank) {
+                    case 0:
+                        return LongScalar.create();
+                    case 1:
+                        return Long1D.create(shape);
+                    case 2:
+                        return Long2D.create(shape);
+                    case 3:
+                        return Long3D.create(shape);
+                    case 4:
+                        return Long4D.create(shape);
+                    case 5:
+                        return Long5D.create(shape);
+                    case 6:
+                        return Long6D.create(shape);
+                    case 7:
+                        return Long7D.create(shape);
+                    case 8:
+                        return Long8D.create(shape);
+                    case 9:
+                        return Long9D.create(shape);
+                }
+                break;
+            case Traits.FLOAT:
+                switch (rank) {
+                    case 0:
+                        return FloatScalar.create();
+                    case 1:
+                        return Float1D.create(shape);
+                    case 2:
+                        return Float2D.create(shape);
+                    case 3:
+                        return Float3D.create(shape);
+                    case 4:
+                        return Float4D.create(shape);
+                    case 5:
+                        return Float5D.create(shape);
+                    case 6:
+                        return Float6D.create(shape);
+                    case 7:
+                        return Float7D.create(shape);
+                    case 8:
+                        return Float8D.create(shape);
+                    case 9:
+                        return Float9D.create(shape);
+                }
+                break;
+            case Traits.DOUBLE:
+                switch (rank) {
+                    case 0:
+                        return DoubleScalar.create();
+                    case 1:
+                        return Double1D.create(shape);
+                    case 2:
+                        return Double2D.create(shape);
+                    case 3:
+                        return Double3D.create(shape);
+                    case 4:
+                        return Double4D.create(shape);
+                    case 5:
+                        return Double5D.create(shape);
+                    case 6:
+                        return Double6D.create(shape);
+                    case 7:
+                        return Double7D.create(shape);
+                    case 8:
+                        return Double8D.create(shape);
+                    case 9:
+                        return Double9D.create(shape);
+                }
+                break;
+            default:
+                throw new IllegalTypeException();
+        }
+        throw new IllegalArgumentException("Invalid rank in shape.");
+    }
+
+
+    /* ROUTINES FOR ARRAY CONVERSION ======================================= */
 
     /**
      * Convert a ShapedArray into a ByteArray.
@@ -425,6 +1055,20 @@ public abstract class ArrayFactory implements Shaped {
     }
 
 
+    /* ROUTINES FOR WRAPPING ARRAYS ======================================== */
+
+    /**
+     * Create a new ByteScalar object with given type.
+     *
+     * @param arr  - The source array.
+     * @param off  - The offset of the element to wrap into the scalar.
+     *
+     * @return A new ByteScalar object.
+     */
+    public static ByteScalar wrap(byte[] arr) {
+        return ByteScalar.wrap(arr, 0);
+    }
+
     /**
      * Wrap an array of byte values into a ByteArray.
      * <p>
@@ -433,7 +1077,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
      * @return A ByteArray wrapped around the source array {@code arr}.
@@ -450,7 +1094,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
@@ -468,7 +1112,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 3D array.
      * @param dim2 - The 2nd dimension of the 3D array.
@@ -487,7 +1131,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 4D array.
      * @param dim2 - The 2nd dimension of the 4D array.
@@ -507,7 +1151,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 5D array.
      * @param dim2 - The 2nd dimension of the 5D array.
@@ -528,7 +1172,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 6D array.
      * @param dim2 - The 2nd dimension of the 6D array.
@@ -550,7 +1194,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 7D array.
      * @param dim2 - The 2nd dimension of the 7D array.
@@ -573,7 +1217,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 8D array.
      * @param dim2 - The 2nd dimension of the 8D array.
@@ -597,7 +1241,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 9D array.
      * @param dim2 - The 2nd dimension of the 9D array.
@@ -621,7 +1265,7 @@ public abstract class ArrayFactory implements Shaped {
      * and that the result can be safely casted into a {@link #Byte1D},
      * {@link #Byte2D}, ... according to the number of dimensions in
      * {@code shape}.
-     *
+     * </p>
      * @param arr  - The input array.
      * @param dims - The dimension list of the result.
      *
@@ -643,8 +1287,6 @@ public abstract class ArrayFactory implements Shaped {
      *
      * @param data   - The input array.
      * @param shape  - The shape of the result.
-     * @param cloneShape - Indicate whether the {@code shape} parameter must be
-     *                     cloned.
      *
      * @return An instance of ByteArray sharing its data with the input array
      *         {@code data}.
@@ -652,6 +1294,8 @@ public abstract class ArrayFactory implements Shaped {
      */
     public static ByteArray wrap(byte[] data, Shape shape) {
         switch (shape.rank()) {
+        case 0:
+            return ByteScalar.wrap(data, 0);
         case 1:
             return Byte1D.wrap(data, shape);
         case 2:
@@ -676,6 +1320,18 @@ public abstract class ArrayFactory implements Shaped {
     }
 
     /**
+     * Create a new ShortScalar object with given type.
+     *
+     * @param arr  - The source array.
+     * @param off  - The offset of the element to wrap into the scalar.
+     *
+     * @return A new ShortScalar object.
+     */
+    public static ShortScalar wrap(short[] arr) {
+        return ShortScalar.wrap(arr, 0);
+    }
+
+    /**
      * Wrap an array of short values into a ShortArray.
      * <p>
      * Notes: (i) The source array {@code arr} and the returned ShortArray
@@ -683,7 +1339,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Short1D}, {@link #Short2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
      * @return A ShortArray wrapped around the source array {@code arr}.
@@ -700,7 +1356,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Short1D}, {@link #Short2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
@@ -718,7 +1374,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Short1D}, {@link #Short2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 3D array.
      * @param dim2 - The 2nd dimension of the 3D array.
@@ -737,7 +1393,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Short1D}, {@link #Short2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 4D array.
      * @param dim2 - The 2nd dimension of the 4D array.
@@ -757,7 +1413,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Short1D}, {@link #Short2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 5D array.
      * @param dim2 - The 2nd dimension of the 5D array.
@@ -778,7 +1434,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Short1D}, {@link #Short2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 6D array.
      * @param dim2 - The 2nd dimension of the 6D array.
@@ -800,7 +1456,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Short1D}, {@link #Short2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 7D array.
      * @param dim2 - The 2nd dimension of the 7D array.
@@ -823,7 +1479,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Short1D}, {@link #Short2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 8D array.
      * @param dim2 - The 2nd dimension of the 8D array.
@@ -847,7 +1503,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Short1D}, {@link #Short2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 9D array.
      * @param dim2 - The 2nd dimension of the 9D array.
@@ -871,7 +1527,7 @@ public abstract class ArrayFactory implements Shaped {
      * and that the result can be safely casted into a {@link #Short1D},
      * {@link #Short2D}, ... according to the number of dimensions in
      * {@code shape}.
-     *
+     * </p>
      * @param arr  - The input array.
      * @param dims - The dimension list of the result.
      *
@@ -893,8 +1549,6 @@ public abstract class ArrayFactory implements Shaped {
      *
      * @param data   - The input array.
      * @param shape  - The shape of the result.
-     * @param cloneShape - Indicate whether the {@code shape} parameter must be
-     *                     cloned.
      *
      * @return An instance of ShortArray sharing its data with the input array
      *         {@code data}.
@@ -902,6 +1556,8 @@ public abstract class ArrayFactory implements Shaped {
      */
     public static ShortArray wrap(short[] data, Shape shape) {
         switch (shape.rank()) {
+        case 0:
+            return ShortScalar.wrap(data, 0);
         case 1:
             return Short1D.wrap(data, shape);
         case 2:
@@ -926,6 +1582,18 @@ public abstract class ArrayFactory implements Shaped {
     }
 
     /**
+     * Create a new IntScalar object with given type.
+     *
+     * @param arr  - The source array.
+     * @param off  - The offset of the element to wrap into the scalar.
+     *
+     * @return A new IntScalar object.
+     */
+    public static IntScalar wrap(int[] arr) {
+        return IntScalar.wrap(arr, 0);
+    }
+
+    /**
      * Wrap an array of int values into an IntArray.
      * <p>
      * Notes: (i) The source array {@code arr} and the returned IntArray
@@ -933,7 +1601,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
      * @return A IntArray wrapped around the source array {@code arr}.
@@ -950,7 +1618,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
@@ -968,7 +1636,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 3D array.
      * @param dim2 - The 2nd dimension of the 3D array.
@@ -987,7 +1655,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 4D array.
      * @param dim2 - The 2nd dimension of the 4D array.
@@ -1007,7 +1675,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 5D array.
      * @param dim2 - The 2nd dimension of the 5D array.
@@ -1028,7 +1696,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 6D array.
      * @param dim2 - The 2nd dimension of the 6D array.
@@ -1050,7 +1718,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 7D array.
      * @param dim2 - The 2nd dimension of the 7D array.
@@ -1073,7 +1741,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 8D array.
      * @param dim2 - The 2nd dimension of the 8D array.
@@ -1097,7 +1765,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Int1D}, {@link #Int2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 9D array.
      * @param dim2 - The 2nd dimension of the 9D array.
@@ -1121,7 +1789,7 @@ public abstract class ArrayFactory implements Shaped {
      * and that the result can be safely casted into a {@link #Int1D},
      * {@link #Int2D}, ... according to the number of dimensions in
      * {@code shape}.
-     *
+     * </p>
      * @param arr  - The input array.
      * @param dims - The dimension list of the result.
      *
@@ -1143,8 +1811,6 @@ public abstract class ArrayFactory implements Shaped {
      *
      * @param data   - The input array.
      * @param shape  - The shape of the result.
-     * @param cloneShape - Indicate whether the {@code shape} parameter must be
-     *                     cloned.
      *
      * @return An instance of IntArray sharing its data with the input array
      *         {@code data}.
@@ -1152,6 +1818,8 @@ public abstract class ArrayFactory implements Shaped {
      */
     public static IntArray wrap(int[] data, Shape shape) {
         switch (shape.rank()) {
+        case 0:
+            return IntScalar.wrap(data, 0);
         case 1:
             return Int1D.wrap(data, shape);
         case 2:
@@ -1176,6 +1844,18 @@ public abstract class ArrayFactory implements Shaped {
     }
 
     /**
+     * Create a new LongScalar object with given type.
+     *
+     * @param arr  - The source array.
+     * @param off  - The offset of the element to wrap into the scalar.
+     *
+     * @return A new LongScalar object.
+     */
+    public static LongScalar wrap(long[] arr) {
+        return LongScalar.wrap(arr, 0);
+    }
+
+    /**
      * Wrap an array of long values into a LongArray.
      * <p>
      * Notes: (i) The source array {@code arr} and the returned LongArray
@@ -1183,7 +1863,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Long1D}, {@link #Long2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
      * @return A LongArray wrapped around the source array {@code arr}.
@@ -1200,7 +1880,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Long1D}, {@link #Long2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
@@ -1218,7 +1898,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Long1D}, {@link #Long2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 3D array.
      * @param dim2 - The 2nd dimension of the 3D array.
@@ -1237,7 +1917,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Long1D}, {@link #Long2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 4D array.
      * @param dim2 - The 2nd dimension of the 4D array.
@@ -1257,7 +1937,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Long1D}, {@link #Long2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 5D array.
      * @param dim2 - The 2nd dimension of the 5D array.
@@ -1278,7 +1958,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Long1D}, {@link #Long2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 6D array.
      * @param dim2 - The 2nd dimension of the 6D array.
@@ -1300,7 +1980,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Long1D}, {@link #Long2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 7D array.
      * @param dim2 - The 2nd dimension of the 7D array.
@@ -1323,7 +2003,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Long1D}, {@link #Long2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 8D array.
      * @param dim2 - The 2nd dimension of the 8D array.
@@ -1347,7 +2027,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Long1D}, {@link #Long2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 9D array.
      * @param dim2 - The 2nd dimension of the 9D array.
@@ -1371,7 +2051,7 @@ public abstract class ArrayFactory implements Shaped {
      * and that the result can be safely casted into a {@link #Long1D},
      * {@link #Long2D}, ... according to the number of dimensions in
      * {@code shape}.
-     *
+     * </p>
      * @param arr  - The input array.
      * @param dims - The dimension list of the result.
      *
@@ -1393,8 +2073,6 @@ public abstract class ArrayFactory implements Shaped {
      *
      * @param data   - The input array.
      * @param shape  - The shape of the result.
-     * @param cloneShape - Indicate whether the {@code shape} parameter must be
-     *                     cloned.
      *
      * @return An instance of LongArray sharing its data with the input array
      *         {@code data}.
@@ -1402,6 +2080,8 @@ public abstract class ArrayFactory implements Shaped {
      */
     public static LongArray wrap(long[] data, Shape shape) {
         switch (shape.rank()) {
+        case 0:
+            return LongScalar.wrap(data, 0);
         case 1:
             return Long1D.wrap(data, shape);
         case 2:
@@ -1426,6 +2106,18 @@ public abstract class ArrayFactory implements Shaped {
     }
 
     /**
+     * Create a new FloatScalar object with given type.
+     *
+     * @param arr  - The source array.
+     * @param off  - The offset of the element to wrap into the scalar.
+     *
+     * @return A new FloatScalar object.
+     */
+    public static FloatScalar wrap(float[] arr) {
+        return FloatScalar.wrap(arr, 0);
+    }
+
+    /**
      * Wrap an array of float values into a FloatArray.
      * <p>
      * Notes: (i) The source array {@code arr} and the returned FloatArray
@@ -1433,7 +2125,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Float1D}, {@link #Float2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
      * @return A FloatArray wrapped around the source array {@code arr}.
@@ -1450,7 +2142,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Float1D}, {@link #Float2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
@@ -1468,7 +2160,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Float1D}, {@link #Float2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 3D array.
      * @param dim2 - The 2nd dimension of the 3D array.
@@ -1487,7 +2179,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Float1D}, {@link #Float2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 4D array.
      * @param dim2 - The 2nd dimension of the 4D array.
@@ -1507,7 +2199,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Float1D}, {@link #Float2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 5D array.
      * @param dim2 - The 2nd dimension of the 5D array.
@@ -1528,7 +2220,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Float1D}, {@link #Float2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 6D array.
      * @param dim2 - The 2nd dimension of the 6D array.
@@ -1550,7 +2242,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Float1D}, {@link #Float2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 7D array.
      * @param dim2 - The 2nd dimension of the 7D array.
@@ -1573,7 +2265,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Float1D}, {@link #Float2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 8D array.
      * @param dim2 - The 2nd dimension of the 8D array.
@@ -1597,7 +2289,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Float1D}, {@link #Float2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 9D array.
      * @param dim2 - The 2nd dimension of the 9D array.
@@ -1621,7 +2313,7 @@ public abstract class ArrayFactory implements Shaped {
      * and that the result can be safely casted into a {@link #Float1D},
      * {@link #Float2D}, ... according to the number of dimensions in
      * {@code shape}.
-     *
+     * </p>
      * @param arr  - The input array.
      * @param dims - The dimension list of the result.
      *
@@ -1643,8 +2335,6 @@ public abstract class ArrayFactory implements Shaped {
      *
      * @param data   - The input array.
      * @param shape  - The shape of the result.
-     * @param cloneShape - Indicate whether the {@code shape} parameter must be
-     *                     cloned.
      *
      * @return An instance of FloatArray sharing its data with the input array
      *         {@code data}.
@@ -1652,6 +2342,8 @@ public abstract class ArrayFactory implements Shaped {
      */
     public static FloatArray wrap(float[] data, Shape shape) {
         switch (shape.rank()) {
+        case 0:
+            return FloatScalar.wrap(data, 0);
         case 1:
             return Float1D.wrap(data, shape);
         case 2:
@@ -1676,6 +2368,18 @@ public abstract class ArrayFactory implements Shaped {
     }
 
     /**
+     * Create a new DoubleScalar object with given type.
+     *
+     * @param arr  - The source array.
+     * @param off  - The offset of the element to wrap into the scalar.
+     *
+     * @return A new DoubleScalar object.
+     */
+    public static DoubleScalar wrap(double[] arr) {
+        return DoubleScalar.wrap(arr, 0);
+    }
+
+    /**
      * Wrap an array of double values into a DoubleArray.
      * <p>
      * Notes: (i) The source array {@code arr} and the returned DoubleArray
@@ -1683,7 +2387,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Double1D}, {@link #Double2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
      * @return A DoubleArray wrapped around the source array {@code arr}.
@@ -1700,7 +2404,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Double1D}, {@link #Double2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
@@ -1718,7 +2422,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Double1D}, {@link #Double2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 3D array.
      * @param dim2 - The 2nd dimension of the 3D array.
@@ -1737,7 +2441,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Double1D}, {@link #Double2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 4D array.
      * @param dim2 - The 2nd dimension of the 4D array.
@@ -1757,7 +2461,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Double1D}, {@link #Double2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 5D array.
      * @param dim2 - The 2nd dimension of the 5D array.
@@ -1778,7 +2482,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Double1D}, {@link #Double2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 6D array.
      * @param dim2 - The 2nd dimension of the 6D array.
@@ -1800,7 +2504,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Double1D}, {@link #Double2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 7D array.
      * @param dim2 - The 2nd dimension of the 7D array.
@@ -1823,7 +2527,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Double1D}, {@link #Double2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 8D array.
      * @param dim2 - The 2nd dimension of the 8D array.
@@ -1847,7 +2551,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #Double1D}, {@link #Double2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 9D array.
      * @param dim2 - The 2nd dimension of the 9D array.
@@ -1871,7 +2575,7 @@ public abstract class ArrayFactory implements Shaped {
      * and that the result can be safely casted into a {@link #Double1D},
      * {@link #Double2D}, ... according to the number of dimensions in
      * {@code shape}.
-     *
+     * </p>
      * @param arr  - The input array.
      * @param dims - The dimension list of the result.
      *
@@ -1893,8 +2597,6 @@ public abstract class ArrayFactory implements Shaped {
      *
      * @param data   - The input array.
      * @param shape  - The shape of the result.
-     * @param cloneShape - Indicate whether the {@code shape} parameter must be
-     *                     cloned.
      *
      * @return An instance of DoubleArray sharing its data with the input array
      *         {@code data}.
@@ -1902,6 +2604,8 @@ public abstract class ArrayFactory implements Shaped {
      */
     public static DoubleArray wrap(double[] data, Shape shape) {
         switch (shape.rank()) {
+        case 0:
+            return DoubleScalar.wrap(data, 0);
         case 1:
             return Double1D.wrap(data, shape);
         case 2:

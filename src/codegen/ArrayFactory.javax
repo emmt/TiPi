@@ -29,6 +29,7 @@ package ${package};
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.Traits;
+import mitiv.exception.IllegalTypeException;
 
 
 /**
@@ -36,11 +37,143 @@ import mitiv.base.Traits;
  *
  * @author Éric Thiébaut & Jonathan Léger.
  */
-public abstract class ${className} implements Shaped {
+public class ${className} {
     /**
      * This class is not instantiable.
      */
     protected ${className}() {}
+
+    /**
+     * Instance of ${className} which can be used to build shaped array objects.
+     */
+    public static final ${className} factory = new ${className}();
+
+
+    /* ROUTINES FOR ARRAY CREATION ========================================= */
+
+    /**
+     * Create a new Scalar object with given type.
+     *
+     * @param type - The type of the element of the result.
+     *
+     * @return A new Scalar object.
+     */
+    public static Scalar create(int type) {
+        switch (type) {
+            //# for id in ${BYTE} : ${DOUBLE}
+            //#     def Type = ${}{Type_${id}}
+            //#     def TYPE = ${}{TYPE_${id}}
+            case Traits.${TYPE}:
+                return ${Type}Scalar.create();
+            //# end
+            default:
+                throw new IllegalTypeException();
+        }
+    }
+
+    //# for rank in 1 : 9
+    //#     if ${rank} < 2
+    //#         def s =
+    //#     else
+    //#         def s = s
+    //#     end
+    //#     def dimList = dim1
+    //#     def dimDecl = int dim1
+    //#     for k in 2:${rank}
+    //#         def dimList = ${dimList}, dim${k}
+    //#         def dimDecl = ${dimDecl}, int dim${k}
+    //#     end
+    //#
+    /**
+     * Create a new Array${rank}D object with given type and dimension${s}.
+     *
+     * @param type - The type of the elements of the result.
+     //#     for k in 1:${rank}
+     //#         def kth = ${}{nth_${k}}
+     * @param dim${k} - The ${kth} dimension of the ${rank}D array.
+     //#     end
+     * @return A new Array${rank}D object.
+     */
+    public static Array${rank}D create(int type, ${dimDecl}) {
+        switch (type) {
+            //# for id in ${BYTE} : ${DOUBLE}
+            //#     def Type = ${}{Type_${id}}
+            //#     def TYPE = ${}{TYPE_${id}}
+            case Traits.${TYPE}:
+                return ${Type}${rank}D.create(${dimList});
+            //# end
+            default:
+                throw new IllegalTypeException();
+        }
+    }
+
+    //# end // loop over rank
+    /**
+     * Create a new ShapedArray object with given type and dimensions.
+     *
+     * @param type - The type of the elements of the result.
+     * @param dims - The dimension list of the result.
+     *
+     * @return A new ShapedArray object.
+     */
+    public static ShapedArray create(int type, int[] dims) {
+        int rank = dims.length;
+        switch (type) {
+            //# for id in ${BYTE} : ${DOUBLE}
+            //#     def type = ${}{type_${id}}
+            //#     def Type = ${}{Type_${id}}
+            //#     def TYPE = ${}{TYPE_${id}}
+            case Traits.${TYPE}:
+                switch (rank) {
+                    case 0:
+                        return ${Type}Scalar.create();
+                    //# for rank in 1:9
+                    case ${rank}:
+                        return ${Type}${rank}D.create(dims);
+                    //# end
+                }
+                break;
+            //# end
+            default:
+                throw new IllegalTypeException();
+        }
+        throw new IllegalArgumentException("Invalid rank in shape.");
+    }
+
+    /**
+     * Create a new ShapedArray object with given type and shape.
+     *
+     * @param type - The type of the elements of the result.
+     * @param shape  - The shape of the result.
+     *
+     * @return A new ShapedArray object.
+     */
+    public static ShapedArray create(int type, Shape shape) {
+        int rank = shape.rank();
+        switch (type) {
+            //# for id in ${BYTE} : ${DOUBLE}
+            //#     def type = ${}{type_${id}}
+            //#     def Type = ${}{Type_${id}}
+            //#     def TYPE = ${}{TYPE_${id}}
+            case Traits.${TYPE}:
+                switch (rank) {
+                    case 0:
+                        return ${Type}Scalar.create();
+                    //# for rank in 1:9
+                    case ${rank}:
+                        return ${Type}${rank}D.create(shape);
+                    //# end
+                }
+                break;
+            //# end
+            default:
+                throw new IllegalTypeException();
+        }
+        throw new IllegalArgumentException("Invalid rank in shape.");
+    }
+
+
+    /* ROUTINES FOR ARRAY CONVERSION ======================================= */
 
     //# for dst in ${BYTE} : ${DOUBLE}
     //#     def dst_type = ${}{type_${dst}}
@@ -94,6 +227,8 @@ public abstract class ${className} implements Shaped {
 
     //# end // loop over DST type
 
+    /* ROUTINES FOR WRAPPING ARRAYS ======================================== */
+
     //# for id in ${BYTE} : ${DOUBLE}
     //#     def type = ${}{type_${id}}
     //#     def Type = ${}{Type_${id}}
@@ -106,14 +241,24 @@ public abstract class ${className} implements Shaped {
     //#         def a = a
     //#         def A = A
     //#     end
+    /**
+     * Create a new ${Type}Scalar object with given type.
+     *
+     * @param arr  - The source array.
+     * @param off  - The offset of the element to wrap into the scalar.
+     *
+     * @return A new ${Type}Scalar object.
+     */
+    public static ${Type}Scalar wrap(${type}[] arr) {
+        return ${Type}Scalar.wrap(arr, 0);
+    }
+
     //#     for rank in 1 : 9
-    //#         def argDimList = dim1
-    //#         def declDimList = int dim1
-    //#         def k = 1
-    //#         while ${k} < ${rank}
-    //#             eval k += 1
-    //#             def argDimList = ${argDimList}, dim${k}
-    //#             def declDimList = ${declDimList}, int dim${k}
+    //#         def dimList = dim1
+    //#         def dimDecl = int dim1
+    //#         for k in 2:${rank}
+    //#             def dimList = ${dimList}, dim${k}
+    //#             def dimDecl = ${dimDecl}, int dim${k}
     //#         end
     /**
      * Wrap an array of ${type} values into ${a} ${Type}Array.
@@ -123,7 +268,7 @@ public abstract class ${className} implements Shaped {
      * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
      * {@link #${Type}1D}, {@link #${Type}2D}, ... according to the number of
      * dimensions in {@code shape}.
-     *
+     * </p>
      * @param arr  - The source array.
      //#         def k = 0
      //#         while ${k} < ${rank}
@@ -133,8 +278,8 @@ public abstract class ${className} implements Shaped {
      //#         end
      * @return A ${Type}Array wrapped around the source array {@code arr}.
       */
-    public static ${Type}${rank}D wrap(${type}[] arr, ${declDimList}) {
-        return ${Type}${rank}D.wrap(arr, ${argDimList});
+    public static ${Type}${rank}D wrap(${type}[] arr, ${dimDecl}) {
+        return ${Type}${rank}D.wrap(arr, ${dimList});
     }
 
     //#     end // loop over rank
@@ -145,7 +290,7 @@ public abstract class ${className} implements Shaped {
      * and that the result can be safely casted into a {@link #${Type}1D},
      * {@link #${Type}2D}, ... according to the number of dimensions in
      * {@code shape}.
-     *
+     * </p>
      * @param arr  - The input array.
      * @param dims - The dimension list of the result.
      *
@@ -167,8 +312,6 @@ public abstract class ${className} implements Shaped {
      *
      * @param data   - The input array.
      * @param shape  - The shape of the result.
-     * @param cloneShape - Indicate whether the {@code shape} parameter must be
-     *                     cloned.
      *
      * @return An instance of ${TypeArray} sharing its data with the input array
      *         {@code data}.
@@ -176,6 +319,8 @@ public abstract class ${className} implements Shaped {
      */
     public static ${Type}Array wrap(${type}[] data, Shape shape) {
         switch (shape.rank()) {
+        case 0:
+            return ${Type}Scalar.wrap(data, 0);
         //# for rank in 1:9
         case ${rank}:
             return ${Type}${rank}D.wrap(data, shape);
