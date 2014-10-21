@@ -522,6 +522,11 @@ public abstract class Float4D extends Array4D implements FloatArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Float4D create() {
+        return new FlatFloat4D(getShape());
+    }
+
     /**
      * Create a 4D array of float's with given dimensions.
      * <p>

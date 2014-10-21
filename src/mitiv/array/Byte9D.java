@@ -772,6 +772,11 @@ public abstract class Byte9D extends Array9D implements ByteArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Byte9D create() {
+        return new FlatByte9D(getShape());
+    }
+
     /**
      * Create a 9D array of byte's with given dimensions.
      * <p>

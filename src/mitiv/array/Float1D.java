@@ -304,6 +304,11 @@ public abstract class Float1D extends Array1D implements FloatArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Float1D create() {
+        return new FlatFloat1D(getShape());
+    }
+
     /**
      * Create a 1D array of float's with given dimensions.
      * <p>

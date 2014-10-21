@@ -772,6 +772,11 @@ public abstract class Float9D extends Array9D implements FloatArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Float9D create() {
+        return new FlatFloat9D(getShape());
+    }
+
     /**
      * Create a 9D array of float's with given dimensions.
      * <p>

@@ -304,6 +304,11 @@ public abstract class Byte1D extends Array1D implements ByteArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Byte1D create() {
+        return new FlatByte1D(getShape());
+    }
+
     /**
      * Create a 1D array of byte's with given dimensions.
      * <p>

@@ -572,6 +572,11 @@ public abstract class Float5D extends Array5D implements FloatArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Float5D create() {
+        return new FlatFloat5D(getShape());
+    }
+
     /**
      * Create a 5D array of float's with given dimensions.
      * <p>

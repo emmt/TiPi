@@ -522,6 +522,11 @@ public abstract class Int4D extends Array4D implements IntArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Int4D create() {
+        return new FlatInt4D(getShape());
+    }
+
     /**
      * Create a 4D array of int's with given dimensions.
      * <p>

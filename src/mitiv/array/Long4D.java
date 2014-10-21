@@ -522,6 +522,11 @@ public abstract class Long4D extends Array4D implements LongArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Long4D create() {
+        return new FlatLong4D(getShape());
+    }
+
     /**
      * Create a 4D array of long's with given dimensions.
      * <p>

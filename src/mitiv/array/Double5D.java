@@ -572,6 +572,11 @@ public abstract class Double5D extends Array5D implements DoubleArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Double5D create() {
+        return new FlatDouble5D(getShape());
+    }
+
     /**
      * Create a 5D array of double's with given dimensions.
      * <p>

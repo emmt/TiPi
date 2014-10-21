@@ -622,6 +622,11 @@ public abstract class Float6D extends Array6D implements FloatArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Float6D create() {
+        return new FlatFloat6D(getShape());
+    }
+
     /**
      * Create a 6D array of float's with given dimensions.
      * <p>

@@ -304,6 +304,11 @@ public abstract class Int1D extends Array1D implements IntArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Int1D create() {
+        return new FlatInt1D(getShape());
+    }
+
     /**
      * Create a 1D array of int's with given dimensions.
      * <p>

@@ -622,6 +622,11 @@ public abstract class Long6D extends Array6D implements LongArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Long6D create() {
+        return new FlatLong6D(getShape());
+    }
+
     /**
      * Create a 6D array of long's with given dimensions.
      * <p>

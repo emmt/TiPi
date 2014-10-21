@@ -522,6 +522,11 @@ public abstract class Double4D extends Array4D implements DoubleArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Double4D create() {
+        return new FlatDouble4D(getShape());
+    }
+
     /**
      * Create a 4D array of double's with given dimensions.
      * <p>

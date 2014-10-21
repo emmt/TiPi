@@ -572,6 +572,11 @@ public abstract class Int5D extends Array5D implements IntArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Int5D create() {
+        return new FlatInt5D(getShape());
+    }
+
     /**
      * Create a 5D array of int's with given dimensions.
      * <p>

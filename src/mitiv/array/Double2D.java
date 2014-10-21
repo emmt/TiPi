@@ -422,6 +422,11 @@ public abstract class Double2D extends Array2D implements DoubleArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Double2D create() {
+        return new FlatDouble2D(getShape());
+    }
+
     /**
      * Create a 2D array of double's with given dimensions.
      * <p>

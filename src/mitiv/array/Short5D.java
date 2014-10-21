@@ -572,6 +572,11 @@ public abstract class Short5D extends Array5D implements ShortArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Short5D create() {
+        return new FlatShort5D(getShape());
+    }
+
     /**
      * Create a 5D array of short's with given dimensions.
      * <p>

@@ -672,6 +672,11 @@ public abstract class Byte7D extends Array7D implements ByteArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Byte7D create() {
+        return new FlatByte7D(getShape());
+    }
+
     /**
      * Create a 7D array of byte's with given dimensions.
      * <p>

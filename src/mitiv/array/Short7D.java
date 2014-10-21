@@ -672,6 +672,11 @@ public abstract class Short7D extends Array7D implements ShortArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Short7D create() {
+        return new FlatShort7D(getShape());
+    }
+
     /**
      * Create a 7D array of short's with given dimensions.
      * <p>

@@ -722,6 +722,11 @@ public abstract class Short8D extends Array8D implements ShortArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Short8D create() {
+        return new FlatShort8D(getShape());
+    }
+
     /**
      * Create a 8D array of short's with given dimensions.
      * <p>

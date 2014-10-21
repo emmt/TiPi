@@ -772,6 +772,11 @@ public abstract class Int9D extends Array9D implements IntArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Int9D create() {
+        return new FlatInt9D(getShape());
+    }
+
     /**
      * Create a 9D array of int's with given dimensions.
      * <p>

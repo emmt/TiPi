@@ -472,6 +472,11 @@ public abstract class Int3D extends Array3D implements IntArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Int3D create() {
+        return new FlatInt3D(getShape());
+    }
+
     /**
      * Create a 3D array of int's with given dimensions.
      * <p>

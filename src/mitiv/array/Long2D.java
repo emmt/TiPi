@@ -422,6 +422,11 @@ public abstract class Long2D extends Array2D implements LongArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Long2D create() {
+        return new FlatLong2D(getShape());
+    }
+
     /**
      * Create a 2D array of long's with given dimensions.
      * <p>

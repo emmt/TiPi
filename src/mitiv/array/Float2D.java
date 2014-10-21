@@ -422,6 +422,11 @@ public abstract class Float2D extends Array2D implements FloatArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Float2D create() {
+        return new FlatFloat2D(getShape());
+    }
+
     /**
      * Create a 2D array of float's with given dimensions.
      * <p>

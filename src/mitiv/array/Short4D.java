@@ -522,6 +522,11 @@ public abstract class Short4D extends Array4D implements ShortArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Short4D create() {
+        return new FlatShort4D(getShape());
+    }
+
     /**
      * Create a 4D array of short's with given dimensions.
      * <p>
