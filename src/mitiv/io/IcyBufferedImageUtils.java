@@ -65,7 +65,7 @@ public class IcyBufferedImageUtils {
             }
             return Double3D.wrap(out, shape);
         } catch (Exception e) {
-            System.err.println("Could not directly convert ICY sequence");
+            //System.err.println("Could not directly convert ICY sequence");
             ArrayList<BufferedImage> list = new ArrayList<BufferedImage>(listImage);
             return BufferedImageUtils.imageToArray(list);
         }
