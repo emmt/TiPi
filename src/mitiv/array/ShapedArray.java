@@ -118,6 +118,16 @@ public interface ShapedArray extends Shaped, Typed {
     public abstract void assign(ShapedVector src);
 
     /**
+     * Get a view of the object as a 1D array.
+     *<p>
+     * The result is a 1D <i>view</i> of its parents, this means that
+     * they share the same contents.
+     * </p>
+     * @return A 1D view of the object.
+     */
+    public abstract Array1D as1D();
+
+    /**
      * Perform some sanity tests.
      * 
      * <p>
