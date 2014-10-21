@@ -27,12 +27,24 @@ package plugins.mitiv.conv;
 
 
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import mitiv.array.Double2D;
+import mitiv.array.Double3D;
+import mitiv.array.DoubleArray;
+import mitiv.exception.DataFormatException;
+import mitiv.exception.RecoverableFormatException;
+import mitiv.io.MdaFormat;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
+import mitiv.microscopy.MicroscopyModelPSF_1D;
 import mitiv.utils.CommonUtils;
 import mitiv.utils.MathUtils;
 import icy.sequence.Sequence;
@@ -40,6 +52,7 @@ import icy.sequence.SequenceEvent;
 import icy.sequence.SequenceListener;
 import icy.image.IcyBufferedImage;
 import icy.type.DataType;
+import icy.type.collection.array.Array1DUtil;
 import plugins.adufour.ezplug.*;
 
 /**
@@ -53,15 +66,15 @@ import plugins.adufour.ezplug.*;
 public class Convolution extends EzPlug implements EzStoppable,SequenceListener, EzVarListener<String>
 {
     //Mydata
-    EzVarText	varText;
+    EzVarText   varText;
     EzVarText  options;
     EzVarText  kernel;
     EzVarText  noise;
-    //EzVarBoolean	varBoolean;
-    EzVarFile	varFilePSF;
-    EzVarFile	varFileIMAGE;
-    EzVarSequence sequencePSF;
-    EzVarSequence sequenceImage;
+    //EzVarBoolean  varBoolean;
+    EzVarFile   varFilePSF;
+    EzVarFile   varFileIMAGE;
+    EzVarSequence EzVarSequencePSF;
+    EzVarSequence EzVarSequenceImage;
     JSlider slider;
     int sliderValue = 3;
 
@@ -70,7 +83,7 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
     String gaussian = "gaussian";
 
     Sequence myseq;
-    Sequence myseq2;
+    Sequence myseqData;
     JLabel label;
 
 
@@ -85,159 +98,12 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
     public static final int KIRSH = 6;
     public static final int DISK = 7;
     
-    private int getType(String type)
-    {
-        int out = 0;
-        if (type.compareTo("average") == 0)
-        {
-            out = AVERAGE;
-        }
-        else if (type.compareTo("disk") == 0)
-        {
-            out = DISK;
-        }
-        else if (type.compareTo("sobel") == 0)
-        {
-            out = SOBEL;
-        }
-        else if (type.compareTo("prewitt") == 0)
-        {
-            out = PREWITT;
-        }
-        else if (type.compareTo("kirsh") == 0)
-        {
-            out = KIRSH;
-        }
-        return out;
-    }
-   
-    private BufferedImage createPSF()
-    {
-        double[][] h;
-        if (kernel.getValue().compareTo("average") == 0)
-        {
-            h = MathUtils.fspecial(AVERAGE, new int[]{sliderValue, sliderValue}, 0);
-        }
-        else if (kernel.getValue().compareTo("disk") == 0)
-        {
-            h = MathUtils.fspecial(DISK, sliderValue);
-        }
-        else
-        {
-            h = MathUtils.fspecial(getType(kernel.getValue()));
-        }
-        double[][] h_pad = CommonUtils.imgPad(h, 100,100, 1);
-        return CommonUtils.array2BuffI(h_pad);
-    }
-
-    private IcyBufferedImage createPSF2()
-    {
-        IcyBufferedImage image = new IcyBufferedImage(256, 256, 1, DataType.DOUBLE);
-        double[] dataBuffer = image.getDataXYAsDouble(0);
-        double[][] h = MathUtils.fspecial(getType(kernel.getValue()));
-        double[][] h_pad = CommonUtils.imgPad(h, 256,256, 1);
-        for (int x = 0; x < 256; x++)
-            for (int y = 0; y < 256; y++)
-                dataBuffer[x + y * 256] = h_pad[x][y];
-        return image;
-    }
-
-    private double[][] computePSF(String name)
-    {
-        double[][] h;
-        if (kernel.getValue().compareTo("average") == 0)
-        {
-            h = MathUtils.fspecial(getType(kernel.getValue()), new int[]{sliderValue, sliderValue}, 0);
-        }
-        else if (kernel.getValue().compareTo("disk") == 0)
-        {
-            h = MathUtils.fspecial(getType(kernel.getValue()), sliderValue);
-        }
-        else
-        {
-            h = MathUtils.fspecial(getType(kernel.getValue()));
-        }
-        return h;
-    }
-
-    private double[][] convolve(double[][] I, double[][] PSF)
-    {
-        double[][] Iout = MathUtils.fftConv(I, PSF);
-        return Iout;
-    }
-
-    private BufferedImage convolve()
-    {
-        /* Convert buffered image to array */
-        double[][] I = CommonUtils.buffI2array(sequenceImage.getValue().getFirstNonNullImage());
-        /* Create the kernel filter and FFT padding */
-
-        /* If no noise and no kernel --> return I */
-        if (kernel.getValue().compareTo(filters[0]) == 0 & noise.getValue().compareTo(noNoise) == 0)
-        {
-            return CommonUtils.array2BuffI(I);
-        }
-        /* If kernel and no noise --> return I_filtered_noNoise */
-        else if (kernel.getValue().compareTo(filters[0]) != 0 & noise.getValue().compareTo(noNoise) == 0)
-        {
-            double[][] h;
-            if (kernel.getValue().compareTo("average") == 0)
-            {
-                h = MathUtils.fspecial(getType(kernel.getValue()), new int[]{sliderValue, sliderValue}, 0);
-            }
-            else if (kernel.getValue().compareTo("disk") == 0)
-            {
-                h = MathUtils.fspecial(getType(kernel.getValue()), sliderValue);
-            }
-            else
-            {
-                h = MathUtils.fspecial(getType(kernel.getValue()));
-            }
-            double[][] h_pad = CommonUtils.imgPad(h, I, -1);
-            double[][] I_filtered_noNoise = MathUtils.fftConv(I, h_pad);
-            return CommonUtils.array2BuffI(I_filtered_noNoise);
-        }
-        /* If no kernel but noise --> return I */
-        else if(kernel.getValue().compareTo(filters[0]) == 0 & noise.getValue().compareTo(noNoise) != 0)
-        {
-            double noiseMean = 0;
-            double noiseVar = 0.01;
-            double[][] I_unfiltered_noise = MathUtils.imnoise(I, getType(noise.getValue()), noiseVar, noiseMean);
-            return CommonUtils.array2BuffI(I_unfiltered_noise);
-        }else
-            /* Filtered with noise --> return I_filtered_noise */
-        {
-            double[][] h;
-            if (kernel.getValue().compareTo("average") == 0)
-            {
-                h = MathUtils.fspecial(getType(kernel.getValue()), new int[]{sliderValue, sliderValue}, 0);
-            }
-            else if (kernel.getValue().compareTo("disk") == 0)
-            {
-                h = MathUtils.fspecial(getType(kernel.getValue()), sliderValue);
-            }
-            else
-            {
-                h = MathUtils.fspecial(getType(kernel.getValue()));
-            }
-            double[][] h_pad = CommonUtils.imgPad(h, I, -1);
-            /* Convolve using FFT */
-            double[][] I_filtered = MathUtils.fftConv(I, h_pad);
-            double noiseMean = 0;
-            double noiseVar = 0.01;
-            double[][] I_filtered_noise = MathUtils.imnoise(I_filtered, getType(noise.getValue()), noiseVar, noiseMean);
-            return CommonUtils.array2BuffI(I_filtered_noise);
-        }
-    }
-
-
 
     @Override
     protected void initialize()
     {
-        sequenceImage = new EzVarSequence("Image");
-        kernel = new EzVarText("Kernel", filters, 0, false);
-        kernel.addVarChangeListener(this);
+        EzVarSequenceImage = new EzVarSequence("Image");
+        EzVarSequencePSF = new EzVarSequence("Load PSF");
         noise = new EzVarText("Noise", new String[] {noNoise, gaussian}, 0, false);
         slider = new JSlider(0, 100, sliderValue);
         slider.setEnabled(false);  
@@ -249,8 +115,8 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
             }
         });
 
-        super.addEzComponent(sequenceImage);
-        super.addEzComponent(kernel);
+        super.addEzComponent(EzVarSequenceImage);
+        super.addEzComponent(EzVarSequencePSF);
         super.addEzComponent(noise);
         super.addComponent(slider);
         super.addComponent(label);
@@ -262,27 +128,33 @@ public class Convolution extends EzPlug implements EzStoppable,SequenceListener,
         if (myseq != null) {
             myseq.close();
         }
+        
+        Sequence seqImg = EzVarSequenceImage.getValue();
+        Sequence seqPSF = EzVarSequencePSF.getValue();
 
-        if(sequenceImage.getValue() == null){
-            throw new IllegalArgumentException("We need an image");
+        int w = seqImg.getSizeX();
+        int h = seqImg.getSizeY();
+        int d = seqImg.getSizeZ();
+
+        double[] x = new double[w*h*d];
+        double[] psf = new double[w*h*d];
+        for(int k = 0; k < d; k++)
+        {
+            Array1DUtil.arrayToDoubleArray(seqImg.getDataXY(0, k, 0), 0, x, k*w*h, w*h, seqImg.isSignedDataType());
+            Array1DUtil.arrayToDoubleArray(seqPSF.getDataXY(0, k, 0), 0, psf, k*w*h, w*h, seqImg.isSignedDataType());
         }
+        
+            double[] psf_shift= MathUtils.fftShift3D(psf, w, h, d);
+            DoubleShapedVector y = MathUtils.convolution(x, psf_shift, w, h, d);
+            
+            Sequence seqY = new Sequence();
+            seqY.setName("Y");
+            for(int k = 0; k < d; k++)
+            {
+                seqY.addImage(new IcyBufferedImage(w, h, MathUtils.getArray(y.getData(), w, h, k)));
+            }
+            addSequence(seqY);
 
-        myseq = new Sequence();
-        myseq.addImage(0, convolve());
-        myseq.addListener(this); 
-        addSequence(myseq);
-        myseq.setName("Blurred I");
-
-        if (myseq2 != null) {
-            myseq2.close();
-        }
-
-        myseq2 = new Sequence();
-        // myseq2.addImage(0, createPSF());
-        myseq2.addImage(0, createPSF());
-        myseq2.addListener(this); 
-        addSequence(myseq2);
-        myseq2.setName("PSF");
     }
 
     @Override
