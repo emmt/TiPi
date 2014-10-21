@@ -165,9 +165,35 @@ public class ArrayUtils {
     public final static int RGB   = 5;
     public final static int RGBA  = 6;
 
+
     /*=======================================================================*/
     /* ZERO-PADDING */
 
+    /**
+     * Zero-pad a shaped array.
+     * <p>
+     * Zero-padding consists in adding zeros around an array to build a larger
+     * array.
+     * </p><p>
+     * There must be as many dimensions in the result as in the input array
+     * and all dimensions must be greater or equal the corresponding dimension
+     * in the input array.  The operation is lazy: if no padding is needed
+     * (that is, if the shapes are the same), the input array is returned.
+     * Otherwise, the contents of the input array is pasted into a larger
+     * output array approximately at the geometrical center of this former
+     * array.  More specifically, the number of zeros at the beginning of a
+     * given dimension is equal to:
+     * <pre>
+     * (outDim/2) - (inpDim/2)
+     * </pre>
+     * assuming integer arithmetic and where {@code outDim} and {@code inpDim}
+     * are the respective length of the given dimension in the output and
+     * input arrays.
+     * </p>
+     * @param inputArray  - The input array.
+     * @param outputShape - The shape of the result.
+     * @return A shaped array of the given shape.
+     */
     public static ShapedArray zeroPadding(ShapedArray inputArray, Shape outputShape) {
         /* Check output shape and build list of ranges for pasting
          * the input array into the result. */
@@ -225,6 +251,108 @@ public class ArrayUtils {
             throw new IllegalArgumentException("Unsupported rank.");
         }
         return outputArray;
+    }
+
+
+    /*=======================================================================*/
+    /* ROLLING OF DIMENSIONS */
+
+    /**
+     * Roll the dimensions of a shaped array.
+     * <p>
+     * This is the same as {@link #roll(ShapedArray, int[])} with offsets
+     * equal to half the lenght of each dimensions.
+     * </p>
+     * @param src - The input array.
+     * @return A shaped array with the contents of the input array but
+     *         rolled along the dimensions of the input array by the given
+     *         offsets.
+     */
+    public static ShapedArray roll(ShapedArray src) {
+        Shape shape = src.getShape();
+        int rank = shape.rank();
+        int[] off = new int[rank];
+        boolean nothing = true;
+        for (int k = 0; k < rank; ++k) {
+            int dim = shape.dimension(k);
+            off[k] = -(dim/2);
+            if (dim != 1) {
+                nothing = false;
+            }
+        }
+        if (nothing) {
+            return src;
+        }
+        return roll(src, off);
+    }
+
+    /**
+     * Roll the dimensions of a shaped array with given offsets.
+     * <p>
+     * This static method rolls the contents of the input array along its
+     * dimensions.  For a mono-dimensional array of length {@code dim}, this
+     * is equivalent to something like:
+     * <pre>
+     * dst[j] = src[(j - off)%dim]
+     * </pre>
+     * where {@code src} is the input array, {@code dst} is the result,
+     * {@code off} is the offset and assuming that the modulo operator
+     * returns a result wrapped in the range [0:{@code dim}-1].
+     * </p><p>
+     * The operation is lazy: if no rolling is needed (that is, if the shapes
+     * are the same), the input array is returned.
+     * </p>
+     * @param src - The input array.
+     * @param off - The offsets to apply along each dimensions.
+     * @return A shaped array with the contents of the input array but
+     *         rolled along the dimensions of the input array by the given
+     *         offsets.
+     */
+    public static ShapedArray roll(ShapedArray src, int off[]) {
+        Shape shape = src.getShape();
+        int rank = shape.rank();
+        if (off.length != rank) {
+            throw new IllegalArgumentException("Range mismatch.");
+        }
+        boolean nothing = true;
+        int[][] sel = new int[rank][];
+        for (int k = 0; k < rank; ++k) {
+            int dim = shape.dimension(k);
+            int offset;
+            if (dim == 1) {
+                offset = 0;
+            } else {
+                offset = (dim - (off[k]%dim))%dim;
+            }
+            if (offset != 0) {
+                int[] index = new int[dim];
+                for (int j = 0; j < dim; ++j) {
+                    index[j] = (j + offset)%dim;
+                }
+                sel[k] = index;
+                nothing = false;
+            }
+        }
+        if (nothing) {
+            return src;
+        }
+
+        ShapedArray dst = src.create();
+        switch (rank) {
+        //# for rank in 1 : 9
+        //#     def argList = sel[0]
+        //#     for k in 2:${rank}
+        //#         eval j = ${k} - 1
+        //#         def argList = ${argList}, sel[${j}]
+        //#     end
+        case ${rank}:
+            ((Array${rank}D)dst).view(${argList}).assign(src);
+            break;
+        //# end
+        default:
+            throw new IllegalArgumentException("Unsupported rank.");
+        }
+        return dst;
     }
 
 
