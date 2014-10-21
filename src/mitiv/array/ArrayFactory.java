@@ -59,17 +59,17 @@ public class ArrayFactory {
     public static Scalar create(int type) {
         switch (type) {
             case Traits.BYTE:
-                return ByteScalar.create();
+                return new ByteScalar();
             case Traits.SHORT:
-                return ShortScalar.create();
+                return new ShortScalar();
             case Traits.INT:
-                return IntScalar.create();
+                return new IntScalar();
             case Traits.LONG:
-                return LongScalar.create();
+                return new LongScalar();
             case Traits.FLOAT:
-                return FloatScalar.create();
+                return new FloatScalar();
             case Traits.DOUBLE:
-                return DoubleScalar.create();
+                return new DoubleScalar();
             default:
                 throw new IllegalTypeException();
         }
@@ -359,7 +359,7 @@ public class ArrayFactory {
             case Traits.BYTE:
                 switch (rank) {
                     case 0:
-                        return ByteScalar.create();
+                        return new ByteScalar();
                     case 1:
                         return Byte1D.create(dims);
                     case 2:
@@ -383,7 +383,7 @@ public class ArrayFactory {
             case Traits.SHORT:
                 switch (rank) {
                     case 0:
-                        return ShortScalar.create();
+                        return new ShortScalar();
                     case 1:
                         return Short1D.create(dims);
                     case 2:
@@ -407,7 +407,7 @@ public class ArrayFactory {
             case Traits.INT:
                 switch (rank) {
                     case 0:
-                        return IntScalar.create();
+                        return new IntScalar();
                     case 1:
                         return Int1D.create(dims);
                     case 2:
@@ -431,7 +431,7 @@ public class ArrayFactory {
             case Traits.LONG:
                 switch (rank) {
                     case 0:
-                        return LongScalar.create();
+                        return new LongScalar();
                     case 1:
                         return Long1D.create(dims);
                     case 2:
@@ -455,7 +455,7 @@ public class ArrayFactory {
             case Traits.FLOAT:
                 switch (rank) {
                     case 0:
-                        return FloatScalar.create();
+                        return new FloatScalar();
                     case 1:
                         return Float1D.create(dims);
                     case 2:
@@ -479,7 +479,7 @@ public class ArrayFactory {
             case Traits.DOUBLE:
                 switch (rank) {
                     case 0:
-                        return DoubleScalar.create();
+                        return new DoubleScalar();
                     case 1:
                         return Double1D.create(dims);
                     case 2:
@@ -520,7 +520,7 @@ public class ArrayFactory {
             case Traits.BYTE:
                 switch (rank) {
                     case 0:
-                        return ByteScalar.create();
+                        return new ByteScalar();
                     case 1:
                         return Byte1D.create(shape);
                     case 2:
@@ -544,7 +544,7 @@ public class ArrayFactory {
             case Traits.SHORT:
                 switch (rank) {
                     case 0:
-                        return ShortScalar.create();
+                        return new ShortScalar();
                     case 1:
                         return Short1D.create(shape);
                     case 2:
@@ -568,7 +568,7 @@ public class ArrayFactory {
             case Traits.INT:
                 switch (rank) {
                     case 0:
-                        return IntScalar.create();
+                        return new IntScalar();
                     case 1:
                         return Int1D.create(shape);
                     case 2:
@@ -592,7 +592,7 @@ public class ArrayFactory {
             case Traits.LONG:
                 switch (rank) {
                     case 0:
-                        return LongScalar.create();
+                        return new LongScalar();
                     case 1:
                         return Long1D.create(shape);
                     case 2:
@@ -616,7 +616,7 @@ public class ArrayFactory {
             case Traits.FLOAT:
                 switch (rank) {
                     case 0:
-                        return FloatScalar.create();
+                        return new FloatScalar();
                     case 1:
                         return Float1D.create(shape);
                     case 2:
@@ -640,7 +640,7 @@ public class ArrayFactory {
             case Traits.DOUBLE:
                 switch (rank) {
                     case 0:
-                        return DoubleScalar.create();
+                        return new DoubleScalar();
                     case 1:
                         return Double1D.create(shape);
                     case 2:

@@ -84,6 +84,16 @@ public interface ShapedArray extends Shaped, Typed {
     public abstract DoubleArray toDouble();
 
     /**
+     * Create a new array with same element type and shape.
+     * <p>
+     * This method yields a new shaped array which has the same element type
+     * and shape as the object but whose contents is not initialized.
+     * </p>
+     * @return A new shaped array.
+     */
+    public abstract ShapedArray create();
+
+    /**
      * Copy the contents of the object as a new array.
      * <p>
      * This method yields a new shaped array which has the same shape, type

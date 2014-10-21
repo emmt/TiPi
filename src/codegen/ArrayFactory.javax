@@ -64,7 +64,7 @@ public class ${className} {
             //#     def Type = ${}{Type_${id}}
             //#     def TYPE = ${}{TYPE_${id}}
             case Traits.${TYPE}:
-                return ${Type}Scalar.create();
+                return new ${Type}Scalar();
             //# end
             default:
                 throw new IllegalTypeException();
@@ -126,7 +126,7 @@ public class ${className} {
             case Traits.${TYPE}:
                 switch (rank) {
                     case 0:
-                        return ${Type}Scalar.create();
+                        return new ${Type}Scalar();
                     //# for rank in 1:9
                     case ${rank}:
                         return ${Type}${rank}D.create(dims);
@@ -158,7 +158,7 @@ public class ${className} {
             case Traits.${TYPE}:
                 switch (rank) {
                     case 0:
-                        return ${Type}Scalar.create();
+                        return new ${Type}Scalar();
                     //# for rank in 1:9
                     case ${rank}:
                         return ${Type}${rank}D.create(shape);
