@@ -24,7 +24,9 @@
  */
 
 package mitiv.array;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.indexing.Range;
 
 
 /**
@@ -33,7 +35,8 @@ import mitiv.base.Shaped;
  * @author Éric Thiébaut.
  */
 public abstract class Array7D implements ShapedArray {
-    static protected final int rank = 7;
+    protected final Shape shape;
+    protected final int number;
     protected final int dim1;
     protected final int dim2;
     protected final int dim3;
@@ -41,18 +44,17 @@ public abstract class Array7D implements ShapedArray {
     protected final int dim5;
     protected final int dim6;
     protected final int dim7;
-    protected final int number;
-    protected final int[] shape;
 
     /*
      * The following constructors make this class non instantiable, but still
      * let others inherit from this class.
      */
-
     protected Array7D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        if (dim1 < 1 || dim2 < 1 || dim3 < 1 || dim4 < 1 || dim5 < 1 || dim6 < 1 || dim7 < 1) {
-            throw new IllegalArgumentException("Bad dimension(s) for 7D array");
+        shape = Shape.make(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+        if (shape.number() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Total number of elements is too large.");
         }
+        number = (int)shape.number();
         this.dim1 = dim1;
         this.dim2 = dim2;
         this.dim3 = dim3;
@@ -60,54 +62,37 @@ public abstract class Array7D implements ShapedArray {
         this.dim5 = dim5;
         this.dim6 = dim6;
         this.dim7 = dim7;
-        this.number = dim1*dim2*dim3*dim4*dim5*dim6*dim7;
-        this.shape = new int[]{dim1,dim2,dim3,dim4,dim5,dim6,dim7};
     }
 
-    protected Array7D(int[] shape) {
-        this(shape, true);
+    protected Array7D(int[] dims) {
+        this(Shape.make(dims));
     }
 
-    protected Array7D(int[] shape, boolean cloneShape) {
-        if (shape == null || shape.length != rank ||
-                (dim1 = shape[0]) < 1 ||
-                (dim2 = shape[1]) < 1 ||
-                (dim3 = shape[2]) < 1 ||
-                (dim4 = shape[3]) < 1 ||
-                (dim5 = shape[4]) < 1 ||
-                (dim6 = shape[5]) < 1 ||
-                (dim7 = shape[6]) < 1) {
-            throw new IllegalArgumentException("Bad shape for 7D array");
+    protected Array7D(Shape shape) {
+        if (shape.rank() != 7) {
+            throw new IllegalArgumentException("Bad number of dimensions for 7-D array.");
         }
-        this.number = dim1*dim2*dim3*dim4*dim5*dim6*dim7;
-        if (cloneShape) {
-            this.shape = new int[]{dim1,dim2,dim3,dim4,dim5,dim6,dim7};
-        } else {
-            this.shape = shape;
+        if (shape.number() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Total number of elements is too large.");
         }
+        this.number = (int)shape.number();
+        this.shape = shape;
+        this.dim1 = shape.dimension(0);
+        this.dim2 = shape.dimension(1);
+        this.dim3 = shape.dimension(2);
+        this.dim4 = shape.dimension(3);
+        this.dim5 = shape.dimension(4);
+        this.dim6 = shape.dimension(5);
+        this.dim7 = shape.dimension(6);
     }
 
     @Override
     public final int getRank() {
-        return rank;
+        return 7;
     }
 
     @Override
-    public final int[] cloneShape() {
-        return new int[]{dim1,dim2,dim3,dim4,dim5,dim6,dim7};
-    }
-
-    /**
-     * Get the shape (that is the list of dimensions) of the shaped object.
-     * <p>
-     * The result returned by this method must be considered as
-     * <b><i>read-only</i></b>.  This is why the visibility of this method is
-     * limited to the package. Use {@link #cloneShape} to get a copy of the
-     * dimension list.
-     *
-     * @return A list of dimensions.
-     */
-    int[] getShape() {
+    public final Shape getShape() {
         return shape;
     }
 
@@ -118,8 +103,90 @@ public abstract class Array7D implements ShapedArray {
 
     @Override
     public final int getDimension(int k) {
-        return (k < rank ? shape[k] : 1);
+        return shape.dimension(k);
     }
+
+    @Override
+    public abstract Array7D copy();
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.  The same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     * @return A Array6D view on the given slice of the array.
+     */
+    public abstract Array6D slice(int idx);
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.
+     * @param dim - The dimension to slice.  For these two arguments,
+     *              the same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     *
+     * @return A Array6D view on the given slice of the array.
+     */
+    public abstract Array6D slice(int idx, int dim);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param rng1 - The range of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param rng2 - The range of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     * @param rng3 - The range of indices to select along 3rd dimension
+     *               (or {@code null} to select all.
+     * @param rng4 - The range of indices to select along 4th dimension
+     *               (or {@code null} to select all.
+     * @param rng5 - The range of indices to select along 5th dimension
+     *               (or {@code null} to select all.
+     * @param rng6 - The range of indices to select along 6th dimension
+     *               (or {@code null} to select all.
+     * @param rng7 - The range of indices to select along 7th dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Array7D view for the given ranges of the array.
+     */
+    public abstract Array7D view(Range rng1, Range rng2, Range rng3, Range rng4, Range rng5, Range rng6, Range rng7);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param idx1 - The list of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param idx2 - The list of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     * @param idx3 - The list of indices to select along 3rd dimension
+     *               (or {@code null} to select all.
+     * @param idx4 - The list of indices to select along 4th dimension
+     *               (or {@code null} to select all.
+     * @param idx5 - The list of indices to select along 5th dimension
+     *               (or {@code null} to select all.
+     * @param idx6 - The list of indices to select along 6th dimension
+     *               (or {@code null} to select all.
+     * @param idx7 - The list of indices to select along 7th dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Array7D view for the given index selections of the
+     *         array.
+     */
+    public abstract Array7D view(int[] idx1, int[] idx2, int[] idx3, int[] idx4, int[] idx5, int[] idx6, int[] idx7);
+
+    /**
+     * Get a view of the array as a 1D array.
+     *
+     * @return A 1D view of the array.
+     */
+    public abstract Array1D as1D();
 
     /**
      * Check the parameters of a 7D view with strides and get ordering.
@@ -141,9 +208,9 @@ public abstract class Array7D implements ShapedArray {
      * @param stride7 - The stride along the 7th dimension.
      * @return The ordering: {@link Shaped#COLUMN_MAJOR},
      *         {@link Shaped#ROW_MAJOR}, or {@link Shaped#NONSPECIFIC_ORDER}.
+     * @throws IndexOutOfBoundsException
      */
-    protected static int checkViewStrides(int number, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7,
-            int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7) {
+    public static int checkViewStrides(int number, int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         int imin, imax, itmp;
         itmp = (dim1 - 1)*stride1;
         if (itmp >= 0) {

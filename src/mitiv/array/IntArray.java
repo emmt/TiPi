@@ -56,20 +56,20 @@ public interface IntArray extends ShapedArray {
      * Increment all the values of the array of int's.
      * @param value - The increment.
      */
-    public abstract void incr(int value);
+    public abstract void increment(int value);
 
 
     /**
      * Decrement all the values of the array of int's.
      * @param value - The decrement.
      */
-    public abstract void decr(int value);
+    public abstract void decrement(int value);
 
     /**
      * Multiply all the values of the array of int's.
      * @param value - The multiplier.
      */
-    public abstract void mult(int value);
+    public abstract void scale(int value);
 
     /**
      * Map all the values of the array of int's by a function.
@@ -86,12 +86,14 @@ public interface IntArray extends ShapedArray {
     /**
      * Flatten the array of int's in a simple array.
      * <p>
-     * The contents of a (multi-dimensional) IntArray can be stored in many
-     * different forms.  This storage details are hidden to the end-user in
-     * favor of a unified and comprehensive interface.  This method returns
-     * the contents of the IntArray object as a simple flat array.  If the
-     * IntArray object is multi-dimensional, the storage of the returned
-     * result is column-major order.
+     * The contents of a (multi-dimensional) IntArray can be stored in
+     * many different forms.  This storage details are hidden to the end-user
+     * in favor of a unified and comprehensive interface.  This method returns
+     * the contents of the IntArray object as a simple <i>flat</i> array,
+     * <i>i.e.</i> successive elements are contiguous and the first element
+     * has {@code 0}-offset.  If the IntArray object is multi-dimensional,
+     * the storage of the returned result is column-major order.
+     * </p>
      * @param forceCopy - Set true to force a copy of the internal data
      *                    even though it can already be in a flat form.
      * @return A simple array of int's with the contents of
@@ -102,21 +104,26 @@ public interface IntArray extends ShapedArray {
     /**
      * Flatten the contents of int's in a simple array.
      * <p>
-     * The contents of a (multi-dimensional) IntArray can be stored in many
-     * different forms.  This storage details are hidden to the end-user in
-     * favor of a unified and comprehensive interface.  This method returns
-     * the contents of the IntArray object as a simple flat array.  If the
-     * IntArray object is multi-dimensional, the storage of the returned
-     * result is column-major order.
-     * <p>
+     * The contents of a (multi-dimensional) IntArray can be stored in
+     * many different forms.  This storage details are hidden to the end-user
+     * in favor of a unified and comprehensive interface.  This method returns
+     * the contents of the IntArray object as a simple <i>flat</i> array,
+     * <i>i.e.</i> successive elements are contiguous and the first element
+     * has {@code 0}-offset.  If the IntArray object is multi-dimensional,
+     * the storage of the returned result is column-major order.
+     * </p><p>
      * Depending on the storage layout, the returned array may or may not
      * share the same storage as the IntArray array.  Call {@code
      * flatten(true)} to make sure that the two storage areas are independent.
+     * </p>
      * @return A simple array of ints with the contents of
      *         the IntArray array.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public abstract int[] flatten();
+
+    @Override
+    public abstract IntArray copy();
 
 }
 

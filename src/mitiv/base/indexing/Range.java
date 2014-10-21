@@ -25,6 +25,8 @@
 
 package mitiv.base.indexing;
 
+import mitiv.exception.IllegalRangeException;
+
 /**
  * Manage ranges along array dimensions.
  * 
@@ -37,16 +39,15 @@ package mitiv.base.indexing;
  * to the length of the dimension of interest if they are strictly
  * negative.  That is {@code -1} (also {@link Range#LAST}) is the last element
  * along a dimension, {@code -2} is the penultimate element, etc.  This
- * rule is however only applied once: if <i>j</i> is a start/stop index,
+ * rule is however only applied once: assuming <i>n</i> is the length of the
+ * dimension of interest and <i>j</i> is the first or last index,
  * then <i>j</i> (if <i>j</i>&nbsp;&ge;&nbsp;{@code 0}) or
- * <i>j</i>&nbsp;+&nbsp;<i>n</i> (if <i>j</i>&nbsp;&lt;&nbsp;{@code 0}
- * with <i>n</i> the length of the dimension) must be greater or equal 0
- * and strictly less than <i>n</i>, the length of the dimension of
- * interest.
+ * <i>j</i>&nbsp;+&nbsp;<i>n</i> (if <i>j</i>&nbsp;&lt;&nbsp;{@code 0})
+ * must be greater or equal 0 and strictly less than <i>n</i>.
  * </p><p>
  * The convention is that the element corresponding to the first index of
- * a range is always considered while the last one may not be reached.
- * In pseudo-code, the rules are:
+ * a range is always considered (unless the range is empty as explianed below)
+ * while the last one may not be reached.  In pseudo-code, the rules are:
  * <pre>
  *     if (step > 0) {
  *         for (int index = first; index <= last; index += step) {
@@ -56,23 +57,26 @@ package mitiv.base.indexing;
  *         for (int index = first; index >= last; index += step) {
  *             ...
  *         }
+ *     } else {
+ *         // step = 0 is illegal
+ *         throw new IllegalRangeException();
  *     }</pre>
- * The step may have the special value {@code 0} to use a step equals to
- * &plusmn;1 depending on the ordering of the first and last element of
- * the range after taking into account the length of the dimension of
- * interest.  Otherwise, the sign of the step must be in agreement with
- * the ordering of the first and last element of the range.
+ * Note that a range is <i>empty</i> if {@code first}&nbsp;&gt;&nbsp;{@code last}
+ * and {@code step}&nbsp;&gt;&nbsp;{@code 0} or if
+ * {@code first}&nbsp;&lt;&nbsp;{@code last} and
+ * {@code step}&nbsp;&lt;&nbsp;{@code 0} (after applying the rules for
+ * negative indices).
  * </p>
  *
  * @author Éric Thiébaut.
  */
 public class Range {
+    /* The members of a range are publicly accessible. */
     /* If strictly negative, 'first' and 'last' are relative to the end of the available space.
-     * If 'step' is zero, it means that it is automatically determined from the endpoints of the range.
      */
-    protected int first;
-    protected int last;
-    protected int step;
+    public int first;
+    public int last;
+    public int step;
 
     /** First element along a dimension. */
     final public static int FIRST = 0;
@@ -97,26 +101,30 @@ public class Range {
      * @param r - If {@code null} or of length 0, create a full range; if
      *            length is 2 (or 3), create a range starting at {@code r[0]}, ending
      *            at {@code r[1]} and with step 1 (or {@code r[2]}).
+     * @throws IllegalRangeException
      */
     public Range(int[] r) {
         switch (r == null ? 0 : r.length) {
         case 0:
-            this.first = FIRST;
-            this.last = LAST;
-            this.step = 1;
+            first = FIRST;
+            last = LAST;
+            step = 1;
             break;
         case 2:
-            this.first = r[0];
-            this.last = r[1];
-            this.step = 0;
+            first = r[0];
+            last = r[1];
+            step = 1;
             break;
         case 3:
-            this.first = r[0];
-            this.last = r[1];
-            this.step = r[2];
+            first = r[0];
+            last = r[1];
+            step = r[2];
+            if (step == 0) {
+                throw new IllegalRangeException("Illegal 0 step.");
+            }
             break;
         default:
-            throw new IllegalArgumentException("Invalid range settings.");
+            throw new IllegalRangeException();
         }
     }
 
@@ -129,7 +137,7 @@ public class Range {
     public Range(int first, int last) {
         this.first = first;
         this.last = last;
-        this.step = 0;
+        this.step = 1;
     }
 
     /**
@@ -142,22 +150,9 @@ public class Range {
         this.first = first;
         this.last = last;
         this.step = step;
-    }
-
-    /**
-     * Engrave the range given the length of the dimension of interest.
-     * 
-     * <p>
-     * This method must be used to apply the conventions for range
-     * settings (in particular negative values to indicate indexing
-     * from the end) and validate them.
-     * </p>
-     * @param length - The number of elements along the dimension
-     *                 of interest.
-     * @return A checked range.
-     */
-    final public EngravedRange engrave(int length) {
-        return new EngravedRange(this, length);
+        if (this.step == 0) {
+            throw new IllegalRangeException("Illegal 0 step.");
+        }
     }
 
     /** Get the first position of the range. */
@@ -172,7 +167,7 @@ public class Range {
      *                 of interest.
      */
     final public int getFirst(int length) {
-        return (first >= 0 ? first : length - first);
+        return fixIndex(first, length);
     }
 
     /** Set the first position of the range. */
@@ -192,7 +187,7 @@ public class Range {
      *                 of interest.
      */
     final public int getLast(int length) {
-        return (last >= 0 ? last : length - last);
+        return fixIndex(last, length);
     }
 
     /** Set the last position of the range. */
@@ -205,25 +200,96 @@ public class Range {
         return step;
     }
 
-    /**
-     * Get the stepping of the range taking into account the length
-     * of the dimension of interest.
-     * @param length - The number of elements along the dimension
-     *                 of interest.
-     */
-    final public int getStep(int length) {
-        if (step != 0) {
-            return step;
-        } else {
-            return (getFirst(length) <= getLast(length) ? +1 : -1);
-        }
-    }
-
     /** Set the stepping of the range. */
     final public void setStep(int step) {
         this.step = step;
     }
 
+    /**
+     * Get a range index accounting for the rules for negative values.
+     * @param index  - The index.
+     * @param length - The number of elements along the dimension
+     *                 of interest.
+     * @return The corrected index.
+     */
+    final public static int fixIndex(int index, int length) {
+        return (index >= 0 ? index : length - index);
+    }
+
+    /**
+     * Check whether a range takes all elements in order.
+     * 
+     * @param rng    - The range (can be {@code null} to mean <i>all</i>).
+     * @param length - The length of the dimension of interest.
+     * @return A boolean result.
+     */
+    final public static boolean doesNothing(Range rng, int length) {
+        return (rng == null || rng.doesNothing(length));
+    }
+
+    final public boolean doesNothing(int length) {
+        return (step == 1 && fixIndex(first, length) == 0
+                && fixIndex(last, length) == length);
+    }
+
+    /**
+     * Build a list of indices from a range.
+     * @param rng    - The range (can be {@code null} to mean <i>all</i>).
+     * @param length - The length of the dimension of interest.
+     * @return A list of indices, can have zero length if the range is empty.
+     */
+    final public static int[] asIndexList(Range rng, int length) {
+        int first, last, step, number;
+        if (rng == null) {
+            first = 0;
+            step = 1;
+            number = length;
+        } else {
+            first = fixIndex(rng.first, length);
+            last = fixIndex(rng.last, length);
+            step = rng.step;
+            number = 0;
+            if (step > 0) {
+                if (first <= last) {
+                    number = (last - first)/step + 1;
+                }
+            } else if (step < 0) {
+                if (first >= last) {
+                    number = (first - last)/(-step) + 1;
+                }
+            }
+        }
+        int[] idx = new int[number];
+        for (int j = 0; j < number; ++j) {
+            idx[j] = first + j*step;
+        }
+        return idx;
+    }
+
+    /**
+     * Build a list of indices from the range.
+     * @param length - The length of the dimension of interest.
+     * @return A list of indices, can have zero length if the range is empty.
+     */
+    final public int[] asIndexList(int length) {
+        int first = fixIndex(this.first, length);
+        int last = fixIndex(this.last, length);
+        int number = 0;
+        if (step > 0) {
+            if (first <= last) {
+                number = (last - first)/step + 1;
+            }
+        } else if (step < 0) {
+            if (first >= last) {
+                number = (first - last)/(-step) + 1;
+            }
+        }
+        int[] idx = new int[number];
+        for (int j = 0; j < number; ++j) {
+            idx[j] = first + j*step;
+        }
+        return idx;
+    }
 }
 
 /*

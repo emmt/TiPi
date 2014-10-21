@@ -25,6 +25,7 @@
 
 package mitiv.linalg.shaped;
 
+import mitiv.array.ShapedArray;
 import mitiv.linalg.ArrayOps;
 import mitiv.random.FloatGenerator;
 
@@ -135,6 +136,15 @@ public class FloatShapedVector extends ShapedVector {
     @Override
     public FloatShapedVector clone() {
         return ((FloatShapedVectorSpace)space)._clone(this);
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        ((ShapedVectorSpace)space).checkShape(arr);
+        float[] arrData = arr.toFloat().flatten();
+        if (arrData != data) {
+            System.arraycopy(arrData, 0, data, 0, getNumber());
+        }
     }
 
 }

@@ -25,9 +25,18 @@
 
 package mitiv.array;
 
+import mitiv.array.impl.FlatByte4D;
+import mitiv.array.impl.StriddenByte4D;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.ByteGenerator;
 
 
@@ -42,12 +51,12 @@ public abstract class Byte4D extends Array4D implements ByteArray {
         super(dim1,dim2,dim3,dim4);
     }
 
-    protected Byte4D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    protected Byte4D(int[] dims) {
+        super(dims);
     }
 
-    protected Byte4D(int[] shape) {
-        super(shape, true);
+    protected Byte4D(Shape shape) {
+        super(shape);
     }
 
     @Override
@@ -107,7 +116,7 @@ public abstract class Byte4D extends Array4D implements ByteArray {
     }
 
     @Override
-    public void incr(byte value) {
+    public void increment(byte value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -133,7 +142,7 @@ public abstract class Byte4D extends Array4D implements ByteArray {
     }
 
     @Override
-    public void decr(byte value) {
+    public void decrement(byte value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -159,7 +168,7 @@ public abstract class Byte4D extends Array4D implements ByteArray {
     }
 
     @Override
-    public void mult(byte value) {
+    public void scale(byte value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -238,14 +247,18 @@ public abstract class Byte4D extends Array4D implements ByteArray {
 
     @Override
     public void scan(ByteScanner scanner)  {
-        boolean skip = true;
-        scanner.initialize(get(0,0,0,0));
+        boolean initialized = false;
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     for (int i3 = 0; i3 < dim3; ++i3) {
                         for (int i4 = 0; i4 < dim4; ++i4) {
-                            if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4));
+                            if (initialized) {
+                                scanner.update(get(i1,i2,i3,i4));
+                            } else {
+                                scanner.initialize(get(i1,i2,i3,i4));
+                                initialized = true;
+                            }
                         }
                     }
                 }
@@ -256,7 +269,12 @@ public abstract class Byte4D extends Array4D implements ByteArray {
                 for (int i3 = 0; i3 < dim3; ++i3) {
                     for (int i2 = 0; i2 < dim2; ++i2) {
                         for (int i1 = 0; i1 < dim1; ++i1) {
-                            if (skip) skip = false; else scanner.update(get(i1,i2,i3,i4));
+                            if (initialized) {
+                                scanner.update(get(i1,i2,i3,i4));
+                            } else {
+                                scanner.initialize(get(i1,i2,i3,i4));
+                                initialized = true;
+                            }
                         }
                     }
                 }
@@ -425,35 +443,84 @@ public abstract class Byte4D extends Array4D implements ByteArray {
         return Double4D.wrap(out, dim1, dim2, dim3, dim4);
     }
 
-    /*=======================================================================*/
-    /* FACTORY */
+    @Override
+    public Byte4D copy() {
+        return new FlatByte4D(flatten(true), shape);
+    }
 
-    /* Inner class instances can only be created from an instance of the outer
-     * class.  For this, we need a static instance of the outer class (to
-     * spare the creation of this instance each time a new instance of the
-     * inner class is needed).  The outer class is however "abstract" and we
-     * must provide a minimal set of methods to make it instantiable.
-     */
-    private static final Byte4D factory = new Byte4D(1,1,1,1) {
-        @Override
-        public final byte get(int i1, int i2, int i3, int i4) {
-            return 0;
+    @Override
+    public void assign(ShapedArray arr) {
+        Byte4D src;
+        if (! getShape().equals(arr.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
-        @Override
-        public final void set(int i1, int i2, int i3, int i4, byte value) {
+        if (arr.getType() == Traits.BYTE) {
+            src = (Byte4D)arr;
+        } else {
+            src = (Byte4D)arr.toByte();
         }
-        @Override
-        public final int getOrder() {
-            return COLUMN_MAJOR;
+        // FIXME: do assignation and conversion at the same time
+        if (getOrder() == ROW_MAJOR && src.getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            set(i1,i2,i3,i4, src.get(i1,i2,i3,i4));
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            set(i1,i2,i3,i4, src.get(i1,i2,i3,i4));
+                        }
+                    }
+                }
+            }
         }
-        @Override
-        public byte[] flatten(boolean forceCopy) {
-            return null;
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        if (! getShape().equals(vec.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
-    };
+        // FIXME: much too slow and may be skipped if data are identical (and array is flat)
+        int i = -1;
+        if (vec.getType() == Traits.DOUBLE) {
+            DoubleShapedVector src = (DoubleShapedVector)vec;
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            set(i1,i2,i3,i4, (byte)src.get(++i));
+                        }
+                    }
+                }
+            }
+        } else if (vec.getType() == Traits.FLOAT) {
+            FloatShapedVector src = (FloatShapedVector)vec;
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            set(i1,i2,i3,i4, (byte)src.get(++i));
+                        }
+                    }
+                }
+            }
+        } else {
+            throw new IllegalTypeException();
+        }
+    }
+
 
     /*=======================================================================*/
-    /* FLAT LAYOUT */
+    /* ARRAY FACTORIES */
 
     /**
      * Create a 4D array of byte's with given dimensions.
@@ -468,7 +535,7 @@ public abstract class Byte4D extends Array4D implements ByteArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Byte4D create(int dim1, int dim2, int dim3, int dim4) {
-        return factory.new Flat(dim1,dim2,dim3,dim4);
+        return new FlatByte4D(dim1,dim2,dim3,dim4);
     }
 
     /**
@@ -476,15 +543,15 @@ public abstract class Byte4D extends Array4D implements ByteArray {
      * <p>
      * This method creates a 4D array of byte's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape - The list of dimensions of the 4D array (all dimensions
-     *                must at least 1).  This argument is not referenced by
-     *                the returned object and its contents can be modified
-     *                after calling this method.
+     * @param dims - The list of dimensions of the 4D array (all dimensions
+     *               must at least 1).  This argument is not referenced by
+     *               the returned object and its contents can be modified
+     *               after calling this method.
      * @return A new 4D array of byte's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Byte4D create(int[] shape) {
-        return factory.new Flat(shape, true);
+    public static Byte4D create(int[] dims) {
+        return new FlatByte4D(dims);
     }
 
     /**
@@ -492,8 +559,7 @@ public abstract class Byte4D extends Array4D implements ByteArray {
      * <p>
      * This method creates a 4D array of byte's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape      - The list of dimensions of the 4D array (all
-     *                     dimensions must at least 1).
+     * @param shape      - The shape of the 4D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -502,8 +568,8 @@ public abstract class Byte4D extends Array4D implements ByteArray {
      * @return A new 4D array of byte's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Byte4D create(int[] shape, boolean cloneShape) {
-        return factory.new Flat(shape, cloneShape);
+    public static Byte4D create(Shape shape) {
+        return new FlatByte4D(shape);
     }
 
     /**
@@ -522,7 +588,7 @@ public abstract class Byte4D extends Array4D implements ByteArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Byte4D wrap(byte[] data, int dim1, int dim2, int dim3, int dim4) {
-        return factory.new Flat(data, dim1,dim2,dim3,dim4);
+        return new FlatByte4D(data, dim1,dim2,dim3,dim4);
     }
 
     /**
@@ -533,14 +599,14 @@ public abstract class Byte4D extends Array4D implements ByteArray {
      * <pre>arr.get(i1,i2,i3,i4) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*i4))]</pre>
      * with {@code arr} the returned 4D array.
      * @param data - The data to wrap in the 4D array.
-     * @param shape - The list of dimensions of the 4D array.  This argument is
+     * @param dims - The list of dimensions of the 4D array.  This argument is
      *                not referenced by the returned object and its contents
      *                can be modified after the call to this method.
      * @return A new 4D array of byte's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Byte4D wrap(byte[] data, int[] shape) {
-        return factory.new Flat(data, shape, true);
+    public static Byte4D wrap(byte[] data, int[] dims) {
+        return new FlatByte4D(data, dims);
     }
 
     /**
@@ -551,7 +617,7 @@ public abstract class Byte4D extends Array4D implements ByteArray {
      * <pre>arr.get(i1,i2,i3,i4) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*i4))]</pre>
      * with {@code arr} the returned 4D array.
      * @param data       - The data to wrap in the 4D array.
-     * @param shape      - The list of dimensions of the 4D array.
+     * @param shape      - The shape of the 4D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -560,79 +626,9 @@ public abstract class Byte4D extends Array4D implements ByteArray {
      * @return A new 4D array of byte's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Byte4D wrap(byte[] data, int[] shape, boolean cloneShape) {
-        return factory.new Flat(data, shape, cloneShape);
+    public static Byte4D wrap(byte[] data, Shape shape) {
+        return new FlatByte4D(data, shape);
     }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 4D array stored in a "flat" (1D) Java array in column-major order.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Flat extends Byte4D {
-        private static final int order = COLUMN_MAJOR;
-        private final byte[] data;
-        private final int dim1dim2;
-        private final int dim1dim2dim3;
-
-        Flat(int dim1, int dim2, int dim3, int dim4) {
-            super(dim1,dim2,dim3,dim4);
-            data = new byte[number];
-            dim1dim2 = dim1*dim2;
-            dim1dim2dim3 = dim1dim2*dim3;
-        }
-
-        Flat(int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = new byte[number];
-            dim1dim2 = dim1*dim2;
-            dim1dim2dim3 = dim1dim2*dim3;
-        }
-
-        Flat(byte[] arr, int dim1, int dim2, int dim3, int dim4) {
-            super(dim1,dim2,dim3,dim4);
-            data = arr;
-            dim1dim2 = dim1*dim2;
-            dim1dim2dim3 = dim1dim2*dim3;
-        }
-
-        Flat(byte[] arr, int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = arr;
-            dim1dim2 = dim1*dim2;
-            dim1dim2dim3 = dim1dim2*dim3;
-        }
-
-        @Override
-        public final byte get(int i1, int i2, int i3, int i4) {
-            return data[dim1dim2dim3*i4 + dim1dim2*i3 + dim1*i2 + i1];
-        }
-
-        @Override
-        public final void set(int i1, int i2, int i3, int i4, byte value) {
-            data[dim1dim2dim3*i4 + dim1dim2*i3 + dim1*i2 + i1] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public byte[] flatten(boolean forceCopy) {
-            if (! forceCopy) {
-                return data;
-            }
-            int number = getNumber();
-            byte[] out = new byte[number];
-            System.arraycopy(data, 0, out, 0, number);
-            return out;
-        }
-    }
-
-    /*=======================================================================*/
-    /* STRIDED LAYOUT */
 
     /**
      * Wrap an existing array in a 4D array of byte's with given dimensions,
@@ -644,138 +640,21 @@ public abstract class Byte4D extends Array4D implements ByteArray {
      * <pre>arr.get(i1,i2,i3,i4) = data[offset + stride1*i1 + stride2*i2 + stride3*i3 + stride4*i4]</pre>
      * with {@code arr} the returned 4D array.
      * @param data    - The array to wrap in the 4D array.
-     * @param dim1    - The 1st dimension of the 4D array.
-     * @param dim2    - The 2nd dimension of the 4D array.
-     * @param dim3    - The 3rd dimension of the 4D array.
-     * @param dim4    - The 4th dimension of the 4D array.
      * @param offset  - The offset in {@code data} of element (0,0,0,0) of
      *                  the 4D array.
      * @param stride1 - The stride along the 1st dimension.
      * @param stride2 - The stride along the 2nd dimension.
      * @param stride3 - The stride along the 3rd dimension.
      * @param stride4 - The stride along the 4th dimension.
+     * @param dim1    - The 1st dimension of the 4D array.
+     * @param dim2    - The 2nd dimension of the 4D array.
+     * @param dim3    - The 3rd dimension of the 4D array.
+     * @param dim4    - The 4th dimension of the 4D array.
      * @return A 4D array sharing the elements of <b>data</b>.
      */
-    public static Byte4D wrap(byte[] data, int dim1, int dim2, int dim3, int dim4,
-            int offset, int stride1, int stride2, int stride3, int stride4) {
-        return factory.new Strided(data, dim1,dim2,dim3,dim4, offset, stride1,stride2,stride3,stride4);
-    }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 4D array stored in a "flat" (1D) Java array with offset and strides.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Strided extends Byte4D {
-        private final byte[] data;
-        private final int order;
-        private final int offset;
-        private final int stride1;
-        private final int stride2;
-        private final int stride3;
-        private final int stride4;
-
-        Strided(byte[] arr, int dim1, int dim2, int dim3, int dim4, int offset, int stride1, int stride2, int stride3, int stride4) {
-            super(dim1,dim2,dim3,dim4);
-            this.data = arr;
-            this.offset = offset;
-            this.stride1 = stride1;
-            this.stride2 = stride2;
-            this.stride3 = stride3;
-            this.stride4 = stride4;
-            this.order = checkViewStrides(arr.length, dim1,dim2,dim3,dim4, offset, stride1,stride2,stride3,stride4);
-        }
-
-        private final int index(int i1, int i2, int i3, int i4) {
-            return offset + stride4*i4 + stride3*i3 + stride2*i2 + stride1*i1;
-        }
-
-        @Override
-        public final byte get(int i1, int i2, int i3, int i4) {
-            return data[index(i1,i2,i3,i4)];
-        }
-
-        @Override
-        public final void set(int i1, int i2, int i3, int i4, byte value) {
-            data[index(i1,i2,i3,i4)] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public byte[] flatten(boolean forceCopy) {
-            boolean flat = (stride1 == 1 && stride2 == dim1 && stride3 == stride2*dim2 && stride4 == stride3*dim3);
-            if (flat && ! forceCopy && offset == 0) {
-                return data;
-            }
-            byte[] out;
-            int number = getNumber();
-            out = new byte[number];
-            if (flat) {
-                System.arraycopy(data, offset, out, 0, number);
-            } else {
-                /* Must access the output in column-major order. */
-                int i = -1;
-                for (int i4 = 0; i4 < dim4; ++i4) {
-                    for (int i3 = 0; i3 < dim3; ++i3) {
-                        for (int i2 = 0; i2 < dim2; ++i2) {
-                            for (int i1 = 0; i1 < dim1; ++i1) {
-                                out[++i] = get(i1,i2,i3,i4);
-                            }
-                        }
-                    }
-                }
-            }
-            return out;
-        }
-    }
-
-    /*=======================================================================*/
-    /* MULTIDIMENSIONAL (4D) LAYOUT */
-
-    /**
-     * Wrap an existing 4D array of byte's in a Byte4D array.
-     * <p>
-     * More specifically:
-     * <pre>arr.get(i1,i2,i3,i4) = data[i4][i3][i2][i1]</pre>
-     * with {@code arr} the returned 4D array.
-     * @param data    - The array to wrap in the 4D array.
-     * @return A 4D array sharing the elements of <b>data</b>.
-     */
-    public static Byte4D wrap(byte[][][][] data) {
-        return factory.new Multi4(data);
-    }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 4D array stored in a 4D Java array.  To instantiate such an inner class,
-     * an instance of the outer class must be available (this is the purpose
-     * of the static "factory" instance).
-     */
-    class Multi4 extends Byte4D {
-        private static final int order = COLUMN_MAJOR;
-        private final byte[][][][] data;
-
-        protected Multi4(byte[][][][] arr) {
-            super(arr[0][0][0].length, arr[0][0].length, arr[0].length, arr.length);
-            data = arr;
-        }
-        @Override
-        public int getOrder() {
-            return order;
-        }
-        @Override
-        public final byte get(int i1, int i2, int i3, int i4) {
-            return data[i4][i3][i2][i1];
-        }
-        @Override
-        public final void set(int i1, int i2, int i3, int i4, byte value) {
-            data[i4][i3][i2][i1] = value;
-        }
+    public static Byte4D wrap(byte[] data,
+            int offset, int stride1, int stride2, int stride3, int stride4, int dim1, int dim2, int dim3, int dim4) {
+        return new StriddenByte4D(data, offset, stride1,stride2,stride3,stride4, dim1,dim2,dim3,dim4);
     }
 
 }

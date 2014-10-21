@@ -24,6 +24,7 @@
  */
 
 package mitiv.array;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.Traits;
 
@@ -44,7 +45,7 @@ public abstract class ArrayFactory implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return A ByteArray whose values has been converted into byte's
      *         from those of {@code src}.
@@ -100,7 +101,7 @@ public abstract class ArrayFactory implements Shaped {
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
-        return wrap(out, src.cloneShape(), false);
+        return wrap(out, src.getShape());
     }
 
     /**
@@ -108,7 +109,7 @@ public abstract class ArrayFactory implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return A ShortArray whose values has been converted into short's
      *         from those of {@code src}.
@@ -164,7 +165,7 @@ public abstract class ArrayFactory implements Shaped {
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
-        return wrap(out, src.cloneShape(), false);
+        return wrap(out, src.getShape());
     }
 
     /**
@@ -172,7 +173,7 @@ public abstract class ArrayFactory implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return An IntArray whose values has been converted into int's
      *         from those of {@code src}.
@@ -228,7 +229,7 @@ public abstract class ArrayFactory implements Shaped {
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
-        return wrap(out, src.cloneShape(), false);
+        return wrap(out, src.getShape());
     }
 
     /**
@@ -236,7 +237,7 @@ public abstract class ArrayFactory implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return A LongArray whose values has been converted into long's
      *         from those of {@code src}.
@@ -292,7 +293,7 @@ public abstract class ArrayFactory implements Shaped {
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
-        return wrap(out, src.cloneShape(), false);
+        return wrap(out, src.getShape());
     }
 
     /**
@@ -300,7 +301,7 @@ public abstract class ArrayFactory implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return A FloatArray whose values has been converted into float's
      *         from those of {@code src}.
@@ -356,7 +357,7 @@ public abstract class ArrayFactory implements Shaped {
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
-        return wrap(out, src.cloneShape(), false);
+        return wrap(out, src.getShape());
     }
 
     /**
@@ -364,7 +365,7 @@ public abstract class ArrayFactory implements Shaped {
      * <p>
      * The operation is lazy, in the sense that {@code src} is returned if it
      * is already of the requested type.
-     *
+     * </p>
      * @param src - The source array.
      * @return A DoubleArray whose values has been converted into double's
      *         from those of {@code src}.
@@ -420,7 +421,7 @@ public abstract class ArrayFactory implements Shaped {
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
-        return wrap(out, src.cloneShape(), false);
+        return wrap(out, src.getShape());
     }
 
 
@@ -621,15 +622,15 @@ public abstract class ArrayFactory implements Shaped {
      * {@link #Byte2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param arr  - The input array.
+     * @param dims - The dimension list of the result.
      *
      * @return An instance of ByteArray sharing its data with the input array
      *         {@code arr}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static ByteArray wrap(byte[] arr, int[] shape) {
-        return wrap(arr, shape, true);
+    public static ByteArray wrap(byte[] arr, int[] dims) {
+        return wrap(arr, Shape.make(dims));
     }
 
     /**
@@ -641,7 +642,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@code shape}.
      *
      * @param data   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param shape  - The shape of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
@@ -649,26 +650,26 @@ public abstract class ArrayFactory implements Shaped {
      *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static ByteArray wrap(byte[] data, int[] shape, boolean cloneShape) {
-        switch (shape == null ? 0 : shape.length) {
+    public static ByteArray wrap(byte[] data, Shape shape) {
+        switch (shape.rank()) {
         case 1:
-            return Byte1D.wrap(data, shape, cloneShape);
+            return Byte1D.wrap(data, shape);
         case 2:
-            return Byte2D.wrap(data, shape, cloneShape);
+            return Byte2D.wrap(data, shape);
         case 3:
-            return Byte3D.wrap(data, shape, cloneShape);
+            return Byte3D.wrap(data, shape);
         case 4:
-            return Byte4D.wrap(data, shape, cloneShape);
+            return Byte4D.wrap(data, shape);
         case 5:
-            return Byte5D.wrap(data, shape, cloneShape);
+            return Byte5D.wrap(data, shape);
         case 6:
-            return Byte6D.wrap(data, shape, cloneShape);
+            return Byte6D.wrap(data, shape);
         case 7:
-            return Byte7D.wrap(data, shape, cloneShape);
+            return Byte7D.wrap(data, shape);
         case 8:
-            return Byte8D.wrap(data, shape, cloneShape);
+            return Byte8D.wrap(data, shape);
         case 9:
-            return Byte9D.wrap(data, shape, cloneShape);
+            return Byte9D.wrap(data, shape);
         default:
             throw new IllegalArgumentException("Invalid shape.");
         }
@@ -871,15 +872,15 @@ public abstract class ArrayFactory implements Shaped {
      * {@link #Short2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param arr  - The input array.
+     * @param dims - The dimension list of the result.
      *
      * @return An instance of ShortArray sharing its data with the input array
      *         {@code arr}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static ShortArray wrap(short[] arr, int[] shape) {
-        return wrap(arr, shape, true);
+    public static ShortArray wrap(short[] arr, int[] dims) {
+        return wrap(arr, Shape.make(dims));
     }
 
     /**
@@ -891,7 +892,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@code shape}.
      *
      * @param data   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param shape  - The shape of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
@@ -899,26 +900,26 @@ public abstract class ArrayFactory implements Shaped {
      *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static ShortArray wrap(short[] data, int[] shape, boolean cloneShape) {
-        switch (shape == null ? 0 : shape.length) {
+    public static ShortArray wrap(short[] data, Shape shape) {
+        switch (shape.rank()) {
         case 1:
-            return Short1D.wrap(data, shape, cloneShape);
+            return Short1D.wrap(data, shape);
         case 2:
-            return Short2D.wrap(data, shape, cloneShape);
+            return Short2D.wrap(data, shape);
         case 3:
-            return Short3D.wrap(data, shape, cloneShape);
+            return Short3D.wrap(data, shape);
         case 4:
-            return Short4D.wrap(data, shape, cloneShape);
+            return Short4D.wrap(data, shape);
         case 5:
-            return Short5D.wrap(data, shape, cloneShape);
+            return Short5D.wrap(data, shape);
         case 6:
-            return Short6D.wrap(data, shape, cloneShape);
+            return Short6D.wrap(data, shape);
         case 7:
-            return Short7D.wrap(data, shape, cloneShape);
+            return Short7D.wrap(data, shape);
         case 8:
-            return Short8D.wrap(data, shape, cloneShape);
+            return Short8D.wrap(data, shape);
         case 9:
-            return Short9D.wrap(data, shape, cloneShape);
+            return Short9D.wrap(data, shape);
         default:
             throw new IllegalArgumentException("Invalid shape.");
         }
@@ -1121,15 +1122,15 @@ public abstract class ArrayFactory implements Shaped {
      * {@link #Int2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param arr  - The input array.
+     * @param dims - The dimension list of the result.
      *
      * @return An instance of IntArray sharing its data with the input array
      *         {@code arr}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static IntArray wrap(int[] arr, int[] shape) {
-        return wrap(arr, shape, true);
+    public static IntArray wrap(int[] arr, int[] dims) {
+        return wrap(arr, Shape.make(dims));
     }
 
     /**
@@ -1141,7 +1142,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@code shape}.
      *
      * @param data   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param shape  - The shape of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
@@ -1149,26 +1150,26 @@ public abstract class ArrayFactory implements Shaped {
      *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static IntArray wrap(int[] data, int[] shape, boolean cloneShape) {
-        switch (shape == null ? 0 : shape.length) {
+    public static IntArray wrap(int[] data, Shape shape) {
+        switch (shape.rank()) {
         case 1:
-            return Int1D.wrap(data, shape, cloneShape);
+            return Int1D.wrap(data, shape);
         case 2:
-            return Int2D.wrap(data, shape, cloneShape);
+            return Int2D.wrap(data, shape);
         case 3:
-            return Int3D.wrap(data, shape, cloneShape);
+            return Int3D.wrap(data, shape);
         case 4:
-            return Int4D.wrap(data, shape, cloneShape);
+            return Int4D.wrap(data, shape);
         case 5:
-            return Int5D.wrap(data, shape, cloneShape);
+            return Int5D.wrap(data, shape);
         case 6:
-            return Int6D.wrap(data, shape, cloneShape);
+            return Int6D.wrap(data, shape);
         case 7:
-            return Int7D.wrap(data, shape, cloneShape);
+            return Int7D.wrap(data, shape);
         case 8:
-            return Int8D.wrap(data, shape, cloneShape);
+            return Int8D.wrap(data, shape);
         case 9:
-            return Int9D.wrap(data, shape, cloneShape);
+            return Int9D.wrap(data, shape);
         default:
             throw new IllegalArgumentException("Invalid shape.");
         }
@@ -1371,15 +1372,15 @@ public abstract class ArrayFactory implements Shaped {
      * {@link #Long2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param arr  - The input array.
+     * @param dims - The dimension list of the result.
      *
      * @return An instance of LongArray sharing its data with the input array
      *         {@code arr}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static LongArray wrap(long[] arr, int[] shape) {
-        return wrap(arr, shape, true);
+    public static LongArray wrap(long[] arr, int[] dims) {
+        return wrap(arr, Shape.make(dims));
     }
 
     /**
@@ -1391,7 +1392,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@code shape}.
      *
      * @param data   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param shape  - The shape of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
@@ -1399,26 +1400,26 @@ public abstract class ArrayFactory implements Shaped {
      *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static LongArray wrap(long[] data, int[] shape, boolean cloneShape) {
-        switch (shape == null ? 0 : shape.length) {
+    public static LongArray wrap(long[] data, Shape shape) {
+        switch (shape.rank()) {
         case 1:
-            return Long1D.wrap(data, shape, cloneShape);
+            return Long1D.wrap(data, shape);
         case 2:
-            return Long2D.wrap(data, shape, cloneShape);
+            return Long2D.wrap(data, shape);
         case 3:
-            return Long3D.wrap(data, shape, cloneShape);
+            return Long3D.wrap(data, shape);
         case 4:
-            return Long4D.wrap(data, shape, cloneShape);
+            return Long4D.wrap(data, shape);
         case 5:
-            return Long5D.wrap(data, shape, cloneShape);
+            return Long5D.wrap(data, shape);
         case 6:
-            return Long6D.wrap(data, shape, cloneShape);
+            return Long6D.wrap(data, shape);
         case 7:
-            return Long7D.wrap(data, shape, cloneShape);
+            return Long7D.wrap(data, shape);
         case 8:
-            return Long8D.wrap(data, shape, cloneShape);
+            return Long8D.wrap(data, shape);
         case 9:
-            return Long9D.wrap(data, shape, cloneShape);
+            return Long9D.wrap(data, shape);
         default:
             throw new IllegalArgumentException("Invalid shape.");
         }
@@ -1621,15 +1622,15 @@ public abstract class ArrayFactory implements Shaped {
      * {@link #Float2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param arr  - The input array.
+     * @param dims - The dimension list of the result.
      *
      * @return An instance of FloatArray sharing its data with the input array
      *         {@code arr}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static FloatArray wrap(float[] arr, int[] shape) {
-        return wrap(arr, shape, true);
+    public static FloatArray wrap(float[] arr, int[] dims) {
+        return wrap(arr, Shape.make(dims));
     }
 
     /**
@@ -1641,7 +1642,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@code shape}.
      *
      * @param data   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param shape  - The shape of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
@@ -1649,26 +1650,26 @@ public abstract class ArrayFactory implements Shaped {
      *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static FloatArray wrap(float[] data, int[] shape, boolean cloneShape) {
-        switch (shape == null ? 0 : shape.length) {
+    public static FloatArray wrap(float[] data, Shape shape) {
+        switch (shape.rank()) {
         case 1:
-            return Float1D.wrap(data, shape, cloneShape);
+            return Float1D.wrap(data, shape);
         case 2:
-            return Float2D.wrap(data, shape, cloneShape);
+            return Float2D.wrap(data, shape);
         case 3:
-            return Float3D.wrap(data, shape, cloneShape);
+            return Float3D.wrap(data, shape);
         case 4:
-            return Float4D.wrap(data, shape, cloneShape);
+            return Float4D.wrap(data, shape);
         case 5:
-            return Float5D.wrap(data, shape, cloneShape);
+            return Float5D.wrap(data, shape);
         case 6:
-            return Float6D.wrap(data, shape, cloneShape);
+            return Float6D.wrap(data, shape);
         case 7:
-            return Float7D.wrap(data, shape, cloneShape);
+            return Float7D.wrap(data, shape);
         case 8:
-            return Float8D.wrap(data, shape, cloneShape);
+            return Float8D.wrap(data, shape);
         case 9:
-            return Float9D.wrap(data, shape, cloneShape);
+            return Float9D.wrap(data, shape);
         default:
             throw new IllegalArgumentException("Invalid shape.");
         }
@@ -1871,15 +1872,15 @@ public abstract class ArrayFactory implements Shaped {
      * {@link #Double2D}, ... according to the number of dimensions in
      * {@code shape}.
      *
-     * @param arr   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param arr  - The input array.
+     * @param dims - The dimension list of the result.
      *
      * @return An instance of DoubleArray sharing its data with the input array
      *         {@code arr}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static DoubleArray wrap(double[] arr, int[] shape) {
-        return wrap(arr, shape, true);
+    public static DoubleArray wrap(double[] arr, int[] dims) {
+        return wrap(arr, Shape.make(dims));
     }
 
     /**
@@ -1891,7 +1892,7 @@ public abstract class ArrayFactory implements Shaped {
      * {@code shape}.
      *
      * @param data   - The input array.
-     * @param shape - The dimension list of the result.
+     * @param shape  - The shape of the result.
      * @param cloneShape - Indicate whether the {@code shape} parameter must be
      *                     cloned.
      *
@@ -1899,26 +1900,26 @@ public abstract class ArrayFactory implements Shaped {
      *         {@code data}.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
-    public static DoubleArray wrap(double[] data, int[] shape, boolean cloneShape) {
-        switch (shape == null ? 0 : shape.length) {
+    public static DoubleArray wrap(double[] data, Shape shape) {
+        switch (shape.rank()) {
         case 1:
-            return Double1D.wrap(data, shape, cloneShape);
+            return Double1D.wrap(data, shape);
         case 2:
-            return Double2D.wrap(data, shape, cloneShape);
+            return Double2D.wrap(data, shape);
         case 3:
-            return Double3D.wrap(data, shape, cloneShape);
+            return Double3D.wrap(data, shape);
         case 4:
-            return Double4D.wrap(data, shape, cloneShape);
+            return Double4D.wrap(data, shape);
         case 5:
-            return Double5D.wrap(data, shape, cloneShape);
+            return Double5D.wrap(data, shape);
         case 6:
-            return Double6D.wrap(data, shape, cloneShape);
+            return Double6D.wrap(data, shape);
         case 7:
-            return Double7D.wrap(data, shape, cloneShape);
+            return Double7D.wrap(data, shape);
         case 8:
-            return Double8D.wrap(data, shape, cloneShape);
+            return Double8D.wrap(data, shape);
         case 9:
-            return Double9D.wrap(data, shape, cloneShape);
+            return Double9D.wrap(data, shape);
         default:
             throw new IllegalArgumentException("Invalid shape.");
         }

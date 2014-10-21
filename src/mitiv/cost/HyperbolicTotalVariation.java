@@ -25,6 +25,7 @@
 
 package mitiv.cost;
 
+import mitiv.base.Shape;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 import mitiv.linalg.shaped.ShapedVectorSpace;
@@ -46,7 +47,7 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
     protected int rank;
 
     /** The dimensions of the variables. */
-    protected int[] shape;
+    protected Shape shape;
 
     /** The threshold */
     protected double epsilon;
@@ -56,8 +57,8 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
 
     public HyperbolicTotalVariation(ShapedVectorSpace inputSpace, double epsilon) {
         this.inputSpace = inputSpace;
-        shape = inputSpace.cloneShape();
-        rank = (shape == null ? 0 : shape.length);
+        shape = inputSpace.getShape();
+        rank = (shape == null ? 0 : shape.rank());
         setThreshold(epsilon);
         delta = new double[rank];
         defaultScale();
@@ -167,8 +168,8 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
         // is done at the end) while ALPHA is taken into account when
         // integrating the gradient GCOST.
         final boolean computeGradient = (gx != null);
-        final int dim1 = shape[0];
-        final int dim2 = shape[1];
+        final int dim1 = shape.dimension(0);
+        final int dim2 = shape.dimension(1);
         final double w1 = 1.0/(2.0*square(delta[0]));
         final double w2 = 1.0/(2.0*square(delta[1]));
         final double s = square(epsilon);
@@ -289,9 +290,9 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
         // is done at the end) while ALPHA is taken into account when
         // integrating the gradient GCOST.
         final boolean computeGradient = (gx != null);
-        final int dim1 = shape[0];
-        final int dim2 = shape[1];
-        final int dim3 = shape[2];
+        final int dim1 = shape.dimension(0);
+        final int dim2 = shape.dimension(1);
+        final int dim3 = shape.dimension(2);
         final double w1 = 1.0/(2.0*square(delta[0]));
         final double w2 = 1.0/(2.0*square(delta[1]));
         final double w3 = 1.0/(2.0*square(delta[2]));

@@ -25,26 +25,32 @@
 
 package mitiv.base;
 
-import java.util.Arrays;
-
 public class ArrayDescriptor implements Shaped, Typed {
     final int type;
-    final int rank;
-    final int[] shape;
     final int number;
+    final Shape shape;
 
-    public ArrayDescriptor(int type, int[] shape, boolean copyShape) {
-        this.number = computeNumber(shape);
+    /**
+     * Create array descriptor.
+     * @param type - The element type of the array.
+     * @param shape - The dimension list of the array.
+     */
+    public ArrayDescriptor(int type, int[] shape) {
+        this(type, Shape.make(shape));
+    }
+
+    /**
+     * Create array descriptor.
+     * @param type - The element type of the array.
+     * @param shape - The shape of the array.
+     */
+    public ArrayDescriptor(int type, Shape shape) {
         this.type = type;
-        this.rank = shape.length;
-        if (copyShape) {
-            this.shape = new int[rank];
-            for (int r = 0; r < rank; ++r) {
-                this.shape[r] = shape[r];
-            }
-        } else {
-            this.shape = shape;
+        this.shape = shape;
+        if (this.shape.number() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Total number of elements is too large.");
         }
+        this.number = (int)this.shape.number();
     }
 
     /**
@@ -83,7 +89,7 @@ public class ArrayDescriptor implements Shaped, Typed {
 
     @Override
     public final int getRank() {
-        return rank;
+        return shape.rank();
     }
 
     @Override
@@ -92,18 +98,13 @@ public class ArrayDescriptor implements Shaped, Typed {
     }
 
     @Override
-    public final int[] cloneShape() {
-        return Arrays.copyOf(shape, shape.length);
+    public final int getDimension(int k) {
+        return shape.dimension(k);
     }
 
-    /**
-     * Get the length of a given dimension.
-     * @param k  - The index of the dimension.
-     * @return The length of ({@code i}+1)-th dimension, 1 for {@code k} greater or equal the rank.
-     */
     @Override
-    public final int getDimension(int k) {
-        return (k < rank ? shape[k] : 1);
+    public final Shape getShape() {
+        return shape;
     }
 
 }

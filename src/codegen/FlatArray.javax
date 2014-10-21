@@ -1,0 +1,489 @@
+/*
+ * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
+ * developed by the MitiV project.
+ *
+ * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+//# // Define the implementation prefix and get common definitions.
+//# def implPrefix = Flat
+//# include <commonImpl.javax>
+import mitiv.base.Shape;
+import mitiv.base.indexing.CompiledRange;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.exception.IllegalRangeException;
+//#
+//# // A few macros for the names of the strides.  It is not
+//# // really possible to generate them as variables names
+//# // in '#def' and '#eval' directives are literal (no
+//# // macro expansion).
+//# def stride1 = 1
+//# def stride2 = dim1
+//# def stride3 = ${stride2}dim2
+//# def stride4 = ${stride3}dim3
+//# def stride5 = ${stride4}dim4
+//# def stride6 = ${stride5}dim5
+//# def stride7 = ${stride6}dim6
+//# def stride8 = ${stride7}dim7
+//# def stride9 = ${stride8}dim8
+//# if ${rank} > 9
+//#     error expand definitions for higher ranks
+//# end
+
+
+/**
+ * Flat implementation of ${rank}-dimensional arrays of ${type}'s.
+ *
+ * @author Éric Thiébaut.
+ */
+public class ${className} extends ${superName} {
+    static final int order = COLUMN_MAJOR;
+    final ${type}[] data;
+    //#
+    //# // Declaration of strides and building of the following macros:
+    //# //
+    //# // ----------------------------------------------------------------
+    //# // Macro        Description (Example)
+    //# // ----------------------------------------------------------------
+    //# // strideInit   initialization of strides
+    //# // indexList    list of indices (i1, i2, ...)
+    //# // indexDecl    declaration of indices (int i1, int i2, ...)
+    //# // indexExpr    fast index expression (i1 + dim1*i2 + ...)
+    //# // dimList      list of dimensions (dim1, dim2, ...)
+    //# // dimDecl      declaration of dimensions (int dim1, int dim2, ...)
+    //# // ----------------------------------------------------------------
+    //#
+    //# def indent := ${__INDENT2__}
+    //# def strideInit =
+    //# if ${rank} == 0
+    //#     def indexExpr = 0
+    //#     def indexList =
+    //#     def indexDecl =
+    //#     def dimList =
+    //#     def dimDecl =
+    //# else
+    //#     def strideName =
+    //#     for k in 1:${rank}
+    //#         def indexName = i${k}
+    //#         def dimensionName = dim${k}
+    //#         if ${k} == 1
+    //#             def indexExpr = ${indexName}
+    //#             def indexList = ${indexName}
+    //#             def indexDecl = int ${indexName}
+    //#             def dimList = ${dimensionName}
+    //#             def dimDecl = int ${dimensionName}
+    //#         else
+    //#             def indexExpr = ${strideName}*${indexName} + ${indexExpr}
+    //#             def indexList = ${indexList}, ${indexName}
+    //#             def indexDecl = ${indexDecl}, int ${indexName}
+    //#             def dimList = ${dimList}, ${dimensionName}
+    //#             def dimDecl = ${dimDecl}, int ${dimensionName}
+    //#         end
+    //#         if ${k} > 2
+    final int ${strideName};
+    //#             def code = ${indent}${strideName} = ${strideExpr};
+    //#             if ${k} == 3
+    //#                 def strideInit = ${code}
+    //#             else
+    //#                 def strideInit = ${strideInit}${__NEWLINE__}${code}
+    //#             end
+    //#         end
+    //#         def strideExpr = ${strideName}*dim${k}
+    //#         def strideName = ${strideName}dim${k}
+    //#     end
+    //# end
+
+    public ${className}(${dimDecl}) {
+        super(${dimList});
+        data = new ${type}[number];
+        //# if ${rank} > 2
+        //#     emit ${strideInit}
+        //# end
+    }
+
+    public ${className}(int[] dims) {
+        super(dims);
+        data = new ${type}[number];
+        //# if ${rank} > 2
+        //#     emit ${strideInit}
+        //# end
+    }
+
+    public ${className}(Shape shape) {
+        super(shape);
+        data = new ${type}[number];
+        //# if ${rank} > 2
+        //#     emit ${strideInit}
+        //# end
+    }
+
+    //# def argList = ${type}[] arr
+    //# if ${rank} >= 1
+    //#     def argList = ${argList}, ${dimDecl}
+    //# end
+    public ${className}(${argList}) {
+        super(${dimList});
+        checkSize(arr);
+        data = arr;
+        //# if ${rank} > 2
+        //#     emit ${strideInit}
+        //# end
+    }
+
+    public ${className}(${type}[] arr, int[] dims) {
+        super(dims);
+        checkSize(arr);
+        data = arr;
+        //# if ${rank} > 2
+        //#     emit ${strideInit}
+        //# end
+    }
+
+    public ${className}(${type}[] arr, Shape shape) {
+        super(shape);
+        checkSize(arr);
+        data = arr;
+        //# if ${rank} > 2
+        //#     emit ${strideInit}
+        //# end
+    }
+
+    @Override
+    public void checkSanity() {
+        if (data == null) {
+           throw new NonConformableArrayException("Wrapped array is null.");
+        }
+        if (data.length < number) {
+            throw new NonConformableArrayException("Wrapped array is too small.");
+        }
+    }
+
+    private void checkSize(${type}[] arr) {
+        if (arr == null || arr.length < number) {
+            throw new NonConformableArrayException("Wrapped array is too small.");
+        }
+    }
+
+    final int index(${indexDecl}) {
+        return ${indexExpr};
+    }
+
+    @Override
+    public final ${type} get(${indexDecl}) {
+        return data[${indexExpr}];
+    }
+
+    //# def argList = ${type} value
+    //# if ${rank} >= 1
+    //#     def argList = ${indexDecl}, ${argList}
+    //# end
+    @Override
+    public final void set(${argList}) {
+        data[${indexExpr}] = value;
+    }
+
+    @Override
+    public final int getOrder() {
+        return order;
+    }
+
+    //# // Build optimized templates for column-major loops (will be expanded later).
+    //# // There are no row-major loops for flat storage arrays and because of the
+    //# // optimization we cannot use the general code in <commonLoops.javax>.
+    //#
+    //# def loopBegin =         // the begining of the colum-major loops
+    //# def loopBody =          // the loop body
+    //# def loopEnd =           // the ending of the loop
+    //# def loopFirstIndent =   // the indentation of the first line of the loop
+    //# def loopBodyIndent =    // the indentation for the body of the loop
+    //# def loopCode =          // the code for colum-major loops
+    //#
+    //# // The following macros must be defined just before emitting the code.
+    //# suspend loopFirstIndent loopBody
+    //#
+    //# // Template for each loop.
+    //# def for := for (int ${var} = 0; ${var} < ${len}; ++${var}) {
+    //#
+    //# // Build optimized code for column-major loops.
+    //# def indent = ${loopFirstIndent}
+    //# for k in 1 : ${rank}
+    //#     eval j = ${rank} + 1 - ${k}
+    //#     if ${k} == 1
+    //#         def loopEnd = ${indent}}
+    //#     else
+    //#         def loopEnd = ${indent}}${__NEWLINE__}${loopEnd}
+    //#     end
+    //#     if ${k} == 1
+    //#         def var = j${j}          // the variable of the loop
+    //#         def len = dim${j}        // the length of the loop
+    //#         def loopBegin = ${indent}${for}
+    //#         def vp = ${var}          // for the next inner loop
+    //#     else
+    //#         def var = i${j}          // the variable of the loop
+    //#         def len = dim${j}        // the length of the loop
+    //#         def init = int j${j} = stride${j}*${var} + ${vp};  // some initialization code (to be expanded)
+    //#         def loopBegin = ${loopBegin}${__NEWLINE__}${indent}${for}${__NEWLINE__}${indent}${__INDENT__}${init}
+    //#         def vp = j${j}           // for the next inner loop
+    //#     end
+    //#     def indent = ${indent}${__INDENT__}
+    //#     if ${k} == ${rank}
+    //#         def loopBodyIndent = ${indent}
+    //#     end
+    //# end
+    //# def loopCode = ${loopBegin}${__NEWLINE__}${loopBodyIndent}${loopBody}${__NEWLINE__}${loopEnd}
+    //#
+    //#
+    //# // Cleanup.
+    //# undef indent j k var len vp for
+    //#
+    @Override
+    public void fill(${type} value) {
+         for (int j = 0; j < number; ++j) {
+            data[j] = value;
+         }
+    }
+
+    @Override
+    public void fill(${Type}Generator generator) {
+        for (int j = 0; j < number; ++j) {
+            data[j] = generator.next${Type}();
+        }
+    }
+
+    @Override
+    public void increment(${type} value) {
+        for (int j = 0; j < number; ++j) {
+            data[j] += value;
+        }
+    }
+
+    @Override
+    public void decrement(${type} value) {
+        for (int j = 0; j < number; ++j) {
+            data[j] -= value;
+        }
+    }
+
+    @Override
+    public void scale(${type} value) {
+        for (int j = 0; j < number; ++j) {
+            data[j] *= value;
+        }
+    }
+
+    @Override
+    public void map(${Type}Function function) {
+        for (int j = 0; j < number; ++j) {
+            data[j] = function.apply(data[j]);
+        }
+    }
+
+    @Override
+    public void scan(${Type}Scanner scanner)  {
+        scanner.initialize(data[0]);
+        for (int j = 1; j < number; ++j) {
+            scanner.update(data[j]);
+        }
+    }
+
+    @Override
+    public ${type}[] flatten(boolean forceCopy) {
+        if (forceCopy) {
+            ${type}[] result = new ${type}[number];
+            //# if ${rank} >= 1
+            System.arraycopy(data, 0, result, 0, number);
+            //# else
+            result[0] = data[0];
+            //# end
+            return result;
+        } else {
+            return data;
+        }
+    }
+
+    @Override
+    public ${reducedSuperName} slice(int idx) {
+        idx = Helper.fixIndex(idx, dim${rank});
+        //# if ${reducedRank} == 0
+        return new ${reducedSuperName}(data, idx);
+        //# else
+        //#     for k in 1:${reducedRank}
+        //#         def stride = ${}{stride${k}}
+        //#         if ${k} == 1
+        //#             def reducedDimList = dim${k}
+        //#             def reducedStrideList = ${stride}
+        //#         else
+        //#             def reducedDimList = ${reducedDimList}, dim${k}
+        //#             def reducedStrideList = ${reducedStrideList}, ${stride}
+        //#         end
+        //#     end
+        //#     if ${rank} == 1
+        //#         def offsetExpr = idx
+        //#     else
+        //#         def stride = ${}{stride${rank}}
+        //#         def offsetExpr = ${stride}*idx
+        //#     end
+        if (idx == 0) {
+            return new Flat${Type}${reducedRank}D(data, ${reducedDimList});
+        } else {
+            return new Stridden${Type}${reducedRank}D(data,
+                    ${offsetExpr}, // offset
+                    ${reducedStrideList}, // strides
+                    ${reducedDimList}); // dimensions
+        }
+        //# end
+    }
+
+    @Override
+    public ${reducedSuperName} slice(int idx, int dim) {
+        //# for k in 1:${reducedRank}
+        //#     if ${k} == 1
+        //#         def reducedDimList = sliceDim${k}
+        //#         def reducedStrideList = sliceStride${k}
+        //#     else
+        //#         def reducedDimList = ${reducedDimList}, sliceDim${k}
+        //#         def reducedStrideList = ${reducedStrideList}, sliceStride${k}
+        //#     end
+        //# end
+        //# if ${reducedRank} == 0
+        Helper.fixSliceIndex(dim, ${rank}); // throws an exception if dim != 0
+        return new ${reducedSuperName}(data, Helper.fixIndex(idx, dim1));
+        //# else
+        int sliceOffset;
+        int ${reducedStrideList};
+        int ${reducedDimList};
+        dim = Helper.fixSliceIndex(dim, ${rank});
+        //#     for k in 1:${rank}
+        //#         eval km1 = ${k} - 1
+        //#         def k_th = ${}{nth_${k}}
+        //#         if ${k} == 1
+        if (dim == ${km1}) {
+            //#     elif ${k} < ${rank}
+        } else if (dim == ${km1}) {
+            //#     else
+        } else {
+            //#     end
+            /* Slice along ${k_th} dimension. */
+            //#     if ${k} == 1
+            //#         def multiplier =
+            //#     else
+            //#         def multiplier = ${}{stride${k}}*
+            //#     end
+            sliceOffset = ${multiplier}Helper.fixIndex(idx, dim${k});
+            //#     def m = 0
+            //#     for j in 1:${rank}
+            //#         if ${j} != ${k}
+            //#             eval m += 1
+            //#             def sliceStride = ${}{stride${j}}
+            sliceStride${m} = ${sliceStride};
+            //#         end
+            //#     end
+            //#     def m = 0
+            //#     for j in 1:${rank}
+            //#         if ${j} != ${k}
+            //#             eval m += 1
+            sliceDim${m} = dim${j};
+            //#         end
+            //#     end
+            //# end
+        }
+        return new Stridden${Type}${reducedRank}D(data, sliceOffset,
+                ${reducedStrideList},
+                ${reducedDimList});
+        //# end
+    }
+
+    //# for k in 1:${rank}
+    //#     if ${k} == 1
+    //#         def argDecl = Range rng${k}
+    //#         def strideList = cr${k}.getStride()
+    //#         def numberList = cr${k}.getNumber()
+    //#         def noChanges = cr${k}.doesNothing()
+    //#         def anyEmpty = cr${k}.getNumber() == 0
+    //#         def offsetExpr = cr${k}.getOffset()
+    //#     else
+    //#         def argDecl = ${argDecl}, Range rng${k}
+    //#         def strideList = ${strideList}, cr${k}.getStride()
+    //#         def numberList = ${numberList}, cr${k}.getNumber()
+    //#         def noChanges = ${noChanges} && cr${k}.doesNothing()
+    //#         def anyEmpty = ${anyEmpty} || cr${k}.getNumber() == 0
+    //#         def offsetExpr = ${offsetExpr} + cr${k}.getOffset()
+    //#     end
+    //# end
+    @Override
+    public ${superName} view(${argDecl}) {
+        //# for k in 1:${rank}
+        //#     def stride = ${}{stride${k}}
+        CompiledRange cr${k} = new CompiledRange(rng${k}, dim${k}, 0, ${stride});
+        //# end
+        if (${noChanges}) {
+            return this;
+        }
+        if (${anyEmpty}) {
+            throw new IllegalRangeException("Empty range.");
+        }
+        return new Stridden${superName}(this.data,
+                ${offsetExpr},
+                ${strideList},
+                ${numberList});
+    }
+
+    //# def argList = this.data
+    //# def noChanges =
+    //# for k in 1:${rank}
+    //#     def argList = ${argList}, idx${k}
+    //#     if ${k} == 1
+    //#         def argDecl = int[] sel${k}
+    //#     else
+    //#         def argDecl = ${argDecl}, int[] sel${k}
+    //#     end
+    //# end
+    @Override
+    public ${superName} view(${argDecl}) {
+        //# for k in 1:${rank}
+        //#     def stride = ${}{stride${k}}
+        int[] idx${k} = Helper.select(0, ${stride}, dim${k}, sel${k});
+        //# end
+        return new Selected${superName}(${argList});
+    }
+
+    @Override
+    public ${Type}1D as1D() {
+        //#     if ${rank} == 1
+        return this;
+        //#     else
+        return new Flat${Type}1D(data, number);
+        //#     end
+    }
+
+}
+
+/*
+ * Local Variables:
+ * mode: Java
+ * tab-width: 8
+ * indent-tabs-mode: nil
+ * c-basic-offset: 4
+ * fill-column: 78
+ * coding: utf-8
+ * ispell-local-dictionary: "american"
+ * End:
+ */

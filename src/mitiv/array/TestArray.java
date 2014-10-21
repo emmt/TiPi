@@ -41,7 +41,7 @@ public class TestArray {
         float[][][] cube = new float[n3][n2][n1];
         Float3D a = Float3D.wrap(arr, n1, n2, n3);
         //FloatArray3D b = FloatArray3D.wrap(rect, n1, n2);
-        Float3D c = Float3D.wrap(cube);
+        //Float3D c = Float3D.wrap(cube);
         NormalDistribution generator = new NormalDistribution(new MersenneTwisterGenerator(7864), -1.0, 1.0);
         long t0, t1;
         generator.nextFloat(); // initialize internal buffers
@@ -81,8 +81,8 @@ public class TestArray {
             }
             t1 = System.currentTimeMillis();
             System.out.println("direct filling of cube array: " + (t1 - t0) + " ms");
-            System.out.println("some values: " + cube[3][2][1] + " / " + c.get(1, 2, 3));
-            System.out.println("some values: " + cube[5][4][3] + " / " + c.get(3, 4, 5));
+            //System.out.println("some values: " + cube[3][2][1] + " / " + c.get(1, 2, 3));
+            //System.out.println("some values: " + cube[5][4][3] + " / " + c.get(3, 4, 5));
 
             t0 = System.currentTimeMillis();
             for (int i1 = 0; i1 < n1; ++i1) {
@@ -107,21 +107,25 @@ public class TestArray {
             System.out.println("filling of rect array: " + (t1 - t0) + " ms");
              */
 
+            /*
             t0 = System.currentTimeMillis();
             c.fill(1.0F);
             t1 = System.currentTimeMillis();
             System.out.println("filling of cube array: " + (t1 - t0) + " ms");
             System.out.println("some values: " + c.get(1, 2, 3) + ", " + c.get(3, 4, 5));
+             */
 
             t0 = System.currentTimeMillis();
             a.fill(generator);
             t1 = System.currentTimeMillis();
             System.out.println("random fill of flat array: " + (t1 - t0) + " ms");
 
+            /*
             t0 = System.currentTimeMillis();
             c.fill(generator);
             t1 = System.currentTimeMillis();
             System.out.println("random fill of cube array: " + (t1 - t0) + " ms");
+             */
         }
     }
 

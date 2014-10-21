@@ -1,3 +1,28 @@
+//# // This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
+//# // developed by the MitiV project.
+//# //
+//# // Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+//# //
+//# // Permission is hereby granted, free of charge, to any person obtaining a
+//# // copy of this software and associated documentation files (the
+//# // "Software"), to deal in the Software without restriction, including
+//# // without limitation the rights to use, copy, modify, merge, publish,
+//# // distribute, sublicense, and/or sell copies of the Software, and to
+//# // permit persons to whom the Software is furnished to do so, subject to
+//# // the following conditions:
+//# //
+//# // The above copyright notice and this permission notice shall be included
+//# // in all copies or substantial portions of the Software.
+//# //
+//# // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+//# // OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+//# // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+//# // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//# // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+//# // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+//# // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//# // ------------------------------------------------------------------------
+//#
 //# // Definitions for all available types.
 //#
 //# def BYTE   = 0
@@ -52,14 +77,14 @@
 //#     def type_id = ${type_id}
 //#     if ${type_id} < ${BYTE} || ${type_id} > ${DOUBLE}
 //#         error Unknown type ${type}
-//#     endif
+//#     end
 //#     def Type = ${}{Type_${type_id}}
 //#     def Type = ${Type}
 //#     def TYPE = ${}{TYPE_${type_id}}
 //#     def TYPE = ${TYPE}
 //#     def TypeClass = ${}{TypeClass_${type_id}}
 //#     def TypeClass = ${TypeClass}
-//# endif
+//# end
 //#
 //# // Define ordering macros:
 //# def nth_0 = 0th
@@ -130,37 +155,53 @@
 //#                                       def list1 := ${list1}${sep}${item}9
 //#                                       def list2 := ${list2}${sep}${part1}9${part2}9${part3}
 //#                                       def listK := ${listK}${sep}${part1}9${part2}8${part3}
-//#                                  endif
-//#                              endif
-//#                          endif
-//#                      endif
-//#                  endif
-//#              endif
-//#          endif
-//#     endif
+//#                                  end
+//#                              end
+//#                          end
+//#                      end
+//#                  end
+//#              end
+//#          end
+//#     end
 //#
-//#     // Substitute the 'list' template to produce declaration lists:
-//#     def sep = ,${__SPACE__}
-//#     def item = int dim
-//#     def declDimList = ${list1}
-//#     def item = int stride
-//#     def declStrideList = ${list1}
-//#     def item = int i
-//#     def declIndexList = ${list1}
+//#     if ${rank} >= 1
 //#
-//#     // Substitute the 'list' template to produce compact lists of arguments:
-//#     def sep = ,
-//#     def item = dim
-//#     def dimList = ${list1}
-//#     def item = stride
-//#     def strideList = ${list1}
-//#     def item = i
-//#     def indexList = ${list1}
-//#     def item = 0
-//#     def zeroList = ${list0}
-//#     def item = 1
-//#     def oneList = ${list0}
-//# endif
+//#         // Substitute the 'list' template to produce declaration lists:
+//#         def sep = ,${__SPACE__}
+//#         def item = int dim
+//#         def declDimList = ${list1}
+//#         def item = int stride
+//#         def declStrideList = ${list1}
+//#         def item = int i
+//#         def declIndexList = ${list1}
+//#
+//#         // Substitute the 'list' template to produce compact lists of
+//#         // arguments:
+//#         def sep = ,
+//#         def item = dim
+//#         def dimList = ${list1}
+//#         def item = stride
+//#         def strideList = ${list1}
+//#         def item = i
+//#         def indexList = ${list1}
+//#         def item = 0
+//#         def zeroList = ${list0}
+//#         def item = 1
+//#         def oneList = ${list0}
+//#
+//#     else
+//#
+//#         def declDimList =
+//#         def declStrideList =
+//#         def declIndexList =
+//#         def dimList =
+//#         def strideList =
+//#         def indexList =
+//#         def zeroList =
+//#         def oneList =
+//#
+//#     end
+//# end
 //#
 //# // Indentation (assuming 4 spaces):
 //# def __INDENT__ = ${__SPACE__}${__SPACE__}${__SPACE__}${__SPACE__}

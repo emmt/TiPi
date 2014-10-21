@@ -40,6 +40,7 @@ import mitiv.array.ArrayUtils;
 import mitiv.array.DoubleArray;
 import mitiv.array.ScalingOptions;
 import mitiv.array.ShapedArray;
+import mitiv.base.mapping.DoubleScanner;
 import mitiv.cost.CompositeDifferentiableCostFunction;
 import mitiv.cost.HyperbolicTotalVariation;
 import mitiv.cost.QuadraticCost;
@@ -372,17 +373,15 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                 }
             };
         }
-        double[] tmp = psf.flatten();
-        DoubleShapedVector y = space.wrap(data.flatten());
-        DoubleShapedVector h = space.wrap(tmp);
+        DoubleShapedVector y = space.create(data);
+        DoubleShapedVector h = space.create(psf);
         DoubleShapedVector x = null;
         if (result != null) {
-            x = space.wrap(result.flatten());
+            x = space.create(result);
         } else {
-            double psf_sum = 0.0;
-            for (int j = 0; j < tmp.length; ++j) {
-                psf_sum += tmp[j];
-            }
+            DoubleScannerWithDoubleResult sum = DoubleScannerWithDoubleResult.sum;
+            psf.scan(sum);
+            double psf_sum = sum.getResult();
             x = space.create();
             if (psf_sum != 1.0) {
                 if (psf_sum != 0.0) {
@@ -469,23 +468,9 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                 fcost = cost.computeCostAndGradient(0.1, x, gcost, true);
             } else if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
                 if (viewer != null) {
+                    // FIXME: must get values back from the result vector
                     viewer.display(this);
                 }
-                //if (verbose) {
-                //    double threshold;
-                //    if (minimizer == lbfgs) {
-                //        threshold = lbfgs.getGradientThreshold();
-                //    } else if (minimizer == lbfgsb) {
-                //        threshold = lbfgsb.getGradientThreshold();
-                //    } else if (minimizer == nlcg) {
-                //        threshold = nlcg.getGradientThreshold();
-                //    } else {
-                //        threshold = 0.0;
-                //    }
-                //    System.out.format("iter: %4d    eval: %4d    fx = %21.15g    |gx| = %8.2g (%.2g)\n",
-                //            minimizer.getIterations(), minimizer.getEvaluations(),
-                //            fcost, gcost.norm2(), threshold);
-                //}
                 boolean stop = (task == OptimTask.FINAL_X);
                 if (! stop && maxiter >= 0 && minimizer.getIterations() >= maxiter) {
                     System.err.format("Warning: too many iterations (%d).\n", maxiter);
@@ -630,6 +615,44 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     }
 
 }
+
+abstract class DoubleScannerWithDoubleResult implements DoubleScanner {
+    protected double result;
+    public double getResult() {
+        return result;
+    }
+    public static final DoubleScannerWithDoubleResult sum = new DoubleScannerWithDoubleResult() {
+        @Override
+        public void initialize(double arg) {
+            result = arg;
+        }
+        @Override
+        public void update(double arg) {
+            result += arg;
+        }
+    };
+    public static final DoubleScannerWithDoubleResult min = new DoubleScannerWithDoubleResult() {
+        @Override
+        public void initialize(double arg) {
+            result = arg;
+        }
+        @Override
+        public void update(double arg) {
+            result = Math.min(result, arg);
+        }
+    };
+    public static final DoubleScannerWithDoubleResult max = new DoubleScannerWithDoubleResult() {
+        @Override
+        public void initialize(double arg) {
+            result = arg;
+        }
+        @Override
+        public void update(double arg) {
+            result = Math.max(result, arg);
+        }
+    };
+}
+
 
 /*
  * Local Variables:

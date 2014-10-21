@@ -25,7 +25,9 @@
 
 package mitiv.linalg.shaped;
 
+import mitiv.array.ShapedArray;
 import mitiv.base.ArrayDescriptor;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.Typed;
 import mitiv.linalg.Vector;
@@ -44,6 +46,7 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
     }
 
 
+    @Override
     public ShapedVectorSpace getSpace(){
         return getOwner();
     }
@@ -64,8 +67,8 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
     }
 
     @Override
-    public final int[] cloneShape() {
-        return descr.cloneShape();
+    public final Shape getShape() {
+        return descr.getShape();
     }
 
     @Override
@@ -74,9 +77,22 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
     }
 
     @Override
-    public ShapedVector clone(){
+    public ShapedVector clone() {
         return getSpace()._clone(this);
     }
+
+    /**
+     * Assign the elements of a shaped vector form those of an array.
+     * 
+     * <p>
+     * The shape of the array must match that of the vector. Type
+     * conversion is automatically performed and the copy is optimized
+     * if the array and the vector already share the same contents.
+     * </p>
+     * @param arr - The input array.
+     */
+    public abstract void assign(ShapedArray arr);
+
 }
 
 /*

@@ -27,6 +27,7 @@ package mitiv.array;
 
 import mitiv.base.Shaped;
 import mitiv.base.Typed;
+import mitiv.linalg.shaped.ShapedVector;
 
 
 /**
@@ -45,42 +46,89 @@ public interface ShapedArray extends Shaped, Typed {
      * @return A {@link ByteArray} object which may be the object itself
      *         if it is already a ByteArray.
      */
-    public ByteArray toByte();
+    public abstract ByteArray toByte();
 
     /**
      * Convert array elements to type {@code short}.
      * @return A {@link ShortArray} object which may be the object itself
      *         if it is already a ShortArray.
      */
-    public ShortArray toShort();
+    public abstract ShortArray toShort();
 
     /**
      * Convert array elements to type {@code int}.
      * @return A {@link IntArray} object which may be the object itself
      *         if it is already an IntArray.
      */
-    public IntArray toInt();
+    public abstract IntArray toInt();
 
     /**
      * Convert array elements to type {@code long}.
      * @return A {@link LongArray} object which may be the object itself
      *         if it is already a LongArray.
      */
-    public LongArray toLong();
+    public abstract LongArray toLong();
 
     /**
      * Convert array elements to type {@code float}.
      * @return A {@link FloatArray} object which may be the object itself
      *         if it is already a FloatArray.
      */
-    public FloatArray toFloat();
+    public abstract FloatArray toFloat();
 
     /**
      * Convert array elements to type {@code double}.
      * @return A {@link DoubleArray} object which may be the object itself
      *         if it is already a DoubleArray.
      */
-    public DoubleArray toDouble();
+    public abstract DoubleArray toDouble();
+
+    /**
+     * Copy the contents of the object as a new array.
+     * <p>
+     * This method yields a new shaped array which has the same shape, type
+     * and values as the object but whose contents is independent from that
+     * of the object.  If the object is a <i>view</i>, then this method yields
+     * a compact array in a <i>flat</i> form.
+     * </p>
+     * @return A flat shaped array.
+     */
+    public abstract ShapedArray copy();
+
+    /**
+     * Assign the values of the object from those of another shaped array.
+     * <p>
+     * The shape of the source and of the destination must match, type
+     * conversion (to the type of the elements of the destination) is
+     * automatically done if needed.
+     * </p>
+     * @param src - The source object.
+     */
+    public abstract void assign(ShapedArray src);
+
+    /**
+     * Assign the values of the object from those of a shaped vector.
+     * <p>
+     * This operation may be slow.
+     * </p>
+     * @param src - The source object.
+     * @see {@link #assign(ShapedArray)} for a discussion of the rules
+     * that apply.
+     */
+    public abstract void assign(ShapedVector src);
+
+    /**
+     * Perform some sanity tests.
+     * 
+     * <p>
+     * For performance reasons, not all errors are checked by TiPi code.
+     * This means that arguments may be simply trusted for being correct.
+     * This method can be used for debugging and tracking incorrect
+     * parameters/arguments.  It throws runtime exception(s) if some
+     * errors or inconsistencies are discovered.
+     * </p>
+     */
+    public abstract void checkSanity();
 }
 
 /*

@@ -25,6 +25,7 @@
 
 package mitiv.invpb;
 
+import mitiv.base.Shape;
 import mitiv.deconv.ConvolutionOperator;
 import mitiv.exception.NotImplementedException;
 import mitiv.linalg.ArrayOps;
@@ -68,7 +69,7 @@ public class LinearDeconvolver {
      * @param wgt
      * @param mu
      */
-    public LinearDeconvolver(int shape[], float[] data, float[] psf, float[] wgt, double mu) {
+    public LinearDeconvolver(Shape shape, float[] data, float[] psf, float[] wgt, double mu) {
         /* See single precision version for comments. */
         FloatShapedVectorSpace space = new FloatShapedVectorSpace(shape);
         y = space.wrap(data);
@@ -88,7 +89,7 @@ public class LinearDeconvolver {
      * @param wgt
      * @param mu
      */
-    public LinearDeconvolver(int shape[], double[] data, double[] psf, double[] wgt, double mu) {
+    public LinearDeconvolver(Shape shape, double[] data, double[] psf, double[] wgt, double mu) {
         /* Check dimensions and create FFT operator.
          * We assume that all cases (i.e. 1D, 2D, 3D) can be wrapped
          * into a simple vector space.  Note that calling space.wrap() checks
@@ -103,8 +104,8 @@ public class LinearDeconvolver {
         setup(shape, mu);
     }
 
-    private void setup(int shape[], double mu) {
-        rank = shape.length;
+    private void setup(Shape shape, double mu) {
+        rank = shape.rank();
         if (rank > 3) {
             throw new IllegalArgumentException("Too many dimensions.");
         }
@@ -260,7 +261,7 @@ public class LinearDeconvolver {
         }
         return u;
     }
-    private static void generateIsotropicQ(int[] shape, float[] q) {
+    private static void generateIsotropicQ(Shape shape, float[] q) {
         int n = q.length;
         double[] qTemp = new double[n];
         generateIsotropicQ(shape, qTemp);
@@ -268,26 +269,27 @@ public class LinearDeconvolver {
             q[j] = (float)qTemp[j];
         }
     }
-    private static void generateIsotropicQ(int[] shape, double[] q) {
+    private static void generateIsotropicQ(Shape shape, double[] q) {
         /* Compute weights q = 4*PI^2*sum(kj/Nj) for operator Q. */
-        int rank = shape.length;
+        int rank = shape.rank();
         double[][] u = new double[rank][];
         for (int r = 0; r < rank; ++r) {
-            double[] t = generateFrequency(2.0*Math.PI/shape[r], shape[r]);
+            double[] t = generateFrequency(2.0*Math.PI/shape.dimension(r),
+                    shape.dimension(r));
             for (int k = 0; k < t.length; ++k) {
                 t[k] = t[k]*t[k];
             }
             u[r] = t;
         }
         if (rank == 1) {
-            int n1 = shape[0];
+            int n1 = shape.dimension(0);
             double[] u1 = u[0];
             for (int k1 = 0; k1 < n1; ++k1) {
                 q[k1] = u1[k1];
             }
         } else if (rank == 2) {
-            int n1 = shape[0];
-            int n2 = shape[1];
+            int n1 = shape.dimension(0);
+            int n2 = shape.dimension(1);
             double[] u1 = u[0];
             double[] u2 = u[1];
             for (int k2 = 0; k2 < n2; ++k2) {
@@ -296,9 +298,9 @@ public class LinearDeconvolver {
                 }
             }
         } else {
-            int n1 = shape[0];
-            int n2 = shape[1];
-            int n3 = shape[2];
+            int n1 = shape.dimension(0);
+            int n2 = shape.dimension(1);
+            int n3 = shape.dimension(2);
             double[] u1 = u[0];
             double[] u2 = u[1];
             double[] u3 = u[2];
@@ -320,7 +322,7 @@ public class LinearDeconvolver {
     }
 
     /**
-     * @param mu 
+     * @param mu
      */
     public void setMu(double mu) {
         A.setMu(mu*muFactor);
@@ -359,10 +361,10 @@ public class LinearDeconvolver {
     /**
      * 
      * Not sure if can really be used
-     * @param x 
-     * @param maxiter 
-     * @param reset 
-     * @return 
+     * @param x
+     * @param maxiter
+     * @param reset
+     * @return
      */
     public int solve(Vector x, int maxiter, boolean reset) {
         return cg.solve(x, maxiter, reset);

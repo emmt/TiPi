@@ -62,15 +62,50 @@ With this kind of trick it is also possible to mimic the behavior of
 macros with arguments (even though it is less readable).
 
 Nested test:
-   //# if EXPR1 // optional comment?
+   //# if EXPR1 // optional comment
    some text
-   //# elif EXPR2 // optional comment?
+   //# elif EXPR2 // optional comment
    some other text
-   //# elif EXPR3 // optional comment?
+   //# elif EXPR3 // optional comment
    yet some other text
-   //# else // optional comment?
+   //# else // optional comment
    finally some text
-   //# endif // optional comment?
+   //# end // optional comment
+
+
+Conditional loop:
+    //# while EXPR // some optional comment
+    ...
+    //# end // another optional comment
+
+Loop over a list or a range of values:
+
+    //# for NAME in EXPR // some optional comment
+    ...
+    //# end // another optional comment
+
+The body of the loop is repeated with macro NAME set to every values
+in EXPR.  EXPR is recursively expanded and the result can be empty (the
+body of the loop is just skipped), or a range (see below) or a list
+of values.
+
+A range of values has the form:
+
+    FIRST : LAST
+
+or
+
+    FIRST : LAST : STEP
+
+where (after macro expansion) FIRST, LAST and STEP are integers, if
+omitted, STEP equals 1.  A zero-STEP is forbidden.  Numerical
+expressions are not yet supported for these fields but you can use the
+'#eval' directive to compute the range parameters.  For instance:
+
+    //# eval last = ${x} + 3*${y}
+    //# for i in 0 : ${last}
+    ...
+    //# end
 
 
 Include another source (note that macro expansion is performed on the line):
@@ -81,7 +116,7 @@ or
 
     //#include "name"
 
-A restriction is that '#if' ... #elif' ... '#endif' and '#while' ... '#done'
+A restriction is that '#if' ... #elif' ... '#end' and '#while' ... '#end'
 blocks must be open and closed in a single included file.
 
 Expressions involve integer arithmetic and tests:

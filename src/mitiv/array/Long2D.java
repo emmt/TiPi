@@ -25,9 +25,18 @@
 
 package mitiv.array;
 
+import mitiv.array.impl.FlatLong2D;
+import mitiv.array.impl.StriddenLong2D;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.random.LongGenerator;
 
 
@@ -42,12 +51,12 @@ public abstract class Long2D extends Array2D implements LongArray {
         super(dim1,dim2);
     }
 
-    protected Long2D(int[] shape, boolean cloneShape) {
-        super(shape, cloneShape);
+    protected Long2D(int[] dims) {
+        super(dims);
     }
 
-    protected Long2D(int[] shape) {
-        super(shape, true);
+    protected Long2D(Shape shape) {
+        super(shape);
     }
 
     @Override
@@ -95,7 +104,7 @@ public abstract class Long2D extends Array2D implements LongArray {
     }
 
     @Override
-    public void incr(long value) {
+    public void increment(long value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -113,7 +122,7 @@ public abstract class Long2D extends Array2D implements LongArray {
     }
 
     @Override
-    public void decr(long value) {
+    public void decrement(long value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -131,7 +140,7 @@ public abstract class Long2D extends Array2D implements LongArray {
     }
 
     @Override
-    public void mult(long value) {
+    public void scale(long value) {
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -186,19 +195,28 @@ public abstract class Long2D extends Array2D implements LongArray {
 
     @Override
     public void scan(LongScanner scanner)  {
-        boolean skip = true;
-        scanner.initialize(get(0,0));
+        boolean initialized = false;
         if (getOrder() == ROW_MAJOR) {
             for (int i1 = 0; i1 < dim1; ++i1) {
                 for (int i2 = 0; i2 < dim2; ++i2) {
-                    if (skip) skip = false; else scanner.update(get(i1,i2));
+                    if (initialized) {
+                        scanner.update(get(i1,i2));
+                    } else {
+                        scanner.initialize(get(i1,i2));
+                        initialized = true;
+                    }
                 }
             }
         } else {
             /* Assume column-major order. */
             for (int i2 = 0; i2 < dim2; ++i2) {
                 for (int i1 = 0; i1 < dim1; ++i1) {
-                    if (skip) skip = false; else scanner.update(get(i1,i2));
+                    if (initialized) {
+                        scanner.update(get(i1,i2));
+                    } else {
+                        scanner.initialize(get(i1,i2));
+                        initialized = true;
+                    }
                 }
             }
         }
@@ -341,35 +359,68 @@ public abstract class Long2D extends Array2D implements LongArray {
         return Double2D.wrap(out, dim1, dim2);
     }
 
-    /*=======================================================================*/
-    /* FACTORY */
+    @Override
+    public Long2D copy() {
+        return new FlatLong2D(flatten(true), shape);
+    }
 
-    /* Inner class instances can only be created from an instance of the outer
-     * class.  For this, we need a static instance of the outer class (to
-     * spare the creation of this instance each time a new instance of the
-     * inner class is needed).  The outer class is however "abstract" and we
-     * must provide a minimal set of methods to make it instantiable.
-     */
-    private static final Long2D factory = new Long2D(1,1) {
-        @Override
-        public final long get(int i1, int i2) {
-            return 0;
+    @Override
+    public void assign(ShapedArray arr) {
+        Long2D src;
+        if (! getShape().equals(arr.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
-        @Override
-        public final void set(int i1, int i2, long value) {
+        if (arr.getType() == Traits.LONG) {
+            src = (Long2D)arr;
+        } else {
+            src = (Long2D)arr.toLong();
         }
-        @Override
-        public final int getOrder() {
-            return COLUMN_MAJOR;
+        // FIXME: do assignation and conversion at the same time
+        if (getOrder() == ROW_MAJOR && src.getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    set(i1,i2, src.get(i1,i2));
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    set(i1,i2, src.get(i1,i2));
+                }
+            }
         }
-        @Override
-        public long[] flatten(boolean forceCopy) {
-            return null;
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        if (! getShape().equals(vec.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
-    };
+        // FIXME: much too slow and may be skipped if data are identical (and array is flat)
+        int i = -1;
+        if (vec.getType() == Traits.DOUBLE) {
+            DoubleShapedVector src = (DoubleShapedVector)vec;
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    set(i1,i2, (long)src.get(++i));
+                }
+            }
+        } else if (vec.getType() == Traits.FLOAT) {
+            FloatShapedVector src = (FloatShapedVector)vec;
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    set(i1,i2, (long)src.get(++i));
+                }
+            }
+        } else {
+            throw new IllegalTypeException();
+        }
+    }
+
 
     /*=======================================================================*/
-    /* FLAT LAYOUT */
+    /* ARRAY FACTORIES */
 
     /**
      * Create a 2D array of long's with given dimensions.
@@ -382,7 +433,7 @@ public abstract class Long2D extends Array2D implements LongArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Long2D create(int dim1, int dim2) {
-        return factory.new Flat(dim1,dim2);
+        return new FlatLong2D(dim1,dim2);
     }
 
     /**
@@ -390,15 +441,15 @@ public abstract class Long2D extends Array2D implements LongArray {
      * <p>
      * This method creates a 2D array of long's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape - The list of dimensions of the 2D array (all dimensions
-     *                must at least 1).  This argument is not referenced by
-     *                the returned object and its contents can be modified
-     *                after calling this method.
+     * @param dims - The list of dimensions of the 2D array (all dimensions
+     *               must at least 1).  This argument is not referenced by
+     *               the returned object and its contents can be modified
+     *               after calling this method.
      * @return A new 2D array of long's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D create(int[] shape) {
-        return factory.new Flat(shape, true);
+    public static Long2D create(int[] dims) {
+        return new FlatLong2D(dims);
     }
 
     /**
@@ -406,8 +457,7 @@ public abstract class Long2D extends Array2D implements LongArray {
      * <p>
      * This method creates a 2D array of long's with zero offset, contiguous
      * elements and column-major order.
-     * @param shape      - The list of dimensions of the 2D array (all
-     *                     dimensions must at least 1).
+     * @param shape      - The shape of the 2D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -416,8 +466,8 @@ public abstract class Long2D extends Array2D implements LongArray {
      * @return A new 2D array of long's.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D create(int[] shape, boolean cloneShape) {
-        return factory.new Flat(shape, cloneShape);
+    public static Long2D create(Shape shape) {
+        return new FlatLong2D(shape);
     }
 
     /**
@@ -434,7 +484,7 @@ public abstract class Long2D extends Array2D implements LongArray {
      * @see {@link Shaped#COLUMN_MAJOR}
      */
     public static Long2D wrap(long[] data, int dim1, int dim2) {
-        return factory.new Flat(data, dim1,dim2);
+        return new FlatLong2D(data, dim1,dim2);
     }
 
     /**
@@ -445,14 +495,14 @@ public abstract class Long2D extends Array2D implements LongArray {
      * <pre>arr.get(i1,i2) = data[i1 + shape[0]*i2]</pre>
      * with {@code arr} the returned 2D array.
      * @param data - The data to wrap in the 2D array.
-     * @param shape - The list of dimensions of the 2D array.  This argument is
+     * @param dims - The list of dimensions of the 2D array.  This argument is
      *                not referenced by the returned object and its contents
      *                can be modified after the call to this method.
      * @return A new 2D array of long's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D wrap(long[] data, int[] shape) {
-        return factory.new Flat(data, shape, true);
+    public static Long2D wrap(long[] data, int[] dims) {
+        return new FlatLong2D(data, dims);
     }
 
     /**
@@ -463,7 +513,7 @@ public abstract class Long2D extends Array2D implements LongArray {
      * <pre>arr.get(i1,i2) = data[i1 + shape[0]*i2]</pre>
      * with {@code arr} the returned 2D array.
      * @param data       - The data to wrap in the 2D array.
-     * @param shape      - The list of dimensions of the 2D array.
+     * @param shape      - The shape of the 2D array.
      * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
      *                     otherwise, the returned object will reference
      *                     <b>shape</b> whose contents <b><i>must not be
@@ -472,69 +522,9 @@ public abstract class Long2D extends Array2D implements LongArray {
      * @return A new 2D array of long's sharing the elements of <b>data</b>.
      * @see {@link Shaped#COLUMN_MAJOR}
      */
-    public static Long2D wrap(long[] data, int[] shape, boolean cloneShape) {
-        return factory.new Flat(data, shape, cloneShape);
+    public static Long2D wrap(long[] data, Shape shape) {
+        return new FlatLong2D(data, shape);
     }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 2D array stored in a "flat" (1D) Java array in column-major order.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Flat extends Long2D {
-        private static final int order = COLUMN_MAJOR;
-        private final long[] data;
-
-        Flat(int dim1, int dim2) {
-            super(dim1,dim2);
-            data = new long[number];
-        }
-
-        Flat(int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = new long[number];
-        }
-
-        Flat(long[] arr, int dim1, int dim2) {
-            super(dim1,dim2);
-            data = arr;
-        }
-
-        Flat(long[] arr, int[] shape, boolean cloneShape) {
-            super(shape, cloneShape);
-            data = arr;
-        }
-
-        @Override
-        public final long get(int i1, int i2) {
-            return data[dim1*i2 + i1];
-        }
-
-        @Override
-        public final void set(int i1, int i2, long value) {
-            data[dim1*i2 + i1] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public long[] flatten(boolean forceCopy) {
-            if (! forceCopy) {
-                return data;
-            }
-            int number = getNumber();
-            long[] out = new long[number];
-            System.arraycopy(data, 0, out, 0, number);
-            return out;
-        }
-    }
-
-    /*=======================================================================*/
-    /* STRIDED LAYOUT */
 
     /**
      * Wrap an existing array in a 2D array of long's with given dimensions,
@@ -546,126 +536,17 @@ public abstract class Long2D extends Array2D implements LongArray {
      * <pre>arr.get(i1,i2) = data[offset + stride1*i1 + stride2*i2]</pre>
      * with {@code arr} the returned 2D array.
      * @param data    - The array to wrap in the 2D array.
-     * @param dim1    - The 1st dimension of the 2D array.
-     * @param dim2    - The 2nd dimension of the 2D array.
      * @param offset  - The offset in {@code data} of element (0,0) of
      *                  the 2D array.
      * @param stride1 - The stride along the 1st dimension.
      * @param stride2 - The stride along the 2nd dimension.
+     * @param dim1    - The 1st dimension of the 2D array.
+     * @param dim2    - The 2nd dimension of the 2D array.
      * @return A 2D array sharing the elements of <b>data</b>.
      */
-    public static Long2D wrap(long[] data, int dim1, int dim2,
-            int offset, int stride1, int stride2) {
-        return factory.new Strided(data, dim1,dim2, offset, stride1,stride2);
-    }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 2D array stored in a "flat" (1D) Java array with offset and strides.
-     * To instantiate such an inner class, an instance of the outer class must
-     * be available (this is the purpose of the static "factory" instance).
-     */
-    private class Strided extends Long2D {
-        private final long[] data;
-        private final int order;
-        private final int offset;
-        private final int stride1;
-        private final int stride2;
-
-        Strided(long[] arr, int dim1, int dim2, int offset, int stride1, int stride2) {
-            super(dim1,dim2);
-            this.data = arr;
-            this.offset = offset;
-            this.stride1 = stride1;
-            this.stride2 = stride2;
-            this.order = checkViewStrides(arr.length, dim1,dim2, offset, stride1,stride2);
-        }
-
-        private final int index(int i1, int i2) {
-            return offset + stride2*i2 + stride1*i1;
-        }
-
-        @Override
-        public final long get(int i1, int i2) {
-            return data[index(i1,i2)];
-        }
-
-        @Override
-        public final void set(int i1, int i2, long value) {
-            data[index(i1,i2)] = value;
-        }
-
-        @Override
-        public final int getOrder() {
-            return order;
-        }
-
-        @Override
-        public long[] flatten(boolean forceCopy) {
-            boolean flat = (stride1 == 1 && stride2 == dim1);
-            if (flat && ! forceCopy && offset == 0) {
-                return data;
-            }
-            long[] out;
-            int number = getNumber();
-            out = new long[number];
-            if (flat) {
-                System.arraycopy(data, offset, out, 0, number);
-            } else {
-                /* Must access the output in column-major order. */
-                int i = -1;
-                for (int i2 = 0; i2 < dim2; ++i2) {
-                    for (int i1 = 0; i1 < dim1; ++i1) {
-                        out[++i] = get(i1,i2);
-                    }
-                }
-            }
-            return out;
-        }
-    }
-
-    /*=======================================================================*/
-    /* MULTIDIMENSIONAL (2D) LAYOUT */
-
-    /**
-     * Wrap an existing 2D array of long's in a Long2D array.
-     * <p>
-     * More specifically:
-     * <pre>arr.get(i1,i2) = data[i2][i1]</pre>
-     * with {@code arr} the returned 2D array.
-     * @param data    - The array to wrap in the 2D array.
-     * @return A 2D array sharing the elements of <b>data</b>.
-     */
-    public static Long2D wrap(long[][] data) {
-        return factory.new Multi2(data);
-    }
-
-    /*
-     * The following inner class is defined to handle the specific case of a
-     * 2D array stored in a 2D Java array.  To instantiate such an inner class,
-     * an instance of the outer class must be available (this is the purpose
-     * of the static "factory" instance).
-     */
-    class Multi2 extends Long2D {
-        private static final int order = COLUMN_MAJOR;
-        private final long[][] data;
-
-        protected Multi2(long[][] arr) {
-            super(arr[0].length, arr.length);
-            data = arr;
-        }
-        @Override
-        public int getOrder() {
-            return order;
-        }
-        @Override
-        public final long get(int i1, int i2) {
-            return data[i2][i1];
-        }
-        @Override
-        public final void set(int i1, int i2, long value) {
-            data[i2][i1] = value;
-        }
+    public static Long2D wrap(long[] data,
+            int offset, int stride1, int stride2, int dim1, int dim2) {
+        return new StriddenLong2D(data, offset, stride1,stride2, dim1,dim2);
     }
 
 }

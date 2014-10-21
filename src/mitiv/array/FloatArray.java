@@ -56,20 +56,20 @@ public interface FloatArray extends ShapedArray {
      * Increment all the values of the array of float's.
      * @param value - The increment.
      */
-    public abstract void incr(float value);
+    public abstract void increment(float value);
 
 
     /**
      * Decrement all the values of the array of float's.
      * @param value - The decrement.
      */
-    public abstract void decr(float value);
+    public abstract void decrement(float value);
 
     /**
      * Multiply all the values of the array of float's.
      * @param value - The multiplier.
      */
-    public abstract void mult(float value);
+    public abstract void scale(float value);
 
     /**
      * Map all the values of the array of float's by a function.
@@ -86,12 +86,14 @@ public interface FloatArray extends ShapedArray {
     /**
      * Flatten the array of float's in a simple array.
      * <p>
-     * The contents of a (multi-dimensional) FloatArray can be stored in many
-     * different forms.  This storage details are hidden to the end-user in
-     * favor of a unified and comprehensive interface.  This method returns
-     * the contents of the FloatArray object as a simple flat array.  If the
-     * FloatArray object is multi-dimensional, the storage of the returned
-     * result is column-major order.
+     * The contents of a (multi-dimensional) FloatArray can be stored in
+     * many different forms.  This storage details are hidden to the end-user
+     * in favor of a unified and comprehensive interface.  This method returns
+     * the contents of the FloatArray object as a simple <i>flat</i> array,
+     * <i>i.e.</i> successive elements are contiguous and the first element
+     * has {@code 0}-offset.  If the FloatArray object is multi-dimensional,
+     * the storage of the returned result is column-major order.
+     * </p>
      * @param forceCopy - Set true to force a copy of the internal data
      *                    even though it can already be in a flat form.
      * @return A simple array of float's with the contents of
@@ -102,21 +104,26 @@ public interface FloatArray extends ShapedArray {
     /**
      * Flatten the contents of float's in a simple array.
      * <p>
-     * The contents of a (multi-dimensional) FloatArray can be stored in many
-     * different forms.  This storage details are hidden to the end-user in
-     * favor of a unified and comprehensive interface.  This method returns
-     * the contents of the FloatArray object as a simple flat array.  If the
-     * FloatArray object is multi-dimensional, the storage of the returned
-     * result is column-major order.
-     * <p>
+     * The contents of a (multi-dimensional) FloatArray can be stored in
+     * many different forms.  This storage details are hidden to the end-user
+     * in favor of a unified and comprehensive interface.  This method returns
+     * the contents of the FloatArray object as a simple <i>flat</i> array,
+     * <i>i.e.</i> successive elements are contiguous and the first element
+     * has {@code 0}-offset.  If the FloatArray object is multi-dimensional,
+     * the storage of the returned result is column-major order.
+     * </p><p>
      * Depending on the storage layout, the returned array may or may not
      * share the same storage as the FloatArray array.  Call {@code
      * flatten(true)} to make sure that the two storage areas are independent.
+     * </p>
      * @return A simple array of floats with the contents of
      *         the FloatArray array.
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public abstract float[] flatten();
+
+    @Override
+    public abstract FloatArray copy();
 
 }
 

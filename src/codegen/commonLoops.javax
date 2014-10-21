@@ -1,0 +1,86 @@
+//# // This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
+//# // developed by the MitiV project.
+//# //
+//# // Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+//# //
+//# // Permission is hereby granted, free of charge, to any person obtaining a
+//# // copy of this software and associated documentation files (the
+//# // "Software"), to deal in the Software without restriction, including
+//# // without limitation the rights to use, copy, modify, merge, publish,
+//# // distribute, sublicense, and/or sell copies of the Software, and to
+//# // permit persons to whom the Software is furnished to do so, subject to
+//# // the following conditions:
+//# //
+//# // The above copyright notice and this permission notice shall be included
+//# // in all copies or substantial portions of the Software.
+//# //
+//# // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+//# // OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+//# // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+//# // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//# // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+//# // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+//# // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//# // ------------------------------------------------------------------------
+//#
+//#
+//# // Define macros for efficient column-major and row-major loops.
+//#
+//# // Before including this file, the templates CM1, RM1, CM2 and RM2 must be
+//# // predefined.  CM1 and RM1 are used to initialize the offsets at the outermost
+//# // loop of the column-major and row-major loops respectively.  CM2 and RM2 are
+//# // are used to initialize the offsets at the inner loops of the column-major
+//# // and row-major loops respectively.
+//#
+//# def loopColMajBegin =   // begining of colum-major loops
+//# def loopRowMajBegin =   // begining of row-major loops
+//# def loopBody =          // loop body
+//# def loopEnd =           // ending of loops
+//# def loopFirstIndent =   // indentation of the first line of the loop
+//# def loopBodyIndent =    // indentation for the body of the loop
+//# def loopColMaj =        // code for colum-major loops
+//# def loopRowMaj =        // code for row-major loops
+//#
+//# // The following macros must be defined just before emitting the code.
+//# suspend loopFirstIndent loopBody
+//#
+//# // Templates for the row-major and column-major loops (will be expanded later).
+//# def CM0 := ${indent}for (int i${j} = 0; i${j} < dim${j}; ++i${j}) {
+//# def CM1 := ${indent}${__INDENT__}${CM1}
+//# def CM2 := ${indent}${__INDENT__}${CM2}
+//# def RM0 := ${indent}for (int i${k} = 0; i${k} < dim${k}; ++i${k}) {
+//# def RM1 := ${indent}${__INDENT__}${RM1}
+//# def RM2 := ${indent}${__INDENT__}${RM2}
+//#
+//# // Build the loops.
+//# def indent = ${loopFirstIndent}
+//# for k in 1 : ${rank}
+//#     eval j = ${rank} + 1 - ${k}
+//#     if ${k} == 1
+//#         def loopEnd = ${indent}}
+//#     else
+//#         def loopEnd = ${indent}}${__NEWLINE__}${loopEnd}
+//#     end
+//#     if ${k} == 1
+//#         def loopColMajBegin = ${CM0}${__NEWLINE__}${CM1}
+//#         def loopRowMajBegin = ${RM0}${__NEWLINE__}${RM1}
+//#     else
+//#         def loopColMajBegin = ${loopColMajBegin}${__NEWLINE__}${CM0}${__NEWLINE__}${CM2}
+//#         def loopRowMajBegin = ${loopRowMajBegin}${__NEWLINE__}${RM0}${__NEWLINE__}${RM2}
+//#     end
+//#     def jp = ${j}
+//#     def kp = ${k}
+//#     def indent = ${indent}${__INDENT__}
+//#     if ${k} == ${rank}
+//#         def loopBodyIndent = ${indent}
+//#     end
+//# end
+//# def loopColMaj = ${loopColMajBegin}${__NEWLINE__}${loopBodyIndent}${loopBody}${__NEWLINE__}${loopEnd}
+//# def loopRowMaj = ${loopRowMajBegin}${__NEWLINE__}${loopBodyIndent}${loopBody}${__NEWLINE__}${loopEnd}
+//#
+//# // Cleanup (there are only column-major loops when rank is 1).
+//# undef indent j k jp kp
+//# if ${rank} == 1
+//#     undef loopRowMaj loopRowMajBegin
+//# end
+//#

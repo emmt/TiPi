@@ -30,8 +30,10 @@ import icy.image.IcyBufferedImage;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+
 import mitiv.array.DoubleArray;
 import mitiv.array.ShapedArray;
+
 import mitiv.invpb.LinearDeconvolver;
 import mitiv.io.BufferedImageUtils;
 import mitiv.io.IcyBufferedImageUtils;
@@ -698,7 +700,7 @@ public class Deconvolution{
         w = space.create(1);
 
         linDeconv = new LinearDeconvolver(
-                space.cloneShape(), vectorImage.getData(), vectorPsf.getData(), w.getData(), alpha);
+                space.getShape(), vectorImage.getData(), vectorPsf.getData(), w.getData(), alpha);
         outputValue = linDeconv.solve(x.getData(), maxIter, false);
         parseOuputCG(outputValue); //print nothing if good, print in err else
         return (utils.arrayToImage1D(x.getData(), correction, false));
@@ -749,7 +751,7 @@ public class Deconvolution{
 
         maxIter = 50;
         linDeconv = new LinearDeconvolver(
-                space.cloneShape(), vectorImage.getData(), vectorPsf.getData(), w.getData(), alpha);
+                space.getShape(), vectorImage.getData(), vectorPsf.getData(), w.getData(), alpha);
         outputValue = linDeconv.solve(x.getData(), maxIter, false);
         parseOuputCG(outputValue); //print nothing if good, print in err else
         return (utils.arrayToIcyImage3D(x.getData(), correction,false));
@@ -772,7 +774,7 @@ public class Deconvolution{
 
         maxIter = 50;
         linDeconv = new LinearDeconvolver(
-                space.cloneShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
+                space.getShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
         outputValue = linDeconv.solve(x.getData(), maxIter, false);
         parseOuputCG(outputValue); //print nothing if good, print in err else
         return (utils.arrayToIcyImage3D(x.getData(), correction,false));*/

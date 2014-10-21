@@ -30,49 +30,42 @@ import mitiv.exception.IncorrectSpaceException;
 /**
  * Abstract basic class for vector spaces.
  *
+ * <p>
+ * A vector space E over the field F is a collection of elements can be
+ * added and scaled by a scalar (of the field F), these operations must
+ * have the following properties (axioms):
+ * </p><ul>
+ * <li>associativity of addition: u + (v + w) = (u + v) + w</li>
+ * <li>commutativity of addition: u + v = v + u</li>
+ * <li>there exists an identity element (the zero vector 0) for the
+ *     addition: u + 0 = u</li>
+ * <li>every vector has an inverse for the addition: v + (-v) = 0</li>
+ * <li>scalar multiplication is distributive w.r.t. vector addition:
+ *     α (u + v) = α u + α v</li>
+ * <li>distributivity of scalar multiplication with respect to field
+ *     addition: (α + β) v = α v + β v</li>
+ * <li>compatibility of scalar multiplication with field multiplication: α
+ *     (β v) = (α β) v</li>
+ * <li>identity element of scalar multiplication: 1 v = v, where 1 denotes
+ *     the multiplicative identity in F.</li>
+ * </ul><p>
+ * A Hilbert space {H, 〈⋅,⋅〉} is a vector space endowed with an inner
+ * product (which yields length and angle). A Hilbert space can have
+ * infinite dimension.
+ * </p><p>
+ * A Euclidean space is a vector space of finite dimension endowed with
+ * an inner product (which yields length and angle).
+ * </p><p>
+ * For our purposes (inverse problems and numerical optimization), we
+ * mainly consider vector spaces over the field of reals (either single
+ * or double precision floating points) of finite size (for obvious
+ * practical reasons) and endowed with an inner product. Mathematically
+ * speaking these kind of spaces are Euclidean spaces.
+ * </p><p>
+ * To achieve simple control of consistency and for clarity, operations
+ * involving vectors are implemented as methods of their vector space.
+ * </p>
  * @author Éric Thiébaut.
- *
- *         A vector space E over the field F is a collection of elements can be
- *         added and scaled by a scalar (of the field F), these operations must
- *         have the following properties (axioms):
- *
- *         - associativity of addition: u + (v + w) = (u + v) + w
- *
- *         - commutativity of addition: u + v = v + u
- *
- *         - there exists an identity element (the zero vector 0) for the
- *         addition: u + 0 = u
- *
- *         - every vector has an inverse for the addition: v + (-v) = 0
- *
- *         - scalar multiplication is distributive w.r.t. vector addition: α (u
- *         + v) = α u + α v
- *
- *         - distributivity of scalar multiplication with respect to field
- *         addition: (α + β) v = α v + β v
- *
- *         - compatibility of scalar multiplication with field multiplication: α
- *         (β v) = (α β) v
- *
- *         - identity element of scalar multiplication: 1 v = v, where 1 denotes
- *         the multiplicative identity in F.
- *
- *         A Hilbert space {H, 〈⋅,⋅〉} is a vector space endowed with an inner
- *         product (which yields length and angle). A Hilbert space can have
- *         infinite dimension.
- *
- *         A Euclidean space is a vector space of finite dimension endowed with
- *         an inner product (which yields length and angle).
- *
- *         For our purposes (inverse problems and numerical optimization), we
- *         mainly consider vector spaces over the field of reals (either single
- *         or double precision floating points) of finite size (for obvious
- *         practical reasons) and endowed with an inner product. Mathematically
- *         speaking these kind of spaces are Euclidean spaces.
- *
- *         To achieve simple control of consistency and for clarity, operations
- *         involving vectors are implemented as methods of their vector space.
- *
  */
 public abstract class VectorSpace {
     protected final int number; /* All vector spaces have a number of elements. */
@@ -111,8 +104,8 @@ public abstract class VectorSpace {
      * 
      * @param x - A vector of this vector space.
      * @param y - Another vector of this vector space.
-     * @return The inner product of {@code x} and {@code y}.
-     * @throws IncorrectSpaceException {@code x} and {@code y} must belong to this vector space.
+     * @return The inner product of <b>x</b> and <b>y</b>.
+     * @throws IncorrectSpaceException <b>x</b> and <b>y</b> must belong to this vector space.
      */
     public final double dot(Vector x, Vector y) {
         check(x);
@@ -122,17 +115,17 @@ public abstract class VectorSpace {
 
     /**
      * Compute the inner product of two vectors.
-     *
+     * <p>
      * This abstract method must be overwritten by its descendants to implement the
      * inner product.  The passed arguments are guaranteed to belong to this vector
      * space.
-     *
+     * </p>
      * @param x - A vector of this vector space.
      * @param y - Another vector of this vector space.
-     * @return the inner product of X and Y.
-     * @throws IncorrectSpaceException X and Y must belong to this vector space.
+     * @return The inner product of <b>x</b> and <b>y</b>.
+     * @throws IncorrectSpaceException <b>x</b> and <b>y</b> must belong to this vector space.
      */
-    protected abstract double _dot(final Vector x, final Vector y)
+    protected abstract double _dot(Vector x, Vector y)
             throws IncorrectSpaceException;
 
     /**
@@ -142,7 +135,7 @@ public abstract class VectorSpace {
      * overwritten with a more efficient version by the descendants of this
      * class.
      *
-     * @param x   A vector.
+     * @param x - A vector.
      *
      * @return The square root of the sum of squared elements of x.
      * 

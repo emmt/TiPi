@@ -38,6 +38,664 @@ import mitiv.linalg.shaped.DoubleShapedVector;
 public class ArrayUtils {
 
     /*=======================================================================*/
+    /* CONVERSION */
+
+    /**
+     * Convert an array of {@code byte}'s into an array of {@code byte}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to byte's
+     *         from those of {@code src}.
+     */
+    public static byte[] toByte(byte[] src) {
+        return src;
+    }
+
+    /**
+     * Convert an array of {@code short}'s into an array of {@code byte}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to byte's
+     *         from those of {@code src}.
+     */
+    public static byte[] toByte(short[] src) {
+        int number = src.length;
+        byte[] dst = new byte[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (byte)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code int}'s into an array of {@code byte}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to byte's
+     *         from those of {@code src}.
+     */
+    public static byte[] toByte(int[] src) {
+        int number = src.length;
+        byte[] dst = new byte[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (byte)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code long}'s into an array of {@code byte}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to byte's
+     *         from those of {@code src}.
+     */
+    public static byte[] toByte(long[] src) {
+        int number = src.length;
+        byte[] dst = new byte[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (byte)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code float}'s into an array of {@code byte}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to byte's
+     *         from those of {@code src}.
+     */
+    public static byte[] toByte(float[] src) {
+        int number = src.length;
+        byte[] dst = new byte[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (byte)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code double}'s into an array of {@code byte}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to byte's
+     *         from those of {@code src}.
+     */
+    public static byte[] toByte(double[] src) {
+        int number = src.length;
+        byte[] dst = new byte[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (byte)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code byte}'s into an array of {@code short}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to short's
+     *         from those of {@code src}.
+     */
+    public static short[] toShort(byte[] src) {
+        int number = src.length;
+        short[] dst = new short[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (short)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code short}'s into an array of {@code short}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to short's
+     *         from those of {@code src}.
+     */
+    public static short[] toShort(short[] src) {
+        return src;
+    }
+
+    /**
+     * Convert an array of {@code int}'s into an array of {@code short}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to short's
+     *         from those of {@code src}.
+     */
+    public static short[] toShort(int[] src) {
+        int number = src.length;
+        short[] dst = new short[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (short)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code long}'s into an array of {@code short}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to short's
+     *         from those of {@code src}.
+     */
+    public static short[] toShort(long[] src) {
+        int number = src.length;
+        short[] dst = new short[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (short)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code float}'s into an array of {@code short}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to short's
+     *         from those of {@code src}.
+     */
+    public static short[] toShort(float[] src) {
+        int number = src.length;
+        short[] dst = new short[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (short)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code double}'s into an array of {@code short}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to short's
+     *         from those of {@code src}.
+     */
+    public static short[] toShort(double[] src) {
+        int number = src.length;
+        short[] dst = new short[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (short)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code byte}'s into an array of {@code int}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to int's
+     *         from those of {@code src}.
+     */
+    public static int[] toInt(byte[] src) {
+        int number = src.length;
+        int[] dst = new int[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (int)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code short}'s into an array of {@code int}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to int's
+     *         from those of {@code src}.
+     */
+    public static int[] toInt(short[] src) {
+        int number = src.length;
+        int[] dst = new int[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (int)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code int}'s into an array of {@code int}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to int's
+     *         from those of {@code src}.
+     */
+    public static int[] toInt(int[] src) {
+        return src;
+    }
+
+    /**
+     * Convert an array of {@code long}'s into an array of {@code int}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to int's
+     *         from those of {@code src}.
+     */
+    public static int[] toInt(long[] src) {
+        int number = src.length;
+        int[] dst = new int[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (int)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code float}'s into an array of {@code int}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to int's
+     *         from those of {@code src}.
+     */
+    public static int[] toInt(float[] src) {
+        int number = src.length;
+        int[] dst = new int[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (int)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code double}'s into an array of {@code int}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to int's
+     *         from those of {@code src}.
+     */
+    public static int[] toInt(double[] src) {
+        int number = src.length;
+        int[] dst = new int[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (int)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code byte}'s into an array of {@code long}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to long's
+     *         from those of {@code src}.
+     */
+    public static long[] toLong(byte[] src) {
+        int number = src.length;
+        long[] dst = new long[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (long)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code short}'s into an array of {@code long}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to long's
+     *         from those of {@code src}.
+     */
+    public static long[] toLong(short[] src) {
+        int number = src.length;
+        long[] dst = new long[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (long)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code int}'s into an array of {@code long}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to long's
+     *         from those of {@code src}.
+     */
+    public static long[] toLong(int[] src) {
+        int number = src.length;
+        long[] dst = new long[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (long)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code long}'s into an array of {@code long}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to long's
+     *         from those of {@code src}.
+     */
+    public static long[] toLong(long[] src) {
+        return src;
+    }
+
+    /**
+     * Convert an array of {@code float}'s into an array of {@code long}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to long's
+     *         from those of {@code src}.
+     */
+    public static long[] toLong(float[] src) {
+        int number = src.length;
+        long[] dst = new long[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (long)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code double}'s into an array of {@code long}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to long's
+     *         from those of {@code src}.
+     */
+    public static long[] toLong(double[] src) {
+        int number = src.length;
+        long[] dst = new long[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (long)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code byte}'s into an array of {@code float}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to float's
+     *         from those of {@code src}.
+     */
+    public static float[] toFloat(byte[] src) {
+        int number = src.length;
+        float[] dst = new float[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (float)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code short}'s into an array of {@code float}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to float's
+     *         from those of {@code src}.
+     */
+    public static float[] toFloat(short[] src) {
+        int number = src.length;
+        float[] dst = new float[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (float)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code int}'s into an array of {@code float}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to float's
+     *         from those of {@code src}.
+     */
+    public static float[] toFloat(int[] src) {
+        int number = src.length;
+        float[] dst = new float[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (float)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code long}'s into an array of {@code float}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to float's
+     *         from those of {@code src}.
+     */
+    public static float[] toFloat(long[] src) {
+        int number = src.length;
+        float[] dst = new float[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (float)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code float}'s into an array of {@code float}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to float's
+     *         from those of {@code src}.
+     */
+    public static float[] toFloat(float[] src) {
+        return src;
+    }
+
+    /**
+     * Convert an array of {@code double}'s into an array of {@code float}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to float's
+     *         from those of {@code src}.
+     */
+    public static float[] toFloat(double[] src) {
+        int number = src.length;
+        float[] dst = new float[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (float)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code byte}'s into an array of {@code double}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to double's
+     *         from those of {@code src}.
+     */
+    public static double[] toDouble(byte[] src) {
+        int number = src.length;
+        double[] dst = new double[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (double)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code short}'s into an array of {@code double}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to double's
+     *         from those of {@code src}.
+     */
+    public static double[] toDouble(short[] src) {
+        int number = src.length;
+        double[] dst = new double[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (double)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code int}'s into an array of {@code double}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to double's
+     *         from those of {@code src}.
+     */
+    public static double[] toDouble(int[] src) {
+        int number = src.length;
+        double[] dst = new double[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (double)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code long}'s into an array of {@code double}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to double's
+     *         from those of {@code src}.
+     */
+    public static double[] toDouble(long[] src) {
+        int number = src.length;
+        double[] dst = new double[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (double)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code float}'s into an array of {@code double}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to double's
+     *         from those of {@code src}.
+     */
+    public static double[] toDouble(float[] src) {
+        int number = src.length;
+        double[] dst = new double[number];
+        for (int j = 0; j < number; ++j) {
+            dst[j] = (double)src[j];
+        }
+        return dst;
+    }
+
+    /**
+     * Convert an array of {@code double}'s into an array of {@code double}'.
+     * <p>
+     * The operation is lazy, in the sense that {@code src} is returned if it
+     * is already of the requested type.
+     * </p>
+     * @param src - The source array.
+     * @return An array whose values has been converted to double's
+     *         from those of {@code src}.
+     */
+    public static double[] toDouble(double[] src) {
+        return src;
+    }
+
+
+    /*=======================================================================*/
     /* COLORS */
 
     /**
@@ -377,10 +1035,10 @@ public class ArrayUtils {
         }
         return number;
     }
-    
+
     /*=======================================================================*/
     /* FUNCTIONS TO BUFFERED */
-    
+
     public static BufferedImage doubleAsBuffered(DoubleArray img) {
         int[] dims = getImageDimensions(img);
         return doubleAsBuffered(img.flatten(), dims[0], dims[1], dims[2]);
@@ -458,7 +1116,7 @@ public class ArrayUtils {
         }
         return buf;
     }
-    
+
     private static void writeImage(BufferedImage buf, String fileName){
         String type = "png"; // FIXME: guess from extension
         try {

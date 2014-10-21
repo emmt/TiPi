@@ -25,6 +25,9 @@
 
 package mitiv.linalg.shaped;
 
+import mitiv.array.FloatArray;
+import mitiv.array.ShapedArray;
+import mitiv.base.Shape;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.Vector;
 
@@ -36,12 +39,12 @@ import mitiv.linalg.Vector;
  */
 public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
-    public FloatShapedVectorSpace(int[] shape, boolean copyShape) {
-        super(FLOAT, shape, copyShape);
+    public FloatShapedVectorSpace(Shape shape) {
+        super(FLOAT, shape);
     }
 
-    public FloatShapedVectorSpace(int[] shape) {
-        super(FLOAT, shape);
+    public FloatShapedVectorSpace(int[] dims) {
+        super(FLOAT, dims);
     }
 
     public FloatShapedVectorSpace(int dim1) {
@@ -70,6 +73,50 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
         FloatShapedVector v = new FloatShapedVector(this);
         ArrayOps.fill(number, v.getData(), value);
         return v;
+    }
+
+    @Override
+    public FloatShapedVector create(ShapedArray arr) {
+        return create(arr, false);
+    }
+
+    @Override
+    public FloatShapedVector create(ShapedArray arr, boolean forceCopy) {
+        /* Verify shape, then convert to correct data type and avoid forcing a
+         * copy if conversion yields a different array. */
+        checkShape(arr);
+        FloatArray tmp = arr.toFloat();
+        return new FloatShapedVector(this, tmp.flatten(forceCopy && tmp == arr));
+    }
+
+    /**
+     * Create a new vector initialized with the contents of an array.
+     *
+     * <p>
+     * This is a variant of {@link #create(ShapedArray)} for an array of
+     * known data type.
+     * </p>
+     * @param arr - A shaped array with elements of type {@code float}.
+     * @return A new FloatShapedVector.
+     */
+    public FloatShapedVector create(FloatArray arr) {
+        return create(arr, false);
+    }
+
+    /**
+     * Create a new vector initialized with the contents of an array.
+     *
+     * <p>
+     * This is a variant of {@link #create(ShapedArray, boolean)} for an array of
+     * known data type.
+     * </p>
+     * @param arr       - A shaped array with elements of type {@code float}.
+     * @param forceCopy - A flag to force a copy of the contents if true.
+     * @return A new FloatShapedVector.
+     */
+    public FloatShapedVector create(FloatArray arr, boolean forceCopy) {
+        checkShape(arr);
+        return new FloatShapedVector(this, arr.flatten(forceCopy));
     }
 
     public FloatShapedVector clone(FloatShapedVector vec) {
