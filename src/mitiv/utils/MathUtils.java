@@ -44,7 +44,7 @@ import mitiv.deconv.ConvolutionOperator;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
+import org.jtransforms.fft.DoubleFFT_2D;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -252,21 +252,25 @@ public class MathUtils {
 
         return y.getData();
     }
-    
+
     public static double[] create3DSquare(int nxy, int nz, int sizeSquare)
     {
         double[] out = new double[nxy*nxy*nz];
-        for (int i = 0; i < nz; i++)
+
+        for (int k = 0; k < nz; k++)
         {
-            for(int j = 0; j < 2; j++)
+            for(int j = nxy/2 - sizeSquare/2; j < nxy/2 + sizeSquare/2; j++)
             {
-                out[i*nxy*nxy + nxy*nxy/2 + j + nxy/2] = 1;
-                out[i*nxy*nxy + nxy*nxy/2 + j + nxy+nxy/2] = 1;
+                for (int i = nxy/2 - sizeSquare/2; i < nxy/2 + sizeSquare/2; i++)
+                {
+                    out[k*nxy*nxy + j*nxy + i] = 1;
+                    //out[k*nxy*nxy + nxy*nxy/2 + j + nxy+nxy/2] = 1;
+                }
             }
         }
         return out;
     }
-    
+
     /**
      * Return an array of polar angle of
      * value x between [(-W+1)/2, W/2] and y
@@ -770,6 +774,21 @@ public class MathUtils {
             {
                 A[i][j] = (A[i][j] - minScaleA)*255/deltaScaleA;
             }
+        }
+    }
+
+    /**
+     * Scale array values into a 8bit (between 0 and 255).
+     *
+     * @param A the a
+     */
+    public static void normalise(double[] A)
+    {
+        int L = A.length;
+        double N = sum(abs2(A, 0));
+        for(int i = 0; i < L; i++)
+        {
+            A[i] = A[i]/N;
         }
     }
 
@@ -1317,7 +1336,7 @@ public class MathUtils {
         }
         return A_shift;
     }
-    
+
     /**
      * Shift zero-frequency component to center of spectrum.
      *
@@ -1328,17 +1347,17 @@ public class MathUtils {
     {   
         double A_shift[] = new double[w*h];
 
-            /* Higher-left to lower-right */
-            for(int j = 0; j < h/2; j++)
+        /* Higher-left to lower-right */
+        for(int j = 0; j < h/2; j++)
+        {
+            for(int i = 0; i < w/2; i++)
             {
-                for(int i = 0; i < w/2; i++)
-                {
-                    A_shift[w*(h - h/2 + j) + w - w/2 + i] = A[i + w*j];
-                    A_shift[w*(h - h/2 + j) + i] = A[w*j + i + w/2];
-                    A_shift[w*j + w - w/2 + i] = A[w*(j + h/2) + i];
-                    A_shift[i + w*j] = A[w*(j + h/2) + i + w/2];
-                }
+                A_shift[w*(h - h/2 + j) + w - w/2 + i] = A[i + w*j];
+                A_shift[w*(h - h/2 + j) + i] = A[w*j + i + w/2];
+                A_shift[w*j + w - w/2 + i] = A[w*(j + h/2) + i];
+                A_shift[i + w*j] = A[w*(j + h/2) + i + w/2];
             }
+        }
         return A_shift;
     }
 
@@ -1370,7 +1389,7 @@ public class MathUtils {
                     A_shift[w - w/2 + i + w*j + wh*(d - d/2 + k)] = A[i + w*(j + h/2) + k*wh];
                     //haut droit face en bas gauche fond
                     A_shift[i + w*j+ wh*(d - d/2 + k)] = A[i + w/2 + w*(j + h/2) + k*wh];
-                    
+
                     //le coté fond en face
                     A_shift[w - w/2 + i + w*(h - h/2 + j) + k*wh] = A[i + w*j + wh*(d - d/2 + k)];
                     A_shift[i + w*(h - h/2 + j) + k*wh] = A[i + w/2 + w*j + wh*(d - d/2 + k)];
@@ -1381,7 +1400,7 @@ public class MathUtils {
         }
         return A_shift;
     }
-    
+
     /**
      * Convolution using fast fourier transform.
      *
@@ -1666,79 +1685,166 @@ public class MathUtils {
         return New;
     }
 
-    
-    public static double[] img_pad1d(double img[], int oldH, int oldW, int newW, int newH, int just)
-    {   int L = img.length;
-    double New[] = new double[newH*newW];
-    switch (just)
-    {
-    case 0:
-        /* image will not be centered */
-        for(int i = 0; i < L; i++)
+
+    public static double[] img_pad1d(double img[], int oldW, int oldH, int newW, int newH, int just)
+    { 
+        double New[] = new double[newH*newW];
+        switch (just)
         {
-            New[i] = img[i];
-        }
-        break;
-    case 1:
-        /* image will be centered */
-        int i1 = (newW - oldW)/2;
-        int i2 = (newH - oldH)/2;
-        for(int j = 0; j < oldH; j++)
-        {
-            for(int i = 0; i < oldW; i++)
+        case 0:
+            /* image will not be centered */
+            for(int j = 0; j < oldH; j++)
             {
-                New[i2 + j + (i + i1)*oldW] = img[i*oldW + j];
-            }
-        }
-        break;
-    case -1:
-        /* preserve FFT indexing */
-        int oldW2 = oldW/2;
-        int oldH2 = oldH/2;
-        if (oldW2 != 0 || oldH2 != 0) // haut gauche->bas droit
-        {
-            for(int j = 0; j < oldH2; j++)
-            {
-                for(int i = 0; i < oldW2; i++)
+                for(int i = 0; i < oldW; i++)
                 {
-                    New[newH - oldH2 + j + (newW - oldW2 + i)*oldW2] = img[i*oldW2 + j];
+                    New[i + j*newW] = img[i + j*oldW];
                 }
             }
-        }
-        if(oldW2 != 0) // Haut droit->bas gauche
-        {
-            for(int i = 0; i < oldH2; i++)
+            break;
+        case 1:
+            /* image will be centered */
+            int i1 = (newW - oldW)/2;
+            int i2 = (newH - oldH)/2;
+            for(int j = 0; j < oldH; j++)
             {
-                for(int j = 0; j < oldW-oldW2; j++)
+                for(int i = 0; i < oldW; i++)
                 {
-                    New[newH - oldH2 + i][j] = img[i][j + oldW2];
+                    New[i2 + j + (i + i1)*newW] = img[i*oldW + j];
                 }
             }
-        }
-        if(oldH2 != 0) // bas gauche->haut droit
-        {
-            for(int i = 0; i < oldH - oldH2; i++)
+            break;
+        case -1:
+            /* preserve FFT indexing */
+            int oldW2 = oldW/2;
+            int oldH2 = oldH/2;
+            if (oldW2 != 0 || oldH2 != 0) // haut gauche->bas droit
             {
-                for(int j = 0; j < oldW2; j++)
+                for(int j = 0; j < oldH2; j++)
                 {
-                    New[i][newW - oldW2 + j] = img[i + oldH2][j];
+                    for(int i = 0; i < oldW2; i++)
+                    {
+                        New[newH - oldH2 + j + (newW - oldW2 + i)*newW] = img[i*oldW + j];
+                    }
                 }
             }
+            if(oldW2 != 0) // Haut droit->bas gauche
+            {
+                for(int j = 0; j < oldH2; j++)
+                {
+                    for(int i = 0; i < oldW-oldW2; i++)
+                    {
+                        New[(newH - oldH2 + j)*newW + i] = img[j*oldW + i + oldW2];
+                    }
+                }
+            }
+            if(oldH2 != 0) // bas gauche->haut droit
+            {
+                for(int j = 0; j < oldH - oldH2; j++)
+                {
+                    for(int i = 0; i < oldW2; i++)
+                    {
+                        New[j*newW + newW - oldW2 + i] = img[(j + oldH2)*oldW + i];
+                    }
+                }
+            }
+            for(int j = 0; j < oldH-oldH2; j++) // Bas droit->Haut gaucHe
+            {
+                for(int i = 0; i < oldW-oldW2; i++)
+                {
+                    New[i + j*newW] = img[(j + oldH2)*oldW +i + oldW2];
+                }
+            }
+            break;
+        default:
+            System.out.println("bad value for keyword JUST");            
         }
 
-        for(int i = 0; i < oldH-oldH2; i++) // Bas droit->Haut gaucHe
-        {
-            for(int j = 0; j < oldW-oldW2; j++)
-            {
-                New[i][j] = img[i + oldH2][j + oldW2];
-            }
-        }
-        break;
-    default:
-        System.out.println("bad value for keyword JUST");            
+        return New;
     }
 
-    return New;
+    public static double[] img_pad(double img[], int oldW, int oldH, int oldD, int newW, int newH, int newD, int just)
+    { 
+        double New[] = new double[newH*newW*newD];
+        int newWH = newW*newH;
+        int oldWH = oldW*oldH;
+        switch (just)
+        {
+        case 0:
+            /* image will not be centered */
+            for(int k = 0; k < oldD; k++)
+            {
+                for(int j = 0; j < oldH; j++)
+                {
+                    for(int i = 0; i < oldW; i++)
+                    {
+                        New[i + j*newW] = img[i + j*oldW];
+                    }
+                }
+            }
+            break;
+        case 1:
+            /* image will be centered */
+            int i2 = (newW - oldW)/2;
+            int j2 = (newH - oldH)/2;
+            int k2 = (newD - oldD)/2;
+            for(int k = 0; k < oldD; k++)
+            {
+                for(int j = 0; j < oldH; j++)
+                {
+                    for(int i = 0; i < oldW; i++)
+                    {
+                        New[i2 + i + (j + j2)*newW + (k + k2)*newWH] = img[i + j*oldW + k*oldWH ];
+                    }
+                }
+            }
+            break;
+        case -1:
+            /* preserve FFT indexing */
+            int oldW2 = oldW/2;
+            int oldH2 = oldH/2;
+            if (oldW2 != 0 || oldH2 != 0) // haut gauche->bas droit
+            {
+                for(int j = 0; j < oldH2; j++)
+                {
+                    for(int i = 0; i < oldW2; i++)
+                    {
+                        New[newH - oldH2 + j + (newW - oldW2 + i)*newW] = img[i*oldW + j];
+                    }
+                }
+            }
+            if(oldW2 != 0) // Haut droit->bas gauche
+            {
+                for(int j = 0; j < oldH2; j++)
+                {
+                    for(int i = 0; i < oldW-oldW2; i++)
+                    {
+                        New[(newH - oldH2 + j)*newW + i] = img[j*oldW + i + oldW2];
+                    }
+                }
+            }
+            if(oldH2 != 0) // bas gauche->haut droit
+            {
+                for(int j = 0; j < oldH - oldH2; j++)
+                {
+                    for(int i = 0; i < oldW2; i++)
+                    {
+                        New[j*newW + newW - oldW2 + i] = img[(j + oldH2)*oldW + i];
+                    }
+                }
+            }
+            for(int j = 0; j < oldH-oldH2; j++) // Bas droit->Haut gaucHe
+            {
+                for(int i = 0; i < oldW-oldW2; i++)
+                {
+                    New[i + j*newW] = img[(j + oldH2)*oldW +i + oldW2];
+                }
+            }
+            break;
+        default:
+            System.out.println("bad value for keyword JUST");            
+        }
+
+        return New;
     }
 
     /**
@@ -1909,6 +2015,25 @@ public class MathUtils {
         System.out.println("size " + a.length);
         System.out.println("min " + min(a) + " max " + max(a));
         System.out.println("avg " + avg(a) + " var " + var(a) + " std " + std(a));
+    }
+
+    public static void statC(double a[])
+    {
+        int L = a.length;
+        System.out.println("size " + a.length);
+        double[] realA = new double[L/2];
+        double[] imgA = new double[L/2];
+        for(int i = 0; i < L/2; i++)
+        {
+            realA[i] = a[2*i];
+            imgA[i] = a[2*i + 1];
+        }
+        System.out.println("Real part");
+        System.out.println("min " + min(realA) + " max " + max(realA));
+        System.out.println("avg " + avg(realA) + " var " + var(realA) + " std " + std(realA));
+        System.out.println("Imaginary part");
+        System.out.println("min " + min(imgA) + " max " + max(imgA));
+        System.out.println("avg " + avg(imgA) + " var " + var(imgA) + " std " + std(imgA));
     }
 
     public static void stat(double a[], int begin, int end)
@@ -2334,7 +2459,7 @@ public class MathUtils {
         }
         return out;
     }
-    
+
     /**
      * Cum sum.
      *
