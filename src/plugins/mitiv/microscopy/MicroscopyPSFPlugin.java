@@ -167,14 +167,10 @@ public class MicroscopyPSFPlugin extends EzPlug implements EzStoppable
         psf3DSequence.setName("PSF");
         for (int k = 0; k < Nz.getValue(); k++)
         {
-            //MathUtils.fftShift1D(pupil.getPSF(k), Nx.getValue(), Ny.getValue(), 1)
-            //psf3DSequence.setImage(0, k,
-                    //ArrayUtils.doubleAsBuffered(MathUtils.getArray(PSF_shift, Nx.getValue(), Ny.getValue(), k), 1, Nx.getValue(), Ny.getValue()));
-            //psf3DSequence.setImage(0, k, new IcyBufferedImage(Nx.getValue(), Ny.getValue(), pupil.getPSF(k)));
             psf3DSequence.addImage(new IcyBufferedImage(Nx.getValue(), Ny.getValue(), MathUtils.getArray(PSF_shift, Nx.getValue(), Ny.getValue(), k)));
-            //System.out.println(MathUtils.max(pupil.getPSF(k)));
         }
         MathUtils.stat(pupil.getPSF());
+
         addSequence(psf3DSequence);
         
         if( rho.getValue() == true )
