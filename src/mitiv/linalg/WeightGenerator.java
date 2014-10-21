@@ -26,6 +26,7 @@
 package mitiv.linalg;
 
 import mitiv.array.Double1D;
+import mitiv.array.DoubleArray;
 import mitiv.array.ShapedArray;
 
 public class WeightGenerator {
@@ -40,69 +41,6 @@ public class WeightGenerator {
     public WeightGenerator() {
 
     }
-    /*
-    
-     * The weight map shaped array should contain:
-     * <br>
-     * <pre>    0 if the value is not known.</pre>
-     * <pre>    1/var(y) or 1/&sigma;&sup2; else.</pre>;
-     * 
-     * @param weightMap 
-     * @return map The weight map
-     
-    public ShapedArray getWeightMap(ShapedArray weightMap){
-        double[] dblMap = weightMap.toDouble().flatten();
-        for (int i = 0; i < dblMap.length; i++) {
-            if (dblMap[i] < 0) {
-                throw new IllegalArgumentException("A weight map can not contain negative values");
-            }
-        }
-        return weightMap;
-    }
-
-    
-     * The weight map shaped array should contain:
-     * <br>
-     * <pre>    0 if the value is not known.</pre>
-     * <pre>    1/var(y) or 1/&sigma;&sup2; else.</pre>;
-     * 
-     * @param varianceMap 
-     * @param stdMap 
-     * @return map The weight map
-     
-    public ShapedArray getWeightMap(ShapedArray varianceMap, double stdMap){
-        double[] varMap = varianceMap.toDouble().flatten();
-        double out[] = new double[varMap.length];
-        for (int i = 0; i < varMap.length; i++) {
-            out[i] = 1.0/(Math.max(varMap[i], 0.0) + stdMap*stdMap);
-        }
-        return Double1D.wrap(out, out.length);
-    }
-
-    
-     * We build the map from the variance map by using the formula:<br>
-     * Xk = 1/var(Yk)<br>
-     * X &isin; Map, Y &isin; Variance Map
-     * 
-     * @param varianceMap 
-     * @param stdMap 
-     * @param deadPixelMap 
-     * @return 
-     
-    public ShapedArray getWeightMap(ShapedArray varianceMap, double stdMap, ShapedArray deadPixelMap){
-        double[] varMap = varianceMap.toDouble().flatten();
-        double[] dblBad = deadPixelMap.toDouble().flatten();
-        double out[] = new double[varMap.length];
-        for (int i = 0; i < varMap.length; i++) {
-            if (varMap[i] == saturationLevel) {
-                out[i] = 0.0;
-            } else {
-                out[i] = 1.0/((dblBad[i] == 0) ? 0.0 : Math.max(varMap[i], 0.0) + stdMap*stdMap);
-            }
-
-        }
-        return Double1D.wrap(out, out.length);
-    }*/
 
     public ShapedArray getWeightMap(){
         double[] output = null;
@@ -114,6 +52,7 @@ public class WeightGenerator {
                 }
             }
         } else if (varianceMap != null) {
+            DoubleArray tsmp = varianceMap.toDouble();
             output = varianceMap.toDouble().flatten();//Bis
             for (int i = 0; i < output.length; i++) {
                 output[i] = 1.0/(Math.max(output[i], 0.0));
