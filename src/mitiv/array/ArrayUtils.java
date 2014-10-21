@@ -32,7 +32,29 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import mitiv.array.Array1D;
+import mitiv.array.Array2D;
+import mitiv.array.Array3D;
+import mitiv.array.Array4D;
+import mitiv.array.Array5D;
+import mitiv.array.Array6D;
+import mitiv.array.Array7D;
+import mitiv.array.Array8D;
+import mitiv.array.Array9D;
+import mitiv.array.ArrayFactory;
+import mitiv.array.ByteArray;
+import mitiv.array.DoubleArray;
+import mitiv.array.FloatArray;
+import mitiv.array.IntArray;
+import mitiv.array.LongArray;
+import mitiv.array.ShapedArray;
+import mitiv.array.ShortArray;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
+import mitiv.base.indexing.Range;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonconformingArrayException;
 import mitiv.linalg.shaped.DoubleShapedVector;
 
 public class ArrayUtils {
@@ -762,6 +784,241 @@ public class ArrayUtils {
     public final static int GRAY  = 4;
     public final static int RGB   = 5;
     public final static int RGBA  = 6;
+
+
+    /*=======================================================================*/
+    /* ZERO-PADDING */
+
+    /**
+     * Zero-pad a shaped array.
+     * <p>
+     * Zero-padding consists in adding zeros around an array to build a larger
+     * array.
+     * </p><p>
+     * There must be as many dimensions in the result as in the input array
+     * and all dimensions must be greater or equal the corresponding dimension
+     * in the input array.  The operation is lazy: if no padding is needed
+     * (that is, if the shapes are the same), the input array is returned.
+     * Otherwise, the contents of the input array is pasted into a larger
+     * output array approximately at the geometrical center of this former
+     * array.  More specifically, the number of zeros at the beginning of a
+     * given dimension is equal to:
+     * <pre>
+     * (outDim/2) - (inpDim/2)
+     * </pre>
+     * assuming integer arithmetic and where {@code outDim} and {@code inpDim}
+     * are the respective length of the given dimension in the output and
+     * input arrays.
+     * </p>
+     * @param inputArray  - The input array.
+     * @param outputShape - The shape of the result.
+     * @return A shaped array of the given shape.
+     */
+    public static ShapedArray zeroPadding(ShapedArray inputArray, Shape outputShape) {
+        /* Check output shape and build list of ranges for pasting
+         * the input array into the result. */
+        Shape inputShape = inputArray.getShape();
+        if (outputShape.equals(inputShape)) {
+            return inputArray;
+        }
+        int rank = inputShape.rank();
+        if (outputShape.rank() != rank) {
+            throw new NonconformingArrayException("Not same rank.");
+        }
+        Range[] range = new Range[rank];
+        for (int k = 0; k < rank; ++k) {
+            int inpDim = inputShape.dimension(k);
+            int outDim = outputShape.dimension(k);
+            if (outDim < inpDim) {
+                throw new NonconformingArrayException("Zero-padding cannot shrink dimensions.");
+            }
+            int first = outDim/2 - inpDim/2;
+            int last = first + inpDim - 1;
+            range[k].setFirst(first);
+            range[k].setLast(last);
+            range[k].setStep(1);
+        }
+
+        /* Create the output array and fill it with zeroes. */
+        int type = inputArray.getType();
+        ShapedArray outputArray = ArrayFactory.create(type, outputShape);
+        switch (type) {
+        case Traits.BYTE:
+            ((ByteArray)outputArray).fill((byte)0);
+            break;
+        case Traits.SHORT:
+            ((ShortArray)outputArray).fill((short)0);
+            break;
+        case Traits.INT:
+            ((IntArray)outputArray).fill((int)0);
+            break;
+        case Traits.LONG:
+            ((LongArray)outputArray).fill((long)0);
+            break;
+        case Traits.FLOAT:
+            ((FloatArray)outputArray).fill((float)0);
+            break;
+        case Traits.DOUBLE:
+            ((DoubleArray)outputArray).fill((double)0);
+            break;
+        default:
+            throw new IllegalTypeException();
+        }
+
+        /* Copy input into output. */
+        switch (rank) {
+        case 1:
+            ((Array1D)outputArray).view(range[0]).assign(inputArray);
+            break;
+        case 2:
+            ((Array2D)outputArray).view(range[0], range[1]).assign(inputArray);
+            break;
+        case 3:
+            ((Array3D)outputArray).view(range[0], range[1], range[2]).assign(inputArray);
+            break;
+        case 4:
+            ((Array4D)outputArray).view(range[0], range[1], range[2], range[3]).assign(inputArray);
+            break;
+        case 5:
+            ((Array5D)outputArray).view(range[0], range[1], range[2], range[3], range[4]).assign(inputArray);
+            break;
+        case 6:
+            ((Array6D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5]).assign(inputArray);
+            break;
+        case 7:
+            ((Array7D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]).assign(inputArray);
+            break;
+        case 8:
+            ((Array8D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]).assign(inputArray);
+            break;
+        case 9:
+            ((Array9D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]).assign(inputArray);
+            break;
+        default:
+            throw new IllegalArgumentException("Unsupported rank.");
+        }
+        return outputArray;
+    }
+
+
+    /*=======================================================================*/
+    /* ROLLING OF DIMENSIONS */
+
+    /**
+     * Roll the dimensions of a shaped array.
+     * <p>
+     * This is the same as {@link #roll(ShapedArray, int[])} with offsets
+     * equal to half the lenght of each dimensions.
+     * </p>
+     * @param src - The input array.
+     * @return A shaped array with the contents of the input array but
+     *         rolled along the dimensions of the input array by the given
+     *         offsets.
+     */
+    public static ShapedArray roll(ShapedArray src) {
+        Shape shape = src.getShape();
+        int rank = shape.rank();
+        int[] off = new int[rank];
+        boolean nothing = true;
+        for (int k = 0; k < rank; ++k) {
+            int dim = shape.dimension(k);
+            off[k] = -(dim/2);
+            if (dim != 1) {
+                nothing = false;
+            }
+        }
+        if (nothing) {
+            return src;
+        }
+        return roll(src, off);
+    }
+
+    /**
+     * Roll the dimensions of a shaped array with given offsets.
+     * <p>
+     * This static method rolls the contents of the input array along its
+     * dimensions.  For a mono-dimensional array of length {@code dim}, this
+     * is equivalent to something like:
+     * <pre>
+     * dst[j] = src[(j - off)%dim]
+     * </pre>
+     * where {@code src} is the input array, {@code dst} is the result,
+     * {@code off} is the offset and assuming that the modulo operator
+     * returns a result wrapped in the range [0:{@code dim}-1].
+     * </p><p>
+     * The operation is lazy: if no rolling is needed (that is, if the shapes
+     * are the same), the input array is returned.
+     * </p>
+     * @param src - The input array.
+     * @param off - The offsets to apply along each dimensions.
+     * @return A shaped array with the contents of the input array but
+     *         rolled along the dimensions of the input array by the given
+     *         offsets.
+     */
+    public static ShapedArray roll(ShapedArray src, int off[]) {
+        Shape shape = src.getShape();
+        int rank = shape.rank();
+        if (off.length != rank) {
+            throw new IllegalArgumentException("Range mismatch.");
+        }
+        boolean nothing = true;
+        int[][] sel = new int[rank][];
+        for (int k = 0; k < rank; ++k) {
+            int dim = shape.dimension(k);
+            int offset;
+            if (dim == 1) {
+                offset = 0;
+            } else {
+                offset = (dim - (off[k]%dim))%dim;
+            }
+            if (offset != 0) {
+                int[] index = new int[dim];
+                for (int j = 0; j < dim; ++j) {
+                    index[j] = (j + offset)%dim;
+                }
+                sel[k] = index;
+                nothing = false;
+            }
+        }
+        if (nothing) {
+            return src;
+        }
+
+        ShapedArray dst = src.create();
+        switch (rank) {
+        case 1:
+            ((Array1D)dst).view(sel[0]).assign(src);
+            break;
+        case 2:
+            ((Array2D)dst).view(sel[0], sel[1]).assign(src);
+            break;
+        case 3:
+            ((Array3D)dst).view(sel[0], sel[1], sel[2]).assign(src);
+            break;
+        case 4:
+            ((Array4D)dst).view(sel[0], sel[1], sel[2], sel[3]).assign(src);
+            break;
+        case 5:
+            ((Array5D)dst).view(sel[0], sel[1], sel[2], sel[3], sel[4]).assign(src);
+            break;
+        case 6:
+            ((Array6D)dst).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5]).assign(src);
+            break;
+        case 7:
+            ((Array7D)dst).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6]).assign(src);
+            break;
+        case 8:
+            ((Array8D)dst).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6], sel[7]).assign(src);
+            break;
+        case 9:
+            ((Array9D)dst).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6], sel[7], sel[8]).assign(src);
+            break;
+        default:
+            throw new IllegalArgumentException("Unsupported rank.");
+        }
+        return dst;
+    }
+
 
     /*=======================================================================*/
     /* FUNCTIONS FOR DOUBLE TYPE */

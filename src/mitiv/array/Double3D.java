@@ -472,6 +472,11 @@ public abstract class Double3D extends Array3D implements DoubleArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Double3D create() {
+        return new FlatDouble3D(getShape());
+    }
+
     /**
      * Create a 3D array of double's with given dimensions.
      * <p>

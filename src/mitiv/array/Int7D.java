@@ -672,6 +672,11 @@ public abstract class Int7D extends Array7D implements IntArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Int7D create() {
+        return new FlatInt7D(getShape());
+    }
+
     /**
      * Create a 7D array of int's with given dimensions.
      * <p>

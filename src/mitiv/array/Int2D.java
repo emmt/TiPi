@@ -422,6 +422,11 @@ public abstract class Int2D extends Array2D implements IntArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Int2D create() {
+        return new FlatInt2D(getShape());
+    }
+
     /**
      * Create a 2D array of int's with given dimensions.
      * <p>

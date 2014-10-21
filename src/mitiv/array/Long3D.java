@@ -472,6 +472,11 @@ public abstract class Long3D extends Array3D implements LongArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Long3D create() {
+        return new FlatLong3D(getShape());
+    }
+
     /**
      * Create a 3D array of long's with given dimensions.
      * <p>

@@ -304,6 +304,11 @@ public abstract class Short1D extends Array1D implements ShortArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Short1D create() {
+        return new FlatShort1D(getShape());
+    }
+
     /**
      * Create a 1D array of short's with given dimensions.
      * <p>

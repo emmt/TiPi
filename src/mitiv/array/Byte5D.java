@@ -572,6 +572,11 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Byte5D create() {
+        return new FlatByte5D(getShape());
+    }
+
     /**
      * Create a 5D array of byte's with given dimensions.
      * <p>

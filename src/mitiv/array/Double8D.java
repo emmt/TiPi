@@ -722,6 +722,11 @@ public abstract class Double8D extends Array8D implements DoubleArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Double8D create() {
+        return new FlatDouble8D(getShape());
+    }
+
     /**
      * Create a 8D array of double's with given dimensions.
      * <p>

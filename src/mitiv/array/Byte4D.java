@@ -522,6 +522,11 @@ public abstract class Byte4D extends Array4D implements ByteArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Byte4D create() {
+        return new FlatByte4D(getShape());
+    }
+
     /**
      * Create a 4D array of byte's with given dimensions.
      * <p>

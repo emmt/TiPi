@@ -772,6 +772,11 @@ public abstract class Long9D extends Array9D implements LongArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Long9D create() {
+        return new FlatLong9D(getShape());
+    }
+
     /**
      * Create a 9D array of long's with given dimensions.
      * <p>

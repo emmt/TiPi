@@ -722,6 +722,11 @@ public abstract class Int8D extends Array8D implements IntArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Int8D create() {
+        return new FlatInt8D(getShape());
+    }
+
     /**
      * Create a 8D array of int's with given dimensions.
      * <p>

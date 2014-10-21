@@ -772,6 +772,11 @@ public abstract class Short9D extends Array9D implements ShortArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Short9D create() {
+        return new FlatShort9D(getShape());
+    }
+
     /**
      * Create a 9D array of short's with given dimensions.
      * <p>

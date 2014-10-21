@@ -722,6 +722,11 @@ public abstract class Float8D extends Array8D implements FloatArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Float8D create() {
+        return new FlatFloat8D(getShape());
+    }
+
     /**
      * Create a 8D array of float's with given dimensions.
      * <p>

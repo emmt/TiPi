@@ -722,6 +722,11 @@ public abstract class Byte8D extends Array8D implements ByteArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Byte8D create() {
+        return new FlatByte8D(getShape());
+    }
+
     /**
      * Create a 8D array of byte's with given dimensions.
      * <p>

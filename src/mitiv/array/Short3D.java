@@ -472,6 +472,11 @@ public abstract class Short3D extends Array3D implements ShortArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Short3D create() {
+        return new FlatShort3D(getShape());
+    }
+
     /**
      * Create a 3D array of short's with given dimensions.
      * <p>

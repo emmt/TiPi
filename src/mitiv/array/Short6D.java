@@ -622,6 +622,11 @@ public abstract class Short6D extends Array6D implements ShortArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Short6D create() {
+        return new FlatShort6D(getShape());
+    }
+
     /**
      * Create a 6D array of short's with given dimensions.
      * <p>

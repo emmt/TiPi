@@ -622,6 +622,11 @@ public abstract class Byte6D extends Array6D implements ByteArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Byte6D create() {
+        return new FlatByte6D(getShape());
+    }
+
     /**
      * Create a 6D array of byte's with given dimensions.
      * <p>

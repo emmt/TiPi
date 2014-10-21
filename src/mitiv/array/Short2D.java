@@ -422,6 +422,11 @@ public abstract class Short2D extends Array2D implements ShortArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Short2D create() {
+        return new FlatShort2D(getShape());
+    }
+
     /**
      * Create a 2D array of short's with given dimensions.
      * <p>

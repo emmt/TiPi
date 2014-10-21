@@ -304,6 +304,11 @@ public abstract class Long1D extends Array1D implements LongArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Long1D create() {
+        return new FlatLong1D(getShape());
+    }
+
     /**
      * Create a 1D array of long's with given dimensions.
      * <p>

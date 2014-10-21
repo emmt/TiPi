@@ -672,6 +672,11 @@ public abstract class Float7D extends Array7D implements FloatArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Float7D create() {
+        return new FlatFloat7D(getShape());
+    }
+
     /**
      * Create a 7D array of float's with given dimensions.
      * <p>

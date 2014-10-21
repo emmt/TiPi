@@ -622,6 +622,11 @@ public abstract class Double6D extends Array6D implements DoubleArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Double6D create() {
+        return new FlatDouble6D(getShape());
+    }
+
     /**
      * Create a 6D array of double's with given dimensions.
      * <p>

@@ -622,6 +622,11 @@ public abstract class Int6D extends Array6D implements IntArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Int6D create() {
+        return new FlatInt6D(getShape());
+    }
+
     /**
      * Create a 6D array of int's with given dimensions.
      * <p>

@@ -672,6 +672,11 @@ public abstract class Double7D extends Array7D implements DoubleArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Double7D create() {
+        return new FlatDouble7D(getShape());
+    }
+
     /**
      * Create a 7D array of double's with given dimensions.
      * <p>

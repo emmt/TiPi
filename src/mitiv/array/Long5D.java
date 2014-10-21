@@ -572,6 +572,11 @@ public abstract class Long5D extends Array5D implements LongArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Long5D create() {
+        return new FlatLong5D(getShape());
+    }
+
     /**
      * Create a 5D array of long's with given dimensions.
      * <p>

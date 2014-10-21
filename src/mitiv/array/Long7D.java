@@ -672,6 +672,11 @@ public abstract class Long7D extends Array7D implements LongArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Long7D create() {
+        return new FlatLong7D(getShape());
+    }
+
     /**
      * Create a 7D array of long's with given dimensions.
      * <p>

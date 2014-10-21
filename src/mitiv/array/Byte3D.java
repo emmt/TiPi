@@ -472,6 +472,11 @@ public abstract class Byte3D extends Array3D implements ByteArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Byte3D create() {
+        return new FlatByte3D(getShape());
+    }
+
     /**
      * Create a 3D array of byte's with given dimensions.
      * <p>

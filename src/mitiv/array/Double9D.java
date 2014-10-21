@@ -772,6 +772,11 @@ public abstract class Double9D extends Array9D implements DoubleArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Double9D create() {
+        return new FlatDouble9D(getShape());
+    }
+
     /**
      * Create a 9D array of double's with given dimensions.
      * <p>

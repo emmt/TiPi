@@ -304,6 +304,11 @@ public abstract class Double1D extends Array1D implements DoubleArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Double1D create() {
+        return new FlatDouble1D(getShape());
+    }
+
     /**
      * Create a 1D array of double's with given dimensions.
      * <p>

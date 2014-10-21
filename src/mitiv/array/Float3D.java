@@ -472,6 +472,11 @@ public abstract class Float3D extends Array3D implements FloatArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Float3D create() {
+        return new FlatFloat3D(getShape());
+    }
+
     /**
      * Create a 3D array of float's with given dimensions.
      * <p>

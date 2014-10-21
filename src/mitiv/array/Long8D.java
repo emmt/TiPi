@@ -722,6 +722,11 @@ public abstract class Long8D extends Array8D implements LongArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Long8D create() {
+        return new FlatLong8D(getShape());
+    }
+
     /**
      * Create a 8D array of long's with given dimensions.
      * <p>

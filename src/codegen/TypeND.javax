@@ -403,6 +403,11 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public ${className} create() {
+        return new Flat${className}(getShape());
+    }
+
     /**
      * Create a ${rank}D array of ${type}'s with given dimensions.
      * <p>

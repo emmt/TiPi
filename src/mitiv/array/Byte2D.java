@@ -422,6 +422,11 @@ public abstract class Byte2D extends Array2D implements ByteArray {
     /*=======================================================================*/
     /* ARRAY FACTORIES */
 
+    @Override
+    public Byte2D create() {
+        return new FlatByte2D(getShape());
+    }
+
     /**
      * Create a 2D array of byte's with given dimensions.
      * <p>

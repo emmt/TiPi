@@ -48,6 +48,23 @@ public class IntScalar extends Scalar implements IntArray {
     final int offset;
 
     /**
+     * Create a new IntScalar object.
+     */
+    public IntScalar() {
+        super();
+        this.data = new int[1];
+        this.offset = 0;
+    }
+
+    /**
+     * Create a new IntScalar object of same type.
+     */
+    @Override
+    public IntScalar create() {
+        return new IntScalar();
+    }
+
+    /**
      * Create a IntScalar pointing a slot in a Java array.
      *
      * @param arr - The array.
@@ -58,6 +75,13 @@ public class IntScalar extends Scalar implements IntArray {
         this.data = arr;
         this.offset = idx;
         checkSanity();
+    }
+
+    /**
+     * Wrap a slot in a Java array into a new IntScalar object.
+     */
+    public static IntScalar wrap(int[] arr, int idx) {
+        return new IntScalar(arr, idx);
     }
 
     /**

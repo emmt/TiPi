@@ -84,6 +84,16 @@ public interface ShapedArray extends Shaped, Typed {
     public abstract DoubleArray toDouble();
 
     /**
+     * Create a new array with same element type and shape.
+     * <p>
+     * This method yields a new shaped array which has the same element type
+     * and shape as the object but whose contents is not initialized.
+     * </p>
+     * @return A new shaped array.
+     */
+    public abstract ShapedArray create();
+
+    /**
      * Copy the contents of the object as a new array.
      * <p>
      * This method yields a new shaped array which has the same shape, type
@@ -116,6 +126,16 @@ public interface ShapedArray extends Shaped, Typed {
      * that apply.
      */
     public abstract void assign(ShapedVector src);
+
+    /**
+     * Get a view of the object as a 1D array.
+     *<p>
+     * The result is a 1D <i>view</i> of its parents, this means that
+     * they share the same contents.
+     * </p>
+     * @return A 1D view of the object.
+     */
+    public abstract Array1D as1D();
 
     /**
      * Perform some sanity tests.
