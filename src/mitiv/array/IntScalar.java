@@ -57,9 +57,10 @@ public class IntScalar extends Scalar implements IntArray {
     }
 
     /**
-     * Create a new IntScalar object.
+     * Create a new IntScalar object of same type.
      */
-    public static IntScalar create() {
+    @Override
+    public IntScalar create() {
         return new IntScalar();
     }
 

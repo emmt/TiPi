@@ -63,9 +63,10 @@ public class ${className} extends Scalar implements ${Type}Array {
     }
 
     /**
-     * Create a new ${className} object.
+     * Create a new ${className} object of same type.
      */
-    public static ${className} create() {
+    @Override
+    public ${className} create() {
         return new ${className}();
     }
 

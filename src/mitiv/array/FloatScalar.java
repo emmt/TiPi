@@ -57,9 +57,10 @@ public class FloatScalar extends Scalar implements FloatArray {
     }
 
     /**
-     * Create a new FloatScalar object.
+     * Create a new FloatScalar object of same type.
      */
-    public static FloatScalar create() {
+    @Override
+    public FloatScalar create() {
         return new FloatScalar();
     }
 

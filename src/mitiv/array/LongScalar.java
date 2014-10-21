@@ -57,9 +57,10 @@ public class LongScalar extends Scalar implements LongArray {
     }
 
     /**
-     * Create a new LongScalar object.
+     * Create a new LongScalar object of same type.
      */
-    public static LongScalar create() {
+    @Override
+    public LongScalar create() {
         return new LongScalar();
     }
 

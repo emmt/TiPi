@@ -57,9 +57,10 @@ public class DoubleScalar extends Scalar implements DoubleArray {
     }
 
     /**
-     * Create a new DoubleScalar object.
+     * Create a new DoubleScalar object of same type.
      */
-    public static DoubleScalar create() {
+    @Override
+    public DoubleScalar create() {
         return new DoubleScalar();
     }
 

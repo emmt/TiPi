@@ -57,9 +57,10 @@ public class ByteScalar extends Scalar implements ByteArray {
     }
 
     /**
-     * Create a new ByteScalar object.
+     * Create a new ByteScalar object of same type.
      */
-    public static ByteScalar create() {
+    @Override
+    public ByteScalar create() {
         return new ByteScalar();
     }
 

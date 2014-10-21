@@ -57,9 +57,10 @@ public class ShortScalar extends Scalar implements ShortArray {
     }
 
     /**
-     * Create a new ShortScalar object.
+     * Create a new ShortScalar object of same type.
      */
-    public static ShortScalar create() {
+    @Override
+    public ShortScalar create() {
         return new ShortScalar();
     }
 
