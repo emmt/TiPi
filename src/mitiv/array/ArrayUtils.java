@@ -32,7 +32,29 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import mitiv.array.Array1D;
+import mitiv.array.Array2D;
+import mitiv.array.Array3D;
+import mitiv.array.Array4D;
+import mitiv.array.Array5D;
+import mitiv.array.Array6D;
+import mitiv.array.Array7D;
+import mitiv.array.Array8D;
+import mitiv.array.Array9D;
+import mitiv.array.ArrayFactory;
+import mitiv.array.ByteArray;
+import mitiv.array.DoubleArray;
+import mitiv.array.FloatArray;
+import mitiv.array.IntArray;
+import mitiv.array.LongArray;
+import mitiv.array.ShapedArray;
+import mitiv.array.ShortArray;
+import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
+import mitiv.base.indexing.Range;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonconformingArrayException;
 import mitiv.linalg.shaped.DoubleShapedVector;
 
 public class ArrayUtils {
@@ -762,6 +784,96 @@ public class ArrayUtils {
     public final static int GRAY  = 4;
     public final static int RGB   = 5;
     public final static int RGBA  = 6;
+
+    /*=======================================================================*/
+    /* ZERO-PADDING */
+
+    public static ShapedArray zeroPadding(ShapedArray inputArray, Shape outputShape) {
+        /* Check output shape and build list of ranges for pasting
+         * the input array into the result. */
+        Shape inputShape = inputArray.getShape();
+        if (outputShape.equals(inputShape)) {
+            return inputArray;
+        }
+        int rank = inputShape.rank();
+        if (outputShape.rank() != rank) {
+            throw new NonconformingArrayException("Not same rank.");
+        }
+        Range[] range = new Range[rank];
+        for (int k = 0; k < rank; ++k) {
+            int inpDim = inputShape.dimension(k);
+            int outDim = outputShape.dimension(k);
+            if (outDim < inpDim) {
+                throw new NonconformingArrayException("Zero-padding cannot shrink dimensions.");
+            }
+            int first = outDim/2 - inpDim/2;
+            int last = first + inpDim - 1;
+            range[k].setFirst(first);
+            range[k].setLast(last);
+            range[k].setStep(1);
+        }
+
+        /* Create the output array and fill it with zeroes. */
+        int type = inputArray.getType();
+        ShapedArray outputArray = ArrayFactory.create(type, outputShape);
+        switch (type) {
+        case Traits.BYTE:
+            ((ByteArray)outputArray).fill((byte)0);
+            break;
+        case Traits.SHORT:
+            ((ShortArray)outputArray).fill((short)0);
+            break;
+        case Traits.INT:
+            ((IntArray)outputArray).fill((int)0);
+            break;
+        case Traits.LONG:
+            ((LongArray)outputArray).fill((long)0);
+            break;
+        case Traits.FLOAT:
+            ((FloatArray)outputArray).fill((float)0);
+            break;
+        case Traits.DOUBLE:
+            ((DoubleArray)outputArray).fill((double)0);
+            break;
+        default:
+            throw new IllegalTypeException();
+        }
+
+        /* Copy input into output. */
+        switch (rank) {
+        case 1:
+            ((Array1D)outputArray).view(range[0]).assign(inputArray);
+            break;
+        case 2:
+            ((Array2D)outputArray).view(range[0], range[1]).assign(inputArray);
+            break;
+        case 3:
+            ((Array3D)outputArray).view(range[0], range[1], range[2]).assign(inputArray);
+            break;
+        case 4:
+            ((Array4D)outputArray).view(range[0], range[1], range[2], range[3]).assign(inputArray);
+            break;
+        case 5:
+            ((Array5D)outputArray).view(range[0], range[1], range[2], range[3], range[4]).assign(inputArray);
+            break;
+        case 6:
+            ((Array6D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5]).assign(inputArray);
+            break;
+        case 7:
+            ((Array7D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]).assign(inputArray);
+            break;
+        case 8:
+            ((Array8D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]).assign(inputArray);
+            break;
+        case 9:
+            ((Array9D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]).assign(inputArray);
+            break;
+        default:
+            throw new IllegalArgumentException("Unsupported rank.");
+        }
+        return outputArray;
+    }
+
 
     /*=======================================================================*/
     /* FUNCTIONS FOR DOUBLE TYPE */
