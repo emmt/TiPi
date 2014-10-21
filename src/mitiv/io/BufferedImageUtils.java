@@ -41,6 +41,7 @@ import mitiv.array.Double3D;
 import mitiv.array.Float2D;
 import mitiv.array.Float3D;
 import mitiv.array.ShapedArray;
+import mitiv.base.Shape;
 import mitiv.utils.CommonUtils;
 
 public class BufferedImageUtils {
@@ -249,11 +250,11 @@ public class BufferedImageUtils {
 
     public static BufferedImage arrayToImage(ShapedArray array) {
         //FIXME MOST IMPORTANT SHOULD WORK WITH 2D 3D and Double Float{
-        int[] shape = array.cloneShape(); 
-        if (shape.length != 2) {
+        Shape shape = array.getShape(); 
+        if (shape.rank() != 2) {
             throw new IllegalArgumentException("Array should be bi-dimensional ");
         }
-        BufferedImage imageout = new BufferedImage(shape[0], shape[1], BufferedImage.TYPE_USHORT_GRAY);
+        BufferedImage imageout = new BufferedImage(shape.dimension(0), shape.dimension(1), BufferedImage.TYPE_USHORT_GRAY);
         WritableRaster raster = imageout.getRaster();
         int grey;
         int[] tmp = new int[3];
@@ -282,15 +283,15 @@ public class BufferedImageUtils {
 
     public static ArrayList<BufferedImage> arrayToImages(ShapedArray array) {
         //FIXME MOST IMPORTANT SHOULD WORK WITH 2D 3D and Double Float{
-        int[] shape = array.cloneShape(); 
-        if (!(shape.length == 2 || shape.length == 3)) {
+        Shape shape = array.getShape(); 
+        if (!(shape.rank() == 2 || shape.rank() == 3)) {
             throw new IllegalArgumentException("Array should be bi or tri dimensional ");
         }
-        int width = shape[0];
-        int height = shape[1];
+        int width = shape.dimension(0);
+        int height = shape.dimension(1);
         int sizeZ = 1;
-        if (shape.length == 3) {
-            sizeZ = shape[2];
+        if (shape.rank() == 3) {
+            sizeZ = shape.dimension(2);
         }
         ArrayList<BufferedImage> listOut = new ArrayList<BufferedImage>();
         int grey;
@@ -338,11 +339,11 @@ public class BufferedImageUtils {
      * @return
      */
     public static ShapedArray imagePad(ShapedArray input, double coef) {
-        int[] shape = input.cloneShape();
+        Shape shape = input.getShape();
         if (input.getRank() == 2) {
-            return imagePad(input, shape[0], shape[1], 1, coef, coef);
+            return imagePad(input, shape.dimension(0), shape.dimension(1), 1, coef, coef);
         } else {
-            return imagePad(input, shape[0], shape[1], shape[2], coef, coef);
+            return imagePad(input, shape.dimension(0), shape.dimension(1), shape.dimension(2), coef, coef);
         }
         
     }
@@ -459,20 +460,20 @@ public class BufferedImageUtils {
     }
 
     public static ShapedArray shiftPsf(ShapedArray psf){
-        int[] shape = psf.cloneShape();
-        int width = shape[0];
-        int height = shape[1];
+        Shape shape = psf.getShape();
+        int width = shape.dimension(0);
+        int height = shape.dimension(1);
         double[] data;
-        if (shape.length == 2) {
+        if (shape.rank() == 2) {
             data = psf.toDouble().flatten();
             double[] out = new double[data.length];
             CommonUtils.psfPadding1D(out, width, height, data, width, height, false);
             return Double2D.wrap(out, shape);
-        } else if (shape.length == 3) {
+        } else if (shape.rank() == 3) {
             data = psf.toDouble().flatten();
             double[] out = new double[data.length];
             //CommonUtils.fftShift3D(data, out, width, height, shape[2]);
-            CommonUtils.psf3DPadding1D(data, out, width, height, shape[2]);
+            CommonUtils.psf3DPadding1D(data, out, width, height, shape.dimension(2));
             return Double3D.wrap(out, shape);
         } else {
             throw new IllegalArgumentException("Input should be bi or tri dimensionnal");
@@ -568,7 +569,7 @@ public class BufferedImageUtils {
      */
     public static void saveArrayToImage(ShapedArray A, String name)
     {
-        if (A.cloneShape().length != 2) {
+        if (A.getShape().rank() != 2) {
             throw new IllegalArgumentException("The shapped array should be bi-dimensionnal");
         }
         BufferedImage I = arrayToImage(A);

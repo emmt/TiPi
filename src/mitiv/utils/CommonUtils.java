@@ -39,6 +39,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import mitiv.array.ArrayUtils;
+import mitiv.base.Shape;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
@@ -518,18 +519,18 @@ public class CommonUtils {
      */
     @Deprecated
     public static BufferedImage vectorToImage(ShapedVectorSpace outputSpace, ShapedVector vector, int job, boolean singlePrecision ,boolean isComplex){
+        Shape shape = outputSpace.getShape();
         if (singlePrecision) {
-            int[] shape = outputSpace.cloneShape();
+
             if (!(outputSpace.getRank() == 2)) {
                 throw new IllegalArgumentException("The vector should be of rank 2 to create an image");
             }
-            return arrayToImage1D(((FloatShapedVector)vector).getData(), job, shape[1], shape[0], isComplex);
+            return arrayToImage1D(((FloatShapedVector)vector).getData(), job, shape.dimension(1), shape.dimension(0), isComplex);
         } else {
-            int[] shape = outputSpace.cloneShape();
             if (!(outputSpace.getRank() == 2)) {
                 throw new IllegalArgumentException("The vector should be of rank 2 to create an image");
             }
-            return arrayToImage1D(((DoubleShapedVector)vector).getData(), job, shape[1], shape[0], isComplex);
+            return arrayToImage1D(((DoubleShapedVector)vector).getData(), job, shape.dimension(1), shape.dimension(0), isComplex);
         }
     }
 
@@ -1344,10 +1345,10 @@ public class CommonUtils {
             if (!(spaceFloat.getRank() == 2)) {
                 throw new IllegalArgumentException("The rank of vector must be 2");
             }
-            int[] shape = spaceFloat.cloneShape();
-            int[] shapePsf = ((FloatShapedVectorSpace)imagePsf.getSpace()).cloneShape();
-            float[] psfPad = psfPadding1D(spaceFloat.create().getData(),shape[1],
-                    shape[0],vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
+            Shape shape = spaceFloat.getShape();
+            Shape shapePsf = ((FloatShapedVectorSpace)imagePsf.getSpace()).getShape();
+            float[] psfPad = psfPadding1D(spaceFloat.create().getData(),shape.dimension(1),
+                    shape.dimension(0),vectorPsf.getData(),shapePsf.dimension(1),shapePsf.dimension(0),isComplex);
             return spaceFloat.wrap(psfPad);
         } else {
             DoubleShapedVectorSpace spaceDoubleOut = (DoubleShapedVectorSpace)outputSpace;
@@ -1356,10 +1357,10 @@ public class CommonUtils {
             if (!(spaceDoubleOut.getRank() == 2)) {
                 throw new IllegalArgumentException("The rank of vector must be 2");
             }
-            int[] shape = spaceDoubleIn.cloneShape();
-            int[] shapePsf = ((DoubleShapedVectorSpace)imagePsf.getSpace()).cloneShape();
-            double[] psfPad = psfPadding1D(spaceDoubleOut.create().getData(),shape[1],
-                    shape[0], vectorPsf.getData(),shapePsf[1],shapePsf[0],isComplex);
+            Shape shape = spaceDoubleIn.getShape();
+            Shape shapePsf = ((DoubleShapedVectorSpace)imagePsf.getSpace()).getShape();
+            double[] psfPad = psfPadding1D(spaceDoubleOut.create().getData(),shape.dimension(1),
+                    shape.dimension(0), vectorPsf.getData(),shapePsf.dimension(1),shapePsf.dimension(0),isComplex);
             return spaceDoubleOut.wrap(psfPad);
         }
     }
