@@ -40,6 +40,7 @@ import mitiv.array.ArrayUtils;
 import mitiv.array.DoubleArray;
 import mitiv.array.ScalingOptions;
 import mitiv.array.ShapedArray;
+import mitiv.base.Shape;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.cost.CompositeDifferentiableCostFunction;
 import mitiv.cost.HyperbolicTotalVariation;
@@ -324,7 +325,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         if (data == null) {
             fatal("Input data not specified.");
         }
-        int[] shape = data.cloneShape();
+        Shape shape = data.getShape();
         int rank = data.getRank();
 
         // Check the PSF.
@@ -335,7 +336,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             fatal("PSF must have same rank as data.");
         }
         for (int k = 0; k < rank; ++k) {
-            if (psf.getDimension(k) != shape[k]) {
+            if (psf.getDimension(k) != shape.dimension(k)) {
                 fatal("The dimensions of the PSF must match those of the input image.");
             }
         }
@@ -391,7 +392,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                 }
             }
         }
-        result = ArrayFactory.wrap(x.getData(), shape, false);
+        result = ArrayFactory.wrap(x.getData(), shape);
         ConvolutionOperator H = new ConvolutionOperator(FFT, h);
         if (debug) {
             System.out.println("Vector space initialization complete.");
