@@ -48,6 +48,22 @@ public class FloatScalar extends Scalar implements FloatArray {
     final int offset;
 
     /**
+     * Create a new FloatScalar object.
+     */
+    public FloatScalar() {
+        super();
+        this.data = new float[1];
+        this.offset = 0;
+    }
+
+    /**
+     * Create a new FloatScalar object.
+     */
+    public static FloatScalar create() {
+        return new FloatScalar();
+    }
+
+    /**
      * Create a FloatScalar pointing a slot in a Java array.
      *
      * @param arr - The array.
@@ -58,6 +74,13 @@ public class FloatScalar extends Scalar implements FloatArray {
         this.data = arr;
         this.offset = idx;
         checkSanity();
+    }
+
+    /**
+     * Wrap a slot in a Java array into a new FloatScalar object.
+     */
+    public static FloatScalar wrap(float[] arr, int idx) {
+        return new FloatScalar(arr, idx);
     }
 
     /**

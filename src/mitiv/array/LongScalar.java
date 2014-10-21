@@ -48,6 +48,22 @@ public class LongScalar extends Scalar implements LongArray {
     final int offset;
 
     /**
+     * Create a new LongScalar object.
+     */
+    public LongScalar() {
+        super();
+        this.data = new long[1];
+        this.offset = 0;
+    }
+
+    /**
+     * Create a new LongScalar object.
+     */
+    public static LongScalar create() {
+        return new LongScalar();
+    }
+
+    /**
      * Create a LongScalar pointing a slot in a Java array.
      *
      * @param arr - The array.
@@ -58,6 +74,13 @@ public class LongScalar extends Scalar implements LongArray {
         this.data = arr;
         this.offset = idx;
         checkSanity();
+    }
+
+    /**
+     * Wrap a slot in a Java array into a new LongScalar object.
+     */
+    public static LongScalar wrap(long[] arr, int idx) {
+        return new LongScalar(arr, idx);
     }
 
     /**

@@ -54,6 +54,22 @@ public class ${className} extends Scalar implements ${Type}Array {
     final int offset;
 
     /**
+     * Create a new ${className} object.
+     */
+    public ${className}() {
+        super();
+        this.data = new ${type}[1];
+        this.offset = 0;
+    }
+
+    /**
+     * Create a new ${className} object.
+     */
+    public static ${className} create() {
+        return new ${className}();
+    }
+
+    /**
      * Create a ${className} pointing a slot in a Java array.
      *
      * @param arr - The array.
@@ -64,6 +80,13 @@ public class ${className} extends Scalar implements ${Type}Array {
         this.data = arr;
         this.offset = idx;
         checkSanity();
+    }
+
+    /**
+     * Wrap a slot in a Java array into a new ${className} object.
+     */
+    public static ${className} wrap(${type}[] arr, int idx) {
+        return new ${className}(arr, idx);
     }
 
     /**

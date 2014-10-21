@@ -48,6 +48,22 @@ public class ShortScalar extends Scalar implements ShortArray {
     final int offset;
 
     /**
+     * Create a new ShortScalar object.
+     */
+    public ShortScalar() {
+        super();
+        this.data = new short[1];
+        this.offset = 0;
+    }
+
+    /**
+     * Create a new ShortScalar object.
+     */
+    public static ShortScalar create() {
+        return new ShortScalar();
+    }
+
+    /**
      * Create a ShortScalar pointing a slot in a Java array.
      *
      * @param arr - The array.
@@ -58,6 +74,13 @@ public class ShortScalar extends Scalar implements ShortArray {
         this.data = arr;
         this.offset = idx;
         checkSanity();
+    }
+
+    /**
+     * Wrap a slot in a Java array into a new ShortScalar object.
+     */
+    public static ShortScalar wrap(short[] arr, int idx) {
+        return new ShortScalar(arr, idx);
     }
 
     /**

@@ -48,6 +48,22 @@ public class DoubleScalar extends Scalar implements DoubleArray {
     final int offset;
 
     /**
+     * Create a new DoubleScalar object.
+     */
+    public DoubleScalar() {
+        super();
+        this.data = new double[1];
+        this.offset = 0;
+    }
+
+    /**
+     * Create a new DoubleScalar object.
+     */
+    public static DoubleScalar create() {
+        return new DoubleScalar();
+    }
+
+    /**
      * Create a DoubleScalar pointing a slot in a Java array.
      *
      * @param arr - The array.
@@ -58,6 +74,13 @@ public class DoubleScalar extends Scalar implements DoubleArray {
         this.data = arr;
         this.offset = idx;
         checkSanity();
+    }
+
+    /**
+     * Wrap a slot in a Java array into a new DoubleScalar object.
+     */
+    public static DoubleScalar wrap(double[] arr, int idx) {
+        return new DoubleScalar(arr, idx);
     }
 
     /**

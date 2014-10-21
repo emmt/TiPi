@@ -48,6 +48,22 @@ public class ByteScalar extends Scalar implements ByteArray {
     final int offset;
 
     /**
+     * Create a new ByteScalar object.
+     */
+    public ByteScalar() {
+        super();
+        this.data = new byte[1];
+        this.offset = 0;
+    }
+
+    /**
+     * Create a new ByteScalar object.
+     */
+    public static ByteScalar create() {
+        return new ByteScalar();
+    }
+
+    /**
      * Create a ByteScalar pointing a slot in a Java array.
      *
      * @param arr - The array.
@@ -58,6 +74,13 @@ public class ByteScalar extends Scalar implements ByteArray {
         this.data = arr;
         this.offset = idx;
         checkSanity();
+    }
+
+    /**
+     * Wrap a slot in a Java array into a new ByteScalar object.
+     */
+    public static ByteScalar wrap(byte[] arr, int idx) {
+        return new ByteScalar(arr, idx);
     }
 
     /**
