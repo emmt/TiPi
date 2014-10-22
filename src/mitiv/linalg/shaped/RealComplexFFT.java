@@ -27,17 +27,27 @@ package mitiv.linalg.shaped;
 import mitiv.base.Shape;
 import mitiv.linalg.LinearOperator;
 import mitiv.linalg.Vector;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
-import edu.emory.mathcs.jtransforms.fft.FloatFFT_1D;
-import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
-import edu.emory.mathcs.jtransforms.fft.FloatFFT_3D;
+
+/* The following lines are for the 3.0 version of JTransforms. */
+import org.jtransforms.fft.DoubleFFT_1D;
+import org.jtransforms.fft.DoubleFFT_2D;
+import org.jtransforms.fft.DoubleFFT_3D;
+import org.jtransforms.fft.FloatFFT_1D;
+import org.jtransforms.fft.FloatFFT_2D;
+import org.jtransforms.fft.FloatFFT_3D;
+
+/* The following lines are for the 2.4 version of JTransforms. */
+//import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
+//import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
+//import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
+//import edu.emory.mathcs.jtransforms.fft.FloatFFT_1D;
+//import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
+//import edu.emory.mathcs.jtransforms.fft.FloatFFT_3D;
 
 /**
  * Emulate real-complex FFT-1D/2D/3D.
- * @author ...
- *
+ * 
+ * @author Éric and Jonathan
  */
 public class RealComplexFFT extends ShapedLinearOperator {
 
