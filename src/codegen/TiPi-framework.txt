@@ -181,9 +181,9 @@ as those of `Shaped` and `Typed` objects:
     arr.getType()        // query the type of the array
     arr.getRank()        // query the rank of the array
     arr.getNumber()      // query the number of elements in the array
-    arr.getDimention(k)  // query the length of the (k+1)-th dimension
+    arr.getDimension(k)  // query the length of the (k+1)-th dimension
     arr.getOrder()       // query the storage order of the elements in the array
-    arr.cloneShape()     // query a copy of the shape of the array
+    arr.getShape()       // query the shape of the array
 
 and type conversion:
 
@@ -261,15 +261,21 @@ Assign a value to an element:
     arr.set(i1,...,ir, value)
 
 
+## Operations Available for Arrays with Unveiled Rank
+
+
 ### Slicing
 
-    arr.slice([which,] index)
+    arr.slice(index[, dim])
 
-By default `which` = `LAST` (-1) to slice through the last dimension,
+By default `dim` = `LAST` (-1) to slice through the last dimension,
 result is an array of same data type with one less dimension (slicing
 a `Float3D` yields a `Float2D`, slicing a `Double1D` yields a
-`DoubleScalar`, *etc.*), the operation is fast as it returns a view
-on `arr`.
+`DoubleScalar`, *etc.*).  The operation is fast as it returns a view
+on `arr`.  A slice shares its contents with its parent.  The same
+rules as for ranges (see this section) apply to `index` and `dim`
+which can have a negative value understood as being relative to the
+end.
 
 
 ### Ranged Sub-array
@@ -291,8 +297,7 @@ or:
     Range rng = new Range(start, stop, step);
 
 where `start` is the initial index of the range, `stop` is the last
-index and `step` is optional and defaults to +/-1 depending on the
-ordering of the endpoints `start` and `stop`.
+index and `step` is optional and defaults to `+1` if omitted.
 
 As in Java, indexes of a range start at `0` (also `Range.FIRST`) but
 may be negative.  Starting/ending indexes of a range are interpreted
@@ -318,27 +323,29 @@ In pseudo-code, the rules are:
         }
     }
 
-The step may have the special value `0` to use a step equals to +/-1
-depending on the ordering of the first and last element of the range
-after taking into account the length of the dimension of interest.
-Otherwise, the sign of the step must be in agreement with the ordering
-of the first and last element of the range.
+The sign of the step must be in agreement with the ordering of the
+first and last element of the range, otherwise the range may be
+*empty*.  This occurs when (after applying the rules for negative
+indices) `first` > `last` and `step` > 0 and when `first` < `last` and
+`step` < 0.
 
 To ease the construction of ranges and make the code more readable,
 we recommend to use a range factory, *e.g.*:
 
-    static public Range range(int start, int stop) {
-        return new Range(start, stop);
+    static public Range range(int first, int last) {
+        return new Range(first, last);
     }
-    static public Range range(int start, int stop, int step) {
-        return new Range(start, stop, step);
+    static public Range range(int first, int last, int step) {
+        return new Range(first, last, step);
     }
 
 Then a ranged view of an array can be written as:
 
     arr.view(range(0,-1,2), range(4,8))
 
-which is lighter.
+which is lighter and more readable than:
+
+    arr.view(new Range(0,-1,2), new Range(4,8))
 
 
 ### Selected Sub-array
@@ -388,6 +395,20 @@ to mimic:
     arr.view(select(6,4,8,2), range(2,11,3))
 
 which is not allowed for now.
+
+
+### 1D View
+
+
+Finally it is possible to view an array as if it was a
+mono-dimensional (1-D) array.  This is done by:
+
+
+    arr.as1D()
+
+
+Since the rank is unveiled by this operation, it is available for any `ShapedArray` and yields an instance of the abstract class `Array1D`.
+
 
 
 [^flat]:flat: Zero-offset, contiguous storage in colum-major order.
