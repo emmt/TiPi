@@ -34,7 +34,6 @@ import mitiv.random.LongGenerator;
 import mitiv.base.Shape;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
-import mitiv.exception.IllegalRangeException;
 
 
 /**
@@ -216,9 +215,6 @@ public class FlatLong2D extends Long2D {
         CompiledRange cr2 = new CompiledRange(rng2, dim2, 0, dim1);
         if (cr1.doesNothing() && cr2.doesNothing()) {
             return this;
-        }
-        if (cr1.getNumber() == 0 || cr2.getNumber() == 0) {
-            throw new IllegalRangeException("Empty range.");
         }
         return new StriddenLong2D(this.data,
                 cr1.getOffset() + cr2.getOffset(),

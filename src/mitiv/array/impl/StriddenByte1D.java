@@ -32,7 +32,7 @@ import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
 import mitiv.base.indexing.CompiledRange;
-import mitiv.exception.IllegalRangeException;
+
 
 /**
  * Stridden implementation of 1-dimensional arrays of byte's.
@@ -194,9 +194,6 @@ public class StriddenByte1D extends Byte1D {
         CompiledRange cr1 = new CompiledRange(rng1, dim1, offset, stride1);
         if (cr1.doesNothing()) {
             return this;
-        }
-        if (cr1.getNumber() == 0) {
-            throw new IllegalRangeException("Empty range.");
         }
         return new StriddenByte1D(this.data,
                 cr1.getOffset(),

@@ -32,7 +32,7 @@ import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
 import mitiv.random.FloatGenerator;
 import mitiv.base.indexing.CompiledRange;
-import mitiv.exception.IllegalRangeException;
+
 
 /**
  * Stridden implementation of 1-dimensional arrays of float's.
@@ -194,9 +194,6 @@ public class StriddenFloat1D extends Float1D {
         CompiledRange cr1 = new CompiledRange(rng1, dim1, offset, stride1);
         if (cr1.doesNothing()) {
             return this;
-        }
-        if (cr1.getNumber() == 0) {
-            throw new IllegalRangeException("Empty range.");
         }
         return new StriddenFloat1D(this.data,
                 cr1.getOffset(),

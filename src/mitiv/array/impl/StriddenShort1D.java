@@ -32,7 +32,7 @@ import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
 import mitiv.random.ShortGenerator;
 import mitiv.base.indexing.CompiledRange;
-import mitiv.exception.IllegalRangeException;
+
 
 /**
  * Stridden implementation of 1-dimensional arrays of short's.
@@ -194,9 +194,6 @@ public class StriddenShort1D extends Short1D {
         CompiledRange cr1 = new CompiledRange(rng1, dim1, offset, stride1);
         if (cr1.doesNothing()) {
             return this;
-        }
-        if (cr1.getNumber() == 0) {
-            throw new IllegalRangeException("Empty range.");
         }
         return new StriddenShort1D(this.data,
                 cr1.getOffset(),

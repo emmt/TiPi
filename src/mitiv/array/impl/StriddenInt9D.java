@@ -33,7 +33,7 @@ import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
 import mitiv.random.IntGenerator;
 import mitiv.base.indexing.CompiledRange;
-import mitiv.exception.IllegalRangeException;
+
 
 /**
  * Stridden implementation of 9-dimensional arrays of int's.
@@ -823,9 +823,6 @@ public class StriddenInt9D extends Int9D {
         CompiledRange cr9 = new CompiledRange(rng9, dim9, 0, stride9);
         if (cr1.doesNothing() && cr2.doesNothing() && cr3.doesNothing() && cr4.doesNothing() && cr5.doesNothing() && cr6.doesNothing() && cr7.doesNothing() && cr8.doesNothing() && cr9.doesNothing()) {
             return this;
-        }
-        if (cr1.getNumber() == 0 || cr2.getNumber() == 0 || cr3.getNumber() == 0 || cr4.getNumber() == 0 || cr5.getNumber() == 0 || cr6.getNumber() == 0 || cr7.getNumber() == 0 || cr8.getNumber() == 0 || cr9.getNumber() == 0) {
-            throw new IllegalRangeException("Empty range.");
         }
         return new StriddenInt9D(this.data,
                 cr1.getOffset() + cr2.getOffset() + cr3.getOffset() + cr4.getOffset() + cr5.getOffset() + cr6.getOffset() + cr7.getOffset() + cr8.getOffset() + cr9.getOffset(),
