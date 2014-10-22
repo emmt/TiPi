@@ -25,6 +25,8 @@
 
 package mitiv.base.indexing;
 
+import mitiv.exception.IllegalRangeException;
+
 
 /**
  * Compiled ranges.
@@ -45,12 +47,12 @@ public class CompiledRange {
             this.number = length;
             this.nothing = true;
         } else {
-            int first = fixIndex(rng.first, length);
-            int last = fixIndex(rng.last, length);
-            int step = rng.step;
+            int first = rng.getFirst(length);
+            int last = rng.getLast(length);
+            int step = rng.getStep();
+            this.number = count(first, last, step, length);
             this.offset = first;
             this.stride = step;
-            this.number = count(first, last, step);
             this.nothing = (first == 0 && number == length && (step == 1 || length == 1));
         }
     }
@@ -62,22 +64,47 @@ public class CompiledRange {
             this.number = length;
             this.nothing = true;
         } else {
-            int first = fixIndex(rng.first, length);
-            int last = fixIndex(rng.last, length);
-            int step = rng.step;
+            int first = rng.getFirst(length);
+            int last = rng.getLast(length);
+            int step = rng.getStep();
+            this.number = count(first, last, step, length);
             this.offset = offset + first*stride;
             this.stride = step*stride;
-            this.number = count(first, last, step);
             this.nothing = (first == 0 && number == length && (step == 1 || length == 1));
         }
     }
 
-    public static final int count(int first, int last, int step) {
-        if ((step > 0 && first <= last) || (step < 0 && first >= last)) {
-            return (last - first)/step + 1;
+    private static final int count(int first, int last, int step, int length) {
+        if (first <= last) {
+            if (0 <= first && last < length) {
+                if (step > 0) {
+                    return (last - first)/step + 1;
+                } else if (step < 0) {
+                    emptyRange();
+                } else {
+                    illegalStep();
+                }
+            }
         } else {
-            return 0;
+            if (0 <= last && first < length) {
+                if (step < 0) {
+                    return (last - first)/step + 1;
+                } else if (step > 0) {
+                    emptyRange();
+                } else {
+                    illegalStep();
+                }
+            }
         }
+        throw new IndexOutOfBoundsException("Range is outside bounds.");
+    }
+
+    private final static void emptyRange() {
+        throw new IllegalRangeException("Empty range.");
+    }
+
+    private final static void illegalStep() {
+        throw new IllegalRangeException("Illegal 0 step.");
     }
 
     /** Get the first position of the compiled range. */
@@ -98,17 +125,6 @@ public class CompiledRange {
     /** Check whether a range has no effects. */
     final public boolean doesNothing() {
         return nothing;
-    }
-
-    /**
-     * Get a range index accounting for the rules for negative values.
-     * @param index  - The index.
-     * @param length - The number of elements along the dimension
-     *                 of interest.
-     * @return The corrected index.
-     */
-    final public static int fixIndex(int index, int length) {
-        return (index >= 0 ? index : length - index);
     }
 
 }
