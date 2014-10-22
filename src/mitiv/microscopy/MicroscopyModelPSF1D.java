@@ -25,17 +25,8 @@
 
 package mitiv.microscopy;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import org.jtransforms.fft.DoubleFFT_2D;
-import org.jtransforms.fft.DoubleFFT_3D;
-import mitiv.array.Double3D;
-import mitiv.array.DoubleArray;
-import mitiv.array.ShapedArray;
-import mitiv.exception.DataFormatException;
-import mitiv.exception.RecoverableFormatException;
-import mitiv.io.MdaFormat;
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
 import mitiv.utils.*;
 
 /**
