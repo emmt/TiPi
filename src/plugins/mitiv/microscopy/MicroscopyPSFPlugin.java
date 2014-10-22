@@ -149,7 +149,7 @@ public class MicroscopyPSFPlugin extends EzPlug implements EzStoppable
     @Override
     protected void execute()
     {
-        MicroscopyModelPSF_1D pupil = new MicroscopyModelPSF_1D(NA.getValue(),
+        MicroscopyModelPSF1D pupil = new MicroscopyModelPSF1D(NA.getValue(),
                 lambda.getValue()*1e-9, ni.getValue(), ns.getValue(),
                 zdepth.getValue()*1e-6, dxy.getValue()*1e-9, dz.getValue()*1e-6, Nx.getValue(), Ny.getValue(),
                 Nz.getValue(), NZernike.getValue(), use_depth_scaling.getValue());
@@ -287,6 +287,7 @@ public class MicroscopyPSFPlugin extends EzPlug implements EzStoppable
     }
 
     /**
+     
      * 
      */
     public double getDxy() {

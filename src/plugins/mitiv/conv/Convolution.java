@@ -26,32 +26,17 @@
 package plugins.mitiv.conv;
 
 
-import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import mitiv.array.Double2D;
-import mitiv.array.Double3D;
-import mitiv.array.DoubleArray;
-import mitiv.exception.DataFormatException;
-import mitiv.exception.RecoverableFormatException;
-import mitiv.io.MdaFormat;
 import mitiv.linalg.shaped.DoubleShapedVector;
-import mitiv.linalg.shaped.DoubleShapedVectorSpace;
-import mitiv.microscopy.MicroscopyModelPSF1D;
-import mitiv.utils.CommonUtils;
 import mitiv.utils.MathUtils;
 import icy.sequence.Sequence;
 import icy.sequence.SequenceEvent;
 import icy.sequence.SequenceListener;
 import icy.image.IcyBufferedImage;
-import icy.type.DataType;
 import icy.type.collection.array.Array1DUtil;
 import plugins.adufour.ezplug.*;
 
