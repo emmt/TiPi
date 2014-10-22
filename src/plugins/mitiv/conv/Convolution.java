@@ -44,7 +44,7 @@ import mitiv.exception.RecoverableFormatException;
 import mitiv.io.MdaFormat;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
-import mitiv.microscopy.MicroscopyModelPSF_1D;
+import mitiv.microscopy.MicroscopyModelPSF1D;
 import mitiv.utils.CommonUtils;
 import mitiv.utils.MathUtils;
 import icy.sequence.Sequence;
