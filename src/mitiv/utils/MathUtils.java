@@ -40,11 +40,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import mitiv.deconv.ConvolutionOperator;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 
 // TODO: Auto-generated Javadoc
 /**
