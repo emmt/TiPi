@@ -55,6 +55,7 @@ import mitiv.base.mapping.${Type}Function;
 import mitiv.base.mapping.${Type}Scanner;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.base.indexing.Range;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -546,6 +547,103 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
             int offset, ${declStrideList}, ${declDimList}) {
         return new Stridden${className}(data, offset, ${strideList}, ${dimList});
     }
+
+    //# if ${rank} >= 1
+    //#    eval reducedRank = ${rank} - 1
+    //#    if ${reducedRank} == 0
+    //#        def reducedClassName = ${Type}Scalar
+    //#    else
+    //#        def reducedClassName = ${Type}${reducedRank}D
+    //#    end
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.  The same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     * @return A ${reducedClassName} view on the given slice of the array.
+     */
+    public abstract ${reducedClassName} slice(int idx);
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.
+     * @param dim - The dimension to slice.  For these two arguments,
+     *              the same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     *
+     * @return A ${reducedClassName} view on the given slice of the array.
+     */
+    public abstract ${reducedClassName} slice(int idx, int dim);
+
+    //# if ${rank} > 1
+    //#     def s = s
+    //# else
+    //#     def s =
+    //# end
+    /**
+     * Get a view of the array for given range${s} of indices.
+     *
+     //# def k = 0
+     //# def argType = Range
+     //# def argName = rng
+     //# for k in 1:${rank}
+     //#     if ${k} == 1
+     //#         def argList = ${argType} ${argName}${k}
+     //#     else
+     //#         def argList = ${argList}, ${argType} ${argName}${k}
+     //#     end
+     //#     def kth = ${}{nth_${k}}
+     * @param ${argName}${k} - The range of indices to select along ${kth} dimension
+     *               (or {@code null} to select all.
+     //# end
+     *
+     * @return A ${className} view for the given range${s} of the array.
+     */
+    public abstract ${className} view(${argList});
+
+    /**
+     * Get a view of the array for given range${s} of indices.
+     *
+     //# def k = 0
+     //# def argType = int[]
+     //# def argName = idx
+     //# for k in 1:${rank}
+     //#     if ${k} == 1
+     //#         def argList = ${argType} ${argName}${k}
+     //#     else
+     //#         def argList = ${argList}, ${argType} ${argName}${k}
+     //#     end
+     //#     def kth = ${}{nth_${k}}
+     * @param ${argName}${k} - The list of indices to select along ${kth} dimension
+     *               (or {@code null} to select all.
+     //# end
+     *
+     * @return A ${className} view for the given index selection${s} of the
+     *         array.
+     */
+    public abstract ${className} view(${argList});
+
+    //#end // for ${rank} >= 1
+    //#
+    //# if ${rank} == 0
+    //#     def obj = scalar
+    //# else
+    //#     def obj = array
+    //# end
+    /**
+     * Get a view of the ${obj} as a 1D array.
+     *
+     * @return A 1D view of the ${obj}.
+     */
+    @Override
+    public abstract ${Type}1D as1D();
 
 }
 

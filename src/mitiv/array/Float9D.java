@@ -34,6 +34,7 @@ import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.base.indexing.Range;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -931,6 +932,94 @@ public abstract class Float9D extends Array9D implements FloatArray {
             int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int stride8, int stride9, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return new StriddenFloat9D(data, offset, stride1,stride2,stride3,stride4,stride5,stride6,stride7,stride8,stride9, dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8,dim9);
     }
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.  The same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     * @return A Float8D view on the given slice of the array.
+     */
+    public abstract Float8D slice(int idx);
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.
+     * @param dim - The dimension to slice.  For these two arguments,
+     *              the same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     *
+     * @return A Float8D view on the given slice of the array.
+     */
+    public abstract Float8D slice(int idx, int dim);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param rng1 - The range of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param rng2 - The range of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     * @param rng3 - The range of indices to select along 3rd dimension
+     *               (or {@code null} to select all.
+     * @param rng4 - The range of indices to select along 4th dimension
+     *               (or {@code null} to select all.
+     * @param rng5 - The range of indices to select along 5th dimension
+     *               (or {@code null} to select all.
+     * @param rng6 - The range of indices to select along 6th dimension
+     *               (or {@code null} to select all.
+     * @param rng7 - The range of indices to select along 7th dimension
+     *               (or {@code null} to select all.
+     * @param rng8 - The range of indices to select along 8th dimension
+     *               (or {@code null} to select all.
+     * @param rng9 - The range of indices to select along 9th dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Float9D view for the given ranges of the array.
+     */
+    public abstract Float9D view(Range rng1, Range rng2, Range rng3, Range rng4, Range rng5, Range rng6, Range rng7, Range rng8, Range rng9);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param idx1 - The list of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param idx2 - The list of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     * @param idx3 - The list of indices to select along 3rd dimension
+     *               (or {@code null} to select all.
+     * @param idx4 - The list of indices to select along 4th dimension
+     *               (or {@code null} to select all.
+     * @param idx5 - The list of indices to select along 5th dimension
+     *               (or {@code null} to select all.
+     * @param idx6 - The list of indices to select along 6th dimension
+     *               (or {@code null} to select all.
+     * @param idx7 - The list of indices to select along 7th dimension
+     *               (or {@code null} to select all.
+     * @param idx8 - The list of indices to select along 8th dimension
+     *               (or {@code null} to select all.
+     * @param idx9 - The list of indices to select along 9th dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Float9D view for the given index selections of the
+     *         array.
+     */
+    public abstract Float9D view(int[] idx1, int[] idx2, int[] idx3, int[] idx4, int[] idx5, int[] idx6, int[] idx7, int[] idx8, int[] idx9);
+
+    /**
+     * Get a view of the array as a 1D array.
+     *
+     * @return A 1D view of the array.
+     */
+    @Override
+    public abstract Float1D as1D();
 
 }
 
