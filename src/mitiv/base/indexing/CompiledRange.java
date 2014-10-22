@@ -39,23 +39,37 @@ public class CompiledRange {
     public final boolean nothing;
 
     public CompiledRange(Range rng, int length) {
-        int first = fixIndex(rng.first, length);
-        int last = fixIndex(rng.last, length);
-        int step = rng.step;
-        this.offset = first;
-        this.stride = step;
-        this.number = count(first, last, step);
-        this.nothing = (first == 0 && number == length && (step == 1 || length == 1));
+        if (rng == null) {
+            this.offset = 0;
+            this.stride = 1;
+            this.number = length;
+            this.nothing = true;
+        } else {
+            int first = fixIndex(rng.first, length);
+            int last = fixIndex(rng.last, length);
+            int step = rng.step;
+            this.offset = first;
+            this.stride = step;
+            this.number = count(first, last, step);
+            this.nothing = (first == 0 && number == length && (step == 1 || length == 1));
+        }
     }
 
     public CompiledRange(Range rng, int length, int offset, int stride) {
-        int first = fixIndex(rng.first, length);
-        int last = fixIndex(rng.last, length);
-        int step = rng.step;
-        this.offset = offset + first*stride;
-        this.stride = step*stride;
-        this.number = count(first, last, step);
-        this.nothing = (first == 0 && number == length && (step == 1 || length == 1));
+        if (rng == null) {
+            this.offset = offset;
+            this.stride = stride;
+            this.number = length;
+            this.nothing = true;
+        } else {
+            int first = fixIndex(rng.first, length);
+            int last = fixIndex(rng.last, length);
+            int step = rng.step;
+            this.offset = offset + first*stride;
+            this.stride = step*stride;
+            this.number = count(first, last, step);
+            this.nothing = (first == 0 && number == length && (step == 1 || length == 1));
+        }
     }
 
     public static final int count(int first, int last, int step) {
