@@ -72,6 +72,8 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
     EzVarBoolean  varBoolean = new EzVarBoolean("Is PSF splitted ?", false);
     EzVarSequence sequencePSF = new EzVarSequence("PSF");
     EzVarSequence sequenceImage = new EzVarSequence("Image");
+    
+    EzVarDouble eZcoef = new EzVarDouble("Padding multiplication", 1.0, 10, 0.1);
 
     EzVarInteger advOne = new EzVarInteger("Complex1");
     EzVarInteger advTwo = new EzVarInteger("Complex2");
@@ -257,6 +259,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
         addEzComponent(sequenceImage);
         addEzComponent(options);
         addEzComponent(correction);
+        addEzComponent(eZcoef);
         addComponent(slider);
         addComponent(label);
         advancedOptions.addVisibilityTriggerTo(advOne, true);
@@ -308,6 +311,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
                 Sequence seqPsf = sequencePSF.getValue();
                 if (seqIm.getSizeZ() == 1 && seqPsf.getSizeZ() == 1) {
                     deconvolution = new Deconvolution(seqIm.getFirstNonNullImage(), seqPsf.getFirstNonNullImage(),correct);
+                    deconvolution.setPaddingCoefficient(eZcoef.getValue());
                     myseq = new Sequence();
                     myseq.addImage(0,firstJob(job));
                     myseq.addListener(this); 
@@ -334,6 +338,7 @@ public class MitivDeconvolution extends EzPlug implements EzStoppable,SequenceLi
                     }
                 } else {
                     deconvolution = new Deconvolution(seqIm.getAllImage(), seqPsf.getAllImage(),correct);
+                    deconvolution.setPaddingCoefficient(eZcoef.getValue());
                     myseq = new Sequence();
                     myseq.addListener(this); 
                     myseq.setName("");

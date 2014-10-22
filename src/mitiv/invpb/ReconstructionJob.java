@@ -56,6 +56,7 @@ public interface ReconstructionJob {
     /** Get the infinite norm of the current gradient of the objective function. */
     public abstract double getGradientNormInf();
 
+    public abstract double getRelativeTolerance();
 }
 
 /*

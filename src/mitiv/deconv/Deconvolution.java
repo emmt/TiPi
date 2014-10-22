@@ -25,10 +25,18 @@
 
 package mitiv.deconv;
 
+import icy.image.IcyBufferedImage;
+
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+
+import mitiv.array.DoubleArray;
+import mitiv.array.ShapedArray;
+
 import mitiv.invpb.LinearDeconvolver;
+import mitiv.io.BufferedImageUtils;
+import mitiv.io.IcyBufferedImageUtils;
 import mitiv.linalg.LinearConjugateGradient;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
@@ -63,8 +71,8 @@ public class Deconvolution{
     Filter wiener;
     double[] image1D;
     double[] psf1D;
-    DoubleShapedVector vector_image;
-    DoubleShapedVector vector_psf;
+    DoubleShapedVector vectorImage;
+    DoubleShapedVector vectorPsf;
     int correction;
     boolean isPsfSplitted = false;
     boolean useVectors;
@@ -78,6 +86,7 @@ public class Deconvolution{
     LinearDeconvolver linDeconv;
     int outputValue = LinearConjugateGradient.CONVERGED;
     int maxIter = 20;
+    double coef = 1.0;
 
     static boolean forceVectorUsage = false;
 
@@ -134,13 +143,17 @@ public class Deconvolution{
             }
         }else if(image instanceof ArrayList){
             //we pad the image in any case
-            utils.readImage((ArrayList<BufferedImage>)image, (ArrayList<BufferedImage>)PSF);
+            utils.readImage((ArrayList<IcyBufferedImage>)image, (ArrayList<IcyBufferedImage>)PSF);
 
         }else{
             throw new IllegalArgumentException("Input should be a IcyBufferedImage, BufferedImage or a path");
         }
         this.correction = correction;
         wiener = new Filter();
+    }
+    
+    public void setPaddingCoefficient(double coef){
+        this.coef = coef;
     }
 
     private ArrayList<BufferedImage> list(BufferedImage im){
@@ -274,7 +287,7 @@ public class Deconvolution{
      * @return The bufferedImage for the input value given
      */
     private BufferedImage nextDeconvolutionSimple1D(double alpha){
-        double[] out = wiener.wiener3D(alpha);
+        double[] out = wiener.wiener1D(alpha);
         utils.IFFT1D(out);
         return(utils.arrayToImage1D(out, correction,true));
     }
@@ -286,15 +299,68 @@ public class Deconvolution{
      * @return The bufferedImage for the input value given
      */
     private ArrayList<BufferedImage> firstDeconvolutionSimple3D(double alpha){
-        space = new DoubleShapedVectorSpace(utils.width, utils.height,utils.sizeZ);
+        ArrayList<IcyBufferedImage> imgList = utils.listImageIcy;
+        ArrayList<IcyBufferedImage> psfList = utils.listPSFIcy;
+        
+        
+        ShapedArray imgArray = IcyBufferedImageUtils.imageToArray(imgList);
+        ShapedArray psfArray = IcyBufferedImageUtils.imageToArray(psfList);
+        ShapedArray weightArray = (DoubleArray) IcyBufferedImageUtils.imageToArray(psfList);
+        
+        ((DoubleArray)weightArray).fill(1.0);
+        
+        imgArray = BufferedImageUtils.imagePad(imgArray, coef);
+        psfArray = BufferedImageUtils.imagePad(psfArray, coef);
+        weightArray = BufferedImageUtils.imagePad(weightArray, coef);
+        psfArray = BufferedImageUtils.shiftPsf(psfArray);
+        
+        utils.PadImageAndPSF(coef);//Multiply utils.{width,height,sizeZ} by coef
+        
+        space = new DoubleShapedVectorSpace(utils.width, utils.height, utils.sizeZ);
         fft = new RealComplexFFT(space);
         complexSpace = (DoubleShapedVectorSpace) fft.getOutputSpace();
-
+        vectorPsf = space.wrap(psfArray.toDouble().flatten());
+        vectorImage = space.wrap(imgArray.toDouble().flatten());
+        DoubleShapedVector vectorWgt = space.wrap(weightArray.toDouble().flatten());
+        DoubleShapedVector imgComplex = complexSpace.create(0);
+        DoubleShapedVector psfComplex = complexSpace.create(0);
+        DoubleShapedVector wgtComplex = complexSpace.create(0);
+        fft.apply(vectorWgt, wgtComplex);
+        fft.apply(vectorPsf, psfComplex);
+        fft.apply(vectorImage, imgComplex);
+        vectorPsf = psfComplex;
+        vectorImage = imgComplex;
+        DoubleShapedVector out = complexSpace.wrap(wiener.wiener3D(alpha, psfComplex.getData(), imgComplex.getData() , wgtComplex.getData() ,utils.width,utils.height, utils.sizeZ, coef));
+        //DoubleShapedVector out = complexSpace.clone(imgComplex);
+        DoubleShapedVector outReal = space.create();
+        fft.apply(out, outReal, RealComplexFFT.ADJOINT);
+        
+        return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
+        //return utils.arrayToImage3D(outReal.getData(), correction, false);
+        /*
+         * GOOD OLD WAY
+         */
+        
+        /*
+        double[] image = utils.image3DToArray1D(false);
+        double[] psf = utils.psf3DToArray1Dexp(false);
+        image = CommonUtils.imagePad(image, utils.width, utils.height, utils.sizeZ, coef);
+        psf = CommonUtils.imagePad(psf, utils.width, utils.height, utils.sizeZ, coef);
+        
+        utils.PadImageAndPSF(2.0);
+        
+        double[] psfShift = new double[utils.width*utils.height*utils.sizeZ];
+        //CommonUtils.fftShift3D(psf,psfShift, utils.width, utils.height, utils.sizeZ);
+        CommonUtils.psf3DPadding1D(psfShift, psf , utils.width, utils.height, utils.sizeZ);
+        
+        space = new DoubleShapedVectorSpace(utils.width, utils.height, utils.sizeZ);
+        fft = new RealComplexFFT(space);
+        complexSpace = (DoubleShapedVectorSpace) fft.getOutputSpace();
+        
         //vector_psf = space.wrap(utils.shiftPsf3DToArray1D(false));
         //vector_image = space.wrap(utils.image3DToArray1D(false));
-
-        vector_image = space.wrap(CommonUtils.image3DToArray1D(utils.listImage, utils.width, utils.height, utils.sizeZ, false));
-        vector_psf = space.wrap(CommonUtils.shiftPsf3DToArray1D(utils.listPSF, utils.width, utils.height, utils.sizeZ, false));
+        vector_psf = space.wrap(psfShift);
+        vector_image = space.wrap(image);
 
         DoubleShapedVector imgComplex = complexSpace.create(0);
         DoubleShapedVector psfComplex = complexSpace.create(0);
@@ -306,6 +372,7 @@ public class Deconvolution{
         DoubleShapedVector outReal = space.create();
         fft.apply(out, outReal,RealComplexFFT.ADJOINT);
         return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
+        */
     }
 
     /**
@@ -317,18 +384,20 @@ public class Deconvolution{
      */
     private ArrayList<BufferedImage> nextDeconvolutionSimple3D(double alpha){
         DoubleShapedVector out = complexSpace.wrap(wiener.wiener3D(alpha));
+        //DoubleShapedVector out = complexSpace.clone(vector_image);
         DoubleShapedVector outReal = space.create();
-        fft.apply(out, outReal,RealComplexFFT.ADJOINT);
+        fft.apply(out, outReal, RealComplexFFT.ADJOINT);
         return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
+        //return utils.arrayToImage3D(outReal.getData(), correction, false);
     }
 
     private BufferedImage firstDeconvolutionVector(double alpha){
-        vector_image = (DoubleShapedVector) utils.cloneImageVect();
-        vector_psf = (DoubleShapedVector) utils.getPsfPadVect();
+        vectorImage = (DoubleShapedVector) utils.cloneImageVect();
+        vectorPsf = (DoubleShapedVector) utils.getPsfPadVect();
         //TODO add getPsfVect need change on opening of the image
-        utils.FFT1D(vector_image);
-        utils.FFT1D(vector_psf);
-        ShapedVector out = wiener.wienerVect(alpha, vector_psf, vector_image);
+        utils.FFT1D(vectorImage);
+        utils.FFT1D(vectorPsf);
+        ShapedVector out = wiener.wienerVect(alpha, vectorPsf, vectorImage);
         utils.IFFT1D(out);
         return(utils.arrayToImage(out, correction,true));
     }
@@ -336,7 +405,7 @@ public class Deconvolution{
     private BufferedImage nextDeconvolutionVector(double alpha){
         ShapedVector out = wiener.wienerVect(alpha);
         utils.IFFT1D(out);
-        return(utils.arrayToImage(out, correction,true));
+        return(utils.arrayToImage(out, correction, true));
     }
 
     /**
@@ -472,16 +541,16 @@ public class Deconvolution{
         fft = new RealComplexFFT(space);
         complexSpace = (DoubleShapedVectorSpace) fft.getOutputSpace();
 
-        vector_image = space.wrap(CommonUtils.image3DToArray1D(utils.listImage, utils.width, utils.height, utils.sizeZ, false));
-        vector_psf = space.wrap(CommonUtils.shiftPsf3DToArray1D(utils.listPSF, utils.width, utils.height, utils.sizeZ, false));
-
+        vectorPsf = space.wrap(utils.shiftPsf3DToArray1D(false));
+        vectorImage = space.wrap(utils.image3DToArray1D(false));
+        
         DoubleShapedVector imgComplex = complexSpace.create(0);
         DoubleShapedVector psfComplex = complexSpace.create(0);
 
-        fft.apply(vector_psf, psfComplex);
-        fft.apply(vector_image, imgComplex);
-        vector_psf = psfComplex;
-        vector_image = imgComplex;
+        fft.apply(vectorPsf, psfComplex);
+        fft.apply(vectorImage, imgComplex);
+        vectorPsf = psfComplex;
+        vectorImage = imgComplex;
 
         DoubleShapedVector out = complexSpace.wrap(wiener.wienerQuad3D(alpha, psfComplex.getData(), imgComplex.getData(),utils.width,utils.height, utils.sizeZ,utils.sizePadding));
         DoubleShapedVector outReal = space.create();
@@ -504,11 +573,11 @@ public class Deconvolution{
     }
 
     private BufferedImage firstDeconvolutionQuadVector(double alpha){
-        vector_image = (DoubleShapedVector) utils.cloneImageVect();
-        vector_psf = (DoubleShapedVector) utils.getPsfPadVect();
-        utils.FFT1D(vector_image);
-        utils.FFT1D(vector_psf);
-        ShapedVector out = wiener.wienerQuadVect(alpha, vector_psf, vector_image);
+        vectorImage = (DoubleShapedVector) utils.cloneImageVect();
+        vectorPsf = (DoubleShapedVector) utils.getPsfPadVect();
+        utils.FFT1D(vectorImage);
+        utils.FFT1D(vectorPsf);
+        ShapedVector out = wiener.wienerQuadVect(alpha, vectorPsf, vectorImage);
         utils.IFFT1D(out);
         return(utils.arrayToImage(out, correction,true));
     }
@@ -612,11 +681,11 @@ public class Deconvolution{
     private BufferedImage firstDeconvolutionCGNormal(double alpha){
         space = new DoubleShapedVectorSpace(utils.width, utils.height);
         if (isPsfSplitted) {
-            vector_psf = space.wrap(utils.psfToArray1D(false));
+            vectorPsf = space.wrap(utils.psfToArray1D(false));
         } else {
-            vector_psf = space.wrap(utils.psfPadding1D(false));
+            vectorPsf = space.wrap(utils.psfPadding1D(false));
         }
-        vector_image = space.wrap(utils.imageToArray1D(false));
+        vectorImage = space.wrap(utils.imageToArray1D(false));
         /*//We should use this one BUT as there is only CG with vectors, then in the case of no vectors, there is no imageVect
         In others words, if useVectors is False, getImageVect return null.
         if (vector_image == null) {
@@ -631,7 +700,7 @@ public class Deconvolution{
         w = space.create(1);
 
         linDeconv = new LinearDeconvolver(
-                space.getShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
+                space.getShape(), vectorImage.getData(), vectorPsf.getData(), w.getData(), alpha);
         outputValue = linDeconv.solve(x.getData(), maxIter, false);
         parseOuputCG(outputValue); //print nothing if good, print in err else
         return (utils.arrayToImage1D(x.getData(), correction, false));
@@ -656,25 +725,51 @@ public class Deconvolution{
     }
 
     private ArrayList<BufferedImage> firstDeconvolutionCG3D(double alpha){
+        ArrayList<IcyBufferedImage> imgList = utils.listImageIcy;
+        ArrayList<IcyBufferedImage> psfList = utils.listPSFIcy;
+        ShapedArray imgArray = IcyBufferedImageUtils.imageToArray(imgList);
+        ShapedArray psfArray = IcyBufferedImageUtils.imageToArray(psfList);
+        double[] weight = new double[utils.width*utils.height*utils.sizeZ];
+        for (int i = 0; i < weight.length; i++) {
+            weight[i] = 1;
+        }
+        weight = CommonUtils.imagePad(weight, utils.width, utils.height, utils.sizeZ, coef);
+        imgArray = BufferedImageUtils.imagePad(imgArray, coef);
+        psfArray = BufferedImageUtils.imagePad(psfArray, coef);
+        psfArray = BufferedImageUtils.shiftPsf(psfArray);
+        
+        utils.PadImageAndPSF(coef);
+        
+        space = new DoubleShapedVectorSpace(utils.width, utils.height, utils.sizeZ);
+
+        vectorPsf = space.wrap(psfArray.toDouble().flatten());
+        vectorImage = space.wrap(imgArray.toDouble().flatten());
+        
+        x = space.create(0);
+
+        w = space.wrap(weight);
+
+        maxIter = 50;
+        linDeconv = new LinearDeconvolver(
+                space.getShape(), vectorImage.getData(), vectorPsf.getData(), w.getData(), alpha);
+        outputValue = linDeconv.solve(x.getData(), maxIter, false);
+        parseOuputCG(outputValue); //print nothing if good, print in err else
+        return (utils.arrayToIcyImage3D(x.getData(), correction,false));
+
+        /*
+         * Good OLD WAY
+         */
+        /*utils.PadImageAndPSF();
         space = new DoubleShapedVectorSpace(utils.width, utils.height,utils.sizeZ);
 
-        vector_image = space.wrap(CommonUtils.image3DToArray1D(utils.listImage, utils.width, utils.height, utils.sizeZ, false));
-        vector_psf = space.wrap(CommonUtils.shiftPsf3DToArray1D(utils.listPSF, utils.width, utils.height, utils.sizeZ, false));
+        vector_psf = space.wrap(utils.shiftPsf3DToArray1D(false));
+        vector_image = space.wrap(utils.image3DToArray1D(false));
 
         x = space.create(0);
         //WeightGenerator weightGen = new WeightGenerator();
         //Creation of a weight map
         w = space.create(1);
-        int pad = utils.sizePadding/2;
-        for (int k = 0; k < utils.sizeZ; k++) {
-            for (int j = 0; j < utils.height; j++) {
-                for (int i = 0; i < utils.width; i++) {
-                    if ((i > pad && i < (utils.width-pad)) || (j > pad && j < (utils.height - pad))) {
-                        w.getData()[i+j*utils.width+k*utils.height*utils.width] = 1;
-                    }
-                }
-            }
-        }
+
         //End of weight map generation
 
         maxIter = 50;
@@ -682,7 +777,7 @@ public class Deconvolution{
                 space.getShape(), vector_image.getData(), vector_psf.getData(), w.getData(), alpha);
         outputValue = linDeconv.solve(x.getData(), maxIter, false);
         parseOuputCG(outputValue); //print nothing if good, print in err else
-        return (utils.arrayToIcyImage3D(x.getData(), correction,false));
+        return (utils.arrayToIcyImage3D(x.getData(), correction,false));*/
     }
 
     private ArrayList<BufferedImage> nextDeconvolutionCG3D(double alpha){
