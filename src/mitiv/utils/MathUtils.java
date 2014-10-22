@@ -44,7 +44,7 @@ import mitiv.deconv.ConvolutionOperator;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
-import org.jtransforms.fft.DoubleFFT_2D;
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 
 // TODO: Auto-generated Javadoc
 /**
