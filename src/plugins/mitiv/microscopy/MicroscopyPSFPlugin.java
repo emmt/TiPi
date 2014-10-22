@@ -149,7 +149,7 @@ public class MicroscopyPSFPlugin extends EzPlug implements EzStoppable
     @Override
     protected void execute()
     {
-        MicroscopyModelPSF_1D pupil = new MicroscopyModelPSF_1D(NA.getValue(),
+        MicroscopyModelPSF1D pupil = new MicroscopyModelPSF1D(NA.getValue(),
                 lambda.getValue()*1e-9, ni.getValue(), ns.getValue(),
                 zdepth.getValue()*1e-6, dxy.getValue()*1e-9, dz.getValue()*1e-6, Nx.getValue(), Ny.getValue(),
                 Nz.getValue(), NZernike.getValue(), use_depth_scaling.getValue());
@@ -167,14 +167,10 @@ public class MicroscopyPSFPlugin extends EzPlug implements EzStoppable
         psf3DSequence.setName("PSF");
         for (int k = 0; k < Nz.getValue(); k++)
         {
-            //MathUtils.fftShift1D(pupil.getPSF(k), Nx.getValue(), Ny.getValue(), 1)
-            //psf3DSequence.setImage(0, k,
-                    //ArrayUtils.doubleAsBuffered(MathUtils.getArray(PSF_shift, Nx.getValue(), Ny.getValue(), k), 1, Nx.getValue(), Ny.getValue()));
-            //psf3DSequence.setImage(0, k, new IcyBufferedImage(Nx.getValue(), Ny.getValue(), pupil.getPSF(k)));
             psf3DSequence.addImage(new IcyBufferedImage(Nx.getValue(), Ny.getValue(), MathUtils.getArray(PSF_shift, Nx.getValue(), Ny.getValue(), k)));
-            //System.out.println(MathUtils.max(pupil.getPSF(k)));
         }
         MathUtils.stat(pupil.getPSF());
+
         addSequence(psf3DSequence);
         
         if( rho.getValue() == true )
