@@ -37,6 +37,7 @@ import mitiv.array.Float3D;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
+import mitiv.utils.CommonUtils;
 
 public class IcyBufferedImageUtils {
 
@@ -106,6 +107,22 @@ public class IcyBufferedImageUtils {
             return BufferedImageUtils.imageToArray(image);
         }
     }
+    
+    public static double[] shiftIcyPsf3DToArray1D(ArrayList<IcyBufferedImage>listPSF,int width, int height, int sizeZ,  boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[width*height*sizeZ*2];
+        } else {
+            out = new double[width*height*sizeZ];
+        }
+        double[] psfIn = CommonUtils.icyImage3DToArray1D(listPSF, width, height, sizeZ, isComplex);
+        if (psfIn.length != out.length) {
+            System.err.println("Bad size for psf and output deconvutil l356");
+        }
+        CommonUtils.fftShift3D(psfIn,out, width, height, sizeZ);
+        //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
+        return out;
+    }
 
     public static ArrayList<IcyBufferedImage> arrayToImage(ShapedArray array) {
         Shape shape = array.getShape();
@@ -156,6 +173,65 @@ public class IcyBufferedImageUtils {
         ArrayList<IcyBufferedImage> list = new ArrayList<IcyBufferedImage>();
         list.add(img);
         return list;
+    }
+    
+    /*
+     * 
+     * HERE BACKUP FROM DELETED FUNCTION FROM DECONVUTILS
+     * 
+     */
+    
+    //FIXME TMP COPY
+    public static double[] icyImage3DToArray1D(ArrayList<IcyBufferedImage>listImage, int width,int height,int sizeZ, boolean isComplex) {
+        double[] out;
+        if (isComplex) {
+            out = new double[2*sizeZ*width*height];
+            int strideW = width;
+            int strideH = width*height;
+            for (int k = 0; k < sizeZ; k++) {
+                double[] tmp = CommonUtils.imageToArray1D(listImage.get(k), false);
+                for (int j = 0; j < height; j++) {
+                    for (int i = 0; i < width; i++) {
+                        out[2*i+2*j*strideW+2*k*strideH] = tmp[i+j*strideW];
+                    }
+                }
+            }
+        } else {
+            out = new double[sizeZ*width*height];
+            for (int j = 0; j < sizeZ; j++) {
+                double[] tmp = CommonUtils.imageToArray1D(listImage.get(j), false);
+                for (int i = 0; i < tmp.length; i++) {
+                    out[i+j*tmp.length] = tmp[i];
+                }
+            }
+        }
+        return out;
+    }
+    
+    public ArrayList<BufferedImage> arrayToIcyImage3D(double[] array, int job, boolean isComplex, int width, int height, int sizeZ){
+        ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
+        if (isComplex) {
+            for (int k = 0; k < sizeZ; k++) {
+                double[] tmp = new double[width*height];
+                for (int j = 0; j < height; j++) {
+                    for (int i = 0; i < width; i++) {
+                        tmp[i+j*width] = array[2*i+2*j*width+2*k*height*width];
+                    }
+                }
+                out.add(new IcyBufferedImage(width, height, tmp));
+            }
+        }else{
+            for (int j = 0; j < sizeZ; j++) {
+                double[] tmp = new double[width*height];
+                for (int i = 0; i < width*height; i++) {
+                    tmp[i] = array[i+j*height*width];
+                }
+                out.add(new IcyBufferedImage(width, height, tmp));
+            }
+        }
+        //IMPORTANT WE DEPAD AS WE COMPUTE OR NOT ...
+        //return CommonUtils.imageUnPad(out, sizePadding);
+        return out;
     }
 }
 
