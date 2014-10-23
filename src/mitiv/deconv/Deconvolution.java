@@ -26,7 +26,6 @@
 package mitiv.deconv;
 
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 import mitiv.array.Double2D;
 import mitiv.array.Double3D;
@@ -35,7 +34,6 @@ import mitiv.array.ShapedArray;
 import mitiv.base.indexing.Range;
 import mitiv.invpb.LinearDeconvolver;
 import mitiv.io.BufferedImageUtils;
-import mitiv.io.IcyBufferedImageUtils;
 import mitiv.linalg.LinearConjugateGradient;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
