@@ -25,8 +25,6 @@
 
 package mitiv.utils;
 
-import icy.image.IcyBufferedImage;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -426,33 +424,6 @@ public class CommonUtils {
         return out;
     }
 
-    @Deprecated
-    public static double[] icyImage3DToArray1D(ArrayList<IcyBufferedImage>listImage, int width,int height,int sizeZ, boolean isComplex) {
-        double[] out;
-        if (isComplex) {
-            out = new double[2*sizeZ*width*height];
-            int strideW = width;
-            int strideH = width*height;
-            for (int k = 0; k < sizeZ; k++) {
-                double[] tmp = CommonUtils.imageToArray1D(listImage.get(k), false);
-                for (int j = 0; j < height; j++) {
-                    for (int i = 0; i < width; i++) {
-                        out[2*i+2*j*strideW+2*k*strideH] = tmp[i+j*strideW];
-                    }
-                }
-            }
-        } else {
-            out = new double[sizeZ*width*height];
-            for (int j = 0; j < sizeZ; j++) {
-                double[] tmp = CommonUtils.imageToArray1D(listImage.get(j), false);
-                for (int i = 0; i < tmp.length; i++) {
-                    out[i+j*tmp.length] = tmp[i];
-                }
-            }
-        }
-        return out;
-    }
-
     public static double[] shiftPsf3DToArray1D(ArrayList<BufferedImage>listPSF,int width, int height, int sizeZ,  boolean isComplex) {
         double[] out;
         if (isComplex) {
@@ -465,22 +436,6 @@ public class CommonUtils {
             throw new IllegalArgumentException("The PSF and the output should be of same size");
         }
         fftShift3D(psfIn,out, width, height, sizeZ);
-        //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
-        return out;
-    }
-
-    public static double[] shiftIcyPsf3DToArray1D(ArrayList<IcyBufferedImage>listPSF,int width, int height, int sizeZ,  boolean isComplex) {
-        double[] out;
-        if (isComplex) {
-            out = new double[width*height*sizeZ*2];
-        } else {
-            out = new double[width*height*sizeZ];
-        }
-        double[] psfIn = CommonUtils.icyImage3DToArray1D(listPSF, width, height, sizeZ, isComplex);
-        if (psfIn.length != out.length) {
-            System.err.println("Bad size for psf and output deconvutil l356");
-        }
-        CommonUtils.fftShift3D(psfIn,out, width, height, sizeZ);
         //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
         return out;
     }

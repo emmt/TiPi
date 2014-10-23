@@ -25,8 +25,6 @@
 
 package mitiv.deconv;
 
-import icy.image.IcyBufferedImage;
-
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -142,12 +140,12 @@ public class Deconvolution{
             } else {
                 utils.readImage((BufferedImage)image, (BufferedImage)PSF);
             }
-        }else if(image instanceof ArrayList){
+        }else if(image instanceof ShapedArray){
             //we pad the image in any case
-            utils.readImage((ArrayList<IcyBufferedImage>)image, (ArrayList<IcyBufferedImage>)PSF);
+            utils.readImage((ShapedArray) image, (ShapedArray)PSF);
 
         }else{
-            throw new IllegalArgumentException("Input should be a IcyBufferedImage, BufferedImage or a path");
+            throw new IllegalArgumentException("Input should be a ShappedArray, BufferedImage or a path");
         }
         this.correction = correction;
         wiener = new Filter();
@@ -173,6 +171,7 @@ public class Deconvolution{
             return firstDeconvolution(alpha, standardProcessing, false);
         }
     }
+    
 
     /**
      * Simple filter based on the wiener filter.
@@ -308,13 +307,9 @@ public class Deconvolution{
      * @return The bufferedImage for the input value given
      */
     private ShapedArray firstDeconvolutionSimple3D(double alpha){
-        ArrayList<IcyBufferedImage> imgList = utils.listImageIcy;
-        ArrayList<IcyBufferedImage> psfList = utils.listPSFIcy;
-        
-        
-        ShapedArray imgArray = IcyBufferedImageUtils.imageToArray(imgList);
-        ShapedArray psfArray = IcyBufferedImageUtils.imageToArray(psfList);
-        ShapedArray weightArray = (DoubleArray) IcyBufferedImageUtils.imageToArray(psfList);
+        ShapedArray imgArray = utils.getImgShaped();
+        ShapedArray psfArray = utils.getPsfShaped();
+        ShapedArray weightArray = ((DoubleArray) psfArray).create();
         
         ((DoubleArray)weightArray).fill(1.0);
         
@@ -525,7 +520,9 @@ public class Deconvolution{
         utils.FFT1D(psf1D);
         double[] out = wiener.wienerQuad1D(alpha, psf1D, image1D, utils.width, utils.height);
         utils.IFFT1D(out);
-        return Double2D.wrap(out, utils.width, utils.height);
+        Double2D outArray =  Double2D.wrap(out, utils.width*2, utils.height);
+        return outArray.view(new Range(0,-1,2), null);
+        //return Double2D.wrap(out, utils.width, utils.height);
         //return(utils.arrayToImage1D(out, correction,true));
     }
 
@@ -539,7 +536,9 @@ public class Deconvolution{
     private ShapedArray nextDeconvolutionQuad1D(double alpha){
         double[] out = wiener.wienerQuad1D(alpha);
         utils.IFFT1D(out);
-        return Double2D.wrap(out, utils.width, utils.height);
+        Double2D outArray =  Double2D.wrap(out, utils.width*2, utils.height);
+        return outArray.view(new Range(0,-1,2), null);
+        //return Double2D.wrap(out, utils.width, utils.height);
         //return(utils.arrayToImage1D(out, correction, true));
     }
 
@@ -550,7 +549,7 @@ public class Deconvolution{
      * @return The bufferedImage for the input value given
      */
     private ShapedArray firstDeconvolutionQuad3D(double alpha){
-        space = new DoubleShapedVectorSpace(utils.width, utils.height,utils.sizeZ);
+        space = new DoubleShapedVectorSpace(utils.width, utils.height, utils.sizeZ);
         fft = new RealComplexFFT(space);
         complexSpace = (DoubleShapedVectorSpace) fft.getOutputSpace();
 
@@ -745,10 +744,8 @@ public class Deconvolution{
     }
 
     private ShapedArray firstDeconvolutionCG3D(double alpha){
-        ArrayList<IcyBufferedImage> imgList = utils.listImageIcy;
-        ArrayList<IcyBufferedImage> psfList = utils.listPSFIcy;
-        ShapedArray imgArray = IcyBufferedImageUtils.imageToArray(imgList);
-        ShapedArray psfArray = IcyBufferedImageUtils.imageToArray(psfList);
+        ShapedArray imgArray = utils.getImgShaped();
+        ShapedArray psfArray = utils.getPsfShaped();
         double[] weight = new double[utils.width*utils.height*utils.sizeZ];
         for (int i = 0; i < weight.length; i++) {
             weight[i] = 1;
@@ -809,7 +806,7 @@ public class Deconvolution{
         if (verbose) {
             parseOuputCG(outputValue); //print nothing if good, print in err else
         }
-        return Double2D.wrap(x.getData(), space.getShape());
+        return Double3D.wrap(x.getData(), space.getShape());
         //return utils.arrayToIcyImage3D(x.getData(), correction,false);
     }
 
