@@ -999,7 +999,6 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the buffered image
      */
-    @Deprecated
     public static BufferedImage arrayToImage1D(double[] array, int width, int height, boolean isComplex){
         BufferedImage imageout = createNewBufferedImage(width, height);
         WritableRaster raster = imageout.getRaster();
@@ -1028,7 +1027,6 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the buffered image
      */
-    @Deprecated
     public static BufferedImage arrayToImage1D(float[] array, int width, int height, boolean isComplex){
         //BufferedImage imageout = createNewBufferedImage(width, height);
         BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
