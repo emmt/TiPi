@@ -46,7 +46,7 @@ public class Timer {
     private static final double NANOSECOND = 1e-9;
 
     /**
-     * Start the timer.
+     * Start or restart the timer.
      * <p>
      * Reset any integrated time and start timing at the current time.
      * </p>
@@ -55,6 +55,16 @@ public class Timer {
         integrated = 0;
         running = true;
         marked = System.nanoTime();
+    }
+
+    /**
+     * Reset the timer.
+     * <p>
+     * Set integrated time to zero.
+     * </p>
+     */
+    public final void reset() {
+        integrated = 0;
     }
 
     /**
