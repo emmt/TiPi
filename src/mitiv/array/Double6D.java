@@ -535,10 +535,10 @@ public abstract class Double6D extends Array6D implements DoubleArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Double6D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Double6D src;
         if (arr.getType() == Traits.DOUBLE) {
             src = (Double6D)arr;
         } else {

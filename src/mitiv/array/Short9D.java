@@ -661,10 +661,10 @@ public abstract class Short9D extends Array9D implements ShortArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Short9D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Short9D src;
         if (arr.getType() == Traits.SHORT) {
             src = (Short9D)arr;
         } else {

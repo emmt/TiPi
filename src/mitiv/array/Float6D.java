@@ -535,10 +535,10 @@ public abstract class Float6D extends Array6D implements FloatArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Float6D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Float6D src;
         if (arr.getType() == Traits.FLOAT) {
             src = (Float6D)arr;
         } else {

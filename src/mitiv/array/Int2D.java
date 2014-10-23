@@ -367,10 +367,10 @@ public abstract class Int2D extends Array2D implements IntArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Int2D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Int2D src;
         if (arr.getType() == Traits.INT) {
             src = (Int2D)arr;
         } else {

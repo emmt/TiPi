@@ -535,10 +535,10 @@ public abstract class Byte6D extends Array6D implements ByteArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Byte6D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Byte6D src;
         if (arr.getType() == Traits.BYTE) {
             src = (Byte6D)arr;
         } else {

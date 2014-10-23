@@ -265,10 +265,10 @@ public abstract class Byte1D extends Array1D implements ByteArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Byte1D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Byte1D src;
         if (arr.getType() == Traits.BYTE) {
             src = (Byte1D)arr;
         } else {

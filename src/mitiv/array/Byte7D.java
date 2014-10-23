@@ -577,10 +577,10 @@ public abstract class Byte7D extends Array7D implements ByteArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Byte7D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Byte7D src;
         if (arr.getType() == Traits.BYTE) {
             src = (Byte7D)arr;
         } else {

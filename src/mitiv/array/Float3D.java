@@ -409,10 +409,10 @@ public abstract class Float3D extends Array3D implements FloatArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Float3D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Float3D src;
         if (arr.getType() == Traits.FLOAT) {
             src = (Float3D)arr;
         } else {

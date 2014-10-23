@@ -409,10 +409,10 @@ public abstract class Long3D extends Array3D implements LongArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Long3D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Long3D src;
         if (arr.getType() == Traits.LONG) {
             src = (Long3D)arr;
         } else {

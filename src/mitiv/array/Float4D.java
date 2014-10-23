@@ -451,10 +451,10 @@ public abstract class Float4D extends Array4D implements FloatArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Float4D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Float4D src;
         if (arr.getType() == Traits.FLOAT) {
             src = (Float4D)arr;
         } else {

@@ -619,10 +619,10 @@ public abstract class Double8D extends Array8D implements DoubleArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Double8D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Double8D src;
         if (arr.getType() == Traits.DOUBLE) {
             src = (Double8D)arr;
         } else {

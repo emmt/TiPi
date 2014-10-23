@@ -409,10 +409,10 @@ public abstract class Byte3D extends Array3D implements ByteArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Byte3D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Byte3D src;
         if (arr.getType() == Traits.BYTE) {
             src = (Byte3D)arr;
         } else {

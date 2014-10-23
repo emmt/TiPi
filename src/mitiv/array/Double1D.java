@@ -265,10 +265,10 @@ public abstract class Double1D extends Array1D implements DoubleArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Double1D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Double1D src;
         if (arr.getType() == Traits.DOUBLE) {
             src = (Double1D)arr;
         } else {

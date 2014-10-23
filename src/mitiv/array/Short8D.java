@@ -619,10 +619,10 @@ public abstract class Short8D extends Array8D implements ShortArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Short8D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Short8D src;
         if (arr.getType() == Traits.SHORT) {
             src = (Short8D)arr;
         } else {

@@ -619,10 +619,10 @@ public abstract class Int8D extends Array8D implements IntArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Int8D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Int8D src;
         if (arr.getType() == Traits.INT) {
             src = (Int8D)arr;
         } else {

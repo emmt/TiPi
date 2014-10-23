@@ -577,10 +577,10 @@ public abstract class Float7D extends Array7D implements FloatArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Float7D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Float7D src;
         if (arr.getType() == Traits.FLOAT) {
             src = (Float7D)arr;
         } else {

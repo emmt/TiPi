@@ -661,10 +661,10 @@ public abstract class Long9D extends Array9D implements LongArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Long9D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Long9D src;
         if (arr.getType() == Traits.LONG) {
             src = (Long9D)arr;
         } else {

@@ -577,10 +577,10 @@ public abstract class Double7D extends Array7D implements DoubleArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Double7D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Double7D src;
         if (arr.getType() == Traits.DOUBLE) {
             src = (Double7D)arr;
         } else {

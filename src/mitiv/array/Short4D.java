@@ -451,10 +451,10 @@ public abstract class Short4D extends Array4D implements ShortArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Short4D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Short4D src;
         if (arr.getType() == Traits.SHORT) {
             src = (Short4D)arr;
         } else {

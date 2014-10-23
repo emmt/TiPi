@@ -535,10 +535,10 @@ public abstract class Int6D extends Array6D implements IntArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Int6D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Int6D src;
         if (arr.getType() == Traits.INT) {
             src = (Int6D)arr;
         } else {

@@ -265,10 +265,10 @@ public abstract class Int1D extends Array1D implements IntArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Int1D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Int1D src;
         if (arr.getType() == Traits.INT) {
             src = (Int1D)arr;
         } else {

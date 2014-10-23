@@ -409,10 +409,10 @@ public abstract class Int3D extends Array3D implements IntArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Int3D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Int3D src;
         if (arr.getType() == Traits.INT) {
             src = (Int3D)arr;
         } else {

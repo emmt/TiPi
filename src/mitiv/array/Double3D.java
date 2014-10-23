@@ -409,10 +409,10 @@ public abstract class Double3D extends Array3D implements DoubleArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Double3D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Double3D src;
         if (arr.getType() == Traits.DOUBLE) {
             src = (Double3D)arr;
         } else {

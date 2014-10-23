@@ -619,10 +619,10 @@ public abstract class Byte8D extends Array8D implements ByteArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Byte8D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Byte8D src;
         if (arr.getType() == Traits.BYTE) {
             src = (Byte8D)arr;
         } else {

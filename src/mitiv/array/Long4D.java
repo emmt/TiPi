@@ -451,10 +451,10 @@ public abstract class Long4D extends Array4D implements LongArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Long4D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Long4D src;
         if (arr.getType() == Traits.LONG) {
             src = (Long4D)arr;
         } else {

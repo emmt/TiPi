@@ -265,10 +265,10 @@ public abstract class Long1D extends Array1D implements LongArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Long1D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Long1D src;
         if (arr.getType() == Traits.LONG) {
             src = (Long1D)arr;
         } else {

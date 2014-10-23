@@ -661,10 +661,10 @@ public abstract class Byte9D extends Array9D implements ByteArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Byte9D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Byte9D src;
         if (arr.getType() == Traits.BYTE) {
             src = (Byte9D)arr;
         } else {

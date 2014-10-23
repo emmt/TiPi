@@ -451,10 +451,10 @@ public abstract class Byte4D extends Array4D implements ByteArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Byte4D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Byte4D src;
         if (arr.getType() == Traits.BYTE) {
             src = (Byte4D)arr;
         } else {
