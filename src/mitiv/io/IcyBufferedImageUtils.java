@@ -32,7 +32,11 @@ import java.util.ArrayList;
 
 import mitiv.array.Double2D;
 import mitiv.array.Double3D;
+import mitiv.array.Float2D;
+import mitiv.array.Float3D;
 import mitiv.array.ShapedArray;
+import mitiv.base.Shape;
+import mitiv.base.Traits;
 
 public class IcyBufferedImageUtils {
 
@@ -43,14 +47,14 @@ public class IcyBufferedImageUtils {
         int[] shape = new int[]{width, height, sizeZ};
         return imageToArray(listImage,shape[0], shape[1], shape[2]);
     }
-    
+
     public static ShapedArray imageToArray(ArrayList<IcyBufferedImage> listImage, int[] shape) {
         if (shape.length != 3) {
             throw new IllegalArgumentException("Shape should be of size 3, because input is three dimensionnal data");
         }
         return imageToArray(listImage,shape[0], shape[1], shape[2]);
     }
-    
+
     public static ShapedArray imageToArray(ArrayList<IcyBufferedImage> listImage, int width, int height, int sizeZ) {
         //First we try if we can convert the data directly by using Icy Capacities
         int[] shape = new int[]{width, height, sizeZ};
@@ -70,7 +74,7 @@ public class IcyBufferedImageUtils {
             return BufferedImageUtils.imageToArray(list);
         }
     }
-    
+
     public static ShapedArray imageToArray(IcyBufferedImage image) {
         int[] shape = new int[]{image.getWidth(), image.getHeight()};
         return imageToArray(image, shape[0], shape[1]);
@@ -92,7 +96,7 @@ public class IcyBufferedImageUtils {
             return BufferedImageUtils.imageToArray(image);
         }
     }
-    
+
     public static ShapedArray sequenceToArray(IcyBufferedImage image, int width,int height) {
         //First we try if we can convert the data directly by using Icy Capacities
         int[] shape = new int[]{width, height};
@@ -102,8 +106,58 @@ public class IcyBufferedImageUtils {
             return BufferedImageUtils.imageToArray(image);
         }
     }
-}
 
+    public static ArrayList<IcyBufferedImage> arrayToImage(ShapedArray array) {
+        Shape shape = array.getShape();
+        int width = shape.dimension(0);
+        int height = shape.dimension(1);
+        if (array.getType() == Traits.DOUBLE) {
+            if (shape.rank() == 2) {
+                return fill(new IcyBufferedImage(width, height, ((Double2D)array).flatten()));
+            } else if (shape.rank() == 3) {
+                double[] data = ((Double3D)array).flatten();
+                int sizeZ = shape.dimension(2);
+                ArrayList<IcyBufferedImage> list = new ArrayList<IcyBufferedImage>();
+                for (int j = 0; j < sizeZ; j++) {
+                    double[] tmp = new double[width*height];
+                    for (int i = 0; i < width*height; i++) {
+                        tmp[i] = data[i+j*width*height];
+                    }
+                    IcyBufferedImage icyTmp = new IcyBufferedImage(width, height, tmp);
+                    list.add(icyTmp);
+                }
+                return list;
+            } else {
+                throw new IllegalArgumentException("Rank of the Shaped Array can only be 2 or 3");
+            }
+        } else {
+            if (shape.rank() == 2) {
+                return fill(new IcyBufferedImage(width, height, ((Float2D)array).toFloat().flatten())); //Whatever the type other than float, we use float
+            } else if (shape.rank() == 3) {
+                float[] data = ((Float3D)array).flatten();
+                int sizeZ = shape.dimension(2);
+                ArrayList<IcyBufferedImage> list = new ArrayList<IcyBufferedImage>();
+                for (int j = 0; j < sizeZ; j++) {
+                    float[] tmp = new float[width*height];
+                    for (int i = 0; i < width*height; i++) {
+                        tmp[i] = data[i+j*width*height];
+                    }
+                    IcyBufferedImage icyTmp = new IcyBufferedImage(width, height, tmp);
+                    list.add(icyTmp);
+                }
+                return list;
+            } else {
+                throw new IllegalArgumentException("Rank of the Shaped Array can only be 2 or 3");
+            }
+        }
+    }
+
+    private static ArrayList<IcyBufferedImage> fill(IcyBufferedImage img){
+        ArrayList<IcyBufferedImage> list = new ArrayList<IcyBufferedImage>();
+        list.add(img);
+        return list;
+    }
+}
 
 /*
  * Local Variables:
