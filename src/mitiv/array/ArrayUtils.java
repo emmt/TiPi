@@ -834,9 +834,7 @@ public class ArrayUtils {
             }
             int first = outDim/2 - inpDim/2;
             int last = first + inpDim - 1;
-            range[k].setFirst(first);
-            range[k].setLast(last);
-            range[k].setStep(1);
+            range[k] = new Range(first, last, 1);
         }
 
         /* Create the output array and fill it with zeroes. */
@@ -866,37 +864,39 @@ public class ArrayUtils {
         }
 
         /* Copy input into output. */
+        ShapedArray roi;
         switch (rank) {
         case 1:
-            ((Array1D)outputArray).view(range[0]).assign(inputArray);
+            roi = ((Array1D)outputArray).view(range[0]);
             break;
         case 2:
-            ((Array2D)outputArray).view(range[0], range[1]).assign(inputArray);
+            roi = ((Array2D)outputArray).view(range[0], range[1]);
             break;
         case 3:
-            ((Array3D)outputArray).view(range[0], range[1], range[2]).assign(inputArray);
+            roi = ((Array3D)outputArray).view(range[0], range[1], range[2]);
             break;
         case 4:
-            ((Array4D)outputArray).view(range[0], range[1], range[2], range[3]).assign(inputArray);
+            roi = ((Array4D)outputArray).view(range[0], range[1], range[2], range[3]);
             break;
         case 5:
-            ((Array5D)outputArray).view(range[0], range[1], range[2], range[3], range[4]).assign(inputArray);
+            roi = ((Array5D)outputArray).view(range[0], range[1], range[2], range[3], range[4]);
             break;
         case 6:
-            ((Array6D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5]).assign(inputArray);
+            roi = ((Array6D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5]);
             break;
         case 7:
-            ((Array7D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]).assign(inputArray);
+            roi = ((Array7D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]);
             break;
         case 8:
-            ((Array8D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]).assign(inputArray);
+            roi = ((Array8D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]);
             break;
         case 9:
-            ((Array9D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]).assign(inputArray);
+            roi = ((Array9D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]);
             break;
         default:
             throw new IllegalArgumentException("Unsupported rank.");
         }
+        roi.assign(inputArray);
         return outputArray;
     }
 
@@ -910,13 +910,13 @@ public class ArrayUtils {
      * This is the same as {@link #roll(ShapedArray, int[])} with offsets
      * equal to half the lenght of each dimensions.
      * </p>
-     * @param src - The input array.
-     * @return A shaped array with the contents of the input array but
-     *         rolled along the dimensions of the input array by the given
-     *         offsets.
+     * @param arr - The input array.
+     * @return A view with the contents of the input array but rolled along
+     *         the dimensions of the input array by the given offsets.  Note
+     *         that the result shares its contents with the input array.
      */
-    public static ShapedArray roll(ShapedArray src) {
-        Shape shape = src.getShape();
+    public static ShapedArray roll(ShapedArray arr) {
+        Shape shape = arr.getShape();
         int rank = shape.rank();
         int[] off = new int[rank];
         boolean nothing = true;
@@ -928,9 +928,9 @@ public class ArrayUtils {
             }
         }
         if (nothing) {
-            return src;
+            return arr;
         }
-        return roll(src, off);
+        return roll(arr, off);
     }
 
     /**
@@ -949,14 +949,14 @@ public class ArrayUtils {
      * The operation is lazy: if no rolling is needed (that is, if the shapes
      * are the same), the input array is returned.
      * </p>
-     * @param src - The input array.
+     * @param arr - The input array.
      * @param off - The offsets to apply along each dimensions.
-     * @return A shaped array with the contents of the input array but
-     *         rolled along the dimensions of the input array by the given
-     *         offsets.
+     * @return A shaped array with the contents of the input array but rolled
+     *         along the dimensions of the input array by the given offsets.
+     *         Note that the result shares its contents with the input array.
      */
-    public static ShapedArray roll(ShapedArray src, int off[]) {
-        Shape shape = src.getShape();
+    public static ShapedArray roll(ShapedArray arr, int off[]) {
+        Shape shape = arr.getShape();
         int rank = shape.rank();
         if (off.length != rank) {
             throw new IllegalArgumentException("Range mismatch.");
@@ -969,7 +969,7 @@ public class ArrayUtils {
             if (dim == 1) {
                 offset = 0;
             } else {
-                offset = (dim - (off[k]%dim))%dim;
+                offset = (dim + (off[k]%dim))%dim;
             }
             if (offset != 0) {
                 int[] index = new int[dim];
@@ -981,42 +981,30 @@ public class ArrayUtils {
             }
         }
         if (nothing) {
-            return src;
+            return arr;
         }
-
-        ShapedArray dst = src.create();
         switch (rank) {
         case 1:
-            ((Array1D)dst).view(sel[0]).assign(src);
-            break;
+            return ((Array1D)arr).view(sel[0]);
         case 2:
-            ((Array2D)dst).view(sel[0], sel[1]).assign(src);
-            break;
+            return ((Array2D)arr).view(sel[0], sel[1]);
         case 3:
-            ((Array3D)dst).view(sel[0], sel[1], sel[2]).assign(src);
-            break;
+            return ((Array3D)arr).view(sel[0], sel[1], sel[2]);
         case 4:
-            ((Array4D)dst).view(sel[0], sel[1], sel[2], sel[3]).assign(src);
-            break;
+            return ((Array4D)arr).view(sel[0], sel[1], sel[2], sel[3]);
         case 5:
-            ((Array5D)dst).view(sel[0], sel[1], sel[2], sel[3], sel[4]).assign(src);
-            break;
+            return ((Array5D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4]);
         case 6:
-            ((Array6D)dst).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5]).assign(src);
-            break;
+            return ((Array6D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5]);
         case 7:
-            ((Array7D)dst).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6]).assign(src);
-            break;
+            return ((Array7D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6]);
         case 8:
-            ((Array8D)dst).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6], sel[7]).assign(src);
-            break;
+            return ((Array8D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6], sel[7]);
         case 9:
-            ((Array9D)dst).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6], sel[7], sel[8]).assign(src);
-            break;
+            return ((Array9D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6], sel[7], sel[8]);
         default:
             throw new IllegalArgumentException("Unsupported rank.");
         }
-        return dst;
     }
 
 

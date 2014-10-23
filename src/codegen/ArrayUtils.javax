@@ -214,9 +214,7 @@ public class ArrayUtils {
             }
             int first = outDim/2 - inpDim/2;
             int last = first + inpDim - 1;
-            range[k].setFirst(first);
-            range[k].setLast(last);
-            range[k].setStep(1);
+            range[k] = new Range(first, last, 1);
         }
 
         /* Create the output array and fill it with zeroes. */
@@ -236,6 +234,7 @@ public class ArrayUtils {
         }
 
         /* Copy input into output. */
+        ShapedArray roi;
         switch (rank) {
         //# for rank in 1 : 9
         //#     def argList = range[0]
@@ -244,12 +243,13 @@ public class ArrayUtils {
         //#         def argList = ${argList}, range[${j}]
         //#     end
         case ${rank}:
-            ((Array${rank}D)outputArray).view(${argList}).assign(inputArray);
+            roi = ((Array${rank}D)outputArray).view(${argList});
             break;
         //# end
         default:
             throw new IllegalArgumentException("Unsupported rank.");
         }
+        roi.assign(inputArray);
         return outputArray;
     }
 
@@ -263,13 +263,13 @@ public class ArrayUtils {
      * This is the same as {@link #roll(ShapedArray, int[])} with offsets
      * equal to half the lenght of each dimensions.
      * </p>
-     * @param src - The input array.
-     * @return A shaped array with the contents of the input array but
-     *         rolled along the dimensions of the input array by the given
-     *         offsets.
+     * @param arr - The input array.
+     * @return A view with the contents of the input array but rolled along
+     *         the dimensions of the input array by the given offsets.  Note
+     *         that the result shares its contents with the input array.
      */
-    public static ShapedArray roll(ShapedArray src) {
-        Shape shape = src.getShape();
+    public static ShapedArray roll(ShapedArray arr) {
+        Shape shape = arr.getShape();
         int rank = shape.rank();
         int[] off = new int[rank];
         boolean nothing = true;
@@ -281,9 +281,9 @@ public class ArrayUtils {
             }
         }
         if (nothing) {
-            return src;
+            return arr;
         }
-        return roll(src, off);
+        return roll(arr, off);
     }
 
     /**
@@ -302,14 +302,14 @@ public class ArrayUtils {
      * The operation is lazy: if no rolling is needed (that is, if the shapes
      * are the same), the input array is returned.
      * </p>
-     * @param src - The input array.
+     * @param arr - The input array.
      * @param off - The offsets to apply along each dimensions.
-     * @return A shaped array with the contents of the input array but
-     *         rolled along the dimensions of the input array by the given
-     *         offsets.
+     * @return A shaped array with the contents of the input array but rolled
+     *         along the dimensions of the input array by the given offsets.
+     *         Note that the result shares its contents with the input array.
      */
-    public static ShapedArray roll(ShapedArray src, int off[]) {
-        Shape shape = src.getShape();
+    public static ShapedArray roll(ShapedArray arr, int off[]) {
+        Shape shape = arr.getShape();
         int rank = shape.rank();
         if (off.length != rank) {
             throw new IllegalArgumentException("Range mismatch.");
@@ -322,7 +322,7 @@ public class ArrayUtils {
             if (dim == 1) {
                 offset = 0;
             } else {
-                offset = (dim - (off[k]%dim))%dim;
+                offset = (dim + (off[k]%dim))%dim;
             }
             if (offset != 0) {
                 int[] index = new int[dim];
@@ -334,10 +334,8 @@ public class ArrayUtils {
             }
         }
         if (nothing) {
-            return src;
+            return arr;
         }
-
-        ShapedArray dst = src.create();
         switch (rank) {
         //# for rank in 1 : 9
         //#     def argList = sel[0]
@@ -346,13 +344,11 @@ public class ArrayUtils {
         //#         def argList = ${argList}, sel[${j}]
         //#     end
         case ${rank}:
-            ((Array${rank}D)dst).view(${argList}).assign(src);
-            break;
+            return ((Array${rank}D)arr).view(${argList});
         //# end
         default:
             throw new IllegalArgumentException("Unsupported rank.");
         }
-        return dst;
     }
 
 
