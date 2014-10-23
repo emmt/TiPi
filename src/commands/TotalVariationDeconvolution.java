@@ -540,6 +540,15 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             int nevals = getEvaluations();
             System.out.format("Total time in cost function: %.3f s (%.3f ms/eval.)\n",
                     elapsed, (nevals > 0 ? 1e3*elapsed/nevals : 0.0));
+            if (H instanceof WeightedConvolutionOperator) {
+                WeightedConvolutionOperator A = (WeightedConvolutionOperator)H;
+                elapsed = A.getElapsedTimeInFFT();
+                System.out.format("Total time in FFT: %.3f s (%.3f ms/eval.)\n",
+                        elapsed, (nevals > 0 ? 1e3*elapsed/nevals : 0.0));
+                elapsed = A.getElapsedTime() - elapsed;
+                System.out.format("Total time in other parts of the convolution operator: %.3f s (%.3f ms/eval.)\n",
+                        elapsed, (nevals > 0 ? 1e3*elapsed/nevals : 0.0));
+            }
             System.out.format("min(x) = %g\n", ArrayOps.getMin(x.getData()));
             System.out.format("max(x) = %g\n", ArrayOps.getMax(x.getData()));
         }
