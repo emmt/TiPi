@@ -13,6 +13,5 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
-		<nature>icy.icy4eclipse.core.icynature</nature>
 	</natures>
 </projectDescription>

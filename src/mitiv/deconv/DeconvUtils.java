@@ -24,14 +24,14 @@
 
 package mitiv.deconv;
 
-import icy.image.IcyBufferedImage;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import mitiv.array.ShapedArray;
+import mitiv.base.Shape;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
@@ -65,11 +65,9 @@ public class DeconvUtils {
     boolean isComplex;
 
     //3D
-    ArrayList<BufferedImage> listImage;
-    ArrayList<BufferedImage> listPSF;
-    ArrayList<IcyBufferedImage> listImageIcy;
+    private ShapedArray imgShaped;
+    private ShapedArray psfShaped;
     
-    ArrayList<IcyBufferedImage> listPSFIcy;
     public int sizeZ;
     private DoubleFFT_3D fft3D;
 
@@ -149,26 +147,20 @@ public class DeconvUtils {
         this.image_psf = PSF;
         setValue();
     }
-    
-    private ArrayList<BufferedImage> fromIcy(ArrayList<IcyBufferedImage> list){
-        ArrayList<BufferedImage> out = new java.util.ArrayList<BufferedImage>();
-        for (int i = 0; i < list.size(); i++) {
-            out.add(list.get(i));
-        }
-        return out;
-    }
 
-    public void readImage(ArrayList<IcyBufferedImage> imgList, ArrayList<IcyBufferedImage> psfList) {
-        this.listImageIcy = imgList;
-        this.listPSFIcy = psfList;
-        this.listImage = fromIcy(imgList);
-        this.listPSF = fromIcy(psfList);
-        BufferedImage tmp = imgList.get(0);
-        
-        this.width = tmp.getWidth();
-        this.height = tmp.getHeight();
-        this.sizeZ = imgList.size();
+    public void readImage(ShapedArray imgList, ShapedArray psfList) {
+        this.imgShaped = imgList;
+        this.psfShaped = psfList;
+        Shape shape = imgList.getShape();
+        this.width = shape.dimension(0);
+        this.height = shape.dimension(1);
+        if (shape.rank() == 3) {
+            this.sizeZ = shape.dimension(2);
+        } else {
+            this.sizeZ = 1;
+        }
     }
+    
     /********************************** Read image vector **********************************/
 
     /**
@@ -231,21 +223,6 @@ public class DeconvUtils {
     }
 
     /********************************** Pad image **********************************/
-    public void PadImageAndPSF(){
-        //IMPORTANT WE PAD AS WE COMPUTE
-        //FIXME here padding
-        int max = Math.max(listPSF.get(0).getHeight(), listPSF.get(0).getWidth());
-        sizePadding = max;
-        //sizePadding = 0;
-        double coef = (double)(sizePadding+max)/max;
-        ArrayList<BufferedImage> listImagePad = CommonUtils.imagePad(listImage, coef, false);
-        ArrayList<BufferedImage> listPSFPad = CommonUtils.imagePad(listPSF, coef, true);
-        this.listImage = listImagePad;
-        this.listPSF = listPSFPad;
-        sizeZ = listImagePad.size();
-        width = listImagePad.get(0).getWidth();
-        height = listImagePad.get(0).getHeight();        
-    }
     
     public void PadImageAndPSF(double coef){
         //IMPORTANT WE PAD AS WE COMPUTE
@@ -337,32 +314,12 @@ public class DeconvUtils {
      * @return A 1D array
      */
     public double[] image3DToArray1D(boolean isComplex) {
-        return CommonUtils.image3DToArray1D(listImage, width, height, sizeZ, isComplex);
-    }
-    /**
-     * Convert the PSF to a 1D array
-     * @param isComplex 
-     * 
-     * @return A 1D array
-     */
-    public double[] psf3DToArray1D(boolean isComplex) {
-        double[] out;
-        if (isComplex) {
-            out = new double[sizeZ*width*height*2];
-        } else {
-            out = new double[sizeZ*width*height];
-        }
-        for (int j = 0; j < sizeZ; j++) {
-            double[] tmp = CommonUtils.psfPadding1D(listImage.get(j), listPSF.get(j), false);
-            for (int i = 0; i < tmp.length; i++) {
-                out[i+j*tmp.length] = tmp[i];
-            }
-        }
-        return out;
+        return imgShaped.toDouble().flatten();
     }
 
+
     public double[] psf3DToArray1Dexp(boolean isComplex) {
-        return CommonUtils.image3DToArray1D(listPSF, width, height, sizeZ, isComplex);
+        return psfShaped.toDouble().flatten();
     }
 
     public double[] shiftPsf3DToArray1D(boolean isComplex) {
@@ -372,7 +329,7 @@ public class DeconvUtils {
         } else {
             out = new double[width*height*sizeZ];
         }
-        double[] psfIn = psf3DToArray1Dexp(isComplex);
+        double[] psfIn = psfShaped.toDouble().flatten();
         if (psfIn.length != out.length) {
             System.err.println("Bad size for psf and output deconvutil l356");
         }
@@ -438,33 +395,6 @@ public class DeconvUtils {
         //return CommonUtils.imageUnPad(out, sizePadding);
         return out;
         //FIXME pad option
-    }
-
-
-    public ArrayList<BufferedImage> arrayToIcyImage3D(double[] array, int job, boolean isComplex){
-        ArrayList<BufferedImage> out = new ArrayList<BufferedImage>();
-        if (isComplex) {
-            for (int k = 0; k < sizeZ; k++) {
-                double[] tmp = new double[width*height];
-                for (int j = 0; j < height; j++) {
-                    for (int i = 0; i < width; i++) {
-                        tmp[i+j*width] = array[2*i+2*j*width+2*k*height*width];
-                    }
-                }
-                out.add(new IcyBufferedImage(width, height, tmp));
-            }
-        }else{
-            for (int j = 0; j < sizeZ; j++) {
-                double[] tmp = new double[width*height];
-                for (int i = 0; i < width*height; i++) {
-                    tmp[i] = array[i+j*height*width];
-                }
-                out.add(new IcyBufferedImage(width, height, tmp));
-            }
-        }
-        //IMPORTANT WE DEPAD AS WE COMPUTE OR NOT ...
-        //return CommonUtils.imageUnPad(out, sizePadding);
-        return out;
     }
 
     /********************************** FFT PART **********************************/
@@ -628,37 +558,21 @@ public class DeconvUtils {
     public int getImagePadding(){
         return sizePadding;
     }
-    
-    public ArrayList<BufferedImage> getListImage() {
-        return listImage;
+
+    public ShapedArray getImgShaped() {
+        return imgShaped;
     }
 
-    public void setListImage(ArrayList<BufferedImage> listImage) {
-        this.listImage = listImage;
+    public void setImgShaped(ShapedArray imgShaped) {
+        this.imgShaped = imgShaped;
     }
 
-    public ArrayList<BufferedImage> getListPSF() {
-        return listPSF;
+    public ShapedArray getPsfShaped() {
+        return psfShaped;
     }
 
-    public void setListPSF(ArrayList<BufferedImage> listPSF) {
-        this.listPSF = listPSF;
-    }
-
-    public ArrayList<IcyBufferedImage> getListImageIcy() {
-        return listImageIcy;
-    }
-
-    public void setListImageIcy(ArrayList<IcyBufferedImage> listImageIcy) {
-        this.listImageIcy = listImageIcy;
-    }
-
-    public ArrayList<IcyBufferedImage> getListPSFIcy() {
-        return listPSFIcy;
-    }
-
-    public void setListPSFIcy(ArrayList<IcyBufferedImage> listPSFIcy) {
-        this.listPSFIcy = listPSFIcy;
+    public void setPsfShaped(ShapedArray psfShaped) {
+        this.psfShaped = psfShaped;
     }
 }
 
