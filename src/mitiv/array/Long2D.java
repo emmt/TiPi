@@ -367,10 +367,10 @@ public abstract class Long2D extends Array2D implements LongArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Long2D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Long2D src;
         if (arr.getType() == Traits.LONG) {
             src = (Long2D)arr;
         } else {

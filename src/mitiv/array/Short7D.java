@@ -577,10 +577,10 @@ public abstract class Short7D extends Array7D implements ShortArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Short7D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Short7D src;
         if (arr.getType() == Traits.SHORT) {
             src = (Short7D)arr;
         } else {

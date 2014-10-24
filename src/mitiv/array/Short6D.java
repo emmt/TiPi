@@ -535,10 +535,10 @@ public abstract class Short6D extends Array6D implements ShortArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Short6D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Short6D src;
         if (arr.getType() == Traits.SHORT) {
             src = (Short6D)arr;
         } else {

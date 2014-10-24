@@ -577,10 +577,10 @@ public abstract class Int7D extends Array7D implements IntArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Int7D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Int7D src;
         if (arr.getType() == Traits.INT) {
             src = (Int7D)arr;
         } else {

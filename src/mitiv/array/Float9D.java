@@ -661,10 +661,10 @@ public abstract class Float9D extends Array9D implements FloatArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Float9D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Float9D src;
         if (arr.getType() == Traits.FLOAT) {
             src = (Float9D)arr;
         } else {

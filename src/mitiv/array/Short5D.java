@@ -493,10 +493,10 @@ public abstract class Short5D extends Array5D implements ShortArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Short5D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Short5D src;
         if (arr.getType() == Traits.SHORT) {
             src = (Short5D)arr;
         } else {

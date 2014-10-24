@@ -619,10 +619,10 @@ public abstract class Long8D extends Array8D implements LongArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Long8D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Long8D src;
         if (arr.getType() == Traits.LONG) {
             src = (Long8D)arr;
         } else {

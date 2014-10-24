@@ -265,10 +265,10 @@ public abstract class Float1D extends Array1D implements FloatArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Float1D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Float1D src;
         if (arr.getType() == Traits.FLOAT) {
             src = (Float1D)arr;
         } else {

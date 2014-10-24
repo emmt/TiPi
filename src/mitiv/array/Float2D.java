@@ -367,10 +367,10 @@ public abstract class Float2D extends Array2D implements FloatArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Float2D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Float2D src;
         if (arr.getType() == Traits.FLOAT) {
             src = (Float2D)arr;
         } else {

@@ -27,7 +27,7 @@ package mitiv.linalg;
 
 import java.io.PrintStream;
 
-import mitiv.exception.NonconformingArrayException;
+import mitiv.exception.NonConformableArrayException;
 
 
 /**
@@ -119,7 +119,7 @@ public class ArrayOps {
     public static final int getLength(final float[] x, final float[] y) {
         int n = getLength(x);
         if (getLength(y) != n) {
-            throw new NonconformingArrayException(1);
+            throw new NonConformableArrayException(1);
         }
         return n;
     }
@@ -127,7 +127,7 @@ public class ArrayOps {
     public static final int getLength(final double[] x, final double[] y) {
         int n = getLength(x);
         if (getLength(y) != n) {
-            throw new NonconformingArrayException(1);
+            throw new NonConformableArrayException(1);
         }
         return n;
     }
@@ -136,7 +136,7 @@ public class ArrayOps {
             final float[] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
-            throw new NonconformingArrayException(1);
+            throw new NonConformableArrayException(1);
         }
         return n;
     }
@@ -145,7 +145,7 @@ public class ArrayOps {
             final double[] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
-            throw new NonconformingArrayException(1);
+            throw new NonConformableArrayException(1);
         }
         return n;
     }
@@ -154,7 +154,7 @@ public class ArrayOps {
             final double[] y, final double[] z) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n || getLength(z) != n) {
-            throw new NonconformingArrayException(1);
+            throw new NonConformableArrayException(1);
         }
         return n;
     }
@@ -163,7 +163,7 @@ public class ArrayOps {
             final float[] y, final float[] z) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n || getLength(z) != n) {
-            throw new NonconformingArrayException(1);
+            throw new NonConformableArrayException(1);
         }
         return n;
     }
@@ -193,7 +193,7 @@ public class ArrayOps {
     public static final int getLength(final double[][] x, final double[][] y) {
         int n = getLength(x);
         if (getLength(y) != n) {
-            throw new NonconformingArrayException(2);
+            throw new NonConformableArrayException(2);
         }
         return n;
     }
@@ -202,7 +202,7 @@ public class ArrayOps {
             final double[][] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
-            throw new NonconformingArrayException(2);
+            throw new NonConformableArrayException(2);
         }
         return n;
     }
@@ -210,7 +210,7 @@ public class ArrayOps {
     public static final int getLength(final float[][] x, final float[][] y) {
         int n = getLength(x);
         if (getLength(y) != n) {
-            throw new NonconformingArrayException(2);
+            throw new NonConformableArrayException(2);
         }
         return n;
     }
@@ -219,7 +219,7 @@ public class ArrayOps {
             final float[][] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
-            throw new NonconformingArrayException(2);
+            throw new NonConformableArrayException(2);
         }
         return n;
     }
@@ -249,7 +249,7 @@ public class ArrayOps {
     public static final int getLength(final double[][][] x, final double[][][] y) {
         int n = getLength(x);
         if (getLength(y) != n) {
-            throw new NonconformingArrayException(3);
+            throw new NonConformableArrayException(3);
         }
         return n;
     }
@@ -257,7 +257,7 @@ public class ArrayOps {
     public static final int getLength(final float[][][] x, final float[][][] y) {
         int n = getLength(x);
         if (getLength(y) != n) {
-            throw new NonconformingArrayException(3);
+            throw new NonConformableArrayException(3);
         }
         return n;
     }
@@ -269,13 +269,13 @@ public class ArrayOps {
      * @param x
      * @param y
      * @return
-     * @throws NonconformingArrayException
+     * @throws NonConformableArrayException
      */
     public static final int getLength(final double[][][] w,
             final double[][][] x, final double[][][] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
-            throw new NonconformingArrayException(3);
+            throw new NonConformableArrayException(3);
         }
         return n;
     }
@@ -284,7 +284,7 @@ public class ArrayOps {
             final float[][][] x, final float[][][] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
-            throw new NonconformingArrayException(3);
+            throw new NonConformableArrayException(3);
         }
         return n;
     }

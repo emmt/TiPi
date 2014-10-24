@@ -535,10 +535,10 @@ public abstract class Long6D extends Array6D implements LongArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Long6D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Long6D src;
         if (arr.getType() == Traits.LONG) {
             src = (Long6D)arr;
         } else {

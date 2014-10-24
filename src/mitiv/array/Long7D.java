@@ -577,10 +577,10 @@ public abstract class Long7D extends Array7D implements LongArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Long7D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Long7D src;
         if (arr.getType() == Traits.LONG) {
             src = (Long7D)arr;
         } else {

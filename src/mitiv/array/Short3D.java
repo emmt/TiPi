@@ -409,10 +409,10 @@ public abstract class Short3D extends Array3D implements ShortArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Short3D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Short3D src;
         if (arr.getType() == Traits.SHORT) {
             src = (Short3D)arr;
         } else {

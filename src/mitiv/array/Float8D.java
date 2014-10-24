@@ -619,10 +619,10 @@ public abstract class Float8D extends Array8D implements FloatArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Float8D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Float8D src;
         if (arr.getType() == Traits.FLOAT) {
             src = (Float8D)arr;
         } else {

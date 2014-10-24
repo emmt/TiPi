@@ -451,10 +451,10 @@ public abstract class Double4D extends Array4D implements DoubleArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Double4D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Double4D src;
         if (arr.getType() == Traits.DOUBLE) {
             src = (Double4D)arr;
         } else {

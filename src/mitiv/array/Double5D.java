@@ -493,10 +493,10 @@ public abstract class Double5D extends Array5D implements DoubleArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Double5D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Double5D src;
         if (arr.getType() == Traits.DOUBLE) {
             src = (Double5D)arr;
         } else {

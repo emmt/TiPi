@@ -493,10 +493,10 @@ public abstract class Float5D extends Array5D implements FloatArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Float5D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Float5D src;
         if (arr.getType() == Traits.FLOAT) {
             src = (Float5D)arr;
         } else {

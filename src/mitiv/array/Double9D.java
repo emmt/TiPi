@@ -661,10 +661,10 @@ public abstract class Double9D extends Array9D implements DoubleArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Double9D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Double9D src;
         if (arr.getType() == Traits.DOUBLE) {
             src = (Double9D)arr;
         } else {

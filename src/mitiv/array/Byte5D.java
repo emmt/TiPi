@@ -493,10 +493,10 @@ public abstract class Byte5D extends Array5D implements ByteArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Byte5D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Byte5D src;
         if (arr.getType() == Traits.BYTE) {
             src = (Byte5D)arr;
         } else {

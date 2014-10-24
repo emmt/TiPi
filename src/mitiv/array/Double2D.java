@@ -367,10 +367,10 @@ public abstract class Double2D extends Array2D implements DoubleArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Double2D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Double2D src;
         if (arr.getType() == Traits.DOUBLE) {
             src = (Double2D)arr;
         } else {

@@ -367,10 +367,10 @@ public abstract class Short2D extends Array2D implements ShortArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Short2D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Short2D src;
         if (arr.getType() == Traits.SHORT) {
             src = (Short2D)arr;
         } else {

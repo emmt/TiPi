@@ -265,10 +265,10 @@ public abstract class Short1D extends Array1D implements ShortArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Short1D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Short1D src;
         if (arr.getType() == Traits.SHORT) {
             src = (Short1D)arr;
         } else {

@@ -661,10 +661,10 @@ public abstract class Int9D extends Array9D implements IntArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Int9D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Int9D src;
         if (arr.getType() == Traits.INT) {
             src = (Int9D)arr;
         } else {

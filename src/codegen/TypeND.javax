@@ -349,10 +349,10 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
 
     @Override
     public void assign(ShapedArray arr) {
-        ${className} src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        ${className} src;
         if (arr.getType() == Traits.${TYPE}) {
             src = (${className})arr;
         } else {

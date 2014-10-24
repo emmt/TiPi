@@ -493,10 +493,10 @@ public abstract class Long5D extends Array5D implements LongArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Long5D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Long5D src;
         if (arr.getType() == Traits.LONG) {
             src = (Long5D)arr;
         } else {

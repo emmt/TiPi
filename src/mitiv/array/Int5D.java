@@ -493,10 +493,10 @@ public abstract class Int5D extends Array5D implements IntArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Int5D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Int5D src;
         if (arr.getType() == Traits.INT) {
             src = (Int5D)arr;
         } else {
