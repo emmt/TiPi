@@ -277,7 +277,7 @@ public class DataFormat {
      */
     public static void save(ShapedArray arr, String fileName)
             throws FileNotFoundException, IOException {
-        save(arr, fileName, new ScalingOptions());
+        save(arr, fileName, new FormatOptions());
     }
 
     /**
@@ -293,7 +293,7 @@ public class DataFormat {
      * @throws FileNotFoundException
      */
     public static void save(ShapedArray arr, String fileName,
-            ScalingOptions opts) throws FileNotFoundException, IOException {
+            FormatOptions opts) throws FileNotFoundException, IOException {
         int format = DataFormat.guessFormat(fileName);
         String formatName = null;
         switch (format) {

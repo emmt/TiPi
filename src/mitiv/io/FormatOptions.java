@@ -26,7 +26,7 @@
 package mitiv.io;
 
 
-public class ScalingOptions {
+public class FormatOptions {
     private double minValue = 0.0;
     private boolean minValueGiven = false;
 
@@ -35,7 +35,7 @@ public class ScalingOptions {
 
     private ColorModel colorModel = null;
 
-    public ScalingOptions() {
+    public FormatOptions() {
     }
 
     public double getMinValue() {

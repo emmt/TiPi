@@ -56,7 +56,7 @@ import mitiv.base.indexing.Range;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
 import mitiv.io.ColorModel;
-import mitiv.io.ScalingOptions;
+import mitiv.io.FormatOptions;
 import mitiv.linalg.shaped.DoubleShapedVector;
 
 public class ArrayUtils {
@@ -1233,7 +1233,7 @@ public class ArrayUtils {
         writeImage(buf, fileName);
     }
 
-    public static void writeImage(DoubleArray img, String fileName, ScalingOptions scaleOpts) {
+    public static void writeImage(DoubleArray img, String fileName, FormatOptions scaleOpts) {
         BufferedImage buf = doubleAsBuffered(img, scaleOpts);
         writeImage(buf, fileName);
     }
@@ -1243,7 +1243,7 @@ public class ArrayUtils {
         writeImage(buf, fileName);
     }
 
-    public static void writeImage(DoubleShapedVector img, String fileName, ScalingOptions scaleOpts) {
+    public static void writeImage(DoubleShapedVector img, String fileName, FormatOptions scaleOpts) {
         BufferedImage buf = doubleAsBuffered(img, scaleOpts);
         writeImage(buf, fileName);
     }
@@ -1255,7 +1255,7 @@ public class ArrayUtils {
     }
 
     public static void writeImage(double[] arr, int depth, int width, int height, String fileName,
-            ScalingOptions scaleOpts) {
+            FormatOptions scaleOpts) {
         BufferedImage buf = doubleAsBuffered(arr, depth, width, height, scaleOpts);
         writeImage(buf, fileName);
     }
@@ -1283,7 +1283,7 @@ public class ArrayUtils {
         return doubleAsBuffered(img.flatten(), dims[0], dims[1], dims[2]);
     }
 
-    public static BufferedImage doubleAsBuffered(DoubleArray img, ScalingOptions scaleOpts) {
+    public static BufferedImage doubleAsBuffered(DoubleArray img, FormatOptions scaleOpts) {
         int[] dims = getImageDimensions(img);
         return doubleAsBuffered(img.flatten(), dims[0], dims[1], dims[2], scaleOpts);
     }
@@ -1293,19 +1293,19 @@ public class ArrayUtils {
         return doubleAsBuffered(img.getData(), dims[0], dims[1], dims[2]);
     }
 
-    public static BufferedImage doubleAsBuffered(DoubleShapedVector img, ScalingOptions scaleOpts) {
+    public static BufferedImage doubleAsBuffered(DoubleShapedVector img, FormatOptions scaleOpts) {
         int[] dims = getImageDimensions(img);
         return doubleAsBuffered(img.getData(), dims[0], dims[1], dims[2], scaleOpts);
     }
 
     public static BufferedImage doubleAsBuffered(double[] arr, int depth, int width, int height) {
-        return doubleAsBuffered(arr, depth, width, height, new ScalingOptions());
+        return doubleAsBuffered(arr, depth, width, height, new FormatOptions());
     }
 
     public static BufferedImage doubleAsBuffered(double[] arr, int depth, int width, int height,
-            ScalingOptions scaleOpts) {
+            FormatOptions opts) {
         int number = checkDimensions(arr, depth, width, height);
-        double[] sf = scaleOpts.getScaling(arr, 0, number, 0, 255);
+        double[] sf = opts.getScaling(arr, 0, number, 0, 255);
         double scale = sf[0];
         double bias = sf[1];
         double factor = 1.0/scale;
