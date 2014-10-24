@@ -54,7 +54,7 @@ import mitiv.base.Shaped;
 import mitiv.base.Traits;
 import mitiv.base.indexing.Range;
 import mitiv.exception.IllegalTypeException;
-import mitiv.exception.NonconformingArrayException;
+import mitiv.exception.NonConformableArrayException;
 import mitiv.linalg.shaped.DoubleShapedVector;
 
 public class ArrayUtils {
@@ -823,14 +823,14 @@ public class ArrayUtils {
         }
         int rank = inputShape.rank();
         if (outputShape.rank() != rank) {
-            throw new NonconformingArrayException("Not same rank.");
+            throw new NonConformableArrayException("Not same rank.");
         }
         Range[] range = new Range[rank];
         for (int k = 0; k < rank; ++k) {
             int inpDim = inputShape.dimension(k);
             int outDim = outputShape.dimension(k);
             if (outDim < inpDim) {
-                throw new NonconformingArrayException("Zero-padding cannot shrink dimensions.");
+                throw new NonConformableArrayException("Zero-padding cannot shrink dimensions.");
             }
             int first = outDim/2 - inpDim/2;
             int last = first + inpDim - 1;
