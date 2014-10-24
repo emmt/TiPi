@@ -33,7 +33,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import mitiv.array.ArrayUtils;
-import mitiv.array.ScalingOptions;
 import mitiv.array.ShapedArray;
 
 /**

@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.array;
+package mitiv.io;
 
 
 public class ScalingOptions {

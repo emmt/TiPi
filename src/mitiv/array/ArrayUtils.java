@@ -55,6 +55,7 @@ import mitiv.base.Traits;
 import mitiv.base.indexing.Range;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.io.ScalingOptions;
 import mitiv.linalg.shaped.DoubleShapedVector;
 
 public class ArrayUtils {
