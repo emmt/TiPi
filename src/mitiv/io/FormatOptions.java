@@ -35,6 +35,8 @@ public class FormatOptions {
 
     private ColorModel colorModel = null;
 
+    private DataFormat dataFormat = null;
+
     public FormatOptions() {
     }
 
@@ -72,6 +74,45 @@ public class FormatOptions {
      */
     public ColorModel getColorModel() {
         return colorModel;
+    }
+
+    /**
+     * Set the color model.
+     * @param value - The color model.
+     */
+    public void setColorModel(ColorModel value) {
+        colorModel = value;
+    }
+
+    /**
+     * Unset the color model.
+     */
+    public void unsetColorModel() {
+        colorModel = null;
+    }
+
+
+    /**
+     * Get the chosen data format.
+     * @return The data format or {@code null} if not set.
+     */
+    public DataFormat getDataFormat() {
+        return dataFormat;
+    }
+
+    /**
+     * Set the data format.
+     * @param value - The data format.
+     */
+    public void setDataFormat(DataFormat value) {
+        dataFormat = value;
+    }
+
+    /**
+     * Unset the data format.
+     */
+    public void unsetDataFormat() {
+        dataFormat = null;
     }
 
     public double[] getScaling(double arr[], double fileMin, double fileMax) {

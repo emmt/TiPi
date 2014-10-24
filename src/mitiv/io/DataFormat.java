@@ -41,56 +41,73 @@ import mitiv.array.ShapedArray;
  * @author Éric Thiébaut.
  *
  */
-public class DataFormat {
+public enum DataFormat {
 
-    /** Make this class non-instantiable. */
-    protected DataFormat() {}
+    PNM("PNM", "Portable anymap (PBM/PGM/PPM/PNM) image.", new String[]{"pnm", "ppm", "pgm", "pbm"}),
+    JPEG("JPEG", "JPEG image.", new String[]{"jpg", "jpeg"}),
+    PNG("PNG", "Portable Network Graphic (PNG) image.", new String[]{"png"}),
+    GIF("GIF", "GIF image.", new String[]{"gif"}),
+    BMP("BMP", "BMP image.", new String[]{"bmp"}),
+    WBMP("WBMP", "Wireless Bitmap (WBMP) image format.", new String[]{"wbmp"}),
+    TIFF("TIFF", "TIFF image format.", new String[]{"tiff", "tif"}),
+    FITS("FITS", "Flexible Image Transport System (FITS) format.", new String[]{"fits", "fts", "fit"}),
+    MDA("MDA", "Multi-dimensional array (MDA) format.", new String[]{"mda"});
 
-    /** Error while scanning data. */
-    public static final int FMT_ERROR = -1;
+    private final String identifier;
 
-    /** Unknown data format. */
-    public static final int FMT_UNKNOWN = 0;
+    private final String description;
 
-    /** Portable anymap (PBM/PGM/PPM) image. */
-    public static final int FMT_PNM = 1;
+    private final String[] extensions;
 
-    /** JPEG image. */
-    public static final int FMT_JPEG = 2;
-
-    /** Portable Network Graphic (PNG) image. */
-    public static final int FMT_PNG = 3;
-
-    /** GIF image. */
-    public static final int FMT_GIF = 4;
-
-    /** BMP image. */
-    public static final int FMT_BMP = 5;
-
-    /** Wireless Bitmap (WBMP) image format. */
-    public static final int FMT_WBMP = 6;
-
-    /** TIFF image format. */
-    public static final int FMT_TIFF = 7;
-
-    /** Flexible Image Transport System (FITS) format. */
-    public static final int FMT_FITS = 8;
-
-    /** Multi-dimensional array (MDA) format. */
-    public static final int FMT_MDA = 9;
-
-    private static final String[] formatNames = {null, "PNM", "JPEG", "PNG", "GIF", "BMP", "WBMP", "TIFF", "FITS", "MDA"};
+    private DataFormat(String ident, String descr, String[] extensions) {
+        this.identifier = ident;
+        this.description = descr;
+        this.extensions = extensions;
+    }
 
     /**
-     * Get the name of a data file format.
+     * Get the name of the data file format.
      * 
      * For image format supported by Java, the format name is suitable for
      * {@link ImageIO#write}.
-     * @param id - The identifier of the file format, as {@link #FMT_JPGEG}.
-     * @return The name of the format, {@code null} if {@code id} does not correspond to a known format.
+     * @return The name of the format.
      */
-    public static String getFormatName(int id) {
-        return (id >= 0 && id < formatNames.length ? formatNames[id] : null);
+    public String identifier() {
+        return identifier;
+    }
+
+    /** Get the description of the file format. */
+    public String description() {
+        return description;
+    }
+
+    /** Get the recognized file name extensions for the format. */
+    public String[] extensions() {
+        return extensions;
+    }
+
+    /** Get a string representation of the color model. */
+    @Override
+    public String toString() {
+        return description;
+    }
+
+    /**
+     * Check whether a suffix matches recognized file name extensions.
+     * 
+     * @param suffix - The suffix to check.
+     * @return A boolean value.
+     */
+    public boolean match(String suffix) {
+        if (suffix != null && suffix.length() > 0) {
+            int n = (extensions == null ? 0 : extensions.length);
+            for (int k = 0; k < n; ++k) {
+                if (suffix.equalsIgnoreCase(extensions[k])) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -98,54 +115,75 @@ public class DataFormat {
      * <p>
      * This function examines the extension of the file name
      * to determine the data format.
-     * 
+     * </p>
      * @param fileName - The name of the file.
-     * @return A file format identifier: {@link #FMT_UNKNOWN} if the
-     *         format is not recognized; otherwise {@link #FMT_PNM},
-     *         {@link #FMT_JPEG}, {@link #FMT_PNG}, {@link #FMT_TIFF},
-     *         {@link #FMT_FITS}, {@link #FMT_GIF}, or {@link #FMT_MDA}.
+     * @return A file format identifier: {@code null} if the
+     *         format is not recognized; otherwise {@link #PNM},
+     *         {@link #JPEG}, {@link #PNG}, {@link #TIFF},
+     *         {@link #FITS}, {@link #GIF}, or {@link #MDA}.
      */
-    public static final int guessFormat(String fileName) {
+    public static final DataFormat guessFormat(String fileName) {
         int index = fileName.lastIndexOf('.');
         if (index < 0) {
-            return FMT_UNKNOWN;
+            return null;
         }
-        String extension = fileName.substring(index + 1);
-        int length = extension.length();
-        if (length == 3) {
-            if (extension.equalsIgnoreCase("jpg")) {
-                return FMT_JPEG;
-            } else if (extension.equalsIgnoreCase("png")) {
-                return FMT_PNG;
-            } else if (extension.equalsIgnoreCase("pnm") |
-                    extension.equalsIgnoreCase("pbm") |
-                    extension.equalsIgnoreCase("pgm") |
-                    extension.equalsIgnoreCase("ppm")) {
-                return FMT_PNM;
-            } else if (extension.equalsIgnoreCase("fts") |
-                    extension.equalsIgnoreCase("fit")) {
-                return FMT_FITS;
-            } else if (extension.equalsIgnoreCase("gif")) {
-                return FMT_GIF;
-            } else if (extension.equalsIgnoreCase("tif")) {
-                return FMT_TIFF;
-            } else if (extension.equalsIgnoreCase("mda")) {
-                return FMT_MDA;
-            }
-        } else if (length == 4) {
-            if (extension.equalsIgnoreCase("jpeg")) {
-                return FMT_JPEG;
-            } else if (extension.equalsIgnoreCase("fits")) {
-                return FMT_FITS;
-            } else if (extension.equalsIgnoreCase("tiff")) {
-                return FMT_TIFF;
-            }
-        } else if (length == 6) {
-            if (extension.equalsIgnoreCase("oifits")) {
-                return FMT_FITS;
-            }
+        String suffix = fileName.substring(index + 1);
+        if (MDA.match(suffix)) {
+            return MDA;
         }
-        return FMT_UNKNOWN;
+        if (PNG.match(suffix)) {
+            return PNG;
+        }
+        if (JPEG.match(suffix)) {
+            return JPEG;
+        }
+        if (PNM.match(suffix)) {
+            return PNM;
+        }
+        if (TIFF.match(suffix)) {
+            return TIFF;
+        }
+        if (FITS.match(suffix)) {
+            return FITS;
+        }
+        if (BMP.match(suffix)) {
+            return BMP;
+        }
+        if (WBMP.match(suffix)) {
+            return WBMP;
+        }
+        if (FITS.match(suffix)) {
+            return FITS;
+        }
+        if (GIF.match(suffix)) {
+            return GIF;
+        }
+        return null;
+    }
+
+
+    /**
+     * Guess data format from the given options or from the extension of
+     * the file name.
+     * <p>
+     * It a preferred data format is specified in the options, this format
+     * is returned; otherwise, the extension of the file name is examined
+     * to determine the data format.
+     * </p>
+     * @param fileName - The name of the file.
+     * @return A file format identifier: {@code null} if the
+     *         format is not recognized; otherwise {@link #PNM},
+     *         {@link #JPEG}, {@link #PNG}, {@link #TIFF},
+     *         {@link #FITS}, {@link #GIF}, or {@link #MDA}.
+     */
+    public static final DataFormat guessFormat(String fileName,
+            FormatOptions opts) {
+        DataFormat format = (opts == null ? null : opts.getDataFormat());
+        if (format != null) {
+            return format;
+        } else {
+            return guessFormat(fileName);
+        }
     }
 
     /**
@@ -159,38 +197,34 @@ public class DataFormat {
      * @param stream - The input data stream.
      * 
      * @return A file format identifier (see {@link #guessFormat(String)}),
-     *         or {@link #FMT_UNKNOWN} if the format is not recognized, or
-     *         {@link #FMT_ERROR} in case of error.
+     *         or {@code null} if the format is not recognized,.
+     * @throws IOException
      */
-    public static final int guessFormat(BufferedInputDataStream stream) {
-        int length;
-        try {
-            int preserved = stream.insure(80);
-            if (preserved < 2) {
-                return FMT_UNKNOWN;
-            }
-            length = Math.min(preserved, 80);
-        } catch (IOException ex) {
-            return FMT_ERROR;
+    public static final DataFormat guessFormat(BufferedInputDataStream stream)
+            throws IOException {
+        int preserved = stream.insure(80);
+        if (preserved < 2) {
+            return null;
         }
-        byte[] magic = new byte[length];
-        int format = FMT_UNKNOWN;
+        DataFormat format = null;
         stream.mark();
         try {
+            int length = Math.min(preserved, 80);
+            byte[] magic = new byte[length];
             length = stream.read(magic, 0, length);
             if (length < 2) {
-                return FMT_ERROR;
+                return null;
             }
             if (length >= 2 && matchMagic(magic, '\377', '\330')) {
-                format = FMT_JPEG;
+                format = JPEG;
             } else if (length >= 4 && matchMagic(magic, '\211', 'P', 'N', 'G')) {
-                format = FMT_PNG;
+                format = PNG;
             } else if (length >= 4 && matchMagic(magic, 'M', 'M', '\000', '\052')) {
-                format = FMT_TIFF;
+                format = TIFF;
             } else if (length >= 4 && matchMagic(magic, 'I', 'I', '\052', '\000')) {
-                format = FMT_TIFF;
+                format = TIFF;
             } else if (length >= 4 && matchMagic(magic, 'G', 'I', 'F', '8')) {
-                format = FMT_GIF;
+                format = GIF;
             } else if (length >= 3 && magic[0] == (byte)'P' && isSpace(magic[2])
                     && (byte)'1' <= magic[1] && magic[1] <= (byte)'6') {
                 /* "P1" space = ascii PBM (portable bitmap)
@@ -200,13 +234,13 @@ public class DataFormat {
                  * "P5" space = raw PGM
                  * "P6" space = raw PPM
                  */
-                format = FMT_PNM;
+                format = PNM;
             } else if (length >= 3
                     && matchMagic(magic, 'S', 'I', 'M', 'P', 'L', 'E', ' ', ' ', '=')) {
-                format = FMT_FITS;
+                format = FITS;
             }
         } catch (IOException ex) {
-            return FMT_ERROR;
+            throw ex;
         } finally{
             stream.reset();
         }
@@ -251,9 +285,9 @@ public class DataFormat {
      */
     public static ShapedArray load(String fileName, ColorModel colorModel, String description) {
         ShapedArray arr = null;
-        int format = DataFormat.guessFormat(fileName);
+        DataFormat format = DataFormat.guessFormat(fileName);
         try {
-            if (format == DataFormat.FMT_MDA) {
+            if (format == MDA) {
                 arr = MdaFormat.load(fileName);
             } else {
                 arr = ArrayUtils.imageAsDouble(ImageIO.read(new File(fileName)), colorModel);
@@ -294,26 +328,26 @@ public class DataFormat {
      */
     public static void save(ShapedArray arr, String fileName,
             FormatOptions opts) throws FileNotFoundException, IOException {
-        int format = DataFormat.guessFormat(fileName);
-        String formatName = null;
+        DataFormat format = DataFormat.guessFormat(fileName);
+        String identifier = null;
         switch (format) {
-        //case DataFormat.FMT_PNM:
-        case DataFormat.FMT_JPEG:
-        case DataFormat.FMT_PNG:
-        case DataFormat.FMT_GIF:
-        case DataFormat.FMT_BMP:
-        case DataFormat.FMT_WBMP:
-            //case DataFormat.FMT_TIFF:
-            //case DataFormat.FMT_FITS:
-            formatName = DataFormat.getFormatName(format);
+        //case PNM:
+        case JPEG:
+        case PNG:
+        case GIF:
+        case BMP:
+        case WBMP:
+            //case DataFormat.TIFF:
+            //case DataFormat.FITS:
+            identifier = format.identifier();
             break;
-        case DataFormat.FMT_MDA:
+        case MDA:
             MdaFormat.save(arr, fileName);
             return;
         default:
-            formatName = null;
+            identifier = null;
         }
-        if (formatName == null) {
+        if (identifier == null) {
             fatal("Unknown/unsupported format name.");
         }
         int depth, width, height, rank = arr.getRank();
@@ -333,7 +367,7 @@ public class DataFormat {
         }
         double[] data = arr.toDouble().flatten();
         BufferedImage buf = ArrayUtils.doubleAsBuffered(data, depth, width, height, opts);
-        ImageIO.write(buf, formatName, new File(fileName));
+        ImageIO.write(buf, identifier, new File(fileName));
     }
 
     public static void main(String[] args) {
