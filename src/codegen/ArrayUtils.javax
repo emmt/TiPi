@@ -345,6 +345,12 @@ public class ArrayUtils {
     /*=======================================================================*/
     /* FUNCTIONS FOR DOUBLE TYPE */
 
+    //# for dst in ${BYTE} : ${DOUBLE}
+    //#     def dst_type = ${}{type_${dst}}
+    //#     def dst_Type = ${}{Type_${dst}}
+    //#     def dst_TYPE = ${}{TYPE_${dst}}
+    //# end
+
     /**
      * Convert a BufferedImage into a DoubleArray.
      * @param image      - The input BufferedImage.
@@ -359,6 +365,10 @@ public class ArrayUtils {
         int height = image.getHeight();
         int width = image.getWidth();
         int depth;
+        if (colorModel == null) {
+            // FIXME: read with no changes
+            colorModel = ColorModel.GRAY;
+        }
         switch (colorModel) {
         case RED:
         case GREEN:

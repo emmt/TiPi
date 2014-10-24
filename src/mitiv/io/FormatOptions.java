@@ -26,6 +26,11 @@
 package mitiv.io;
 
 
+/**
+ * This class is used to collect options for reading/writing data in different format.
+ * 
+ * @author emmt
+ */
 public class FormatOptions {
     private double minValue = 0.0;
     private boolean minValueGiven = false;

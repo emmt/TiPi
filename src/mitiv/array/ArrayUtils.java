@@ -1001,6 +1001,7 @@ public class ArrayUtils {
     /*=======================================================================*/
     /* FUNCTIONS FOR DOUBLE TYPE */
 
+
     /**
      * Convert a BufferedImage into a DoubleArray.
      * @param image      - The input BufferedImage.
@@ -1015,6 +1016,10 @@ public class ArrayUtils {
         int height = image.getHeight();
         int width = image.getWidth();
         int depth;
+        if (colorModel == null) {
+            // FIXME: read with no changes
+            colorModel = ColorModel.GRAY;
+        }
         switch (colorModel) {
         case RED:
         case GREEN:

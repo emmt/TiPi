@@ -46,6 +46,7 @@ import mitiv.invpb.ReconstructionViewer;
 import mitiv.invpb.SimpleViewer;
 import mitiv.io.ColorModel;
 import mitiv.io.DataFormat;
+import mitiv.io.FormatOptions;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.LinearOperator;
 import mitiv.linalg.Vector;
@@ -296,8 +297,10 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         }
 
         // Read the blurred image and the PSF.
-        job.data = DataFormat.load(inputName, ColorModel.GRAY, "input image").toDouble();
-        job.psf = DataFormat.load(psfName, ColorModel.GRAY, "PSF").toDouble();
+        FormatOptions opts = new FormatOptions();
+        opts.setColorModel(ColorModel.GRAY);
+        job.data = DataFormat.load(inputName, opts).toDouble();
+        job.psf = DataFormat.load(psfName, opts).toDouble();
 
         job.deconvolve();
         try {
