@@ -112,6 +112,12 @@ public class ConvolutionFloat2D extends WeightedConvolutionOperator {
         computeMTF(((FloatArray)arr).flatten());
     }
 
+    @Override
+    public void setPSF(ShapedArray arr, int[] cen) {
+        arr = adjustPSF(arr.toFloat(), cen);
+        computeMTF(((FloatArray)arr).flatten());
+    }
+
     private final void computeMTF(float[] psf) {
         final float zero = 0;
         if (mtf == null) {

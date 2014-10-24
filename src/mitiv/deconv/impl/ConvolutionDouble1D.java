@@ -108,6 +108,12 @@ public class ConvolutionDouble1D extends WeightedConvolutionOperator {
         computeMTF(((DoubleArray)arr).flatten());
     }
 
+    @Override
+    public void setPSF(ShapedArray arr, int[] cen) {
+        arr = adjustPSF(arr.toDouble(), cen);
+        computeMTF(((DoubleArray)arr).flatten());
+    }
+
     private final void computeMTF(double[] psf) {
         final double zero = 0;
         if (mtf == null) {

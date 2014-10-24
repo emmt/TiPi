@@ -126,6 +126,12 @@ public class ${className} extends WeightedConvolutionOperator {
         computeMTF(((${Type}Array)arr).flatten());
     }
 
+    @Override
+    public void setPSF(ShapedArray arr, int[] cen) {
+        arr = adjustPSF(arr.to${Type}(), cen);
+        computeMTF(((${Type}Array)arr).flatten());
+    }
+
     private final void computeMTF(${type}[] psf) {
         final ${type} zero = 0;
         if (mtf == null) {

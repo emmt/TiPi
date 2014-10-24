@@ -25,6 +25,7 @@
 
 package mitiv.deconv;
 
+import mitiv.array.ArrayUtils;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
@@ -261,10 +262,23 @@ public abstract class WeightedConvolutionOperator extends ShapedLinearOperator {
     /**
      * Set the PSF of the operator.
      * @param arr - The PSF in the form of a shaped array.  It is
-     *              automatically converted to the correct data type, zero-padded
-     *              and rolled.  It must be geometrically centered on input.
+     *              automatically converted to the correct data type,
+     *              zero-padded and rolled.  It is assumed to be
+     *              geometrically centered.
      */
     public abstract void setPSF(ShapedArray arr);
+
+    /**
+     * Set the PSF of the operator with given center coordinates.
+     * @param arr - The PSF in the form of a shaped array.  It is
+     *              automatically converted to the correct data type,
+     *              zero-padded and rolled.
+     * @param cen - The coordinates of the central element of the PSF.
+     *              There must be as many coordinates as the rank of
+     *              the PSF, each coordinate is the 0-based offset of
+     *              the center along the corresponding dimension.
+     */
+    public abstract void setPSF(ShapedArray arr, int[] cen);
 
     /**
      * Set the weights of the operator.
@@ -425,6 +439,42 @@ public abstract class WeightedConvolutionOperator extends ShapedLinearOperator {
 
         return offset;
     }
+
+    /**
+     * Helper function to zero-pad and roll the PSF.
+     * @param arr - The PSF as a shaped array.
+     * @param cen - The coordinates of the central element of the PSF.
+     *              There must be as many coordinates as the rank of
+     *              the PSF, each coordinate is the 0-based offset of
+     *              the center along the corresponding dimension.
+     * @return The offsets for the {@link ArrayUtils#roll} method.
+     */
+    protected ShapedArray adjustPSF(ShapedArray arr, int[] cen) {
+        Shape dstShape = getInputSpace().getShape();
+        Shape srcShape = arr.getShape();
+        int rank = dstShape.rank();
+        if (srcShape.rank() != rank) {
+            throw new IllegalArgumentException("PSF rank not conformable.");
+        }
+        if (cen.length != rank) {
+            throw new IllegalArgumentException("Number of coordinates not conformable.");
+        }
+        int [] off = new int[rank];
+        for (int k = 0; k < rank; ++k) {
+            int srcDim = srcShape.dimension(k);
+            int dstDim = dstShape.dimension(k);
+            if (srcDim > dstDim) {
+                throw new IllegalArgumentException("PSF dimension(s) too large.");
+            }
+            int margin = (dstDim/2) - (srcDim/2); // margin for zero-padding
+            off[k] = - (margin + cen[k]);
+        }
+        return ArrayUtils.roll(ArrayUtils.zeroPadding(arr, dstShape), off);
+    }
+
+
+    /*======================================================================*/
+    /* TIMERS */
 
     protected Timer timerForFFT = new Timer();
     protected Timer timer = new Timer();
