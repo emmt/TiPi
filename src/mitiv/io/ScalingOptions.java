@@ -33,6 +33,8 @@ public class ScalingOptions {
     private double maxValue = 0.0;
     private boolean maxValueGiven = false;
 
+    private ColorModel colorModel = null;
+
     public ScalingOptions() {
     }
 
@@ -45,6 +47,11 @@ public class ScalingOptions {
         minValueGiven = true;
     }
 
+    public void unsetMinValue() {
+        minValue = Double.NaN;
+        minValueGiven = false;
+    }
+
     public double getMaxValue() {
         return (maxValueGiven ? maxValue : Double.NaN);
     }
@@ -52,6 +59,19 @@ public class ScalingOptions {
     public void setMaxValue(double value) {
         maxValue = value;
         maxValueGiven = true;
+    }
+
+    public void unsetMaxValue() {
+        maxValue = Double.NaN;
+        maxValueGiven = false;
+    }
+
+    /**
+     * Get the chosen color model.
+     * @return The color model or {@code null} if not set.
+     */
+    public ColorModel getColorModel() {
+        return colorModel;
     }
 
     public double[] getScaling(double arr[], double fileMin, double fileMax) {

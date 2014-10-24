@@ -249,7 +249,7 @@ public class DataFormat {
      * @param description - A description for error messages.
      * @return
      */
-    public static ShapedArray load(String fileName, int colorModel, String description) {
+    public static ShapedArray load(String fileName, ColorModel colorModel, String description) {
         ShapedArray arr = null;
         int format = DataFormat.guessFormat(fileName);
         try {
@@ -292,7 +292,7 @@ public class DataFormat {
      * @throws IOException
      * @throws FileNotFoundException
      */
-    public static void save(ShapedArray img, String fileName,
+    public static void save(ShapedArray arr, String fileName,
             ScalingOptions opts) throws FileNotFoundException, IOException {
         int format = DataFormat.guessFormat(fileName);
         String formatName = null;
@@ -308,7 +308,7 @@ public class DataFormat {
             formatName = DataFormat.getFormatName(format);
             break;
         case DataFormat.FMT_MDA:
-            MdaFormat.save(img, fileName);
+            MdaFormat.save(arr, fileName);
             return;
         default:
             formatName = null;
@@ -316,22 +316,22 @@ public class DataFormat {
         if (formatName == null) {
             fatal("Unknown/unsupported format name.");
         }
-        int depth, width, height, rank = img.getRank();
+        int depth, width, height, rank = arr.getRank();
         if (rank == 2) {
             depth = 1;
-            width = img.getDimension(0);
-            height = img.getDimension(1);
+            width = arr.getDimension(0);
+            height = arr.getDimension(1);
         } else if (rank == 3) {
-            depth = img.getDimension(0);
-            width = img.getDimension(1);
-            height = img.getDimension(2);
+            depth = arr.getDimension(0);
+            width = arr.getDimension(1);
+            height = arr.getDimension(2);
         } else {
             depth = 0;
             width = 0;
             height = 0;
             fatal("Expecting 2D array as image.");
         }
-        double[] data = img.toDouble().flatten();
+        double[] data = arr.toDouble().flatten();
         BufferedImage buf = ArrayUtils.doubleAsBuffered(data, depth, width, height, opts);
         ImageIO.write(buf, formatName, new File(fileName));
     }

@@ -55,6 +55,7 @@ import mitiv.base.Traits;
 import mitiv.base.indexing.Range;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.io.ColorModel;
 import mitiv.io.ScalingOptions;
 import mitiv.linalg.shaped.DoubleShapedVector;
 
@@ -776,18 +777,6 @@ public class ArrayUtils {
     //}
 
     /*=======================================================================*/
-    /* COLOR MODELS */
-
-    public final static int RED   = 0;
-    public final static int GREEN = 1;
-    public final static int BLUE  = 2;
-    public final static int ALPHA = 3;
-    public final static int GRAY  = 4;
-    public final static int RGB   = 5;
-    public final static int RGBA  = 6;
-
-
-    /*=======================================================================*/
     /* ZERO-PADDING */
 
     /**
@@ -1020,7 +1009,8 @@ public class ArrayUtils {
      * grayscale image, with shape {depth,width,height} for a RGB or RGBA
      * image (depth = 3 or 4 respectively).
      */
-    public static DoubleArray imageAsDouble(BufferedImage image, int colorModel) {
+    public static DoubleArray imageAsDouble(BufferedImage image,
+                                            ColorModel colorModel) {
         final double OPAQUE = 255.0;
         int height = image.getHeight();
         int width = image.getWidth();
@@ -1048,20 +1038,23 @@ public class ArrayUtils {
         int[] pixval = new int[nbands];
         if (nbands == 1) {
             /* Assume input is greyscale image. */
-            if (colorModel == GRAY || colorModel == RED || colorModel == GREEN || colorModel == BLUE) {
+            if (colorModel == ColorModel.GRAY ||
+                colorModel == ColorModel.RED ||
+                colorModel == ColorModel.GREEN ||
+                colorModel == ColorModel.BLUE) {
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
                         raster.getPixel(x, y, pixval);
                         out[x + y*width] = pixval[0];
                     }
                 }
-            } else if (colorModel == ALPHA) {
+            } else if (colorModel == ColorModel.ALPHA) {
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
                         out[x + y*width] = OPAQUE;
                     }
                 }
-            } else if (colorModel == RGB) {
+            } else if (colorModel == ColorModel.RGB) {
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
                         int k = 3*(x + y*width);
@@ -1088,14 +1081,14 @@ public class ArrayUtils {
             }
         } else if (nbands == 3) {
             /* Assume input is RGB image. */
-            if (colorModel == GRAY) {
+            if (colorModel == ColorModel.GRAY) {
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
                         raster.getPixel(x, y, pixval);
                         out[x + y*width] = colorToGrey((double)pixval[0], (double)pixval[1], (double)pixval[2]);
                     }
                 }
-            } else if (colorModel == RGB) {
+            } else if (colorModel == ColorModel.RGB) {
                 /* Flatten the RGB image. */
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
@@ -1106,7 +1099,7 @@ public class ArrayUtils {
                         out[k+2] = pixval[2];
                     }
                 }
-            } else if (colorModel == RGBA) {
+            } else if (colorModel == ColorModel.RGBA) {
                 /* Flatten the RGBA image. */
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
@@ -1118,7 +1111,7 @@ public class ArrayUtils {
                         out[k+3] = OPAQUE;
                     }
                 }
-            } else if (colorModel == ALPHA) {
+            } else if (colorModel == ColorModel.ALPHA) {
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
                         out[x + y*width] = OPAQUE;
@@ -1126,9 +1119,9 @@ public class ArrayUtils {
                 }
             } else {
                 int band;
-                if (colorModel == RED) {
+                if (colorModel == ColorModel.RED) {
                     band = 0;
-                } else if (colorModel == GREEN) {
+                } else if (colorModel == ColorModel.GREEN) {
                     band = 1;
                 } else /* Output must be BLUE channel. */ {
                     band = 2;
@@ -1142,14 +1135,14 @@ public class ArrayUtils {
             }
         } else if (nbands == 4) {
             /* Assume input is RGBA image. */
-            if (colorModel == GRAY) {
+            if (colorModel == ColorModel.GRAY) {
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
                         raster.getPixel(x, y, pixval);
                         out[x + y*width] = colorToGrey((double)pixval[0], (double)pixval[1], (double)pixval[2]);
                     }
                 }
-            } else if (colorModel == RGB) {
+            } else if (colorModel == ColorModel.RGB) {
                 /* Flatten the RGB image (ignoring the ALPHA channel). */
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
@@ -1160,7 +1153,7 @@ public class ArrayUtils {
                         out[k+2] = pixval[2];
                     }
                 }
-            } else if (colorModel == RGBA) {
+            } else if (colorModel == ColorModel.RGBA) {
                 /* Flatten the RGBA image. */
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
@@ -1174,11 +1167,11 @@ public class ArrayUtils {
                 }
             } else {
                 int band;
-                if (colorModel == RED) {
+                if (colorModel == ColorModel.RED) {
                     band = 0;
-                } else if (colorModel == GREEN) {
+                } else if (colorModel == ColorModel.GREEN) {
                     band = 1;
-                } else if (colorModel == BLUE) {
+                } else if (colorModel == ColorModel.BLUE) {
                     band = 2;
                 } else /* Output must be ALPHA channel. */ {
                     band = 3;
@@ -1210,11 +1203,11 @@ public class ArrayUtils {
     public static DoubleArray imageAsDouble(BufferedImage image) {
         switch (image.getRaster().getNumBands()) {
         case 1:
-            return imageAsDouble(image, GRAY);
+            return imageAsDouble(image, ColorModel.GRAY);
         case 3:
-            return imageAsDouble(image, RGB);
+            return imageAsDouble(image, ColorModel.RGB);
         case 4:
-            return imageAsDouble(image, RGBA);
+            return imageAsDouble(image, ColorModel.RGBA);
         default:
             throw new IllegalArgumentException("Unknown pixel format");
         }
