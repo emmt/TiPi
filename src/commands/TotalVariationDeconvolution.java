@@ -25,21 +25,14 @@
 
 package commands;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Locale;
 
-import javax.imageio.ImageIO;
-
 import mitiv.array.ArrayFactory;
 import mitiv.array.ArrayUtils;
 import mitiv.array.DoubleArray;
-import mitiv.array.ScalingOptions;
-import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.cost.CompositeDifferentiableCostFunction;
@@ -53,7 +46,6 @@ import mitiv.invpb.ReconstructionSynchronizer;
 import mitiv.invpb.ReconstructionViewer;
 import mitiv.invpb.SimpleViewer;
 import mitiv.io.DataFormat;
-import mitiv.io.MdaFormat;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.LinearOperator;
 import mitiv.linalg.Vector;
@@ -304,12 +296,12 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         }
 
         // Read the blurred image and the PSF.
-        job.data = readImage(inputName, ArrayUtils.GRAY, "input image");;
-        job.psf = readImage(psfName, ArrayUtils.GRAY, "PSF");
+        job.data = DataFormat.load(inputName, ArrayUtils.GRAY, "input image").toDouble();
+        job.psf = DataFormat.load(psfName, ArrayUtils.GRAY, "PSF").toDouble();
 
         job.deconvolve();
         try {
-            writeImage(job.result, job.outName);
+            DataFormat.save(job.result, job.outName);
         } catch (IOException e) {
             if (job.debug) {
                 e.printStackTrace();
@@ -555,80 +547,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     }
 
 
-    /* ************************ FONCTIONS UTILES   ************************* */
-
-    /**
-     * FONCTIONS UTILES : writeImage()
-     * @param img
-     * @param fileName
-     * @throws IOException
-     * @throws FileNotFoundException
-     */
-    public static void writeImage(ShapedArray img, String fileName)
-            throws FileNotFoundException, IOException {
-        writeImage(img, fileName, new ScalingOptions());
-    }
-
-    public static void writeImage(ShapedArray img, String fileName,
-            ScalingOptions opts) throws FileNotFoundException, IOException {
-        int format = DataFormat.guessFormat(fileName);
-        String formatName = null;
-        switch (format) {
-        //case DataFormat.FMT_PNM:
-        case DataFormat.FMT_JPEG:
-        case DataFormat.FMT_PNG:
-        case DataFormat.FMT_GIF:
-        case DataFormat.FMT_BMP:
-        case DataFormat.FMT_WBMP:
-            //case DataFormat.FMT_TIFF:
-            //case DataFormat.FMT_FITS:
-            formatName = DataFormat.getFormatName(format);
-            break;
-        case DataFormat.FMT_MDA:
-            MdaFormat.save(img, fileName);
-            return;
-        default:
-            formatName = null;
-        }
-        if (formatName == null) {
-            fatal("Unknown/unsupported format name.");
-        }
-        int depth, width, height, rank = img.getRank();
-        if (rank == 2) {
-            depth = 1;
-            width = img.getDimension(0);
-            height = img.getDimension(1);
-        } else if (rank == 3) {
-            depth = img.getDimension(0);
-            width = img.getDimension(1);
-            height = img.getDimension(2);
-        } else {
-            depth = 0;
-            width = 0;
-            height = 0;
-            fatal("Expecting 2D array as image.");
-        }
-        double[] data = img.toDouble().flatten();
-        BufferedImage buf = ArrayUtils.doubleAsBuffered(data, depth, width, height, opts);
-        ImageIO.write(buf, formatName, new File(fileName));
-    }
-
-    private static DoubleArray readImage(String fileName, int colorModel, String description) {
-        DoubleArray img = null;
-        int format = DataFormat.guessFormat(fileName);
-        try {
-            if (format == DataFormat.FMT_MDA) {
-                img = MdaFormat.load(fileName).toDouble();
-            } else {
-                img = ArrayUtils.imageAsDouble(ImageIO.read(new File(fileName)), colorModel);
-            }
-        } catch (Exception e) {
-            fatal("Error while reading " + description + "(" + e.getMessage() +").");
-        }
-        return img;
-    }
-
-    /* Below are all methods required for a RecosntructionJob. */
+    /* Below are all methods required for a ReconstructionJob. */
 
     @Override
     public int getIterations() {

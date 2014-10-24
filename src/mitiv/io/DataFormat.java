@@ -25,9 +25,16 @@
 
 package mitiv.io;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import mitiv.array.ArrayUtils;
+import mitiv.array.ScalingOptions;
+import mitiv.array.ShapedArray;
 
 /**
  * This class deals with identifying various data format.
@@ -230,6 +237,104 @@ public class DataFormat {
 
     private static final boolean isSpace(byte s) {
         return (s == (byte)' ' || s == (byte)'\n' || s == (byte)'\r' || s == (byte)'\t');
+    }
+
+    private static void fatal(String reason) {
+        throw new IllegalArgumentException(reason);
+    }
+
+    /**
+     * Load formatted data from afile.
+     * @param fileName - The name of the input file.
+     * @param colorModel - The model for dealing with color images.
+     * @param description - A description for error messages.
+     * @return
+     */
+    public static ShapedArray load(String fileName, int colorModel, String description) {
+        ShapedArray  = null;
+        int format = DataFormat.guessFormat(fileName);
+        try {
+            if (format == DataFormat.FMT_MDA) {
+                arr = MdaFormat.load(fileName);
+            } else {
+                arr = ArrayUtils.imageAsDouble(ImageIO.read(new File(fileName)), colorModel);
+            }
+        } catch (Exception e) {
+            fatal("Error while reading " + description + "(" + e.getMessage() +").");
+        }
+        return arr;
+    }
+
+    /**
+     * Save data to file.
+     * <p>
+     * The file format is guessed from the extension of the file name and default
+     * options are used to encode the file.
+     * </p>
+     * @param arr - The data to save.
+     * @param fileName - The destination file.
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+    public static void save(ShapedArray arr, String fileName)
+            throws FileNotFoundException, IOException {
+        save(arr, fileName, new ScalingOptions());
+    }
+
+    /**
+     * Save data to file with given options.
+     * <p>
+     * The file format is guessed from the extension of the file name and default
+     * options are used to encode the file.
+     * </p>
+     * @param arr - The data to save.
+     * @param fileName - The destination file.
+     * @param opts - Options for encoding the data.
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+    public static void save(ShapedArray img, String fileName,
+            ScalingOptions opts) throws FileNotFoundException, IOException {
+        int format = DataFormat.guessFormat(fileName);
+        String formatName = null;
+        switch (format) {
+        //case DataFormat.FMT_PNM:
+        case DataFormat.FMT_JPEG:
+        case DataFormat.FMT_PNG:
+        case DataFormat.FMT_GIF:
+        case DataFormat.FMT_BMP:
+        case DataFormat.FMT_WBMP:
+            //case DataFormat.FMT_TIFF:
+            //case DataFormat.FMT_FITS:
+            formatName = DataFormat.getFormatName(format);
+            break;
+        case DataFormat.FMT_MDA:
+            MdaFormat.save(img, fileName);
+            return;
+        default:
+            formatName = null;
+        }
+        if (formatName == null) {
+            fatal("Unknown/unsupported format name.");
+        }
+        int depth, width, height, rank = img.getRank();
+        if (rank == 2) {
+            depth = 1;
+            width = img.getDimension(0);
+            height = img.getDimension(1);
+        } else if (rank == 3) {
+            depth = img.getDimension(0);
+            width = img.getDimension(1);
+            height = img.getDimension(2);
+        } else {
+            depth = 0;
+            width = 0;
+            height = 0;
+            fatal("Expecting 2D array as image.");
+        }
+        double[] data = img.toDouble().flatten();
+        BufferedImage buf = ArrayUtils.doubleAsBuffered(data, depth, width, height, opts);
+        ImageIO.write(buf, formatName, new File(fileName));
     }
 
     public static void main(String[] args) {
