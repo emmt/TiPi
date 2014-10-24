@@ -96,34 +96,20 @@ public class BufferedImageUtils {
         }
     }
 
+    /**
+     * By default we use double precision
+     * 
+     * @param listImage
+     * @return
+     */
     public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage) {
         return imageToArray(listImage, false);
     }
-    
+
     public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage, boolean single) {
         int width = listImage.get(0).getWidth();
         int height = listImage.get(0).getHeight();
-        int sizeZ = listImage.size();
-        int[] shape = new int[]{width, height, sizeZ};
-        return imageToArray(listImage, shape, single);
-    }
-    
-    public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage, int[] shape) {
-        return imageToArray(listImage, shape, false);
-    }
-
-    public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage, int[] shape, boolean single) {
-        if (shape.length != 3) {
-            throw new IllegalArgumentException("Input should be tri dimensionnal");
-        }
-        return imageToArray(listImage, shape[0], shape[1], shape[2], single);
-    }
-
-    public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage, int width, int height, int sizeZ) {
-        return imageToArray(listImage, width, height, sizeZ, false);
-    }
-
-    public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage, int width, int height, int sizeZ, boolean single) {
+        int sizeZ = listImage.size();   //FIXME if 2D (size == 1) what happen ? Throw exception ?
         if (single) {
             float[] out = new float[sizeZ*width*height];
             for (int k = 0; k < sizeZ; k++) {
@@ -170,11 +156,11 @@ public class BufferedImageUtils {
      * @param shape 
      * @return the buffered image
      */
-    public static ShapedArray arrayToImage(double[] array, int[] shape) {
-        if (shape.length == 2) {
-            return arrayToImage(array, shape[0], shape[1]);
-        } else if (shape.length == 3) {
-            return arrayToImage(array, shape[0], shape[1], shape[2]);
+    public static ShapedArray arrayToImage(double[] array, Shape shape) {
+        if (shape.rank() == 2) {
+            return arrayToImage(array, shape.dimension(0), shape.dimension(1));
+        } else if (shape.rank() == 3) {
+            return arrayToImage(array, shape.dimension(0), shape.dimension(1), shape.dimension(2));
         }else{
             throw new IllegalArgumentException("Only Bi and tri dimensionnal images are accepted now");
         }
@@ -212,11 +198,11 @@ public class BufferedImageUtils {
      * @param shape 
      * @return the buffered image
      */
-    public static ShapedArray arrayToImage(float[] array, int[] shape){
-        if (shape.length == 2) {
-            return arrayToImage(array, shape[0], shape[1]);
-        } else if (shape.length == 3) {
-            return arrayToImage(array, shape[0], shape[1], shape[2]);
+    public static ShapedArray arrayToImage(float[] array, Shape shape){
+        if (shape.rank() == 2) {
+            return arrayToImage(array, shape.dimension(0), shape.dimension(1));
+        } else if (shape.rank() == 3) {
+            return arrayToImage(array, shape.dimension(0), shape.dimension(1), shape.dimension(2));
         }else{
             throw new IllegalArgumentException("Only Bi and tri dimensionnal images are accepted now");
         }
@@ -358,7 +344,7 @@ public class BufferedImageUtils {
         int halfSizePadH = sizePadH/2;
         int halfSizePadZ = sizePadZ/2;
 
-        int[] shape = new int[]{width+sizePadW, height+sizePadH, sizeZ+sizePadZ};
+        Shape shape = Shape.make(width+sizePadW, height+sizePadH, sizeZ+sizePadZ);
         //If we are in double else we will work in FLOAt
         if (input.getType() == ShapedArray.DOUBLE) {
             double[] output = new double[(width+sizePadW)*(height+sizePadH)*(sizeZ+sizePadZ)];

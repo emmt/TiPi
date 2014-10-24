@@ -251,7 +251,7 @@ public class DataFormat {
      * @return
      */
     public static ShapedArray load(String fileName, int colorModel, String description) {
-        ShapedArray  = null;
+        ShapedArray arr = null;
         int format = DataFormat.guessFormat(fileName);
         try {
             if (format == DataFormat.FMT_MDA) {

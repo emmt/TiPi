@@ -1343,7 +1343,7 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the double[]
      */
-    public static double[] psfPadding1D(double[] imageout,int imageWidth, int imageHeight, double[] imagePsf, int psfWidth, int psfHeight, boolean isComplex) {
+    public static double[] psfPadding1D(double[] imageout, int imageWidth, int imageHeight, double[] imagePsf, int psfWidth, int psfHeight, boolean isComplex) {
         int demiPsfW = psfWidth/2;int demiPsfH = psfHeight/2;
         //System.out.println(imageWidth+" "+imageHeight+" "+psfWidth+" "+psfHeight+" "+isComplex);
         // IMAGE point of view:
