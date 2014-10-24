@@ -24,6 +24,7 @@
  */
 
 package mitiv.io;
+//# include <common.javax>
 
 import java.awt.image.BufferedImage;
 import java.io.File;
