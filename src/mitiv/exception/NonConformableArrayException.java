@@ -36,6 +36,12 @@ public class NonConformableArrayException extends RuntimeException {
     private static final String message1 = "Incompatible 1st dimensions.";
     private static final String message2 = "Incompatible 2nd dimensions.";
     private static final String message3 = "Incompatible 3rd dimensions.";
+    private static final String message4 = "Incompatible 4th dimensions.";
+    private static final String message5 = "Incompatible 5th dimensions.";
+    private static final String message6 = "Incompatible 6th dimensions.";
+    private static final String message7 = "Incompatible 7th dimensions.";
+    private static final String message8 = "Incompatible 8th dimensions.";
+    private static final String message9 = "Incompatible 9th dimensions.";
 
     public NonConformableArrayException(String message) {
         super(message);
@@ -50,13 +56,26 @@ public class NonConformableArrayException extends RuntimeException {
     }
 
     private static String makeMessage(int rank) {
-        if (rank == 1) {
+        switch (rank) {
+        case 1:
             return message1;
-        } else if (rank == 2) {
+        case 2:
             return message2;
-        } else if (rank == 3) {
+        case 3:
             return message3;
-        } else {
+        case 4:
+            return message4;
+        case 5:
+            return message5;
+        case 6:
+            return message6;
+        case 7:
+            return message7;
+        case 8:
+            return message8;
+        case 9:
+            return message9;
+        default:
             return defaultMessage;
         }
     }
