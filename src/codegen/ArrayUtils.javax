@@ -28,10 +28,6 @@ package mitiv.array;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 import mitiv.array.Array1D;
 import mitiv.array.Array2D;
@@ -51,14 +47,11 @@ import mitiv.array.LongArray;
 import mitiv.array.ShapedArray;
 import mitiv.array.ShortArray;
 import mitiv.base.Shape;
-import mitiv.base.Shaped;
 import mitiv.base.Traits;
 import mitiv.base.indexing.Range;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
 import mitiv.io.ColorModel;
-import mitiv.io.FormatOptions;
-import mitiv.linalg.shaped.DoubleShapedVector;
 
 public class ArrayUtils {
 
@@ -345,12 +338,6 @@ public class ArrayUtils {
     /*=======================================================================*/
     /* FUNCTIONS FOR DOUBLE TYPE */
 
-    //# for dst in ${BYTE} : ${DOUBLE}
-    //#     def dst_type = ${}{type_${dst}}
-    //#     def dst_Type = ${}{Type_${dst}}
-    //#     def dst_TYPE = ${}{TYPE_${dst}}
-    //# end
-
     /**
      * Convert a BufferedImage into a DoubleArray.
      * @param image      - The input BufferedImage.
@@ -547,182 +534,7 @@ public class ArrayUtils {
         }
     }
 
-    /**
-     * Convert a BufferedImage into a DoubleArray.
-     * @param image      - The input BufferedImage.
-     * @return A DoubleArray object with shape {width,height} for a
-     * grayscale image, with shape {depth,width,height} for a RGB or RGBA
-     * image (depth = 3 or 4 respectively).
-     */
-    public static DoubleArray imageAsDouble(BufferedImage image) {
-        switch (image.getRaster().getNumBands()) {
-        case 1:
-            return imageAsDouble(image, ColorModel.GRAY);
-        case 3:
-            return imageAsDouble(image, ColorModel.RGB);
-        case 4:
-            return imageAsDouble(image, ColorModel.RGBA);
-        default:
-            throw new IllegalArgumentException("Unknown pixel format");
-        }
-    }
 
-    private static int[] getImageDimensions(Shaped img) {
-        int rank = img.getRank();
-        if (rank == 2) {
-            return new int[]{1, img.getDimension(0), img.getDimension(1)};
-        } else if (rank == 3) {
-            int depth = img.getDimension(0);
-            int width = img.getDimension(1);
-            int height = img.getDimension(2);
-            if (depth == 3 || depth == 4) {
-                return new int[]{depth, width, height};
-            }
-        }
-        throw new IllegalArgumentException("Conversion to image is only allowed for WIDTHxHEIGHT, 3xWIDTHxHEIGHT or 4xWIDTHxHEIGHT arrays.");
-    }
-
-    public static void writeImage(DoubleArray img, String fileName) {
-        BufferedImage buf = doubleAsBuffered(img);
-        writeImage(buf, fileName);
-    }
-
-    public static void writeImage(DoubleArray img, String fileName, FormatOptions scaleOpts) {
-        BufferedImage buf = doubleAsBuffered(img, scaleOpts);
-        writeImage(buf, fileName);
-    }
-
-    public static void writeImage(DoubleShapedVector img, String fileName) {
-        BufferedImage buf = doubleAsBuffered(img);
-        writeImage(buf, fileName);
-    }
-
-    public static void writeImage(DoubleShapedVector img, String fileName, FormatOptions scaleOpts) {
-        BufferedImage buf = doubleAsBuffered(img, scaleOpts);
-        writeImage(buf, fileName);
-    }
-
-    // FIXME: deal with NaN and INFINITE
-    public static void writeImage(double[] arr, int depth, int width, int height, String fileName) {
-        BufferedImage buf = doubleAsBuffered(arr, depth, width, height);
-        writeImage(buf, fileName);
-    }
-
-    public static void writeImage(double[] arr, int depth, int width, int height, String fileName,
-            FormatOptions scaleOpts) {
-        BufferedImage buf = doubleAsBuffered(arr, depth, width, height, scaleOpts);
-        writeImage(buf, fileName);
-    }
-
-    private static int checkDimensions(double[] arr, int depth, int width, int height) {
-        int number;
-        if ((depth != 1 && depth != 3 && depth != 4)) {
-            throw new IllegalArgumentException("Only gray, RGB or RGBA images supported.");
-        }
-        if (width < 1 || height < 1) {
-            throw new IllegalArgumentException("Bad image size.");
-        }
-        number = depth*width*height;
-        if (arr == null || number > arr.length) {
-            throw new IllegalArgumentException("More pixel values than array elements.");
-        }
-        return number;
-    }
-
-    /*=======================================================================*/
-    /* FUNCTIONS TO BUFFERED */
-
-    public static BufferedImage doubleAsBuffered(DoubleArray img) {
-        int[] dims = getImageDimensions(img);
-        return doubleAsBuffered(img.flatten(), dims[0], dims[1], dims[2]);
-    }
-
-    public static BufferedImage doubleAsBuffered(DoubleArray img, FormatOptions scaleOpts) {
-        int[] dims = getImageDimensions(img);
-        return doubleAsBuffered(img.flatten(), dims[0], dims[1], dims[2], scaleOpts);
-    }
-
-    public static BufferedImage doubleAsBuffered(DoubleShapedVector img) {
-        int[] dims = getImageDimensions(img);
-        return doubleAsBuffered(img.getData(), dims[0], dims[1], dims[2]);
-    }
-
-    public static BufferedImage doubleAsBuffered(DoubleShapedVector img, FormatOptions scaleOpts) {
-        int[] dims = getImageDimensions(img);
-        return doubleAsBuffered(img.getData(), dims[0], dims[1], dims[2], scaleOpts);
-    }
-
-    public static BufferedImage doubleAsBuffered(double[] arr, int depth, int width, int height) {
-        return doubleAsBuffered(arr, depth, width, height, new FormatOptions());
-    }
-
-    public static BufferedImage doubleAsBuffered(double[] arr, int depth, int width, int height,
-            FormatOptions opts) {
-        int number = checkDimensions(arr, depth, width, height);
-        double[] sf = opts.getScaling(arr, 0, number, 0, 255);
-        double scale = sf[0];
-        double bias = sf[1];
-        double factor = 1.0/scale;
-        BufferedImage buf;
-        if (depth == 1) {
-            buf = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-            WritableRaster raster = buf.getRaster();
-            int[] rgb = new int[3];
-            for (int y = 0; y < height; ++y){
-                for (int x = 0; x < width; ++x){
-                    int level = Math.min(255, Math.max(0, (int)Math.round((arr[x + y*width] - bias)*factor)));
-                    rgb[0] = level;
-                    rgb[1] = level;
-                    rgb[2] = level;
-                    raster.setPixel(x, y, rgb);
-                }
-            }
-        } else if (depth == 3) {
-            buf = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-            WritableRaster raster = buf.getRaster();
-            int[] rgb = new int[3];
-            for (int y = 0; y < height; ++y){
-                for (int x = 0; x < width; ++x){
-                    int i = (x + y*width)*3;
-                    rgb[0] = Math.min(255, Math.max(0, (int)Math.round((arr[i]     - bias)*factor)));
-                    rgb[1] = Math.min(255, Math.max(0, (int)Math.round((arr[i + 1] - bias)*factor)));
-                    rgb[2] = Math.min(255, Math.max(0, (int)Math.round((arr[i + 2] - bias)*factor)));
-                    raster.setPixel(x, y, rgb);
-                }
-            }
-        } else if (depth == 4) {
-            buf = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-            WritableRaster raster = buf.getRaster();
-            int[] argb = new int[4];
-            for (int y = 0; y < height; ++y){
-                for (int x = 0; x < width; ++x){
-                    int i = (x + y*width)*4;
-                    argb[0] = Math.min(255, Math.max(0, (int)Math.round((arr[i]     - bias)*factor)));
-                    argb[1] = Math.min(255, Math.max(0, (int)Math.round((arr[i + 1] - bias)*factor)));
-                    argb[2] = Math.min(255, Math.max(0, (int)Math.round((arr[i + 2] - bias)*factor)));
-                    argb[3] = Math.min(255, Math.max(0, (int)Math.round((arr[i + 3] - bias)*factor)));
-                    raster.setPixel(x, y, argb);
-                }
-            }
-        } else {
-            throw new IllegalArgumentException("Unexpected image depth.");
-        }
-        return buf;
-    }
-
-    private static void writeImage(BufferedImage buf, String fileName){
-        String type = "png"; // FIXME: guess from extension
-        try {
-            ImageIO.write(buf, type, new File(fileName));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /*=======================================================================*/
-    /* FUNCTIONS FOR FLOAT TYPE */
-
-    // FIXME: to do
 }
 
 /*

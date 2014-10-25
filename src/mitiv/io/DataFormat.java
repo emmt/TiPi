@@ -26,14 +26,34 @@
 package mitiv.io;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import mitiv.array.ArrayFactory;
 import mitiv.array.ArrayUtils;
+import mitiv.array.Byte2D;
+import mitiv.array.Byte3D;
+import mitiv.array.Double2D;
+import mitiv.array.Double3D;
+import mitiv.array.Float2D;
+import mitiv.array.Float3D;
+import mitiv.array.Int2D;
+import mitiv.array.Int3D;
+import mitiv.array.Long2D;
+import mitiv.array.Long3D;
 import mitiv.array.ShapedArray;
+import mitiv.array.Short2D;
+import mitiv.array.Short3D;
+import mitiv.base.Shape;
+import mitiv.base.Traits;
+import mitiv.exception.IllegalTypeException;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.ShapedVector;
 
 /**
  * This enumeration deals with identifying, reading and writing
@@ -351,25 +371,348 @@ public enum DataFormat {
         if (identifier == null) {
             fatal("Unknown/unsupported format name.");
         }
-        int depth, width, height, rank = arr.getRank();
+        BufferedImage image = makeBufferedImage(arr, opts);
+        ImageIO.write(image, identifier, new File(name));
+    }
+
+
+
+    /*=======================================================================*/
+    /* MAKE BUFFERED IMAGES */
+
+    // FIXME: make this for any array/vector types
+
+    /**
+     * Make a buffered image from a shaped array with default options.
+     * <p>
+     *
+     * </p>
+     * @param arr  - The array to convert into an image.
+     * @see {@link #makeBufferedImage(ShapedArray, FormatOptions)} for more
+     *      details about how is interpreted the array.
+     */
+    public static BufferedImage makeBufferedImage(ShapedArray arr) {
+        return makeBufferedImage(arr, new FormatOptions());
+    }
+
+    // FIXME: deal with NaN and INFINITE
+
+    private static final int clip(float value) {
+        return Math.min(255, Math.max(0, (int)Math.round(value)));
+    }
+
+    private static final int clip(double value) {
+        return Math.min(255, Math.max(0, (int)Math.round(value)));
+    }
+
+    /**
+     * Make a buffered image from a shaped array with given options.
+     * <p>
+     * Different kind of shaped array can be interpreted as an image: 2D
+     * shaped array are interpreted as gresy scale images, 3D shaped arrays
+     * are interpreted as RGB array if their first dimension is 3 and as RGBA
+     * array if their first dimension is 4.  All other shapes result in
+     * throxwin an {@link IllegalArgumentException}.  The penultimate
+     * dimension of the shaped array is the width of the image and the last
+     * dimension of the shaped array is the height of the image.  Currently
+     * alpha channel (RGBA images) are only implemented for byte shaped
+     * arrays.
+     * </p><p>
+     * If a color model of the format options is specified, then the source
+     * image (that is the input shaped array interpreted as explained above)
+     * is automatically converted according to this setting.  Otherwise, the
+     * returned buffer image will have the same color model as the input one.
+     * </p>
+     * @param arr  - The array to convert into an image.
+     * @param opts - Options for conversion.
+     */
+    public static BufferedImage makeBufferedImage(ShapedArray arr, FormatOptions opts) {
+        Shape shape = arr.getShape();
+        int rank = shape.rank();
+        int type = arr.getType();
+        int depth = -1;
+        int imageType = -1;
         if (rank == 2) {
             depth = 1;
-            width = arr.getDimension(0);
-            height = arr.getDimension(1);
+            imageType = BufferedImage.TYPE_BYTE_GRAY;
         } else if (rank == 3) {
-            depth = arr.getDimension(0);
-            width = arr.getDimension(1);
-            height = arr.getDimension(2);
-        } else {
-            depth = 0;
-            width = 0;
-            height = 0;
-            fatal("Expecting 2D array as image.");
+            depth = shape.dimension(0);
+            if (depth == 3 || (depth == 4 && type == Traits.BYTE)) {
+                imageType = BufferedImage.TYPE_3BYTE_BGR;
+            } else {
+                depth = -1;
+            }
         }
-        double[] data = arr.toDouble().flatten();
-        BufferedImage buf = ArrayUtils.doubleAsBuffered(data, depth, width, height, opts);
-        ImageIO.write(buf, identifier, new File(name));
+        if (depth < 0) {
+            throw new IllegalArgumentException("Conversion to image is only allowed for WIDTH x HEIGHT arrays, 3 x WIDTH x HEIGHT arrays or 4 x WIDTH x HEIGHT byte arrays.");
+        }
+        int width = shape.dimension(rank - 2);
+        int height = shape.dimension(rank - 1);
+        BufferedImage image = new BufferedImage(width, height, imageType);
+        WritableRaster raster = image.getRaster();
+        int[] argb = new int[4];
+        int[] rgb = new int[3];
+        if (type == Traits.BYTE) {
+            if (depth == 1) {
+                Byte2D src = (Byte2D)arr;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        int level = ((int)(src.get(x,y)) & 0xFF);
+                        rgb[0] = level;
+                        rgb[1] = level;
+                        rgb[2] = level;
+                        raster.setPixel(x, y, rgb);
+                    }
+                }
+            } else {
+                Byte3D src = (Byte3D)arr;
+                if (depth == 3) {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            rgb[0] = ((int)(src.get(0,x,y)) & 0xFF);
+                            rgb[1] = ((int)(src.get(1,x,y)) & 0xFF);
+                            rgb[2] = ((int)(src.get(2,x,y)) & 0xFF);
+                            raster.setPixel(x, y, rgb);
+                        }
+                    }
+                } else /* depth == 4 */ {
+                    for (int y = 0; y < height; ++y){
+                        for (int x = 0; x < width; ++x){
+                            argb[0] = ((int)(src.get(0,x,y)) & 0xFF);
+                            argb[1] = ((int)(src.get(1,x,y)) & 0xFF);
+                            argb[2] = ((int)(src.get(2,x,y)) & 0xFF);
+                            argb[3] = ((int)(src.get(3,x,y)) & 0xFF);
+                            raster.setPixel(x, y, argb);
+                        }
+                    }
+                }
+            }
+        } else if (type == Traits.SHORT) {
+            double[] sf = opts.getScaling(arr, 0, 255);
+            float scale = (float)sf[0];
+            float bias = (float)sf[1];
+            float factor = 1/scale;
+            if (depth == 1) {
+                Short2D src = (Short2D)arr;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        int level = clip(((float)(src.get(x,y)) - bias)*factor);
+                        rgb[0] = level;
+                        rgb[1] = level;
+                        rgb[2] = level;
+                        raster.setPixel(x, y, rgb);
+                    }
+                }
+            } else {
+                Short3D src = (Short3D)arr;
+                if (depth == 3) {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            rgb[0] = clip(((float)(src.get(0,x,y)) - bias)*factor);
+                            rgb[1] = clip(((float)(src.get(1,x,y)) - bias)*factor);
+                            rgb[2] = clip(((float)(src.get(2,x,y)) - bias)*factor);
+                            raster.setPixel(x, y, rgb);
+                        }
+                    }
+                } else /* depth == 4 */ {
+                    for (int y = 0; y < height; ++y){
+                        for (int x = 0; x < width; ++x){
+                            argb[0] = clip(((float)(src.get(0,x,y)) - bias)*factor);
+                            argb[1] = clip(((float)(src.get(1,x,y)) - bias)*factor);
+                            argb[2] = clip(((float)(src.get(2,x,y)) - bias)*factor);
+                            argb[3] = clip(((float)(src.get(3,x,y)) - bias)*factor);
+                            raster.setPixel(x, y, argb);
+                        }
+                    }
+                }
+            }
+        } else if (type == Traits.INT) {
+            double[] sf = opts.getScaling(arr, 0, 255);
+            float scale = (float)sf[0];
+            float bias = (float)sf[1];
+            float factor = 1/scale;
+            if (depth == 1) {
+                Int2D src = (Int2D)arr;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        int level = clip(((float)(src.get(x,y)) - bias)*factor);
+                        rgb[0] = level;
+                        rgb[1] = level;
+                        rgb[2] = level;
+                        raster.setPixel(x, y, rgb);
+                    }
+                }
+            } else {
+                Int3D src = (Int3D)arr;
+                if (depth == 3) {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            rgb[0] = clip(((float)(src.get(0,x,y)) - bias)*factor);
+                            rgb[1] = clip(((float)(src.get(1,x,y)) - bias)*factor);
+                            rgb[2] = clip(((float)(src.get(2,x,y)) - bias)*factor);
+                            raster.setPixel(x, y, rgb);
+                        }
+                    }
+                } else /* depth == 4 */ {
+                    for (int y = 0; y < height; ++y){
+                        for (int x = 0; x < width; ++x){
+                            argb[0] = clip(((float)(src.get(0,x,y)) - bias)*factor);
+                            argb[1] = clip(((float)(src.get(1,x,y)) - bias)*factor);
+                            argb[2] = clip(((float)(src.get(2,x,y)) - bias)*factor);
+                            argb[3] = clip(((float)(src.get(3,x,y)) - bias)*factor);
+                            raster.setPixel(x, y, argb);
+                        }
+                    }
+                }
+            }
+        } else if (type == Traits.LONG) {
+            double[] sf = opts.getScaling(arr, 0, 255);
+            double scale = (double)sf[0];
+            double bias = (double)sf[1];
+            double factor = 1/scale;
+            if (depth == 1) {
+                Long2D src = (Long2D)arr;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        int level = clip(((double)(src.get(x,y)) - bias)*factor);
+                        rgb[0] = level;
+                        rgb[1] = level;
+                        rgb[2] = level;
+                        raster.setPixel(x, y, rgb);
+                    }
+                }
+            } else {
+                Long3D src = (Long3D)arr;
+                if (depth == 3) {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            rgb[0] = clip(((double)(src.get(0,x,y)) - bias)*factor);
+                            rgb[1] = clip(((double)(src.get(1,x,y)) - bias)*factor);
+                            rgb[2] = clip(((double)(src.get(2,x,y)) - bias)*factor);
+                            raster.setPixel(x, y, rgb);
+                        }
+                    }
+                } else /* depth == 4 */ {
+                    for (int y = 0; y < height; ++y){
+                        for (int x = 0; x < width; ++x){
+                            argb[0] = clip(((double)(src.get(0,x,y)) - bias)*factor);
+                            argb[1] = clip(((double)(src.get(1,x,y)) - bias)*factor);
+                            argb[2] = clip(((double)(src.get(2,x,y)) - bias)*factor);
+                            argb[3] = clip(((double)(src.get(3,x,y)) - bias)*factor);
+                            raster.setPixel(x, y, argb);
+                        }
+                    }
+                }
+            }
+        } else if (type == Traits.FLOAT) {
+            double[] sf = opts.getScaling(arr, 0, 255);
+            float scale = (float)sf[0];
+            float bias = (float)sf[1];
+            float factor = 1/scale;
+            if (depth == 1) {
+                Float2D src = (Float2D)arr;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        int level = clip((src.get(x,y) - bias)*factor);
+                        rgb[0] = level;
+                        rgb[1] = level;
+                        rgb[2] = level;
+                        raster.setPixel(x, y, rgb);
+                    }
+                }
+            } else {
+                Float3D src = (Float3D)arr;
+                if (depth == 3) {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            rgb[0] = clip((src.get(0,x,y) - bias)*factor);
+                            rgb[1] = clip((src.get(1,x,y) - bias)*factor);
+                            rgb[2] = clip((src.get(2,x,y) - bias)*factor);
+                            raster.setPixel(x, y, rgb);
+                        }
+                    }
+                } else /* depth == 4 */ {
+                    for (int y = 0; y < height; ++y){
+                        for (int x = 0; x < width; ++x){
+                            argb[0] = clip((src.get(0,x,y) - bias)*factor);
+                            argb[1] = clip((src.get(1,x,y) - bias)*factor);
+                            argb[2] = clip((src.get(2,x,y) - bias)*factor);
+                            argb[3] = clip((src.get(3,x,y) - bias)*factor);
+                            raster.setPixel(x, y, argb);
+                        }
+                    }
+                }
+            }
+        } else if (type == Traits.DOUBLE) {
+            double[] sf = opts.getScaling(arr, 0, 255);
+            double scale = (double)sf[0];
+            double bias = (double)sf[1];
+            double factor = 1/scale;
+            if (depth == 1) {
+                Double2D src = (Double2D)arr;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        int level = clip((src.get(x,y) - bias)*factor);
+                        rgb[0] = level;
+                        rgb[1] = level;
+                        rgb[2] = level;
+                        raster.setPixel(x, y, rgb);
+                    }
+                }
+            } else {
+                Double3D src = (Double3D)arr;
+                if (depth == 3) {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            rgb[0] = clip((src.get(0,x,y) - bias)*factor);
+                            rgb[1] = clip((src.get(1,x,y) - bias)*factor);
+                            rgb[2] = clip((src.get(2,x,y) - bias)*factor);
+                            raster.setPixel(x, y, rgb);
+                        }
+                    }
+                } else /* depth == 4 */ {
+                    for (int y = 0; y < height; ++y){
+                        for (int x = 0; x < width; ++x){
+                            argb[0] = clip((src.get(0,x,y) - bias)*factor);
+                            argb[1] = clip((src.get(1,x,y) - bias)*factor);
+                            argb[2] = clip((src.get(2,x,y) - bias)*factor);
+                            argb[3] = clip((src.get(3,x,y) - bias)*factor);
+                            raster.setPixel(x, y, argb);
+                        }
+                    }
+                }
+            }
+        } else {
+            throw new IllegalTypeException();
+        }
+
+        return image;
     }
+
+    public static BufferedImage makeBufferedImage(ShapedVector vec) {
+        if (vec instanceof DoubleShapedVector) {
+            return makeBufferedImage(ArrayFactory.wrap(((DoubleShapedVector)vec).getData(), vec.getShape()));
+        }
+        if (vec instanceof FloatShapedVector) {
+            return makeBufferedImage(ArrayFactory.wrap(((FloatShapedVector)vec).getData(), vec.getShape()));
+        }
+        throw new IllegalArgumentException("Unable to convert shaped vector to image.");
+    }
+
+    public static BufferedImage makeBufferedImage(ShapedVector vec,
+                                                  FormatOptions opts) {
+        if (vec instanceof DoubleShapedVector) {
+            return makeBufferedImage(ArrayFactory.wrap(((DoubleShapedVector)vec).getData(), vec.getShape()), opts);
+        }
+        if (vec instanceof FloatShapedVector) {
+            return makeBufferedImage(ArrayFactory.wrap(((FloatShapedVector)vec).getData(), vec.getShape()), opts);
+        }
+        throw new IllegalArgumentException("Unable to convert shaped vector to image.");
+    }
+
+
+    /*=======================================================================*/
+    /* TESTS */
 
     public static void main(String[] args) {
         String[] str;
