@@ -320,7 +320,7 @@ namespace eval ::tpp {
     }
 
     if {$depth != 0} {
-      failure "there are unclosed '#if' or '#while' directives"
+      failure "there are unclosed '#if', '#for' or '#while' directives"
     }
 
     set code(length) $MACRO(__LINE__)
