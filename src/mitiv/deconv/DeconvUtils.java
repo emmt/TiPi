@@ -39,9 +39,10 @@ import mitiv.linalg.shaped.FloatShapedVectorSpace;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 import mitiv.utils.CommonUtils;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
-import edu.emory.mathcs.jtransforms.fft.FloatFFT_1D;
+
+import org.jtransforms.fft.DoubleFFT_1D;
+import org.jtransforms.fft.DoubleFFT_3D;
+import org.jtransforms.fft.FloatFFT_1D;
 
 /**
  * @author Leger Jonathan
@@ -67,7 +68,7 @@ public class DeconvUtils {
     //3D
     private ShapedArray imgShaped;
     private ShapedArray psfShaped;
-    
+
     public int sizeZ;
     private DoubleFFT_3D fft3D;
 
@@ -118,7 +119,7 @@ public class DeconvUtils {
             System.err.println("Wrong path given");
         }
     }
-    
+
     /**
      * Open the images and store them
      * 
@@ -160,7 +161,7 @@ public class DeconvUtils {
             this.sizeZ = 1;
         }
     }
-    
+
     /********************************** Read image vector **********************************/
 
     /**
@@ -223,15 +224,15 @@ public class DeconvUtils {
     }
 
     /********************************** Pad image **********************************/
-    
+
     public void PadImageAndPSF(double coef){
         //IMPORTANT WE PAD AS WE COMPUTE
         //FIXME here padding
         sizeZ = (int)(sizeZ*coef);
         width = (int)(width*coef);
-        height = (int)(height*coef);        
+        height = (int)(height*coef);
     }
-    
+
     /********************************** Vector quick util **********************************/
 
     /**
@@ -309,7 +310,7 @@ public class DeconvUtils {
 
     /**
      * Convert a stack of image to a 1D array
-     * @param isComplex 
+     * @param isComplex
      * 
      * @return A 1D array
      */
@@ -424,7 +425,7 @@ public class DeconvUtils {
         }
         fft1D.realForwardFull(array);
     }
-    
+
     public void FFT1DComplex(double[] array) {
         if(fft1D == null){
             fft1D = new DoubleFFT_1D(width*height);

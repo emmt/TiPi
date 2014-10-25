@@ -25,9 +25,11 @@
 
 package mitiv.microscopy;
 
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
-import mitiv.utils.*;
+import mitiv.utils.CommonUtils;
+import mitiv.utils.MathUtils;
+
+import org.jtransforms.fft.DoubleFFT_2D;
+import org.jtransforms.fft.DoubleFFT_3D;
 
 /**
  * Compute a 3D point spread function of a wild field fluorescente microscope (WFFM)
@@ -40,7 +42,7 @@ import mitiv.utils.*;
  * of Zernike polynomials Zn.
  * <p>
  * A(z) = ρ.exp(iΦ(z)) with Φ(z) = φ + 2π(d.ω + z.ψ)
- * φ 
+ * φ
  * d depth within the system
  * ω
  * ψ the defocus aberration
@@ -197,7 +199,7 @@ public class MicroscopyModelPSF1D
     /**
      * Compute the modulus ρ on a Zernike polynomial basis
      * <p>
-     * The coefficients β are normalized and the modulus is 
+     * The coefficients β are normalized and the modulus is
      * ρ = Σ_n β_n Z_n
      * @param beta Zernike coefficients
      * @return Nzern Zernike polynomials
@@ -233,7 +235,7 @@ public class MicroscopyModelPSF1D
      * <p>
      * φ = Σ_n α_n Z_{n+3}
      * @param alpha Zernike coefficients
-     * @return phi Zernike polynomials 
+     * @return phi Zernike polynomials
      */
     public void setPhi(double[] alpha)
     {
@@ -267,7 +269,7 @@ public class MicroscopyModelPSF1D
      */
     public void computeDefocus(double deltaX, double deltaY, double zdepth)
     {
-        maskPupil = computeMaskPupil(Nx, Ny, radius);  
+        maskPupil = computeMaskPupil(Nx, Ny, radius);
         double lambda_ns2 = lambda_ns*lambda_ns;
         double lambda_ni2 = lambda_ni*lambda_ni;
         double scale_x = 1/(Nx*dxy);
@@ -342,7 +344,7 @@ public class MicroscopyModelPSF1D
                     sum_defocus_over_depth += psi[Nxy]/gamma[Nxy];
                 }
             }
-            eta =(depth_dot_defocus/defocus_L2) - 1;     
+            eta =(depth_dot_defocus/defocus_L2) - 1;
         }
         else
         {
@@ -406,7 +408,7 @@ public class MicroscopyModelPSF1D
         double PSFnorm = 1.0/(Nx*Ny*Nz);
         // double defoc_scale[] = Utils.indgen((-Nz+1)/2, Nz/2);
         double defoc_scale;
-        double phasePupil;  
+        double phasePupil;
         int Npix = Nx*Ny, Ci;
         double[] A = new double[2*Npix];
 
@@ -435,7 +437,7 @@ public class MicroscopyModelPSF1D
                 phasePupil = phi[in] + defoc_scale*psi[in];
                 PHASE[Ci] = phasePupil;
                 A[2*in] = rho[in]*Math.cos(phasePupil);
-                A[2*in + 1] = rho[in]*Math.sin(phasePupil);    
+                A[2*in + 1] = rho[in]*Math.sin(phasePupil);
             }
             /* Fourier transform of the pupil function A(z) */
             FFT2D.complexForward(A);
@@ -457,7 +459,7 @@ public class MicroscopyModelPSF1D
         double PSFnorm = 1.0/(Nx*Ny*Nz);
         // double defoc_scale[] = Utils.indgen((-Nz+1)/2, Nz/2);
         double defoc_scale;
-        double phasePupil;  
+        double phasePupil;
         int Npix = Nx*Ny, Ci;
 
         if (zdepth != 0)
@@ -485,7 +487,7 @@ public class MicroscopyModelPSF1D
                 phasePupil = phi[in] + defoc_scale*psi[in];
                 PHASE[Ci] = phasePupil;
                 a[2*in] = rho[in]*Math.cos(phasePupil);
-                a[2*in + 1] = rho[in]*Math.sin(phasePupil);    
+                a[2*in + 1] = rho[in]*Math.sin(phasePupil);
             }
         }
         /* Fourier transform of the pupil function A(z) */
@@ -525,7 +527,7 @@ public class MicroscopyModelPSF1D
         double PSFnorm = 1.0/(Nx*Ny*Nz);
         // double defoc_scale[] = Utils.indgen((-Nz+1)/2, Nz/2);
         double defoc_scale;
-        double phasePupil;  
+        double phasePupil;
         int Npix = Nx*Ny, Ci;
         double[] A = new double[2*Npix];
 
@@ -603,7 +605,7 @@ public class MicroscopyModelPSF1D
             {
                 Ci = iz*Npix + in;
                 J[in] = J[in] + Aq[2*in]*Math.cos(PHASE[Ci]) - Aq[2*in + 1]*Math.sin(PHASE[Ci]);
-            }   
+            }
 
         }
 
