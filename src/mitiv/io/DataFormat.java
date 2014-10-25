@@ -136,18 +136,18 @@ public enum DataFormat {
      * This function examines the extension of the file name
      * to determine the data format.
      * </p>
-     * @param fileName - The name of the file.
+     * @param name - The name of the destination file.
      * @return A file format identifier: {@code null} if the
      *         format is not recognized; otherwise {@link #PNM},
      *         {@link #JPEG}, {@link #PNG}, {@link #TIFF},
      *         {@link #FITS}, {@link #GIF}, or {@link #MDA}.
      */
-    public static final DataFormat guessFormat(String fileName) {
-        int index = fileName.lastIndexOf('.');
+    public static final DataFormat guessFormat(String name) {
+        int index = name.lastIndexOf('.');
         if (index < 0) {
             return null;
         }
-        String suffix = fileName.substring(index + 1);
+        String suffix = name.substring(index + 1);
         if (MDA.match(suffix)) {
             return MDA;
         }
@@ -190,19 +190,19 @@ public enum DataFormat {
      * is returned; otherwise, the extension of the file name is examined
      * to determine the data format.
      * </p>
-     * @param fileName - The name of the file.
+     * @param name - The name of the destination file.
      * @return A file format identifier: {@code null} if the
      *         format is not recognized; otherwise {@link #PNM},
      *         {@link #JPEG}, {@link #PNG}, {@link #TIFF},
      *         {@link #FITS}, {@link #GIF}, or {@link #MDA}.
      */
-    public static final DataFormat guessFormat(String fileName,
+    public static final DataFormat guessFormat(String name,
             FormatOptions opts) {
         DataFormat format = (opts == null ? null : opts.getDataFormat());
         if (format != null) {
             return format;
         } else {
-            return guessFormat(fileName);
+            return guessFormat(name);
         }
     }
 
@@ -298,23 +298,23 @@ public enum DataFormat {
 
     /**
      * Load formatted data from afile.
-     * @param fileName - The name of the input file.
-     * @param colorModel - The model for dealing with color images.
+     * @param name - The name of the destination file.
+     * @param opts - Options for dealing with color images.
      * @param description - A description for error messages.
      * @return
      */
-    public static ShapedArray load(String fileName, FormatOptions opts) {
+    public static ShapedArray load(String name, FormatOptions opts) {
         ShapedArray arr = null;
-        DataFormat format = guessFormat(fileName);
+        DataFormat format = guessFormat(name);
         try {
             if (format == MDA) {
-                arr = MdaFormat.load(fileName);
+                arr = MdaFormat.load(name);
             } else {
-                BufferedImage img = ImageIO.read(new File(fileName));
+                BufferedImage img = ImageIO.read(new File(name));
                 arr = ArrayUtils.imageAsDouble(img, opts.getColorModel());
             }
         } catch (Exception e) {
-            fatal("Error while reading " + fileName + "(" + e.getMessage() +").");
+            fatal("Error while reading " + name + "(" + e.getMessage() +").");
         }
         return arr;
     }
@@ -322,27 +322,27 @@ public enum DataFormat {
     /**
      * Save data to file.
      * <p>
-     * The file format is guessed from the extension of the file name and default
-     * options are used to encode the file.
+     * The file format is guessed from the extension of the file name and
+     * default options are used to encode the file.
      * </p>
      * @param arr - The data to save.
-     * @param fileName - The destination file.
+     * @param name - The name of the destination file.
      * @throws IOException
      * @throws FileNotFoundException
      */
-    public static void save(ShapedArray arr, String fileName)
+    public static void save(ShapedArray arr, String name)
             throws FileNotFoundException, IOException {
-        save(arr, fileName, new FormatOptions());
+        save(arr, name, new FormatOptions());
     }
 
     /**
      * Save data to file with given options.
      * <p>
-     * The file format is guessed from the extension of the file name and default
-     * options are used to encode the file.
+     * The file format is guessed from the extension of the file name and
+     * default options are used to encode the file.
      * </p>
      * @param arr  - The data to save.
-     * @param name - The destination file.
+     * @param name - The name of the destination file.
      * @param opts - Options for encoding the data.
      * @throws IOException
      * @throws FileNotFoundException
