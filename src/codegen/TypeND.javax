@@ -295,6 +295,115 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
         return flatten(false);
     }
 
+    //# // Define a macro to get the value.
+    //# suspend arg
+    //# def getValue = get(${arg})
+    //# if ${type_id} == ${BYTE}
+    //#     def valueType = int
+    //#     def getValue = (int)(${getValue} & 0xFF)
+    //# else
+    //#     def valueType = ${type}
+    //# end
+    //# def arg = ${zeroList}
+    //# def getInitialValue = ${getValue}
+    //# def arg = ${indexList}
+    //# def getValue = ${getValue}
+    //# def loopFirstIndent = ${__INDENT2__}
+    //# def _ = ${__NEWLINE__}${loopBodyIndent}
+    //# def __ = ${_}${__INDENT__}
+    //# def ___ = ${__}${__INDENT__}
+    //# def ____ = ${___}${__INDENT__}
+    @Override
+    public ${valueType} min() {
+        ${valueType} minValue = ${getInitialValue};
+        //# if ${rank} == 1
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            ${valueType} value = ${getValue};
+            if (value < minValue) {
+                minValue = value;
+            }
+        }
+        //# else
+        boolean skip = true;
+        //#   def loopBody = if (skip) {${__}skip = false;${_}} else {${__}${valueType} value = ${getValue};${__}if (value < minValue) {${___}minValue = value;${__}}${_}}
+        //#   emit ${loop}
+        //# end
+        return minValue;
+    }
+
+    @Override
+    public ${valueType} max() {
+        ${valueType} maxValue = ${getInitialValue};
+        //# if ${rank} == 1
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            ${valueType} value = ${getValue};
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        //# else
+        boolean skip = true;
+        //#   def loopBody = if (skip) {${__}skip = false;${_}} else {${__}${valueType} value = ${getValue};${__}if (value > maxValue) {${___}maxValue = value;${__}}${_}}
+        //#   emit ${loop}
+        //# end
+        return maxValue;
+    }
+
+    @Override
+    public ${valueType}[] getMinAndMax() {
+        ${valueType}[] result = new ${valueType}[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(${valueType}[] mm) {
+        ${valueType} minValue = ${getInitialValue};
+        ${valueType} maxValue = minValue;
+        //# if ${rank} == 1
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            ${valueType} value = ${getValue};
+            if (value < minValue) {
+                minValue = value;
+            }
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        //# else
+        boolean skip = true;
+        //#   def loopBody = if (skip) {${__}skip = false;${_}} else {${__}${valueType} value = ${getValue};${__}if (value < minValue) {${___}minValue = value;${__}}${__}if (value > maxValue) {${___}maxValue = value;${__}}${_}}
+        //#   emit ${loop}
+        //# end
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    //# if ${type_id} <= ${INT}
+    //#     def sumType = int
+    //# else
+    //#     def sumType = ${type}
+    //# end
+    @Override
+    public ${sumType} sum() {
+        //# def loopBody = totalValue += ${getValue};
+        //# if ${rank} == 1
+        ${sumType} totalValue = ${getInitialValue};
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            ${loopBody};
+        }
+        //# else
+        ${sumType} totalValue = 0;
+        //#   emit ${loop}
+        //# end
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     //# def dst = ${BYTE}
     //# while ${dst} <= ${DOUBLE}
     //#     def dst_type = ${}{type_${dst}}

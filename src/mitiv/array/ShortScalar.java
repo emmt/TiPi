@@ -173,6 +173,40 @@ public class ShortScalar extends Scalar implements ShortArray {
     }
 
     @Override
+    public short min() {
+        return data[offset];
+    }
+
+    @Override
+    public short max() {
+        return data[offset];
+    }
+
+    @Override
+    public short[] getMinAndMax() {
+        short[] result = new short[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(short[] mm) {
+        short value = data[offset];
+        mm[0] = value;
+        mm[1] = value;
+    }
+
+    @Override
+    public int sum() {
+        return data[offset];
+    }
+
+    @Override
+    public double average() {
+        return data[offset];
+    }
+
+    @Override
     public final ByteArray toByte() {
         return new ByteScalar((byte)data[offset]);
     }

@@ -125,6 +125,35 @@ public interface DoubleArray extends ShapedArray {
     @Override
     public abstract DoubleArray copy();
 
+    /**
+     * Get the minimal value of all the elements.
+     */
+    public abstract double min();
+
+    /**
+     * Get the maximal value of all the elements.
+     */
+    public abstract double max();
+
+    /**
+     * Get the minimal and maximal values of all the elements.
+     */
+    public abstract double[] getMinAndMax();
+
+    /**
+     * Get the minimal and maximal values of all the elements.
+     */
+    public abstract void getMinAndMax(double[] mm);
+
+    /**
+     * Get the sum of values of all elements.
+     */
+    public abstract double sum();
+
+    /**
+     * Get the average value of all elements.
+     */
+    public abstract double average();
 }
 
 /*

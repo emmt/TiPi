@@ -310,6 +310,183 @@ public abstract class Short4D extends Array4D implements ShortArray {
         return flatten(false);
     }
 
+    @Override
+    public short min() {
+        short minValue = get(0,0,0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            if (skip) {
+                                skip = false;
+                            } else {
+                                short value = get(i1,i2,i3,i4);
+                                if (value < minValue) {
+                                    minValue = value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            if (skip) {
+                                skip = false;
+                            } else {
+                                short value = get(i1,i2,i3,i4);
+                                if (value < minValue) {
+                                    minValue = value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public short max() {
+        short maxValue = get(0,0,0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            if (skip) {
+                                skip = false;
+                            } else {
+                                short value = get(i1,i2,i3,i4);
+                                if (value > maxValue) {
+                                    maxValue = value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            if (skip) {
+                                skip = false;
+                            } else {
+                                short value = get(i1,i2,i3,i4);
+                                if (value > maxValue) {
+                                    maxValue = value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public short[] getMinAndMax() {
+        short[] result = new short[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(short[] mm) {
+        short minValue = get(0,0,0,0);
+        short maxValue = minValue;
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            if (skip) {
+                                skip = false;
+                            } else {
+                                short value = get(i1,i2,i3,i4);
+                                if (value < minValue) {
+                                    minValue = value;
+                                }
+                                if (value > maxValue) {
+                                    maxValue = value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            if (skip) {
+                                skip = false;
+                            } else {
+                                short value = get(i1,i2,i3,i4);
+                                if (value < minValue) {
+                                    minValue = value;
+                                }
+                                if (value > maxValue) {
+                                    maxValue = value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public int sum() {
+        int totalValue = 0;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            totalValue += get(i1,i2,i3,i4);
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            totalValue += get(i1,i2,i3,i4);
+                        }
+                    }
+                }
+            }
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte4D.
      * <p>

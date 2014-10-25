@@ -178,6 +178,53 @@ public class ${className} extends Scalar implements ${Type}Array {
         return new ${type}[]{data[offset]};
     }
 
+    //# // Define a macro to get the value.
+    //# def getValue = data[offset]
+    //# if ${type_id} == ${BYTE}
+    //#     def valueType = int
+    //#     def getValue = (int)(${getValue} & 0xFF)
+    //# else
+    //#     def valueType = ${type}
+    //# end
+    @Override
+    public ${valueType} min() {
+        return ${getValue};
+    }
+
+    @Override
+    public ${valueType} max() {
+        return ${getValue};
+    }
+
+    @Override
+    public ${valueType}[] getMinAndMax() {
+        ${valueType}[] result = new ${valueType}[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(${valueType}[] mm) {
+        ${valueType} value = ${getValue};
+        mm[0] = value;
+        mm[1] = value;
+    }
+
+    //# if ${type_id} <= ${INT}
+    //#     def sumType = int
+    //# else
+    //#     def sumType = ${type}
+    //# end
+    @Override
+    public ${sumType} sum() {
+        return ${getValue};
+    }
+
+    @Override
+    public double average() {
+        return ${getValue};
+    }
+
     @Override
     public final ByteArray toByte() {
         //# if ${type_id} == ${BYTE}

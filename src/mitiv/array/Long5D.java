@@ -342,6 +342,199 @@ public abstract class Long5D extends Array5D implements LongArray {
         return flatten(false);
     }
 
+    @Override
+    public long min() {
+        long minValue = get(0,0,0,0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                if (skip) {
+                                    skip = false;
+                                } else {
+                                    long value = get(i1,i2,i3,i4,i5);
+                                    if (value < minValue) {
+                                        minValue = value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                if (skip) {
+                                    skip = false;
+                                } else {
+                                    long value = get(i1,i2,i3,i4,i5);
+                                    if (value < minValue) {
+                                        minValue = value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public long max() {
+        long maxValue = get(0,0,0,0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                if (skip) {
+                                    skip = false;
+                                } else {
+                                    long value = get(i1,i2,i3,i4,i5);
+                                    if (value > maxValue) {
+                                        maxValue = value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                if (skip) {
+                                    skip = false;
+                                } else {
+                                    long value = get(i1,i2,i3,i4,i5);
+                                    if (value > maxValue) {
+                                        maxValue = value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public long[] getMinAndMax() {
+        long[] result = new long[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(long[] mm) {
+        long minValue = get(0,0,0,0,0);
+        long maxValue = minValue;
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                if (skip) {
+                                    skip = false;
+                                } else {
+                                    long value = get(i1,i2,i3,i4,i5);
+                                    if (value < minValue) {
+                                        minValue = value;
+                                    }
+                                    if (value > maxValue) {
+                                        maxValue = value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                if (skip) {
+                                    skip = false;
+                                } else {
+                                    long value = get(i1,i2,i3,i4,i5);
+                                    if (value < minValue) {
+                                        minValue = value;
+                                    }
+                                    if (value > maxValue) {
+                                        maxValue = value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public long sum() {
+        long totalValue = 0;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                totalValue += get(i1,i2,i3,i4,i5);
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i5 = 0; i5 < dim5; ++i5) {
+                for (int i4 = 0; i4 < dim4; ++i4) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i2 = 0; i2 < dim2; ++i2) {
+                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                totalValue += get(i1,i2,i3,i4,i5);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte5D.
      * <p>

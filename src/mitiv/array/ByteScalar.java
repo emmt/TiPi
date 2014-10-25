@@ -173,6 +173,40 @@ public class ByteScalar extends Scalar implements ByteArray {
     }
 
     @Override
+    public int min() {
+        return (int)(data[offset] & 0xFF);
+    }
+
+    @Override
+    public int max() {
+        return (int)(data[offset] & 0xFF);
+    }
+
+    @Override
+    public int[] getMinAndMax() {
+        int[] result = new int[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(int[] mm) {
+        int value = (int)(data[offset] & 0xFF);
+        mm[0] = value;
+        mm[1] = value;
+    }
+
+    @Override
+    public int sum() {
+        return (int)(data[offset] & 0xFF);
+    }
+
+    @Override
+    public double average() {
+        return (int)(data[offset] & 0xFF);
+    }
+
+    @Override
     public final ByteArray toByte() {
         return this;
     }

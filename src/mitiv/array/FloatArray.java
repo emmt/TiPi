@@ -125,6 +125,35 @@ public interface FloatArray extends ShapedArray {
     @Override
     public abstract FloatArray copy();
 
+    /**
+     * Get the minimal value of all the elements.
+     */
+    public abstract float min();
+
+    /**
+     * Get the maximal value of all the elements.
+     */
+    public abstract float max();
+
+    /**
+     * Get the minimal and maximal values of all the elements.
+     */
+    public abstract float[] getMinAndMax();
+
+    /**
+     * Get the minimal and maximal values of all the elements.
+     */
+    public abstract void getMinAndMax(float[] mm);
+
+    /**
+     * Get the sum of values of all elements.
+     */
+    public abstract float sum();
+
+    /**
+     * Get the average value of all elements.
+     */
+    public abstract double average();
 }
 
 /*

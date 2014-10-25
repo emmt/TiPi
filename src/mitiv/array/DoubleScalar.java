@@ -173,6 +173,40 @@ public class DoubleScalar extends Scalar implements DoubleArray {
     }
 
     @Override
+    public double min() {
+        return data[offset];
+    }
+
+    @Override
+    public double max() {
+        return data[offset];
+    }
+
+    @Override
+    public double[] getMinAndMax() {
+        double[] result = new double[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(double[] mm) {
+        double value = data[offset];
+        mm[0] = value;
+        mm[1] = value;
+    }
+
+    @Override
+    public double sum() {
+        return data[offset];
+    }
+
+    @Override
+    public double average() {
+        return data[offset];
+    }
+
+    @Override
     public final ByteArray toByte() {
         return new ByteScalar((byte)data[offset]);
     }

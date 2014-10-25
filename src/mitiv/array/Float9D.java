@@ -470,6 +470,263 @@ public abstract class Float9D extends Array9D implements FloatArray {
         return flatten(false);
     }
 
+    @Override
+    public float min() {
+        float minValue = get(0,0,0,0,0,0,0,0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i6 = 0; i6 < dim6; ++i6) {
+                                    for (int i7 = 0; i7 < dim7; ++i7) {
+                                        for (int i8 = 0; i8 < dim8; ++i8) {
+                                            for (int i9 = 0; i9 < dim9; ++i9) {
+                                                if (skip) {
+                                                    skip = false;
+                                                } else {
+                                                    float value = get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                                    if (value < minValue) {
+                                                        minValue = value;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i9 = 0; i9 < dim9; ++i9) {
+                for (int i8 = 0; i8 < dim8; ++i8) {
+                    for (int i7 = 0; i7 < dim7; ++i7) {
+                        for (int i6 = 0; i6 < dim6; ++i6) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i4 = 0; i4 < dim4; ++i4) {
+                                    for (int i3 = 0; i3 < dim3; ++i3) {
+                                        for (int i2 = 0; i2 < dim2; ++i2) {
+                                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                                if (skip) {
+                                                    skip = false;
+                                                } else {
+                                                    float value = get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                                    if (value < minValue) {
+                                                        minValue = value;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public float max() {
+        float maxValue = get(0,0,0,0,0,0,0,0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i6 = 0; i6 < dim6; ++i6) {
+                                    for (int i7 = 0; i7 < dim7; ++i7) {
+                                        for (int i8 = 0; i8 < dim8; ++i8) {
+                                            for (int i9 = 0; i9 < dim9; ++i9) {
+                                                if (skip) {
+                                                    skip = false;
+                                                } else {
+                                                    float value = get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                                    if (value > maxValue) {
+                                                        maxValue = value;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i9 = 0; i9 < dim9; ++i9) {
+                for (int i8 = 0; i8 < dim8; ++i8) {
+                    for (int i7 = 0; i7 < dim7; ++i7) {
+                        for (int i6 = 0; i6 < dim6; ++i6) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i4 = 0; i4 < dim4; ++i4) {
+                                    for (int i3 = 0; i3 < dim3; ++i3) {
+                                        for (int i2 = 0; i2 < dim2; ++i2) {
+                                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                                if (skip) {
+                                                    skip = false;
+                                                } else {
+                                                    float value = get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                                    if (value > maxValue) {
+                                                        maxValue = value;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public float[] getMinAndMax() {
+        float[] result = new float[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(float[] mm) {
+        float minValue = get(0,0,0,0,0,0,0,0,0);
+        float maxValue = minValue;
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i6 = 0; i6 < dim6; ++i6) {
+                                    for (int i7 = 0; i7 < dim7; ++i7) {
+                                        for (int i8 = 0; i8 < dim8; ++i8) {
+                                            for (int i9 = 0; i9 < dim9; ++i9) {
+                                                if (skip) {
+                                                    skip = false;
+                                                } else {
+                                                    float value = get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                                    if (value < minValue) {
+                                                        minValue = value;
+                                                    }
+                                                    if (value > maxValue) {
+                                                        maxValue = value;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i9 = 0; i9 < dim9; ++i9) {
+                for (int i8 = 0; i8 < dim8; ++i8) {
+                    for (int i7 = 0; i7 < dim7; ++i7) {
+                        for (int i6 = 0; i6 < dim6; ++i6) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i4 = 0; i4 < dim4; ++i4) {
+                                    for (int i3 = 0; i3 < dim3; ++i3) {
+                                        for (int i2 = 0; i2 < dim2; ++i2) {
+                                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                                if (skip) {
+                                                    skip = false;
+                                                } else {
+                                                    float value = get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                                    if (value < minValue) {
+                                                        minValue = value;
+                                                    }
+                                                    if (value > maxValue) {
+                                                        maxValue = value;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public float sum() {
+        float totalValue = 0;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i6 = 0; i6 < dim6; ++i6) {
+                                    for (int i7 = 0; i7 < dim7; ++i7) {
+                                        for (int i8 = 0; i8 < dim8; ++i8) {
+                                            for (int i9 = 0; i9 < dim9; ++i9) {
+                                                totalValue += get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i9 = 0; i9 < dim9; ++i9) {
+                for (int i8 = 0; i8 < dim8; ++i8) {
+                    for (int i7 = 0; i7 < dim7; ++i7) {
+                        for (int i6 = 0; i6 < dim6; ++i6) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i4 = 0; i4 < dim4; ++i4) {
+                                    for (int i3 = 0; i3 < dim3; ++i3) {
+                                        for (int i2 = 0; i2 < dim2; ++i2) {
+                                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                                totalValue += get(i1,i2,i3,i4,i5,i6,i7,i8,i9);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte9D.
      * <p>

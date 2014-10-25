@@ -154,6 +154,68 @@ public abstract class Byte1D extends Array1D implements ByteArray {
         return flatten(false);
     }
 
+    @Override
+    public int min() {
+        int minValue = (int)(get(0) & 0xFF);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            int value = (int)(get(i1) & 0xFF);
+            if (value < minValue) {
+                minValue = value;
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public int max() {
+        int maxValue = (int)(get(0) & 0xFF);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            int value = (int)(get(i1) & 0xFF);
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public int[] getMinAndMax() {
+        int[] result = new int[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(int[] mm) {
+        int minValue = (int)(get(0) & 0xFF);
+        int maxValue = minValue;
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            int value = (int)(get(i1) & 0xFF);
+            if (value < minValue) {
+                minValue = value;
+            }
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public int sum() {
+        int totalValue = (int)(get(0) & 0xFF);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            totalValue += (int)(get(i1) & 0xFF);;
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte1D.
      * <p>

@@ -154,6 +154,68 @@ public abstract class Int1D extends Array1D implements IntArray {
         return flatten(false);
     }
 
+    @Override
+    public int min() {
+        int minValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            int value = get(i1);
+            if (value < minValue) {
+                minValue = value;
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public int max() {
+        int maxValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            int value = get(i1);
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public int[] getMinAndMax() {
+        int[] result = new int[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(int[] mm) {
+        int minValue = get(0);
+        int maxValue = minValue;
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            int value = get(i1);
+            if (value < minValue) {
+                minValue = value;
+            }
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public int sum() {
+        int totalValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            totalValue += get(i1);;
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte1D.
      * <p>

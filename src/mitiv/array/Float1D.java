@@ -154,6 +154,68 @@ public abstract class Float1D extends Array1D implements FloatArray {
         return flatten(false);
     }
 
+    @Override
+    public float min() {
+        float minValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            float value = get(i1);
+            if (value < minValue) {
+                minValue = value;
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public float max() {
+        float maxValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            float value = get(i1);
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public float[] getMinAndMax() {
+        float[] result = new float[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(float[] mm) {
+        float minValue = get(0);
+        float maxValue = minValue;
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            float value = get(i1);
+            if (value < minValue) {
+                minValue = value;
+            }
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public float sum() {
+        float totalValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            totalValue += get(i1);;
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte1D.
      * <p>

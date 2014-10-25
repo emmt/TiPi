@@ -246,6 +246,151 @@ public abstract class Int2D extends Array2D implements IntArray {
         return flatten(false);
     }
 
+    @Override
+    public int min() {
+        int minValue = get(0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    if (skip) {
+                        skip = false;
+                    } else {
+                        int value = get(i1,i2);
+                        if (value < minValue) {
+                            minValue = value;
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    if (skip) {
+                        skip = false;
+                    } else {
+                        int value = get(i1,i2);
+                        if (value < minValue) {
+                            minValue = value;
+                        }
+                    }
+                }
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public int max() {
+        int maxValue = get(0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    if (skip) {
+                        skip = false;
+                    } else {
+                        int value = get(i1,i2);
+                        if (value > maxValue) {
+                            maxValue = value;
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    if (skip) {
+                        skip = false;
+                    } else {
+                        int value = get(i1,i2);
+                        if (value > maxValue) {
+                            maxValue = value;
+                        }
+                    }
+                }
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public int[] getMinAndMax() {
+        int[] result = new int[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(int[] mm) {
+        int minValue = get(0,0);
+        int maxValue = minValue;
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    if (skip) {
+                        skip = false;
+                    } else {
+                        int value = get(i1,i2);
+                        if (value < minValue) {
+                            minValue = value;
+                        }
+                        if (value > maxValue) {
+                            maxValue = value;
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    if (skip) {
+                        skip = false;
+                    } else {
+                        int value = get(i1,i2);
+                        if (value < minValue) {
+                            minValue = value;
+                        }
+                        if (value > maxValue) {
+                            maxValue = value;
+                        }
+                    }
+                }
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public int sum() {
+        int totalValue = 0;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    totalValue += get(i1,i2);
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    totalValue += get(i1,i2);
+                }
+            }
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte2D.
      * <p>

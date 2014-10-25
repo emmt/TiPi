@@ -127,6 +127,75 @@ public interface ${className} extends ShapedArray {
     @Override
     public abstract ${className} copy();
 
+    //# if ${type_id} == ${BYTE}
+    //#     def valueType = int
+    //# else
+    //#     def valueType = ${type}
+    //# end
+    /**
+     * Get the minimal value of all the elements.
+     //# if ${type_id} == ${BYTE}
+     * <p>
+     * Bytes are assumed to be unsigned.
+     * </p>
+     //# end
+     */
+    public abstract ${valueType} min();
+
+    /**
+     * Get the maximal value of all the elements.
+     //# if ${type_id} == ${BYTE}
+     * <p>
+     * Bytes are assumed to be unsigned.
+     * </p>
+     //# end
+     */
+    public abstract ${valueType} max();
+
+    /**
+     * Get the minimal and maximal values of all the elements.
+     //# if ${type_id} == ${BYTE}
+     * <p>
+     * Bytes are assumed to be unsigned.
+     * </p>
+     //# end
+     */
+    public abstract ${valueType}[] getMinAndMax();
+
+    /**
+     * Get the minimal and maximal values of all the elements.
+     //# if ${type_id} == ${BYTE}
+     * <p>
+     * Bytes are assumed to be unsigned.
+     * </p>
+     //# end
+     */
+    public abstract void getMinAndMax(${valueType}[] mm);
+
+    /**
+     * Get the sum of values of all elements.
+     //# if ${type_id} == ${BYTE}
+     * <p>
+     * Bytes are assumed to be unsigned.
+     * </p>
+     //# end
+     */
+    //# if ${type_id} <= ${INT}
+    //#     def sumType = int
+    //# else
+    //#     def sumType = ${type}
+    //# end
+    public abstract ${sumType} sum();
+
+    /**
+     * Get the average value of all elements.
+     //# if ${type_id} == ${BYTE}
+     * <p>
+     * Bytes are assumed to be unsigned.
+     * </p>
+     //# end
+     */
+    public abstract double average();
 }
 
 /*

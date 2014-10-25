@@ -154,6 +154,68 @@ public abstract class Long1D extends Array1D implements LongArray {
         return flatten(false);
     }
 
+    @Override
+    public long min() {
+        long minValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            long value = get(i1);
+            if (value < minValue) {
+                minValue = value;
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public long max() {
+        long maxValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            long value = get(i1);
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public long[] getMinAndMax() {
+        long[] result = new long[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(long[] mm) {
+        long minValue = get(0);
+        long maxValue = minValue;
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            long value = get(i1);
+            if (value < minValue) {
+                minValue = value;
+            }
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public long sum() {
+        long totalValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            totalValue += get(i1);;
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte1D.
      * <p>
