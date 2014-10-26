@@ -26,19 +26,25 @@
 package mitiv.io;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.awt.Graphics2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import javax.imageio.ImageIO;
 
+import mitiv.array.Array3D;
 import mitiv.array.ArrayFactory;
-import mitiv.array.ArrayUtils;
 import mitiv.array.Byte2D;
 import mitiv.array.Byte3D;
+import mitiv.array.DoubleArray;
 import mitiv.array.Double2D;
 import mitiv.array.Double3D;
+import mitiv.array.FloatArray;
 import mitiv.array.Float2D;
 import mitiv.array.Float3D;
 import mitiv.array.Int2D;
@@ -50,6 +56,7 @@ import mitiv.array.Short2D;
 import mitiv.array.Short3D;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
+import mitiv.base.indexing.Range;
 import mitiv.exception.IllegalTypeException;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
@@ -300,8 +307,7 @@ public enum DataFormat {
      * Load formatted data from afile.
      * @param name - The name of the destination file.
      * @param opts - Options for dealing with color images.
-     * @param description - A description for error messages.
-     * @return
+     * @return A shaped array.
      */
     public static ShapedArray load(String name, FormatOptions opts) {
         ShapedArray arr = null;
@@ -311,7 +317,7 @@ public enum DataFormat {
                 arr = MdaFormat.load(name);
             } else {
                 BufferedImage img = ImageIO.read(new File(name));
-                arr = ArrayUtils.imageAsDouble(img, opts.getColorModel());
+                arr = imageToShapedArray(img);
             }
         } catch (Exception e) {
             fatal("Error while reading " + name + "(" + e.getMessage() +").");
@@ -325,7 +331,7 @@ public enum DataFormat {
      * The file format is guessed from the extension of the file name and
      * default options are used to encode the file.
      * </p>
-     * @param arr - The data to save.
+     * @param arr  - The data to save.
      * @param name - The name of the destination file.
      * @throws IOException
      * @throws FileNotFoundException
@@ -380,7 +386,10 @@ public enum DataFormat {
     /*=======================================================================*/
     /* MAKE BUFFERED IMAGES */
 
-    // FIXME: make this for any array/vector types
+    /*
+     * See: {@link Color#getRGB()} for the packing of colors in an int (Bits
+     * 24-31 are alpha, 16-23 are red, 8-15 are green, 0-7 are blue)
+     */
 
     /**
      * Make a buffered image from a shaped array with default options.
@@ -395,24 +404,19 @@ public enum DataFormat {
         return makeBufferedImage(arr, new FormatOptions());
     }
 
-    // FIXME: deal with NaN and INFINITE
-
-    private static final int clip(float value) {
-        return Math.min(255, Math.max(0, (int)Math.round(value)));
-    }
-
-    private static final int clip(double value) {
-        return Math.min(255, Math.max(0, (int)Math.round(value)));
+    protected static boolean isFlat(ShapedArray arr) {
+        // FIXME: dummy method for further optimization
+        return false;
     }
 
     /**
      * Make a buffered image from a shaped array with given options.
      * <p>
      * Different kind of shaped array can be interpreted as an image: 2D
-     * shaped array are interpreted as gresy scale images, 3D shaped arrays
-     * are interpreted as RGB array if their first dimension is 3 and as RGBA
+     * shaped array are interpreted as grey scale images, 3D shaped arrays are
+     * interpreted as RGB array if their first dimension is 3 and as RGBA
      * array if their first dimension is 4.  All other shapes result in
-     * throxwin an {@link IllegalArgumentException}.  The penultimate
+     * throwing an {@link IllegalArgumentException}.  The penultimate
      * dimension of the shaped array is the width of the image and the last
      * dimension of the shaped array is the height of the image.  Currently
      * alpha channel (RGBA images) are only implemented for byte shaped
@@ -429,16 +433,22 @@ public enum DataFormat {
     public static BufferedImage makeBufferedImage(ShapedArray arr, FormatOptions opts) {
         Shape shape = arr.getShape();
         int rank = shape.rank();
-        int type = arr.getType();
+        int arrayType = arr.getType();
         int depth = -1;
         int imageType = -1;
         if (rank == 2) {
             depth = 1;
-            imageType = BufferedImage.TYPE_BYTE_GRAY;
+            if (arrayType == Traits.BYTE) {
+                imageType = BufferedImage.TYPE_BYTE_GRAY;
+            } else {
+                imageType = BufferedImage.TYPE_USHORT_GRAY;
+            }
         } else if (rank == 3) {
             depth = shape.dimension(0);
-            if (depth == 3 || (depth == 4 && type == Traits.BYTE)) {
+            if (depth == 3) {
                 imageType = BufferedImage.TYPE_3BYTE_BGR;
+            } else if (depth == 4 && arrayType == Traits.BYTE) {
+                imageType = BufferedImage.TYPE_4BYTE_ABGR;
             } else {
                 depth = -1;
             }
@@ -446,246 +456,249 @@ public enum DataFormat {
         if (depth < 0) {
             throw new IllegalArgumentException("Conversion to image is only allowed for WIDTH x HEIGHT arrays, 3 x WIDTH x HEIGHT arrays or 4 x WIDTH x HEIGHT byte arrays.");
         }
-        int width = shape.dimension(rank - 2);
-        int height = shape.dimension(rank - 1);
+        final int width = shape.dimension(rank - 2);
+        final int height = shape.dimension(rank - 1);
         BufferedImage image = new BufferedImage(width, height, imageType);
         WritableRaster raster = image.getRaster();
-        int[] argb = new int[4];
-        int[] rgb = new int[3];
-        if (type == Traits.BYTE) {
-            if (depth == 1) {
-                Byte2D src = (Byte2D)arr;
+        final int minX = raster.getMinX();
+        final int minY = raster.getMinY();
+        if (imageType == BufferedImage.TYPE_BYTE_GRAY) {
+            /* Input is a 2-D byte array. */
+            Byte2D src = (Byte2D)arr;
+            if (raster.getNumBands() != 1 || raster.getNumDataElements() != 1 ||
+                raster.getTransferType() != DataBuffer.TYPE_BYTE) {
+                throw new IllegalArgumentException("assertion failed for TYPE_BYTE_GRAY");
+            }
+            if (isFlat(src)) {
+                raster.setDataElements(minX, minY, width, height, src.flatten());
+            } else {
+                byte[] data = new byte[1];
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        int level = ((int)(src.get(x,y)) & 0xFF);
-                        rgb[0] = level;
-                        rgb[1] = level;
-                        rgb[2] = level;
-                        raster.setPixel(x, y, rgb);
-                    }
-                }
-            } else {
-                Byte3D src = (Byte3D)arr;
-                if (depth == 3) {
-                    for (int y = 0; y < height; ++y) {
-                        for (int x = 0; x < width; ++x) {
-                            rgb[0] = ((int)(src.get(0,x,y)) & 0xFF);
-                            rgb[1] = ((int)(src.get(1,x,y)) & 0xFF);
-                            rgb[2] = ((int)(src.get(2,x,y)) & 0xFF);
-                            raster.setPixel(x, y, rgb);
-                        }
-                    }
-                } else /* depth == 4 */ {
-                    for (int y = 0; y < height; ++y){
-                        for (int x = 0; x < width; ++x){
-                            argb[0] = ((int)(src.get(0,x,y)) & 0xFF);
-                            argb[1] = ((int)(src.get(1,x,y)) & 0xFF);
-                            argb[2] = ((int)(src.get(2,x,y)) & 0xFF);
-                            argb[3] = ((int)(src.get(3,x,y)) & 0xFF);
-                            raster.setPixel(x, y, argb);
-                        }
+                        data[0] = src.get(x, y);
+                        raster.setDataElements(minX + x, minY + y, data);
                     }
                 }
             }
-        } else if (type == Traits.SHORT) {
-            double[] sf = opts.getScaling(arr, 0, 255);
-            float scale = (float)sf[0];
-            float bias = (float)sf[1];
-            float factor = 1/scale;
-            if (depth == 1) {
+        } else if (imageType == BufferedImage.TYPE_USHORT_GRAY) {
+            /* Input is 2-D array of any type but byte. */
+            if (raster.getNumBands() != 1 || raster.getNumDataElements() != 1 ||
+                raster.getTransferType() != DataBuffer.TYPE_USHORT) {
+                throw new IllegalArgumentException("assertion failed for TYPE_USHORT_GRAY");
+            }
+            short[] data = new short[1];
+            switch (arrayType) {
+            case Traits.SHORT: {
                 Short2D src = (Short2D)arr;
+                double[] sf = opts.getScaling(arr, 0, 0xFFFF);
+                final float scale = (float)sf[0];
+                final float bias = (float)sf[1];
+                final float factor = 1/scale;
+                final float minLevel = 0;
+                final float maxLevel = 0xFFFF;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        int level = clip(((float)(src.get(x,y)) - bias)*factor);
-                        rgb[0] = level;
-                        rgb[1] = level;
-                        rgb[2] = level;
-                        raster.setPixel(x, y, rgb);
-                    }
-                }
-            } else {
-                Short3D src = (Short3D)arr;
-                if (depth == 3) {
-                    for (int y = 0; y < height; ++y) {
-                        for (int x = 0; x < width; ++x) {
-                            rgb[0] = clip(((float)(src.get(0,x,y)) - bias)*factor);
-                            rgb[1] = clip(((float)(src.get(1,x,y)) - bias)*factor);
-                            rgb[2] = clip(((float)(src.get(2,x,y)) - bias)*factor);
-                            raster.setPixel(x, y, rgb);
-                        }
-                    }
-                } else /* depth == 4 */ {
-                    for (int y = 0; y < height; ++y){
-                        for (int x = 0; x < width; ++x){
-                            argb[0] = clip(((float)(src.get(0,x,y)) - bias)*factor);
-                            argb[1] = clip(((float)(src.get(1,x,y)) - bias)*factor);
-                            argb[2] = clip(((float)(src.get(2,x,y)) - bias)*factor);
-                            argb[3] = clip(((float)(src.get(3,x,y)) - bias)*factor);
-                            raster.setPixel(x, y, argb);
-                        }
+                        data[0] = (short)((int)Math.max(minLevel, Math.min(((float)src.get(x,y) - bias)*factor, maxLevel)) & 0xFFFF);
+                        raster.setDataElements(minX + x, minY + y, data);
                     }
                 }
             }
-        } else if (type == Traits.INT) {
-            double[] sf = opts.getScaling(arr, 0, 255);
-            float scale = (float)sf[0];
-            float bias = (float)sf[1];
-            float factor = 1/scale;
-            if (depth == 1) {
+            case Traits.INT: {
                 Int2D src = (Int2D)arr;
+                double[] sf = opts.getScaling(arr, 0, 0xFFFF);
+                final float scale = (float)sf[0];
+                final float bias = (float)sf[1];
+                final float factor = 1/scale;
+                final float minLevel = 0;
+                final float maxLevel = 0xFFFF;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        int level = clip(((float)(src.get(x,y)) - bias)*factor);
-                        rgb[0] = level;
-                        rgb[1] = level;
-                        rgb[2] = level;
-                        raster.setPixel(x, y, rgb);
-                    }
-                }
-            } else {
-                Int3D src = (Int3D)arr;
-                if (depth == 3) {
-                    for (int y = 0; y < height; ++y) {
-                        for (int x = 0; x < width; ++x) {
-                            rgb[0] = clip(((float)(src.get(0,x,y)) - bias)*factor);
-                            rgb[1] = clip(((float)(src.get(1,x,y)) - bias)*factor);
-                            rgb[2] = clip(((float)(src.get(2,x,y)) - bias)*factor);
-                            raster.setPixel(x, y, rgb);
-                        }
-                    }
-                } else /* depth == 4 */ {
-                    for (int y = 0; y < height; ++y){
-                        for (int x = 0; x < width; ++x){
-                            argb[0] = clip(((float)(src.get(0,x,y)) - bias)*factor);
-                            argb[1] = clip(((float)(src.get(1,x,y)) - bias)*factor);
-                            argb[2] = clip(((float)(src.get(2,x,y)) - bias)*factor);
-                            argb[3] = clip(((float)(src.get(3,x,y)) - bias)*factor);
-                            raster.setPixel(x, y, argb);
-                        }
+                        data[0] = (short)((int)Math.max(minLevel, Math.min(((float)src.get(x,y) - bias)*factor, maxLevel)) & 0xFFFF);
+                        raster.setDataElements(minX + x, minY + y, data);
                     }
                 }
             }
-        } else if (type == Traits.LONG) {
-            double[] sf = opts.getScaling(arr, 0, 255);
-            double scale = (double)sf[0];
-            double bias = (double)sf[1];
-            double factor = 1/scale;
-            if (depth == 1) {
+            case Traits.LONG: {
                 Long2D src = (Long2D)arr;
+                double[] sf = opts.getScaling(arr, 0, 0xFFFF);
+                final double scale = (double)sf[0];
+                final double bias = (double)sf[1];
+                final double factor = 1/scale;
+                final double minLevel = 0;
+                final double maxLevel = 0xFFFF;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        int level = clip(((double)(src.get(x,y)) - bias)*factor);
-                        rgb[0] = level;
-                        rgb[1] = level;
-                        rgb[2] = level;
-                        raster.setPixel(x, y, rgb);
-                    }
-                }
-            } else {
-                Long3D src = (Long3D)arr;
-                if (depth == 3) {
-                    for (int y = 0; y < height; ++y) {
-                        for (int x = 0; x < width; ++x) {
-                            rgb[0] = clip(((double)(src.get(0,x,y)) - bias)*factor);
-                            rgb[1] = clip(((double)(src.get(1,x,y)) - bias)*factor);
-                            rgb[2] = clip(((double)(src.get(2,x,y)) - bias)*factor);
-                            raster.setPixel(x, y, rgb);
-                        }
-                    }
-                } else /* depth == 4 */ {
-                    for (int y = 0; y < height; ++y){
-                        for (int x = 0; x < width; ++x){
-                            argb[0] = clip(((double)(src.get(0,x,y)) - bias)*factor);
-                            argb[1] = clip(((double)(src.get(1,x,y)) - bias)*factor);
-                            argb[2] = clip(((double)(src.get(2,x,y)) - bias)*factor);
-                            argb[3] = clip(((double)(src.get(3,x,y)) - bias)*factor);
-                            raster.setPixel(x, y, argb);
-                        }
+                        data[0] = (short)((int)Math.max(minLevel, Math.min(((double)src.get(x,y) - bias)*factor, maxLevel)) & 0xFFFF);
+                        raster.setDataElements(minX + x, minY + y, data);
                     }
                 }
             }
-        } else if (type == Traits.FLOAT) {
-            double[] sf = opts.getScaling(arr, 0, 255);
-            float scale = (float)sf[0];
-            float bias = (float)sf[1];
-            float factor = 1/scale;
-            if (depth == 1) {
+            case Traits.FLOAT: {
                 Float2D src = (Float2D)arr;
+                double[] sf = opts.getScaling(arr, 0, 0xFFFF);
+                final float scale = (float)sf[0];
+                final float bias = (float)sf[1];
+                final float factor = 1/scale;
+                final float minLevel = 0;
+                final float maxLevel = 0xFFFF;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        int level = clip((src.get(x,y) - bias)*factor);
-                        rgb[0] = level;
-                        rgb[1] = level;
-                        rgb[2] = level;
-                        raster.setPixel(x, y, rgb);
-                    }
-                }
-            } else {
-                Float3D src = (Float3D)arr;
-                if (depth == 3) {
-                    for (int y = 0; y < height; ++y) {
-                        for (int x = 0; x < width; ++x) {
-                            rgb[0] = clip((src.get(0,x,y) - bias)*factor);
-                            rgb[1] = clip((src.get(1,x,y) - bias)*factor);
-                            rgb[2] = clip((src.get(2,x,y) - bias)*factor);
-                            raster.setPixel(x, y, rgb);
-                        }
-                    }
-                } else /* depth == 4 */ {
-                    for (int y = 0; y < height; ++y){
-                        for (int x = 0; x < width; ++x){
-                            argb[0] = clip((src.get(0,x,y) - bias)*factor);
-                            argb[1] = clip((src.get(1,x,y) - bias)*factor);
-                            argb[2] = clip((src.get(2,x,y) - bias)*factor);
-                            argb[3] = clip((src.get(3,x,y) - bias)*factor);
-                            raster.setPixel(x, y, argb);
-                        }
+                        data[0] = (short)((int)Math.max(minLevel, Math.min((src.get(x,y) - bias)*factor, maxLevel)) & 0xFFFF);
+                        raster.setDataElements(minX + x, minY + y, data);
                     }
                 }
             }
-        } else if (type == Traits.DOUBLE) {
-            double[] sf = opts.getScaling(arr, 0, 255);
-            double scale = (double)sf[0];
-            double bias = (double)sf[1];
-            double factor = 1/scale;
-            if (depth == 1) {
+            case Traits.DOUBLE: {
                 Double2D src = (Double2D)arr;
+                double[] sf = opts.getScaling(arr, 0, 0xFFFF);
+                final double scale = (double)sf[0];
+                final double bias = (double)sf[1];
+                final double factor = 1/scale;
+                final double minLevel = 0;
+                final double maxLevel = 0xFFFF;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        int level = clip((src.get(x,y) - bias)*factor);
-                        rgb[0] = level;
-                        rgb[1] = level;
-                        rgb[2] = level;
-                        raster.setPixel(x, y, rgb);
+                        data[0] = (short)((int)Math.max(minLevel, Math.min((src.get(x,y) - bias)*factor, maxLevel)) & 0xFFFF);
+                        raster.setDataElements(minX + x, minY + y, data);
                     }
                 }
-            } else {
-                Double3D src = (Double3D)arr;
-                if (depth == 3) {
+            }
+            default:
+                throw new IllegalTypeException();
+            }
+        } else if (imageType == BufferedImage.TYPE_3BYTE_BGR) {
+            /* Input is 3-D array of any type. */
+            if (raster.getNumBands() != 3 || raster.getNumDataElements() != 3 ||
+                raster.getTransferType() != DataBuffer.TYPE_BYTE) {
+                throw new IllegalArgumentException("assertion failed for TYPE_3BYTE_BGR");
+            }
+            byte[] data = new byte[3];
+            switch (arrayType) {
+            case Traits.BYTE: {
+                Byte3D src = (Byte3D)arr;
+                if (isFlat(src)) {
+                    raster.setDataElements(minX, minY, width, height, src.flatten());
+                } else {
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            rgb[0] = clip((src.get(0,x,y) - bias)*factor);
-                            rgb[1] = clip((src.get(1,x,y) - bias)*factor);
-                            rgb[2] = clip((src.get(2,x,y) - bias)*factor);
-                            raster.setPixel(x, y, rgb);
-                        }
-                    }
-                } else /* depth == 4 */ {
-                    for (int y = 0; y < height; ++y){
-                        for (int x = 0; x < width; ++x){
-                            argb[0] = clip((src.get(0,x,y) - bias)*factor);
-                            argb[1] = clip((src.get(1,x,y) - bias)*factor);
-                            argb[2] = clip((src.get(2,x,y) - bias)*factor);
-                            argb[3] = clip((src.get(3,x,y) - bias)*factor);
-                            raster.setPixel(x, y, argb);
+                            data[0] = src.get(0, x, y);
+                            data[1] = src.get(1, x, y);
+                            data[2] = src.get(2, x, y);
+                            raster.setDataElements(minX + x, minY + y, data);
                         }
                     }
                 }
             }
-        } else {
-            throw new IllegalTypeException();
+            case Traits.SHORT: {
+                Short3D src = (Short3D)arr;
+                double[] sf = opts.getScaling(arr, 0, 0xFF);
+                final float scale = (float)sf[0];
+                final float bias = (float)sf[1];
+                final float factor = 1/scale;
+                final float minLevel = 0;
+                final float maxLevel = 0xFF;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        data[0] = (byte)((int)Math.max(minLevel, Math.min(((float)src.get(0,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        data[1] = (byte)((int)Math.max(minLevel, Math.min(((float)src.get(1,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        data[2] = (byte)((int)Math.max(minLevel, Math.min(((float)src.get(2,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        raster.setDataElements(minX + x, minY + y, data);
+                    }
+                }
+            }
+            case Traits.INT: {
+                Int3D src = (Int3D)arr;
+                double[] sf = opts.getScaling(arr, 0, 0xFF);
+                final float scale = (float)sf[0];
+                final float bias = (float)sf[1];
+                final float factor = 1/scale;
+                final float minLevel = 0;
+                final float maxLevel = 0xFF;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        data[0] = (byte)((int)Math.max(minLevel, Math.min(((float)src.get(0,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        data[1] = (byte)((int)Math.max(minLevel, Math.min(((float)src.get(1,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        data[2] = (byte)((int)Math.max(minLevel, Math.min(((float)src.get(2,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        raster.setDataElements(minX + x, minY + y, data);
+                    }
+                }
+            }
+            case Traits.LONG: {
+                Long3D src = (Long3D)arr;
+                double[] sf = opts.getScaling(arr, 0, 0xFF);
+                final double scale = (double)sf[0];
+                final double bias = (double)sf[1];
+                final double factor = 1/scale;
+                final double minLevel = 0;
+                final double maxLevel = 0xFF;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        data[0] = (byte)((int)Math.max(minLevel, Math.min(((double)src.get(0,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        data[1] = (byte)((int)Math.max(minLevel, Math.min(((double)src.get(1,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        data[2] = (byte)((int)Math.max(minLevel, Math.min(((double)src.get(2,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        raster.setDataElements(minX + x, minY + y, data);
+                    }
+                }
+            }
+            case Traits.FLOAT: {
+                Float3D src = (Float3D)arr;
+                double[] sf = opts.getScaling(arr, 0, 0xFF);
+                final float scale = (float)sf[0];
+                final float bias = (float)sf[1];
+                final float factor = 1/scale;
+                final float minLevel = 0;
+                final float maxLevel = 0xFF;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        data[0] = (byte)((int)Math.max(minLevel, Math.min((src.get(0,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        data[1] = (byte)((int)Math.max(minLevel, Math.min((src.get(1,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        data[2] = (byte)((int)Math.max(minLevel, Math.min((src.get(2,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        raster.setDataElements(minX + x, minY + y, data);
+                    }
+                }
+            }
+            case Traits.DOUBLE: {
+                Double3D src = (Double3D)arr;
+                double[] sf = opts.getScaling(arr, 0, 0xFF);
+                final double scale = (double)sf[0];
+                final double bias = (double)sf[1];
+                final double factor = 1/scale;
+                final double minLevel = 0;
+                final double maxLevel = 0xFF;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        data[0] = (byte)((int)Math.max(minLevel, Math.min((src.get(0,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        data[1] = (byte)((int)Math.max(minLevel, Math.min((src.get(1,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        data[2] = (byte)((int)Math.max(minLevel, Math.min((src.get(2,x,y) - bias)*factor, maxLevel)) & 0xFF);
+                        raster.setDataElements(minX + x, minY + y, data);
+                    }
+                }
+            }
+            default:
+                throw new IllegalTypeException();
+            }
+        } else /* imageType == BufferedImage.TYPE_4BYTE_ABGR */ {
+            /* Input is 3-D byte array. */
+            Byte3D src = (Byte3D)arr;
+            if (raster.getNumBands() != 4 || raster.getNumDataElements() != 4 ||
+                raster.getTransferType() != DataBuffer.TYPE_BYTE) {
+                throw new IllegalArgumentException("assertion failed for TYPE_4BYTE_ABGR");
+            }
+            if (isFlat(src)) {
+                raster.setDataElements(minX, minY, width, height, src.flatten());
+            } else {
+                byte[] data = new byte[4];
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        data[0] = src.get(0, x, y);
+                        data[1] = src.get(1, x, y);
+                        data[2] = src.get(2, x, y);
+                        data[3] = src.get(3, x, y);
+                        raster.setDataElements(minX + x, minY + y, data);
+                    }
+                }
+            }
         }
-
         return image;
     }
 
@@ -708,6 +721,1835 @@ public enum DataFormat {
             return makeBufferedImage(ArrayFactory.wrap(((FloatShapedVector)vec).getData(), vec.getShape()), opts);
         }
         throw new IllegalArgumentException("Unable to convert shaped vector to image.");
+    }
+
+
+    /*=======================================================================*/
+    /* COLORS */
+
+    /**
+     * Convert red, green and blue levels in a gray level.
+     * @param red   - The red level.
+     * @param green - The green level.
+     * @param blue  - The blue level.
+     * @return The gray level.
+     */
+    public static double colorToGrey(double red, double green, double blue) {
+        return 0.2126*red + 0.7152*green + 0.0722*blue;
+    }
+
+    /**
+     * Convert red, green and blue levels in a gray level.
+     * @param red   - The red level.
+     * @param green - The green level.
+     * @param blue  - The blue level.
+     * @return The gray level.
+     */
+    public static float colorToGrey(float red, float green, float blue) {
+        return 0.2126F*red + 0.7152F*green + 0.0722F*blue;
+    }
+
+    /**
+     * Convert red, green and blue levels in a gray level.
+     * @param red   - The red level.
+     * @param green - The green level.
+     * @param blue  - The blue level.
+     * @return The gray level.
+     */
+    public static int colorToGrey(int red, int green, int blue) {
+        return Math.round(0.2126F*red + 0.7152F*green + 0.0722F*blue);
+    }
+
+    /* COLOR MODELS
+     * Below is how to decode an ARGB pixel value:
+     * <pre>
+     *   int argb = image.getRGB(i,j);
+     *   int red   = (argb)&0xFF;
+     *   int green = (argb>>8)&0xFF;
+     *   int blue  = (argb>>16)&0xFF;
+     *   int alpha = (argb>>24)&0xFF;
+     * </pre>
+     */
+
+    //private static int[] grayTable = makeGrayTable();
+    //private static int[] makeGrayTable() {
+    //    int[] color = new int[256];
+    //    int OPAQUE = 255;
+    //    for (int gray = 0; gray < 256; ++gray) {
+    //        color[gray] = (OPAQUE<<24)|(gray<<16)|(gray<<8)|gray;
+    //    }
+    //    return color;
+    //}
+
+
+    /**
+     * Filter the channels of an image stored as a shpaed array.
+     * @param image      - The array to filter.
+     * @param colorModel - The color model for the result.
+     * @return A FloatArray object with shape {width,height} for a
+     * grayscale image, with shape {depth,width,height} for a RGB or RGBA
+     * image (depth = 3 or 4 respectively).
+     */
+    public static FloatArray imageFilterFloat(ShapedArray arr, ColorModel colorModel) {
+        int type = arr.getType();
+        Shape shape = arr.getShape();
+        int rank = shape.rank();
+        int depth = -1;
+        boolean colored = false;
+        if (rank == 2) {
+            depth = 1;
+        } else if (rank == 3) {
+            depth = shape.dimension(0);
+            if (depth == 3) {
+                colored = true;
+            } else if (depth == 4 && type == Traits.BYTE) {
+                colored = true;
+            } else {
+                depth = -1;
+            }
+        }
+        if (depth < 0) {
+            throw new IllegalArgumentException("Images must be WIDTH x HEIGHT arrays, 3 x WIDTH x HEIGHT arrays or 4 x WIDTH x HEIGHT byte arrays.");
+
+        }
+        final int width = shape.dimension(rank - 2);
+        final int height = shape.dimension(rank - 1);
+
+        /* Perhaps simply getting a slice is sufficient. */
+        ShapedArray view = null;
+
+        if (colorModel == ColorModel.GRAY) {
+            if (colored) {
+                Float2D dst = Float2D.create(width, height);
+                switch (type) {
+                case Traits.BYTE: {
+                    Byte3D src = (Byte3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float red   = (float)((int)src.get(0,x,y) & 0xFF);
+                            float green = (float)((int)src.get(1,x,y) & 0xFF);
+                            float blue  = (float)((int)src.get(2,x,y) & 0xFF);
+                            dst.set(x,y, colorToGrey(red, green, blue));
+                        }
+                    }
+                    break;
+                }
+                case Traits.SHORT: {
+                    Short3D src = (Short3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float red   = (float)src.get(0,x,y);
+                            float green = (float)src.get(1,x,y);
+                            float blue  = (float)src.get(2,x,y);
+                            dst.set(x,y, colorToGrey(red, green, blue));
+                        }
+                    }
+                    break;
+                }
+                case Traits.INT: {
+                    Int3D src = (Int3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float red   = (float)src.get(0,x,y);
+                            float green = (float)src.get(1,x,y);
+                            float blue  = (float)src.get(2,x,y);
+                            dst.set(x,y, colorToGrey(red, green, blue));
+                        }
+                    }
+                    break;
+                }
+                case Traits.LONG: {
+                    Long3D src = (Long3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float red   = (float)src.get(0,x,y);
+                            float green = (float)src.get(1,x,y);
+                            float blue  = (float)src.get(2,x,y);
+                            dst.set(x,y, colorToGrey(red, green, blue));
+                        }
+                    }
+                    break;
+                }
+                case Traits.FLOAT: {
+                    Float3D src = (Float3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float red   = src.get(0,x,y);
+                            float green = src.get(1,x,y);
+                            float blue  = src.get(2,x,y);
+                            dst.set(x,y, colorToGrey(red, green, blue));
+                        }
+                    }
+                    break;
+                }
+                case Traits.DOUBLE: {
+                    Double3D src = (Double3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float red   = (float)src.get(0,x,y);
+                            float green = (float)src.get(1,x,y);
+                            float blue  = (float)src.get(2,x,y);
+                            dst.set(x,y, colorToGrey(red, green, blue));
+                        }
+                    }
+                    break;
+                }
+                default:
+                    throw new IllegalTypeException();
+                }
+                return dst;
+            } else {
+                view = arr;
+            }
+
+       } else if (colorModel == ColorModel.RGB) {
+
+            if (depth == 3) {
+                view = arr;
+            } else if (depth == 4) {
+                view = ((Array3D)arr).view(new Range(0,2), null, null);
+            } else {
+                /* Make an RGB image from a gray image.  (FIXME: Things could
+                 * be much simpler if only we can insert a dimension.) */
+                Float3D dst = Float3D.create(3, width, height);
+                switch (type) {
+                case Traits.BYTE: {
+                    Byte2D src = (Byte2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float value = (float)((int)src.get(x,y) & 0xFF);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                        }
+                    }
+                    break;
+                }
+                case Traits.SHORT: {
+                    Short2D src = (Short2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float value = (float)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                        }
+                    }
+                    break;
+                }
+                case Traits.INT: {
+                    Int2D src = (Int2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float value = (float)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                        }
+                    }
+                    break;
+                }
+                case Traits.LONG: {
+                    Long2D src = (Long2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float value = (float)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                        }
+                    }
+                    break;
+                }
+                case Traits.FLOAT: {
+                    Float2D src = (Float2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float value = src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                        }
+                    }
+                    break;
+                }
+                case Traits.DOUBLE: {
+                    Double2D src = (Double2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float value = (float)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                        }
+                    }
+                    break;
+                }
+                default:
+                    throw new IllegalTypeException();
+                }
+                return dst;
+            }
+
+        } else if (colorModel == ColorModel.RGBA) {
+
+            /* Create new floating point RGBA image. */
+            Float3D dst = Float3D.create(4, width, height);
+
+            if (depth == 1) {
+
+                /* Make an floating point RGBA image from a gray image. */
+                final float opaque = 1.0F;
+                switch (type) {
+                case Traits.BYTE: {
+                    Byte2D src = (Byte2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float value = (float)((int)src.get(x,y) & 0xFF);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.SHORT: {
+                    Short2D src = (Short2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float value = (float)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.INT: {
+                    Int2D src = (Int2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float value = (float)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.LONG: {
+                    Long2D src = (Long2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float value = (float)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.FLOAT: {
+                    Float2D src = (Float2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float value = src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.DOUBLE: {
+                    Double2D src = (Double2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float value = (float)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                default:
+                    throw new IllegalTypeException();
+                }
+
+            } else if (depth == 3) {
+
+                /* Make an floating point RGBA image from a RGB image. */
+                final float opaque = 1;
+                switch (type) {
+                case Traits.BYTE: {
+                    Byte3D src = (Byte3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float red   = (float)((int)src.get(0,x,y) & 0xFF);
+                            float green = (float)((int)src.get(1,x,y) & 0xFF);
+                            float blue  = (float)((int)src.get(2,x,y) & 0xFF);
+                            dst.set(0,x,y, red);
+                            dst.set(1,x,y, green);
+                            dst.set(2,x,y, blue);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.SHORT: {
+                    Short3D src = (Short3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float red   = (float)src.get(0,x,y);
+                            float green = (float)src.get(1,x,y);
+                            float blue  = (float)src.get(2,x,y);
+                            dst.set(0,x,y, red);
+                            dst.set(1,x,y, green);
+                            dst.set(2,x,y, blue);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.INT: {
+                    Int3D src = (Int3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float red   = (float)src.get(0,x,y);
+                            float green = (float)src.get(1,x,y);
+                            float blue  = (float)src.get(2,x,y);
+                            dst.set(0,x,y, red);
+                            dst.set(1,x,y, green);
+                            dst.set(2,x,y, blue);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.LONG: {
+                    Long3D src = (Long3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float red   = (float)src.get(0,x,y);
+                            float green = (float)src.get(1,x,y);
+                            float blue  = (float)src.get(2,x,y);
+                            dst.set(0,x,y, red);
+                            dst.set(1,x,y, green);
+                            dst.set(2,x,y, blue);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.FLOAT: {
+                    Float3D src = (Float3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float red   = src.get(0,x,y);
+                            float green = src.get(1,x,y);
+                            float blue  = src.get(2,x,y);
+                            dst.set(0,x,y, red);
+                            dst.set(1,x,y, green);
+                            dst.set(2,x,y, blue);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.DOUBLE: {
+                    Double3D src = (Double3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            float red   = (float)src.get(0,x,y);
+                            float green = (float)src.get(1,x,y);
+                            float blue  = (float)src.get(2,x,y);
+                            dst.set(0,x,y, red);
+                            dst.set(1,x,y, green);
+                            dst.set(2,x,y, blue);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                default:
+                    throw new IllegalTypeException();
+                }
+
+            } else {
+
+                /* Make an floating point RGBA image from a RGBA byte image. */
+                Byte3D src = (Byte3D)arr;
+                final float scale = 1.0F/255.0F;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float red   = (float)((int)src.get(0,x,y) & 0xFF);
+                        float green = (float)((int)src.get(1,x,y) & 0xFF);
+                        float blue  = (float)((int)src.get(2,x,y) & 0xFF);
+                        float alpha = (float)((int)src.get(3,x,y) & 0xFF)*scale;
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                        dst.set(3,x,y, alpha);
+                    }
+                }
+            }
+
+            return dst;
+
+        } else if (colorModel == ColorModel.RED) {
+
+            view = (depth == 1 ? arr : ((Array3D)arr).slice(0, 0));
+
+        } else if (colorModel == ColorModel.GREEN) {
+
+            view = (depth == 1 ? arr : ((Array3D)arr).slice(1, 0));
+
+        } else if (colorModel == ColorModel.BLUE) {
+
+            view = (depth == 1 ? arr : ((Array3D)arr).slice(2, 0));
+
+        } else if (colorModel == ColorModel.ALPHA) {
+
+            Float2D dst = Float2D.create(width, height);
+            if (depth == 4) {
+                /* Extract the alpha channel of an RGBA byte image. */
+                Byte3D src = (Byte3D)arr;
+                final float scale = 1.0F/255.0F;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float alpha = (float)((int)src.get(3,x,y) & 0xFF)*scale;
+                        dst.set(x,y, alpha);
+                    }
+                }
+            } else {
+                dst.fill(1.0F);
+            }
+            return dst;
+
+        } else  {
+
+            throw new IllegalArgumentException("Unkwnon color filter");
+        }
+
+        /* If arrive here, we just have to convert the view.   At most what is needed
+           is pixel unpacking and data conversion. */
+        if (view == arr && type == Traits.FLOAT) {
+            /* Never forget to be lazy. */
+            return (FloatArray)arr;
+        }
+        shape = view.getShape();
+        rank = view.getRank();
+        if (rank == 2) {
+            depth = 1;
+        } else {
+            depth = shape.dimension(0);
+        }
+        switch (type) {
+        case Traits.BYTE:
+             if (depth == 1) {
+                 Float2D dst = Float2D.create(width, height);
+                 Byte2D src = (Byte2D)view;
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         float value = (float)((int)src.get(x,y) & 0xFF);
+                         dst.set(x,y, value);
+                     }
+                 }
+                 return dst;
+             } else {
+                 Float3D dst = Float3D.create(depth, width, height);
+                 Byte3D src = (Byte3D)view;
+                 if (depth != 3) {
+                     throw new IllegalArgumentException("assertion failed");
+                 }
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         float red   = (float)((int)src.get(0,x,y) & 0xFF);
+                         float green = (float)((int)src.get(1,x,y) & 0xFF);
+                         float blue  = (float)((int)src.get(2,x,y) & 0xFF);
+                         dst.set(0,x,y, red);
+                         dst.set(1,x,y, green);
+                         dst.set(2,x,y, blue);
+                     }
+                 }
+                 return dst;
+             }
+        case Traits.SHORT:
+             if (depth == 1) {
+                 Float2D dst = Float2D.create(width, height);
+                 Short2D src = (Short2D)view;
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         float value = (float)src.get(x,y);
+                         dst.set(x,y, value);
+                     }
+                 }
+                 return dst;
+             } else {
+                 Float3D dst = Float3D.create(depth, width, height);
+                 Short3D src = (Short3D)view;
+                 if (depth != 3) {
+                     throw new IllegalArgumentException("assertion failed");
+                 }
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         float red   = (float)src.get(0,x,y);
+                         float green = (float)src.get(1,x,y);
+                         float blue  = (float)src.get(2,x,y);
+                         dst.set(0,x,y, red);
+                         dst.set(1,x,y, green);
+                         dst.set(2,x,y, blue);
+                     }
+                 }
+                 return dst;
+             }
+        case Traits.INT:
+             if (depth == 1) {
+                 Float2D dst = Float2D.create(width, height);
+                 Int2D src = (Int2D)view;
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         float value = (float)src.get(x,y);
+                         dst.set(x,y, value);
+                     }
+                 }
+                 return dst;
+             } else {
+                 Float3D dst = Float3D.create(depth, width, height);
+                 Int3D src = (Int3D)view;
+                 if (depth != 3) {
+                     throw new IllegalArgumentException("assertion failed");
+                 }
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         float red   = (float)src.get(0,x,y);
+                         float green = (float)src.get(1,x,y);
+                         float blue  = (float)src.get(2,x,y);
+                         dst.set(0,x,y, red);
+                         dst.set(1,x,y, green);
+                         dst.set(2,x,y, blue);
+                     }
+                 }
+                 return dst;
+             }
+        case Traits.LONG:
+             if (depth == 1) {
+                 Float2D dst = Float2D.create(width, height);
+                 Long2D src = (Long2D)view;
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         float value = (float)src.get(x,y);
+                         dst.set(x,y, value);
+                     }
+                 }
+                 return dst;
+             } else {
+                 Float3D dst = Float3D.create(depth, width, height);
+                 Long3D src = (Long3D)view;
+                 if (depth != 3) {
+                     throw new IllegalArgumentException("assertion failed");
+                 }
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         float red   = (float)src.get(0,x,y);
+                         float green = (float)src.get(1,x,y);
+                         float blue  = (float)src.get(2,x,y);
+                         dst.set(0,x,y, red);
+                         dst.set(1,x,y, green);
+                         dst.set(2,x,y, blue);
+                     }
+                 }
+                 return dst;
+             }
+        case Traits.FLOAT:
+             if (depth == 1) {
+                 Float2D dst = Float2D.create(width, height);
+                 Float2D src = (Float2D)view;
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         float value = src.get(x,y);
+                         dst.set(x,y, value);
+                     }
+                 }
+                 return dst;
+             } else {
+                 Float3D dst = Float3D.create(depth, width, height);
+                 Float3D src = (Float3D)view;
+                 if (depth != 3) {
+                     throw new IllegalArgumentException("assertion failed");
+                 }
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         float red   = src.get(0,x,y);
+                         float green = src.get(1,x,y);
+                         float blue  = src.get(2,x,y);
+                         dst.set(0,x,y, red);
+                         dst.set(1,x,y, green);
+                         dst.set(2,x,y, blue);
+                     }
+                 }
+                 return dst;
+             }
+        case Traits.DOUBLE:
+             if (depth == 1) {
+                 Float2D dst = Float2D.create(width, height);
+                 Double2D src = (Double2D)view;
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         float value = (float)src.get(x,y);
+                         dst.set(x,y, value);
+                     }
+                 }
+                 return dst;
+             } else {
+                 Float3D dst = Float3D.create(depth, width, height);
+                 Double3D src = (Double3D)view;
+                 if (depth != 3) {
+                     throw new IllegalArgumentException("assertion failed");
+                 }
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         float red   = (float)src.get(0,x,y);
+                         float green = (float)src.get(1,x,y);
+                         float blue  = (float)src.get(2,x,y);
+                         dst.set(0,x,y, red);
+                         dst.set(1,x,y, green);
+                         dst.set(2,x,y, blue);
+                     }
+                 }
+                 return dst;
+             }
+        default:
+            throw new IllegalTypeException();
+        }
+    }
+    /**
+     * Filter the channels of an image stored as a shpaed array.
+     * @param image      - The array to filter.
+     * @param colorModel - The color model for the result.
+     * @return A DoubleArray object with shape {width,height} for a
+     * grayscale image, with shape {depth,width,height} for a RGB or RGBA
+     * image (depth = 3 or 4 respectively).
+     */
+    public static DoubleArray imageFilterDouble(ShapedArray arr, ColorModel colorModel) {
+        int type = arr.getType();
+        Shape shape = arr.getShape();
+        int rank = shape.rank();
+        int depth = -1;
+        boolean colored = false;
+        if (rank == 2) {
+            depth = 1;
+        } else if (rank == 3) {
+            depth = shape.dimension(0);
+            if (depth == 3) {
+                colored = true;
+            } else if (depth == 4 && type == Traits.BYTE) {
+                colored = true;
+            } else {
+                depth = -1;
+            }
+        }
+        if (depth < 0) {
+            throw new IllegalArgumentException("Images must be WIDTH x HEIGHT arrays, 3 x WIDTH x HEIGHT arrays or 4 x WIDTH x HEIGHT byte arrays.");
+
+        }
+        final int width = shape.dimension(rank - 2);
+        final int height = shape.dimension(rank - 1);
+
+        /* Perhaps simply getting a slice is sufficient. */
+        ShapedArray view = null;
+
+        if (colorModel == ColorModel.GRAY) {
+            if (colored) {
+                Double2D dst = Double2D.create(width, height);
+                switch (type) {
+                case Traits.BYTE: {
+                    Byte3D src = (Byte3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double red   = (double)((int)src.get(0,x,y) & 0xFF);
+                            double green = (double)((int)src.get(1,x,y) & 0xFF);
+                            double blue  = (double)((int)src.get(2,x,y) & 0xFF);
+                            dst.set(x,y, colorToGrey(red, green, blue));
+                        }
+                    }
+                    break;
+                }
+                case Traits.SHORT: {
+                    Short3D src = (Short3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double red   = (double)src.get(0,x,y);
+                            double green = (double)src.get(1,x,y);
+                            double blue  = (double)src.get(2,x,y);
+                            dst.set(x,y, colorToGrey(red, green, blue));
+                        }
+                    }
+                    break;
+                }
+                case Traits.INT: {
+                    Int3D src = (Int3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double red   = (double)src.get(0,x,y);
+                            double green = (double)src.get(1,x,y);
+                            double blue  = (double)src.get(2,x,y);
+                            dst.set(x,y, colorToGrey(red, green, blue));
+                        }
+                    }
+                    break;
+                }
+                case Traits.LONG: {
+                    Long3D src = (Long3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double red   = (double)src.get(0,x,y);
+                            double green = (double)src.get(1,x,y);
+                            double blue  = (double)src.get(2,x,y);
+                            dst.set(x,y, colorToGrey(red, green, blue));
+                        }
+                    }
+                    break;
+                }
+                case Traits.FLOAT: {
+                    Float3D src = (Float3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double red   = (double)src.get(0,x,y);
+                            double green = (double)src.get(1,x,y);
+                            double blue  = (double)src.get(2,x,y);
+                            dst.set(x,y, colorToGrey(red, green, blue));
+                        }
+                    }
+                    break;
+                }
+                case Traits.DOUBLE: {
+                    Double3D src = (Double3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double red   = src.get(0,x,y);
+                            double green = src.get(1,x,y);
+                            double blue  = src.get(2,x,y);
+                            dst.set(x,y, colorToGrey(red, green, blue));
+                        }
+                    }
+                    break;
+                }
+                default:
+                    throw new IllegalTypeException();
+                }
+                return dst;
+            } else {
+                view = arr;
+            }
+
+       } else if (colorModel == ColorModel.RGB) {
+
+            if (depth == 3) {
+                view = arr;
+            } else if (depth == 4) {
+                view = ((Array3D)arr).view(new Range(0,2), null, null);
+            } else {
+                /* Make an RGB image from a gray image.  (FIXME: Things could
+                 * be much simpler if only we can insert a dimension.) */
+                Double3D dst = Double3D.create(3, width, height);
+                switch (type) {
+                case Traits.BYTE: {
+                    Byte2D src = (Byte2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double value = (double)((int)src.get(x,y) & 0xFF);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                        }
+                    }
+                    break;
+                }
+                case Traits.SHORT: {
+                    Short2D src = (Short2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double value = (double)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                        }
+                    }
+                    break;
+                }
+                case Traits.INT: {
+                    Int2D src = (Int2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double value = (double)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                        }
+                    }
+                    break;
+                }
+                case Traits.LONG: {
+                    Long2D src = (Long2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double value = (double)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                        }
+                    }
+                    break;
+                }
+                case Traits.FLOAT: {
+                    Float2D src = (Float2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double value = (double)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                        }
+                    }
+                    break;
+                }
+                case Traits.DOUBLE: {
+                    Double2D src = (Double2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double value = src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                        }
+                    }
+                    break;
+                }
+                default:
+                    throw new IllegalTypeException();
+                }
+                return dst;
+            }
+
+        } else if (colorModel == ColorModel.RGBA) {
+
+            /* Create new floating point RGBA image. */
+            Double3D dst = Double3D.create(4, width, height);
+
+            if (depth == 1) {
+
+                /* Make an floating point RGBA image from a gray image. */
+                final double opaque = 1.0;
+                switch (type) {
+                case Traits.BYTE: {
+                    Byte2D src = (Byte2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double value = (double)((int)src.get(x,y) & 0xFF);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.SHORT: {
+                    Short2D src = (Short2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double value = (double)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.INT: {
+                    Int2D src = (Int2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double value = (double)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.LONG: {
+                    Long2D src = (Long2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double value = (double)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.FLOAT: {
+                    Float2D src = (Float2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double value = (double)src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.DOUBLE: {
+                    Double2D src = (Double2D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double value = src.get(x,y);
+                            dst.set(0,x,y, value);
+                            dst.set(1,x,y, value);
+                            dst.set(2,x,y, value);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                default:
+                    throw new IllegalTypeException();
+                }
+
+            } else if (depth == 3) {
+
+                /* Make an floating point RGBA image from a RGB image. */
+                final double opaque = 1;
+                switch (type) {
+                case Traits.BYTE: {
+                    Byte3D src = (Byte3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double red   = (double)((int)src.get(0,x,y) & 0xFF);
+                            double green = (double)((int)src.get(1,x,y) & 0xFF);
+                            double blue  = (double)((int)src.get(2,x,y) & 0xFF);
+                            dst.set(0,x,y, red);
+                            dst.set(1,x,y, green);
+                            dst.set(2,x,y, blue);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.SHORT: {
+                    Short3D src = (Short3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double red   = (double)src.get(0,x,y);
+                            double green = (double)src.get(1,x,y);
+                            double blue  = (double)src.get(2,x,y);
+                            dst.set(0,x,y, red);
+                            dst.set(1,x,y, green);
+                            dst.set(2,x,y, blue);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.INT: {
+                    Int3D src = (Int3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double red   = (double)src.get(0,x,y);
+                            double green = (double)src.get(1,x,y);
+                            double blue  = (double)src.get(2,x,y);
+                            dst.set(0,x,y, red);
+                            dst.set(1,x,y, green);
+                            dst.set(2,x,y, blue);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.LONG: {
+                    Long3D src = (Long3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double red   = (double)src.get(0,x,y);
+                            double green = (double)src.get(1,x,y);
+                            double blue  = (double)src.get(2,x,y);
+                            dst.set(0,x,y, red);
+                            dst.set(1,x,y, green);
+                            dst.set(2,x,y, blue);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.FLOAT: {
+                    Float3D src = (Float3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double red   = (double)src.get(0,x,y);
+                            double green = (double)src.get(1,x,y);
+                            double blue  = (double)src.get(2,x,y);
+                            dst.set(0,x,y, red);
+                            dst.set(1,x,y, green);
+                            dst.set(2,x,y, blue);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                case Traits.DOUBLE: {
+                    Double3D src = (Double3D)arr;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            double red   = src.get(0,x,y);
+                            double green = src.get(1,x,y);
+                            double blue  = src.get(2,x,y);
+                            dst.set(0,x,y, red);
+                            dst.set(1,x,y, green);
+                            dst.set(2,x,y, blue);
+                            dst.set(3,x,y, opaque);
+                        }
+                    }
+                }
+                default:
+                    throw new IllegalTypeException();
+                }
+
+            } else {
+
+                /* Make an floating point RGBA image from a RGBA byte image. */
+                Byte3D src = (Byte3D)arr;
+                final double scale = 1.0/255.0;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double red   = (double)((int)src.get(0,x,y) & 0xFF);
+                        double green = (double)((int)src.get(1,x,y) & 0xFF);
+                        double blue  = (double)((int)src.get(2,x,y) & 0xFF);
+                        double alpha = (double)((int)src.get(3,x,y) & 0xFF)*scale;
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                        dst.set(3,x,y, alpha);
+                    }
+                }
+            }
+
+            return dst;
+
+        } else if (colorModel == ColorModel.RED) {
+
+            view = (depth == 1 ? arr : ((Array3D)arr).slice(0, 0));
+
+        } else if (colorModel == ColorModel.GREEN) {
+
+            view = (depth == 1 ? arr : ((Array3D)arr).slice(1, 0));
+
+        } else if (colorModel == ColorModel.BLUE) {
+
+            view = (depth == 1 ? arr : ((Array3D)arr).slice(2, 0));
+
+        } else if (colorModel == ColorModel.ALPHA) {
+
+            Double2D dst = Double2D.create(width, height);
+            if (depth == 4) {
+                /* Extract the alpha channel of an RGBA byte image. */
+                Byte3D src = (Byte3D)arr;
+                final double scale = 1.0/255.0;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double alpha = (double)((int)src.get(3,x,y) & 0xFF)*scale;
+                        dst.set(x,y, alpha);
+                    }
+                }
+            } else {
+                dst.fill(1.0);
+            }
+            return dst;
+
+        } else  {
+
+            throw new IllegalArgumentException("Unkwnon color filter");
+        }
+
+        /* If arrive here, we just have to convert the view.   At most what is needed
+           is pixel unpacking and data conversion. */
+        if (view == arr && type == Traits.DOUBLE) {
+            /* Never forget to be lazy. */
+            return (DoubleArray)arr;
+        }
+        shape = view.getShape();
+        rank = view.getRank();
+        if (rank == 2) {
+            depth = 1;
+        } else {
+            depth = shape.dimension(0);
+        }
+        switch (type) {
+        case Traits.BYTE:
+             if (depth == 1) {
+                 Double2D dst = Double2D.create(width, height);
+                 Byte2D src = (Byte2D)view;
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         double value = (double)((int)src.get(x,y) & 0xFF);
+                         dst.set(x,y, value);
+                     }
+                 }
+                 return dst;
+             } else {
+                 Double3D dst = Double3D.create(depth, width, height);
+                 Byte3D src = (Byte3D)view;
+                 if (depth != 3) {
+                     throw new IllegalArgumentException("assertion failed");
+                 }
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         double red   = (double)((int)src.get(0,x,y) & 0xFF);
+                         double green = (double)((int)src.get(1,x,y) & 0xFF);
+                         double blue  = (double)((int)src.get(2,x,y) & 0xFF);
+                         dst.set(0,x,y, red);
+                         dst.set(1,x,y, green);
+                         dst.set(2,x,y, blue);
+                     }
+                 }
+                 return dst;
+             }
+        case Traits.SHORT:
+             if (depth == 1) {
+                 Double2D dst = Double2D.create(width, height);
+                 Short2D src = (Short2D)view;
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         double value = (double)src.get(x,y);
+                         dst.set(x,y, value);
+                     }
+                 }
+                 return dst;
+             } else {
+                 Double3D dst = Double3D.create(depth, width, height);
+                 Short3D src = (Short3D)view;
+                 if (depth != 3) {
+                     throw new IllegalArgumentException("assertion failed");
+                 }
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         double red   = (double)src.get(0,x,y);
+                         double green = (double)src.get(1,x,y);
+                         double blue  = (double)src.get(2,x,y);
+                         dst.set(0,x,y, red);
+                         dst.set(1,x,y, green);
+                         dst.set(2,x,y, blue);
+                     }
+                 }
+                 return dst;
+             }
+        case Traits.INT:
+             if (depth == 1) {
+                 Double2D dst = Double2D.create(width, height);
+                 Int2D src = (Int2D)view;
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         double value = (double)src.get(x,y);
+                         dst.set(x,y, value);
+                     }
+                 }
+                 return dst;
+             } else {
+                 Double3D dst = Double3D.create(depth, width, height);
+                 Int3D src = (Int3D)view;
+                 if (depth != 3) {
+                     throw new IllegalArgumentException("assertion failed");
+                 }
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         double red   = (double)src.get(0,x,y);
+                         double green = (double)src.get(1,x,y);
+                         double blue  = (double)src.get(2,x,y);
+                         dst.set(0,x,y, red);
+                         dst.set(1,x,y, green);
+                         dst.set(2,x,y, blue);
+                     }
+                 }
+                 return dst;
+             }
+        case Traits.LONG:
+             if (depth == 1) {
+                 Double2D dst = Double2D.create(width, height);
+                 Long2D src = (Long2D)view;
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         double value = (double)src.get(x,y);
+                         dst.set(x,y, value);
+                     }
+                 }
+                 return dst;
+             } else {
+                 Double3D dst = Double3D.create(depth, width, height);
+                 Long3D src = (Long3D)view;
+                 if (depth != 3) {
+                     throw new IllegalArgumentException("assertion failed");
+                 }
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         double red   = (double)src.get(0,x,y);
+                         double green = (double)src.get(1,x,y);
+                         double blue  = (double)src.get(2,x,y);
+                         dst.set(0,x,y, red);
+                         dst.set(1,x,y, green);
+                         dst.set(2,x,y, blue);
+                     }
+                 }
+                 return dst;
+             }
+        case Traits.FLOAT:
+             if (depth == 1) {
+                 Double2D dst = Double2D.create(width, height);
+                 Float2D src = (Float2D)view;
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         double value = (double)src.get(x,y);
+                         dst.set(x,y, value);
+                     }
+                 }
+                 return dst;
+             } else {
+                 Double3D dst = Double3D.create(depth, width, height);
+                 Float3D src = (Float3D)view;
+                 if (depth != 3) {
+                     throw new IllegalArgumentException("assertion failed");
+                 }
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         double red   = (double)src.get(0,x,y);
+                         double green = (double)src.get(1,x,y);
+                         double blue  = (double)src.get(2,x,y);
+                         dst.set(0,x,y, red);
+                         dst.set(1,x,y, green);
+                         dst.set(2,x,y, blue);
+                     }
+                 }
+                 return dst;
+             }
+        case Traits.DOUBLE:
+             if (depth == 1) {
+                 Double2D dst = Double2D.create(width, height);
+                 Double2D src = (Double2D)view;
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         double value = src.get(x,y);
+                         dst.set(x,y, value);
+                     }
+                 }
+                 return dst;
+             } else {
+                 Double3D dst = Double3D.create(depth, width, height);
+                 Double3D src = (Double3D)view;
+                 if (depth != 3) {
+                     throw new IllegalArgumentException("assertion failed");
+                 }
+                 for (int y = 0; y < height; ++y) {
+                     for (int x = 0; x < width; ++x) {
+                         double red   = src.get(0,x,y);
+                         double green = src.get(1,x,y);
+                         double blue  = src.get(2,x,y);
+                         dst.set(0,x,y, red);
+                         dst.set(1,x,y, green);
+                         dst.set(2,x,y, blue);
+                     }
+                 }
+                 return dst;
+             }
+        default:
+            throw new IllegalTypeException();
+        }
+    }
+
+    /*=======================================================================*/
+    /* BUFFERED IMAGES TO ARRAYS */
+
+    public static String getImageTypeName(BufferedImage image) {
+        return getImageTypeName(image.getType());
+    }
+
+    public static String getImageTypeName(int type) {
+        switch (type) {
+        case BufferedImage.TYPE_INT_RGB:
+            return "TYPE_INT_RGB";
+        case BufferedImage.TYPE_INT_BGR:
+            return "TYPE_INT_BGR";
+        case BufferedImage.TYPE_3BYTE_BGR:
+            return "TYPE_3BYTE_BGR";
+        case BufferedImage.TYPE_USHORT_565_RGB:
+            return "TYPE_USHORT_565_RGB";
+        case BufferedImage.TYPE_USHORT_555_RGB:
+            return "TYPE_USHORT_555_RGB";
+        case BufferedImage.TYPE_INT_ARGB:
+            return "TYPE_INT_ARGB";
+        case BufferedImage.TYPE_INT_ARGB_PRE:
+            return "TYPE_INT_ARGB_PRE";
+        case BufferedImage.TYPE_4BYTE_ABGR:
+            return "TYPE_4BYTE_ABGR";
+        case BufferedImage.TYPE_4BYTE_ABGR_PRE:
+            return "TYPE_4BYTE_ABGR_PRE";
+        case BufferedImage.TYPE_BYTE_GRAY:
+            return "TYPE_BYTE_GRAY";
+        case BufferedImage.TYPE_USHORT_GRAY:
+            return "TYPE_USHORT_GRAY";
+        case BufferedImage.TYPE_BYTE_BINARY:
+            return "TYPE_BYTE_BINARY";
+        case BufferedImage.TYPE_BYTE_INDEXED:
+            return "TYPE_BYTE_INDEXED";
+        case BufferedImage.TYPE_CUSTOM:
+            return "TYPE_CUSTOM";
+        default:
+            return "UNKOWN";
+        }
+    }
+
+    /** Get the name of the data type of a DataBuffer object. */
+    public static String getDataTypeName(DataBuffer buffer) {
+        return getDataTypeName(buffer.getDataType());
+    }
+
+    /** Get the name of the data type of a DataBuffer object. */
+    public static String getDataTypeName(int type) {
+        switch (type) {
+        case DataBuffer.TYPE_BYTE:
+            /* Unsigned byte data. */
+            return "TYPE_BYTE";
+        case DataBuffer.TYPE_SHORT:
+            return "TYPE_SHORT";
+        case DataBuffer.TYPE_USHORT:
+            return "TYPE_USHORT";
+        case DataBuffer.TYPE_INT:
+            return "TYPE_INT";
+        case DataBuffer.TYPE_FLOAT:
+            return "TYPE_FLOAT";
+        case DataBuffer.TYPE_DOUBLE:
+            return "TYPE_DOUBLE";
+        case DataBuffer.TYPE_UNDEFINED:
+            return "TYPE_UNDEFINED";
+        default:
+            return "UNKOWN";
+        }
+    }
+
+    public static void printImageInfo(PrintStream output, BufferedImage image, String name) {
+        Raster raster = image.getRaster();
+        final int height = raster.getHeight();
+        final int width = raster.getWidth();
+        final int minX = raster.getMinX();
+        final int minY = raster.getMinY();
+        final int numBands = raster.getNumBands();
+        final int transferType = raster.getTransferType();
+        final int numElements = raster.getNumDataElements();
+        if (name != null) {
+            output.format("image name       %s\n", name);
+        }
+        output.format("image type:      %s\n", getImageTypeName(image));
+        output.format("image size:      %d x %d\n", width, height);
+        output.format("image origin:    (%d,%d)\n", minX, minY);
+        output.format("number of bands: %d\n", numBands);
+        output.format("transfer data:   %s x %d\n", getDataTypeName(transferType), numElements);
+    }
+
+    /**
+     * Convert a BufferedImage to a given image type.
+     * <p>
+     * This method converts an image of any type to the given type.  The
+     * operation is lazy: if the image type of the original image is already
+     * the correct one, it is returned as the result.
+     * </p>>
+     * @param img - The input image.
+     * @param type - The image type of the result.
+     * @return A {@link BufferedImage} of the requested type.
+     * @see {@link BufferedImage#TYPE_3BYTE_BGR}
+     *      {@link BufferedImage#TYPE_4BYTE_ABGR},
+     *      {@link BufferedImage#TYPE_4BYTE_ABGR_PRE},
+     *      {@link BufferedImage#TYPE_BYTE_BINARY},
+     *      {@link BufferedImage#TYPE_BYTE_INDEXED},
+     *      {@link BufferedImage#TYPE_BYTE_GRAY},
+     *      {@link BufferedImage#TYPE_USHORT_555_RGB},
+     *      {@link BufferedImage#TYPE_USHORT_565_RGB},
+     *      {@link BufferedImage#TYPE_USHORT_GRAY},
+     *      {@link BufferedImage#TYPE_INT_RGB},
+     *      {@link BufferedImage#TYPE_INT_BGR},
+     *      {@link BufferedImage#TYPE_INT_ARGB},
+     *      {@link BufferedImage#TYPE_INT_ARGB_PRE}.
+     */
+    public static BufferedImage convertImage(BufferedImage img, int type) {
+        if (img.getType() == type) {
+            return img;
+        }
+        BufferedImage result = new BufferedImage(img.getWidth(), img.getHeight(), type);
+        Graphics2D g2 = result.createGraphics();
+        g2.drawImage(img, null, null);
+        g2.dispose();
+        return result;
+    }
+
+    /**
+     * Convert an image into a shaped array.
+     * <p>
+     * This method attempts to convert the image data with no loss of
+     * information.  The data type and rank of the result depend on the image
+     * type.
+     * </p><p>
+     * Gray scaled images yield 2D array while colored (RGB) and translucent
+     * (RGBA) images yields 3D images.  The penultimate dimension is the width
+     * of the image and the last dimension is the height of the image.  For
+     * RGB and RGBA images, the first dimension is respectively 3 and 4 with
+     * the red red, green, blue, and alpha channels (if any) given by:
+     * <pre>
+     *    Array3D arr   = imageToShapedArray(image);
+     *    Array2D red   = arr.slice(0, 0);
+     *    Array2D green = arr.slice(1, 0);
+     *    Array2D blue  = arr.slice(2, 0);
+     *    Array2D alpha = arr.slice(3, 0);
+     * </pre>
+     * If the result is a {@link ByteArray}, the bytes are to be interpreted
+     * as being unsigned.  For {@link BufferedImage#TYPE_USHORT_GRAY} images,
+     * the result is a {@link Int2D} array as TiPi does not implement
+     * {@code unsigned short} data.
+     * <p>
+     * For translucent images, the color levels in the result are not
+     * pre-multiplied by the alpha value (for
+     * {@link BufferedImage#TYPE_INT_ARGB_PRE} and
+     * {@link BufferedImage#TYPE_4BYTE_ABGR_PRE}, the pre-multiplication is
+     * reversed).
+     * </p>
+     * @return A shaped array.
+     */
+    public static ShapedArray imageToShapedArray(BufferedImage image) {
+        WritableRaster raster = image.getRaster();
+        final int height = raster.getHeight();
+        final int width = raster.getWidth();
+        final int minX = raster.getMinX();
+        final int minY = raster.getMinY();
+        final int numBands = raster.getNumBands();
+        final int transferType = raster.getTransferType();
+        final int numDataElements = raster.getNumDataElements();
+        final int type = image.getType();
+        switch (type) {
+        case BufferedImage.TYPE_INT_RGB: {
+            if (numBands != 3 || numDataElements != 1 || transferType != DataBuffer.TYPE_INT) {
+                throw new IllegalArgumentException("assertion failed for TYPE_INT_RGB");
+            }
+            Byte3D arr = Byte3D.wrap(new byte[3*width*height], 3, width, height);
+            int[] data = new int[1];
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    raster.getDataElements(x + minX, y + minY, data);
+                    int pixel = data[0];
+                    int red   = (pixel >> 16) & 0xFF;
+                    int green = (pixel >>  8) & 0xFF;
+                    int blue  = (pixel      ) & 0xFF;
+                    arr.set(0, x, y, (byte)red);
+                    arr.set(1, x, y, (byte)green);
+                    arr.set(2, x, y, (byte)blue);
+                }
+            }
+            return arr;
+        }
+        case BufferedImage.TYPE_INT_ARGB: {
+            if (numBands != 4 || numDataElements != 1 || transferType != DataBuffer.TYPE_INT) {
+                throw new IllegalArgumentException("assertion failed for TYPE_INT_ARGB");
+            }
+            Byte3D arr = Byte3D.wrap(new byte[4*width*height], 4, width, height);
+            int[] data = new int[1];
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    raster.getDataElements(x + minX, y + minY, data);
+                    int pixel = data[0];
+                    int alpha = (pixel >> 24) & 0xFF;
+                    int red   = (pixel >> 16) & 0xFF;
+                    int green = (pixel >>  8) & 0xFF;
+                    int blue  = (pixel      ) & 0xFF;
+                    arr.set(0, x, y, (byte)red);
+                    arr.set(1, x, y, (byte)green);
+                    arr.set(2, x, y, (byte)blue);
+                    arr.set(3, x, y, (byte)alpha);
+                }
+            }
+            return arr;
+        }
+        case BufferedImage.TYPE_INT_ARGB_PRE: {
+            /* Assume colors have been premultiplied by alpha/255. */
+            final int b = 255;
+            final int a = 2*b;
+            if (numBands != 4 || numDataElements != 1 || transferType != DataBuffer.TYPE_INT) {
+                throw new IllegalArgumentException("assertion failed for TYPE_INT_ARGB_PRE");
+            }
+            Byte3D arr = Byte3D.wrap(new byte[4*width*height], 4, width, height);
+            int[] data = new int[1];
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    raster.getDataElements(x + minX, y + minY, data);
+                    int pixel = data[0];
+                    int alpha = (pixel >> 24) & 0xFF;
+                    int c = 2*alpha;
+                    int red   = (((pixel >> 16) & 0xFF)*c + b)/a;
+                    int green = (((pixel >>  8) & 0xFF)*c + b)/a;
+                    int blue  = (((pixel      ) & 0xFF)*c + b)/a;
+                    arr.set(0, x, y, (byte)red);
+                    arr.set(1, x, y, (byte)green);
+                    arr.set(2, x, y, (byte)blue);
+                    arr.set(3, x, y, (byte)alpha);
+                }
+            }
+            return arr;
+        }
+        case BufferedImage.TYPE_INT_BGR: {
+            if (numBands != 3 || numDataElements != 1 || transferType != DataBuffer.TYPE_INT) {
+                throw new IllegalArgumentException("assertion failed for TYPE_INT_BGR");
+            }
+            Byte3D arr = Byte3D.wrap(new byte[3*width*height], 3, width, height);
+            int[] data = new int[1];
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    raster.getDataElements(x + minX, y + minY, data);
+                    int pixel = data[0];
+                    int red   = (pixel >>  8) & 0xFF;
+                    int green = (pixel >> 16) & 0xFF;
+                    int blue  = (pixel >> 24) & 0xFF;
+                    arr.set(0, x, y, (byte)red);
+                    arr.set(1, x, y, (byte)green);
+                    arr.set(2, x, y, (byte)blue);
+                }
+            }
+            return arr;
+        }
+        case BufferedImage.TYPE_USHORT_565_RGB: {
+            if (numBands != 3 || numDataElements != 1 || transferType != DataBuffer.TYPE_USHORT) {
+                throw new IllegalArgumentException("assertion failed for TYPE_USHORT_565_RGB");
+            }
+            Byte3D arr = Byte3D.wrap(new byte[3*width*height], 3, width, height);
+            short[] data = new short[1];
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    raster.getDataElements(x + minX, y + minY, data);
+                    int pixel = data[0];
+                    int red   = (pixel >> 11) & 0x1F;
+                    int green = (pixel >>  5) & 0x3F;
+                    int blue  = (pixel      ) & 0x1F;
+                    arr.set(0, x, y, (byte)red);
+                    arr.set(1, x, y, (byte)green);
+                    arr.set(2, x, y, (byte)blue);
+                }
+            }
+            return arr;
+        }
+        case BufferedImage.TYPE_USHORT_555_RGB: {
+            if (numBands != 3 || numDataElements != 1 || transferType != DataBuffer.TYPE_USHORT) {
+                throw new IllegalArgumentException("assertion failed for TYPE_USHORT_555_RGB");
+            }
+            Byte3D arr = Byte3D.wrap(new byte[3*width*height], 3, width, height);
+            short[] data = new short[1];
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    raster.getDataElements(x + minX, y + minY, data);
+                    int pixel = data[0];
+                    int red   = (pixel >> 10) & 0x1F;
+                    int green = (pixel >>  5) & 0x1F;
+                    int blue  = (pixel      ) & 0x1F;
+                    arr.set(0, x, y, (byte)red);
+                    arr.set(1, x, y, (byte)green);
+                    arr.set(2, x, y, (byte)blue);
+                }
+            }
+            return arr;
+        }
+        case BufferedImage.TYPE_3BYTE_BGR: {
+            if (numBands != 3 || numDataElements != 3 || transferType != DataBuffer.TYPE_BYTE) {
+                throw new IllegalArgumentException("assertion failed for TYPE_3BYTE_BGR");
+            }
+            Byte3D arr = Byte3D.wrap(new byte[3*width*height], 3, width, height);
+            byte[] data = new byte[3];
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    raster.getDataElements(x + minX, y + minY, data);
+                    arr.set(0, x, y, data[0]); /* red*/
+                    arr.set(1, x, y, data[1]); /* green */
+                    arr.set(2, x, y, data[2]); /* blue */
+                }
+            }
+            return arr;
+        }
+        case BufferedImage.TYPE_4BYTE_ABGR: {
+            if (numBands != 4 || numDataElements != 4 || transferType != DataBuffer.TYPE_BYTE) {
+                throw new IllegalArgumentException("assertion failed for TYPE_4BYTE_ABGR");
+            }
+            Byte3D arr = Byte3D.wrap(new byte[4*width*height], 4, width, height);
+            byte[] data = new byte[4];
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    raster.getDataElements(x + minX, y + minY, data);
+                    arr.set(0, x, y, data[0]); /* red*/
+                    arr.set(1, x, y, data[1]); /* green */
+                    arr.set(2, x, y, data[2]); /* blue */
+                    arr.set(3, x, y, data[3]); /* alpha */
+                }
+            }
+            return arr;
+        }
+        case BufferedImage.TYPE_4BYTE_ABGR_PRE: {
+            /* Assume colors have been premultiplied by alpha/255. */
+            final int b = 255;
+            final int a = 2*b;
+            if (numBands != 4 || numDataElements != 4 || transferType != DataBuffer.TYPE_BYTE) {
+                throw new IllegalArgumentException("assertion failed for TYPE_4BYTE_ABGR_PRE");
+            }
+            Byte3D arr = Byte3D.wrap(new byte[4*width*height], 4, width, height);
+            byte[] data = new byte[4];
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    raster.getDataElements(x + minX, y + minY, data);
+                    int alpha = data[3];
+                    int c = 2*alpha;
+                    int red   = (data[0]*c + b)/a;
+                    int green = (data[1]*c + b)/a;
+                    int blue  = (data[2]*c + b)/a;
+                    arr.set(0, x, y, (byte)red);
+                    arr.set(1, x, y, (byte)green);
+                    arr.set(2, x, y, (byte)blue);
+                    arr.set(3, x, y, (byte)alpha);
+                }
+            }
+            return arr;
+        }
+        case BufferedImage.TYPE_BYTE_GRAY: {
+            if (numBands != 1 || numDataElements != 1 || transferType != DataBuffer.TYPE_BYTE) {
+                throw new IllegalArgumentException("assertion failed for TYPE_BYTE_GRAY");
+            }
+            Byte2D arr = Byte2D.wrap(new byte[width*height], width, height);
+            byte[] data = new byte[1];
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    raster.getDataElements(x + minX, y + minY, data);
+                    arr.set(x, y, (byte)data[0]);
+                }
+            }
+            return arr;
+        }
+        case BufferedImage.TYPE_USHORT_GRAY: {
+            if (numBands != 1 || numDataElements != 1 || transferType != DataBuffer.TYPE_USHORT) {
+                throw new IllegalArgumentException("assertion failed for TYPE_USHORT_GRAY");
+            }
+            Int2D arr = Int2D.wrap(new int[width*height], width, height);
+            short[] data = new short[1];
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    raster.getDataElements(x + minX, y + minY, data);
+                    arr.set(x, y, data[0]);
+                }
+            }
+            return arr;
+        }
+        case BufferedImage.TYPE_BYTE_BINARY: {
+            if (numBands != 1 || numDataElements != 1 || transferType != DataBuffer.TYPE_BYTE) {
+                throw new IllegalArgumentException("assertion failed for TYPE_BYTE_BINARY");
+            }
+            Byte2D arr = Byte2D.wrap(new byte[width*height], width, height);
+            // FIXME:
+            byte[] data = new byte[1];
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    raster.getDataElements(x + minX, y + minY, data);
+                    arr.set(x, y, data[0]);
+                }
+            }
+            return arr;
+        }
+        //case BufferedImage.TYPE_BYTE_INDEXED:
+        //case BufferedImage.TYPE_CUSTOM:
+        }
+
+        /* For all other image types, we use a fallback method. */
+        if (transferType == DataBuffer.TYPE_FLOAT) {
+            if (numBands == 1) {
+                Float2D arr = Float2D.wrap(new float[width*height], width, height);
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        arr.set(x, y, raster.getSampleFloat(x + minX, y + minY, 0));
+                    }
+                }
+                return arr;
+            } else {
+                Float3D arr = Float3D.wrap(new float[numBands*width*height], numBands, width, height);
+                if (numBands == 3) {
+                    /* unroll the innermost loop for the most common case */
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            arr.set(0, x, y, raster.getSampleFloat(x + minX, y + minY, 0));
+                            arr.set(1, x, y, raster.getSampleFloat(x + minX, y + minY, 1));
+                            arr.set(2, x, y, raster.getSampleFloat(x + minX, y + minY, 2));
+                        }
+                    }
+                } else {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            for (int b = 0; b < numBands; ++b) {
+                                arr.set(b, x, y, raster.getSampleFloat(x + minX, y + minY, b));
+                            }
+                        }
+                    }
+                }
+                return arr;
+            }
+        } else if (transferType == DataBuffer.TYPE_DOUBLE) {
+            if (numBands == 1) {
+                Double2D arr = Double2D.wrap(new double[width*height], width, height);
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        arr.set(x, y, raster.getSampleDouble(x + minX, y + minY, 0));
+                    }
+                }
+                return arr;
+            } else {
+                Double3D arr = Double3D.wrap(new double[numBands*width*height], numBands, width, height);
+                if (numBands == 3) {
+                    /* unroll the innermost loop for the most common case */
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            arr.set(0, x, y, raster.getSampleDouble(x + minX, y + minY, 0));
+                            arr.set(1, x, y, raster.getSampleDouble(x + minX, y + minY, 1));
+                            arr.set(2, x, y, raster.getSampleDouble(x + minX, y + minY, 2));
+                        }
+                    }
+                } else {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            for (int b = 0; b < numBands; ++b) {
+                                arr.set(b, x, y, raster.getSampleDouble(x + minX, y + minY, b));
+                            }
+                        }
+                    }
+                }
+                return arr;
+            }
+        } else {
+            if (numBands == 1) {
+                Int2D arr = Int2D.wrap(new int[width*height], width, height);
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        arr.set(x, y, raster.getSample(x + minX, y + minY, 0));
+                    }
+                }
+                return arr;
+            } else {
+                Int3D arr = Int3D.wrap(new int[numBands*width*height], numBands, width, height);
+                if (numBands == 3) {
+                    /* unroll the innermost loop for the most common case */
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            arr.set(0, x, y, raster.getSample(x + minX, y + minY, 0));
+                            arr.set(1, x, y, raster.getSample(x + minX, y + minY, 1));
+                            arr.set(2, x, y, raster.getSample(x + minX, y + minY, 2));
+                        }
+                    }
+                } else {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            for (int b = 0; b < numBands; ++b) {
+                                arr.set(b, x, y, raster.getSample(x + minX, y + minY, b));
+                            }
+                        }
+                    }
+                }
+                return arr;
+            }
+        }
     }
 
 
@@ -740,6 +2582,40 @@ public enum DataFormat {
             System.out.format("  - %s\n", str[i]);
         }
 
+        if (args == null || args.length == 0) {
+            args = new String[]{"/tmp/test-image.jpg"};
+        }
+        BufferedImage image;
+        int[] imageTypes = new int[]{
+                BufferedImage.TYPE_INT_RGB,
+                BufferedImage.TYPE_INT_BGR,
+                BufferedImage.TYPE_3BYTE_BGR,
+                BufferedImage.TYPE_USHORT_565_RGB,
+                BufferedImage.TYPE_USHORT_555_RGB,
+                BufferedImage.TYPE_INT_ARGB,
+                BufferedImage.TYPE_INT_ARGB_PRE,
+                BufferedImage.TYPE_4BYTE_ABGR,
+                BufferedImage.TYPE_4BYTE_ABGR_PRE,
+                BufferedImage.TYPE_BYTE_GRAY,
+                BufferedImage.TYPE_USHORT_GRAY,
+                BufferedImage.TYPE_BYTE_BINARY,
+                BufferedImage.TYPE_BYTE_INDEXED
+        };
+        for (int k = 0; k < args.length; ++k) {
+            String name = args[k];
+            try {
+                image = ImageIO.read(new File(name));
+                printImageInfo(System.out, image, name);
+                System.out.format("\n");
+                for (int j = 0; j < imageTypes.length; ++j) {
+                    BufferedImage converted = convertImage(image, imageTypes[j]);
+                    printImageInfo(System.out, converted, name);
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 }
 
