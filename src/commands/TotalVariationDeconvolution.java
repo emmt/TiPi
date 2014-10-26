@@ -32,6 +32,7 @@ import java.util.Locale;
 
 import mitiv.array.ArrayFactory;
 import mitiv.array.DoubleArray;
+import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.cost.CompositeDifferentiableCostFunction;
@@ -46,7 +47,6 @@ import mitiv.invpb.ReconstructionViewer;
 import mitiv.invpb.SimpleViewer;
 import mitiv.io.ColorModel;
 import mitiv.io.DataFormat;
-import mitiv.io.FormatOptions;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.LinearOperator;
 import mitiv.linalg.Vector;
@@ -236,6 +236,16 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         this.weights = W;
     }
 
+    public static DoubleArray loadData(String name) {
+        ShapedArray arr = DataFormat.load(name);
+        ColorModel colorModel = ColorModel.guessColorModel(arr);
+        if (colorModel == ColorModel.NONE) {
+            return arr.toDouble();
+        } else {
+            return ColorModel.filterImageAsDouble(arr, ColorModel.GRAY);
+        }
+    }
+
     //private static double parseDouble(String option, String arg) {
     //    try {
     //        return Double.parseDouble(arg);
@@ -297,10 +307,8 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         }
 
         // Read the blurred image and the PSF.
-        FormatOptions opts = new FormatOptions();
-        opts.setColorModel(ColorModel.GRAY);
-        job.data = DataFormat.load(inputName, opts).toDouble();
-        job.psf = DataFormat.load(psfName, opts).toDouble();
+        job.data = loadData(inputName);
+        job.psf = loadData(psfName);
 
         job.deconvolve();
         try {
