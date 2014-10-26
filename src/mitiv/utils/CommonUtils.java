@@ -36,8 +36,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
+import mitiv.io.DataFormat;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
@@ -53,8 +53,8 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
  */
 public class CommonUtils {
 
-    /** 
-     * padding options: Nothing is done 
+    /**
+     * padding options: Nothing is done
      * _______
      * |      |
      * |      |
@@ -63,8 +63,8 @@ public class CommonUtils {
      * */
     public static final int LOWER_LEFT = 0;
 
-    /** 
-     * padding options: Nothing is done 
+    /**
+     * padding options: Nothing is done
      * _______
      * |      |
      * |  #   |
@@ -73,8 +73,8 @@ public class CommonUtils {
      * */
     public static final int CENTERED = 1;
 
-    /** 
-     * padding options: Nothing is done 
+    /**
+     * padding options: Nothing is done
      * _______
      * |#    #|
      * |      |
@@ -136,13 +136,13 @@ public class CommonUtils {
      */
     public static int colorToGrey(double r, double g, double b)
     {
-        return (int) ArrayUtils.colorToGrey(r, g, b);
+        return (int) DataFormat.colorToGrey(r, g, b);
     }
 
     public static int colorToGrey(int[]rgb)
     {
         if (rgb.length == 3) {
-            return ArrayUtils.colorToGrey(rgb[0], rgb[1], rgb[2]);
+            return DataFormat.colorToGrey(rgb[0], rgb[1], rgb[2]);
         } else {
             return rgb[0];
         }
@@ -396,7 +396,7 @@ public class CommonUtils {
         }
         return out;
     }
-    
+
     @Deprecated
     public static double[] image3DToArray1D(ArrayList<BufferedImage>listImage, int width,int height, int sizeZ, boolean isComplex) {
         double[] out;
@@ -439,7 +439,7 @@ public class CommonUtils {
         //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
         return out;
     }
-    
+
     /**
      * Convert an image to a vector.
      *
@@ -913,7 +913,7 @@ public class CommonUtils {
      * @param array the array
      * @param width the width
      * @param height the height
-     * @param depth 
+     * @param depth
      * @param isComplex the is complex
      * @return the buffered image
      */
@@ -1129,7 +1129,7 @@ public class CommonUtils {
      * HeightOutput = HeightInput +sizePSF.
      *
      * @param image the image
-     * @param coef 
+     * @param coef
      * @return the buffered image
      */
     public static BufferedImage imagePad(BufferedImage image, double coef) {
@@ -1190,10 +1190,10 @@ public class CommonUtils {
             }
         }
         return output;
-        
-        
+
+
     }
-    
+
     public static double[] imagePad(double[] input, int width, int height, int sizeZ, double coef) {
         return imagePad(input, width, height, sizeZ, coef, coef);
     }
@@ -1388,14 +1388,14 @@ public class CommonUtils {
      * Shift zero-frequency component to center of spectrum for a 3D array.
      *
      * @param psf the a
-     * @param out 
+     * @param out
      * @param w the width
      * @param h the height
      * @param d the depth
      * @return the double[]
      */
     public static double[] fftShift3D(double[] psf, double[] out, int w, int h, int d)
-    {   
+    {
         int wh = w*h;
         for (int k = 0; k < d/2; k++)
         {
@@ -1427,7 +1427,7 @@ public class CommonUtils {
     /**
      * Here we are padding a cube, no scale only padding
      * 
-     * Cube : 
+     * Cube :
      *     H
      *    /
      *   /
@@ -1435,15 +1435,15 @@ public class CommonUtils {
      *  |
      *  |
      *  Z
-     *  
+     * 
      * Front:
      *  1 2
      *  3 4
-     *  
+     * 
      *  back:
      *  5 6
      *  7 8
-     *  
+     * 
      *  1<=>8
      *  3<=>6
      *  2<=>7
