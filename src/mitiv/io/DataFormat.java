@@ -303,13 +303,23 @@ public enum DataFormat {
         throw new IllegalArgumentException(reason);
     }
 
-    /**
-     * Load formatted data from afile.
-     * @param name - The name of the destination file.
-     * @param opts - Options for dealing with color images.
+   /**
+     * Load formatted data from a file.
+     * <p>
+     * This method attempts to give the most apprpriate representation of the
+     * data stored in the file as a shaped array.  For instance, it relies on
+     * {@link #imageToShapedArray} to convert an image in a shaped array.  See
+     * {@link ColorModel} for the assumed conventions about the representation
+     * of an image as a shaped array.  You may use
+     * {@link ColorModel#guessColorModel} to determine the color model of an
+     * image loaded by this method and {@link ColorModel#filterImageAsFloat} or
+     * {@link ColorModel#filterImageAsDouble} to convert such an image
+     * according to your needs.
+     * </p>
+     * @param name - The name of the source file.
      * @return A shaped array.
      */
-    public static ShapedArray load(String name, FormatOptions opts) {
+    public static ShapedArray load(String name) {
         ShapedArray arr = null;
         DataFormat format = guessFormat(name);
         try {
@@ -783,14 +793,20 @@ public enum DataFormat {
 
 
     /**
-     * Filter the channels of an image stored as a shpaed array.
+     * Filter the channels of an image stored as a shaped array to produce
+     * a floating point image suitable for inverse problem data processing.
+     * <p>
+     * This method must be called after converting a buffered image with
+     * {@link #imageToShapedArray}.  The method is lazy: the input array is
+     * returned if possible.
+     * </p>
      * @param image      - The array to filter.
      * @param colorModel - The color model for the result.
      * @return A FloatArray object with shape {width,height} for a
      * grayscale image, with shape {depth,width,height} for a RGB or RGBA
      * image (depth = 3 or 4 respectively).
      */
-    public static FloatArray imageFilterFloat(ShapedArray arr, ColorModel colorModel) {
+    public static FloatArray filterImageAsFloat(ShapedArray arr, ColorModel colorModel) {
         int type = arr.getType();
         Shape shape = arr.getShape();
         int rank = shape.rank();
@@ -1419,14 +1435,20 @@ public enum DataFormat {
         }
     }
     /**
-     * Filter the channels of an image stored as a shpaed array.
+     * Filter the channels of an image stored as a shaped array to produce
+     * a floating point image suitable for inverse problem data processing.
+     * <p>
+     * This method must be called after converting a buffered image with
+     * {@link #imageToShapedArray}.  The method is lazy: the input array is
+     * returned if possible.
+     * </p>
      * @param image      - The array to filter.
      * @param colorModel - The color model for the result.
      * @return A DoubleArray object with shape {width,height} for a
      * grayscale image, with shape {depth,width,height} for a RGB or RGBA
      * image (depth = 3 or 4 respectively).
      */
-    public static DoubleArray imageFilterDouble(ShapedArray arr, ColorModel colorModel) {
+    public static DoubleArray filterImageAsDouble(ShapedArray arr, ColorModel colorModel) {
         int type = arr.getType();
         Shape shape = arr.getShape();
         int rank = shape.rank();
