@@ -75,6 +75,7 @@ TYPED_OUTPUTS = $(ARRAY)@TYPE@Array.java $(ARRAY)@TYPE@Scalar.java \
 MISC_OUTPUTS = $(ARRAY)ArrayFactory.java \
                $(ARRAY)ArrayUtils.java \
                $(BASE)Shape.java \
+               $(TOP)/io/ColorModel.java \
                $(TOP)/io/DataFormat.java
 
 BYTE_OUTPUTS = $(subst @TYPE@,Byte,$(TYPED_OUTPUTS))
@@ -136,6 +137,9 @@ $(BASE)Shape.java: Shape.javax
 
 $(ARRAY)ArrayUtils.java: ArrayUtils.javax common.javax
 	$(CODGER) -Dpackage=mitiv.array $< $@
+
+$(TOP)/io/ColorModel.java: ColorModel.javax common.javax
+	$(CODGER) -Dpackage=mitiv.io $< $@
 
 $(TOP)/io/DataFormat.java: DataFormat.javax common.javax
 	$(CODGER) -Dpackage=mitiv.io $< $@

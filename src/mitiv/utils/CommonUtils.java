@@ -37,7 +37,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import mitiv.base.Shape;
-import mitiv.io.DataFormat;
+import mitiv.io.ColorModel;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
@@ -136,13 +136,13 @@ public class CommonUtils {
      */
     public static int colorToGrey(double r, double g, double b)
     {
-        return (int) DataFormat.colorToGrey(r, g, b);
+        return (int) ColorModel.colorToGrey(r, g, b);
     }
 
     public static int colorToGrey(int[]rgb)
     {
         if (rgb.length == 3) {
-            return DataFormat.colorToGrey(rgb[0], rgb[1], rgb[2]);
+            return ColorModel.colorToGrey(rgb[0], rgb[1], rgb[2]);
         } else {
             return rgb[0];
         }
