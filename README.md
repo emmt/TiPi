@@ -6,13 +6,9 @@ TiPi is a Java Toolkit for Inverse Problems and Imaging developed by the MiTiV p
 Library needed
 ==============
 
-bio-formats.jar	Icy dependency, In Icy/lib
+Args4J 2.0.21 
 
-EzPlug.jar	Icy dependency, In Icy/plugins/adufour
-
-icy.jar		Icy dependency, In Icy
-
-jtranform.jar	Globaly needed, maybe in Icy/Lib
+JTranforms and JLargeArrays	Can be found  [here](https://sites.google.com/site/piotrwendykier/software/jtransforms)
 
 Eclipse
 =======
