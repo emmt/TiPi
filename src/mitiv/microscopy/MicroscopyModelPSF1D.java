@@ -25,8 +25,15 @@
 
 package mitiv.microscopy;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
+import mitiv.array.ShapedArray;
+import mitiv.exception.DataFormatException;
+import mitiv.exception.RecoverableFormatException;
+import mitiv.io.MdaFormat;
 import mitiv.utils.*;
 
 /**
@@ -116,7 +123,7 @@ public class MicroscopyModelPSF1D
      */
     public MicroscopyModelPSF1D()
     {
-        this(1.4, 542e-9, 1.518, 0, 0, 64.5e-9, 160e-9, 256, 256, 64, 10, 0);
+        this(1.4, 542e-9, 1.518, 0, 0, 64.5e-9, 160e-9, 256, 256, 64, 0);
     }
 
     /** Initialize the WFFM PSF model containing parameters
@@ -133,7 +140,7 @@ public class MicroscopyModelPSF1D
      *  @param use_depth_scaling use_depth_scaling = 1, PSF are centered on the plan with maximum strehl
      */
     public MicroscopyModelPSF1D(double NA, double lambda, double ni,double ns,
-            double zdepth, double dxy, double dz, int Nx, int Ny, int Nz, int Nzern, int use_depth_scaling)
+            double zdepth, double dxy, double dz, int Nx, int Ny, int Nz, int use_depth_scaling)
     {
         this.NA = NA;
         this.lambda = lambda;
@@ -145,7 +152,7 @@ public class MicroscopyModelPSF1D
         this.Nx = Nx;
         this.Ny = Ny;
         this.Nz = Nz;
-        this.Nzern = Nzern;
+        this.Nzern = 120;
         this.radius = NA/lambda;
         this.lambda_ni = ni/lambda;
         this.lambda_ns = ns/lambda;
@@ -194,6 +201,29 @@ public class MicroscopyModelPSF1D
         return Z = MathUtils.gram_schmidt_orthonormalization(Z, Nx, Ny, Nzern);
     }
 
+    private double[] computeZernike2(int Nzern, int Nx, int Ny, double radius)
+    {
+            ShapedArray Zer;
+            try {
+                //Zer = MdaFormat.load("/home/ludo/Images/Zernikes128_mda");
+                Zer = MdaFormat.load("/home/ludo/Images/TestShrinkBars/ZernikeY_mda");
+                Z = Zer.toDouble().flatten();
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (DataFormatException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (RecoverableFormatException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        return Z;
+    }
+    
     /**
      * Compute the modulus ρ on a Zernike polynomial basis
      * <p>
@@ -855,6 +885,19 @@ public class MicroscopyModelPSF1D
         return psi;
     }
 
+    public double[] getBeta() {
+        return modulus_coefs;
+    }
+    
+    public double[] getAlpha() {
+        return phase_coefs;
+    }
+    
+    public double[] getDefocus() {
+        double[] defocus = {lambda_ni, deltaX, deltaY};
+        return defocus;
+    }
+    
     public double[] getGamma() {
         return psi;
     }
