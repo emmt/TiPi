@@ -33,7 +33,6 @@ import mitiv.array.ShapedArray;
 import mitiv.exception.DataFormatException;
 import mitiv.exception.RecoverableFormatException;
 import mitiv.io.MdaFormat;
-
 import mitiv.utils.CommonUtils;
 import mitiv.utils.MathUtils;
 
@@ -199,36 +198,14 @@ public class MicroscopyModelPSF1D
         return maskPupil;
     }
 
+    
     private double[] computeZernike(int Nzern, int Nx, int Ny, double radius)
     {
         Zernike1D zernike = new Zernike1D(Nx, Ny);
         Z = zernike.zernikePupilMultipleOpt(Nzern, Nx, Ny, radius, NORMALIZED);
         return Z = MathUtils.gram_schmidt_orthonormalization(Z, Nx, Ny, Nzern);
     }
-
-    private double[] computeZernike2(int Nzern, int Nx, int Ny, double radius)
-    {
-            ShapedArray Zer;
-            try {
-                //Zer = MdaFormat.load("/home/ludo/Images/Zernikes128_mda");
-                Zer = MdaFormat.load("/home/ludo/Images/TestShrinkBars/ZernikeY_mda");
-                Z = Zer.toDouble().flatten();
-            } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (DataFormatException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (RecoverableFormatException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        return Z;
-    }
-    
+ 
     /**
      * Compute the modulus ρ on a Zernike polynomial basis
      * <p>
