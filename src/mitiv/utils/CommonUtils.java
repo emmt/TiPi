@@ -25,8 +25,6 @@
 
 package mitiv.utils;
 
-import icy.image.IcyBufferedImage;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -38,8 +36,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import mitiv.array.ArrayUtils;
 import mitiv.base.Shape;
+import mitiv.io.ColorModel;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
@@ -55,8 +53,8 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
  */
 public class CommonUtils {
 
-    /** 
-     * padding options: Nothing is done 
+    /**
+     * padding options: Nothing is done
      * _______
      * |      |
      * |      |
@@ -65,8 +63,8 @@ public class CommonUtils {
      * */
     public static final int LOWER_LEFT = 0;
 
-    /** 
-     * padding options: Nothing is done 
+    /**
+     * padding options: Nothing is done
      * _______
      * |      |
      * |  #   |
@@ -75,8 +73,8 @@ public class CommonUtils {
      * */
     public static final int CENTERED = 1;
 
-    /** 
-     * padding options: Nothing is done 
+    /**
+     * padding options: Nothing is done
      * _______
      * |#    #|
      * |      |
@@ -138,13 +136,13 @@ public class CommonUtils {
      */
     public static int colorToGrey(double r, double g, double b)
     {
-        return (int) ArrayUtils.colorToGrey(r, g, b);
+        return (int) ColorModel.colorToGrey(r, g, b);
     }
 
     public static int colorToGrey(int[]rgb)
     {
         if (rgb.length == 3) {
-            return ArrayUtils.colorToGrey(rgb[0], rgb[1], rgb[2]);
+            return ColorModel.colorToGrey(rgb[0], rgb[1], rgb[2]);
         } else {
             return rgb[0];
         }
@@ -398,36 +396,9 @@ public class CommonUtils {
         }
         return out;
     }
-    
-    @Deprecated
-    public static double[] image3DToArray1D(ArrayList<BufferedImage>listImage, int width,int height, int sizeZ, boolean isComplex) {
-        double[] out;
-        if (isComplex) {
-            out = new double[2*sizeZ*width*height];
-            int strideW = width;
-            int strideH = width*height;
-            for (int k = 0; k < sizeZ; k++) {
-                double[] tmp = CommonUtils.imageToArray1D(listImage.get(k), false);
-                for (int j = 0; j < height; j++) {
-                    for (int i = 0; i < width; i++) {
-                        out[2*i+2*j*strideW+2*k*strideH] = tmp[i+j*strideW];
-                    }
-                }
-            }
-        } else {
-            out = new double[sizeZ*width*height];
-            for (int j = 0; j < sizeZ; j++) {
-                double[] tmp = CommonUtils.imageToArray1D(listImage.get(j), false);
-                for (int i = 0; i < tmp.length; i++) {
-                    out[i+j*tmp.length] = tmp[i];
-                }
-            }
-        }
-        return out;
-    }
 
     @Deprecated
-    public static double[] icyImage3DToArray1D(ArrayList<IcyBufferedImage>listImage, int width,int height,int sizeZ, boolean isComplex) {
+    public static double[] image3DToArray1D(ArrayList<BufferedImage>listImage, int width,int height, int sizeZ, boolean isComplex) {
         double[] out;
         if (isComplex) {
             out = new double[2*sizeZ*width*height];
@@ -469,22 +440,6 @@ public class CommonUtils {
         return out;
     }
 
-    public static double[] shiftIcyPsf3DToArray1D(ArrayList<IcyBufferedImage>listPSF,int width, int height, int sizeZ,  boolean isComplex) {
-        double[] out;
-        if (isComplex) {
-            out = new double[width*height*sizeZ*2];
-        } else {
-            out = new double[width*height*sizeZ];
-        }
-        double[] psfIn = CommonUtils.icyImage3DToArray1D(listPSF, width, height, sizeZ, isComplex);
-        if (psfIn.length != out.length) {
-            System.err.println("Bad size for psf and output deconvutil l356");
-        }
-        CommonUtils.fftShift3D(psfIn,out, width, height, sizeZ);
-        //CommonUtils.psf3DPadding1D(out, psfIn , width, height, sizeZ);
-        return out;
-    }
-    
     /**
      * Convert an image to a vector.
      *
@@ -958,7 +913,7 @@ public class CommonUtils {
      * @param array the array
      * @param width the width
      * @param height the height
-     * @param depth 
+     * @param depth
      * @param isComplex the is complex
      * @return the buffered image
      */
@@ -999,7 +954,6 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the buffered image
      */
-    @Deprecated
     public static BufferedImage arrayToImage1D(double[] array, int width, int height, boolean isComplex){
         BufferedImage imageout = createNewBufferedImage(width, height);
         WritableRaster raster = imageout.getRaster();
@@ -1028,7 +982,6 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the buffered image
      */
-    @Deprecated
     public static BufferedImage arrayToImage1D(float[] array, int width, int height, boolean isComplex){
         //BufferedImage imageout = createNewBufferedImage(width, height);
         BufferedImage imageout = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
@@ -1176,7 +1129,7 @@ public class CommonUtils {
      * HeightOutput = HeightInput +sizePSF.
      *
      * @param image the image
-     * @param coef 
+     * @param coef
      * @return the buffered image
      */
     public static BufferedImage imagePad(BufferedImage image, double coef) {
@@ -1237,10 +1190,10 @@ public class CommonUtils {
             }
         }
         return output;
-        
-        
+
+
     }
-    
+
     public static double[] imagePad(double[] input, int width, int height, int sizeZ, double coef) {
         return imagePad(input, width, height, sizeZ, coef, coef);
     }
@@ -1390,7 +1343,7 @@ public class CommonUtils {
      * @param isComplex the is complex
      * @return the double[]
      */
-    public static double[] psfPadding1D(double[] imageout,int imageWidth, int imageHeight, double[] imagePsf, int psfWidth, int psfHeight, boolean isComplex) {
+    public static double[] psfPadding1D(double[] imageout, int imageWidth, int imageHeight, double[] imagePsf, int psfWidth, int psfHeight, boolean isComplex) {
         int demiPsfW = psfWidth/2;int demiPsfH = psfHeight/2;
         //System.out.println(imageWidth+" "+imageHeight+" "+psfWidth+" "+psfHeight+" "+isComplex);
         // IMAGE point of view:
@@ -1435,14 +1388,14 @@ public class CommonUtils {
      * Shift zero-frequency component to center of spectrum for a 3D array.
      *
      * @param psf the a
-     * @param out 
+     * @param out
      * @param w the width
      * @param h the height
      * @param d the depth
      * @return the double[]
      */
     public static double[] fftShift3D(double[] psf, double[] out, int w, int h, int d)
-    {   
+    {
         int wh = w*h;
         for (int k = 0; k < d/2; k++)
         {
@@ -1474,7 +1427,7 @@ public class CommonUtils {
     /**
      * Here we are padding a cube, no scale only padding
      * 
-     * Cube : 
+     * Cube :
      *     H
      *    /
      *   /
@@ -1482,15 +1435,15 @@ public class CommonUtils {
      *  |
      *  |
      *  Z
-     *  
+     * 
      * Front:
      *  1 2
      *  3 4
-     *  
+     * 
      *  back:
      *  5 6
      *  7 8
-     *  
+     * 
      *  1<=>8
      *  3<=>6
      *  2<=>7

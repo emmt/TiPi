@@ -34,6 +34,7 @@ import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.base.indexing.Range;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -153,6 +154,68 @@ public abstract class Short1D extends Array1D implements ShortArray {
         return flatten(false);
     }
 
+    @Override
+    public short min() {
+        short minValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            short value = get(i1);
+            if (value < minValue) {
+                minValue = value;
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public short max() {
+        short maxValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            short value = get(i1);
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public short[] getMinAndMax() {
+        short[] result = new short[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(short[] mm) {
+        short minValue = get(0);
+        short maxValue = minValue;
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            short value = get(i1);
+            if (value < minValue) {
+                minValue = value;
+            }
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public int sum() {
+        int totalValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            totalValue += get(i1);;
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte1D.
      * <p>
@@ -264,10 +327,10 @@ public abstract class Short1D extends Array1D implements ShortArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Short1D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Short1D src;
         if (arr.getType() == Traits.SHORT) {
             src = (Short1D)arr;
         } else {
@@ -431,6 +494,62 @@ public abstract class Short1D extends Array1D implements ShortArray {
             int offset, int stride1, int dim1) {
         return new StriddenShort1D(data, offset, stride1, dim1);
     }
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.  The same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     * @return A ShortScalar view on the given slice of the array.
+     */
+    public abstract ShortScalar slice(int idx);
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.
+     * @param dim - The dimension to slice.  For these two arguments,
+     *              the same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     *
+     * @return A ShortScalar view on the given slice of the array.
+     */
+    public abstract ShortScalar slice(int idx, int dim);
+
+    /**
+     * Get a view of the array for given range of indices.
+     *
+     * @param rng1 - The range of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Short1D view for the given range of the array.
+     */
+    public abstract Short1D view(Range rng1);
+
+    /**
+     * Get a view of the array for given range of indices.
+     *
+     * @param idx1 - The list of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Short1D view for the given index selection of the
+     *         array.
+     */
+    public abstract Short1D view(int[] idx1);
+
+    /**
+     * Get a view of the array as a 1D array.
+     *
+     * @return A 1D view of the array.
+     */
+    @Override
+    public abstract Short1D as1D();
 
 }
 

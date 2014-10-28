@@ -34,6 +34,7 @@ import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.base.indexing.Range;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -153,6 +154,68 @@ public abstract class Long1D extends Array1D implements LongArray {
         return flatten(false);
     }
 
+    @Override
+    public long min() {
+        long minValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            long value = get(i1);
+            if (value < minValue) {
+                minValue = value;
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public long max() {
+        long maxValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            long value = get(i1);
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public long[] getMinAndMax() {
+        long[] result = new long[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(long[] mm) {
+        long minValue = get(0);
+        long maxValue = minValue;
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            long value = get(i1);
+            if (value < minValue) {
+                minValue = value;
+            }
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public long sum() {
+        long totalValue = get(0);
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            totalValue += get(i1);;
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte1D.
      * <p>
@@ -264,10 +327,10 @@ public abstract class Long1D extends Array1D implements LongArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Long1D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Long1D src;
         if (arr.getType() == Traits.LONG) {
             src = (Long1D)arr;
         } else {
@@ -431,6 +494,62 @@ public abstract class Long1D extends Array1D implements LongArray {
             int offset, int stride1, int dim1) {
         return new StriddenLong1D(data, offset, stride1, dim1);
     }
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.  The same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     * @return A LongScalar view on the given slice of the array.
+     */
+    public abstract LongScalar slice(int idx);
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.
+     * @param dim - The dimension to slice.  For these two arguments,
+     *              the same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     *
+     * @return A LongScalar view on the given slice of the array.
+     */
+    public abstract LongScalar slice(int idx, int dim);
+
+    /**
+     * Get a view of the array for given range of indices.
+     *
+     * @param rng1 - The range of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Long1D view for the given range of the array.
+     */
+    public abstract Long1D view(Range rng1);
+
+    /**
+     * Get a view of the array for given range of indices.
+     *
+     * @param idx1 - The list of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Long1D view for the given index selection of the
+     *         array.
+     */
+    public abstract Long1D view(int[] idx1);
+
+    /**
+     * Get a view of the array as a 1D array.
+     *
+     * @return A 1D view of the array.
+     */
+    @Override
+    public abstract Long1D as1D();
 
 }
 

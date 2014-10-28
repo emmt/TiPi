@@ -35,7 +35,6 @@ import mitiv.random.IntGenerator;
 import mitiv.base.Shape;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
-import mitiv.exception.IllegalRangeException;
 
 
 /**
@@ -317,9 +316,6 @@ public class FlatInt6D extends Int6D {
         CompiledRange cr6 = new CompiledRange(rng6, dim6, 0, dim1dim2dim3dim4dim5);
         if (cr1.doesNothing() && cr2.doesNothing() && cr3.doesNothing() && cr4.doesNothing() && cr5.doesNothing() && cr6.doesNothing()) {
             return this;
-        }
-        if (cr1.getNumber() == 0 || cr2.getNumber() == 0 || cr3.getNumber() == 0 || cr4.getNumber() == 0 || cr5.getNumber() == 0 || cr6.getNumber() == 0) {
-            throw new IllegalRangeException("Empty range.");
         }
         return new StriddenInt6D(this.data,
                 cr1.getOffset() + cr2.getOffset() + cr3.getOffset() + cr4.getOffset() + cr5.getOffset() + cr6.getOffset(),

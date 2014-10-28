@@ -23,17 +23,36 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.array;
+package mitiv.io;
+
+import mitiv.array.ByteArray;
+import mitiv.array.DoubleArray;
+import mitiv.array.FloatArray;
+import mitiv.array.IntArray;
+import mitiv.array.LongArray;
+import mitiv.array.ShapedArray;
+import mitiv.array.ShortArray;
+import mitiv.base.Traits;
+import mitiv.exception.IllegalTypeException;
 
 
-public class ScalingOptions {
+/**
+ * This class is used to collect options for reading/writing data in different format.
+ * 
+ * @author emmt
+ */
+public class FormatOptions {
     private double minValue = 0.0;
     private boolean minValueGiven = false;
 
     private double maxValue = 0.0;
     private boolean maxValueGiven = false;
 
-    public ScalingOptions() {
+    private ColorModel colorModel = null;
+
+    private DataFormat dataFormat = null;
+
+    public FormatOptions() {
     }
 
     public double getMinValue() {
@@ -45,6 +64,11 @@ public class ScalingOptions {
         minValueGiven = true;
     }
 
+    public void unsetMinValue() {
+        minValue = Double.NaN;
+        minValueGiven = false;
+    }
+
     public double getMaxValue() {
         return (maxValueGiven ? maxValue : Double.NaN);
     }
@@ -54,13 +78,60 @@ public class ScalingOptions {
         maxValueGiven = true;
     }
 
-    public double[] getScaling(double arr[], double fileMin, double fileMax) {
-        return getScaling(arr, 0, arr.length, fileMin, fileMax);
+    public void unsetMaxValue() {
+        maxValue = Double.NaN;
+        maxValueGiven = false;
     }
 
-    public double[] getScaling(double arr[], int offset, int number,
-            double fileMin, double fileMax) {
-        if (arr == null || offset < 0 || number <= 0 || offset + number > arr.length) {
+    /**
+     * Get the chosen color model.
+     * @return The color model or {@code null} if not set.
+     */
+    public ColorModel getColorModel() {
+        return colorModel;
+    }
+
+    /**
+     * Set the color model.
+     * @param value - The color model.
+     */
+    public void setColorModel(ColorModel value) {
+        colorModel = value;
+    }
+
+    /**
+     * Unset the color model.
+     */
+    public void unsetColorModel() {
+        colorModel = null;
+    }
+
+
+    /**
+     * Get the chosen data format.
+     * @return The data format or {@code null} if not set.
+     */
+    public DataFormat getDataFormat() {
+        return dataFormat;
+    }
+
+    /**
+     * Set the data format.
+     * @param value - The data format.
+     */
+    public void setDataFormat(DataFormat value) {
+        dataFormat = value;
+    }
+
+    /**
+     * Unset the data format.
+     */
+    public void unsetDataFormat() {
+        dataFormat = null;
+    }
+
+    public double[] getScaling(ShapedArray arr, double fileMin, double fileMax) {
+        if (arr == null) {
             /* Invalid arguments or no elements to consider, silently return neutral
                scaling parameters. */
             return new double[]{1.0, 0.0};
@@ -71,24 +142,92 @@ public class ScalingOptions {
             dataMax = maxValue;
         } else if (minValueGiven) {
             dataMin = minValue;
-            dataMax = arr[offset];
-            for (int i = 1; i < number; ++i){
-                double value = arr[offset + i];
-                if (value > dataMax) dataMax = value;
+            switch (arr.getType()) {
+            case Traits.BYTE:
+                dataMax = ((ByteArray)arr).max();
+                break;
+            case Traits.SHORT:
+                dataMax = ((ShortArray)arr).max();
+                break;
+            case Traits.INT:
+                dataMax = ((IntArray)arr).max();
+                break;
+            case Traits.LONG:
+                dataMax = ((LongArray)arr).max();
+                break;
+            case Traits.FLOAT:
+                dataMax = ((FloatArray)arr).max();
+                break;
+            case Traits.DOUBLE:
+                dataMax = ((DoubleArray)arr).max();
+                break;
+            default:
+                throw new IllegalTypeException();
             }
         } else if (maxValueGiven) {
-            dataMin = arr[offset];
             dataMax = maxValue;
-            for (int i = 1; i < number; ++i){
-                double value = arr[offset + i];
-                if (value < dataMin) dataMin = value;
+            switch (arr.getType()) {
+            case Traits.BYTE:
+                dataMin = ((ByteArray)arr).min();
+                break;
+            case Traits.SHORT:
+                dataMin = ((ShortArray)arr).min();
+                break;
+            case Traits.INT:
+                dataMin = ((IntArray)arr).min();
+                break;
+            case Traits.LONG:
+                dataMin = ((LongArray)arr).min();
+                break;
+            case Traits.FLOAT:
+                dataMin = ((FloatArray)arr).min();
+                break;
+            case Traits.DOUBLE:
+                dataMin = ((DoubleArray)arr).min();
+                break;
+            default:
+                throw new IllegalTypeException();
             }
         } else {
-            dataMin = dataMax = arr[offset];
-            for (int i = 1; i < number; ++i){
-                double value = arr[offset + i];
-                if (value > dataMax) dataMax = value;
-                if (value < dataMin) dataMin = value;
+            short[] shortResult;
+            int[] intResult;
+            long[] longResult;
+            float[] floatResult;
+            double[] doubleResult;
+            switch (arr.getType()) {
+            case Traits.BYTE:
+                /* Bytes are interpreted as unsigned. */
+                intResult = ((ByteArray)arr).getMinAndMax();
+                dataMin = intResult[0];
+                dataMax = intResult[1];
+                break;
+            case Traits.SHORT:
+                shortResult = ((ShortArray)arr).getMinAndMax();
+                dataMin = shortResult[0];
+                dataMax = shortResult[1];
+                break;
+            case Traits.INT:
+                intResult = ((IntArray)arr).getMinAndMax();
+                dataMin = intResult[0];
+                dataMax = intResult[1];
+                break;
+            case Traits.LONG:
+                longResult = ((LongArray)arr).getMinAndMax();
+                dataMin = longResult[0];
+                dataMax = longResult[1];
+                break;
+            case Traits.FLOAT:
+                floatResult = ((FloatArray)arr).getMinAndMax();
+                dataMin = floatResult[0];
+                dataMax = floatResult[1];
+                break;
+            case Traits.DOUBLE:
+                doubleResult = ((DoubleArray)arr).getMinAndMax();
+                dataMin = doubleResult[0];
+                dataMax = doubleResult[1];
+                break;
+            default:
+                throw new IllegalTypeException();
             }
         }
         return computeScalingFactors(dataMin, dataMax, fileMin, fileMax);

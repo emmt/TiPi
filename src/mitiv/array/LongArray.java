@@ -125,6 +125,35 @@ public interface LongArray extends ShapedArray {
     @Override
     public abstract LongArray copy();
 
+    /**
+     * Get the minimal value of all the elements.
+     */
+    public abstract long min();
+
+    /**
+     * Get the maximal value of all the elements.
+     */
+    public abstract long max();
+
+    /**
+     * Get the minimal and maximal values of all the elements.
+     */
+    public abstract long[] getMinAndMax();
+
+    /**
+     * Get the minimal and maximal values of all the elements.
+     */
+    public abstract void getMinAndMax(long[] mm);
+
+    /**
+     * Get the sum of values of all elements.
+     */
+    public abstract long sum();
+
+    /**
+     * Get the average value of all elements.
+     */
+    public abstract double average();
 }
 
 /*

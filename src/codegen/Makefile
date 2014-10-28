@@ -30,7 +30,9 @@ TYPED_OUTPUTS = $(ARRAY)@TYPE@Array.java $(ARRAY)@TYPE@Scalar.java \
 
 MISC_OUTPUTS = $(ARRAY)ArrayFactory.java \
                $(ARRAY)ArrayUtils.java \
-               $(BASE)Shape.java
+               $(BASE)Shape.java \
+               $(TOP)/io/ColorModel.java \
+               $(TOP)/io/DataFormat.java
 
 BYTE_OUTPUTS = $(subst @TYPE@,Byte,$(TYPED_OUTPUTS))
 
@@ -60,10 +62,17 @@ STRIDDEN_ARRAY_INPUTS = StriddenArray.javax $(ARRAY_IMPL_INPUTS)
 
 SELECTED_ARRAY_INPUTS = SelectedArray.javax $(ARRAY_IMPL_INPUTS)
 
+CONVOLUTION_IMPL = $(TOP)/deconv/impl/
+CONVOLUTION_RANKS = 1 2 3
+CONVOLUTION_TYPES = Float Double
+CONVOLUTION_INPUTS = ConvolutionOperator.javax common.javax
+CONVOLUTION_OUTPUTS = $(foreach TYPE,$(CONVOLUTION_TYPES),$(foreach RANK,$(CONVOLUTION_RANKS),$(CONVOLUTION_IMPL)Convolution$(TYPE)$(RANK)D.java))
+
+
 default:
 
 all: all-array all-byte all-short all-int all-long all-float all-double \
-     all-misc
+     all-misc all-convolution
 
 clean:
 	rm -f *~
@@ -84,6 +93,30 @@ $(BASE)Shape.java: Shape.javax
 
 $(ARRAY)ArrayUtils.java: ArrayUtils.javax common.javax
 	$(CODGER) -Dpackage=mitiv.array $< $@
+
+$(TOP)/io/ColorModel.java: ColorModel.javax common.javax
+	$(CODGER) -Dpackage=mitiv.io $< $@
+
+$(TOP)/io/DataFormat.java: DataFormat.javax common.javax
+	$(CODGER) -Dpackage=mitiv.io $< $@
+
+#-----------------------------------------------------------------------------
+# Convolution operators
+
+all-convolution: $(CONVOLUTION_OUTPUTS)
+
+$(CONVOLUTION_IMPL)ConvolutionFloat1D.java: $(CONVOLUTION_INPUTS)
+	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionFloat1D -Drank=1 -Dtype=float $< $@
+$(CONVOLUTION_IMPL)ConvolutionFloat2D.java: $(CONVOLUTION_INPUTS)
+	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionFloat2D -Drank=2 -Dtype=float $< $@
+$(CONVOLUTION_IMPL)ConvolutionFloat3D.java: $(CONVOLUTION_INPUTS)
+	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionFloat3D -Drank=3 -Dtype=float $< $@
+$(CONVOLUTION_IMPL)ConvolutionDouble1D.java: $(CONVOLUTION_INPUTS)
+	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionDouble1D -Drank=1 -Dtype=double $< $@
+$(CONVOLUTION_IMPL)ConvolutionDouble2D.java: $(CONVOLUTION_INPUTS)
+	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionDouble2D -Drank=2 -Dtype=double $< $@
+$(CONVOLUTION_IMPL)ConvolutionDouble3D.java: $(CONVOLUTION_INPUTS)
+	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionDouble3D -Drank=3 -Dtype=double $< $@
 
 #-----------------------------------------------------------------------------
 # Array

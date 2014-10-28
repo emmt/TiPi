@@ -38,7 +38,9 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
+import mitiv.array.ShapedArray;
 import mitiv.deconv.Deconvolution;
+import mitiv.io.BufferedImageUtils;
 
 /**
  * mitivCLI is a command line interface that let the user call the functions contains 
@@ -93,15 +95,17 @@ public class mitivCLI {
     }
 
     private static BufferedImage chooseReg(String reg,Deconvolution deconv, double alpha){
+        ShapedArray tmp;
         if (reg.compareTo(regularizationChoice[0]) == 0) {
-            return deconv.firstDeconvolution(alpha).get(0);
+            tmp = deconv.firstDeconvolution(alpha);
         }else if (reg.compareTo(regularizationChoice[1]) == 0) {
-            return deconv.firstDeconvolutionQuad(alpha).get(0);
+            tmp = deconv.firstDeconvolutionQuad(alpha);
         }else if (reg.compareTo(regularizationChoice[2]) == 0) {
-            return deconv.firstDeconvolutionCG(alpha).get(0);
+            tmp = deconv.firstDeconvolutionCG(alpha);
         }else{
             throw new IllegalArgumentException("Invalid Job");
         }
+        return BufferedImageUtils.arrayToImage(tmp).get(0);
     }
 
     private static int choosePost(String post){

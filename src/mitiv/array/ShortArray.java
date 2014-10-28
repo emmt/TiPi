@@ -125,6 +125,35 @@ public interface ShortArray extends ShapedArray {
     @Override
     public abstract ShortArray copy();
 
+    /**
+     * Get the minimal value of all the elements.
+     */
+    public abstract short min();
+
+    /**
+     * Get the maximal value of all the elements.
+     */
+    public abstract short max();
+
+    /**
+     * Get the minimal and maximal values of all the elements.
+     */
+    public abstract short[] getMinAndMax();
+
+    /**
+     * Get the minimal and maximal values of all the elements.
+     */
+    public abstract void getMinAndMax(short[] mm);
+
+    /**
+     * Get the sum of values of all elements.
+     */
+    public abstract int sum();
+
+    /**
+     * Get the average value of all elements.
+     */
+    public abstract double average();
 }
 
 /*

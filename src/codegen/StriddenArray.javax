@@ -27,7 +27,7 @@
 //# def implPrefix = Stridden
 //# include <commonImpl.javax>
 import mitiv.base.indexing.CompiledRange;
-import mitiv.exception.IllegalRangeException;
+
 
 /**
  * Stridden implementation of ${rank}-dimensional arrays of ${type}'s.
@@ -379,14 +379,12 @@ public class ${className} extends ${superName} {
     //#         def strideList = cr${k}.getStride()
     //#         def numberList = cr${k}.getNumber()
     //#         def noChanges = cr${k}.doesNothing()
-    //#         def anyEmpty = cr${k}.getNumber() == 0
     //#         def offsetExpr = cr${k}.getOffset()
     //#     else
     //#         def argDecl = ${argDecl}, Range rng${k}
     //#         def strideList = ${strideList}, cr${k}.getStride()
     //#         def numberList = ${numberList}, cr${k}.getNumber()
     //#         def noChanges = ${noChanges} && cr${k}.doesNothing()
-    //#         def anyEmpty = ${anyEmpty} || cr${k}.getNumber() == 0
     //#         def offsetExpr = ${offsetExpr} + cr${k}.getOffset()
     //#     end
     //# end
@@ -402,9 +400,6 @@ public class ${className} extends ${superName} {
         //# end
         if (${noChanges}) {
             return this;
-        }
-        if (${anyEmpty}) {
-            throw new IllegalRangeException("Empty range.");
         }
         return new Stridden${superName}(this.data,
                 ${offsetExpr},

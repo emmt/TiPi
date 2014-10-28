@@ -44,7 +44,8 @@ import mitiv.deconv.ConvolutionOperator;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
+
+import org.jtransforms.fft.DoubleFFT_2D;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -77,7 +78,7 @@ public class MathUtils {
     public static final int DISK = 7;
 
     /**
-     * Check if the number is even. 
+     * Check if the number is even.
      *
      * @param x the x
      * @return return a boolean
@@ -88,7 +89,7 @@ public class MathUtils {
     }
 
     /**
-     * Returns the factorial of a number. 
+     * Returns the factorial of a number.
      *
      * @param n the n
      * @return the factorial of the number
@@ -326,7 +327,7 @@ public class MathUtils {
      * @return FFT frequencies along a dimension of length LEN.
      */
     public static double[] fftIndgen(int L)
-    {   
+    {
         double[] k = new double[L];
         double u[] = indgen(0, L - 1);
         for (int i = 0; i < L; i++)
@@ -610,7 +611,7 @@ public class MathUtils {
         double tab[] = new double[L];
 
         a = begin;
-        int b = 0;	
+        int b = 0;
         for(double i = begin; i <= end; i+= scale)
         {
             tab[b] = i;
@@ -683,7 +684,7 @@ public class MathUtils {
         double tab[] = new double[L];
 
         a = start;
-        int b = 0;  
+        int b = 0;
         for(double i = start; i <= stop; i+= scale)
         {
             tab[b] = i;
@@ -888,7 +889,7 @@ public class MathUtils {
                 y[i] = x[i]*x[i];
             }
             return y;
-        }  
+        }
     }
 
     /**
@@ -919,7 +920,7 @@ public class MathUtils {
                 y[i] = x[i + begin]*x[i + begin];
             }
             return y;
-        }  
+        }
     }
 
 
@@ -1002,7 +1003,7 @@ public class MathUtils {
     }
 
     public static void printArray(int A[])
-    {   
+    {
         System.out.println(Arrays.toString(A));
     }
 
@@ -1012,7 +1013,7 @@ public class MathUtils {
      * @param A the a
      */
     public static void printArray(double A[])
-    {   
+    {
         System.out.println(Arrays.toString(A));
     }
 
@@ -1045,7 +1046,7 @@ public class MathUtils {
      * 
      */
     public static void printArray(double A[], int width, int height, int deepth, int decimal)
-    {   
+    {
         if( decimal == 0)
         {
             for(int k = 0; k < deepth; k++)
@@ -1085,7 +1086,7 @@ public class MathUtils {
      * @param A the a
      */
     public static void printArray(double A[][])
-    {	
+    {
         int H = A.length;
         for(int i = 0; i < H; i++ ){
             System.out.println(Arrays.toString(A[i]));
@@ -1099,7 +1100,7 @@ public class MathUtils {
      * @param colorMap 0 for a grayscale display and 1 with a colormap
      */
     public static void pli(double A[][], int colorMap)
-    {   
+    {
         int H = A.length;
         int W = A[0].length;
         double S[][];
@@ -1151,7 +1152,7 @@ public class MathUtils {
      * @param colorMap the color map
      */
     public static void pli2(double A[][], int colorMap)
-    {	
+    {
         int H = A.length;
         int W = A[0].length;
         double S[][];
@@ -1195,7 +1196,7 @@ public class MathUtils {
      * @param colorMap the color map
      */
     public static void pli2(double A[], int W, int H, int colorMap)
-    {   
+    {
         double S[];
         //int L = A.length;
         S = scaleArrayTo8bit(A);
@@ -1242,7 +1243,7 @@ public class MathUtils {
      * @param A the a
      */
     public static void fftPli2(double A[][])
-    {	
+    {
         uint8(A);
         double[][] A_padded = fftShift(A);
         pli2(A_padded, COLORMAP_JET);
@@ -1258,7 +1259,7 @@ public class MathUtils {
      * @param A the a
      */
     public static void fftPli(double A[][])
-    {	
+    {
         uint8(A);
         double[][] A_padded = fftShift(A);
         pli(A_padded, COLORMAP_JET);
@@ -1272,7 +1273,7 @@ public class MathUtils {
      * @return the double[][]
      */
     public static double[][] fftShift(double A[][])
-    {	
+    {
         int H = A.length;
         int W = A[0].length;
         double A_shift[][] = new double[H][W];
@@ -1318,7 +1319,7 @@ public class MathUtils {
      * @return the double[][]
      */
     public static double[] fftShift1D(double A[], int w, int h, int d)
-    {   
+    {
         double A_shift[] = new double[w*h*d];
         for (int k = 0; k < d; k++)
         {
@@ -1344,7 +1345,7 @@ public class MathUtils {
      * @return the double[][]
      */
     public static double[] fftShift1D(double A[], int w, int h)
-    {   
+    {
         double A_shift[] = new double[w*h];
 
         /* Higher-left to lower-right */
@@ -1371,7 +1372,7 @@ public class MathUtils {
      * @return the double[]
      */
     public static double[] fftShift3D(double A[], int w, int h, int d)
-    {   
+    {
         double A_shift[] = new double[w*h*d];
         int wh = w*h;
         for (int k = 0; k < d/2; k++)
@@ -1415,7 +1416,7 @@ public class MathUtils {
         DoubleFFT_2D FFT2D = new DoubleFFT_2D(H, W);
         double[][] res = new double[H][W];
         /* convert to complex array */
-        double[][] hC = real2complex(h);    
+        double[][] hC = real2complex(h);
         double[][] imgC = real2complex(img);
         /* fft hC & img */
         FFT2D.complexForward(hC);
@@ -1607,7 +1608,7 @@ public class MathUtils {
 
 
     public static double[][] img_pad(double img[][], int newW, int newH, int just)
-    {   
+    {
         int oldH = img.length; // hauteur
         int oldW = img[0].length; // largeur
         double New[][] = new double[newH][newW];
@@ -1679,7 +1680,7 @@ public class MathUtils {
             }
             break;
         default:
-            System.out.println("bad value for keyword JUST");            
+            System.out.println("bad value for keyword JUST");
         }
 
         return New;
@@ -1687,7 +1688,7 @@ public class MathUtils {
 
 
     public static double[] img_pad1d(double img[], int oldW, int oldH, int newW, int newH, int just)
-    { 
+    {
         double New[] = new double[newH*newW];
         switch (just)
         {
@@ -1756,14 +1757,14 @@ public class MathUtils {
             }
             break;
         default:
-            System.out.println("bad value for keyword JUST");            
+            System.out.println("bad value for keyword JUST");
         }
 
         return New;
     }
 
     public static double[] img_pad(double img[], int oldW, int oldH, int oldD, int newW, int newH, int newD, int just)
-    { 
+    {
         double New[] = new double[newH*newW*newD];
         int newWH = newW*newH;
         int oldWH = oldW*oldH;
@@ -1841,14 +1842,14 @@ public class MathUtils {
             }
             break;
         default:
-            System.out.println("bad value for keyword JUST");            
+            System.out.println("bad value for keyword JUST");
         }
 
         return New;
     }
 
     /**
-     * Hadamard product between two matrices 
+     * Hadamard product between two matrices
      * Hadamard (also known as the element-wise product)
      * product A ○ B is a matrix of the same dimensions,
      * the i, j element of A is multiplied with the i, j element of B.
@@ -1948,7 +1949,7 @@ public class MathUtils {
 
     /**
      * Variance σ² of a 1d array
-     * var = 1/N \sum_i (x_i - E[x])^2 = E[x'x]-E[x]^2 
+     * var = 1/N \sum_i (x_i - E[x])^2 = E[x'x]-E[x]^2
      */
     public static double var(double a[])
     {
@@ -1962,7 +1963,7 @@ public class MathUtils {
     }
 
     /**
-     * Variance of the matrix 
+     * Variance of the matrix
      */
     public static double var(double a[][])
     {
@@ -2094,7 +2095,7 @@ public class MathUtils {
      * @return the double[][]
      */
     public static double[][] fspecialAverage(int[] arg1)
-    { 
+    {
         double[][] ha = new double[arg1[0]][arg1[1]];
         double coef = 1./(arg1[0]*arg1[1]);
         int H = arg1[0];
@@ -2117,7 +2118,7 @@ public class MathUtils {
      * @return the double[][]
      */
     public static double[][] fspecial(int type, int arg1)
-    { 
+    {
         switch (type)
         {
         case DISK:
@@ -2163,7 +2164,7 @@ public class MathUtils {
      * @return the double[][]
      */
     public static double[][] fspecial(int type, int[] arg1, double arg2)
-    { 
+    {
         switch (type)
         {
         case AVERAGE:
@@ -2209,7 +2210,7 @@ public class MathUtils {
      * @return the double[][]
      */
     public static double[] fspecial1D(int type, int[] arg1, double arg2)
-    { 
+    {
         int L = arg1[0]*arg1[1];
         switch (type)
         {
@@ -2252,7 +2253,7 @@ public class MathUtils {
      * @return the double[][]
      */
     public static double[] fspecial1D(int type)
-    { 
+    {
         switch (type)
         {
         case AVERAGE:
@@ -2304,7 +2305,7 @@ public class MathUtils {
      * @return the double[][]
      */
     public static double[][] fspecial(int type)
-    { 
+    {
         switch (type)
         {
         case AVERAGE:
@@ -2405,7 +2406,7 @@ public class MathUtils {
             StringBuffer sb = new StringBuffer();
 
             for(int i =0;i<=5;i++){
-                sb.append(name); 
+                sb.append(name);
             }
 
             sb.append("H " + a.length + " W " + a[0].length + "\n min " + min(a) + " max " + max(a) +

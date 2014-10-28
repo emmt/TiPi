@@ -74,9 +74,9 @@ public class Range {
     /* The members of a range are publicly accessible. */
     /* If strictly negative, 'first' and 'last' are relative to the end of the available space.
      */
-    public int first;
-    public int last;
-    public int step;
+    private int first;
+    private int last;
+    private int step;
 
     /** First element along a dimension. */
     final public static int FIRST = 0;
@@ -118,10 +118,7 @@ public class Range {
         case 3:
             first = r[0];
             last = r[1];
-            step = r[2];
-            if (step == 0) {
-                throw new IllegalRangeException("Illegal 0 step.");
-            }
+            setStep(r[2]);
             break;
         default:
             throw new IllegalRangeException();
@@ -149,10 +146,7 @@ public class Range {
     public Range(int first, int last, int step) {
         this.first = first;
         this.last = last;
-        this.step = step;
-        if (this.step == 0) {
-            throw new IllegalRangeException("Illegal 0 step.");
-        }
+        setStep(step);
     }
 
     /** Get the first position of the range. */
@@ -202,6 +196,9 @@ public class Range {
 
     /** Set the stepping of the range. */
     final public void setStep(int step) {
+        if (step == 0) {
+            throw new IllegalRangeException("Illegal 0 step.");
+        }
         this.step = step;
     }
 
@@ -213,7 +210,7 @@ public class Range {
      * @return The corrected index.
      */
     final public static int fixIndex(int index, int length) {
-        return (index >= 0 ? index : length - index);
+        return (index >= 0 ? index : length + index);
     }
 
     /**

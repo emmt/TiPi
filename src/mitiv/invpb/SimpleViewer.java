@@ -27,6 +27,8 @@ package mitiv.invpb;
 
 import java.io.PrintStream;
 
+import mitiv.utils.Timer;
+
 /**
  * Implement a simple viewer for displaying information during an iterative
  * reconstruction.
@@ -36,12 +38,15 @@ import java.io.PrintStream;
 public class SimpleViewer implements ReconstructionViewer {
 
     private PrintStream stream;
+    private Timer timer;
 
     /**
      * Create a simple viewer which prints to the standard output stream.
      */
     public SimpleViewer() {
         this(null);
+        timer = new Timer();
+        timer.start();
     }
 
     /**
@@ -70,8 +75,9 @@ public class SimpleViewer implements ReconstructionViewer {
 
     @Override
     public void display(ReconstructionJob job) {
-        stream.format("iter: %4d    eval: %4d    fx = %22.16e    |gx| = %8.2e\n",
+        stream.format("iter: %4d    eval: %4d    time: %7.3f s.    fx = %22.16e    |gx| = %8.2e\n",
                 job.getIterations(), job.getEvaluations(),
+                timer.getElapsedTime(),
                 job.getCost(), job.getGradientNorm2());
     }
 

@@ -42,6 +42,7 @@ import mitiv.array.Float2D;
 import mitiv.array.Float3D;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
+import mitiv.base.Traits;
 import mitiv.utils.CommonUtils;
 
 public class BufferedImageUtils {
@@ -95,34 +96,20 @@ public class BufferedImageUtils {
         }
     }
 
+    /**
+     * By default we use double precision
+     * 
+     * @param listImage
+     * @return
+     */
     public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage) {
         return imageToArray(listImage, false);
     }
-    
+
     public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage, boolean single) {
         int width = listImage.get(0).getWidth();
         int height = listImage.get(0).getHeight();
-        int sizeZ = listImage.size();
-        int[] shape = new int[]{width, height, sizeZ};
-        return imageToArray(listImage, shape, single);
-    }
-    
-    public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage, int[] shape) {
-        return imageToArray(listImage, shape, false);
-    }
-
-    public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage, int[] shape, boolean single) {
-        if (shape.length != 3) {
-            throw new IllegalArgumentException("Input should be tri dimensionnal");
-        }
-        return imageToArray(listImage, shape[0], shape[1], shape[2], single);
-    }
-
-    public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage, int width, int height, int sizeZ) {
-        return imageToArray(listImage, width, height, sizeZ, false);
-    }
-
-    public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage, int width, int height, int sizeZ, boolean single) {
+        int sizeZ = listImage.size();   //FIXME if 2D (size == 1) what happen ? Throw exception ?
         if (single) {
             float[] out = new float[sizeZ*width*height];
             for (int k = 0; k < sizeZ; k++) {
@@ -169,11 +156,11 @@ public class BufferedImageUtils {
      * @param shape 
      * @return the buffered image
      */
-    public static ShapedArray arrayToImage(double[] array, int[] shape) {
-        if (shape.length == 2) {
-            return arrayToImage(array, shape[0], shape[1]);
-        } else if (shape.length == 3) {
-            return arrayToImage(array, shape[0], shape[1], shape[2]);
+    public static ShapedArray arrayToImage(double[] array, Shape shape) {
+        if (shape.rank() == 2) {
+            return arrayToImage(array, shape.dimension(0), shape.dimension(1));
+        } else if (shape.rank() == 3) {
+            return arrayToImage(array, shape.dimension(0), shape.dimension(1), shape.dimension(2));
         }else{
             throw new IllegalArgumentException("Only Bi and tri dimensionnal images are accepted now");
         }
@@ -211,11 +198,11 @@ public class BufferedImageUtils {
      * @param shape 
      * @return the buffered image
      */
-    public static ShapedArray arrayToImage(float[] array, int[] shape){
-        if (shape.length == 2) {
-            return arrayToImage(array, shape[0], shape[1]);
-        } else if (shape.length == 3) {
-            return arrayToImage(array, shape[0], shape[1], shape[2]);
+    public static ShapedArray arrayToImage(float[] array, Shape shape){
+        if (shape.rank() == 2) {
+            return arrayToImage(array, shape.dimension(0), shape.dimension(1));
+        } else if (shape.rank() == 3) {
+            return arrayToImage(array, shape.dimension(0), shape.dimension(1), shape.dimension(2));
         }else{
             throw new IllegalArgumentException("Only Bi and tri dimensionnal images are accepted now");
         }
@@ -247,85 +234,57 @@ public class BufferedImageUtils {
     }
 
 
-
-    public static BufferedImage arrayToImage(ShapedArray array) {
-        //FIXME MOST IMPORTANT SHOULD WORK WITH 2D 3D and Double Float{
-        Shape shape = array.getShape(); 
-        if (shape.rank() != 2) {
-            throw new IllegalArgumentException("Array should be bi-dimensional ");
-        }
-        BufferedImage imageout = new BufferedImage(shape.dimension(0), shape.dimension(1), BufferedImage.TYPE_USHORT_GRAY);
-        WritableRaster raster = imageout.getRaster();
-        int grey;
-        int[] tmp = new int[3];
-        if (array.getType() == ShapedArray.DOUBLE) {
-            double[] arrayDbl = array.toDouble().flatten();
-            for(int j = 0; j<imageout.getHeight(); j++){
-                for(int i = 0; i<imageout.getWidth(); i++){
-                    grey = (int)arrayDbl[(i+j*imageout.getHeight())];
-                    tmp[0]=tmp[1]=tmp[2]=grey;
-                    raster.setPixel(i, j, tmp);
-                }
-            }
-        } else { //We only work we double or float, and float is the "smallest" that we use
-            float[] arrayFlt = array.toFloat().flatten();
-            for(int j = 0; j<imageout.getHeight(); j++){
-                for(int i = 0; i<imageout.getWidth(); i++){
-                    grey = (int)arrayFlt[(i+j*imageout.getHeight())];
-                    tmp[0]=tmp[1]=tmp[2]=grey;
-                    raster.setPixel(i, j, tmp);
-                }
-            }
-
-        }
-        return imageout;
-    }
-
-    public static ArrayList<BufferedImage> arrayToImages(ShapedArray array) {
-        //FIXME MOST IMPORTANT SHOULD WORK WITH 2D 3D and Double Float{
-        Shape shape = array.getShape(); 
-        if (!(shape.rank() == 2 || shape.rank() == 3)) {
-            throw new IllegalArgumentException("Array should be bi or tri dimensional ");
-        }
+    public static ArrayList<BufferedImage> arrayToImage(ShapedArray array) {
+        Shape shape = array.getShape();
         int width = shape.dimension(0);
         int height = shape.dimension(1);
-        int sizeZ = 1;
-        if (shape.rank() == 3) {
-            sizeZ = shape.dimension(2);
-        }
-        ArrayList<BufferedImage> listOut = new ArrayList<BufferedImage>();
-        int grey;
-        int[] tmp = new int[3];
-        if (array.getType() == ShapedArray.DOUBLE) {
-            double[] arrayDbl = array.toDouble().flatten();
-            for (int k = 0; k < sizeZ; k++) {
-                BufferedImage imageOut = createNewBufferedImage(width, height);
-                WritableRaster raster = imageOut.getRaster();
-                for(int j = 0; j<height; j++){
-                    for(int i = 0; i<width; i++){
-                        grey = (int)arrayDbl[i+j*height+k*width*height];
-                        tmp[0]=tmp[1]=tmp[2]=grey;
-                        raster.setPixel(i, j, tmp);
+        if (array.getType() == Traits.DOUBLE) {
+            if (shape.rank() == 2) {
+                BufferedImage tmp = CommonUtils.arrayToImage1D(((Double2D)array).flatten(), width, height, false);
+                return fill(tmp);
+            } else if (shape.rank() == 3) {
+                double[] data = ((Double3D)array).flatten();
+                int sizeZ = shape.dimension(2);
+                ArrayList<BufferedImage> list = new ArrayList<BufferedImage>();
+                for (int j = 0; j < sizeZ; j++) {
+                    double[] tmp = new double[width*height];
+                    for (int i = 0; i < width*height; i++) {
+                        tmp[i] = data[i+j*width*height];
                     }
+                    BufferedImage tmpImg = CommonUtils.arrayToImage1D(((Double2D)array).flatten(), width, height, false);
+                    list.add(tmpImg);
                 }
-                listOut.add(imageOut);
+                return list;
+            } else {
+                throw new IllegalArgumentException("Rank of the Shaped Array can only be 2 or 3");
             }
-        } else { //We only work we double or float, and float is the "smallest" that we use
-            float[] arrayFlt = array.toFloat().flatten();
-            for (int k = 0; k < sizeZ; k++) {
-                BufferedImage imageOut = createNewBufferedImage(width, height);
-                WritableRaster raster = imageOut.getRaster();
-                for(int j = 0; j<height; j++){
-                    for(int i = 0; i<width; i++){
-                        grey = (int)arrayFlt[i+j*height+k*width*height];
-                        tmp[0]=tmp[1]=tmp[2]=grey;
-                        raster.setPixel(i, j, tmp);
+        } else {
+            if (shape.rank() == 2) {
+                BufferedImage tmp = createNewBufferedImage(width, height);
+                return fill(tmp); //Whatever the type other than float, we use float
+            } else if (shape.rank() == 3) {
+                float[] data = ((Float3D)array).flatten();
+                int sizeZ = shape.dimension(2);
+                ArrayList<BufferedImage> list = new ArrayList<BufferedImage>();
+                for (int j = 0; j < sizeZ; j++) {
+                    float[] tmp = new float[width*height];
+                    for (int i = 0; i < width*height; i++) {
+                        tmp[i] = data[i+j*width*height];
                     }
+                    BufferedImage tmpImg = CommonUtils.arrayToImage1D(((Float2D)array).flatten(), width, height, false);
+                    list.add(tmpImg);
                 }
-                listOut.add(imageOut);
+                return list;
+            } else {
+                throw new IllegalArgumentException("Rank of the Shaped Array can only be 2 or 3");
             }
         }
-        return listOut;
+    }
+    
+    private static ArrayList<BufferedImage> fill(BufferedImage img){
+        ArrayList<BufferedImage> list = new ArrayList<BufferedImage>();
+        list.add(img);
+        return list;
     }
 
     /**********************************************************/
@@ -385,7 +344,7 @@ public class BufferedImageUtils {
         int halfSizePadH = sizePadH/2;
         int halfSizePadZ = sizePadZ/2;
 
-        int[] shape = new int[]{width+sizePadW, height+sizePadH, sizeZ+sizePadZ};
+        Shape shape = Shape.make(width+sizePadW, height+sizePadH, sizeZ+sizePadZ);
         //If we are in double else we will work in FLOAt
         if (input.getType() == ShapedArray.DOUBLE) {
             double[] output = new double[(width+sizePadW)*(height+sizePadH)*(sizeZ+sizePadZ)];
@@ -572,7 +531,7 @@ public class BufferedImageUtils {
         if (A.getShape().rank() != 2) {
             throw new IllegalArgumentException("The shapped array should be bi-dimensionnal");
         }
-        BufferedImage I = arrayToImage(A);
+        BufferedImage I = arrayToImage(A).get(0);
         saveBufferedImage(I, name);
     }
 }

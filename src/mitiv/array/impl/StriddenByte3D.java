@@ -33,7 +33,7 @@ import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
 import mitiv.base.indexing.CompiledRange;
-import mitiv.exception.IllegalRangeException;
+
 
 /**
  * Stridden implementation of 3-dimensional arrays of byte's.
@@ -379,9 +379,6 @@ public class StriddenByte3D extends Byte3D {
         CompiledRange cr3 = new CompiledRange(rng3, dim3, 0, stride3);
         if (cr1.doesNothing() && cr2.doesNothing() && cr3.doesNothing()) {
             return this;
-        }
-        if (cr1.getNumber() == 0 || cr2.getNumber() == 0 || cr3.getNumber() == 0) {
-            throw new IllegalRangeException("Empty range.");
         }
         return new StriddenByte3D(this.data,
                 cr1.getOffset() + cr2.getOffset() + cr3.getOffset(),

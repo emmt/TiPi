@@ -173,6 +173,40 @@ public class FloatScalar extends Scalar implements FloatArray {
     }
 
     @Override
+    public float min() {
+        return data[offset];
+    }
+
+    @Override
+    public float max() {
+        return data[offset];
+    }
+
+    @Override
+    public float[] getMinAndMax() {
+        float[] result = new float[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(float[] mm) {
+        float value = data[offset];
+        mm[0] = value;
+        mm[1] = value;
+    }
+
+    @Override
+    public float sum() {
+        return data[offset];
+    }
+
+    @Override
+    public double average() {
+        return data[offset];
+    }
+
+    @Override
     public final ByteArray toByte() {
         return new ByteScalar((byte)data[offset]);
     }

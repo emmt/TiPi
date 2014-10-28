@@ -34,6 +34,7 @@ import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.base.indexing.Range;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -405,6 +406,231 @@ public abstract class Long7D extends Array7D implements LongArray {
         return flatten(false);
     }
 
+    @Override
+    public long min() {
+        long minValue = get(0,0,0,0,0,0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i6 = 0; i6 < dim6; ++i6) {
+                                    for (int i7 = 0; i7 < dim7; ++i7) {
+                                        if (skip) {
+                                            skip = false;
+                                        } else {
+                                            long value = get(i1,i2,i3,i4,i5,i6,i7);
+                                            if (value < minValue) {
+                                                minValue = value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i7 = 0; i7 < dim7; ++i7) {
+                for (int i6 = 0; i6 < dim6; ++i6) {
+                    for (int i5 = 0; i5 < dim5; ++i5) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i3 = 0; i3 < dim3; ++i3) {
+                                for (int i2 = 0; i2 < dim2; ++i2) {
+                                    for (int i1 = 0; i1 < dim1; ++i1) {
+                                        if (skip) {
+                                            skip = false;
+                                        } else {
+                                            long value = get(i1,i2,i3,i4,i5,i6,i7);
+                                            if (value < minValue) {
+                                                minValue = value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public long max() {
+        long maxValue = get(0,0,0,0,0,0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i6 = 0; i6 < dim6; ++i6) {
+                                    for (int i7 = 0; i7 < dim7; ++i7) {
+                                        if (skip) {
+                                            skip = false;
+                                        } else {
+                                            long value = get(i1,i2,i3,i4,i5,i6,i7);
+                                            if (value > maxValue) {
+                                                maxValue = value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i7 = 0; i7 < dim7; ++i7) {
+                for (int i6 = 0; i6 < dim6; ++i6) {
+                    for (int i5 = 0; i5 < dim5; ++i5) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i3 = 0; i3 < dim3; ++i3) {
+                                for (int i2 = 0; i2 < dim2; ++i2) {
+                                    for (int i1 = 0; i1 < dim1; ++i1) {
+                                        if (skip) {
+                                            skip = false;
+                                        } else {
+                                            long value = get(i1,i2,i3,i4,i5,i6,i7);
+                                            if (value > maxValue) {
+                                                maxValue = value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public long[] getMinAndMax() {
+        long[] result = new long[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(long[] mm) {
+        long minValue = get(0,0,0,0,0,0,0);
+        long maxValue = minValue;
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i6 = 0; i6 < dim6; ++i6) {
+                                    for (int i7 = 0; i7 < dim7; ++i7) {
+                                        if (skip) {
+                                            skip = false;
+                                        } else {
+                                            long value = get(i1,i2,i3,i4,i5,i6,i7);
+                                            if (value < minValue) {
+                                                minValue = value;
+                                            }
+                                            if (value > maxValue) {
+                                                maxValue = value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i7 = 0; i7 < dim7; ++i7) {
+                for (int i6 = 0; i6 < dim6; ++i6) {
+                    for (int i5 = 0; i5 < dim5; ++i5) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i3 = 0; i3 < dim3; ++i3) {
+                                for (int i2 = 0; i2 < dim2; ++i2) {
+                                    for (int i1 = 0; i1 < dim1; ++i1) {
+                                        if (skip) {
+                                            skip = false;
+                                        } else {
+                                            long value = get(i1,i2,i3,i4,i5,i6,i7);
+                                            if (value < minValue) {
+                                                minValue = value;
+                                            }
+                                            if (value > maxValue) {
+                                                maxValue = value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public long sum() {
+        long totalValue = 0;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                for (int i6 = 0; i6 < dim6; ++i6) {
+                                    for (int i7 = 0; i7 < dim7; ++i7) {
+                                        totalValue += get(i1,i2,i3,i4,i5,i6,i7);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i7 = 0; i7 < dim7; ++i7) {
+                for (int i6 = 0; i6 < dim6; ++i6) {
+                    for (int i5 = 0; i5 < dim5; ++i5) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            for (int i3 = 0; i3 < dim3; ++i3) {
+                                for (int i2 = 0; i2 < dim2; ++i2) {
+                                    for (int i1 = 0; i1 < dim1; ++i1) {
+                                        totalValue += get(i1,i2,i3,i4,i5,i6,i7);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte7D.
      * <p>
@@ -576,10 +802,10 @@ public abstract class Long7D extends Array7D implements LongArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Long7D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Long7D src;
         if (arr.getType() == Traits.LONG) {
             src = (Long7D)arr;
         } else {
@@ -823,6 +1049,86 @@ public abstract class Long7D extends Array7D implements LongArray {
             int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return new StriddenLong7D(data, offset, stride1,stride2,stride3,stride4,stride5,stride6,stride7, dim1,dim2,dim3,dim4,dim5,dim6,dim7);
     }
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.  The same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     * @return A Long6D view on the given slice of the array.
+     */
+    public abstract Long6D slice(int idx);
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.
+     * @param dim - The dimension to slice.  For these two arguments,
+     *              the same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     *
+     * @return A Long6D view on the given slice of the array.
+     */
+    public abstract Long6D slice(int idx, int dim);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param rng1 - The range of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param rng2 - The range of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     * @param rng3 - The range of indices to select along 3rd dimension
+     *               (or {@code null} to select all.
+     * @param rng4 - The range of indices to select along 4th dimension
+     *               (or {@code null} to select all.
+     * @param rng5 - The range of indices to select along 5th dimension
+     *               (or {@code null} to select all.
+     * @param rng6 - The range of indices to select along 6th dimension
+     *               (or {@code null} to select all.
+     * @param rng7 - The range of indices to select along 7th dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Long7D view for the given ranges of the array.
+     */
+    public abstract Long7D view(Range rng1, Range rng2, Range rng3, Range rng4, Range rng5, Range rng6, Range rng7);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param idx1 - The list of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param idx2 - The list of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     * @param idx3 - The list of indices to select along 3rd dimension
+     *               (or {@code null} to select all.
+     * @param idx4 - The list of indices to select along 4th dimension
+     *               (or {@code null} to select all.
+     * @param idx5 - The list of indices to select along 5th dimension
+     *               (or {@code null} to select all.
+     * @param idx6 - The list of indices to select along 6th dimension
+     *               (or {@code null} to select all.
+     * @param idx7 - The list of indices to select along 7th dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Long7D view for the given index selections of the
+     *         array.
+     */
+    public abstract Long7D view(int[] idx1, int[] idx2, int[] idx3, int[] idx4, int[] idx5, int[] idx6, int[] idx7);
+
+    /**
+     * Get a view of the array as a 1D array.
+     *
+     * @return A 1D view of the array.
+     */
+    @Override
+    public abstract Long1D as1D();
 
 }
 

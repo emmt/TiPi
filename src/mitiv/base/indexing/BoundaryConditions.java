@@ -53,7 +53,7 @@ public enum BoundaryConditions {
     }
 
     /** Get the description of the boundary conditions. */
-    public String toDescription() {
+    public String getDescription() {
         return description;
     }
 

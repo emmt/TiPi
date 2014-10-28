@@ -34,6 +34,7 @@ import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.base.indexing.Range;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -309,6 +310,183 @@ public abstract class Short4D extends Array4D implements ShortArray {
         return flatten(false);
     }
 
+    @Override
+    public short min() {
+        short minValue = get(0,0,0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            if (skip) {
+                                skip = false;
+                            } else {
+                                short value = get(i1,i2,i3,i4);
+                                if (value < minValue) {
+                                    minValue = value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            if (skip) {
+                                skip = false;
+                            } else {
+                                short value = get(i1,i2,i3,i4);
+                                if (value < minValue) {
+                                    minValue = value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public short max() {
+        short maxValue = get(0,0,0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            if (skip) {
+                                skip = false;
+                            } else {
+                                short value = get(i1,i2,i3,i4);
+                                if (value > maxValue) {
+                                    maxValue = value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            if (skip) {
+                                skip = false;
+                            } else {
+                                short value = get(i1,i2,i3,i4);
+                                if (value > maxValue) {
+                                    maxValue = value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public short[] getMinAndMax() {
+        short[] result = new short[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(short[] mm) {
+        short minValue = get(0,0,0,0);
+        short maxValue = minValue;
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            if (skip) {
+                                skip = false;
+                            } else {
+                                short value = get(i1,i2,i3,i4);
+                                if (value < minValue) {
+                                    minValue = value;
+                                }
+                                if (value > maxValue) {
+                                    maxValue = value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            if (skip) {
+                                skip = false;
+                            } else {
+                                short value = get(i1,i2,i3,i4);
+                                if (value < minValue) {
+                                    minValue = value;
+                                }
+                                if (value > maxValue) {
+                                    maxValue = value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public int sum() {
+        int totalValue = 0;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        for (int i4 = 0; i4 < dim4; ++i4) {
+                            totalValue += get(i1,i2,i3,i4);
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i4 = 0; i4 < dim4; ++i4) {
+                for (int i3 = 0; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1) {
+                            totalValue += get(i1,i2,i3,i4);
+                        }
+                    }
+                }
+            }
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte4D.
      * <p>
@@ -450,10 +628,10 @@ public abstract class Short4D extends Array4D implements ShortArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Short4D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Short4D src;
         if (arr.getType() == Traits.SHORT) {
             src = (Short4D)arr;
         } else {
@@ -661,6 +839,74 @@ public abstract class Short4D extends Array4D implements ShortArray {
             int offset, int stride1, int stride2, int stride3, int stride4, int dim1, int dim2, int dim3, int dim4) {
         return new StriddenShort4D(data, offset, stride1,stride2,stride3,stride4, dim1,dim2,dim3,dim4);
     }
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.  The same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     * @return A Short3D view on the given slice of the array.
+     */
+    public abstract Short3D slice(int idx);
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.
+     * @param dim - The dimension to slice.  For these two arguments,
+     *              the same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     *
+     * @return A Short3D view on the given slice of the array.
+     */
+    public abstract Short3D slice(int idx, int dim);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param rng1 - The range of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param rng2 - The range of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     * @param rng3 - The range of indices to select along 3rd dimension
+     *               (or {@code null} to select all.
+     * @param rng4 - The range of indices to select along 4th dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Short4D view for the given ranges of the array.
+     */
+    public abstract Short4D view(Range rng1, Range rng2, Range rng3, Range rng4);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param idx1 - The list of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param idx2 - The list of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     * @param idx3 - The list of indices to select along 3rd dimension
+     *               (or {@code null} to select all.
+     * @param idx4 - The list of indices to select along 4th dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Short4D view for the given index selections of the
+     *         array.
+     */
+    public abstract Short4D view(int[] idx1, int[] idx2, int[] idx3, int[] idx4);
+
+    /**
+     * Get a view of the array as a 1D array.
+     *
+     * @return A 1D view of the array.
+     */
+    @Override
+    public abstract Short1D as1D();
 
 }
 

@@ -173,6 +173,40 @@ public class LongScalar extends Scalar implements LongArray {
     }
 
     @Override
+    public long min() {
+        return data[offset];
+    }
+
+    @Override
+    public long max() {
+        return data[offset];
+    }
+
+    @Override
+    public long[] getMinAndMax() {
+        long[] result = new long[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(long[] mm) {
+        long value = data[offset];
+        mm[0] = value;
+        mm[1] = value;
+    }
+
+    @Override
+    public long sum() {
+        return data[offset];
+    }
+
+    @Override
+    public double average() {
+        return data[offset];
+    }
+
+    @Override
     public final ByteArray toByte() {
         return new ByteScalar((byte)data[offset]);
     }

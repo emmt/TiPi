@@ -33,7 +33,7 @@ import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
 import mitiv.base.indexing.CompiledRange;
-import mitiv.exception.IllegalRangeException;
+
 
 /**
  * Stridden implementation of 4-dimensional arrays of byte's.
@@ -443,9 +443,6 @@ public class StriddenByte4D extends Byte4D {
         CompiledRange cr4 = new CompiledRange(rng4, dim4, 0, stride4);
         if (cr1.doesNothing() && cr2.doesNothing() && cr3.doesNothing() && cr4.doesNothing()) {
             return this;
-        }
-        if (cr1.getNumber() == 0 || cr2.getNumber() == 0 || cr3.getNumber() == 0 || cr4.getNumber() == 0) {
-            throw new IllegalRangeException("Empty range.");
         }
         return new StriddenByte4D(this.data,
                 cr1.getOffset() + cr2.getOffset() + cr3.getOffset() + cr4.getOffset(),

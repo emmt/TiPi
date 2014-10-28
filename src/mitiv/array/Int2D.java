@@ -34,6 +34,7 @@ import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.base.indexing.Range;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -245,6 +246,151 @@ public abstract class Int2D extends Array2D implements IntArray {
         return flatten(false);
     }
 
+    @Override
+    public int min() {
+        int minValue = get(0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    if (skip) {
+                        skip = false;
+                    } else {
+                        int value = get(i1,i2);
+                        if (value < minValue) {
+                            minValue = value;
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    if (skip) {
+                        skip = false;
+                    } else {
+                        int value = get(i1,i2);
+                        if (value < minValue) {
+                            minValue = value;
+                        }
+                    }
+                }
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public int max() {
+        int maxValue = get(0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    if (skip) {
+                        skip = false;
+                    } else {
+                        int value = get(i1,i2);
+                        if (value > maxValue) {
+                            maxValue = value;
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    if (skip) {
+                        skip = false;
+                    } else {
+                        int value = get(i1,i2);
+                        if (value > maxValue) {
+                            maxValue = value;
+                        }
+                    }
+                }
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public int[] getMinAndMax() {
+        int[] result = new int[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(int[] mm) {
+        int minValue = get(0,0);
+        int maxValue = minValue;
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    if (skip) {
+                        skip = false;
+                    } else {
+                        int value = get(i1,i2);
+                        if (value < minValue) {
+                            minValue = value;
+                        }
+                        if (value > maxValue) {
+                            maxValue = value;
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    if (skip) {
+                        skip = false;
+                    } else {
+                        int value = get(i1,i2);
+                        if (value < minValue) {
+                            minValue = value;
+                        }
+                        if (value > maxValue) {
+                            maxValue = value;
+                        }
+                    }
+                }
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public int sum() {
+        int totalValue = 0;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    totalValue += get(i1,i2);
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    totalValue += get(i1,i2);
+                }
+            }
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte2D.
      * <p>
@@ -366,10 +512,10 @@ public abstract class Int2D extends Array2D implements IntArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Int2D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Int2D src;
         if (arr.getType() == Traits.INT) {
             src = (Int2D)arr;
         } else {
@@ -553,6 +699,66 @@ public abstract class Int2D extends Array2D implements IntArray {
             int offset, int stride1, int stride2, int dim1, int dim2) {
         return new StriddenInt2D(data, offset, stride1,stride2, dim1,dim2);
     }
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.  The same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     * @return A Int1D view on the given slice of the array.
+     */
+    public abstract Int1D slice(int idx);
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.
+     * @param dim - The dimension to slice.  For these two arguments,
+     *              the same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     *
+     * @return A Int1D view on the given slice of the array.
+     */
+    public abstract Int1D slice(int idx, int dim);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param rng1 - The range of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param rng2 - The range of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Int2D view for the given ranges of the array.
+     */
+    public abstract Int2D view(Range rng1, Range rng2);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param idx1 - The list of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param idx2 - The list of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Int2D view for the given index selections of the
+     *         array.
+     */
+    public abstract Int2D view(int[] idx1, int[] idx2);
+
+    /**
+     * Get a view of the array as a 1D array.
+     *
+     * @return A 1D view of the array.
+     */
+    @Override
+    public abstract Int1D as1D();
 
 }
 

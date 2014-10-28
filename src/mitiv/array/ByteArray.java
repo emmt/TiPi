@@ -125,6 +125,53 @@ public interface ByteArray extends ShapedArray {
     @Override
     public abstract ByteArray copy();
 
+    /**
+     * Get the minimal value of all the elements.
+     * <p>
+     * Bytes are assumed to be unsigned.
+     * </p>
+     */
+    public abstract int min();
+
+    /**
+     * Get the maximal value of all the elements.
+     * <p>
+     * Bytes are assumed to be unsigned.
+     * </p>
+     */
+    public abstract int max();
+
+    /**
+     * Get the minimal and maximal values of all the elements.
+     * <p>
+     * Bytes are assumed to be unsigned.
+     * </p>
+     */
+    public abstract int[] getMinAndMax();
+
+    /**
+     * Get the minimal and maximal values of all the elements.
+     * <p>
+     * Bytes are assumed to be unsigned.
+     * </p>
+     */
+    public abstract void getMinAndMax(int[] mm);
+
+    /**
+     * Get the sum of values of all elements.
+     * <p>
+     * Bytes are assumed to be unsigned.
+     * </p>
+     */
+    public abstract int sum();
+
+    /**
+     * Get the average value of all elements.
+     * <p>
+     * Bytes are assumed to be unsigned.
+     * </p>
+     */
+    public abstract double average();
 }
 
 /*

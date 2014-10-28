@@ -34,7 +34,6 @@ import mitiv.random.ByteGenerator;
 import mitiv.base.Shape;
 import mitiv.base.indexing.CompiledRange;
 import mitiv.exception.NonConformableArrayException;
-import mitiv.exception.IllegalRangeException;
 
 
 /**
@@ -192,9 +191,6 @@ public class FlatByte1D extends Byte1D {
         CompiledRange cr1 = new CompiledRange(rng1, dim1, 0, 1);
         if (cr1.doesNothing()) {
             return this;
-        }
-        if (cr1.getNumber() == 0) {
-            throw new IllegalRangeException("Empty range.");
         }
         return new StriddenByte1D(this.data,
                 cr1.getOffset(),

@@ -33,7 +33,7 @@ import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
 import mitiv.random.ShortGenerator;
 import mitiv.base.indexing.CompiledRange;
-import mitiv.exception.IllegalRangeException;
+
 
 /**
  * Stridden implementation of 3-dimensional arrays of short's.
@@ -379,9 +379,6 @@ public class StriddenShort3D extends Short3D {
         CompiledRange cr3 = new CompiledRange(rng3, dim3, 0, stride3);
         if (cr1.doesNothing() && cr2.doesNothing() && cr3.doesNothing()) {
             return this;
-        }
-        if (cr1.getNumber() == 0 || cr2.getNumber() == 0 || cr3.getNumber() == 0) {
-            throw new IllegalRangeException("Empty range.");
         }
         return new StriddenShort3D(this.data,
                 cr1.getOffset() + cr2.getOffset() + cr3.getOffset(),

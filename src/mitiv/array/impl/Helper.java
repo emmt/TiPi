@@ -96,7 +96,7 @@ public class Helper {
         int length = src.length;
         int first = rng.getFirst(length);
         int last = rng.getLast(length);
-        int step = rng.step;
+        int step = rng.getStep();
         if (first <= last) {
             if (step < 0) {
                 badStepDirection();

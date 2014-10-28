@@ -34,6 +34,7 @@ import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.base.indexing.Range;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -277,6 +278,167 @@ public abstract class Double3D extends Array3D implements DoubleArray {
         return flatten(false);
     }
 
+    @Override
+    public double min() {
+        double minValue = get(0,0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        if (skip) {
+                            skip = false;
+                        } else {
+                            double value = get(i1,i2,i3);
+                            if (value < minValue) {
+                                minValue = value;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        if (skip) {
+                            skip = false;
+                        } else {
+                            double value = get(i1,i2,i3);
+                            if (value < minValue) {
+                                minValue = value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return minValue;
+    }
+
+    @Override
+    public double max() {
+        double maxValue = get(0,0,0);
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        if (skip) {
+                            skip = false;
+                        } else {
+                            double value = get(i1,i2,i3);
+                            if (value > maxValue) {
+                                maxValue = value;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        if (skip) {
+                            skip = false;
+                        } else {
+                            double value = get(i1,i2,i3);
+                            if (value > maxValue) {
+                                maxValue = value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return maxValue;
+    }
+
+    @Override
+    public double[] getMinAndMax() {
+        double[] result = new double[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(double[] mm) {
+        double minValue = get(0,0,0);
+        double maxValue = minValue;
+        boolean skip = true;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        if (skip) {
+                            skip = false;
+                        } else {
+                            double value = get(i1,i2,i3);
+                            if (value < minValue) {
+                                minValue = value;
+                            }
+                            if (value > maxValue) {
+                                maxValue = value;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        if (skip) {
+                            skip = false;
+                        } else {
+                            double value = get(i1,i2,i3);
+                            if (value < minValue) {
+                                minValue = value;
+                            }
+                            if (value > maxValue) {
+                                maxValue = value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    @Override
+    public double sum() {
+        double totalValue = 0;
+        if (getOrder() == ROW_MAJOR) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i3 = 0; i3 < dim3; ++i3) {
+                        totalValue += get(i1,i2,i3);
+                    }
+                }
+            }
+        } else {
+            /* Assume column-major order. */
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        totalValue += get(i1,i2,i3);
+                    }
+                }
+            }
+        }
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     /**
      * Convert instance into a Byte3D.
      * <p>
@@ -408,10 +570,10 @@ public abstract class Double3D extends Array3D implements DoubleArray {
 
     @Override
     public void assign(ShapedArray arr) {
-        Double3D src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        Double3D src;
         if (arr.getType() == Traits.DOUBLE) {
             src = (Double3D)arr;
         } else {
@@ -607,6 +769,70 @@ public abstract class Double3D extends Array3D implements DoubleArray {
             int offset, int stride1, int stride2, int stride3, int dim1, int dim2, int dim3) {
         return new StriddenDouble3D(data, offset, stride1,stride2,stride3, dim1,dim2,dim3);
     }
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.  The same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     * @return A Double2D view on the given slice of the array.
+     */
+    public abstract Double2D slice(int idx);
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.
+     * @param dim - The dimension to slice.  For these two arguments,
+     *              the same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     *
+     * @return A Double2D view on the given slice of the array.
+     */
+    public abstract Double2D slice(int idx, int dim);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param rng1 - The range of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param rng2 - The range of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     * @param rng3 - The range of indices to select along 3rd dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Double3D view for the given ranges of the array.
+     */
+    public abstract Double3D view(Range rng1, Range rng2, Range rng3);
+
+    /**
+     * Get a view of the array for given ranges of indices.
+     *
+     * @param idx1 - The list of indices to select along 1st dimension
+     *               (or {@code null} to select all.
+     * @param idx2 - The list of indices to select along 2nd dimension
+     *               (or {@code null} to select all.
+     * @param idx3 - The list of indices to select along 3rd dimension
+     *               (or {@code null} to select all.
+     *
+     * @return A Double3D view for the given index selections of the
+     *         array.
+     */
+    public abstract Double3D view(int[] idx1, int[] idx2, int[] idx3);
+
+    /**
+     * Get a view of the array as a 1D array.
+     *
+     * @return A 1D view of the array.
+     */
+    @Override
+    public abstract Double1D as1D();
 
 }
 

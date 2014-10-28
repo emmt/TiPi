@@ -55,6 +55,7 @@ import mitiv.base.mapping.${Type}Function;
 import mitiv.base.mapping.${Type}Scanner;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.base.indexing.Range;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -294,6 +295,115 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
         return flatten(false);
     }
 
+    //# // Define a macro to get the value.
+    //# suspend arg
+    //# def getValue = get(${arg})
+    //# if ${type_id} == ${BYTE}
+    //#     def valueType = int
+    //#     def getValue = (int)(${getValue} & 0xFF)
+    //# else
+    //#     def valueType = ${type}
+    //# end
+    //# def arg = ${zeroList}
+    //# def getInitialValue = ${getValue}
+    //# def arg = ${indexList}
+    //# def getValue = ${getValue}
+    //# def loopFirstIndent = ${__INDENT2__}
+    //# def _ = ${__NEWLINE__}${loopBodyIndent}
+    //# def __ = ${_}${__INDENT__}
+    //# def ___ = ${__}${__INDENT__}
+    //# def ____ = ${___}${__INDENT__}
+    @Override
+    public ${valueType} min() {
+        ${valueType} minValue = ${getInitialValue};
+        //# if ${rank} == 1
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            ${valueType} value = ${getValue};
+            if (value < minValue) {
+                minValue = value;
+            }
+        }
+        //# else
+        boolean skip = true;
+        //#   def loopBody = if (skip) {${__}skip = false;${_}} else {${__}${valueType} value = ${getValue};${__}if (value < minValue) {${___}minValue = value;${__}}${_}}
+        //#   emit ${loop}
+        //# end
+        return minValue;
+    }
+
+    @Override
+    public ${valueType} max() {
+        ${valueType} maxValue = ${getInitialValue};
+        //# if ${rank} == 1
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            ${valueType} value = ${getValue};
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        //# else
+        boolean skip = true;
+        //#   def loopBody = if (skip) {${__}skip = false;${_}} else {${__}${valueType} value = ${getValue};${__}if (value > maxValue) {${___}maxValue = value;${__}}${_}}
+        //#   emit ${loop}
+        //# end
+        return maxValue;
+    }
+
+    @Override
+    public ${valueType}[] getMinAndMax() {
+        ${valueType}[] result = new ${valueType}[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(${valueType}[] mm) {
+        ${valueType} minValue = ${getInitialValue};
+        ${valueType} maxValue = minValue;
+        //# if ${rank} == 1
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            ${valueType} value = ${getValue};
+            if (value < minValue) {
+                minValue = value;
+            }
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        //# else
+        boolean skip = true;
+        //#   def loopBody = if (skip) {${__}skip = false;${_}} else {${__}${valueType} value = ${getValue};${__}if (value < minValue) {${___}minValue = value;${__}}${__}if (value > maxValue) {${___}maxValue = value;${__}}${_}}
+        //#   emit ${loop}
+        //# end
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    //# if ${type_id} <= ${INT}
+    //#     def sumType = int
+    //# else
+    //#     def sumType = ${type}
+    //# end
+    @Override
+    public ${sumType} sum() {
+        //# def loopBody = totalValue += ${getValue};
+        //# if ${rank} == 1
+        ${sumType} totalValue = ${getInitialValue};
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            ${loopBody};
+        }
+        //# else
+        ${sumType} totalValue = 0;
+        //#   emit ${loop}
+        //# end
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
     //# def dst = ${BYTE}
     //# while ${dst} <= ${DOUBLE}
     //#     def dst_type = ${}{type_${dst}}
@@ -348,10 +458,10 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
 
     @Override
     public void assign(ShapedArray arr) {
-        ${className} src;
         if (! getShape().equals(arr.getShape())) {
             throw new NonConformableArrayException("Source and destination must have the same shape.");
         }
+        ${className} src;
         if (arr.getType() == Traits.${TYPE}) {
             src = (${className})arr;
         } else {
@@ -546,6 +656,103 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
             int offset, ${declStrideList}, ${declDimList}) {
         return new Stridden${className}(data, offset, ${strideList}, ${dimList});
     }
+
+    //# if ${rank} >= 1
+    //#    eval reducedRank = ${rank} - 1
+    //#    if ${reducedRank} == 0
+    //#        def reducedClassName = ${Type}Scalar
+    //#    else
+    //#        def reducedClassName = ${Type}${reducedRank}D
+    //#    end
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.  The same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     * @return A ${reducedClassName} view on the given slice of the array.
+     */
+    public abstract ${reducedClassName} slice(int idx);
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.
+     * @param dim - The dimension to slice.  For these two arguments,
+     *              the same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     *
+     * @return A ${reducedClassName} view on the given slice of the array.
+     */
+    public abstract ${reducedClassName} slice(int idx, int dim);
+
+    //# if ${rank} > 1
+    //#     def s = s
+    //# else
+    //#     def s =
+    //# end
+    /**
+     * Get a view of the array for given range${s} of indices.
+     *
+     //# def k = 0
+     //# def argType = Range
+     //# def argName = rng
+     //# for k in 1:${rank}
+     //#     if ${k} == 1
+     //#         def argList = ${argType} ${argName}${k}
+     //#     else
+     //#         def argList = ${argList}, ${argType} ${argName}${k}
+     //#     end
+     //#     def kth = ${}{nth_${k}}
+     * @param ${argName}${k} - The range of indices to select along ${kth} dimension
+     *               (or {@code null} to select all.
+     //# end
+     *
+     * @return A ${className} view for the given range${s} of the array.
+     */
+    public abstract ${className} view(${argList});
+
+    /**
+     * Get a view of the array for given range${s} of indices.
+     *
+     //# def k = 0
+     //# def argType = int[]
+     //# def argName = idx
+     //# for k in 1:${rank}
+     //#     if ${k} == 1
+     //#         def argList = ${argType} ${argName}${k}
+     //#     else
+     //#         def argList = ${argList}, ${argType} ${argName}${k}
+     //#     end
+     //#     def kth = ${}{nth_${k}}
+     * @param ${argName}${k} - The list of indices to select along ${kth} dimension
+     *               (or {@code null} to select all.
+     //# end
+     *
+     * @return A ${className} view for the given index selection${s} of the
+     *         array.
+     */
+    public abstract ${className} view(${argList});
+
+    //#end // for ${rank} >= 1
+    //#
+    //# if ${rank} == 0
+    //#     def obj = scalar
+    //# else
+    //#     def obj = array
+    //# end
+    /**
+     * Get a view of the ${obj} as a 1D array.
+     *
+     * @return A 1D view of the ${obj}.
+     */
+    @Override
+    public abstract ${Type}1D as1D();
 
 }
 

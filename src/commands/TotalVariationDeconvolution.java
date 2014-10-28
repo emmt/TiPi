@@ -25,20 +25,13 @@
 
 package commands;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Locale;
 
-import javax.imageio.ImageIO;
-
 import mitiv.array.ArrayFactory;
-import mitiv.array.ArrayUtils;
 import mitiv.array.DoubleArray;
-import mitiv.array.ScalingOptions;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.mapping.DoubleScanner;
@@ -46,19 +39,21 @@ import mitiv.cost.CompositeDifferentiableCostFunction;
 import mitiv.cost.HyperbolicTotalVariation;
 import mitiv.cost.QuadraticCost;
 import mitiv.deconv.ConvolutionOperator;
+import mitiv.deconv.WeightedConvolutionOperator;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.invpb.ReconstructionJob;
 import mitiv.invpb.ReconstructionSynchronizer;
 import mitiv.invpb.ReconstructionViewer;
 import mitiv.invpb.SimpleViewer;
+import mitiv.io.ColorModel;
 import mitiv.io.DataFormat;
-import mitiv.io.MdaFormat;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.LinearOperator;
 import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
+import mitiv.linalg.shaped.ShapedLinearOperator;
 import mitiv.optim.ArmijoLineSearch;
 import mitiv.optim.BoundProjector;
 import mitiv.optim.LBFGS;
@@ -71,6 +66,7 @@ import mitiv.optim.ReverseCommunicationOptimizer;
 import mitiv.optim.SimpleBounds;
 import mitiv.optim.SimpleLowerBound;
 import mitiv.optim.SimpleUpperBound;
+import mitiv.utils.Timer;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -118,6 +114,9 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     @Option(name = "--maxiter", aliases = {"-l"}, usage = "Maximum number of iterations, -1 for no limits.")
     private int maxiter = 200;
 
+    @Option(name = "--old", usage = "Use old concolution operator.")
+    private boolean old;
+
     @Argument
     private List<String> arguments;
 
@@ -126,6 +125,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     private DoubleArray result = null;
     private double fcost = 0.0;
     private DoubleShapedVector gcost = null;
+    private Timer timer = new Timer();
 
     public DoubleArray getData() {
         return data;
@@ -219,6 +219,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     public void setRelativeTolerance(double value) {
         grtol = value;
     }
+    @Override
     public double getRelativeTolerance() {
         return grtol;
     }
@@ -233,6 +234,16 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     }
     public void setWeight(double[] W){
         this.weights = W;
+    }
+
+    public static DoubleArray loadData(String name) {
+        ShapedArray arr = DataFormat.load(name);
+        ColorModel colorModel = ColorModel.guessColorModel(arr);
+        if (colorModel == ColorModel.NONE) {
+            return arr.toDouble();
+        } else {
+            return ColorModel.filterImageAsDouble(arr, ColorModel.GRAY);
+        }
     }
 
     //private static double parseDouble(String option, String arg) {
@@ -296,12 +307,12 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         }
 
         // Read the blurred image and the PSF.
-        job.data = readImage(inputName, ArrayUtils.GRAY, "input image");;
-        job.psf = readImage(psfName, ArrayUtils.GRAY, "PSF");
+        job.data = loadData(inputName);
+        job.psf = loadData(psfName);
 
         job.deconvolve();
         try {
-            writeImage(job.result, job.outName);
+            DataFormat.save(job.result, job.outName);
         } catch (IOException e) {
             if (job.debug) {
                 e.printStackTrace();
@@ -321,6 +332,8 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
 
     public void deconvolve() {
 
+        timer.start();
+
         // Check input data and get dimensions.
         if (data == null) {
             fatal("Input data not specified.");
@@ -335,9 +348,11 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         if (psf.getRank() != rank) {
             fatal("PSF must have same rank as data.");
         }
-        for (int k = 0; k < rank; ++k) {
-            if (psf.getDimension(k) != shape.dimension(k)) {
-                fatal("The dimensions of the PSF must match those of the input image.");
+        if (old) {
+            for (int k = 0; k < rank; ++k) {
+                if (psf.getDimension(k) != shape.dimension(k)) {
+                    fatal("The dimensions of the PSF must match those of the input image.");
+                }
             }
         }
         if (result != null) {
@@ -354,28 +369,8 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
 
         // Initialize a vector space and populate it with workspace vectors.
         DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
-        RealComplexFFT FFT = new RealComplexFFT(space);
         LinearOperator W = null;
-        if (weights != null) {
-            // FIXME: for now the weights are stored as a simple Java vector.
-            if (weights.length != data.getNumber()) {
-                throw new IllegalArgumentException("Error weights and input data size don't match");
-            }
-            W = new LinearOperator(space) {
-                @Override
-                protected void privApply(Vector src, Vector dst, int job)
-                        throws IncorrectSpaceException {
-                    double[] inp = ((DoubleShapedVector)src).getData();
-                    double[] out = ((DoubleShapedVector)dst).getData();
-                    int number = src.getNumber();
-                    for (int i = 0; i < number; ++i) {
-                        out[i] = inp[i]*weights[i];
-                    }
-                }
-            };
-        }
         DoubleShapedVector y = space.create(data);
-        DoubleShapedVector h = space.create(psf);
         DoubleShapedVector x = null;
         if (result != null) {
             x = space.create(result);
@@ -393,7 +388,37 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             }
         }
         result = ArrayFactory.wrap(x.getData(), shape);
-        ConvolutionOperator H = new ConvolutionOperator(FFT, h);
+
+        // Build convolution operator.
+        ShapedLinearOperator H = null;
+        if (old) {
+            RealComplexFFT FFT = new RealComplexFFT(space);
+            if (weights != null) {
+                // FIXME: for now the weights are stored as a simple Java vector.
+                if (weights.length != data.getNumber()) {
+                    throw new IllegalArgumentException("Error weights and input data size don't match");
+                }
+                W = new LinearOperator(space) {
+                    @Override
+                    protected void privApply(Vector src, Vector dst, int job)
+                            throws IncorrectSpaceException {
+                        double[] inp = ((DoubleShapedVector)src).getData();
+                        double[] out = ((DoubleShapedVector)dst).getData();
+                        int number = src.getNumber();
+                        for (int i = 0; i < number; ++i) {
+                            out[i] = inp[i]*weights[i];
+                        }
+                    }
+                };
+            }
+            DoubleShapedVector h = space.create(psf);
+            H = new ConvolutionOperator(FFT, h);
+        } else {
+            // FIXME: add a method for that
+            WeightedConvolutionOperator A = WeightedConvolutionOperator.build(space, space);
+            A.setPSF(psf);
+            H = A;
+        }
         if (debug) {
             System.out.println("Vector space initialization complete.");
         }
@@ -404,11 +429,15 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         CompositeDifferentiableCostFunction cost = new CompositeDifferentiableCostFunction(1.0, fdata, mu, fprior);
         fcost = 0.0;
         gcost = space.create();
+        timer.stop();
         if (debug) {
-            System.out.println("Cost function initialization complete.");
+            System.out.format("Cost function initialization completed in %.3f sec.\n",
+                    timer.getElapsedTime());
         }
+        timer.reset();
 
         // Initialize the non linear conjugate gradient
+        timer.start();
         LineSearch lineSearch = null;
         LBFGS lbfgs = null;
         LBFGSB lbfgsb = null;
@@ -457,16 +486,21 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             projector.apply(x, x);
 
         }
-
+        timer.stop();
         if (debug) {
-            System.out.println("Optimization method initialization complete.");
+            System.out.format("Optimization method initialization complete in %.3f sec.\n",
+                    timer.getElapsedTime());
         }
+        timer.reset();
+
 
         // Launch the non linear conjugate gradient
         OptimTask task = minimizer.start();
         while (run) {
             if (task == OptimTask.COMPUTE_FG) {
+                timer.resume();
                 fcost = cost.computeCostAndGradient(0.1, x, gcost, true);
+                timer.stop();
             } else if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
                 if (viewer != null) {
                     // FIXME: must get values back from the result vector
@@ -504,86 +538,27 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             task = minimizer.iterate(x, fcost, gcost);
         }
         if (verbose) {
+            timer.stop();
+            double elapsed = timer.getElapsedTime();
+            int nevals = getEvaluations();
+            System.out.format("Total time in cost function: %.3f s (%.3f ms/eval.)\n",
+                    elapsed, (nevals > 0 ? 1e3*elapsed/nevals : 0.0));
+            if (H instanceof WeightedConvolutionOperator) {
+                WeightedConvolutionOperator A = (WeightedConvolutionOperator)H;
+                elapsed = A.getElapsedTimeInFFT();
+                System.out.format("Total time in FFT: %.3f s (%.3f ms/eval.)\n",
+                        elapsed, (nevals > 0 ? 1e3*elapsed/nevals : 0.0));
+                elapsed = A.getElapsedTime() - elapsed;
+                System.out.format("Total time in other parts of the convolution operator: %.3f s (%.3f ms/eval.)\n",
+                        elapsed, (nevals > 0 ? 1e3*elapsed/nevals : 0.0));
+            }
             System.out.format("min(x) = %g\n", ArrayOps.getMin(x.getData()));
             System.out.format("max(x) = %g\n", ArrayOps.getMax(x.getData()));
         }
     }
 
 
-    /* ************************ FONCTIONS UTILES   ************************* */
-
-    /**
-     * FONCTIONS UTILES : writeImage()
-     * @param img
-     * @param fileName
-     * @throws IOException
-     * @throws FileNotFoundException
-     */
-    public static void writeImage(ShapedArray img, String fileName)
-            throws FileNotFoundException, IOException {
-        writeImage(img, fileName, new ScalingOptions());
-    }
-
-    public static void writeImage(ShapedArray img, String fileName,
-            ScalingOptions opts) throws FileNotFoundException, IOException {
-        int format = DataFormat.guessFormat(fileName);
-        String formatName = null;
-        switch (format) {
-        //case DataFormat.FMT_PNM:
-        case DataFormat.FMT_JPEG:
-        case DataFormat.FMT_PNG:
-        case DataFormat.FMT_GIF:
-        case DataFormat.FMT_BMP:
-        case DataFormat.FMT_WBMP:
-            //case DataFormat.FMT_TIFF:
-            //case DataFormat.FMT_FITS:
-            formatName = DataFormat.getFormatName(format);
-            break;
-        case DataFormat.FMT_MDA:
-            MdaFormat.save(img, fileName);
-            return;
-        default:
-            formatName = null;
-        }
-        if (formatName == null) {
-            fatal("Unknown/unsupported format name.");
-        }
-        int depth, width, height, rank = img.getRank();
-        if (rank == 2) {
-            depth = 1;
-            width = img.getDimension(0);
-            height = img.getDimension(1);
-        } else if (rank == 3) {
-            depth = img.getDimension(0);
-            width = img.getDimension(1);
-            height = img.getDimension(2);
-        } else {
-            depth = 0;
-            width = 0;
-            height = 0;
-            fatal("Expecting 2D array as image.");
-        }
-        double[] data = img.toDouble().flatten();
-        BufferedImage buf = ArrayUtils.doubleAsBuffered(data, depth, width, height, opts);
-        ImageIO.write(buf, formatName, new File(fileName));
-    }
-
-    private static DoubleArray readImage(String fileName, int colorModel, String description) {
-        DoubleArray img = null;
-        int format = DataFormat.guessFormat(fileName);
-        try {
-            if (format == DataFormat.FMT_MDA) {
-                img = MdaFormat.load(fileName).toDouble();
-            } else {
-                img = ArrayUtils.imageAsDouble(ImageIO.read(new File(fileName)), colorModel);
-            }
-        } catch (Exception e) {
-            fatal("Error while reading " + description + "(" + e.getMessage() +").");
-        }
-        return img;
-    }
-
-    /* Below are all methods required for a RecosntructionJob. */
+    /* Below are all methods required for a ReconstructionJob. */
 
     @Override
     public int getIterations() {
