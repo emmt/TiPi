@@ -778,6 +778,19 @@ public class MathUtils {
         }
     }
 
+    public static double[] uint16(double[] A)
+    {
+        int L = A.length;
+        double minScaleA = min(A);
+        double maxScaleA = max(A);
+        double deltaScaleA = maxScaleA - minScaleA;
+            for(int i = 0; i < L; i++)
+            {
+                A[i] = (A[i] - minScaleA)*65535/deltaScaleA;
+            }
+            return A;
+        }
+    
     /**
      * Scale array values into a 8bit (between 0 and 255).
      *
