@@ -434,7 +434,7 @@ public abstract class WeightedConvolutionOperator extends ShapedLinearOperator {
 
             }
             offset += stride*index;
-
+            stride *= inpDim;
         }
 
         return offset;
