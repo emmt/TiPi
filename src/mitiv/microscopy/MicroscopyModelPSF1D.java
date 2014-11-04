@@ -80,6 +80,7 @@ public class MicroscopyModelPSF1D
     protected int Ny; // number of samples along lateral Y-dimension
     protected int Nz; // number of samples along axial Z-dimension
     protected int Nzern; // number of Zernike modes
+    protected int PState;
     protected double use_depth_scaling; //use_depth_scaling = 1, PSF are centered on the plan with maximum strehl
     protected double deltaX;
     protected double deltaY;
@@ -177,35 +178,37 @@ public class MicroscopyModelPSF1D
         setDefocus(new double[] {ni/lambda, 0., 0.});
     }
 
-    /**
-     * Computes the mask of the pupil
-     * @param Nx
-     * @param Ny
-     * @param radius
-     */
     private double[] computeMaskPupil(int Nx, int Ny, double radius)
     {
         double[] maskPupil = new double[Nx*Ny];
-        double r[] = MathUtils.fftDist1D(Nx, Ny);
-        int Npix = Nx*Ny;
-        for(int in = 0; in < Npix; in++)
+        double scale_y = Math.pow(1/dxy/Ny, 2);
+        double scale_x = Math.pow(1/dxy/Nx, 2);
+        double rx, ry, ix, iy;
+        double radius2 = radius*radius;
+        for(int ny = 0; ny < Ny; ny++)
         {
-            if(r[in] < radius)
+            iy = Math.min(ny, Ny - ny);
+            ry = iy*iy*scale_y;
+            for(int nx = 0; nx < Nx; nx++)
             {
-                maskPupil[in] = 1;
+                ix = Math.min(nx, Nx - nx);
+                rx = ix*ix*scale_x;
+                if( (rx + ry) < radius2 )
+                {
+                    maskPupil[nx + ny*Nx] = 1;
+                }
             }
         }
         return maskPupil;
     }
 
-    
     private double[] computeZernike(int Nzern, int Nx, int Ny, double radius)
     {
         Zernike1D zernike = new Zernike1D(Nx, Ny);
         Z = zernike.zernikePupilMultipleOpt(Nzern, Nx, Ny, radius, NORMALIZED);
         return Z = MathUtils.gram_schmidt_orthonormalization(Z, Nx, Ny, Nzern);
     }
- 
+
     /**
      * Compute the modulus ρ on a Zernike polynomial basis
      * <p>
@@ -421,7 +424,9 @@ public class MicroscopyModelPSF1D
         double phasePupil;
         int Npix = Nx*Ny, Ci;
         double[] A = new double[2*Npix];
-
+        System.out.println("sum phi 1");
+        System.out.println(MathUtils.sum(phi));
+        
         if (zdepth != 0)
         {
             for (int in = 0; in < Npix; in++)
@@ -460,6 +465,9 @@ public class MicroscopyModelPSF1D
                 a[2*Ci + 1] = -A[2*in + 1];
             }
         }
+        System.out.println("sum phi 3");
+        System.out.println(MathUtils.sum(phi));
+        System.out.println();
     }
 
     public void computePSF_3Dfft()
@@ -846,14 +854,6 @@ public class MicroscopyModelPSF1D
         return grd;
     }
 
-    public void info()
-    {
-        System.out.println("Number of Zernikes : " + Nzern);
-        System.out.println("Wavelength NA: " + lambda);
-        System.out.println("Nx: " + Nx);
-        System.out.println("dxy: " + dxy);
-        System.out.println("Radius : " + NA/lambda*Nx*dxy);
-    }
 
     public double[] getRho() {
         return rho;
@@ -870,16 +870,16 @@ public class MicroscopyModelPSF1D
     public double[] getBeta() {
         return modulus_coefs;
     }
-    
+
     public double[] getAlpha() {
         return phase_coefs;
     }
-    
+
     public double[] getDefocus() {
         double[] defocus = {lambda_ni, deltaX, deltaY};
         return defocus;
     }
-    
+
     public double[] getGamma() {
         return psi;
     }
@@ -892,11 +892,6 @@ public class MicroscopyModelPSF1D
         return psf;
     }
 
-    public double[] getPSF_shift_pad(double coefPad) {
-
-        return MathUtils.fftShift3D(CommonUtils.imagePad(MathUtils.fftShift3D(psf, Nx, Ny, Nz), Nx, Ny, Nz, coefPad),
-                (int)(Nx*coefPad), (int)(Ny*coefPad), (int)(Nz*coefPad));
-    }
     public double[] getPSF(int k) {
         return MathUtils.getArray(getPSF(), Nx, Ny, k);
     }
