@@ -34,7 +34,6 @@ import mitiv.array.ArrayFactory;
 import mitiv.array.DoubleArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
-import mitiv.base.mapping.DoubleScanner;
 import mitiv.cost.CompositeDifferentiableCostFunction;
 import mitiv.cost.HyperbolicTotalVariation;
 import mitiv.cost.QuadraticCost;
@@ -428,7 +427,6 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         if (result != null) {
             x = resultSpace.create(result);
         } else if (old) {
-            DoubleScannerWithDoubleResult sum = DoubleScannerWithDoubleResult.sum;
             double psf_sum = psf.sum();
             x = resultSpace.create();
             if (psf_sum != 1.0) {
@@ -644,43 +642,6 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         return (gcost == null ? 0.0 : gcost.normInf());
     }
 
-}
-
-abstract class DoubleScannerWithDoubleResult implements DoubleScanner {
-    protected double result;
-    public double getResult() {
-        return result;
-    }
-    public static final DoubleScannerWithDoubleResult sum = new DoubleScannerWithDoubleResult() {
-        @Override
-        public void initialize(double arg) {
-            result = arg;
-        }
-        @Override
-        public void update(double arg) {
-            result += arg;
-        }
-    };
-    public static final DoubleScannerWithDoubleResult min = new DoubleScannerWithDoubleResult() {
-        @Override
-        public void initialize(double arg) {
-            result = arg;
-        }
-        @Override
-        public void update(double arg) {
-            result = Math.min(result, arg);
-        }
-    };
-    public static final DoubleScannerWithDoubleResult max = new DoubleScannerWithDoubleResult() {
-        @Override
-        public void initialize(double arg) {
-            result = arg;
-        }
-        @Override
-        public void update(double arg) {
-            result = Math.max(result, arg);
-        }
-    };
 }
 
 
