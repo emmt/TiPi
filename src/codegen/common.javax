@@ -1,0 +1,217 @@
+//# // This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
+//# // developed by the MitiV project.
+//# //
+//# // Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+//# //
+//# // Permission is hereby granted, free of charge, to any person obtaining a
+//# // copy of this software and associated documentation files (the
+//# // "Software"), to deal in the Software without restriction, including
+//# // without limitation the rights to use, copy, modify, merge, publish,
+//# // distribute, sublicense, and/or sell copies of the Software, and to
+//# // permit persons to whom the Software is furnished to do so, subject to
+//# // the following conditions:
+//# //
+//# // The above copyright notice and this permission notice shall be included
+//# // in all copies or substantial portions of the Software.
+//# //
+//# // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+//# // OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+//# // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+//# // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//# // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+//# // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+//# // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//# // ------------------------------------------------------------------------
+//#
+//# // Definitions for all available types.
+//#
+//# def BYTE   = 0
+//# def type_0 = byte
+//# def Type_0 = Byte
+//# def TYPE_0 = BYTE
+//# def TypeClass_0 = ${Type_0}
+//#
+//# def SHORT  = 1
+//# def type_1 = short
+//# def Type_1 = Short
+//# def TYPE_1 = SHORT
+//# def TypeClass_1 = ${Type_1}
+//#
+//# def INT    = 2
+//# def type_2 = int
+//# def Type_2 = Int
+//# def TYPE_2 = INT
+//# def TypeClass_2 = Integer
+//#
+//# def LONG   = 3
+//# def type_3 = long
+//# def Type_3 = Long
+//# def TYPE_3 = LONG
+//# def TypeClass_3 = ${Type_3}
+//#
+//# def FLOAT  = 4
+//# def type_4 = float
+//# def Type_4 = Float
+//# def TYPE_4 = FLOAT
+//# def TypeClass_4 = ${Type_4}
+//#
+//# def DOUBLE = 5
+//# def type_5 = double
+//# def Type_5 = Double
+//# def TYPE_5 = DOUBLE
+//# def TypeClass_5 = ${Type_5}
+//#
+//# // Convert type name into a numerical code.
+//# def identof_byte   = ${BYTE}
+//# def identof_short  = ${SHORT}
+//# def identof_int    = ${INT}
+//# def identof_long   = ${LONG}
+//# def identof_float  = ${FLOAT}
+//# def identof_double = ${DOUBLE}
+//#
+//# // Definitions for a specific type.
+//# if defined(type)
+//#     // Build a macro, then evaluate it to get the
+//#     // identifier of the current type.
+//#     def type_id = ${}{identof_${type}}
+//#     def type_id = ${type_id}
+//#     if ${type_id} < ${BYTE} || ${type_id} > ${DOUBLE}
+//#         error Unknown type ${type}
+//#     end
+//#     def Type = ${}{Type_${type_id}}
+//#     def Type = ${Type}
+//#     def TYPE = ${}{TYPE_${type_id}}
+//#     def TYPE = ${TYPE}
+//#     def TypeClass = ${}{TypeClass_${type_id}}
+//#     def TypeClass = ${TypeClass}
+//# end
+//#
+//# // Define ordering macros:
+//# def nth_0 = 0th
+//# def nth_1 = 1st
+//# def nth_2 = 2nd
+//# def nth_3 = 3rd
+//# def nth_4 = 4th
+//# def nth_5 = 5th
+//# def nth_6 = 6th
+//# def nth_7 = 7th
+//# def nth_8 = 8th
+//# def nth_9 = 9th
+//#
+//# if defined(rank)
+//#     // Define templates for simple and complex numbered lists.
+//#     //
+//#     // For simple numbered lists, the macros 'item' and 'sep' must be defined
+//#     // before expanding the macro 'list1' to yield:
+//#     //
+//#     //     ${item}1${sep}${item}2...${sep}${item}${rank}
+//#     //
+//#     // For complex numbered lists, the macros 'part1', 'part2', 'part3' and
+//#     // 'sep' must be defined before expanding the macro 'list2' to yield a
+//#     // list where the k-th item is: ${part1}${k}${part2}${k}${part3} for
+//#     // ${k} set to 1, ..., ${rank}.
+//#     //
+//#     def list0 := ${item}
+//#     def list1 := ${item}1
+//#     def list2 := ${part1}1${part2}1${part3}
+//#     def listK := ${part1}1${part2}0${part3}
+//#     if ${rank} >= 2
+//#         def list0 := ${list0}${sep}${item}
+//#         def list1 := ${list1}${sep}${item}2
+//#         def list2 := ${list2}${sep}${part1}2${part2}2${part3}
+//#         def listK := ${listK}${sep}${part1}2${part2}1${part3}
+//#         if ${rank} >= 3
+//#             def list0 := ${list0}${sep}${item}
+//#             def list1 := ${list1}${sep}${item}3
+//#             def list2 := ${list2}${sep}${part1}3${part2}3${part3}
+//#             def listK := ${listK}${sep}${part1}3${part2}2${part3}
+//#             if ${rank} >= 4
+//#                 def list0 := ${list0}${sep}${item}
+//#                 def list1 := ${list1}${sep}${item}4
+//#                 def list2 := ${list2}${sep}${part1}4${part2}4${part3}
+//#                 def listK := ${listK}${sep}${part1}4${part2}3${part3}
+//#                 if ${rank} >= 5
+//#                     def list0 := ${list0}${sep}${item}
+//#                     def list1 := ${list1}${sep}${item}5
+//#                     def list2 := ${list2}${sep}${part1}5${part2}5${part3}
+//#                     def listK := ${listK}${sep}${part1}5${part2}4${part3}
+//#                     if ${rank} >= 6
+//#                          def list0 := ${list0}${sep}${item}
+//#                          def list1 := ${list1}${sep}${item}6
+//#                          def list2 := ${list2}${sep}${part1}6${part2}6${part3}
+//#                          def listK := ${listK}${sep}${part1}6${part2}5${part3}
+//#                          if ${rank} >= 7
+//#                              def list0 := ${list0}${sep}${item}
+//#                              def list1 := ${list1}${sep}${item}7
+//#                              def list2 := ${list2}${sep}${part1}7${part2}7${part3}
+//#                              def listK := ${listK}${sep}${part1}7${part2}6${part3}
+//#                              if ${rank} >= 8
+//#                                  def list0 := ${list0}${sep}${item}
+//#                                  def list1 := ${list1}${sep}${item}8
+//#                                  def list2 := ${list2}${sep}${part1}8${part2}8${part3}
+//#                                  def listK := ${listK}${sep}${part1}8${part2}7${part3}
+//#                                  if ${rank} >= 9
+//#                                       def list0 := ${list0}${sep}${item}
+//#                                       def list1 := ${list1}${sep}${item}9
+//#                                       def list2 := ${list2}${sep}${part1}9${part2}9${part3}
+//#                                       def listK := ${listK}${sep}${part1}9${part2}8${part3}
+//#                                  end
+//#                              end
+//#                          end
+//#                      end
+//#                  end
+//#              end
+//#          end
+//#     end
+//#
+//#     if ${rank} >= 1
+//#
+//#         // Substitute the 'list' template to produce declaration lists:
+//#         def sep = ,${__SPACE__}
+//#         def item = int dim
+//#         def declDimList = ${list1}
+//#         def item = int stride
+//#         def declStrideList = ${list1}
+//#         def item = int i
+//#         def declIndexList = ${list1}
+//#
+//#         // Substitute the 'list' template to produce compact lists of
+//#         // arguments:
+//#         def sep = ,
+//#         def item = dim
+//#         def dimList = ${list1}
+//#         def item = stride
+//#         def strideList = ${list1}
+//#         def item = i
+//#         def indexList = ${list1}
+//#         def item = 0
+//#         def zeroList = ${list0}
+//#         def item = 1
+//#         def oneList = ${list0}
+//#
+//#     else
+//#
+//#         def declDimList =
+//#         def declStrideList =
+//#         def declIndexList =
+//#         def dimList =
+//#         def strideList =
+//#         def indexList =
+//#         def zeroList =
+//#         def oneList =
+//#
+//#     end
+//# end
+//#
+//# // Indentation (assuming 4 spaces):
+//# def __INDENT__ = ${__SPACE__}${__SPACE__}${__SPACE__}${__SPACE__}
+//# def __INDENT0__ =
+//# def __INDENT1__ = ${__INDENT__}
+//# def __INDENT2__ = ${__INDENT__}${__INDENT1__}
+//# def __INDENT3__ = ${__INDENT__}${__INDENT2__}
+//# def __INDENT4__ = ${__INDENT__}${__INDENT3__}
+//# def __INDENT5__ = ${__INDENT__}${__INDENT4__}
+//# def __INDENT6__ = ${__INDENT__}${__INDENT5__}
+//# def __INDENT7__ = ${__INDENT__}${__INDENT6__}
+//# def __INDENT8__ = ${__INDENT__}${__INDENT7__}
+//# def __INDENT9__ = ${__INDENT__}${__INDENT8__}

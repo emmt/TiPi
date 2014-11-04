@@ -1,0 +1,769 @@
+/*
+ * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
+ * developed by the MitiV project.
+ *
+ * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+//# // Get common definitions.
+//# include <common.javax>
+//#
+//# // Define the name of the class and its superclass.
+//# if ${rank} == 0
+//#     def superName = Scalar
+//#     def className = ${Type}Scalar
+//# else
+//#     def superName = Array${rank}D
+//#     def className = ${Type}${rank}D
+//# end
+//#
+//# // Be prepared to deal with different types.
+//# if ${type_id} == ${FLOAT}
+//#   def zero = 0.0F
+//# elif ${type_id} == ${DOUBLE}
+//#   def zero = 0.0
+//# else
+//#   def zero = 0
+//# end
+//#
+package ${package};
+
+import mitiv.array.impl.Flat${className};
+import mitiv.array.impl.Stridden${className};
+import mitiv.base.Shape;
+import mitiv.base.Shaped;
+import mitiv.base.Traits;
+import mitiv.base.mapping.${Type}Function;
+import mitiv.base.mapping.${Type}Scanner;
+import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NonConformableArrayException;
+import mitiv.base.indexing.Range;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.ShapedVector;
+import mitiv.random.${Type}Generator;
+
+//# def k = 1
+//# def flatIndexDoc   =  i${k}
+//# def shapeIndexDoc  =  i${k}
+//# def strideIndexDoc =  stride${k}*i${k}
+//# def strideIndex    =  stride${k}*i${k}
+//# def close          =
+//# while ${k} < ${rank}
+//#     eval k += 1
+//#     eval km2 = ${k} - 2
+//#     eval km1 = ${k} - 1
+//#     if ${k} < ${rank}
+//#          def open  = (
+//#          def close = ${close})
+//#     else
+//#          def open  =
+//#     end
+//#     def flatIndexDoc   = ${flatIndexDoc} + dim${km1}*${open}i${k}
+//#     def shapeIndexDoc  = ${shapeIndexDoc} + shape[${km2}]*${open}i${k}
+//#     def strideIndexDoc = ${strideIndexDoc} + stride${k}*i${k}
+//#     def strideIndex    = stride${k}*i${k} + ${strideIndex}
+//# end
+//# def strideIndex    = offset + ${strideIndex}
+//# def strideIndexDoc = offset + ${strideIndexDoc}
+//# def flatIndexDoc   = ${flatIndexDoc}${close}
+//# def shapeIndexDoc  = ${shapeIndexDoc}${close}
+//#
+//# //debug strideIndex: ${strideIndex}
+//# //debug strideIndexDoc: ${strideIndexDoc}
+//# //debug shapeIndexDoc: ${shapeIndexDoc}
+//# //debug flatIndexDoc: ${flatIndexDoc}
+
+/**
+ * Define class for comprehensive ${rank}-dimensional arrays of ${type}'s.
+ *
+ * @author Éric Thiébaut.
+ */
+public abstract class ${className} extends ${superName} implements ${Type}Array {
+
+    protected ${className}(${declDimList}) {
+        super(${dimList});
+    }
+
+    protected ${className}(int[] dims) {
+        super(dims);
+    }
+
+    protected ${className}(Shape shape) {
+        super(shape);
+    }
+
+    @Override
+    public final int getType() {
+        return type;
+    }
+
+    /**
+     * Query the value stored at a given position.
+     //# def k = 1
+     //# while ${k} <= ${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param i${k} - The index along the ${kth} dimension.
+     //#   eval k += 1
+     //# end
+     * @return The value stored at position {@code (${indexList})}.
+     */
+    public abstract ${type} get(${declIndexList});
+
+    /**
+     * Set the value at a given position.
+     //# def k = 1
+     //# while ${k} <= ${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param i${k}    - The index along the ${kth} dimension.
+     //#   eval k += 1
+     //# end
+     * @param value - The value to store at position {@code (${indexList})}.
+     */
+    public abstract void set(${declIndexList}, ${type} value);
+
+    /*=======================================================================*/
+    /* Provide default (non-optimized, except for the loop ordering)
+     * implementation of methods that can be coded solely with the "set"
+     * and "get" methods. */
+
+    //# // Build the row-major and column-major loop structures.
+    //#
+    //# def loop =              // complete loop structure
+    //# def colMajLoopBegin =   // begining of colum-major loops
+    //# def rowMajLoopBegin =   // begining of row-major loops
+    //# def loopBody =          // loop body
+    //# def loopEnd =           // ending of loops
+    //# def loopFirstIndent =   // indentation of the first line of the loop
+    //# def loopBodyIndent =    // indentation for the body of the loop
+    //# def colMajLoop =        // code for colum-major loops
+    //# def rowMajLoop =        // code for row-major loops
+    //#
+    //# // The following macros must be defined just before emitting the code.
+    //# suspend loopFirstIndent loopBody
+    //#
+    //# // Templates for the row-major and column-major loops (will be expanded later).
+    //# def rowMajTemplate := for (int i${k} = 0; i${k} < dim${k}; ++i${k}) {
+    //# def colMajTemplate := for (int i${j} = 0; i${j} < dim${j}; ++i${j}) {
+    //#
+    //# // Build the loops.
+    //# def indent = ${loopFirstIndent}
+    //# if ${rank} > 1
+    //#     def indent = ${indent}${__INDENT__}
+    //# end
+    //# for k in 1 : ${rank}
+    //#     eval j = ${rank} + 1 - ${k}
+    //#     if ${k} == 1
+    //#         def loopEnd = ${indent}}
+    //#     else
+    //#         def loopEnd = ${indent}}${__NEWLINE__}${loopEnd}
+    //#     end
+    //#     if ${k} == 1
+    //#         def colMajLoopBegin = ${indent}${colMajTemplate}
+    //#         def rowMajLoopBegin = ${indent}${rowMajTemplate}
+    //#     else
+    //#         def colMajLoopBegin = ${colMajLoopBegin}${__NEWLINE__}${indent}${colMajTemplate}
+    //#         def rowMajLoopBegin = ${rowMajLoopBegin}${__NEWLINE__}${indent}${rowMajTemplate}
+    //#     end
+    //#     def indent = ${indent}${__INDENT__}
+    //#     if ${k} == ${rank}
+    //#         def loopBodyIndent = ${indent}
+    //#     end
+    //# end
+    //# def colMajLoop = ${colMajLoopBegin}${__NEWLINE__}${loopBodyIndent}${loopBody}${__NEWLINE__}${loopEnd}
+    //# def rowMajLoop = ${rowMajLoopBegin}${__NEWLINE__}${loopBodyIndent}${loopBody}${__NEWLINE__}${loopEnd}
+    //#
+    //# // Cleanup and define complete loop construction optimized according to ordering
+    //# // (there are only column-major loops when rank is 1).
+    //# undef indent j k
+    //# if ${rank} == 1
+    //#     def loop = ${colMajLoop}
+    //#     undef rowMajLoop rowMajLoopBegin
+    //# else
+    //#     def loop = ${loopFirstIndent}if (getOrder() == ROW_MAJOR) {
+    //#     def loop = ${loop}${__NEWLINE__}${rowMajLoop}
+    //#     def loop = ${loop}${__NEWLINE__}${loopFirstIndent}} else {
+    //#     def loop = ${loop}${__NEWLINE__}${loopFirstIndent}${__INDENT__}/* Assume column-major order. */
+    //#     def loop = ${loop}${__NEWLINE__}${colMajLoop}
+    //#     def loop = ${loop}${__NEWLINE__}${loopFirstIndent}}
+    //# end
+    //# //debug ${loop}
+    @Override
+    public void fill(${type} value) {
+        //# def loopFirstIndent = ${__INDENT2__}
+        //# def loopBody = set(${indexList}, value);
+        //# emit ${loop}
+    }
+
+    //# suspend loopOperator
+    //# def loopFirstIndent = ${__INDENT2__}
+    //# def loopExpr = get(${indexList}) ${loopOperator} value
+    //# if ${type_id} <= 1
+    //#     def loopExpr = (${type})(${loopExpr})
+    //# end
+    //# def loopBody = set(${indexList}, ${loopExpr});
+    @Override
+    public void increment(${type} value) {
+        //# def loopOperator = +
+        //# emit ${loop}
+    }
+
+    @Override
+    public void decrement(${type} value) {
+        //# def loopOperator = -
+        //# emit ${loop}
+    }
+
+    @Override
+    public void scale(${type} value) {
+        //# def loopOperator = *
+        //# emit ${loop}
+    }
+
+    //# suspend loopExpr
+    //# def loopBody = set(${indexList}, ${loopExpr});
+    @Override
+    public void map(${Type}Function function) {
+        //# def loopExpr = function.apply(get(${indexList}))
+        //# emit ${loop}
+    }
+
+    @Override
+    public void fill(${Type}Generator generator) {
+        //# def loopExpr = generator.next${Type}()
+        //# emit ${loop}
+    }
+
+    @Override
+    public void scan(${Type}Scanner scanner)  {
+        //# if ${rank} == 1
+        scanner.initialize(get(0));
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            scanner.update(get(i1));
+        }
+        //# else
+        boolean initialized = false;
+        //# def _ = ${__NEWLINE__}${loopBodyIndent}
+        //# def __ = ${_}${__INDENT__}
+        //# def loopBody = if (initialized) {${__}scanner.update(get(${indexList}));${_}} else {${__}scanner.initialize(get(${indexList}));${__}initialized = true;${_}}
+        //#     emit ${loop}
+        //# end
+    }
+
+    /* Note that the following default implementation of the "flatten" method
+     * is always returning a copy of the contents whatever the value of the
+     * "forceCopy" argument.
+     * @see devel.eric.array.base.${Type}Array#flatten(boolean)
+     */
+    @Override
+    public ${type}[] flatten(boolean forceCopy) {
+        /* Copy the elements in column-major order. */
+        ${type}[] out = new ${type}[number];
+        //# if ${rank} == 1
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            out[i1] = get(i1);
+        }
+        //# else
+        int i = -1;
+        //#     def loopFirstIndent := ${__INDENT1__}
+        //#     def loopBody = out[++i] = get(${indexList});
+        //#     emit ${colMajLoop}
+        //# end
+        return out;
+    }
+
+    @Override
+    public ${type}[] flatten() {
+        return flatten(false);
+    }
+
+    //# // Define a macro to get the value.
+    //# suspend arg
+    //# def getValue = get(${arg})
+    //# if ${type_id} == ${BYTE}
+    //#     def valueType = int
+    //#     def getValue = (int)(${getValue} & 0xFF)
+    //# else
+    //#     def valueType = ${type}
+    //# end
+    //# def arg = ${zeroList}
+    //# def getInitialValue = ${getValue}
+    //# def arg = ${indexList}
+    //# def getValue = ${getValue}
+    //# def loopFirstIndent = ${__INDENT2__}
+    //# def _ = ${__NEWLINE__}${loopBodyIndent}
+    //# def __ = ${_}${__INDENT__}
+    //# def ___ = ${__}${__INDENT__}
+    //# def ____ = ${___}${__INDENT__}
+    @Override
+    public ${valueType} min() {
+        ${valueType} minValue = ${getInitialValue};
+        //# if ${rank} == 1
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            ${valueType} value = ${getValue};
+            if (value < minValue) {
+                minValue = value;
+            }
+        }
+        //# else
+        boolean skip = true;
+        //#   def loopBody = if (skip) {${__}skip = false;${_}} else {${__}${valueType} value = ${getValue};${__}if (value < minValue) {${___}minValue = value;${__}}${_}}
+        //#   emit ${loop}
+        //# end
+        return minValue;
+    }
+
+    @Override
+    public ${valueType} max() {
+        ${valueType} maxValue = ${getInitialValue};
+        //# if ${rank} == 1
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            ${valueType} value = ${getValue};
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        //# else
+        boolean skip = true;
+        //#   def loopBody = if (skip) {${__}skip = false;${_}} else {${__}${valueType} value = ${getValue};${__}if (value > maxValue) {${___}maxValue = value;${__}}${_}}
+        //#   emit ${loop}
+        //# end
+        return maxValue;
+    }
+
+    @Override
+    public ${valueType}[] getMinAndMax() {
+        ${valueType}[] result = new ${valueType}[2];
+        getMinAndMax(result);
+        return result;
+    }
+
+    @Override
+    public void getMinAndMax(${valueType}[] mm) {
+        ${valueType} minValue = ${getInitialValue};
+        ${valueType} maxValue = minValue;
+        //# if ${rank} == 1
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            ${valueType} value = ${getValue};
+            if (value < minValue) {
+                minValue = value;
+            }
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+        //# else
+        boolean skip = true;
+        //#   def loopBody = if (skip) {${__}skip = false;${_}} else {${__}${valueType} value = ${getValue};${__}if (value < minValue) {${___}minValue = value;${__}}${__}if (value > maxValue) {${___}maxValue = value;${__}}${_}}
+        //#   emit ${loop}
+        //# end
+        mm[0] = minValue;
+        mm[1] = maxValue;
+    }
+
+    //# if ${type_id} <= ${INT}
+    //#     def sumType = int
+    //# else
+    //#     def sumType = ${type}
+    //# end
+    @Override
+    public ${sumType} sum() {
+        //# def loopBody = totalValue += ${getValue};
+        //# if ${rank} == 1
+        ${sumType} totalValue = ${getInitialValue};
+        for (int i1 = 1; i1 < dim1; ++i1) {
+            ${loopBody};
+        }
+        //# else
+        ${sumType} totalValue = 0;
+        //#   emit ${loop}
+        //# end
+        return totalValue;
+    }
+
+    @Override
+    public double average() {
+        return (double)sum()/(double)number;
+    }
+
+    //# def dst = ${BYTE}
+    //# while ${dst} <= ${DOUBLE}
+    //#     def dst_type = ${}{type_${dst}}
+    //#     def dst_Type = ${}{Type_${dst}}
+    //#     def dst_TYPE = ${}{TYPE_${dst}}
+    //#     if ${dst} == 2
+    //#         def a = an
+    //#         def A = An
+    //#     else
+    //#         def a = a
+    //#         def A = A
+    //#     end
+    //#     def argDimList = dim1
+    //#     def k = 1
+    //#     while ${k} < ${rank}
+    //#         eval k += 1
+    //#         def argDimList = ${argDimList}, dim${k}
+    //#     end
+    /**
+     * Convert instance into ${a} ${dst_Type}${rank}D.
+     * <p>
+     * The operation is lazy, in the sense that {@code this} is returned if it
+     * is already of the requested type.
+     *
+     * @return ${A} ${dst_Type}${rank}D whose values has been converted into ${dst_type}'s
+     *         from those of {@code this}.
+     */
+    @Override
+    public ${dst_Type}${rank}D to${dst_Type}() {
+        //# if ${type_id} == ${dst}
+        return this;
+        //# else
+        ${dst_type}[] out = new ${dst_type}[number];
+        int i = -1;
+        //#     if ${rank} == 1
+        //#         def loopFirstIndent := ${__INDENT2__}
+        //#     else
+        //#         def loopFirstIndent := ${__INDENT1__}
+        //#     end
+        //#     def loopBody = out[++i] = (${dst_type})get(${indexList});
+        //#     emit ${colMajLoop}
+        return ${dst_Type}${rank}D.wrap(out, ${argDimList});
+        //# end
+    }
+    //#     eval dst += 1
+    //# end
+
+    @Override
+    public ${className} copy() {
+        return new Flat${className}(flatten(true), shape);
+    }
+
+    @Override
+    public void assign(ShapedArray arr) {
+        if (! getShape().equals(arr.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        ${className} src;
+        if (arr.getType() == Traits.${TYPE}) {
+            src = (${className})arr;
+        } else {
+            src = (${className})arr.to${Type}();
+        }
+        // FIXME: do assignation and conversion at the same time
+        //# if ${rank} == 1
+        for (int i1 = 0; i1 < dim1; ++i1) {
+            set(i1, src.get(i1));
+        }
+        //# else
+        //#     def loopFirstIndent := ${__INDENT2__}
+        //#     def loopBody = set(${indexList}, src.get(${indexList}));
+        if (getOrder() == ROW_MAJOR && src.getOrder() == ROW_MAJOR) {
+            //# emit ${rowMajLoop}
+        } else {
+            /* Assume column-major order. */
+            //# emit ${colMajLoop}
+        }
+        //# end
+    }
+
+    @Override
+    public void assign(ShapedVector vec) {
+        if (! getShape().equals(vec.getShape())) {
+            throw new NonConformableArrayException("Source and destination must have the same shape.");
+        }
+        // FIXME: much too slow and may be skipped if data are identical (and array is flat)
+        //# if ${rank} == 1
+        //#     def loopFirstIndent := ${__INDENT3__}
+        //#     def loopBody = set(${indexList}, (${type})src.get(${indexList}));
+        //# else
+        //#     def loopFirstIndent := ${__INDENT2__}
+        //#     def loopBody = set(${indexList}, (${type})src.get(++i));
+        int i = -1;
+        //# end
+        if (vec.getType() == Traits.DOUBLE) {
+            DoubleShapedVector src = (DoubleShapedVector)vec;
+            //# emit ${colMajLoop}
+        } else if (vec.getType() == Traits.FLOAT) {
+            FloatShapedVector src = (FloatShapedVector)vec;
+            //# emit ${colMajLoop}
+        } else {
+            throw new IllegalTypeException();
+        }
+    }
+
+
+    /*=======================================================================*/
+    /* ARRAY FACTORIES */
+
+    @Override
+    public ${className} create() {
+        return new Flat${className}(getShape());
+    }
+
+    /**
+     * Create a ${rank}D array of ${type}'s with given dimensions.
+     * <p>
+     * This method creates a ${rank}D array of ${type}'s with zero offset, contiguous
+     * elements and column-major order.  All dimensions must at least 1.
+     //# def k = 1
+     //# while ${k} <= ${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param dim${k} - The ${kth} dimension of the ${rank}D array.
+     //#   eval k += 1
+     //# end
+     * @return A new ${rank}D array of ${type}'s.
+     * @see {@link Shaped#COLUMN_MAJOR}
+     */
+    public static ${className} create(${declDimList}) {
+        return new Flat${className}(${dimList});
+    }
+
+    /**
+     * Create a ${rank}D array of ${type}'s with given shape.
+     * <p>
+     * This method creates a ${rank}D array of ${type}'s with zero offset, contiguous
+     * elements and column-major order.
+     * @param dims - The list of dimensions of the ${rank}D array (all dimensions
+     *               must at least 1).  This argument is not referenced by
+     *               the returned object and its contents can be modified
+     *               after calling this method.
+     * @return A new ${rank}D array of ${type}'s.
+     * @see {@link Shaped#COLUMN_MAJOR}
+     */
+    public static ${className} create(int[] dims) {
+        return new Flat${className}(dims);
+    }
+
+    /**
+     * Create a ${rank}D array of ${type}'s with given shape.
+     * <p>
+     * This method creates a ${rank}D array of ${type}'s with zero offset, contiguous
+     * elements and column-major order.
+     * @param shape      - The shape of the ${rank}D array.
+     * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
+     *                     otherwise, the returned object will reference
+     *                     <b>shape</b> whose contents <b><i>must not be
+     *                     modified</i></b> while the returned object is in
+     *                     use.
+     * @return A new ${rank}D array of ${type}'s.
+     * @see {@link Shaped#COLUMN_MAJOR}
+     */
+    public static ${className} create(Shape shape) {
+        return new Flat${className}(shape);
+    }
+
+    /**
+     * Wrap an existing array in a ${rank}D array of ${type}'s with given dimensions.
+     * <p>
+     * The returned ${rank}D array have zero offset, contiguous elements and
+     * column-major storage order.  More specifically:
+     * <pre>arr.get(${indexList}) = data[${flatIndexDoc}]</pre>
+     * with {@code arr} the returned ${rank}D array.
+     * @param data - The data to wrap in the ${rank}D array.
+     //# def k = 1
+     //# while ${k} <= ${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param dim${k} - The ${kth} dimension of the ${rank}D array.
+     //#   eval k += 1
+     //# end
+     * @return A ${rank}D array sharing the elements of <b>data</b>.
+     * @see {@link Shaped#COLUMN_MAJOR}
+     */
+    public static ${className} wrap(${type}[] data, ${declDimList}) {
+        return new Flat${className}(data, ${dimList});
+    }
+
+    /**
+     * Wrap an existing array in a ${rank}D array of ${type}'s with given shape.
+     * <p>
+     * The returned ${rank}D array have zero offset, contiguous elements and
+     * column-major storage order.  More specifically:
+     * <pre>arr.get(${indexList}) = data[${shapeIndexDoc}]</pre>
+     * with {@code arr} the returned ${rank}D array.
+     * @param data - The data to wrap in the ${rank}D array.
+     * @param dims - The list of dimensions of the ${rank}D array.  This argument is
+     *                not referenced by the returned object and its contents
+     *                can be modified after the call to this method.
+     * @return A new ${rank}D array of ${type}'s sharing the elements of <b>data</b>.
+     * @see {@link Shaped#COLUMN_MAJOR}
+     */
+    public static ${className} wrap(${type}[] data, int[] dims) {
+        return new Flat${className}(data, dims);
+    }
+
+    /**
+     * Wrap an existing array in a ${rank}D array of ${type}'s with given shape.
+     * <p>
+     * The returned ${rank}D array have zero offset, contiguous elements and
+     * column-major storage order.  More specifically:
+     * <pre>arr.get(${indexList}) = data[${shapeIndexDoc}]</pre>
+     * with {@code arr} the returned ${rank}D array.
+     * @param data       - The data to wrap in the ${rank}D array.
+     * @param shape      - The shape of the ${rank}D array.
+     * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
+     *                     otherwise, the returned object will reference
+     *                     <b>shape</b> whose contents <b><i>must not be
+     *                     modified</i></b> while the returned object is in
+     *                     use.
+     * @return A new ${rank}D array of ${type}'s sharing the elements of <b>data</b>.
+     * @see {@link Shaped#COLUMN_MAJOR}
+     */
+    public static ${className} wrap(${type}[] data, Shape shape) {
+        return new Flat${className}(data, shape);
+    }
+
+    /**
+     * Wrap an existing array in a ${rank}D array of ${type}'s with given dimensions,
+     * strides and offset.
+     * <p>
+     * This creates a ${rank}D array of dimensions {{@code ${dimList}}}
+     * sharing (part of) the contents of {@code data} in arbitrary storage
+     * order.  More specifically:
+     * <pre>arr.get(${indexList}) = data[${strideIndexDoc}]</pre>
+     * with {@code arr} the returned ${rank}D array.
+     * @param data    - The array to wrap in the ${rank}D array.
+     * @param offset  - The offset in {@code data} of element (${zeroList}) of
+     *                  the ${rank}D array.
+     //# for k in 1:${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param stride${k} - The stride along the ${kth} dimension.
+     //# end
+     //# for k in 1:${rank}
+     //#   def kth = ${}{nth_${k}}
+     * @param dim${k}    - The ${kth} dimension of the ${rank}D array.
+     //# end
+     * @return A ${rank}D array sharing the elements of <b>data</b>.
+     */
+    public static ${className} wrap(${type}[] data,
+            int offset, ${declStrideList}, ${declDimList}) {
+        return new Stridden${className}(data, offset, ${strideList}, ${dimList});
+    }
+
+    //# if ${rank} >= 1
+    //#    eval reducedRank = ${rank} - 1
+    //#    if ${reducedRank} == 0
+    //#        def reducedClassName = ${Type}Scalar
+    //#    else
+    //#        def reducedClassName = ${Type}${reducedRank}D
+    //#    end
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.  The same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     * @return A ${reducedClassName} view on the given slice of the array.
+     */
+    public abstract ${reducedClassName} slice(int idx);
+
+    /**
+     * Get a slice of the array.
+     *
+     * @param idx - The index of the slice along the last dimension of
+     *              the array.
+     * @param dim - The dimension to slice.  For these two arguments,
+     *              the same indexing rules as for
+     *              {@link mitiv.base.indexing.Range} apply for negative
+     *              index: 0 for the first, 1 for the second, -1 for the
+     *              last, -2 for penultimate, <i>etc.</i>
+     *
+     * @return A ${reducedClassName} view on the given slice of the array.
+     */
+    public abstract ${reducedClassName} slice(int idx, int dim);
+
+    //# if ${rank} > 1
+    //#     def s = s
+    //# else
+    //#     def s =
+    //# end
+    /**
+     * Get a view of the array for given range${s} of indices.
+     *
+     //# def k = 0
+     //# def argType = Range
+     //# def argName = rng
+     //# for k in 1:${rank}
+     //#     if ${k} == 1
+     //#         def argList = ${argType} ${argName}${k}
+     //#     else
+     //#         def argList = ${argList}, ${argType} ${argName}${k}
+     //#     end
+     //#     def kth = ${}{nth_${k}}
+     * @param ${argName}${k} - The range of indices to select along ${kth} dimension
+     *               (or {@code null} to select all.
+     //# end
+     *
+     * @return A ${className} view for the given range${s} of the array.
+     */
+    public abstract ${className} view(${argList});
+
+    /**
+     * Get a view of the array for given range${s} of indices.
+     *
+     //# def k = 0
+     //# def argType = int[]
+     //# def argName = idx
+     //# for k in 1:${rank}
+     //#     if ${k} == 1
+     //#         def argList = ${argType} ${argName}${k}
+     //#     else
+     //#         def argList = ${argList}, ${argType} ${argName}${k}
+     //#     end
+     //#     def kth = ${}{nth_${k}}
+     * @param ${argName}${k} - The list of indices to select along ${kth} dimension
+     *               (or {@code null} to select all.
+     //# end
+     *
+     * @return A ${className} view for the given index selection${s} of the
+     *         array.
+     */
+    public abstract ${className} view(${argList});
+
+    //#end // for ${rank} >= 1
+    //#
+    //# if ${rank} == 0
+    //#     def obj = scalar
+    //# else
+    //#     def obj = array
+    //# end
+    /**
+     * Get a view of the ${obj} as a 1D array.
+     *
+     * @return A 1D view of the ${obj}.
+     */
+    @Override
+    public abstract ${Type}1D as1D();
+
+}
+
+/*
+ * Local Variables:
+ * mode: Java
+ * tab-width: 8
+ * indent-tabs-mode: nil
+ * c-basic-offset: 4
+ * fill-column: 78
+ * coding: utf-8
+ * ispell-local-dictionary: "american"
+ * End:
+ */
