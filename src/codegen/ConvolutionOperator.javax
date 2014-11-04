@@ -217,8 +217,8 @@ public class ${className} extends WeightedConvolutionOperator {
             applyDirect(mtf, wgt, ((${Type}ShapedVector)src).getData(),
                         ((${Type}ShapedVector)dst).getData(), tmp);
         } else {
-            applyAdjoint(mtf, wgt, ((${Type}ShapedVector)src).getData(),
-                         ((${Type}ShapedVector)dst).getData(), tmp);
+            applyAdjoint(mtf, wgt, ((${Type}ShapedVector)dst).getData(),
+                         ((${Type}ShapedVector)src).getData(), tmp);
         }
         timer.stop();
     }
@@ -405,7 +405,7 @@ public class ${className} extends WeightedConvolutionOperator {
         /* Copy real part of workspace into output array. */
         for (int k = 0; k < number; ++k) {
             int real = k + k;
-            y[k] = z[real];
+            x[k] = z[real];
         }
 
     }

@@ -194,8 +194,8 @@ public class ConvolutionDouble1D extends WeightedConvolutionOperator {
             applyDirect(mtf, wgt, ((DoubleShapedVector)src).getData(),
                         ((DoubleShapedVector)dst).getData(), tmp);
         } else {
-            applyAdjoint(mtf, wgt, ((DoubleShapedVector)src).getData(),
-                         ((DoubleShapedVector)dst).getData(), tmp);
+            applyAdjoint(mtf, wgt, ((DoubleShapedVector)dst).getData(),
+                         ((DoubleShapedVector)src).getData(), tmp);
         }
         timer.stop();
     }
@@ -286,7 +286,7 @@ public class ConvolutionDouble1D extends WeightedConvolutionOperator {
         /* Copy real part of workspace into output array. */
         for (int k = 0; k < number; ++k) {
             int real = k + k;
-            y[k] = z[real];
+            x[k] = z[real];
         }
 
     }

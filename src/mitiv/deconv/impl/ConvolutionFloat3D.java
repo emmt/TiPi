@@ -202,8 +202,8 @@ public class ConvolutionFloat3D extends WeightedConvolutionOperator {
             applyDirect(mtf, wgt, ((FloatShapedVector)src).getData(),
                         ((FloatShapedVector)dst).getData(), tmp);
         } else {
-            applyAdjoint(mtf, wgt, ((FloatShapedVector)src).getData(),
-                         ((FloatShapedVector)dst).getData(), tmp);
+            applyAdjoint(mtf, wgt, ((FloatShapedVector)dst).getData(),
+                         ((FloatShapedVector)src).getData(), tmp);
         }
         timer.stop();
     }
@@ -324,7 +324,7 @@ public class ConvolutionFloat3D extends WeightedConvolutionOperator {
         /* Copy real part of workspace into output array. */
         for (int k = 0; k < number; ++k) {
             int real = k + k;
-            y[k] = z[real];
+            x[k] = z[real];
         }
 
     }
