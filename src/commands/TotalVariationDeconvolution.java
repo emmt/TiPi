@@ -66,6 +66,7 @@ import mitiv.optim.ReverseCommunicationOptimizer;
 import mitiv.optim.SimpleBounds;
 import mitiv.optim.SimpleLowerBound;
 import mitiv.optim.SimpleUpperBound;
+import mitiv.utils.FFTUtils;
 import mitiv.utils.Timer;
 
 import org.kohsuke.args4j.Argument;
@@ -114,7 +115,10 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     @Option(name = "--maxiter", aliases = {"-l"}, usage = "Maximum number of iterations, -1 for no limits.")
     private int maxiter = 200;
 
-    @Option(name = "--old", usage = "Use old concolution operator.")
+    @Option(name = "--pad", usage = "Padding method (auto|none).", metaVar = "VALUE")
+    private String paddingMethod = "auto";
+
+    @Option(name = "--old", usage = "Use old convolution operator.")
     private boolean old;
 
     @Argument
@@ -229,7 +233,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     public void setUpperBound(double value) {
         upperBound = value;
     }
-    public void stop(){
+    public void stop() {
         run = false;
     }
     public void setWeight(double[] W){
@@ -240,6 +244,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         ShapedArray arr = DataFormat.load(name);
         ColorModel colorModel = ColorModel.guessColorModel(arr);
         if (colorModel == ColorModel.NONE) {
+            // FIXME: what about bytes?
             return arr.toDouble();
         } else {
             return ColorModel.filterImageAsDouble(arr, ColorModel.GRAY);
@@ -310,7 +315,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         job.data = loadData(inputName);
         job.psf = loadData(psfName);
 
-        job.deconvolve();
+        job.deconvolve(job.paddingMethod);
         try {
             DataFormat.save(job.result, job.outName);
         } catch (IOException e) {
@@ -330,7 +335,36 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         throw new IllegalArgumentException(reason);
     }
 
-    public void deconvolve() {
+    public void deconvolve(String padding) {
+        Shape dataShape = data.getShape();
+        Shape psfShape = psf.getShape();
+        if (old) {
+            deconvolve(dataShape);
+        } else {
+            int rank =  data.getRank();
+            int[] dims = new int[rank];
+            if (padding.equals("auto")) {
+                for (int k = 0; k < rank; ++k) {
+                    int dataDim = dataShape.dimension(k);
+                    int psfDim = psfShape.dimension(k);
+                    int resultDim = FFTUtils.bestDimension(dataDim + psfDim - 1);
+                    dims[k] = resultDim;
+                }
+            } else if (padding.equals("none")) {
+                for (int k = 0; k < rank; ++k) {
+                    int dataDim = dataShape.dimension(k);
+                    int psfDim = psfShape.dimension(k);
+                    int resultDim = FFTUtils.bestDimension(Math.max(dataDim, psfDim));
+                    dims[k] = resultDim;
+                }
+            } else {
+                fatal("Unknown padding strategy.");
+            }
+            deconvolve(Shape.make(dims));
+        }
+    }
+
+    public void deconvolve(Shape resultShape) {
 
         timer.start();
 
@@ -338,7 +372,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         if (data == null) {
             fatal("Input data not specified.");
         }
-        Shape shape = data.getShape();
+        Shape dataShape = data.getShape();
         int rank = data.getRank();
 
         // Check the PSF.
@@ -348,10 +382,11 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         if (psf.getRank() != rank) {
             fatal("PSF must have same rank as data.");
         }
+        Shape psfShape = psf.getShape();
         if (old) {
             for (int k = 0; k < rank; ++k) {
-                if (psf.getDimension(k) != shape.dimension(k)) {
-                    fatal("The dimensions of the PSF must match those of the input image.");
+                if (psf.getDimension(k) != dataShape.dimension(k)) {
+                    fatal("The dimensions of the PSF must match those of the data.");
                 }
             }
         }
@@ -366,19 +401,36 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             }
         }
 
+        // Check the shape of the result.
+        for (int k = 0; k < rank; ++k) {
+            if (old) {
+                if (resultShape.dimension(k) != dataShape.dimension(k)) {
+                    fatal("The dimensions of the result must be equal to those of the data.");
+                }
+            } else {
+                if (resultShape.dimension(k) < dataShape.dimension(k)) {
+                    fatal("The dimensions of the result must be at least those of the data.");
+                }
+                if (resultShape.dimension(k) < psfShape.dimension(k)) {
+                    fatal("The dimensions of the result must be at least those of the PSF.");
+                }
+            }
+        }
 
-        // Initialize a vector space and populate it with workspace vectors.
-        DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
+        // Initialize an input and output vector spaces and populate them with
+        // workspace vectors.
+
+        DoubleShapedVectorSpace dataSpace = new DoubleShapedVectorSpace(dataShape);
+        DoubleShapedVectorSpace resultSpace = (old ? dataSpace : new DoubleShapedVectorSpace(resultShape));
         LinearOperator W = null;
-        DoubleShapedVector y = space.create(data);
+        DoubleShapedVector y = dataSpace.create(data);
         DoubleShapedVector x = null;
         if (result != null) {
-            x = space.create(result);
-        } else {
+            x = resultSpace.create(result);
+        } else if (old) {
             DoubleScannerWithDoubleResult sum = DoubleScannerWithDoubleResult.sum;
-            psf.scan(sum);
-            double psf_sum = sum.getResult();
-            x = space.create();
+            double psf_sum = psf.sum();
+            x = resultSpace.create();
             if (psf_sum != 1.0) {
                 if (psf_sum != 0.0) {
                     x.axpby(0.0, x, 1.0/psf_sum, y);
@@ -386,19 +438,21 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                     x.fill(0.0);
                 }
             }
+        } else {
+            x = resultSpace.create(0.0);
         }
-        result = ArrayFactory.wrap(x.getData(), shape);
+        result = ArrayFactory.wrap(x.getData(), resultShape);
 
         // Build convolution operator.
         ShapedLinearOperator H = null;
         if (old) {
-            RealComplexFFT FFT = new RealComplexFFT(space);
+            RealComplexFFT FFT = new RealComplexFFT(resultSpace);
             if (weights != null) {
                 // FIXME: for now the weights are stored as a simple Java vector.
                 if (weights.length != data.getNumber()) {
                     throw new IllegalArgumentException("Error weights and input data size don't match");
                 }
-                W = new LinearOperator(space) {
+                W = new LinearOperator(resultSpace) {
                     @Override
                     protected void privApply(Vector src, Vector dst, int job)
                             throws IncorrectSpaceException {
@@ -411,11 +465,11 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                     }
                 };
             }
-            DoubleShapedVector h = space.create(psf);
+            DoubleShapedVector h = resultSpace.create(psf);
             H = new ConvolutionOperator(FFT, h);
         } else {
             // FIXME: add a method for that
-            WeightedConvolutionOperator A = WeightedConvolutionOperator.build(space, space);
+            WeightedConvolutionOperator A = WeightedConvolutionOperator.build(resultSpace, dataSpace);
             A.setPSF(psf);
             H = A;
         }
@@ -425,10 +479,10 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
 
         // Build the cost functions
         QuadraticCost fdata = new QuadraticCost(H, y, W);
-        HyperbolicTotalVariation fprior = new HyperbolicTotalVariation(space, epsilon);
+        HyperbolicTotalVariation fprior = new HyperbolicTotalVariation(resultSpace, epsilon);
         CompositeDifferentiableCostFunction cost = new CompositeDifferentiableCostFunction(1.0, fdata, mu, fprior);
         fcost = 0.0;
-        gcost = space.create();
+        gcost = resultSpace.create();
         timer.stop();
         if (debug) {
             System.out.format("Cost function initialization completed in %.3f sec.\n",
@@ -454,13 +508,13 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             /* No bounds have been specified. */
             lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
             if (limitedMemorySize > 0) {
-                lbfgs = new LBFGS(space, limitedMemorySize, lineSearch);
+                lbfgs = new LBFGS(resultSpace, limitedMemorySize, lineSearch);
                 lbfgs.setAbsoluteTolerance(gatol);
                 lbfgs.setRelativeTolerance(grtol);
                 minimizer = lbfgs;
             } else {
                 int method = NonLinearConjugateGradient.DEFAULT_METHOD;
-                nlcg = new NonLinearConjugateGradient(space, method, lineSearch);
+                nlcg = new NonLinearConjugateGradient(resultSpace, method, lineSearch);
                 nlcg.setAbsoluteTolerance(gatol);
                 nlcg.setRelativeTolerance(grtol);
                 minimizer = nlcg;
@@ -470,16 +524,16 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             lineSearch = new ArmijoLineSearch(0.5, 0.1);
             if (bounded == 1) {
                 /* Only a lower bound has been specified. */
-                projector = new SimpleLowerBound(space, lowerBound);
+                projector = new SimpleLowerBound(resultSpace, lowerBound);
             } else if (bounded == 2) {
                 /* Only an upper bound has been specified. */
-                projector = new SimpleUpperBound(space, upperBound);
+                projector = new SimpleUpperBound(resultSpace, upperBound);
             } else {
                 /* Both a lower and an upper bounds have been specified. */
-                projector = new SimpleBounds(space, lowerBound, upperBound);
+                projector = new SimpleBounds(resultSpace, lowerBound, upperBound);
             }
             int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
-            lbfgsb = new LBFGSB(space, projector, m, lineSearch);
+            lbfgsb = new LBFGSB(resultSpace, projector, m, lineSearch);
             lbfgsb.setAbsoluteTolerance(gatol);
             lbfgsb.setRelativeTolerance(grtol);
             minimizer = lbfgsb;
@@ -499,7 +553,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         while (run) {
             if (task == OptimTask.COMPUTE_FG) {
                 timer.resume();
-                fcost = cost.computeCostAndGradient(0.1, x, gcost, true);
+                fcost = cost.computeCostAndGradient(1.0, x, gcost, true);
                 timer.stop();
             } else if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
                 if (viewer != null) {
