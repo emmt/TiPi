@@ -108,7 +108,7 @@ public class WeightGenerator {
         }
         this.gain = alpha;
         this.readNoise = beta;
-        this.weightMap = data;//We store the data in the weightMap, to save one variable
+        setVarianceMap(data);//We store the data in the weightMap, to save one variable
     }
 }
 
