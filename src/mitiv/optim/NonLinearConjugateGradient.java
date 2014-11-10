@@ -85,9 +85,9 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
     private double g1norm; /* Euclidean norm of G1, the gradient of the end of the line
                               search / last accepted point. */
     private double dg0;    /* Directional derivative at the start of the line search;
-                              given by the inner product: <d|g0> = - <p|g0> */
+                              given by the inner product: <d,g0> = - <p,g0> */
     private double dg1;    /* Directional derivative at the end or during the line search;
-                              given by the inner product: <d|g1> = - <p|g1> */
+                              given by the inner product: <d,g1> = - <p,g1> */
     //private double alpha0; /* Scale factor for the initial step step size. */
     private double grtol;  /* Relative threshold for the norm or the gradient (relative
                               to GTEST the norm of the initial gradient) for convergence. */
@@ -261,15 +261,15 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
     /*
      * For Hestenes & Stiefel method:
      *
-     *     beta = <g1|y>/<d|y> = - <g1|y>/<p|y>
+     *     beta = <g1,y>/<d,y> = - <g1,y>/<p,y>
      *
      * with y = g1 - g0.
      */
     private int update_Hestenes_Stiefel(Vector x1, Vector g1)
     {
         form_y(g1);
-        double g1y =  vsp.dot(g1, y);   /* Compute: g1y = <g1|y> */
-        double dy = -vsp.dot(p, y); /* Compute: dy = <d|y> = - <p|y> */
+        double g1y =  vsp.dot(g1, y);   /* Compute: g1y = <g1,y> */
+        double dy = -vsp.dot(p, y); /* Compute: dy = <d,y> = - <p,y> */
         double beta = (dy != 0.0 ? g1y/dy : 0.0);
         return update1(g1, beta);
     }
@@ -277,7 +277,7 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
     /*
      * For Fletcher & Reeves method:
      *
-     *     beta = <g1|g1>/<g0|g0>
+     *     beta = <g1,g1>/<g0,g0>
      *
      * (this value is always >= 0 and can only be zero at a stationnary point).
      */
@@ -290,10 +290,11 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
     /*
      * For Polak-Ribière-Polyak method:
      *
-     *     beta = <g1|y>/<g0|g0>
+     *     beta = <g1,y>/<g0,g0>
      */
     private int update_Polak_Ribiere_Polyak(Vector x1, Vector g1)
     {
+        form_y(g1);
         double beta = vsp.dot(g1, y)/g0norm/g0norm;
         return update1(g1, beta);
     }
@@ -301,7 +302,7 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
     /*
      * For Fletcher "Conjugate Descent" method:
      *
-     *     beta = <g1|g1>/(-<d|g0>)
+     *     beta = <g1,g1>/(-<d,g0>)
      *
      * (this value is always >= 0 and can only be zero at a stationary point).
      */
@@ -314,12 +315,12 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
     /*
      * For Liu & Storey method:
      *
-     *     beta = <g1|y>/(-<d|g0>)
+     *     beta = <g1,y>/(-<d,g0>)
      */
     private int update_Liu_Storey(Vector x1, Vector g1)
     {
         form_y(g1);
-        double g1y =  vsp.dot(g1, y);    /* Compute: g1y = <g1|y> */
+        double g1y =  vsp.dot(g1, y);    /* Compute: g1y = <g1,y> */
         double beta = g1y/(-dg0);
         return update1(g1, beta);
     }
@@ -327,12 +328,12 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
     /*
      * For Dai & Yuan method:
      *
-     *     beta = <g1|g1>/<d|y>
+     *     beta = <g1,g1>/<d,y>
      */
     private int update_Dai_Yuan(Vector x1, Vector g1)
     {
         form_y(g1);
-        double dy = -vsp.dot(p, y); /* Compute: dy = <d|y> = - <p|y> */
+        double dy = -vsp.dot(p, y); /* Compute: dy = <d,y> = - <p,y> */
         double beta = (dy != 0.0 ? g1norm*(g1norm/dy) : 0.0);
         return update1(g1, beta);
     }
@@ -340,8 +341,8 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
     /*
      * For Hager & Zhang method:
      *
-     *     beta = <y - (2*<y|y>/<d|y>)*d|g1>
-     *          = (<g1|y> - 2*<y|y>*<d|g1>/<d|y>)/<d|y>
+     *     beta = <y - (2*<y,y>/<d,y>)*d,g1>
+     *          = (<g1,y> - 2*<y,y>*<d,g1>/<d,y>)/<d,y>
      */
     private int update_Hager_Zhang(Vector x1, Vector g1)
     {
@@ -377,17 +378,17 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
      *
      *     d' = alpha*(-c1*g1 + c2*d - c3*y)  ==>   p' = c1*g1 + c2*p + c3*y
      *
-     *     c1 = (1/alpha)*<s|y>/<y|y>
-     *        =  <d|y>/<y|y>
-     *        = -<p|y>/<y|y>
+     *     c1 = (1/alpha)*<s,y>/<y,y>
+     *        =  <d,y>/<y,y>
+     *        = -<p,y>/<y,y>
      *
-     *     c2 = <g1|y>/<y|y> - 2*<s|g1>/<s|y>
-     *	  = <g1|y>/<y|y> - 2*<d|g1>/<d|y>
-     *	  = <g1|y>/<y|y> - 2*<p|g1>/<p|y>
+     *     c2 = <g1,y>/<y,y> - 2*<s,g1>/<s,y>
+     *	  = <g1,y>/<y,y> - 2*<d,g1>/<d,y>
+     *	  = <g1,y>/<y,y> - 2*<p,g1>/<p,y>
      *
-     *     c3 = -(1/alpha)*<s|g1>/<y|y>
-     *        = -<d|g1>/<y|y>
-     *        =  <p|g1>/<y|y>
+     *     c3 = -(1/alpha)*<s,g1>/<y,y>
+     *        = -<d,g1>/<y,y>
+     *        =  <p,g1>/<y,y>
      *
      * with alpha the step length, s = x1 - x0 = alpha*d = -alpha*p.  For this
      * method, beta = c2/c1.
@@ -521,7 +522,7 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
                         /* Compute an initial step size ALPHA. */
                         if ((method & SHANNO_PHUA) != 0) {
                             /* Initial step size is such that:
-                               <alpha_{k+1}*d_{k+1}|g_{k+1}> = <alpha_{k}*d_{k}|g_{k}> */
+                               <alpha_{k+1}*d_{k+1},g_{k+1}> = <alpha_{k}*d_{k},g_{k}> */
                             alpha *= dg0/dg;
                         }
                     }
@@ -626,7 +627,7 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
 
     /**
      * Query the gradient threshold for the convergence criterion.
-     * 
+     *
      * The convergence of the optimization method is achieved when the
      * Euclidean norm of the gradient at a new iterate is less or equal
      * the threshold:
