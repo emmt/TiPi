@@ -37,15 +37,15 @@ import mitiv.linalg.VectorSpace;
  */
 public class LBFGS implements ReverseCommunicationOptimizer {
 
-    public static int NO_PROBLEM = 0;
-    public static int BAD_H0 = 1; /* H0 is not positive definite */
+    public static int NO_PROBLEMS = 0;
+    public static int BAD_PRECONDITIONER = 1; /* B0 is not positive definite */
     public static int LNSRCH_WARNING = 2; /* warning in line search */
     public static int LNSRCH_ERROR = 3; /* error in line search */
 
-    protected LBFGSOperator H = null;
+    protected LBFGSOperator H = null; /* LBFGS approximation of the inverse Hessian */
     protected LineSearch lnsrch;
     protected OptimTask task = null;
-    protected int reason = NO_PROBLEM;
+    protected int reason = NO_PROBLEMS;
 
     /* Number of function (and gradient) evaluations since start. */
     protected int evaluations = 0;
@@ -63,7 +63,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
     to GTEST the norm of the initial gradient) for convergence. */
     protected double gatol;  /* Absolute threshold for the norm or the gradient for
     convergence. */
-    protected double gtest;  /* Norm or the initial gradient. */
+    protected double ginit;  /* Norm or the initial gradient. */
 
     protected double stpmin = 1e-20;
     protected double stpmax = 1e6;
@@ -188,9 +188,9 @@ public class LBFGS implements ReverseCommunicationOptimizer {
             /* The current step is acceptable. Check for global convergence. */
             g1norm = g1.norm2();
             if (evaluations == 1) {
-                gtest = g1norm;
+                ginit = g1norm;
             }
-            reason = NO_PROBLEM;
+            reason = NO_PROBLEMS;
             task = (g1norm <= getGradientThreshold() ? OptimTask.FINAL_X : OptimTask.NEW_X);
 
         } else if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
@@ -229,7 +229,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
                     /* Initial iteration or recursion has just been
                      * restarted.  This means that the initial inverse
                      * Hessian approximation is not positive definite. */
-                    reason = BAD_H0;
+                    reason = BAD_PRECONDITIONER;
                     task = OptimTask.ERROR;
                     return task;
                 }
@@ -279,7 +279,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
     private OptimTask nextStep(Vector x1) {
         alpha = lnsrch.getStep();
         x1.axpby(1.0, x0, -alpha, p);
-        reason = NO_PROBLEM;
+        reason = NO_PROBLEMS;
         task = OptimTask.COMPUTE_FG;
         return task;
     }
@@ -350,7 +350,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
      *      {@link #getAbsoluteTolerance}, {@link #getRelativeTolerance}.
      */
     public double getGradientThreshold() {
-        return max(0.0, gatol, grtol*gtest);
+        return max(0.0, gatol, grtol*ginit);
     }
 
     private static final double max(double a1, double a2, double a3) {
