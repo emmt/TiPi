@@ -424,8 +424,8 @@ public class MicroscopyModelPSF1D
         double phasePupil;
         int Npix = Nx*Ny, Ci;
         double[] A = new double[2*Npix];
-        System.out.println("sum phi 1");
-        System.out.println(MathUtils.sum(phi));
+        //System.out.println("sum phi 1");
+        //System.out.println(MathUtils.sum(phi));
         
         if (zdepth != 0)
         {
@@ -465,9 +465,9 @@ public class MicroscopyModelPSF1D
                 a[2*Ci + 1] = -A[2*in + 1];
             }
         }
-        System.out.println("sum phi 3");
-        System.out.println(MathUtils.sum(phi));
-        System.out.println();
+        //System.out.println("sum phi 3");
+        //System.out.println(MathUtils.sum(phi));
+        //System.out.println();
     }
 
     public void computePSF_3Dfft()
