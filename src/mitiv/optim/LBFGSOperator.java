@@ -38,7 +38,7 @@ import mitiv.linalg.VectorSpace;
  * (Broyden, Fletcher, Goldfarb & Shanno) updates using the 2-loop recursive
  * algorithm of Strang (described by Nocedal, 1980) combined with a
  * preconditioner (initial approximation of the inverse Hessian) or
- * automatic scalings (along the ideas of Gilbert & Lemaréchal (1989; and
+ * automatic scalings (along the ideas of Gilbert & Lemaréchal (1989); and
  * Shanno).
  * 
  * @author Éric Thiébaut.
@@ -56,10 +56,10 @@ public class LBFGSOperator extends LinearOperator {
     protected int mp;        // actual number of saved pairs
     protected int mark;      // index of oldest saved pair
     protected double rho[];
-    protected double gamma;  // scaling parameter for H0
-    protected double alpha[];
-    protected LinearOperator H0; // crude approximation of inverse
-    // Hessian (preconditioner)
+    protected double epsilon; // threshold to accept descent direction
+    protected double gamma;   // scaling parameter for H0
+    protected double beta[];
+    protected LinearOperator H0; // crude approximation of inverse Hessian (preconditioner)
     protected InverseHessianApproximation rule;
     private Vector tmp; // temporary vector for the apply() method
 
@@ -112,7 +112,7 @@ public class LBFGSOperator extends LinearOperator {
             s[i] = outputSpace.create();
             y[i] = inputSpace.create();
         }
-        alpha = new double[m];
+        beta = new double[m];
         rho = new double[m];
         reset();
     }
@@ -155,6 +155,9 @@ public class LBFGSOperator extends LinearOperator {
      * @param value - The value of gamma.  Must be strictly positive.
      */
     public void setScale(double value) {
+        if (value <= 0.0) {
+            throw new IllegalArgumentException("scale factor must be strictly positive");
+        }
         gamma = value;
         rule = InverseHessianApproximation.BY_USER;
     }
@@ -170,6 +173,16 @@ public class LBFGSOperator extends LinearOperator {
         return gamma;
     }
 
+    public double getUpdateThrehold() {
+        return epsilon;
+    }
+
+    public void setUpdateThrehold(double value) {
+        if (value < 0.0 || value >= 1.0) {
+            throw new IllegalArgumentException("update threshold must be non-negative and strictly less than one");
+        }
+        epsilon = value;
+    }
 
     /**
      * Get slot index of a saved pair of variables and gradient differences.
@@ -212,10 +225,10 @@ public class LBFGSOperator extends LinearOperator {
         for (int k = newest; k >= oldest; --k) {
             int j = slot(k);
             if (rho[j] > 0.0) {
-                alpha[j] = rho[j]*r.dot(s[j]);
-                r.axpby(1.0, r, -alpha[j], y[j]);
+                beta[j] = rho[j]*r.dot(s[j]);
+                r.axpby(1.0, r, -beta[j], y[j]);
             } else {
-                alpha[j] = 0.0;
+                beta[j] = 0.0;
             }
         }
 
@@ -237,8 +250,7 @@ public class LBFGSOperator extends LinearOperator {
         for (int k = oldest; k <= newest; ++k) {
             int j = slot(k);
             if (rho[j] > 0.0) {
-                double beta = rho[j]*q.dot(y[j]);
-                q.axpby(1.0, q, alpha[j] - beta, s[j]);
+                q.axpby(1.0, q, beta[j] - rho[j]*q.dot(y[j]), s[j]);
             }
         }
     }
@@ -271,35 +283,31 @@ public class LBFGSOperator extends LinearOperator {
          */
         int j = slot(1);
         s[j].axpby(1.0, x1, -1.0, x0);
+        double snorm = s[j].norm2();
         y[j].axpby(1.0, g1, -1.0, g0);
+        double ynorm = y[j].norm2();
 
         /* Compute RHO[j] and GAMMA.  If the update formula for GAMMA does
          * not yield a strictly positive value, the strategy is to keep the
          * previous value. */
         double sty = s[j].dot(y[j]);
-        if (sty > 0.0) {
+        if (sty <= epsilon*snorm*ynorm) {
+            /* This pair will be skipped. */
+            rho[j] = 0.0;
+        } else {
+            /* Compute RHO[j] and GAMMA. */
             rho[j] = 1.0/sty;
             if (rule == InverseHessianApproximation.BY_STY_OVER_YTY
                     || (rule == InverseHessianApproximation.BY_INITIAL_STY_OVER_YTY && (mp == 0 || gamma == 1.0))) {
-                double yty = y[j].dot(y[j]);
-                if (yty > 0.0) {
-                    gamma = sty/yty;
-                }
+                gamma = (sty/ynorm)/ynorm;
             } else if (rule == InverseHessianApproximation.BY_STS_OVER_STY
                     || (rule == InverseHessianApproximation.BY_INITIAL_STS_OVER_STY && (mp == 0 || gamma == 1.0))) {
-                double ss = s[j].dot(s[j]);
-                if (ss > 0.0) {
-                    gamma = ss/sty;
-                }
+                gamma = (snorm/sty)*snorm;
             }
-        } else {
-            /* This pair will be skipped. */
-            rho[j] = 0.0;
+            /* Update the mark and the number of saved pairs. */
+            mark = j;
+            mp = Math.min(mp + 1, m);
         }
-
-        /* Update the mark and the number of saved pairs. */
-        mark = j;
-        mp = Math.min(mp + 1, m);
     }
 
 }
