@@ -106,7 +106,7 @@ public class Timer {
      * call to {@link #start()} (denoted as {@code start} below) and the
      * next call to {@link #stop()} (denoted as {@code stop}<sub>1</sub>
      * below) and between the successive calls to {@link #resume()} and
-     * {@link stop()} since then (denoted as {@code resume}<sub><i>k</i></sub>
+     * {@link #stop()} since then (denoted as {@code resume}<sub><i>k</i></sub>
      * and {@code stop}<sub><i>k</i></sub> respectively for the <i>k</i>-th
      * call).  The formula writes:
      * <pre>

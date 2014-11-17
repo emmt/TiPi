@@ -319,7 +319,7 @@ public abstract class WeightedConvolutionOperator extends ShapedLinearOperator {
      * This method is the same as {@link #setWeights(ShapedArray, boolean)} except
      * that a copy is never forced.
      * </p>
-     * @param vec  - The weights.
+     * @param arr  - The weights.
      */
     public void setWeights(ShapedArray arr) {
         setWeights(arr, false);
