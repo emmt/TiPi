@@ -216,33 +216,40 @@ public class LBFGSOperator extends LinearOperator {
             throw new IllegalLinearOperationException();
         }
 
+        /* Initialize work vectors. */
+        Vector tmp = null;
+        if (H0 == null) {
+            /* No preconditioner, no needs for a scratch vector. */
+            tmp = dst;
+        } else {
+            /* With a preconditioner, a scratch vector is needed. */
+            if (this.tmp == null) {
+                this.tmp =  inputSpace.create();
+            }
+            tmp = this.tmp;
+        }
+
         /* First loop of the recursion (from the newest saved pair to the
          * oldest one). */
         final int newest = 0;
         final int oldest = 1 - mp;
-        Vector r = (H0 == null ? dst : tmp);
-        r.copyFrom(src);
+        tmp.copyFrom(src);
         for (int k = newest; k >= oldest; --k) {
             int j = slot(k);
             if (rho[j] > 0.0) {
-                beta[j] = rho[j]*r.dot(s[j]);
-                r.axpby(1.0, r, -beta[j], y[j]);
+                beta[j] = rho[j]*tmp.dot(s[j]);
+                tmp.axpby(1.0, tmp, -beta[j], y[j]);
             } else {
                 beta[j] = 0.0;
             }
         }
 
-        /* Apply approximation of inverse Hessian.  (Note that in any
-         * case Q and DST are the same vector.) */
-        Vector q;
+        /* Apply approximation of inverse Hessian. */
         if (H0 != null) {
-            q = dst;
-            H0.apply(r, q);
-        } else {
-            q = r;
+            H0.apply(tmp, dst);
         }
-        if (rule != InverseHessianApproximation.NONE && gamma != 1.0) {
-            q.scale(gamma);
+        if (gamma != 1.0) {
+            dst.scale(gamma);
         }
 
         /* Second loop of the recursion (from the oldest saved pair to the
@@ -250,7 +257,8 @@ public class LBFGSOperator extends LinearOperator {
         for (int k = oldest; k <= newest; ++k) {
             int j = slot(k);
             if (rho[j] > 0.0) {
-                q.axpby(1.0, q, beta[j] - rho[j]*q.dot(y[j]), s[j]);
+                double phi = rho[j]*dst.dot(y[j]);
+                dst.axpby(1.0, dst, beta[j] - phi, s[j]);
             }
         }
     }
