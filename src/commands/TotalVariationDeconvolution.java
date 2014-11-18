@@ -56,7 +56,6 @@ import mitiv.linalg.shaped.ShapedLinearOperator;
 import mitiv.optim.ArmijoLineSearch;
 import mitiv.optim.BoundProjector;
 import mitiv.optim.LBFGS;
-import mitiv.optim.LBFGSB;
 import mitiv.optim.LineSearch;
 import mitiv.optim.MoreThuenteLineSearch;
 import mitiv.optim.NonLinearConjugateGradient;
@@ -65,6 +64,7 @@ import mitiv.optim.ReverseCommunicationOptimizer;
 import mitiv.optim.SimpleBounds;
 import mitiv.optim.SimpleLowerBound;
 import mitiv.optim.SimpleUpperBound;
+import mitiv.optim.VMLMB;
 import mitiv.utils.FFTUtils;
 import mitiv.utils.Timer;
 
@@ -492,7 +492,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         timer.start();
         LineSearch lineSearch = null;
         LBFGS lbfgs = null;
-        LBFGSB lbfgsb = null;
+        VMLMB vmlmb = null;
         NonLinearConjugateGradient nlcg = null;
         BoundProjector projector = null;
         int bounded = 0;
@@ -519,7 +519,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             }
         } else {
             /* Some bounds have been specified. */
-            lineSearch = new ArmijoLineSearch(0.5, 0.1);
+            lineSearch = new ArmijoLineSearch(0.5, 1e-4);
             if (bounded == 1) {
                 /* Only a lower bound has been specified. */
                 projector = new SimpleLowerBound(resultSpace, lowerBound);
@@ -531,10 +531,10 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                 projector = new SimpleBounds(resultSpace, lowerBound, upperBound);
             }
             int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
-            lbfgsb = new LBFGSB(resultSpace, projector, m, lineSearch);
-            lbfgsb.setAbsoluteTolerance(gatol);
-            lbfgsb.setRelativeTolerance(grtol);
-            minimizer = lbfgsb;
+            vmlmb = new VMLMB(resultSpace, projector, m, lineSearch);
+            vmlmb.setAbsoluteTolerance(gatol);
+            vmlmb.setRelativeTolerance(grtol);
+            minimizer = vmlmb;
             projector.apply(x, x);
 
         }
