@@ -26,14 +26,6 @@
 package mitiv.microscopy;
 
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import mitiv.array.ShapedArray;
-import mitiv.exception.DataFormatException;
-import mitiv.exception.RecoverableFormatException;
-import mitiv.io.MdaFormat;
-import mitiv.utils.CommonUtils;
 import mitiv.utils.MathUtils;
 
 import org.jtransforms.fft.DoubleFFT_2D;
@@ -114,17 +106,17 @@ public class MicroscopyModelPSF1D
 
 
     /** Initialize the WFFM PSF model containing parameters
-     *  @param NA 1.4, numerical aperture
-     *  @param lambda 542e-9,  emission wavelength
-     *  @param ni 1.518, ni refractive index of the immersion medium
-     *  @param ns 0, refractive index of the specimen
-     *  @param zdepth 0, zdepth
-     *  @param dxy 64.5e-9, lateral pixel size
-     *  @param dz 160e-9 axial sampling step size
-     *  @param Nx 256, number of samples along lateral X-dimension
-     *  @param Ny 256, number of samples along lateral Y-dimension
-     *  @param Nz 64, number of samples along axial Z-dimension
-     *  @param use_depth_scaling 0
+     *  NA 1.4, numerical aperture
+     *  lambda 542e-9,  emission wavelength
+     *  ni 1.518, ni refractive index of the immersion medium
+     *  ns 0, refractive index of the specimen
+     *  zdepth 0, zdepth
+     *  dxy 64.5e-9, lateral pixel size
+     *  dz 160e-9 axial sampling step size
+     *  Nx 256, number of samples along lateral X-dimension
+     *  Ny 256, number of samples along lateral Y-dimension
+     *  Nz 64, number of samples along axial Z-dimension
+     *  use_depth_scaling 0
      */
     public MicroscopyModelPSF1D()
     {
@@ -215,7 +207,6 @@ public class MicroscopyModelPSF1D
      * The coefficients β are normalized and the modulus is
      * ρ = Σ_n β_n Z_n
      * @param beta Zernike coefficients
-     * @return Nzern Zernike polynomials
      */
     public void setRho(double[] beta)
     {
@@ -248,7 +239,6 @@ public class MicroscopyModelPSF1D
      * <p>
      * φ = Σ_n α_n Z_{n+3}
      * @param alpha Zernike coefficients
-     * @return phi Zernike polynomials
      */
     public void setPhi(double[] alpha)
     {
@@ -366,7 +356,7 @@ public class MicroscopyModelPSF1D
     }
 
     /**
-     * Update the defocus and the depth functions according the parameters
+     * @param defocus Update the defocus and the depth functions according the parameters
      * defocus. Depending on the number of elements of defocus:
      * 4 :  defocus = {nu_s, c_x, c_y, \nu_i}
      * 3 :  defocus = {c_x, c_y, \nu_i}
@@ -408,11 +398,6 @@ public class MicroscopyModelPSF1D
      * Compute the point spread function
      * <p>
      * h_k(z) = |a_j(z)|² = |Σ_{j,k}A_k(z)|²
-     * @param alpha
-     * @param beta
-     * @param deltaX
-     * @param deltaY
-     * @param zdepth
      */
     public void computePSF()
     {
@@ -424,8 +409,8 @@ public class MicroscopyModelPSF1D
         double phasePupil;
         int Npix = Nx*Ny, Ci;
         double[] A = new double[2*Npix];
-        System.out.println("sum phi 1");
-        System.out.println(MathUtils.sum(phi));
+        //System.out.println("sum phi 1");
+        //System.out.println(MathUtils.sum(phi));
         
         if (zdepth != 0)
         {
@@ -465,9 +450,9 @@ public class MicroscopyModelPSF1D
                 a[2*Ci + 1] = -A[2*in + 1];
             }
         }
-        System.out.println("sum phi 3");
-        System.out.println(MathUtils.sum(phi));
-        System.out.println();
+        //System.out.println("sum phi 3");
+        //System.out.println(MathUtils.sum(phi));
+        //System.out.println();
     }
 
     public void computePSF_3Dfft()

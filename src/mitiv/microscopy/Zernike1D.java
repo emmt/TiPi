@@ -51,10 +51,10 @@ public class Zernike1D
      *  Compute a Zernike polynomial of size Height rows and Width columns
      *  of degree J over the radius of the pupil.
      *  <p>
-     *  @param J mod number of the Zernike polynomials (Noll indexing)
      *  @param Height number of rows
      *  @param Width number of columns
-     *  @param radius the radius of the Zernike polynomial
+     *  radius the radius of the Zernike polynomial
+     *  J mod number of the Zernike polynomials (Noll indexing)
      *
      */
     public Zernike1D(int Width, int Height)
@@ -104,9 +104,10 @@ public class Zernike1D
      *  <p>
      *  Utilisation du logarithme de la somme cumulé
      *  <p>
-     *  @param k mod number of the Zernike polynomials (Noll indexing)
+     *  k = mod number of the Zernike polynomials (Noll indexing)
      *  @param n 
      *  @param m
+     * @return 
      */
     public double[] coeffRadialZCumSumLog(int n, int m)
     {
@@ -166,9 +167,11 @@ public class Zernike1D
      *  <p>
      *  The logarithm of the cumulated sum is used in place of the classic factorial
      *  <p>
-     *  @param k mod number of the Zernike polynomials (Noll indexing)
-     *  @param n 
-     *  @param m
+     * @param J 
+     * @param W 
+     * @param H 
+     * @param radius 
+     * @return 
      */
     //FIXME Qu'elle définition choisir r < radius ou r <= radius
     public double[] zernikeNoll(int J, int W, int H, double radius)
@@ -270,10 +273,11 @@ public class Zernike1D
      * Z_even(r,theta) = R_mn*zr*cos(m*theta)
      * Z_odd(r,theta) = R_mn*zr*sin(m*theta)
      * Zr(r) = 
-     * @param Nzern Number of Zernike mod
-     * @param Nx Number of pixels along x axis
-     * @param Ny Number of pixels y axis
+     * @param Nzer 
+     * @param W 
+     * @param H 
      * @param radius of the pupil
+     * @param normalise 
      * @return Nzern Zernike polynomials over a radius
      */
     public double[] zernikePupilMultipleOpt(int Nzer, int W, int H, double radius, int normalise)
@@ -398,10 +402,11 @@ public class Zernike1D
      * Create Nzern Zernike polynomials over a radius
      * Pre-compute the power distance r, r^2 = r*r, r^3=r^2*r, ect.
      * Pre-compute the pupil coordinate
-     * @param Nzern Number of Zernike mod
-     * @param Nx Number of pixels along x axis
-     * @param Ny Number of pixels y axis
+     * @param Nzer 
+     * @param H 
+     * @param W 
      * @param radius of the pupil
+     * @param normalise 
      * @return Nzern Zernike polynomials over a radius
      */
     public double[] zernikePupilMultipleOptTab(int Nzer, int H, int W, double radius, int normalise)

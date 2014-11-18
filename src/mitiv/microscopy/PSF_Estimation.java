@@ -63,7 +63,6 @@ public class PSF_Estimation implements ReconstructionJob {
     private int limitedMemorySize = 0;
     private double lowerBound = Double.NEGATIVE_INFINITY;
     private double upperBound = Double.POSITIVE_INFINITY;
-    private boolean verbose = false;
     private boolean debug = false;
     private int maxiter = 200;
     private DoubleArray data = null;
@@ -79,6 +78,10 @@ public class PSF_Estimation implements ReconstructionJob {
     private boolean[] change = {false, false};
     private String[] synchronizedParameterNames = {"Regularization Level", "Relaxation Threshold"};
     private double[] weights = null;
+
+    public static final int DEFOCUS = 1;
+    public static final int ALPHA = 2;
+    public static final int BETA = 3;
 
     public void createSynchronizer() {
         if (synchronizer == null) {
@@ -237,58 +240,61 @@ public class PSF_Estimation implements ReconstructionJob {
         DoubleShapedVector gX = xSpace.create();
         // Launch the non linear conjugate gradient
         OptimTask task = minimizer.start();
-        int iter = 0;
         while (run) {
             if (task == OptimTask.COMPUTE_FG) {
-                iter++;
-                if(flag == 1)
+                if(flag == DEFOCUS)
                 {
-                    /*
-                    System.out.println("--------------");
-                    System.out.println("defocus");
-                    MathUtils.printArray(x.getData());
-                    */
+                    if (debug) {
+                        System.out.println("--------------");
+                        System.out.println("defocus");
+                        MathUtils.printArray(x.getData());
+                    }
                     pupil.setDefocus(x.getData());
                 }
-                else if (flag == 2)
+                else if (flag == ALPHA)
                 {
-                    /*
-                    System.out.println("--------------");
-                    System.out.println("alpha");
-                    MathUtils.printArray(x.getData());
-                    */
+                    if (debug) {
+                        System.out.println("--------------");
+                        System.out.println("alpha");
+                        MathUtils.printArray(x.getData());
+                    }
                     pupil.setPhi(x.getData());
                 }
-                else if(flag == 3)
+                else if(flag == BETA)
                 {
-                    /*
-                    System.out.println("--------------");
-                    System.out.println("beta");
-                    MathUtils.printArray(x.getData());
-                    */
+                    if (debug) {
+                        System.out.println("--------------");
+                        System.out.println("beta");
+                        MathUtils.printArray(x.getData());
+                    }
                     pupil.setRho(x.getData());
                 }
-                pupil.computePSF();             
+                pupil.computePSF();
                 fcost = fdata.computeCostAndGradient(1.0, space.wrap(pupil.getPSF()), gcost, true);
 
-                //System.out.format("fdata = %22.15E\n", fcost);
-                if(flag == 1)
+                if(flag == DEFOCUS)
                 {
                     gX = xSpace.wrap(pupil.apply_J_defocus(gcost.getData()));
-                    //System.out.println("grd");
-                    //MathUtils.printArray(gX.getData());
+                    if (debug) {
+                        System.out.println("grd");
+                        MathUtils.printArray(gX.getData());
+                    }
                 }
-                else if (flag == 2) 
+                else if (flag == ALPHA) 
                 {
                     gX = xSpace.wrap(pupil.apply_J_phi(gcost.getData()));
-                    //System.out.println("grd");
-                    //MathUtils.printArray(gX.getData());
+                    if (debug) {
+                        System.out.println("grd");
+                        MathUtils.printArray(gX.getData());
+                    }
                 }
-                else if(flag == 3)
+                else if(flag == BETA)
                 {
                     gX = xSpace.wrap(pupil.apply_J_rho(gcost.getData()));
-                    //System.out.println("grd");
-                    //MathUtils.printArray(gX.getData());
+                    if (debug) {
+                        System.out.println("grd");
+                        MathUtils.printArray(gX.getData());
+                    }
                 }
             } else if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
                 if (viewer != null) {
@@ -323,62 +329,61 @@ public class PSF_Estimation implements ReconstructionJob {
                     // FIXME: restart!!!
                 }
             }
-            /*
-            System.out.println("Evaluations");
-            System.out.println(minimizer.getEvaluations());
-            System.out.println("Iterations");
-            System.out.println(minimizer.getIterations());
-            */
-           // System.out.println("i");
+            if (debug) {
+                System.out.println("Evaluations");
+                System.out.println(minimizer.getEvaluations());
+                System.out.println("Iterations");
+                System.out.println(minimizer.getIterations());
+            }
             task = minimizer.iterate(x, fcost, gX);
             if(minimizer.getEvaluations() > 20)
                 break;
         }
-        if (verbose) {
+        if (debug) {
             System.out.format("min(x) = %g\n", ArrayOps.getMin(x.getData()));
             System.out.format("max(x) = %g\n", ArrayOps.getMax(x.getData()));
         }
-        
-        if(flag == 1)
+
+        if(flag == DEFOCUS)
         {
-            System.out.println("--------------");
-            System.out.println("defocus");
-            MathUtils.printArray(x.getData());
+            if (debug) {
+                System.out.println("--------------");
+                System.out.println("defocus");
+                MathUtils.printArray(x.getData());
+            }
             pupil.setDefocus(x.getData());
         }
-        else if (flag == 2)
+        else if (flag == ALPHA)
         {
-            System.out.println("--------------");
-            System.out.println("alpha");
-            MathUtils.printArray(x.getData());
+            if (debug) {
+                System.out.println("--------------");
+                System.out.println("alpha");
+                MathUtils.printArray(x.getData());
+            }
             pupil.setPhi(x.getData());
         }
-        else if(flag == 3)
+        else if(flag == BETA)
         {
-            System.out.println("--------------");
-            System.out.println("beta");
-            MathUtils.printArray(x.getData());
+            if (debug) {
+                System.out.println("--------------");
+                System.out.println("beta");
+                MathUtils.printArray(x.getData());
+            }
             pupil.setRho(x.getData());
         }
     }
- 
+
     /* Below are all methods required for a RecosntructionJob. */
 
-
-    public void setVerboseMode(boolean value) {
-        verbose = value;
-    }
     public void setDebugMode(boolean value) {
         debug = value;
     }
-
     public void setMaximumIterations(int value) {
         maxiter = value;
     }
     public void setLimitedMemorySize(int value) {
         limitedMemorySize = value;
     }
-
     public void setRegularizationWeight(double value) {
         mu = value;
     }
@@ -403,11 +408,12 @@ public class PSF_Estimation implements ReconstructionJob {
     public void stop(){
         run = false;
     }
+    public void start(){
+        run = true;
+    }
     public void setWeight(double[] W){
         this.weights = W;
     }
-
-    
     public ReconstructionViewer getViewer() {
         return viewer;
     }
@@ -417,27 +423,24 @@ public class PSF_Estimation implements ReconstructionJob {
     public ReconstructionSynchronizer getSynchronizer() {
         return synchronizer;
     }
-    
-    public void setPupil(MicroscopyModelPSF1D pupil)
-    {
+    public void setPupil(MicroscopyModelPSF1D pupil) {
         this.pupil = pupil;
     }
-    
     public DoubleArray getData() {
         return data;
     }
-    
+
     public void setData(DoubleArray data) {
         this.data = data;
     }
-    
+
     public DoubleArray getPsf() {
         return psf;
     }
     public void setPsf(DoubleArray psf) {
         this.psf = psf;
     }
-    
+
     @Override
     public DoubleArray getResult() {
         /* Nothing else to do because the actual result is in a vector
@@ -449,7 +452,7 @@ public class PSF_Estimation implements ReconstructionJob {
     public void setResult(DoubleArray result) {
         this.result = result;
     }
-    
+
     @Override
     public int getIterations() {
         return (minimizer == null ? 0 : minimizer.getIterations());
@@ -479,7 +482,6 @@ public class PSF_Estimation implements ReconstructionJob {
     public double getGradientNormInf() {
         return (gcost == null ? 0.0 : gcost.normInf());
     }
-
 }
 
 /*

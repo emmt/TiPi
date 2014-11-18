@@ -225,6 +225,10 @@ public class DeconvUtils {
 
     /********************************** Pad image **********************************/
 
+    /**
+     * 
+     * @param coef
+     */
     public void PadImageAndPSF(double coef){
         //IMPORTANT WE PAD AS WE COMPUTE
         //FIXME here padding

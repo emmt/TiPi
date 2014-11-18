@@ -485,7 +485,6 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
                     g1norm = vsp.norm2(g1);
                     accept = true;
                 } else {
-                    System.out.println("lnsrch status: " + lnsrch.getStatus());
                     if (lnsrch.hasWarnings()) {
                         /* FIXME: some warnings can be safely considered as a convergence */
                         task = OptimTask.WARNING;
