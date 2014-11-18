@@ -31,6 +31,7 @@ TYPED_OUTPUTS = $(ARRAY)@TYPE@Array.java $(ARRAY)@TYPE@Scalar.java \
 MISC_OUTPUTS = $(ARRAY)ArrayFactory.java \
                $(ARRAY)ArrayUtils.java \
                $(BASE)Shape.java \
+               $(TOP)/cost/HyperbolicTotalVariation.java \
                $(TOP)/io/ColorModel.java \
                $(TOP)/io/DataFormat.java
 
@@ -93,6 +94,9 @@ $(BASE)Shape.java: Shape.javax
 
 $(ARRAY)ArrayUtils.java: ArrayUtils.javax common.javax
 	$(CODGER) -Dpackage=mitiv.array $< $@
+
+$(TOP)/cost/HyperbolicTotalVariation.java: HyperbolicTotalVariation.javax
+	$(CODGER) -Dpackage=mitiv.cost $< $@
 
 $(TOP)/io/ColorModel.java: ColorModel.javax common.javax
 	$(CODGER) -Dpackage=mitiv.io $< $@
