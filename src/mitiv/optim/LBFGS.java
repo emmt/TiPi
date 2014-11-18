@@ -286,9 +286,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
     private OptimTask nextStep(Vector x1) {
         alpha = lnsrch.getStep();
         x1.axpby(1.0, x0, -alpha, p);
-        reason = NO_PROBLEMS;
-        task = OptimTask.COMPUTE_FG;
-        return task;
+        return optimizerSuccess(OptimTask.COMPUTE_FG);
     }
 
     private OptimTask lineSearchFailure() {
