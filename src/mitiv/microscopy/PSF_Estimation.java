@@ -25,9 +25,9 @@
 
 package mitiv.microscopy;
 
-import mitiv.base.Shape;
 import mitiv.array.ArrayFactory;
 import mitiv.array.DoubleArray;
+import mitiv.base.Shape;
 import mitiv.cost.QuadraticCost;
 import mitiv.deconv.ConvolutionOperator;
 import mitiv.exception.IncorrectSpaceException;
@@ -43,7 +43,6 @@ import mitiv.linalg.shaped.RealComplexFFT;
 import mitiv.optim.ArmijoLineSearch;
 import mitiv.optim.BoundProjector;
 import mitiv.optim.LBFGS;
-import mitiv.optim.LBFGSB;
 import mitiv.optim.LineSearch;
 import mitiv.optim.MoreThuenteLineSearch;
 import mitiv.optim.NonLinearConjugateGradient;
@@ -52,6 +51,7 @@ import mitiv.optim.ReverseCommunicationOptimizer;
 import mitiv.optim.SimpleBounds;
 import mitiv.optim.SimpleLowerBound;
 import mitiv.optim.SimpleUpperBound;
+import mitiv.optim.VMLMB;
 import mitiv.utils.MathUtils;
 
 public class PSF_Estimation implements ReconstructionJob {
@@ -186,7 +186,7 @@ public class PSF_Estimation implements ReconstructionJob {
         // Initialize the non linear conjugate gradient
         LineSearch lineSearch = null;
         LBFGS lbfgs = null;
-        LBFGSB lbfgsb = null;
+        VMLMB vmlmb = null;
         NonLinearConjugateGradient nlcg = null;
         BoundProjector projector = null;
         int bounded = 0;
@@ -225,10 +225,10 @@ public class PSF_Estimation implements ReconstructionJob {
                 projector = new SimpleBounds(space, lowerBound, upperBound);
             }
             int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
-            lbfgsb = new LBFGSB(space, projector, m, lineSearch);
-            lbfgsb.setAbsoluteTolerance(gatol);
-            lbfgsb.setRelativeTolerance(grtol);
-            minimizer = lbfgsb;
+            vmlmb = new VMLMB(space, projector, m, lineSearch);
+            vmlmb.setAbsoluteTolerance(gatol);
+            vmlmb.setRelativeTolerance(grtol);
+            minimizer = vmlmb;
             projector.apply(x, x);
 
         }
@@ -280,7 +280,7 @@ public class PSF_Estimation implements ReconstructionJob {
                         MathUtils.printArray(gX.getData());
                     }
                 }
-                else if (flag == ALPHA) 
+                else if (flag == ALPHA)
                 {
                     gX = xSpace.wrap(pupil.apply_J_phi(gcost.getData()));
                     if (debug) {
@@ -396,6 +396,7 @@ public class PSF_Estimation implements ReconstructionJob {
     public void setRelativeTolerance(double value) {
         grtol = value;
     }
+    @Override
     public double getRelativeTolerance() {
         return grtol;
     }
