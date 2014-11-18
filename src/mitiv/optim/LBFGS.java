@@ -56,8 +56,8 @@ public class LBFGS implements ReverseCommunicationOptimizer {
     /* Number of restarts. */
     protected int restarts = 0;
 
-    protected double epsilon = 0.01;
-    protected double tiny = 1e-3;
+    protected double delta = 0.01;
+    protected double epsilon = 1e-3;
     protected double pnorm; // the norm of P
     protected double grtol;  /* Relative threshold for the norm or the gradient (relative
     to GTEST the norm of the initial gradient) for convergence. */
@@ -105,13 +105,21 @@ public class LBFGS implements ReverseCommunicationOptimizer {
 
 
     public LBFGS(VectorSpace vsp, int m, LineSearch ls) {
-        H = new LBFGSOperator(vsp, m);
-        lnsrch = ls;
+        this(new LBFGSOperator(vsp, m), ls);
     }
 
     public LBFGS(LinearOperator H0, int m, LineSearch ls) {
-        H = new LBFGSOperator(H0, m);
-        lnsrch = ls;
+        this(new LBFGSOperator(H0, m), ls);
+    }
+
+    private LBFGS(LBFGSOperator H, LineSearch ls) {
+        this.H = H;
+        this.p = H.getOutputSpace().create();
+        if (! this.saveMemory) {
+            this.x0 = H.getOutputSpace().create();
+            this.g0 = H.getInputSpace().create();
+        }
+        this.lnsrch = ls;
     }
 
     @Override
@@ -167,20 +175,25 @@ public class LBFGS implements ReverseCommunicationOptimizer {
 
     @Override
     public OptimTask iterate(Vector x1, double f1, Vector g1) {
+        double gtest, pg1;
+        int status;
 
         if (task == OptimTask.COMPUTE_FG) {
 
+            /* Caller has computed the function value and the gradient at the
+             * current point. */
             ++evaluations;
             if (evaluations > 1) {
                 /* A line search is in progress.  Compute directional
                  * derivative and check whether line search has converged. */
-                int status = lnsrch.iterate(alpha, f1, -p.dot(g1));
+                pg1 = p.dot(g1);
+                status = lnsrch.iterate(alpha, f1, -pg1);
                 if (status == LineSearch.SEARCH) {
                     return nextStep(x1);
                 }
                 if (status != LineSearch.CONVERGENCE &&
                         status != LineSearch.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS) {
-                    return lineSearchFailure(status);
+                    return lineSearchFailure();
                 }
                 ++iterations;
             }
@@ -190,48 +203,38 @@ public class LBFGS implements ReverseCommunicationOptimizer {
             if (evaluations == 1) {
                 ginit = g1norm;
             }
-            reason = NO_PROBLEMS;
-            task = (g1norm <= getGradientThreshold() ? OptimTask.FINAL_X : OptimTask.NEW_X);
+            gtest = getGradientThreshold();
+            return optimizerSuccess(g1norm <= gtest ? OptimTask.FINAL_X
+                    : OptimTask.NEW_X);
 
         } else if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
+
+            if (task == OptimTask.NEW_X && evaluations > 1) {
+                /* Update the LBFGS matrix. */
+                H.update(x1, x0, g1, g0);
+            }
 
             /* Compute a search direction, possibly after updating the LBFGS
              * matrix.  We take care of checking whether D = -P is a
              * sufficient descent direction.  As shown by Zoutendijk, this is
-             * true if:
-             *      cos(theta) = (D/|D|)'.(G/|G|) >= EPSILON > 0
+             * true if: cos(theta) = -(D/|D|)'.(G/|G|) >= EPSILON > 0
              * where G is the gradient. */
-            if (evaluations == 1) {
-                if (p == null) {
-                    p = H.getOutputSpace().create();
-                }
-                if (! saveMemory && x0 == null) {
-                    x0 = H.getOutputSpace().create();
-                }
-                if (! saveMemory && g0 == null) {
-                    g0 = H.getInputSpace().create();
-                }
-            } else {
-                H.update(x1, x0, g1, g0);
-            }
             while (true) {
                 H.apply(g1, p);
                 pnorm = p.norm2(); // FIXME: in some cases, can be just GNORM*GAMMA
-                double pg = p.dot(g1);
-                if (pg >= epsilon*pnorm*g1norm) {
+                pg1 = p.dot(g1);
+                if (pg1 >= delta*pnorm*g1norm) {
                     /* Accept P (respectively D = -P) as a sufficient ascent
                      * (respectively descent) direction and set the directional
                      * derivative. */
-                    dg0 = -pg;
+                    dg0 = -pg1;
                     break;
                 }
                 if (H.mp < 1) {
                     /* Initial iteration or recursion has just been
                      * restarted.  This means that the initial inverse
                      * Hessian approximation is not positive definite. */
-                    reason = BAD_PRECONDITIONER;
-                    task = OptimTask.ERROR;
-                    return task;
+                    return optimizerFailure(BAD_PRECONDITIONER);
                 }
                 /* Restart the LBFGS recursion and loop to use H0 to compute
                  * an initial search direction. */
@@ -255,24 +258,28 @@ public class LBFGS implements ReverseCommunicationOptimizer {
              * and take the first step along the search direction. */
             if (H.mp >= 1 || H.rule == InverseHessianApproximation.BY_USER) {
                 alpha = 1.0;
-            } else if (0.0 < tiny && tiny < 1.0) {
-                double xnorm = x1.norm2();
-                if (xnorm > 0.0) {
-                    alpha = (xnorm/g1norm)*tiny;
+            } else if (0.0 < epsilon && epsilon < 1.0) {
+                double x1norm = x1.norm2();
+                if (x1norm > 0.0) {
+                    alpha = (x1norm/g1norm)*epsilon;
                 } else {
                     alpha = 1.0/g1norm;
                 }
             } else {
                 alpha = 1.0/g1norm;
             }
-            int status = lnsrch.start(f0, dg0, alpha, stpmin*alpha, stpmax*alpha);
+            status = lnsrch.start(f0, dg0, alpha, stpmin*alpha, stpmax*alpha);
             if (status != LineSearch.SEARCH) {
-                return lineSearchFailure(status);
+                return lineSearchFailure();
             }
             return nextStep(x1);
-        }
 
-        return task;
+        } else {
+
+            /* There must be something wrong. */
+            return task;
+
+        }
     }
 
     /** Build the new step to try as: x1 = x0 - alpha*p. */
@@ -284,7 +291,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
         return task;
     }
 
-    private OptimTask lineSearchFailure(int status) {
+    private OptimTask lineSearchFailure() {
         if (lnsrch.hasWarnings()) {
             reason = LNSRCH_WARNING;
             task = OptimTask.WARNING;
@@ -294,6 +301,20 @@ public class LBFGS implements ReverseCommunicationOptimizer {
         }
         return task;
     }
+
+    private OptimTask optimizerSuccess(OptimTask task) {
+        this.reason = NO_PROBLEMS;
+        this.task = task;
+        return task;
+    }
+
+    private OptimTask optimizerFailure(int reason)
+    {
+        this.reason = reason;
+        this.task = OptimTask.ERROR;
+        return this.task;
+    }
+
 
     /**
      * Set the absolute tolerance for the convergence criterion.
