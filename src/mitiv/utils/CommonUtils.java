@@ -309,11 +309,7 @@ public class CommonUtils {
     }
 
     /**
-     * ******************************** X TO ARRAY *********************************.
-     *
-     * @param image the image
-     * @param isComplex the is complex
-     * @return the double[][]
+     * ******************************** X TO ARRAY *********************************
      */
 
     /**
