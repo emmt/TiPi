@@ -25,9 +25,10 @@
 
 package mitiv.linalg;
 
-import mitiv.array.Double1D;
-import mitiv.array.DoubleArray;
+import mitiv.array.Double2D;
+import mitiv.array.Double3D;
 import mitiv.array.ShapedArray;
+import mitiv.base.Shape;
 
 public class WeightGenerator {
 
@@ -37,12 +38,12 @@ public class WeightGenerator {
     private ShapedArray pixelMap = null;
     private double gain = -1.0;
     private double readNoise = -1.0;
-    
+
     public WeightGenerator() {
 
     }
 
-    public ShapedArray getWeightMap(){
+    public ShapedArray getWeightMap(Shape outputShape){
         double[] output = null;
         if ( weightMap != null) {
             output = weightMap.toDouble().flatten();//Flatten make a copy so we are sure that we are not braking anything
@@ -52,7 +53,6 @@ public class WeightGenerator {
                 }
             }
         } else if (varianceMap != null) {
-            DoubleArray tsmp = varianceMap.toDouble();
             output = varianceMap.toDouble().flatten();//Bis
             for (int i = 0; i < output.length; i++) {
                 output[i] = 1.0/(Math.max(output[i], 0.0));
@@ -66,12 +66,19 @@ public class WeightGenerator {
             throw new IllegalArgumentException("Before getting a weight map you should give something");
         }
         applyDeadPixelMapAndVerify(output);
-        return Double1D.wrap(output, output.length);
+        if (outputShape.rank() == 2 || (outputShape.rank() == 3 && outputShape.dimension(2) == 1)) {
+            return Double2D.wrap(output, outputShape);
+        } else if (outputShape.rank() == 3) {
+            return Double3D.wrap(output, outputShape);
+        } else {
+            throw new IllegalArgumentException("Output rank is not compatible: only 2D or 3D Data");
+        }
     }
-    
+
+
     private void applyDeadPixelMapAndVerify(double[] input){
         for (int i = 0; i < input.length; i++) {
-            if (input[i] == saturationLevel || Double.isNaN(input[i])) {
+            if (input[i] == saturationLevel || Double.isNaN(input[i]) || input[i] > 255.0) {
                 input[i] = 0.0;
             }
         }
@@ -82,7 +89,7 @@ public class WeightGenerator {
             }
         }
     }
-    
+
     /**
      * In order to be able to detect saturation we have to know a value.
      * Default = Double.MAX_VALUE
@@ -92,7 +99,7 @@ public class WeightGenerator {
     public void setSaturation(double saturation){
         saturationLevel = saturation;
     }
-    
+
     public void setWeightMap(ShapedArray map){
         weightMap = map;
     }

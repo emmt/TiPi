@@ -126,6 +126,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     private DoubleArray data = null;
     private DoubleArray psf = null;
     private DoubleArray result = null;
+    private DoubleArray weight = null;
     private double fcost = 0.0;
     private DoubleShapedVector gcost = null;
     private Timer timer = new Timer();
@@ -160,8 +161,6 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     private double[] synchronizedParameters = {0.0, 0.0};
     private boolean[] change = {false, false};
     private String[] synchronizedParameterNames = {"Regularization Level", "Relaxation Threshold"};
-
-    private double[] weights = null;
 
     public ReconstructionViewer getViewer() {
         return viewer;
@@ -235,8 +234,8 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     public void stop() {
         run = false;
     }
-    public void setWeight(double[] W){
-        this.weights = W;
+    public void setWeight(DoubleArray W){
+        this.weight = W;
     }
 
     public static DoubleArray loadData(String name) {
@@ -445,9 +444,9 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         ShapedLinearOperator H = null;
         if (old) {
             RealComplexFFT FFT = new RealComplexFFT(resultSpace);
-            if (weights != null) {
+            if (weight != null) {
                 // FIXME: for now the weights are stored as a simple Java vector.
-                if (weights.length != data.getNumber()) {
+                if (weight.getNumber() != data.getNumber()) {
                     throw new IllegalArgumentException("Error weights and input data size don't match");
                 }
                 W = new LinearOperator(resultSpace) {
@@ -456,6 +455,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                             throws IncorrectSpaceException {
                         double[] inp = ((DoubleShapedVector)src).getData();
                         double[] out = ((DoubleShapedVector)dst).getData();
+                        double[] weights = weight.flatten();
                         int number = src.getNumber();
                         for (int i = 0; i < number; ++i) {
                             out[i] = inp[i]*weights[i];
@@ -469,6 +469,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             // FIXME: add a method for that
             WeightedConvolutionOperator A = WeightedConvolutionOperator.build(resultSpace, dataSpace);
             A.setPSF(psf);
+            A.setWeights(weight);
             H = A;
         }
         if (debug) {
