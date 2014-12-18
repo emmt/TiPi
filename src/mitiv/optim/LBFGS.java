@@ -31,7 +31,30 @@ import mitiv.linalg.VectorSpace;
 
 /**
  * Multivariate non-linear optimization by L-BFGS/VMLM method.
+ *
+ * <p>
+ * LBFGS implements a limited memory quasi-Newton method for unconstrained
+ * optimization with Broyden-Fletcher-Goldfarb-Shanno (BGGS) updates using
+ * Strang two-loop recursive formula  (Nocedal, 1980).
+ * </p>
  * 
+ * <p>
+ * Combined with a Moré & Thuente (1984) line search, the implemented method is
+ * similar to VMLM (Nocedal, 1980) or L-BFGS (Liu & Nocedal, 1989) algorithms.
+ * </p>
+ * 
+ * <h3>References</h3>
+ *  <ul>
+ *  <li>Nocedal, J. "<i>Updating Quasi-Newton Matrices with Limited Storage</i>,"
+ *      Mathematics of Computation <b>35</b>, pp.&nbsp;773-782 (1980).</li>
+ *  <li>Moré, J. J. & Thuente, D. J. "<i>Line search algorithms with guaranteed
+ *      sufficient decrease</i>," TOMS, ACM Press <b>20</b>, pp.&nbsp;286-307
+ *      (1994).</li>
+ *  <li>Liu, D. C. & Nocedal, J. "<i>On the limited memory BFGS method for
+ *      large scale optimization</i>," Mathematical programming <b>45</b>,
+ *      pp.&nbsp;503-528 (1989).</li>
+ *  </ul>
+
  * @author Éric Thiébaut.
  *
  */
@@ -178,7 +201,8 @@ public class LBFGS implements ReverseCommunicationOptimizer {
         double gtest, pg1;
         int status;
 
-        if (task == OptimTask.COMPUTE_FG) {
+        switch (task) {
+        case COMPUTE_FG:
 
             /* Caller has computed the function value and the gradient at the
              * current point. */
@@ -204,15 +228,16 @@ public class LBFGS implements ReverseCommunicationOptimizer {
                 ginit = g1norm;
             }
             gtest = getGradientThreshold();
-            return optimizerSuccess(g1norm <= gtest ? OptimTask.FINAL_X
-                    : OptimTask.NEW_X);
+            return optimizerSuccess(g1norm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
 
-        } else if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
+        case NEW_X:
 
-            if (task == OptimTask.NEW_X && evaluations > 1) {
+            if (evaluations > 1) {
                 /* Update the LBFGS matrix. */
                 H.update(x1, x0, g1, g0);
             }
+
+        case FINAL_X:
 
             /* Compute a search direction, possibly after updating the LBFGS
              * matrix.  We take care of checking whether D = -P is a
@@ -274,12 +299,12 @@ public class LBFGS implements ReverseCommunicationOptimizer {
             }
             return nextStep(x1);
 
-        } else {
+        default:
 
             /* There must be something wrong. */
             return task;
-
         }
+
     }
 
     /** Build the new step to try as: x1 = x0 - alpha*p. */
