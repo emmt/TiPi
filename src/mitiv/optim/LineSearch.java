@@ -221,29 +221,29 @@ public abstract class LineSearch {
      *                   than 0 and this value will be returned by {@link #getStep}
      *                   for the first iteration of the line search after clipping
      *                   into the step bounds).
-     * @param stepMin    The lower bound for the step length (must be greater or
+     * @param minStep    The lower bound for the step length (must be greater or
      *                   equal 0).
-     * @param stepMax    The upper bound for the step length (must be strictly greater
+     * @param maxStep    The upper bound for the step length (must be strictly greater
      *                   than {@code stepMin}).
      *
      * @return The state of the line search.
      */
-    public int start(double f0, double g0, double nextStep, double stepMin, double stepMax)
+    public int start(double f0, double g0, double nextStep, double minStep, double maxStep)
     {
-        if (stepMin < 0.0) {
+        if (minStep < 0.0) {
             status = ERROR_STPMIN_LT_ZERO;
-        } else if (stepMin > stepMax) {
+        } else if (minStep > maxStep) {
             status = ERROR_STPMIN_GT_STPMAX;
-        } else if (nextStep < stepMin) {
+        } else if (nextStep < minStep) {
             status = ERROR_STP_LT_STPMIN;
-        } else if (nextStep > stepMax) {
+        } else if (nextStep > maxStep) {
             status = ERROR_STP_GT_STPMAX;
         } else if (g0 >= 0.0) {
             status = ERROR_INITIAL_DERIVATIVE_GE_ZERO;
         } else {
             this.stp = nextStep;
-            this.stpmin = stepMin;
-            this.stpmax = stepMax;
+            this.stpmin = minStep;
+            this.stpmax = maxStep;
             this.finit = f0;
             this.ginit = g0;
             status = startHook();
@@ -258,30 +258,30 @@ public abstract class LineSearch {
      * at the new position to try.  Upon return, this method indicates whether the line
      * search has converged.  Otherwise, it computes a new step to try.
      *
-     * @param s1   The value of the step (same as the value returned by {@link #getStep}).
-     * @param f1   The value of the function at {@code x1 = x0 + s1*p} where {@code x0}
-     *             are the variables at the start of the line search and {@code p} is the
-     *             search direction.
-     * @param g1   The directional derivative at {@code x1}, that is {@code p'.g(x1)} the
-     *             inner product between the search direction and the function gradient at
-     *             {@code x1}.
+     * @param alpha  The value of the step (same as the value returned by {@link #getStep}).
+     * @param f      The value of the function at {@code x = x0 + alpha*p} where {@code x0}
+     *               are the variables at the start of the line search and {@code p} is the
+     *               search direction.
+     * @param df     The directional derivative at {@code x}, that is {@code p'.g(x)} the
+     *               inner product between the search direction and the function gradient at
+     *               {@code x}.
      *
      * @return The new status of the line search instance.
      */
-    public int iterate(double s1, double f1, double g1)
+    public int iterate(double alpha, double f, double df)
     {
         if (status == SEARCH) {
-            if (s1 != stp) {
+            if (alpha != stp) {
                 status = ERROR_STP_CHANGED;
             } else {
-                status = iterateHook(s1, f1, g1);
+                status = iterateHook(f, df);
                 if (stp >= stpmax) {
-                    if (s1 >= stpmax) {
+                    if (stp >= stpmax) {
                         status = WARNING_STP_EQ_STPMAX;
                     }
                     stp = stpmax;
                 } else if (stp <= stpmin) {
-                    if (s1 <= stpmin) {
+                    if (stp <= stpmin) {
                         status = WARNING_STP_EQ_STPMIN;
                     }
                     stp = stpmin;
@@ -315,17 +315,16 @@ public abstract class LineSearch {
      * as attribute {@code stp}).  The provided arguments have been checked.  Upon return,
      * the caller method, {@link #iterate}, takes care of safeguarding the step.
      *
-     * @param s1   The value of the step (same as the value returned by {@link #getStep}).
-     * @param f1   The value of the function at {@code x1 = x0 + s1*p} where {@code x0}
+     * @param f    The value of the function at {@code x = x0 + stp*p} where {@code x0}
      *             are the variables at the start of the line search and {@code p} is the
      *             search direction.
-     * @param g1   The directional derivative at {@code x1}, that is {@code p'.g(x1)} the
+     * @param df   The directional derivative at {@code x}, that is {@code p'.g(x)} the
      *             inner product between the search direction and the function gradient at
-     *             {@code x1}.
+     *             {@code x}.
      *
      * @return The new status of the line search instance.
      */
-    protected abstract int iterateHook(double s1, double f1, double g1);
+    protected abstract int iterateHook(double f, double df);
 
     /**
      * Get the current step length.
