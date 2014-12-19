@@ -50,40 +50,69 @@ import mitiv.linalg.VectorSpace;
  */
 public class VMLMB implements ReverseCommunicationOptimizer {
 
+    /** Reason of failure. */
+    protected int reason = NO_PROBLEMS;
+
     public static int NO_PROBLEMS = 0;
     public static int BAD_PRECONDITIONER = 1; /* preconditioner is not positive definite */
     public static int LNSRCH_WARNING = 2; /* warning in line search */
     public static int LNSRCH_ERROR = 3; /* error in line search */
 
-    protected LBFGSOperator H = null; /* LBFGS approximation of the inverse Hessian */
-    protected LineSearch lnsrch;
-    protected OptimTask task = null;
-    protected int reason = NO_PROBLEMS;
+    /** LBFGS approximation of the inverse Hessian */
+    protected LBFGSOperator H = null;
 
-    /* Number of function (and gradient) evaluations since start. */
+    /** Line search to use. */
+    protected LineSearch lnsrch;
+
+    /** Pending task for the caller. */
+    protected OptimTask task = null;
+
+    /** Number of function (and gradient) evaluations since start. */
     protected int evaluations = 0;
 
-    /* Number of iterations since start. */
+    /** Number of iterations since start. */
     protected int iterations = 0;
 
-    /* Number of restarts. */
+    /** Number of restarts. */
     protected int restarts = 0;
 
+    /** Relative threshold for the sufficient descent condition. */
     protected double delta = 0.01;
+
+    /** Small relative size for the initial step or after a restart. */
     protected double epsilon = 1e-3;
-    protected double pnorm; // the norm of P
-    protected double grtol;  /* Relative threshold for the norm or the gradient (relative
-    to GTEST the norm of the initial gradient) for convergence. */
-    protected double gatol;  /* Absolute threshold for the norm or the gradient for
-    convergence. */
-    protected double ginit;  /* Norm or the initial gradient. */
 
+    /**
+     * Relative threshold for the norm or the gradient (relative to the norm
+     * of the initial gradient) for convergence.
+     */
+    protected double grtol;
+
+    /**
+     * Absolute threshold for the norm or the gradient for convergence.
+     */
+    protected double gatol;
+
+    /** Norm or the initial gradient. */
+    protected double ginit;
+
+    /** The norm of the search direction. */
+    protected double pnorm;
+
+    /** Lower relative step bound. */
     protected double stpmin = 1e-20;
-    protected double stpmax = 1e6;
 
-    /* To save space, the variable and gradient at the start of a line
-     * search are references to the (s,y) pair of vectors of the LBFGS
-     * operator just after the mark.
+    /** Upper relative step bound. */
+    protected double stpmax = 1e+20;
+
+    /**
+     * Attempt to save some memory?
+     *
+     * <p>
+     * To save space, the variable and gradient at the start of a line search
+     * may be references to the (s,y) pair of vectors of the LBFGS operator
+     * just after the mark.
+     * </p>
      */
     private boolean saveMemory = true;
 
@@ -93,14 +122,15 @@ public class VMLMB implements ReverseCommunicationOptimizer {
     /** Function value at X0. */
     protected  double f0 = 0.0;
 
-    /** Projected gradient at X0. */
+    /** Gradient at X0. */
     protected Vector g0 = null;
 
     /**
      * The (anti-)search direction.
      * 
-     * An iterate is computed as: x1 = x0 - alpha*p
-     * with alpha > 0.
+     * <p>
+     * An iterate is computed as: x = x0 - alpha*p with alpha > 0.
+     * </p>
      */
     protected Vector p = null;
 
@@ -110,12 +140,13 @@ public class VMLMB implements ReverseCommunicationOptimizer {
     /** Directional derivative at X0. */
     protected  double dg0 = 0.0;
 
-    /** Euclidean norm of the projected gradient at the last accepted step. */
-    protected double g1norm = 0.0;
+    /** Euclidean norm of the gradient at the last accepted step. */
+    protected double gnorm = 0.0;
 
-    /** Euclidean norm of the projected gradient at X0. */
+    /** Euclidean norm of the gradient at X0. */
     protected  double g0norm = 0.0;
 
+    /** Projector to use to impose constraints. */
     protected final BoundProjector projector;
 
     public VMLMB(VectorSpace vsp, BoundProjector bp, int m, LineSearch ls) {
@@ -189,34 +220,34 @@ public class VMLMB implements ReverseCommunicationOptimizer {
     }
 
     @Override
-    public OptimTask iterate(Vector x1, double f1, Vector g1) {
-        double gtest, pg1;
-        int status;
+    public OptimTask iterate(Vector x, double f, Vector g) {
 
-        if (task == OptimTask.COMPUTE_FG) {
+        switch (task) {
+
+        case COMPUTE_FG:
 
             /* Caller has computed the function value and the gradient at the
              * current point. */
             if (projector != null) {
-                projector.projectGradient(x1, g1, g1);
+                projector.projectGradient(x, g, g);
             }
             ++evaluations;
             if (evaluations > 1) {
                 /* A line search is in progress.  Compute directional
                  * derivative and check whether line search has converged. */
-                pg1 = p.dot(g1);
-                status = lnsrch.iterate(alpha, f1, -pg1);
+                double pg = p.dot(g);
+                int status = lnsrch.iterate(alpha, f, -pg);
                 if (status == LineSearch.SEARCH) {
                     alpha = lnsrch.getStep();
-                    x1.axpby(1.0, x0, -alpha, p);
+                    x.axpby(1.0, x0, -alpha, p);
                     if (projector != null) {
-                        projector.apply(x1, x1);
+                        projector.projectVariables(x, x);
                     }
                     return optimizerSuccess(OptimTask.COMPUTE_FG);
                 }
                 if (status == LineSearch.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS) {
                     status = LineSearch.CONVERGENCE;
-                } else if (projector != null && status == LineSearch.WARNING_STP_EQ_STPMAX) {
+                } else if (status == LineSearch.WARNING_STP_EQ_STPMAX && projector != null) {
                     status = LineSearch.CONVERGENCE;
                 }
                 if (status != LineSearch.CONVERGENCE) {
@@ -226,35 +257,36 @@ public class VMLMB implements ReverseCommunicationOptimizer {
             }
 
             /* The current step is acceptable. Check for global convergence. */
-            g1norm = g1.norm2();
+            gnorm = g.norm2();
             if (evaluations == 1) {
-                ginit = g1norm;
+                ginit = gnorm;
             }
-            gtest = getGradientThreshold();
-            return optimizerSuccess(g1norm <= gtest ? OptimTask.FINAL_X
-                    : OptimTask.NEW_X);
+            double gtest = getGradientThreshold();
+            return optimizerSuccess(gnorm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
 
-        } else if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
+        case NEW_X:
 
-            if (task == OptimTask.NEW_X && evaluations > 1) {
+            if (evaluations > 1) {
                 /* Update the LBFGS matrix. */
-                H.update(x1, x0, g1, g0);
+                H.update(x, x0, g, g0);
             }
+
+        case FINAL_X:
 
             /* Compute a search direction, possibly after updating the LBFGS
              * matrix.  We take care of checking whether D = -P is a
              * sufficient descent direction.  As shown by Zoutendijk, this is
-             * true if: cos(theta) = -(D/|D|)'.(G/|G|) >= EPSILON > 0
+             * true if: cos(theta) = -(D/|D|)'.(G/|G|) >= DELTA > 0
              * where G is the gradient. */
             while (true) {
-                H.apply(g1, p);
+                H.apply(g, p);
                 pnorm = p.norm2(); // FIXME: in some cases, can be just GNORM*GAMMA
-                pg1 = p.dot(g1);
-                if (pg1 >= delta*pnorm*g1norm) {
+                double pg = p.dot(g);
+                if (pg >= delta*pnorm*gnorm) {
                     /* Accept P (respectively D = -P) as a sufficient ascent
                      * (respectively descent) direction and set the directional
                      * derivative. */
-                    dg0 = -pg1;
+                    dg0 = -pg;
                     break;
                 }
                 if (H.mp < 1) {
@@ -276,27 +308,27 @@ public class VMLMB implements ReverseCommunicationOptimizer {
                 g0 = H.y(1);
                 H.mp = Math.min(H.mp,  H.m - 1);
             }
-            x0.copyFrom(x1);
-            g0.copyFrom(g1);
-            g0norm = g1norm;
-            f0 = f1;
+            x0.copyFrom(x);
+            g0.copyFrom(g);
+            g0norm = gnorm;
+            f0 = f;
 
             /* Estimate the length of the first step, start the line search
              * and take the first step along the search direction. */
             if (H.mp >= 1 || H.rule == InverseHessianApproximation.BY_USER) {
                 alpha = 1.0;
             } else if (0.0 < epsilon && epsilon < 1.0) {
-                double x1norm = x1.norm2();
-                if (x1norm > 0.0) {
-                    alpha = (x1norm/g1norm)*epsilon;
+                double xnorm = x.norm2();
+                if (xnorm > 0.0) {
+                    alpha = (xnorm/gnorm)*epsilon;
                 } else {
-                    alpha = 1.0/g1norm;
+                    alpha = 1.0/gnorm;
                 }
             } else {
-                alpha = 1.0/g1norm;
+                alpha = 1.0/gnorm;
             }
             double amin, amax;
-            x1.axpby(1.0, x0, -alpha, p);
+            x.axpby(1.0, x0, -alpha, p);
             if (projector == null) {
                 /* Unconstrained optimization. */
                 amin = stpmin*alpha;
@@ -304,20 +336,20 @@ public class VMLMB implements ReverseCommunicationOptimizer {
             } else {
                 /* Project the first guess and set line search bounds to only
                  * do backtracking. */
-                projector.apply(x1, x1);
-                p.axpby(1.0, x0, -1.0, x1);
+                projector.projectVariables(x, x);
+                p.axpby(1.0, x0, -1.0, x);
                 dg0 = -p.dot(g0);
                 alpha = 1.0;
                 amin = stpmin;
                 amax = 1.0;
             }
-            status = lnsrch.start(f0, dg0, alpha, amin, amax);
+            int status = lnsrch.start(f0, dg0, alpha, amin, amax);
             if (status != LineSearch.SEARCH) {
                 return lineSearchFailure();
             }
             return optimizerSuccess(OptimTask.COMPUTE_FG);
 
-        } else {
+        default:
 
             /* There must be something wrong. */
             return task;
