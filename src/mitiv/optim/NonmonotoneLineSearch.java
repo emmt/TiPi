@@ -81,7 +81,7 @@ public class NonmonotoneLineSearch extends LineSearch {
      * The line search is assumed to have converged when the following
      * sufficient decrease (Armijo) condition holds:
      * <pre>
-     *    f(x0 + alpha*p) <= fmax + alpha*ftol*<p | g(x0)>
+     *    f(x0 + alpha*d) <= fmax + alpha*ftol*<d|g(x0)>
      * </pre>
      * where <i>fmax</i> is the highest function value since the last <i>m</i>
      * steps, <i>alpha</i> is the step length and <i>ftol</i> is the parameter
