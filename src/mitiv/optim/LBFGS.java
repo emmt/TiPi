@@ -60,41 +60,69 @@ import mitiv.linalg.VectorSpace;
  */
 public class LBFGS implements ReverseCommunicationOptimizer {
 
+    /** Reason of failure. */
+    protected int reason = NO_PROBLEMS;
+
     public static int NO_PROBLEMS = 0;
-    public static int BAD_PRECONDITIONER = 1; /* B0 is not positive definite */
+    public static int BAD_PRECONDITIONER = 1; /* preconditioner is not positive definite */
     public static int LNSRCH_WARNING = 2; /* warning in line search */
     public static int LNSRCH_ERROR = 3; /* error in line search */
 
-    protected LBFGSOperator H = null; /* LBFGS approximation of the inverse Hessian */
-    protected LineSearch lnsrch;
-    protected OptimTask task = null;
-    protected int reason = NO_PROBLEMS;
+    /** LBFGS approximation of the inverse Hessian */
+    protected LBFGSOperator H = null;
 
-    /* Number of function (and gradient) evaluations since start. */
+    /** Line search to use. */
+    protected LineSearch lnsrch;
+
+    /** Pending task for the caller. */
+    protected OptimTask task = null;
+
+    /** Number of function (and gradient) evaluations since start. */
     protected int evaluations = 0;
 
-    /* Number of iterations since start. */
+    /** Number of iterations since start. */
     protected int iterations = 0;
 
-    /* Number of restarts. */
+    /** Number of restarts. */
     protected int restarts = 0;
 
+    /** Relative threshold for the sufficient descent condition. */
     protected double delta = 0.01;
-    protected double epsilon = 1e-3;
-    protected double pnorm;  /* The norm of the search direction. */
-    protected double grtol;  /* Relative threshold for the norm or the gradient
-     * (relative to the norm of the initial gradient)
-     * for convergence. */
-    protected double gatol;  /* Absolute threshold for the norm or the gradient
-     * for convergence. */
-    protected double ginit;  /* Norm or the initial gradient. */
 
+    /** Small relative size for the initial step or after a restart. */
+    protected double epsilon = 1e-3;
+
+    /**
+     * Relative threshold for the norm or the gradient (relative to the norm
+     * of the initial gradient) for convergence.
+     */
+    protected double grtol;
+
+    /**
+     * Absolute threshold for the norm or the gradient for convergence.
+     */
+    protected double gatol;
+
+    /** Norm or the initial gradient. */
+    protected double ginit;
+
+    /** The norm of the search direction. */
+    protected double pnorm;
+
+    /** Lower relative step bound. */
     protected double stpmin = 1e-20;
+
+    /** Upper relative step bound. */
     protected double stpmax = 1e+20;
 
-    /* To save space, the variable and gradient at the start of a line
-     * search are references to the (s,y) pair of vectors of the LBFGS
-     * operator just after the mark.
+    /**
+     * Attempt to save some memory?
+     *
+     * <p>
+     * To save space, the variable and gradient at the start of a line search
+     * may be references to the (s,y) pair of vectors of the LBFGS operator
+     * just after the mark.
+     * </p>
      */
     private boolean saveMemory = true;
 
@@ -110,8 +138,9 @@ public class LBFGS implements ReverseCommunicationOptimizer {
     /**
      * The (anti-)search direction.
      * 
-     * An iterate is computed as: x = x0 - alpha*p
-     * with alpha > 0.
+     * <p>
+     * An iterate is computed as: x = x0 - alpha*p with alpha > 0.
+     * </p>
      */
     protected Vector p = null;
 
@@ -244,7 +273,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
             /* Compute a search direction, possibly after updating the LBFGS
              * matrix.  We take care of checking whether D = -P is a
              * sufficient descent direction.  As shown by Zoutendijk, this is
-             * true if: cos(theta) = -(D/|D|)'.(G/|G|) >= EPSILON > 0
+             * true if: cos(theta) = -(D/|D|)'.(G/|G|) >= DELTA > 0
              * where G is the gradient. */
             while (true) {
                 H.apply(g, p);
@@ -281,8 +310,8 @@ public class LBFGS implements ReverseCommunicationOptimizer {
             g0norm = gnorm;
             f0 = f;
 
-            /* Estimate the length of the first step, start the line search and
-             * take the first step along the search direction. */
+            /* Estimate the length of the first step, start the line search
+             * and take the first step along the search direction. */
             if (H.mp >= 1 || H.rule == InverseHessianApproximation.BY_USER) {
                 alpha = 1.0;
             } else if (0.0 < epsilon && epsilon < 1.0) {
@@ -305,6 +334,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
 
             /* There must be something wrong. */
             return task;
+
         }
 
     }
