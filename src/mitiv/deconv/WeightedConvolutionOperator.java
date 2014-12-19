@@ -282,9 +282,10 @@ public abstract class WeightedConvolutionOperator extends ShapedLinearOperator {
 
     /**
      * Set the weights of the operator.
-     * @param vec  - The weights in the form of a shaped vector.  Its values are
-     *               checked for validity.  It must belong to the output space
-     *               of the operator.
+     * @param vec  - The weights in the form of a shaped vector.  It can be
+     *               {@code null}, in which case any weighting is discarded.
+     *               If non-{@code null}, its values are checked for validity
+     *               and it must belong to the output space of the operator.
      * @param copy - If true, a copy (not a reference) of the contents of <i>vec</i>
      *               is forced.
      */
@@ -304,10 +305,12 @@ public abstract class WeightedConvolutionOperator extends ShapedLinearOperator {
 
     /**
      * Set the weights of the operator.
-     * @param arr  - The weights in the form of a shaped array.  It is automatically
-     *               converted to the correct data type and its values are checked for
-     *               validity.  Its shape must be that of the vectors of the output
-     *               space of the operator.
+     * @param arr  - The weights in the form of a shaped array.  It can be
+     *               {@code null}, in which case any weighting is discarded.
+     *               If non-{@code null}, it is automatically converted to the
+     *               correct data type and its values are checked for validity.
+     *               If non-{@code null}, its shape must be that of the vectors
+     *               of the output space of the operator.
      * @param copy - If true, a copy (not a reference) of the contents of <i>arr</i>
      *               is forced.
      */

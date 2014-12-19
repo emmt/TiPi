@@ -159,16 +159,14 @@ public class ArmijoLineSearch extends LineSearch {
     //        function (and gradient) evaluation than really
     //        necessary
     @Override
-    public int iterateHook(double s1, double f1, double g1) {
-        //System.err.format("f0=%g, f1=%g, ftest=%g, alpha=%g, sigma=%g, dg0=%g\n",
-        //        finit, f1, finit + stp*sigma*ginit, stp, sigma, ginit);
-        if (bypass || f1 - finit <= stp*sigma*ginit) {
+    public int iterateHook(double f, double g) {
+        if (bypass || f - finit <= stp*sigma*ginit) {
             status = CONVERGENCE;
         } else {
-            if (f1 < bestFunc) {
+            if (f < bestFunc) {
                 /* Register best function so far and reduce the step. */
                 bestStep = stp;
-                bestFunc = f1;
+                bestFunc = f;
                 stp = rho*stp;
             } else if (bestStep > stp) {
                 /* A better function has been obtained with a larger step.
