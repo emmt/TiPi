@@ -134,18 +134,26 @@ public class ConvolutionFloat2D extends WeightedConvolutionOperator {
 
     @Override
     public void setWeights(ShapedVector vec, boolean copy) {
-        if (! vec.belongsTo(getOutputSpace())) {
-            throw new IllegalArgumentException("Weights must be a vector of the output space of the operator.");
+        if (vec == null) {
+            wgt = null;
+        } else {
+            if (! vec.belongsTo(getOutputSpace())) {
+                throw new IllegalArgumentException("Weights must be a vector of the output space of the operator.");
+            }
+            wgt = checkWeights(((FloatShapedVector)vec).getData(), copy);
         }
-        wgt = checkWeights(((FloatShapedVector)vec).getData(), copy);
     }
 
     @Override
     public void setWeights(ShapedArray arr, boolean copy) {
-        if (! getOutputSpace().getShape().equals(arr.getShape())) {
-            throw new IllegalArgumentException("Weights must have the same shape as the vectors of the output space of the operator.");
+        if (arr == null) {
+            wgt = null;
+        } else {
+            if (! getOutputSpace().getShape().equals(arr.getShape())) {
+                throw new IllegalArgumentException("Weights must have the same shape as the vectors of the output space of the operator.");
+            }
+            wgt = checkWeights(arr.toFloat().flatten(copy), false);
         }
-        wgt = checkWeights(arr.toFloat().flatten(copy), false);
     }
 
     /** Create low-level FFT operator. */
