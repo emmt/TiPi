@@ -156,7 +156,7 @@ public class NonmonotoneLineSearch extends LineSearch {
     }
 
     @Override
-    protected int startHook() {
+    protected LineSearchStatus startHook() {
         /* Save function value. */
         fsav[mp%m] = finit;
         ++mp;
@@ -169,21 +169,21 @@ public class NonmonotoneLineSearch extends LineSearch {
                 fmax = fsav[k];
             }
         }
-        return SEARCH;
+        return LineSearchStatus.SEARCH;
     }
 
     @Override
-    public int iterateHook(double f, double g) {
+    public LineSearchStatus iterateHook(double f, double g) {
         /* Check whether Armijo-like condition satisfied. */
         if (f <= fmax + stp*ftol*ginit) {
             /* Convergence criterion satisfied. */
-            return CONVERGENCE;
+            return LineSearchStatus.CONVERGENCE;
         }
 
         /* Check whether step is already at the lower bound. */
         if (stp <= stpmin) {
             stp = stpmin;
-            return WARNING_STP_EQ_STPMIN;
+            return LineSearchStatus.WARNING_STP_EQ_STPMIN;
         }
 
         /* Attempt to use safeguarded quadratic interpolation to find a better step.
@@ -202,7 +202,7 @@ public class NonmonotoneLineSearch extends LineSearch {
 
         /* Safeguard the step. */
         stp = Math.max(stp, stpmin);
-        return (stp > 0.0 ? SEARCH : WARNING_STP_EQ_STPMIN);
+        return (stp > 0.0 ? LineSearchStatus.SEARCH : LineSearchStatus.WARNING_STP_EQ_STPMIN);
     }
 
     public static void main(String[] args) {
@@ -211,7 +211,7 @@ public class NonmonotoneLineSearch extends LineSearch {
         double f0 = 0.0;
         double g0 = -1.0;
         double h0 = 5.0;
-        int state = lineSearch.start(f0, g0, alpha, 0.0, 1e20*alpha);
+        LineSearchStatus state = lineSearch.start(f0, g0, alpha, 0.0, 1e20*alpha);
         System.out.println("state = " + state);
         System.out.println("finished = " + lineSearch.finished());
         for (int k = 1; k <= 6; ++k) {

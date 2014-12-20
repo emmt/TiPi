@@ -48,33 +48,13 @@ import mitiv.linalg.VectorSpace;
  * @author Éric Thiébaut.
  *
  */
-public class VMLMB implements ReverseCommunicationOptimizer {
-
-    /** Reason of failure. */
-    protected int reason = NO_PROBLEMS;
-
-    public static int NO_PROBLEMS = 0;
-    public static int BAD_PRECONDITIONER = 1; /* preconditioner is not positive definite */
-    public static int LNSRCH_WARNING = 2; /* warning in line search */
-    public static int LNSRCH_ERROR = 3; /* error in line search */
+public class VMLMB extends ReverseCommunicationOptimizer {
 
     /** LBFGS approximation of the inverse Hessian */
     protected LBFGSOperator H = null;
 
     /** Line search to use. */
     protected LineSearch lnsrch;
-
-    /** Pending task for the caller. */
-    protected OptimTask task = null;
-
-    /** Number of function (and gradient) evaluations since start. */
-    protected int evaluations = 0;
-
-    /** Number of iterations since start. */
-    protected int iterations = 0;
-
-    /** Number of restarts. */
-    protected int restarts = 0;
 
     /** Relative threshold for the sufficient descent condition. */
     protected double delta = 0.01;
@@ -169,37 +149,6 @@ public class VMLMB implements ReverseCommunicationOptimizer {
     }
 
     @Override
-    public OptimTask getTask() {
-        return task;
-    }
-
-    @Override
-    public int getIterations() {
-        return iterations;
-    }
-
-    @Override
-    public int getEvaluations() {
-        return evaluations;
-    }
-
-    @Override
-    public int getRestarts() {
-        return restarts;
-    }
-
-    @Override
-    public String getMessage(int reason) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public int getReason() {
-        return reason;
-    }
-
-    @Override
     public OptimTask start() {
         evaluations = 0;
         iterations = 0;
@@ -215,8 +164,7 @@ public class VMLMB implements ReverseCommunicationOptimizer {
 
     private OptimTask begin() {
         H.reset();
-        task = OptimTask.COMPUTE_FG;
-        return task;
+        return schedule(OptimTask.COMPUTE_FG);
     }
 
     @Override
@@ -236,22 +184,22 @@ public class VMLMB implements ReverseCommunicationOptimizer {
                 /* A line search is in progress.  Compute directional
                  * derivative and check whether line search has converged. */
                 double pg = p.dot(g);
-                int status = lnsrch.iterate(alpha, f, -pg);
-                if (status == LineSearch.SEARCH) {
+                LineSearchStatus status = lnsrch.iterate(alpha, f, -pg);
+                if (status == LineSearchStatus.SEARCH) {
                     alpha = lnsrch.getStep();
                     x.axpby(1.0, x0, -alpha, p);
                     if (projector != null) {
                         projector.projectVariables(x, x);
                     }
-                    return optimizerSuccess(OptimTask.COMPUTE_FG);
+                    return schedule(OptimTask.COMPUTE_FG);
                 }
-                if (status == LineSearch.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS) {
-                    status = LineSearch.CONVERGENCE;
-                } else if (status == LineSearch.WARNING_STP_EQ_STPMAX && projector != null) {
-                    status = LineSearch.CONVERGENCE;
+                if (status == LineSearchStatus.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS) {
+                    status = LineSearchStatus.CONVERGENCE;
+                } else if (status == LineSearchStatus.WARNING_STP_EQ_STPMAX && projector != null) {
+                    status = LineSearchStatus.CONVERGENCE;
                 }
-                if (status != LineSearch.CONVERGENCE) {
-                    return lineSearchFailure();
+                if (status != LineSearchStatus.CONVERGENCE) {
+                    return lineSearchFailure(status);
                 }
                 ++iterations;
             }
@@ -262,7 +210,7 @@ public class VMLMB implements ReverseCommunicationOptimizer {
                 ginit = gnorm;
             }
             double gtest = getGradientThreshold();
-            return optimizerSuccess(gnorm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
+            return schedule(gnorm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
 
         case NEW_X:
 
@@ -293,7 +241,7 @@ public class VMLMB implements ReverseCommunicationOptimizer {
                     /* Initial iteration or recursion has just been
                      * restarted.  This means that the initial inverse
                      * Hessian approximation is not positive definite. */
-                    return optimizerFailure(BAD_PRECONDITIONER);
+                    return failure(BAD_PRECONDITIONER);
                 }
                 /* Restart the LBFGS recursion and loop to use H0 to compute
                  * an initial search direction. */
@@ -343,11 +291,11 @@ public class VMLMB implements ReverseCommunicationOptimizer {
                 amin = stpmin;
                 amax = 1.0;
             }
-            int status = lnsrch.start(f0, dg0, alpha, amin, amax);
-            if (status != LineSearch.SEARCH) {
-                return lineSearchFailure();
+            LineSearchStatus status = lnsrch.start(f0, dg0, alpha, amin, amax);
+            if (status != LineSearchStatus.SEARCH) {
+                return lineSearchFailure(status);
             }
-            return optimizerSuccess(OptimTask.COMPUTE_FG);
+            return schedule(OptimTask.COMPUTE_FG);
 
         default:
 
@@ -356,31 +304,6 @@ public class VMLMB implements ReverseCommunicationOptimizer {
 
         }
     }
-
-    private OptimTask lineSearchFailure() {
-        if (lnsrch.hasWarnings()) {
-            reason = LNSRCH_WARNING;
-            task = OptimTask.WARNING;
-        } else {
-            reason = LNSRCH_ERROR;
-            task = OptimTask.ERROR;
-        }
-        return task;
-    }
-
-    private OptimTask optimizerSuccess(OptimTask task) {
-        this.reason = NO_PROBLEMS;
-        this.task = task;
-        return task;
-    }
-
-    private OptimTask optimizerFailure(int reason)
-    {
-        this.reason = reason;
-        this.task = OptimTask.ERROR;
-        return this.task;
-    }
-
 
     /**
      * Set the absolute tolerance for the convergence criterion.

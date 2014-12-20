@@ -71,7 +71,7 @@ public class MoreThuenteLineSearch extends LineSearch {
     }
 
     @Override
-    protected int startHook() {
+    protected LineSearchStatus startHook() {
         /* Convergence threshold for this step. */
         gtest = ftol*ginit;
 
@@ -96,31 +96,31 @@ public class MoreThuenteLineSearch extends LineSearch {
 
         /* Algorithm starts with STAGE = 1. */
         stage = 1;
-        return SEARCH;
+        return LineSearchStatus.SEARCH;
     }
 
     @Override
-    protected int iterateHook(double f, double g)
+    protected LineSearchStatus iterateHook(double f, double g)
     {
         /* Test for convergence. */
         double ftest = finit + stp*gtest;
         if (f <= ftest && Math.abs(g) <= -gtol*ginit) {
             /* Strong Wolfe conditions satisfied. */
-            return CONVERGENCE;
+            return LineSearchStatus.CONVERGENCE;
         }
 
         /* Test for warnings. */
         if (stp == stpmin && (f > ftest || g >= gtest)) {
-            return WARNING_STP_EQ_STPMIN;
+            return LineSearchStatus.WARNING_STP_EQ_STPMIN;
         }
         if (stp == stpmax && f <= ftest && g <= gtest) {
-            return WARNING_STP_EQ_STPMAX;
+            return LineSearchStatus.WARNING_STP_EQ_STPMAX;
         }
         if (brackt && stmax - stmin <= xtol*stmax) {
-            return WARNING_XTOL_TEST_SATISFIED;
+            return LineSearchStatus.WARNING_XTOL_TEST_SATISFIED;
         }
         if (brackt && (stp <= stmin || stp >= stmax)) {
-            return WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS;
+            return LineSearchStatus.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS;
         }
 
         /* If psi(stp) <= 0 and f'(stp) >= 0 for some step, then the
@@ -147,7 +147,7 @@ public class MoreThuenteLineSearch extends LineSearch {
             ws[8] = g - gtest;
             int result = cstep();
             if (result < 0) {
-                return result;
+                return status;
             }
             stx = ws[0];
             fx  = ws[1] + gtest*stx;
@@ -169,7 +169,7 @@ public class MoreThuenteLineSearch extends LineSearch {
             ws[8] = g;
             int result = cstep();
             if (result < 0) {
-                return result;
+                return status;
             }
             stx = ws[0];
             fx  = ws[1];
@@ -211,7 +211,7 @@ public class MoreThuenteLineSearch extends LineSearch {
         }
 
         /* Obtain another function and derivative. */
-        return SEARCH;
+        return LineSearchStatus.SEARCH;
     }
 
 
@@ -252,11 +252,14 @@ public class MoreThuenteLineSearch extends LineSearch {
         /* Check the input parameters for errors. */
         if (brackt && (stx < sty ? (stp <= stx || stp >= sty)
                 : (stp <= sty || stp >= stx))) {
-            return MoreThuenteLineSearch.ERROR_STP_OUTSIDE_BRACKET;
+            status = LineSearchStatus.ERROR_STP_OUTSIDE_BRACKET;
+            return -1;
         } else if (dx*(stp - stx) >= ZERO) {
-            return MoreThuenteLineSearch.ERROR_NOT_A_DESCENT;
+            status = LineSearchStatus.ERROR_NOT_A_DESCENT;
+            return -1;
         } else if (stpmin > stpmax) {
-            return MoreThuenteLineSearch.ERROR_STPMIN_GT_STPMAX;
+            status = LineSearchStatus.ERROR_STPMIN_GT_STPMAX;
+            return -1;
         }
 
         /* Determine if the derivatives have opposite signs. */

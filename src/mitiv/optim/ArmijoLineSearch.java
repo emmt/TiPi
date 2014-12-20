@@ -115,7 +115,7 @@ public class ArmijoLineSearch extends LineSearch {
         double f0 = 0.0;
         double g0 = -1.0;
         double h0 = 5.0;
-        int state = lineSearch.start(f0, g0, alpha, 0.0, 1e20*alpha);
+        LineSearchStatus state = lineSearch.start(f0, g0, alpha, 0.0, 1e20*alpha);
         System.out.println("state = " + state);
         System.out.println("finished = " + lineSearch.finished());
         for (int k = 1; k <= 6; ++k) {
@@ -148,20 +148,20 @@ public class ArmijoLineSearch extends LineSearch {
     }
 
     @Override
-    protected int startHook() {
+    protected LineSearchStatus startHook() {
         bestFunc = finit;
         bestStep = 0.0;
         bypass = false;
-        return SEARCH;
+        return LineSearchStatus.SEARCH;
     }
 
     // FIXME: by-passing the test means that we spend one more
     //        function (and gradient) evaluation than really
     //        necessary
     @Override
-    public int iterateHook(double f, double g) {
+    public LineSearchStatus iterateHook(double f, double g) {
         if (bypass || f - finit <= stp*sigma*ginit) {
-            status = CONVERGENCE;
+            status = LineSearchStatus.CONVERGENCE;
         } else {
             if (f < bestFunc) {
                 /* Register best function so far and reduce the step. */
@@ -178,7 +178,7 @@ public class ArmijoLineSearch extends LineSearch {
                 /* Reduce the length of the step. */
                 stp = rho*stp;
             }
-            status = SEARCH;
+            status = LineSearchStatus.SEARCH;
         }
         return status;
     }

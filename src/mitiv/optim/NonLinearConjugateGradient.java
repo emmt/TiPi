@@ -48,9 +48,7 @@ import mitiv.tests.MinPack1Tests;
  *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
-public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer {
-    public static final int SUCCESS =  0;
-    public static final int FAILURE = -1;
+public class NonLinearConjugateGradient extends ReverseCommunicationOptimizer {
 
     public static final double STPMIN = 1E-20;
     public static final double STPMAX = 1E+6;
@@ -108,11 +106,7 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
                               as: x1 = x0 - alpha*p, for alpha >= 0. */
     private final Vector y;      /* Work vector (e.g., to store the gradient difference:
                               Y = G1 - G0). */
-    private int iter;      /* Iteration number. */
-    private int nrestarts; /* Number of algorithm restarts. */
-    private int nevals;    /* Number of function and gradient evaluations. */
     private final int method;   /* Conjugate gradient method. */
-    private OptimTask task;     /* Current pending task. */
     private boolean starting;   /* Indicate whether algorithm is starting */
     private boolean fmin_given; /* Indicate whether FMIN is specified. */
     private final boolean update_Hager_Zhang_orig = false;
@@ -200,7 +194,7 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
         this.p = vsp.create();
         this.y = (y_needed ? vsp.create() : null);
         this.task = OptimTask.ERROR;
-        this.nevals = 0;
+        this.evaluations = 0;
     }
 
     /*
@@ -239,7 +233,7 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
     private int update1(Vector g1, double beta)
     {
         if ((method & POWELL) != 0 && beta < 0.0) {
-            ++nrestarts;
+            ++restarts;
             this.beta = 0.0;
         } else {
             this.beta = beta;
@@ -439,20 +433,20 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
     @Override
     public OptimTask start()
     {
-        iter = 0;
-        nevals = 0;
-        nrestarts = 0;
+        iterations = 0;
+        evaluations = 0;
+        restarts = 0;
         starting = true;
         gtest = 0.0;
-        return (task = OptimTask.COMPUTE_FG);
+        return schedule(OptimTask.COMPUTE_FG);
     }
 
     @Override
     public OptimTask restart()
     {
-        ++nrestarts;
+        ++restarts;
         starting = true;
-        return (task = OptimTask.COMPUTE_FG);
+        return schedule(OptimTask.COMPUTE_FG);
     }
 
     @Override
@@ -466,7 +460,7 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
          */
         if (task == OptimTask.COMPUTE_FG) {
             boolean accept;
-            ++nevals;
+            ++evaluations;
             if (starting) {
                 g1norm = vsp.norm2(g1);
                 gtest = g1norm;
@@ -475,33 +469,27 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
                 /* Compute directional derivative and check whether line search has
                    converged. */
                 dg1 = -vsp.dot(p, g1);
-                int status = lnsrch.iterate(alpha, f1, dg1);
+                LineSearchStatus status = lnsrch.iterate(alpha, f1, dg1);
                 alpha = lnsrch.getStep();
-                if (status == LineSearch.SEARCH) {
+                if (status == LineSearchStatus.SEARCH) {
                     accept = false;
-                } else if (status == LineSearch.CONVERGENCE ||
-                        status == LineSearch.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS) {
-                    ++iter;
+                } else if (status == LineSearchStatus.CONVERGENCE ||
+                        status == LineSearchStatus.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS) {
+                    ++iterations;
                     g1norm = vsp.norm2(g1);
                     accept = true;
                 } else {
-                    if (lnsrch.hasWarnings()) {
-                        /* FIXME: some warnings can be safely considered as a convergence */
-                        task = OptimTask.WARNING;
-                    } else {
-                        task = OptimTask.ERROR;
-                    }
-                    return task;
+                    /* FIXME: some warnings can be safely considered as a convergence */
+                    return lineSearchFailure(status);
                 }
             }
             if (accept) {
                 /* Check for global convergence. */
                 if (g1norm <= getGradientThreshold()) {
-                    task = OptimTask.FINAL_X;
+                    return schedule(OptimTask.FINAL_X);
                 } else {
-                    task = OptimTask.NEW_X;
+                    return schedule(OptimTask.NEW_X);
                 }
-                return task;
             }
         } else if (task == OptimTask.NEW_X) {
             /* Compute a search direction and start line search. */
@@ -533,7 +521,7 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
                 /* Initial search direction or recurrence has been restarted.  FIXME:
                    other possibility is to use Fletcher's formula, see BGLS p. 39) */
                 if (! starting) {
-                    ++nrestarts;
+                    ++restarts;
                 }
                 beta = 0.0;
                 // FIXME: cleanup code
@@ -558,16 +546,11 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
 
             /* Start the line search. */
             dg1 = dg0;
-            int status = lnsrch.start(f0, dg0, alpha,
+            LineSearchStatus status = lnsrch.start(f0, dg0, alpha,
                     stpmin*alpha,
                     stpmax*alpha);
-            if (status != LineSearch.SEARCH) {
-                if (lnsrch.hasWarnings()) {
-                    task = OptimTask.WARNING;
-                } else {
-                    task = OptimTask.ERROR;
-                }
-                return task;
+            if (status != LineSearchStatus.SEARCH) {
+                return lineSearchFailure(status);
             }
         } else {
             return task;
@@ -576,14 +559,8 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
         /* Build a new step to try. */
         x1.axpby(1.0, x0, -alpha, p);
         starting = false;
-        task = OptimTask.COMPUTE_FG;
-        return task;
+        return schedule(OptimTask.COMPUTE_FG);
 
-    }
-
-    @Override
-    public OptimTask getTask() {
-        return task;
     }
 
     /**
@@ -675,33 +652,6 @@ public class NonLinearConjugateGradient implements ReverseCommunicationOptimizer
     {
         fmin = Double.NaN;
         fmin_given = false;
-    }
-
-    @Override
-    public int getIterations() {
-        return iter;
-    }
-
-    @Override
-    public int getEvaluations() {
-        return nevals;
-    }
-
-    @Override
-    public int getRestarts() {
-        return nrestarts;
-    }
-
-    @Override
-    public String getMessage(int reason) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public int getReason() {
-        // TODO Auto-generated method stub
-        return 0;
     }
 
     /**

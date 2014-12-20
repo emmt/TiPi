@@ -80,9 +80,29 @@ import mitiv.linalg.Vector;
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 
-public interface ReverseCommunicationOptimizer {
+public abstract class ReverseCommunicationOptimizer {
     public static final int SUCCESS =  0;
     public static final int FAILURE = -1;
+
+    /** Pending task for the caller. */
+    protected OptimTask task = null;
+
+    /** Reason of failure. */
+    protected int reason = NO_PROBLEMS;
+
+    public static int NO_PROBLEMS = 0;
+    public static int BAD_PRECONDITIONER = 1; /* preconditioner is not positive definite */
+    public static int LNSRCH_WARNING = 2; /* warning in line search */
+    public static int LNSRCH_ERROR = 3; /* error in line search */
+
+    /** Number of function (and gradient) evaluations since start. */
+    protected int evaluations = 0;
+
+    /** Number of iterations since start. */
+    protected int iterations = 0;
+
+    /** Number of restarts. */
+    protected int restarts = 0;
 
     /**
      * Start the search.
@@ -95,7 +115,6 @@ public interface ReverseCommunicationOptimizer {
      * @return The next task to perform.
      */
     public abstract OptimTask restart();
-
 
     /**
      * Proceed with next iteration.
@@ -111,13 +130,17 @@ public interface ReverseCommunicationOptimizer {
      * Get the current pending task.
      * @return The pending task to perform..
      */
-    public abstract OptimTask getTask();
+    public final OptimTask getTask() {
+        return task;
+    }
 
     /**
      * Get the iteration number.
      * @return The number of iterations since last start.
      */
-    public abstract int getIterations();
+    public final int getIterations() {
+        return iterations;
+    }
 
     /**
      * Get the number of function (and gradient) evaluations since
@@ -125,14 +148,18 @@ public interface ReverseCommunicationOptimizer {
      * @return The number of function and gradient evaluations since
      *         last start.
      */
-    public abstract int getEvaluations();
+    public final int getEvaluations() {
+        return evaluations;
+    }
 
     /**
      * Get the number of restarts.
      * @return The number of times algorithm has been restarted since
      *         last start.
      */
-    public abstract int getRestarts();
+    public final int getRestarts() {
+        return restarts;
+    }
 
     /**
      * Query a textual description of the reason of an abnormal
@@ -141,7 +168,10 @@ public interface ReverseCommunicationOptimizer {
      * @return A textual description of the reason of the abnormal
      *         termination.
      */
-    public abstract String getMessage(int reason);
+    public final String getMessage(int reason) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     /**
      * Get the code corresponding to the reason of the abnormal termination.
@@ -149,7 +179,36 @@ public interface ReverseCommunicationOptimizer {
      *         termination.
      * @see {@link #getMessage}();
      */
-    public abstract int getReason();
+    public final int getReason() {
+        return reason;
+    }
+
+    /** Set next pending task (not a failure). */
+    protected final OptimTask schedule(OptimTask task) {
+        this.reason = NO_PROBLEMS;
+        this.task = task;
+        return task;
+    }
+
+    /** Set task so as to report a failure. */
+    protected final OptimTask failure(int reason) {
+        this.reason = reason;
+        this.task = OptimTask.ERROR;
+        return this.task;
+    }
+
+    /** Set task so as to report a line search failure. */
+    protected final OptimTask lineSearchFailure(LineSearchStatus status) {
+        if (status.isWarning()) {
+            reason = LNSRCH_WARNING;
+            task = OptimTask.WARNING;
+        } else {
+            reason = LNSRCH_ERROR;
+            task = OptimTask.ERROR;
+        }
+        return task;
+    }
+
 }
 
 /*
