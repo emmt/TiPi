@@ -69,3 +69,16 @@ When adding the project to Eclipse if the project packages are named: src.mitiv.
 ```
 Right click on project -> Properties -> Java Build Path -> Source: Add Folder..., and choose TiPi-src
 ```
+
+Credits
+=======
+
+The development of OptimPack was supported by the
+[MiTiV](http://mitiv-univ-lyon1.fr) project funded by the French *Agence
+Nationale pour la Recherche* (ref. ANR-09-EMER-008).
+
+
+License
+=======
+
+TiPi is released under under the [MIT "Expat" License](LICENSE.md).
