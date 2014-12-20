@@ -48,7 +48,7 @@ public class SimpleUpperBound extends BoundProjector {
 
     /**
      * Create a projector with scalar upper bound.
-     * @param vsp _ The input and output vector space for the variables.
+     * @param vsp        - The input and output vector space for the variables.
      * @param upperBound - The value of the upper bound.
      */
     public SimpleUpperBound(ShapedVectorSpace vsp, double upperBound) {
@@ -64,38 +64,40 @@ public class SimpleUpperBound extends BoundProjector {
     }
 
     @Override
-    protected void _projectGradient(Vector vecX, Vector vecG, Vector vecGP) {
-        final int n = vecX.getNumber();
+    protected void _projectDirection(Vector vx, Vector vg, Vector vd, Vector dest) {
+        final int n = vx.getNumber();
         if (single) {
             final float upperBound = (float)this.upperBound;
             final float zero = 0.0F;
-            float[] x = ((FloatShapedVector)vecX).getData();
-            float[] g = ((FloatShapedVector)vecG).getData();
-            float[] gp = ((FloatShapedVector)vecGP).getData();
+            float[] x = ((FloatShapedVector)vx).getData();
+            float[] g = ((FloatShapedVector)vg).getData();
+            float[] d = ((FloatShapedVector)vd).getData();
+            float[] dp = ((FloatShapedVector)dest).getData();
             for (int j = 0; j < n; ++j) {
                 if (x[j] < upperBound || g[j] > zero) {
-                    gp[j] = g[j];
+                    dp[j] = d[j];
                 } else {
-                    gp[j] = zero;
+                    dp[j] = zero;
                 }
             }
         } else {
             final double zero = 0.0;
-            double[] x = ((DoubleShapedVector)vecG).getData();
-            double[] g = ((DoubleShapedVector)vecG).getData();
-            double[] gp = ((DoubleShapedVector)vecGP).getData();
+            double[] x = ((DoubleShapedVector)vg).getData();
+            double[] g = ((DoubleShapedVector)vg).getData();
+            double[] d = ((DoubleShapedVector)vd).getData();
+            double[] dp = ((DoubleShapedVector)dest).getData();
             for (int j = 0; j < n; ++j) {
                 if (x[j] < upperBound || g[j] > zero) {
-                    gp[j] = g[j];
+                    dp[j] = d[j];
                 } else {
-                    gp[j] = zero;
+                    dp[j] = zero;
                 }
             }
         }
     }
 
     @Override
-    protected void _apply(Vector src, Vector dst) {
+    protected void _projectVariables(Vector src, Vector dst) {
         final int n = src.getNumber();
         if (single) {
             final float upperBound = (float)this.upperBound;

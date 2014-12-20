@@ -36,7 +36,8 @@ import mitiv.linalg.VectorSpace;
  * A ConvexSetProjector can be used to implement convex constraints.
  * Although it operates on a vector space, a ConvexSetProjector is not
  * a linear operator.  It is an idempotent endomorphism and can be
- * applied <i>in-place</i> that is with the same input and output vector.</p>
+ * applied <i>in-place</i> that is with the same input and output vector.
+ * </p>
  *
  * @author Éric Thiébaut.
  */
@@ -63,7 +64,7 @@ public abstract class ConvexSetProjector {
     }
 
     /**
-     * Apply the projector.
+     * Project the variables to the feasible set.
      * 
      * <p>
      * Given input variables <i>x</i>, the projection produces feasible
@@ -76,31 +77,31 @@ public abstract class ConvexSetProjector {
      * @throws IncorrectSpaceException if its arguments do not belong to the
      *         correct vector space.
      */
-    public void apply(Vector x, Vector xp) {
+    public void projectVariables(Vector x, Vector xp) {
         if (x == null || ! x.belongsTo(space) ||
                 xp == null || ! xp.belongsTo(space)) {
             throw new IncorrectSpaceException();
         }
-        _apply(x, xp);
+        _projectVariables(x, xp);
     }
 
     /**
-     * Apply the projector (in-place version).
+     * Project the variables to the feasible set (in-place version).
      * 
      * @param x  - On entry, the unconstrained variables; on exit, the
      *             projected variables.
      * @throws IncorrectSpaceException if its arguments do not belong to the
      *         correct vector space.
      */
-    public void apply(Vector x) {
+    public void projectVariables(Vector x) {
         if (x == null || ! x.belongsTo(space)) {
             throw new IncorrectSpaceException();
         }
-        _apply(x, x);
+        _projectVariables(x, x);
     }
 
     /**
-     * Protected method to apply the projector to the variables.
+     * Protected method to project the variables to the feasible set.
      * 
      * <p>
      * This abstract method must be overridden by instantiable sub-classes,
@@ -110,7 +111,87 @@ public abstract class ConvexSetProjector {
      * @param x  - The source.
      * @param xp - The destination.
      */
-    protected abstract void _apply(Vector x, Vector xp);
+    protected abstract void _projectVariables(Vector x, Vector xp);
+
+    /**
+     * Project a direction to the null-space of the linearized constraints
+     * (in-place version).
+     * 
+     * <p>
+     * 
+     * @param x  - The variables (in principle they should be feasible).
+     * @param g  - The gradient of the objective function at <b>x</b>.
+     * @param d  - The direction to be projected.
+     */
+    public void projectDirection(Vector x, Vector g, Vector d) {
+        if (! x.belongsTo(space) || ! g.belongsTo(space) ||
+                ! d.belongsTo(space)) {
+            throw new IncorrectSpaceException();
+        }
+        _projectDirection(x, g, d, d);
+    }
+
+    /**
+     * Project a direction to the null-space of the linearized constraints.
+     * 
+     * @param x  - The variables (in principle they should be feasible).
+     * @param g  - The gradient of the objective function at  <b>x</b>.
+     * @param d  - The input direction to be projected.
+     * @param dp - The destination to store the projected direction (can be
+     *             the same as the source { <b>d</b>.
+     */
+    public void projectDirection(Vector x, Vector g, Vector d, Vector dp) {
+        if (! x.belongsTo(space) || ! g.belongsTo(space) ||
+                ! d.belongsTo(space) || ! dp.belongsTo(space)) {
+            throw new IncorrectSpaceException();
+        }
+        _projectDirection(x, g, d, dp);
+    }
+
+    /**
+     * Protected method to project a direction to the null-space of the
+     * linearized constraints.
+     * 
+     * <p>
+     * This abstract method must be overridden by instantiable sub-classes,
+     * it is guaranteed to be called with checked arguments.  The input and
+     * output vectors can be the same.
+     * </p>
+     * @param x  - The variables (in principle they should be feasible).
+     * @param g  - The gradient of the objective function at  <b>x</b>.
+     * @param d  - The input direction to be projected.
+     * @param dp - The destination to store the projected direction (can be
+     *             the same as the source  <b>d</b>).
+     */
+    protected abstract void _projectDirection(Vector x, Vector g, Vector d, Vector dp);
+
+    /**
+     * Project the gradient to the null-space of the linearized constraints.
+     * 
+     * <p>
+     * Produce a direction <b>gp</b> such that its opposite -<b>gp</b> is
+     * the steepest feasible descent direction.  This operation is the same
+     * as:
+     * <pre>
+     * this.projectDirection(x, g, g, gp);
+     * </pre>
+     * </p>
+     *
+     * @param x  - The variables (must be <i>feasible</i>, that is within
+     *             the bounds).
+     * @param g  - The gradient at <b>x</b>.
+     * @param gp - The result, i.e. the projected gradient.  The operation
+     *             cannot be done in-place, <i>i.e.</i> <b>g</b> and <b>gp</b>
+     *             must be different vectors.
+     * @throws IncorrectSpaceException if its arguments do not belong to the
+     *         correct vector space.
+     */
+    public void projectGradient(Vector x, Vector g, Vector gp) {
+        if (! x.belongsTo(space) || ! g.belongsTo(space) || ! gp.belongsTo(space)) {
+            throw new IncorrectSpaceException();
+        }
+        _projectDirection(x, g, g, gp);
+    }
 
     /** Get the minimum of two single precision floating point values. */
     protected static final float min(float a, float b) {
@@ -122,6 +203,13 @@ public abstract class ConvexSetProjector {
         return (a >= b ? a : b);
     }
 
+    /** Force a variable in an interval. */
+    protected static final float clamp(float x, float lo, float hi) {
+        if (x <= lo) return lo;
+        if (x >= hi) return hi;
+        return x;
+    }
+
     /** Get the minimum of two double precision floating point values. */
     protected static final double min(double a, double b) {
         return (a <= b ? a : b);
@@ -130,6 +218,13 @@ public abstract class ConvexSetProjector {
     /** Get the maximum of two double precision floating point values. */
     protected static final double max(double a, double b) {
         return (a >= b ? a : b);
+    }
+
+    /** Force a variable in an interval. */
+    protected static final double clamp(double x, double lo, double hi) {
+        if (x <= lo) return lo;
+        if (x >= hi) return hi;
+        return x;
     }
 
 }
