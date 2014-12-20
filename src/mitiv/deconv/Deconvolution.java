@@ -268,7 +268,6 @@ public class Deconvolution{
         double[] out = wiener.wiener1D(alpha, psf1D, image1D,utils.width,utils.height);
         utils.IFFT1D(out);
 
-        System.out.println(out.length+" "+utils.width*2+"  "+utils.height);
         Double2D outArray =  Double2D.wrap(out, utils.width*2, utils.height);
         return outArray.view(new Range(0,-1,2), null);
         

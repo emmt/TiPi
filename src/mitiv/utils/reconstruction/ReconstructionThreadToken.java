@@ -69,7 +69,7 @@ public class ReconstructionThreadToken {
         }
         return anyChange;
     }
-    
+
     public void start(){
         start(true);
     }
@@ -99,10 +99,12 @@ public class ReconstructionThreadToken {
         }
     }
 
-    private void waitForJob(){
+    public void waitForJob(){
         try {
             lock.lock();
-            jobFinished.await();
+            if (run && !stop && !exit) {    //We will wait only if the job is running else we do nothing
+                jobFinished.await();
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {

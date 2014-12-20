@@ -47,12 +47,17 @@ public class ReconstructionThread extends Thread {
             while (!token.isRunning()) {    //We wait for a job and for the order to run
                 token.waitForStart();
             }
-            if (job != null && !token.isExiting()) { //We run if we don't have to quit
-                job.run();
-            } else {
-                if (!token.isExiting()) {
-                    System.err.println("Running command received but no job to run");
+            try {
+                if (job != null && !token.isExiting()) { //We run if we don't have to quit
+                    job.run();
+                } else {
+                    if (!token.isExiting()) {
+                        System.err.println("Running command received but no job to run");
+                    }
                 }
+            } catch (Exception e) {
+                System.err.println("EXCEPTION occured: "+e.getLocalizedMessage());
+            } finally {
                 token.jobFinished();
             }
         }
