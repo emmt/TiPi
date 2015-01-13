@@ -229,7 +229,7 @@ public class PSF_Estimation implements ReconstructionJob {
             vmlmb.setAbsoluteTolerance(gatol);
             vmlmb.setRelativeTolerance(grtol);
             minimizer = vmlmb;
-            projector.apply(x, x);
+            projector.projectGradient(x, x);
 
         }
 
