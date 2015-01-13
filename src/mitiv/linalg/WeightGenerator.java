@@ -35,6 +35,7 @@ public class WeightGenerator {
     private double saturationLevel = Double.MAX_VALUE;
     private ShapedArray weightMap = null;
     private ShapedArray varianceMap = null;
+    private ShapedArray computedVarianceMap = null;
     private ShapedArray pixelMap = null;
     private double gain = -1.0;
     private double readNoise = -1.0;
@@ -58,7 +59,7 @@ public class WeightGenerator {
                 output[i] = 1.0/(Math.max(output[i], 0.0));
             }
         } else if (gain != -1 && readNoise != -1) {
-            output = weightMap.toDouble().flatten();//Ter + We use weightMap BUT it is data that we are using
+            output = computedVarianceMap.toDouble().flatten();//Ter + We use weightMap BUT it is data that we are using
             for (int i = 0; i < output.length; i++) {
                 output[i] = 1.0/((Math.max(output[i], 0.0)/gain)+readNoise*readNoise);
             }
@@ -106,6 +107,9 @@ public class WeightGenerator {
     public void setVarianceMap(ShapedArray map){
         varianceMap = map;
     }
+    public void setComputedVarianceMap(ShapedArray map){
+        computedVarianceMap = map;
+    }
     public void setPixelMap(ShapedArray map){
         pixelMap = map;
     }
@@ -115,7 +119,7 @@ public class WeightGenerator {
         }
         this.gain = alpha;
         this.readNoise = beta;
-        setVarianceMap(data);//We store the data in the weightMap, to save one variable
+        setComputedVarianceMap(data);
     }
 }
 
