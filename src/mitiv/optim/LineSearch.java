@@ -207,7 +207,7 @@ public abstract class LineSearch {
     protected double finit = 0.0;  /* function value at the start of the search */
     protected double ginit = 0.0;  /* directional derivative value at the start of the search */
 
-    protected int status = ERROR_NOT_STARTED;
+    protected LineSearchStatus status = LineSearchStatus.ERROR_NOT_STARTED;
 
     protected LineSearch() {
     }
@@ -228,18 +228,18 @@ public abstract class LineSearch {
      *
      * @return The state of the line search.
      */
-    public int start(double f0, double g0, double nextStep, double minStep, double maxStep)
+    public LineSearchStatus start(double f0, double g0, double nextStep, double minStep, double maxStep)
     {
         if (minStep < 0.0) {
-            status = ERROR_STPMIN_LT_ZERO;
+            status = LineSearchStatus.ERROR_STPMIN_LT_ZERO;
         } else if (minStep > maxStep) {
-            status = ERROR_STPMIN_GT_STPMAX;
+            status = LineSearchStatus.ERROR_STPMIN_GT_STPMAX;
         } else if (nextStep < minStep) {
-            status = ERROR_STP_LT_STPMIN;
+            status = LineSearchStatus.ERROR_STP_LT_STPMIN;
         } else if (nextStep > maxStep) {
-            status = ERROR_STP_GT_STPMAX;
+            status = LineSearchStatus.ERROR_STP_GT_STPMAX;
         } else if (g0 >= 0.0) {
-            status = ERROR_INITIAL_DERIVATIVE_GE_ZERO;
+            status = LineSearchStatus.ERROR_INITIAL_DERIVATIVE_GE_ZERO;
         } else {
             this.stp = nextStep;
             this.stpmin = minStep;
@@ -268,27 +268,27 @@ public abstract class LineSearch {
      *
      * @return The new status of the line search instance.
      */
-    public int iterate(double alpha, double f, double df)
+    public LineSearchStatus iterate(double alpha, double f, double df)
     {
-        if (status == SEARCH) {
+        if (status == LineSearchStatus.SEARCH) {
             if (alpha != stp) {
-                status = ERROR_STP_CHANGED;
+                status = LineSearchStatus.ERROR_STP_CHANGED;
             } else {
                 status = iterateHook(f, df);
                 if (stp >= stpmax) {
                     if (stp >= stpmax) {
-                        status = WARNING_STP_EQ_STPMAX;
+                        status = LineSearchStatus.WARNING_STP_EQ_STPMAX;
                     }
                     stp = stpmax;
                 } else if (stp <= stpmin) {
                     if (stp <= stpmin) {
-                        status = WARNING_STP_EQ_STPMIN;
+                        status = LineSearchStatus.WARNING_STP_EQ_STPMIN;
                     }
                     stp = stpmin;
                 }
             }
         } else {
-            status = ERROR_NOT_STARTED;
+            status = LineSearchStatus.ERROR_NOT_STARTED;
         }
         return status;
     }
@@ -302,9 +302,9 @@ public abstract class LineSearch {
      *
      * @return The new status of the line search instance, in principle {@code LineSearch.SEARCH}.
      */
-    protected int startHook()
+    protected LineSearchStatus startHook()
     {
-        return SEARCH;
+        return LineSearchStatus.SEARCH;
     }
 
     /**
@@ -324,7 +324,7 @@ public abstract class LineSearch {
      *
      * @return The new status of the line search instance.
      */
-    protected abstract int iterateHook(double f, double df);
+    protected abstract LineSearchStatus iterateHook(double f, double df);
 
     /**
      * Get the current step length.
@@ -343,59 +343,9 @@ public abstract class LineSearch {
      * Get the current line search status.
      * @return The line search status.
      */
-    public final int getStatus()
+    public final LineSearchStatus getStatus()
     {
         return status;
-    }
-
-    /**
-     * Get a literal description of a line search status.
-     * @param code  A line search status (e.g. as returned by {@link #getStatus}).
-     * @return A string describing the line search status.
-     */
-    public final String getMessage(int code)
-    {
-        switch(code) {
-        case ERROR_ILLEGAL_FX:
-            return "Illegal function value.";
-        case ERROR_ILLEGAL_ADDRESS:
-            return "Illegal address";
-        case ERROR_CORRUPTED_WORKSPACE:
-            return "Corrupted workspace";
-        case ERROR_BAD_WORKSPACE:
-            return "Bad workspace";
-        case ERROR_STP_CHANGED:
-            return "Step changed";
-        case ERROR_STP_OUTSIDE_BRACKET:
-            return "Step outside bracket";
-        case ERROR_NOT_A_DESCENT:
-            return "Not a descent direction";
-        case ERROR_STPMIN_GT_STPMAX:
-            return "Upper step bound smaller than lower bound";
-        case ERROR_STPMIN_LT_ZERO:
-            return "Lower step bound less than zero";
-        case ERROR_STP_LT_STPMIN:
-            return "Step below lower bound";
-        case ERROR_STP_GT_STPMAX:
-            return "Step above upper bound";
-        case ERROR_INITIAL_DERIVATIVE_GE_ZERO:
-            return "Initial directional derivative greater or equal zero";
-        case ERROR_NOT_STARTED:
-            return "Linesearch not started";
-        case SEARCH:
-            return "Linesearch in progress";
-        case CONVERGENCE:
-            return "Linesearch has converged";
-        case WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS:
-            return "Rounding errors prevent progress";
-        case WARNING_XTOL_TEST_SATISFIED:
-            return "Search interval smaller than tolerance";
-        case WARNING_STP_EQ_STPMAX:
-            return "Step at upper bound";
-        case WARNING_STP_EQ_STPMIN:
-            return "Step at lower bound";
-        }
-        return "Unknown linesearch status";
     }
 
     /**
@@ -404,7 +354,7 @@ public abstract class LineSearch {
      */
     public final String getMessage()
     {
-        return getMessage(status);
+        return status.getDescription();
     }
 
     /**
@@ -412,7 +362,7 @@ public abstract class LineSearch {
      */
     public final boolean hasErrors()
     {
-        return (status < 0);
+        return status.isError();
     }
 
     /**
@@ -420,7 +370,7 @@ public abstract class LineSearch {
      */
     public final boolean hasWarnings()
     {
-        return (status > CONVERGENCE);
+        return status.isWarning();
     }
 
     /**
@@ -428,7 +378,7 @@ public abstract class LineSearch {
      */
     public final boolean converged()
     {
-        return (status == CONVERGENCE);
+        return (status == LineSearchStatus.CONVERGENCE);
     }
 
     /**
@@ -437,7 +387,7 @@ public abstract class LineSearch {
      */
     public final boolean finished()
     {
-        return (status != SEARCH);
+        return (status != LineSearchStatus.SEARCH);
     }
 
     /**

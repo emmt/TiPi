@@ -47,41 +47,19 @@ public abstract class BoundProjector extends ConvexSetProjector {
     }
 
     /**
-     * Project the gradient of bounded variables.
+     * Project the gradient of bounded variables (in-place version).
      * 
      * <p>
-     * Produce a direction <i>gp</i> such that its opposite -<i>gp</i> is
-     * the steepest feasible descent direction.
+     * For general convex set, the projection of the gradient can only be done
+     * out-of-place.  For bound constraints, the projection of the gradient
+     * can be done in-place to save memory and that's why this method is
+     * provided.
      * </p>
-     *
-     * <p>
-     * Alternately, <i>g</i> can be an ascent direction and the result
-     * <i>gp</i> is such that -<i>gp</i> is the feasible direction
-     * which minimize the Euclidean norm of <i>g</i>&nbsp;-&nbsp;<i>gp</i>.
-     * </p>
-     * @param x  - The variables (must be <i>feasible</i>, that is within
-     *             the bounds).
-     * @param g  - The gradient at <i>x</i>.
-     * @param gp - The result, i.e. the projected gradient.  The operation
-     *             can be done in-place, with <i>g</i> and <i>gp</i> the
-     *             same vector.
-     * @throws IncorrectSpaceException if its arguments do not belong to the
-     *         correct vector space.
-     */
-    public void projectGradient(Vector x, Vector g, Vector gp) {
-        if (! x.belongsTo(space) || ! g.belongsTo(space) || ! gp.belongsTo(space)) {
-            throw new IncorrectSpaceException();
-        }
-        _projectGradient(x, g, gp);
-    }
-
-    /**
-     * Project the gradient of bounded variables (in-place version).
      * 
      * @param x  - The variables (must be <i>feasible</i>, that is within
      *             the bounds).
      * @param g  - On entry, the gradient or the ascent direction at
-     *             <i>x</i>; on exit, the projected gradient or feasible
+     *             <b>x</b>; on exit, the projected gradient or feasible
      *             ascent direction.
      * @see {@link #projectGradient(Vector, Vector, Vector)}.
      * @throws IncorrectSpaceException if its arguments do not belong to the
@@ -91,22 +69,8 @@ public abstract class BoundProjector extends ConvexSetProjector {
         if (! x.belongsTo(space) || ! g.belongsTo(space)) {
             throw new IncorrectSpaceException();
         }
-        _projectGradient(x, g, g);
+        _projectDirection(x, g, g, g);
     }
-
-    /**
-     * Protected method to project the gradient.
-     * 
-     * <p>
-     * This abstract method must be overridden by instantiable sub-classes,
-     * it is guaranteed to be called with checked arguments.  The output
-     * vector <i>gp</i> can be the same as the input vector <i>g</i>.
-     * </p>
-     * @param x  - The variables.
-     * @param g  - The gradient.
-     * @param gp - The projected gradient.
-     */
-    protected abstract void _projectGradient(Vector x, Vector g, Vector gp);
 
 }
 

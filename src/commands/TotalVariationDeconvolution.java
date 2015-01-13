@@ -536,7 +536,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             vmlmb.setAbsoluteTolerance(gatol);
             vmlmb.setRelativeTolerance(grtol);
             minimizer = vmlmb;
-            projector.apply(x, x);
+            projector.projectVariables(x, x);
 
         }
         timer.stop();

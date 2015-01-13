@@ -34,8 +34,7 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
 /**
  * Implements a simple bounds projector.
  * 
- * The lower and upper bounds are scalars, they the same values for all
- * the variables.
+ * The bound is a scalar, it has the same value for all the variables.
  * 
  * @author Éric Thiébaut.
  */
@@ -51,13 +50,16 @@ public class SimpleBounds extends BoundProjector {
     private final boolean single;
 
     /**
-     * Create a projector with scalar lower and upper bounds.
-     * @param vsp _ The input and output vector space for the variables.
-     * @param lowerBound - The value of the lower bound.
+     * Create a projector with scalar upper bound.
+     * @param vsp        - The input and output vector space for the variables.
      * @param upperBound - The value of the upper bound.
+     * @param lowerBound - The value of the lower bound.
      */
     public SimpleBounds(ShapedVectorSpace vsp, double lowerBound, double upperBound) {
         super(vsp);
+        if (lowerBound > upperBound) {
+            throw new IllegalArgumentException("Lower bound must be less or equal upper bound");
+        }
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
         if (vsp.getType() == Traits.DOUBLE) {
@@ -70,71 +72,59 @@ public class SimpleBounds extends BoundProjector {
     }
 
     @Override
-    protected void _projectGradient(Vector vecX, Vector vecG, Vector vecGP) {
-        final int n = vecX.getNumber();
+    protected void _projectDirection(Vector vx, Vector vg, Vector vd, Vector dest) {
+        final int n = vx.getNumber();
         if (single) {
-            final float lowerBound = (float)this.lowerBound;
             final float upperBound = (float)this.upperBound;
+            final float lowerBound = (float)this.lowerBound;
             final float zero = 0.0F;
-            float[] x = ((FloatShapedVector)vecX).getData();
-            float[] g = ((FloatShapedVector)vecG).getData();
-            float[] gp = ((FloatShapedVector)vecGP).getData();
+            float[] x = ((FloatShapedVector)vx).getData();
+            float[] g = ((FloatShapedVector)vg).getData();
+            float[] d = ((FloatShapedVector)vd).getData();
+            float[] dp = ((FloatShapedVector)dest).getData();
             for (int j = 0; j < n; ++j) {
                 if (x[j] <= lowerBound) {
-                    gp[j] = min(zero, g[j]);
+                    dp[j] = (g[j] < zero ? d[j] : zero);
                 } else if (x[j] >= upperBound) {
-                    gp[j] = max(zero, g[j]);
+                    dp[j] = (g[j] > zero ? d[j] : zero);
                 } else {
-                    gp[j] = g[j];
+                    dp[j] = d[j];
                 }
             }
         } else {
             final double zero = 0.0;
-            double[] x = ((DoubleShapedVector)vecG).getData();
-            double[] g = ((DoubleShapedVector)vecG).getData();
-            double[] gp = ((DoubleShapedVector)vecGP).getData();
+            double[] x = ((DoubleShapedVector)vg).getData();
+            double[] g = ((DoubleShapedVector)vg).getData();
+            double[] d = ((DoubleShapedVector)vd).getData();
+            double[] dp = ((DoubleShapedVector)dest).getData();
             for (int j = 0; j < n; ++j) {
                 if (x[j] <= lowerBound) {
-                    gp[j] = min(zero, g[j]);
+                    dp[j] = (g[j] < zero ? d[j] : zero);
                 } else if (x[j] >= upperBound) {
-                    gp[j] = max(zero, g[j]);
+                    dp[j] = (g[j] > zero ? d[j] : zero);
                 } else {
-                    gp[j] = g[j];
+                    dp[j] = d[j];
                 }
             }
         }
     }
 
     @Override
-    protected void _apply(Vector src, Vector dst) {
+    protected void _projectVariables(Vector src, Vector dst) {
         final int n = src.getNumber();
         if (single) {
-            final float lowerBound = (float)this.lowerBound;
             final float upperBound = (float)this.upperBound;
+            final float lowerBound = (float)this.lowerBound;
             float[] inp = ((FloatShapedVector)src).getData();
             float[] out = ((FloatShapedVector)dst).getData();
             for (int j = 0; j < n; ++j) {
-                float value = inp[j];
-                if (value <= lowerBound) {
-                    out[j] = lowerBound;
-                } else if (value >= upperBound) {
-                    out[j] = upperBound;
-                } else {
-                    out[j] = value;
-                }
+                out[j] = clamp(inp[j], lowerBound, upperBound);
             }
         } else {
             double[] inp = ((DoubleShapedVector)src).getData();
             double[] out = ((DoubleShapedVector)dst).getData();
             for (int j = 0; j < n; ++j) {
-                double value = inp[j];
-                if (value <= lowerBound) {
-                    out[j] = lowerBound;
-                } else if (value >= upperBound) {
-                    out[j] = upperBound;
-                } else {
-                    out[j] = value;
-                }
+                out[j] = clamp(inp[j], lowerBound, upperBound);
             }
         }
     }
