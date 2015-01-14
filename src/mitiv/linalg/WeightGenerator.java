@@ -47,19 +47,19 @@ public class WeightGenerator {
     public ShapedArray getWeightMap(Shape outputShape){
         double[] output = null;
         if ( weightMap != null) {
-            output = weightMap.toDouble().flatten();//Flatten make a copy so we are sure that we are not braking anything
+            output = weightMap.toDouble().flatten().clone();//Flatten make a copy so we are sure that we are not braking anything
             for (int i = 0; i < output.length; i++) {
                 if (output[i] < 0) {
                     throw new IllegalArgumentException("A weight map can not contain negative values");
                 }
             }
         } else if (varianceMap != null) {
-            output = varianceMap.toDouble().flatten();//Bis
+            output = varianceMap.toDouble().flatten().clone();//Bis
             for (int i = 0; i < output.length; i++) {
                 output[i] = 1.0/(Math.max(output[i], 0.0));
             }
         } else if (gain != -1 && readNoise != -1) {
-            output = computedVarianceMap.toDouble().flatten();//Ter + We use weightMap BUT it is data that we are using
+            output = computedVarianceMap.toDouble().flatten().clone();//Ter + We use weightMap BUT it is data that we are using
             for (int i = 0; i < output.length; i++) {
                 output[i] = 1.0/((Math.max(output[i], 0.0)/gain)+readNoise*readNoise);
             }
