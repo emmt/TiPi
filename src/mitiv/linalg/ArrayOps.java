@@ -1233,9 +1233,6 @@ public class ArrayOps {
     public static void printArray(Object obj, PrintStream stream) {
         printArray(obj, stream, true);
     }
-    private static void printArrayHelper(Object obj, PrintStream stream, boolean first) {
-        //FIXME Empty ?
-    }
     public static void printArray(Object obj, PrintStream stream, boolean newline) {
         if (obj == null) {
             stream.print("null");
