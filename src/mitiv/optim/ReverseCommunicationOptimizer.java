@@ -90,10 +90,10 @@ public abstract class ReverseCommunicationOptimizer {
     /** Reason of failure. */
     protected int reason = NO_PROBLEMS;
 
-    public static int NO_PROBLEMS = 0;
-    public static int BAD_PRECONDITIONER = 1; /* preconditioner is not positive definite */
-    public static int LNSRCH_WARNING = 2; /* warning in line search */
-    public static int LNSRCH_ERROR = 3; /* error in line search */
+    public static final int NO_PROBLEMS = 0;
+    public static final int BAD_PRECONDITIONER = 1; /* preconditioner is not positive definite */
+    public static final int LNSRCH_WARNING = 2; /* warning in line search */
+    public static final int LNSRCH_ERROR = 3; /* error in line search */
 
     /** Number of function (and gradient) evaluations since start. */
     protected int evaluations = 0;
@@ -164,14 +164,10 @@ public abstract class ReverseCommunicationOptimizer {
     /**
      * Query a textual description of the reason of an abnormal
      * termination.
-     * @param reason - The code given by {@link #getReason}().
      * @return A textual description of the reason of the abnormal
      *         termination.
      */
-    public final String getMessage(int reason) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    public abstract String getMessage();
 
     /**
      * Get the code corresponding to the reason of the abnormal termination.

@@ -48,7 +48,7 @@ import mitiv.tests.MinPack1Tests;
  *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
-public class NonLinearConjugateGradient extends ReverseCommunicationOptimizer {
+public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWithLineSearch {
 
     public static final double STPMIN = 1E-20;
     public static final double STPMAX = 1E+6;
@@ -99,7 +99,6 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizer {
     private final double stpmin; /* Relative lower bound for the step length. */
     private final double stpmax; /* Relative upper bound for the step length. */
     private final VectorSpace vsp;
-    private final LineSearch lnsrch;
     private final Vector x0;     /* Variables at start of line search. */
     private final Vector g0;     /* Gradient at start of line search. */
     private final Vector p;      /* (Anti-)search direction, new iterate is searched

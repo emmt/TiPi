@@ -58,13 +58,10 @@ import mitiv.linalg.VectorSpace;
  * @author Éric Thiébaut.
  *
  */
-public class LBFGS extends ReverseCommunicationOptimizer {
+public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
     /** LBFGS approximation of the inverse Hessian */
     protected LBFGSOperator H = null;
-
-    /** Line search to use. */
-    protected LineSearch lnsrch;
 
     /** Relative threshold for the sufficient descent condition. */
     protected double delta = 0.01;

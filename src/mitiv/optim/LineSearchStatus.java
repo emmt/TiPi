@@ -31,7 +31,7 @@ public enum LineSearchStatus {
     ERROR_CORRUPTED_WORKSPACE(               -11, "Corrupted workspace"),
     ERROR_BAD_WORKSPACE(                     -10, "Bad workspace"),
     ERROR_STP_CHANGED(                        -9, "Step changed"),
-    ERROR_STP_OUTSIDE_BRACKET(                -8 , "Step outside bracket"),
+    ERROR_STP_OUTSIDE_BRACKET(                -8, "Step outside bracket"),
     ERROR_NOT_A_DESCENT(                      -7, "Not a descent direction"),
     ERROR_STPMIN_GT_STPMAX(                   -6, "Upper step bound smaller than lower bound"),
     ERROR_STPMIN_LT_ZERO(                     -5, "Lower step bound less than zero"),
