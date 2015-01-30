@@ -1,2 +1,2 @@
-[Generated Pages](http://lightjohn.github.io/TiPi/)
+[Generated Pages](http://emmt.github.io/TiPi/)
 
