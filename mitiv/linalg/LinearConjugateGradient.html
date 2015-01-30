@@ -1,0 +1,566 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>LinearConjugateGradient</title>
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+</head>
+<body>
+<script type="text/javascript"><!--
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="LinearConjugateGradient";
+    }
+//-->
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="topNav"><a name="navbar_top">
+<!--   -->
+</a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+<li><a href="../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../mitiv/linalg/IdentityOperator.html" title="class in mitiv.linalg"><span class="strong">PREV CLASS</span></a></li>
+<li><a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg"><span class="strong">NEXT CLASS</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../index.html?mitiv/linalg/LinearConjugateGradient.html" target="_top">FRAMES</a></li>
+<li><a href="LinearConjugateGradient.html" target="_top">NO FRAMES</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_top");
+  if(window==top) {
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
+  }
+  //-->
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>SUMMARY:&nbsp;</li>
+<li>NESTED&nbsp;|&nbsp;</li>
+<li><a href="#field_summary">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_summary">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">METHOD</a></li>
+</ul>
+<ul class="subNavList">
+<li>DETAIL:&nbsp;</li>
+<li><a href="#field_detail">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_detail">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">METHOD</a></li>
+</ul>
+</div>
+<a name="skip-navbar_top">
+<!--   -->
+</a></div>
+<!-- ========= END OF TOP NAVBAR ========= -->
+<!-- ======== START OF CLASS DATA ======== -->
+<div class="header">
+<p class="subTitle">mitiv.linalg</p>
+<h2 title="Class LinearConjugateGradient" class="title">Class LinearConjugateGradient</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li>mitiv.linalg.LinearConjugateGradient</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<hr>
+<br>
+<pre>public class <strong>LinearConjugateGradient</strong>
+extends java.lang.Object</pre>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+<!-- =========== FIELD SUMMARY =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="field_summary">
+<!--   -->
+</a>
+<h3>Field Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Field Summary table, listing fields, and an explanation">
+<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Field and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#A_IS_NOT_POSITIVE_DEFINITE">A_IS_NOT_POSITIVE_DEFINITE</a></strong></code>
+<div class="block">RHS matrix A is not positive definite.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#BAD_ATOL">BAD_ATOL</a></strong></code>
+<div class="block">Parameter ATOL is less than zero.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#BAD_RTOL">BAD_RTOL</a></strong></code>
+<div class="block">Parameter RTOL is less than zero or greater or equal one.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#BUG">BUG</a></strong></code>
+<div class="block">Congratulations you have found a bug!</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#CONVERGED">CONVERGED</a></strong></code>
+<div class="block">Algorithm has converged within tolerances.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static double</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#DEFAULT_ATOL">DEFAULT_ATOL</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static double</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#DEFAULT_RTOL">DEFAULT_RTOL</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#IN_PROGRESS">IN_PROGRESS</a></strong></code>
+<div class="block">Algorithm is running.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#P_IS_NOT_POSITIVE_DEFINITE">P_IS_NOT_POSITIVE_DEFINITE</a></strong></code>
+<div class="block">Preconditioner P is not positive definite.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#TOO_MANY_ITERATIONS">TOO_MANY_ITERATIONS</a></strong></code>
+<div class="block">Too many iterations.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+<ul class="blockList">
+<li class="blockList"><a name="constructor_summary">
+<!--   -->
+</a>
+<h3>Constructor Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#LinearConjugateGradient(mitiv.linalg.LinearOperator, mitiv.linalg.Vector)">LinearConjugateGradient</a></strong>(<a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a>&nbsp;A,
+                       <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;b)</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#LinearConjugateGradient(mitiv.linalg.LinearOperator, mitiv.linalg.Vector, mitiv.linalg.LinearOperator)">LinearConjugateGradient</a></strong>(<a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a>&nbsp;A,
+                       <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;b,
+                       <a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a>&nbsp;P)</code>&nbsp;</td>
+</tr>
+</table>
+</li>
+</ul>
+<!-- ========== METHOD SUMMARY =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method_summary">
+<!--   -->
+</a>
+<h3>Method Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>double</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#getAtol()">getAtol</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>double</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#getRtol()">getRtol</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#setAtol(double)">setAtol</a></strong>(double&nbsp;atol)</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#setRtol(double)">setRtol</a></strong>(double&nbsp;rtol)</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#solve(mitiv.linalg.LinearOperator, mitiv.linalg.Vector, mitiv.linalg.Vector, double, double, int, boolean)">solve</a></strong>(<a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a>&nbsp;A,
+     <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;b,
+     <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;x,
+     double&nbsp;atol,
+     double&nbsp;rtol,
+     int&nbsp;maxiter,
+     boolean&nbsp;reset)</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#solve(mitiv.linalg.LinearOperator, mitiv.linalg.Vector, mitiv.linalg.Vector, mitiv.linalg.LinearOperator, double, double, int, boolean)">solve</a></strong>(<a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a>&nbsp;A,
+     <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;b,
+     <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;x,
+     <a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a>&nbsp;P,
+     double&nbsp;atol,
+     double&nbsp;rtol,
+     int&nbsp;maxiter,
+     boolean&nbsp;reset)</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/linalg/LinearConjugateGradient.html#solve(mitiv.linalg.Vector, int, boolean)">solve</a></strong>(<a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;x,
+     int&nbsp;maxiter,
+     boolean&nbsp;reset)</code>&nbsp;</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+<!-- ============ FIELD DETAIL =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="field_detail">
+<!--   -->
+</a>
+<h3>Field Detail</h3>
+<a name="IN_PROGRESS">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>IN_PROGRESS</h4>
+<pre>public static final&nbsp;int IN_PROGRESS</pre>
+<div class="block">Algorithm is running.</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../constant-values.html#mitiv.linalg.LinearConjugateGradient.IN_PROGRESS">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="CONVERGED">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>CONVERGED</h4>
+<pre>public static final&nbsp;int CONVERGED</pre>
+<div class="block">Algorithm has converged within tolerances.</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../constant-values.html#mitiv.linalg.LinearConjugateGradient.CONVERGED">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="TOO_MANY_ITERATIONS">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>TOO_MANY_ITERATIONS</h4>
+<pre>public static final&nbsp;int TOO_MANY_ITERATIONS</pre>
+<div class="block">Too many iterations.</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../constant-values.html#mitiv.linalg.LinearConjugateGradient.TOO_MANY_ITERATIONS">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="A_IS_NOT_POSITIVE_DEFINITE">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>A_IS_NOT_POSITIVE_DEFINITE</h4>
+<pre>public static final&nbsp;int A_IS_NOT_POSITIVE_DEFINITE</pre>
+<div class="block">RHS matrix A is not positive definite.</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../constant-values.html#mitiv.linalg.LinearConjugateGradient.A_IS_NOT_POSITIVE_DEFINITE">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="P_IS_NOT_POSITIVE_DEFINITE">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>P_IS_NOT_POSITIVE_DEFINITE</h4>
+<pre>public static final&nbsp;int P_IS_NOT_POSITIVE_DEFINITE</pre>
+<div class="block">Preconditioner P is not positive definite.</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../constant-values.html#mitiv.linalg.LinearConjugateGradient.P_IS_NOT_POSITIVE_DEFINITE">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="BAD_ATOL">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>BAD_ATOL</h4>
+<pre>public static final&nbsp;int BAD_ATOL</pre>
+<div class="block">Parameter ATOL is less than zero.</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../constant-values.html#mitiv.linalg.LinearConjugateGradient.BAD_ATOL">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="BAD_RTOL">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>BAD_RTOL</h4>
+<pre>public static final&nbsp;int BAD_RTOL</pre>
+<div class="block">Parameter RTOL is less than zero or greater or equal one.</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../constant-values.html#mitiv.linalg.LinearConjugateGradient.BAD_RTOL">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="BUG">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>BUG</h4>
+<pre>public static final&nbsp;int BUG</pre>
+<div class="block">Congratulations you have found a bug!</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../constant-values.html#mitiv.linalg.LinearConjugateGradient.BUG">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="DEFAULT_ATOL">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>DEFAULT_ATOL</h4>
+<pre>public static final&nbsp;double DEFAULT_ATOL</pre>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../constant-values.html#mitiv.linalg.LinearConjugateGradient.DEFAULT_ATOL">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+<a name="DEFAULT_RTOL">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>DEFAULT_RTOL</h4>
+<pre>public static final&nbsp;double DEFAULT_RTOL</pre>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../constant-values.html#mitiv.linalg.LinearConjugateGradient.DEFAULT_RTOL">Constant Field Values</a></dd></dl>
+</li>
+</ul>
+</li>
+</ul>
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<ul class="blockList">
+<li class="blockList"><a name="constructor_detail">
+<!--   -->
+</a>
+<h3>Constructor Detail</h3>
+<a name="LinearConjugateGradient(mitiv.linalg.LinearOperator, mitiv.linalg.Vector)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>LinearConjugateGradient</h4>
+<pre>public&nbsp;LinearConjugateGradient(<a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a>&nbsp;A,
+                       <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;b)</pre>
+</li>
+</ul>
+<a name="LinearConjugateGradient(mitiv.linalg.LinearOperator, mitiv.linalg.Vector, mitiv.linalg.LinearOperator)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>LinearConjugateGradient</h4>
+<pre>public&nbsp;LinearConjugateGradient(<a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a>&nbsp;A,
+                       <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;b,
+                       <a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a>&nbsp;P)</pre>
+</li>
+</ul>
+</li>
+</ul>
+<!-- ============ METHOD DETAIL ========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method_detail">
+<!--   -->
+</a>
+<h3>Method Detail</h3>
+<a name="getAtol()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getAtol</h4>
+<pre>public&nbsp;double&nbsp;getAtol()</pre>
+</li>
+</ul>
+<a name="setAtol(double)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setAtol</h4>
+<pre>public&nbsp;void&nbsp;setAtol(double&nbsp;atol)</pre>
+</li>
+</ul>
+<a name="getRtol()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getRtol</h4>
+<pre>public&nbsp;double&nbsp;getRtol()</pre>
+</li>
+</ul>
+<a name="setRtol(double)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setRtol</h4>
+<pre>public&nbsp;void&nbsp;setRtol(double&nbsp;rtol)</pre>
+</li>
+</ul>
+<a name="solve(mitiv.linalg.Vector, int, boolean)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>solve</h4>
+<pre>public&nbsp;int&nbsp;solve(<a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;x,
+        int&nbsp;maxiter,
+        boolean&nbsp;reset)</pre>
+</li>
+</ul>
+<a name="solve(mitiv.linalg.LinearOperator, mitiv.linalg.Vector, mitiv.linalg.Vector, double, double, int, boolean)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>solve</h4>
+<pre>public static&nbsp;int&nbsp;solve(<a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a>&nbsp;A,
+        <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;b,
+        <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;x,
+        double&nbsp;atol,
+        double&nbsp;rtol,
+        int&nbsp;maxiter,
+        boolean&nbsp;reset)</pre>
+</li>
+</ul>
+<a name="solve(mitiv.linalg.LinearOperator, mitiv.linalg.Vector, mitiv.linalg.Vector, mitiv.linalg.LinearOperator, double, double, int, boolean)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>solve</h4>
+<pre>public static&nbsp;int&nbsp;solve(<a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a>&nbsp;A,
+        <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;b,
+        <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;x,
+        <a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a>&nbsp;P,
+        double&nbsp;atol,
+        double&nbsp;rtol,
+        int&nbsp;maxiter,
+        boolean&nbsp;reset)</pre>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<!-- ========= END OF CLASS DATA ========= -->
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<div class="bottomNav"><a name="navbar_bottom">
+<!--   -->
+</a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+<li><a href="../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../mitiv/linalg/IdentityOperator.html" title="class in mitiv.linalg"><span class="strong">PREV CLASS</span></a></li>
+<li><a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg"><span class="strong">NEXT CLASS</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../index.html?mitiv/linalg/LinearConjugateGradient.html" target="_top">FRAMES</a></li>
+<li><a href="LinearConjugateGradient.html" target="_top">NO FRAMES</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_bottom");
+  if(window==top) {
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
+  }
+  //-->
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>SUMMARY:&nbsp;</li>
+<li>NESTED&nbsp;|&nbsp;</li>
+<li><a href="#field_summary">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_summary">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">METHOD</a></li>
+</ul>
+<ul class="subNavList">
+<li>DETAIL:&nbsp;</li>
+<li><a href="#field_detail">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_detail">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">METHOD</a></li>
+</ul>
+</div>
+<a name="skip-navbar_bottom">
+<!--   -->
+</a></div>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+</body>
+</html>

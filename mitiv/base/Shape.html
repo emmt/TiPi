@@ -1,0 +1,592 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>Shape</title>
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+</head>
+<body>
+<script type="text/javascript"><!--
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="Shape";
+    }
+//-->
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="topNav"><a name="navbar_top">
+<!--   -->
+</a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+<li><a href="../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../mitiv/base/BaseUtils.html" title="class in mitiv.base"><span class="strong">PREV CLASS</span></a></li>
+<li><a href="../../mitiv/base/Shaped.html" title="interface in mitiv.base"><span class="strong">NEXT CLASS</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../index.html?mitiv/base/Shape.html" target="_top">FRAMES</a></li>
+<li><a href="Shape.html" target="_top">NO FRAMES</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_top");
+  if(window==top) {
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
+  }
+  //-->
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>SUMMARY:&nbsp;</li>
+<li>NESTED&nbsp;|&nbsp;</li>
+<li>FIELD&nbsp;|&nbsp;</li>
+<li>CONSTR&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">METHOD</a></li>
+</ul>
+<ul class="subNavList">
+<li>DETAIL:&nbsp;</li>
+<li>FIELD&nbsp;|&nbsp;</li>
+<li>CONSTR&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">METHOD</a></li>
+</ul>
+</div>
+<a name="skip-navbar_top">
+<!--   -->
+</a></div>
+<!-- ========= END OF TOP NAVBAR ========= -->
+<!-- ======== START OF CLASS DATA ======== -->
+<div class="header">
+<p class="subTitle">mitiv.base</p>
+<h2 title="Class Shape" class="title">Class Shape</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li>mitiv.base.Shape</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<hr>
+<br>
+<pre>public class <strong>Shape</strong>
+extends java.lang.Object</pre>
+<div class="block">Shape object to store list of dimensions.
+ <p>
+ A Shape object is unmodifiable and is used to store the dimensions of a
+ shaped object in an efficient way.  To preserve its properties, Shape
+ objects can only be built by factories (static methods).
+ </p></div>
+<dl><dt><span class="strong">Author:</span></dt>
+  <dd>Éric Thiébaut</dd></dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+<!-- ========== METHOD SUMMARY =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method_summary">
+<!--   -->
+</a>
+<h3>Method Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int[]</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#copyDimensions()">copyDimensions</a></strong>()</code>
+<div class="block">Copy the dimension list.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#dimension(int)">dimension</a></strong>(int&nbsp;k)</code>
+<div class="block">Get the length of a given dimension.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#equals(mitiv.base.Shape)">equals</a></strong>(<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;other)</code>
+<div class="block">Check whether another shape is the same as this one.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static <a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a></code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#make()">make</a></strong>()</code>
+<div class="block">Get the shape of scalar objects.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static <a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a></code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#make(int)">make</a></strong>(int&nbsp;dim1)</code>
+<div class="block">Make a 1-D shape</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static <a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a></code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#make(int[])">make</a></strong>(int[]&nbsp;dims)</code>
+<div class="block">Make a shape given the dimensions.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static <a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a></code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#make(int, int)">make</a></strong>(int&nbsp;dim1,
+    int&nbsp;dim2)</code>
+<div class="block">Make a 2-D shape</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static <a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a></code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#make(int, int, int)">make</a></strong>(int&nbsp;dim1,
+    int&nbsp;dim2,
+    int&nbsp;dim3)</code>
+<div class="block">Make a 3-D shape</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static <a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a></code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#make(int, int, int, int)">make</a></strong>(int&nbsp;dim1,
+    int&nbsp;dim2,
+    int&nbsp;dim3,
+    int&nbsp;dim4)</code>
+<div class="block">Make a 4-D shape</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static <a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a></code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#make(int, int, int, int, int)">make</a></strong>(int&nbsp;dim1,
+    int&nbsp;dim2,
+    int&nbsp;dim3,
+    int&nbsp;dim4,
+    int&nbsp;dim5)</code>
+<div class="block">Make a 5-D shape</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static <a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a></code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#make(int, int, int, int, int, int)">make</a></strong>(int&nbsp;dim1,
+    int&nbsp;dim2,
+    int&nbsp;dim3,
+    int&nbsp;dim4,
+    int&nbsp;dim5,
+    int&nbsp;dim6)</code>
+<div class="block">Make a 6-D shape</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static <a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a></code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#make(int, int, int, int, int, int, int)">make</a></strong>(int&nbsp;dim1,
+    int&nbsp;dim2,
+    int&nbsp;dim3,
+    int&nbsp;dim4,
+    int&nbsp;dim5,
+    int&nbsp;dim6,
+    int&nbsp;dim7)</code>
+<div class="block">Make a 7-D shape</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static <a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a></code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#make(int, int, int, int, int, int, int, int)">make</a></strong>(int&nbsp;dim1,
+    int&nbsp;dim2,
+    int&nbsp;dim3,
+    int&nbsp;dim4,
+    int&nbsp;dim5,
+    int&nbsp;dim6,
+    int&nbsp;dim7,
+    int&nbsp;dim8)</code>
+<div class="block">Make a 8-D shape</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static <a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a></code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#make(int, int, int, int, int, int, int, int, int)">make</a></strong>(int&nbsp;dim1,
+    int&nbsp;dim2,
+    int&nbsp;dim3,
+    int&nbsp;dim4,
+    int&nbsp;dim5,
+    int&nbsp;dim6,
+    int&nbsp;dim7,
+    int&nbsp;dim8,
+    int&nbsp;dim9)</code>
+<div class="block">Make a 9-D shape</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static <a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a></code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#make(long[])">make</a></strong>(long[]&nbsp;dims)</code>
+<div class="block">Make a shape given the dimensions.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#number()">number</a></strong>()</code>
+<div class="block">Get the number of elements of an object with that shape.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/base/Shape.html#rank()">rank</a></strong>()</code>
+<div class="block">Get the number of dimensions.</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+<!-- ============ METHOD DETAIL ========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method_detail">
+<!--   -->
+</a>
+<h3>Method Detail</h3>
+<a name="make()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>make</h4>
+<pre>public static&nbsp;<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;make()</pre>
+<div class="block">Get the shape of scalar objects.</div>
+<dl><dt><span class="strong">Returns:</span></dt><dd>The shape of a scalar object.</dd></dl>
+</li>
+</ul>
+<a name="make(int[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>make</h4>
+<pre>public static&nbsp;<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;make(int[]&nbsp;dims)</pre>
+<div class="block">Make a shape given the dimensions.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>dims</code> - - The list of dimensions (<code>null</code> is the same as
+               an array of length equals to <code>0</code> and yields the
+               shape of a scalar object).</dd>
+<dt><span class="strong">Returns:</span></dt><dd>A new shape built from the given dimensions.</dd></dl>
+</li>
+</ul>
+<a name="make(long[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>make</h4>
+<pre>public static&nbsp;<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;make(long[]&nbsp;dims)</pre>
+<div class="block">Make a shape given the dimensions.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>dims</code> - - The list of dimensions (<code>null</code> is the same as
+               an array of length equals to <code>0</code> and yields the
+               shape of a scalar object).</dd>
+<dt><span class="strong">Returns:</span></dt><dd>A new shape built from the given dimensions.</dd></dl>
+</li>
+</ul>
+<a name="make(int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>make</h4>
+<pre>public static&nbsp;<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;make(int&nbsp;dim1)</pre>
+<div class="block">Make a 1-D shape</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>dim1</code> - - The 1st dimension.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>A new 1-dimensional shape built from the given dimensions.</dd></dl>
+</li>
+</ul>
+<a name="make(int, int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>make</h4>
+<pre>public static&nbsp;<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;make(int&nbsp;dim1,
+         int&nbsp;dim2)</pre>
+<div class="block">Make a 2-D shape</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>dim1</code> - - The 1st dimension.</dd><dd><code>dim2</code> - - The 2nd dimension.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>A new 2-dimensional shape built from the given dimensions.</dd></dl>
+</li>
+</ul>
+<a name="make(int, int, int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>make</h4>
+<pre>public static&nbsp;<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;make(int&nbsp;dim1,
+         int&nbsp;dim2,
+         int&nbsp;dim3)</pre>
+<div class="block">Make a 3-D shape</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>dim1</code> - - The 1st dimension.</dd><dd><code>dim2</code> - - The 2nd dimension.</dd><dd><code>dim3</code> - - The 3rd dimension.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>A new 3-dimensional shape built from the given dimensions.</dd></dl>
+</li>
+</ul>
+<a name="make(int, int, int, int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>make</h4>
+<pre>public static&nbsp;<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;make(int&nbsp;dim1,
+         int&nbsp;dim2,
+         int&nbsp;dim3,
+         int&nbsp;dim4)</pre>
+<div class="block">Make a 4-D shape</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>dim1</code> - - The 1st dimension.</dd><dd><code>dim2</code> - - The 2nd dimension.</dd><dd><code>dim3</code> - - The 3rd dimension.</dd><dd><code>dim4</code> - - The 4th dimension.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>A new 4-dimensional shape built from the given dimensions.</dd></dl>
+</li>
+</ul>
+<a name="make(int, int, int, int, int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>make</h4>
+<pre>public static&nbsp;<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;make(int&nbsp;dim1,
+         int&nbsp;dim2,
+         int&nbsp;dim3,
+         int&nbsp;dim4,
+         int&nbsp;dim5)</pre>
+<div class="block">Make a 5-D shape</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>dim1</code> - - The 1st dimension.</dd><dd><code>dim2</code> - - The 2nd dimension.</dd><dd><code>dim3</code> - - The 3rd dimension.</dd><dd><code>dim4</code> - - The 4th dimension.</dd><dd><code>dim5</code> - - The 5th dimension.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>A new 5-dimensional shape built from the given dimensions.</dd></dl>
+</li>
+</ul>
+<a name="make(int, int, int, int, int, int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>make</h4>
+<pre>public static&nbsp;<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;make(int&nbsp;dim1,
+         int&nbsp;dim2,
+         int&nbsp;dim3,
+         int&nbsp;dim4,
+         int&nbsp;dim5,
+         int&nbsp;dim6)</pre>
+<div class="block">Make a 6-D shape</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>dim1</code> - - The 1st dimension.</dd><dd><code>dim2</code> - - The 2nd dimension.</dd><dd><code>dim3</code> - - The 3rd dimension.</dd><dd><code>dim4</code> - - The 4th dimension.</dd><dd><code>dim5</code> - - The 5th dimension.</dd><dd><code>dim6</code> - - The 6th dimension.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>A new 6-dimensional shape built from the given dimensions.</dd></dl>
+</li>
+</ul>
+<a name="make(int, int, int, int, int, int, int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>make</h4>
+<pre>public static&nbsp;<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;make(int&nbsp;dim1,
+         int&nbsp;dim2,
+         int&nbsp;dim3,
+         int&nbsp;dim4,
+         int&nbsp;dim5,
+         int&nbsp;dim6,
+         int&nbsp;dim7)</pre>
+<div class="block">Make a 7-D shape</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>dim1</code> - - The 1st dimension.</dd><dd><code>dim2</code> - - The 2nd dimension.</dd><dd><code>dim3</code> - - The 3rd dimension.</dd><dd><code>dim4</code> - - The 4th dimension.</dd><dd><code>dim5</code> - - The 5th dimension.</dd><dd><code>dim6</code> - - The 6th dimension.</dd><dd><code>dim7</code> - - The 7th dimension.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>A new 7-dimensional shape built from the given dimensions.</dd></dl>
+</li>
+</ul>
+<a name="make(int, int, int, int, int, int, int, int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>make</h4>
+<pre>public static&nbsp;<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;make(int&nbsp;dim1,
+         int&nbsp;dim2,
+         int&nbsp;dim3,
+         int&nbsp;dim4,
+         int&nbsp;dim5,
+         int&nbsp;dim6,
+         int&nbsp;dim7,
+         int&nbsp;dim8)</pre>
+<div class="block">Make a 8-D shape</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>dim1</code> - - The 1st dimension.</dd><dd><code>dim2</code> - - The 2nd dimension.</dd><dd><code>dim3</code> - - The 3rd dimension.</dd><dd><code>dim4</code> - - The 4th dimension.</dd><dd><code>dim5</code> - - The 5th dimension.</dd><dd><code>dim6</code> - - The 6th dimension.</dd><dd><code>dim7</code> - - The 7th dimension.</dd><dd><code>dim8</code> - - The 8th dimension.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>A new 8-dimensional shape built from the given dimensions.</dd></dl>
+</li>
+</ul>
+<a name="make(int, int, int, int, int, int, int, int, int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>make</h4>
+<pre>public static&nbsp;<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;make(int&nbsp;dim1,
+         int&nbsp;dim2,
+         int&nbsp;dim3,
+         int&nbsp;dim4,
+         int&nbsp;dim5,
+         int&nbsp;dim6,
+         int&nbsp;dim7,
+         int&nbsp;dim8,
+         int&nbsp;dim9)</pre>
+<div class="block">Make a 9-D shape</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>dim1</code> - - The 1st dimension.</dd><dd><code>dim2</code> - - The 2nd dimension.</dd><dd><code>dim3</code> - - The 3rd dimension.</dd><dd><code>dim4</code> - - The 4th dimension.</dd><dd><code>dim5</code> - - The 5th dimension.</dd><dd><code>dim6</code> - - The 6th dimension.</dd><dd><code>dim7</code> - - The 7th dimension.</dd><dd><code>dim8</code> - - The 8th dimension.</dd><dd><code>dim9</code> - - The 9th dimension.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>A new 9-dimensional shape built from the given dimensions.</dd></dl>
+</li>
+</ul>
+<a name="rank()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>rank</h4>
+<pre>public final&nbsp;int&nbsp;rank()</pre>
+<div class="block">Get the number of dimensions.</div>
+<dl><dt><span class="strong">Returns:</span></dt><dd>The number of dimensions.</dd></dl>
+</li>
+</ul>
+<a name="number()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>number</h4>
+<pre>public final&nbsp;long&nbsp;number()</pre>
+<div class="block">Get the number of elements of an object with that shape.</div>
+<dl><dt><span class="strong">Returns:</span></dt><dd>The number of elements of an object with that shape.</dd></dl>
+</li>
+</ul>
+<a name="dimension(int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>dimension</h4>
+<pre>public final&nbsp;int&nbsp;dimension(int&nbsp;k)</pre>
+<div class="block">Get the length of a given dimension.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>k</code> - - The index of the dimension.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>The length of the <code>(k+1)</code>-th dimension.</dd></dl>
+</li>
+</ul>
+<a name="copyDimensions()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>copyDimensions</h4>
+<pre>public final&nbsp;int[]&nbsp;copyDimensions()</pre>
+<div class="block">Copy the dimension list.</div>
+<dl><dt><span class="strong">Returns:</span></dt><dd>A copy of the dimension list.</dd></dl>
+</li>
+</ul>
+<a name="equals(mitiv.base.Shape)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>equals</h4>
+<pre>public final&nbsp;boolean&nbsp;equals(<a href="../../mitiv/base/Shape.html" title="class in mitiv.base">Shape</a>&nbsp;other)</pre>
+<div class="block">Check whether another shape is the same as this one.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>other</code> - - Another shape.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>A boolean result.</dd></dl>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<!-- ========= END OF CLASS DATA ========= -->
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<div class="bottomNav"><a name="navbar_bottom">
+<!--   -->
+</a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+<li><a href="../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../mitiv/base/BaseUtils.html" title="class in mitiv.base"><span class="strong">PREV CLASS</span></a></li>
+<li><a href="../../mitiv/base/Shaped.html" title="interface in mitiv.base"><span class="strong">NEXT CLASS</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../index.html?mitiv/base/Shape.html" target="_top">FRAMES</a></li>
+<li><a href="Shape.html" target="_top">NO FRAMES</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_bottom");
+  if(window==top) {
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
+  }
+  //-->
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>SUMMARY:&nbsp;</li>
+<li>NESTED&nbsp;|&nbsp;</li>
+<li>FIELD&nbsp;|&nbsp;</li>
+<li>CONSTR&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">METHOD</a></li>
+</ul>
+<ul class="subNavList">
+<li>DETAIL:&nbsp;</li>
+<li>FIELD&nbsp;|&nbsp;</li>
+<li>CONSTR&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">METHOD</a></li>
+</ul>
+</div>
+<a name="skip-navbar_bottom">
+<!--   -->
+</a></div>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+</body>
+</html>
