@@ -7,15 +7,16 @@ before_install: wget http://mitiv.univ-lyon1.fr/lib.zip && unzip lib.zip && rm l
 
 script:
 - ant build
-- ant doc
+- ant doc > /dev/null
 
 after_success:
 - git config --global user.email "eric.thiebaut@univ-lyon1.fr"
 - git config --global user.name "emmt"
+- git config --global push.default matching
 - git clone --quiet --branch=gh-pages https://${GH_TOKEN}@github.com/emmt/TiPi
 - cp -r doc/* TiPi
 - cd TiPi && git add * && git commit -am "Doc update" && git push
 
 env:
   global:
-    secure: "RI6rF9Mdc0YcA8tylhXp9JCvkSIPJQBnfcpqJ7Y5BkZoLedQ2hiR6G7ZmKSNUe7rwJ9brGAVHBWcbk/tYHEu2EJXZ5zsUKQQGng8v+QROqeJEbR5KDbbj3Rdu3XFJLOgXMV67RL4kC12DbEYlKYKESUzLoIaNIVXSQTJJKqhUf0="
+    secure: RI6rF9Mdc0YcA8tylhXp9JCvkSIPJQBnfcpqJ7Y5BkZoLedQ2hiR6G7ZmKSNUe7rwJ9brGAVHBWcbk/tYHEu2EJXZ5zsUKQQGng8v+QROqeJEbR5KDbbj3Rdu3XFJLOgXMV67RL4kC12DbEYlKYKESUzLoIaNIVXSQTJJKqhUf0=
