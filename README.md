@@ -63,6 +63,11 @@ look like:
 	smudge = cat
 ```
 
+Javadoc
+=======
+
+The javadoc is auto generated at each push and is [HERE](http://emmt.github.io/TiPi/)
+
 Known Bugs
 ==========
 
