@@ -11,7 +11,7 @@ after_success:
 - git config --global push.default matching
 - git clone --quiet --branch=gh-pages https://${GH_TOKEN}@github.com/emmt/${PROJECT}
 - cp -r doc/* ${PROJECT}
-- cd ${PROJECT} && git add * && git commit -am "Doc update" && (git push 2> > /dev/null)
+- cd ${PROJECT} && git add * && git commit -am "Doc update" && (git push 2> /dev/null)
 env:
   global:
   - secure: Z73JnfX2XClDTmO0SlFr8jad0whjTAmJlF0mKVtkxTiO1RNtU76HUBgefhSNyInR/KQO6ejgJUpQ5xot/UphusfxB6Fea1KhFM/itM0d28iKGPyl5QmnCPjQ2OXhY7c4GKN0h9Ue5h/bnWTJaC0sDkFjTCaVz0+Njq+BJ5TWHFE=
