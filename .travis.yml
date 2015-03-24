@@ -14,5 +14,5 @@ after_success:
 - cd ${PROJECT} && git add * && git commit -am "Doc update" && (git push 2> /dev/null)
 env:
   global:
-  - secure: Z73JnfX2XClDTmO0SlFr8jad0whjTAmJlF0mKVtkxTiO1RNtU76HUBgefhSNyInR/KQO6ejgJUpQ5xot/UphusfxB6Fea1KhFM/itM0d28iKGPyl5QmnCPjQ2OXhY7c4GKN0h9Ue5h/bnWTJaC0sDkFjTCaVz0+Njq+BJ5TWHFE=
+  - secure: GICFxPwmV9BCVTNJY6aK0eUm9O5tCRSZI2zpRh1MGMiUDx8qpeGxl7ha5bSKS3e/KFJ1HNmPd6jW17rsNeJr18Jl7Uk+LWDutOpLdmnaYqiQW4S9ylJ3r8sl9XqraMOngDzmU65lqmmKNNmO8cdjlje4QAkibx3tz2Plmy5N+AA=
   - PROJECT=TiPi
