@@ -114,7 +114,9 @@ public class LBFGSOperator extends LinearOperator {
         }
         beta = new double[m];
         rho = new double[m];
-        reset();
+        mp = 0;
+        mark = -1;
+        gamma = 1.0;
     }
 
     /**
@@ -124,7 +126,7 @@ public class LBFGSOperator extends LinearOperator {
      */
     public void reset() {
         mp = 0;
-        mark = -1;
+        //mark = -1; // FIXME: check this!!!
         gamma = 1.0;
     }
 
