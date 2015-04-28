@@ -1,0 +1,440 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>FiniteDifferenceOperator</title>
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css" title="Style">
+</head>
+<body>
+<script type="text/javascript"><!--
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="FiniteDifferenceOperator";
+    }
+//-->
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="topNav"><a name="navbar_top">
+<!--   -->
+</a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+<li><a href="../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../mitiv/cost/DifferentiableInverseProblemCost.html" title="class in mitiv.cost"><span class="strong">PREV CLASS</span></a></li>
+<li><a href="../../mitiv/cost/GradientChecker.html" title="class in mitiv.cost"><span class="strong">NEXT CLASS</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../index.html?mitiv/cost/FiniteDifferenceOperator.html" target="_top">FRAMES</a></li>
+<li><a href="FiniteDifferenceOperator.html" target="_top">NO FRAMES</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_top");
+  if(window==top) {
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
+  }
+  //-->
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>SUMMARY:&nbsp;</li>
+<li>NESTED&nbsp;|&nbsp;</li>
+<li><a href="#fields_inherited_from_class_mitiv.linalg.LinearOperator">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_summary">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">METHOD</a></li>
+</ul>
+<ul class="subNavList">
+<li>DETAIL:&nbsp;</li>
+<li>FIELD&nbsp;|&nbsp;</li>
+<li><a href="#constructor_detail">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">METHOD</a></li>
+</ul>
+</div>
+<a name="skip-navbar_top">
+<!--   -->
+</a></div>
+<!-- ========= END OF TOP NAVBAR ========= -->
+<!-- ======== START OF CLASS DATA ======== -->
+<div class="header">
+<p class="subTitle">mitiv.cost</p>
+<h2 title="Class FiniteDifferenceOperator" class="title">Class FiniteDifferenceOperator</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li><a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">mitiv.linalg.LinearOperator</a></li>
+<li>
+<ul class="inheritance">
+<li>mitiv.cost.FiniteDifferenceOperator</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<hr>
+<br>
+<pre>public class <strong>FiniteDifferenceOperator</strong>
+extends <a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a></pre>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+<!-- =========== FIELD SUMMARY =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="field_summary">
+<!--   -->
+</a>
+<h3>Field Summary</h3>
+<ul class="blockList">
+<li class="blockList"><a name="fields_inherited_from_class_mitiv.linalg.LinearOperator">
+<!--   -->
+</a>
+<h3>Fields inherited from class&nbsp;mitiv.linalg.<a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a></h3>
+<code><a href="../../mitiv/linalg/LinearOperator.html#ADJOINT">ADJOINT</a>, <a href="../../mitiv/linalg/LinearOperator.html#ADJOINT_INVERSE">ADJOINT_INVERSE</a>, <a href="../../mitiv/linalg/LinearOperator.html#DIRECT">DIRECT</a>, <a href="../../mitiv/linalg/LinearOperator.html#inputSpace">inputSpace</a>, <a href="../../mitiv/linalg/LinearOperator.html#INVERSE">INVERSE</a>, <a href="../../mitiv/linalg/LinearOperator.html#INVERSE_ADJOINT">INVERSE_ADJOINT</a>, <a href="../../mitiv/linalg/LinearOperator.html#outputSpace">outputSpace</a></code></li>
+</ul>
+</li>
+</ul>
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+<ul class="blockList">
+<li class="blockList"><a name="constructor_summary">
+<!--   -->
+</a>
+<h3>Constructor Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><strong><a href="../../mitiv/cost/FiniteDifferenceOperator.html#FiniteDifferenceOperator(mitiv.linalg.shaped.DoubleShapedVectorSpace)">FiniteDifferenceOperator</a></strong>(<a href="../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a>&nbsp;inputSpace)</code>
+<div class="block">Create an instance of a finite difference operator.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><strong><a href="../../mitiv/cost/FiniteDifferenceOperator.html#FiniteDifferenceOperator(mitiv.linalg.shaped.DoubleShapedVectorSpace, mitiv.base.indexing.BoundaryConditions)">FiniteDifferenceOperator</a></strong>(<a href="../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a>&nbsp;inputSpace,
+                        <a href="../../mitiv/base/indexing/BoundaryConditions.html" title="enum in mitiv.base.indexing">BoundaryConditions</a>&nbsp;bounds)</code>
+<div class="block">Create an instance of a finite difference operator.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><strong><a href="../../mitiv/cost/FiniteDifferenceOperator.html#FiniteDifferenceOperator(mitiv.linalg.shaped.DoubleShapedVectorSpace, mitiv.base.indexing.BoundaryConditions[])">FiniteDifferenceOperator</a></strong>(<a href="../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a>&nbsp;inputSpace,
+                        <a href="../../mitiv/base/indexing/BoundaryConditions.html" title="enum in mitiv.base.indexing">BoundaryConditions</a>[]&nbsp;bounds)</code>
+<div class="block">Create an instance of a finite difference operator.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><strong><a href="../../mitiv/cost/FiniteDifferenceOperator.html#FiniteDifferenceOperator(mitiv.linalg.shaped.FloatShapedVectorSpace)">FiniteDifferenceOperator</a></strong>(<a href="../../mitiv/linalg/shaped/FloatShapedVectorSpace.html" title="class in mitiv.linalg.shaped">FloatShapedVectorSpace</a>&nbsp;inputSpace)</code>
+<div class="block">Create an instance of a finite difference operator.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><strong><a href="../../mitiv/cost/FiniteDifferenceOperator.html#FiniteDifferenceOperator(mitiv.linalg.shaped.FloatShapedVectorSpace, mitiv.base.indexing.BoundaryConditions)">FiniteDifferenceOperator</a></strong>(<a href="../../mitiv/linalg/shaped/FloatShapedVectorSpace.html" title="class in mitiv.linalg.shaped">FloatShapedVectorSpace</a>&nbsp;inputSpace,
+                        <a href="../../mitiv/base/indexing/BoundaryConditions.html" title="enum in mitiv.base.indexing">BoundaryConditions</a>&nbsp;bounds)</code>
+<div class="block">Create an instance of a finite difference operator.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><strong><a href="../../mitiv/cost/FiniteDifferenceOperator.html#FiniteDifferenceOperator(mitiv.linalg.shaped.FloatShapedVectorSpace, mitiv.base.indexing.BoundaryConditions[])">FiniteDifferenceOperator</a></strong>(<a href="../../mitiv/linalg/shaped/FloatShapedVectorSpace.html" title="class in mitiv.linalg.shaped">FloatShapedVectorSpace</a>&nbsp;inputSpace,
+                        <a href="../../mitiv/base/indexing/BoundaryConditions.html" title="enum in mitiv.base.indexing">BoundaryConditions</a>[]&nbsp;bounds)</code>
+<div class="block">Create an instance of a finite difference operator.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+<!-- ========== METHOD SUMMARY =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method_summary">
+<!--   -->
+</a>
+<h3>Method Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static void</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/cost/FiniteDifferenceOperator.html#main(java.lang.String[])">main</a></strong>(java.lang.String[]&nbsp;args)</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected void</code></td>
+<td class="colLast"><code><strong><a href="../../mitiv/cost/FiniteDifferenceOperator.html#privApply(mitiv.linalg.Vector, mitiv.linalg.Vector, int)">privApply</a></strong>(<a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;src,
+         <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;dst,
+         int&nbsp;job)</code>
+<div class="block">Apply a linear operator (or its adjoint) to a vector.</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_mitiv.linalg.LinearOperator">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;mitiv.linalg.<a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a></h3>
+<code><a href="../../mitiv/linalg/LinearOperator.html#apply(mitiv.linalg.Vector, mitiv.linalg.Vector)">apply</a>, <a href="../../mitiv/linalg/LinearOperator.html#apply(mitiv.linalg.Vector, mitiv.linalg.Vector, int)">apply</a>, <a href="../../mitiv/linalg/LinearOperator.html#checkAdjoint(mitiv.linalg.Vector, mitiv.linalg.Vector)">checkAdjoint</a>, <a href="../../mitiv/linalg/LinearOperator.html#checkLinearProblem(mitiv.linalg.LinearOperator, mitiv.linalg.Vector, mitiv.linalg.Vector, boolean)">checkLinearProblem</a>, <a href="../../mitiv/linalg/LinearOperator.html#getInputSpace()">getInputSpace</a>, <a href="../../mitiv/linalg/LinearOperator.html#getOutputSpace()">getOutputSpace</a>, <a href="../../mitiv/linalg/LinearOperator.html#isEndomorphism()">isEndomorphism</a></code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<ul class="blockList">
+<li class="blockList"><a name="constructor_detail">
+<!--   -->
+</a>
+<h3>Constructor Detail</h3>
+<a name="FiniteDifferenceOperator(mitiv.linalg.shaped.DoubleShapedVectorSpace, mitiv.base.indexing.BoundaryConditions[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>FiniteDifferenceOperator</h4>
+<pre>public&nbsp;FiniteDifferenceOperator(<a href="../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a>&nbsp;inputSpace,
+                        <a href="../../mitiv/base/indexing/BoundaryConditions.html" title="enum in mitiv.base.indexing">BoundaryConditions</a>[]&nbsp;bounds)</pre>
+<div class="block">Create an instance of a finite difference operator.
+ <p>
+ The finite difference operator, computes the difference between each element
+ of its argument and its preceding element for each dimensions.  Thus a 1D array yields
+ a 1D result while a <code>n</code>-dimensional array yields a <code>n + 1</code> dimensional
+ result with an additional leading dimension of length <code>n</code> to store the finite
+ differences along each of the <code>n</code> dimensions.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>inputSpace</code> - - The inputs space of the operator (the output space is automatically
+                     built).</dd><dd><code>bounds</code> - - An array indicating the boundary conditions for
+                     each dimension.  If <code>null</code>, normal conditions are assumed for
+                     all dimensions; otherwise, if shorter than <code>n</code>, the rank of
+                     <code>inputSpace</code>, missing values are assumed to be
+                     <a href="../../mitiv/base/indexing/BoundaryConditions.html#NORMAL"><code>BoundaryConditions.NORMAL</code></a>.</dd></dl>
+</li>
+</ul>
+<a name="FiniteDifferenceOperator(mitiv.linalg.shaped.DoubleShapedVectorSpace, mitiv.base.indexing.BoundaryConditions)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>FiniteDifferenceOperator</h4>
+<pre>public&nbsp;FiniteDifferenceOperator(<a href="../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a>&nbsp;inputSpace,
+                        <a href="../../mitiv/base/indexing/BoundaryConditions.html" title="enum in mitiv.base.indexing">BoundaryConditions</a>&nbsp;bounds)</pre>
+<div class="block">Create an instance of a finite difference operator.
+ <p>
+ See <code>#FiniteDifferenceOperator(DoubleShapedVectorSpace, boolean[])</code> for more
+ explanations.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>inputSpace</code> - - The inputs space of the operator</dd><dd><code>bounds</code> - - Indicates the boundary conditions for all dimensions, one of
+                     <a href="../../mitiv/base/indexing/BoundaryConditions.html#PERIODIC"><code>BoundaryConditions.PERIODIC</code></a>, or
+                     <a href="../../mitiv/base/indexing/BoundaryConditions.html#MIRROR"><code>BoundaryConditions.MIRROR</code></a>, otherwise
+                     <a href="../../mitiv/base/indexing/BoundaryConditions.html#NORMAL"><code>BoundaryConditions.NORMAL</code></a> is assumed.</dd></dl>
+</li>
+</ul>
+<a name="FiniteDifferenceOperator(mitiv.linalg.shaped.DoubleShapedVectorSpace)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>FiniteDifferenceOperator</h4>
+<pre>public&nbsp;FiniteDifferenceOperator(<a href="../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a>&nbsp;inputSpace)</pre>
+<div class="block">Create an instance of a finite difference operator.
+ <p>
+ Same as <code>#FiniteDifferenceOperator(DoubleShapedVectorSpace, boolean[])</code> but with
+ non-periodic conditions along all dimensions.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>inputSpace</code> - - The inputs space of the operator</dd></dl>
+</li>
+</ul>
+<a name="FiniteDifferenceOperator(mitiv.linalg.shaped.FloatShapedVectorSpace, mitiv.base.indexing.BoundaryConditions[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>FiniteDifferenceOperator</h4>
+<pre>public&nbsp;FiniteDifferenceOperator(<a href="../../mitiv/linalg/shaped/FloatShapedVectorSpace.html" title="class in mitiv.linalg.shaped">FloatShapedVectorSpace</a>&nbsp;inputSpace,
+                        <a href="../../mitiv/base/indexing/BoundaryConditions.html" title="enum in mitiv.base.indexing">BoundaryConditions</a>[]&nbsp;bounds)</pre>
+<div class="block">Create an instance of a finite difference operator.
+ <p>
+ Same as <code>#FiniteDifferenceOperator(DoubleShapedVectorSpace, boolean[])</code> but for
+ single precision floating point shaped vectors.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>inputSpace</code> - - The inputs space of the operator</dd><dd><code>bounds</code> - - An array of integers indicating the boundary conditions for
+                     each dimension.  If <code>null</code>, normal conditions are assumed for
+                     all dimensions; otherwise, if shorter than <code>n</code>, the rank of
+                     <code>inputSpace</code>, missing values are assumed to be
+                     <a href="../../mitiv/base/indexing/BoundaryConditions.html#NORMAL"><code>BoundaryConditions.NORMAL</code></a>.</dd></dl>
+</li>
+</ul>
+<a name="FiniteDifferenceOperator(mitiv.linalg.shaped.FloatShapedVectorSpace, mitiv.base.indexing.BoundaryConditions)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>FiniteDifferenceOperator</h4>
+<pre>public&nbsp;FiniteDifferenceOperator(<a href="../../mitiv/linalg/shaped/FloatShapedVectorSpace.html" title="class in mitiv.linalg.shaped">FloatShapedVectorSpace</a>&nbsp;inputSpace,
+                        <a href="../../mitiv/base/indexing/BoundaryConditions.html" title="enum in mitiv.base.indexing">BoundaryConditions</a>&nbsp;bounds)</pre>
+<div class="block">Create an instance of a finite difference operator.
+ <p>
+ Same as <code>#FiniteDifferenceOperator(DoubleShapedVectorSpace, boolean)</code> but for
+ single precision floating point shaped vectors.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>inputSpace</code> - - The inputs space of the operator</dd><dd><code>bounds</code> - - Indicates the boundary conditions for all dimensions, one of
+                     <a href="../../mitiv/base/indexing/BoundaryConditions.html#PERIODIC"><code>BoundaryConditions.PERIODIC</code></a>, or
+                     <a href="../../mitiv/base/indexing/BoundaryConditions.html#MIRROR"><code>BoundaryConditions.MIRROR</code></a>, otherwise
+                     <a href="../../mitiv/base/indexing/BoundaryConditions.html#NORMAL"><code>BoundaryConditions.NORMAL</code></a> is assumed.</dd></dl>
+</li>
+</ul>
+<a name="FiniteDifferenceOperator(mitiv.linalg.shaped.FloatShapedVectorSpace)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>FiniteDifferenceOperator</h4>
+<pre>public&nbsp;FiniteDifferenceOperator(<a href="../../mitiv/linalg/shaped/FloatShapedVectorSpace.html" title="class in mitiv.linalg.shaped">FloatShapedVectorSpace</a>&nbsp;inputSpace)</pre>
+<div class="block">Create an instance of a finite difference operator.
+ <p>
+ Same as <a href="../../mitiv/cost/FiniteDifferenceOperator.html#FiniteDifferenceOperator(mitiv.linalg.shaped.DoubleShapedVectorSpace)"><code>FiniteDifferenceOperator(DoubleShapedVectorSpace)</code></a> but for
+ single precision floating point shaped vectors.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>inputSpace</code> - - The inputs space of the operator</dd></dl>
+</li>
+</ul>
+</li>
+</ul>
+<!-- ============ METHOD DETAIL ========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method_detail">
+<!--   -->
+</a>
+<h3>Method Detail</h3>
+<a name="main(java.lang.String[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>main</h4>
+<pre>public static&nbsp;void&nbsp;main(java.lang.String[]&nbsp;args)</pre>
+</li>
+</ul>
+<a name="privApply(mitiv.linalg.Vector, mitiv.linalg.Vector, int)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>privApply</h4>
+<pre>protected&nbsp;void&nbsp;privApply(<a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;src,
+             <a href="../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a>&nbsp;dst,
+             int&nbsp;job)
+                  throws <a href="../../mitiv/exception/IncorrectSpaceException.html" title="class in mitiv.exception">IncorrectSpaceException</a></pre>
+<div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../mitiv/linalg/LinearOperator.html#privApply(mitiv.linalg.Vector, mitiv.linalg.Vector, int)">LinearOperator</a></code></strong></div>
+<div class="block">Apply a linear operator (or its adjoint) to a vector.
+ 
+ This protected method is called by the "apply" method after checking of the
+ arguments.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../mitiv/linalg/LinearOperator.html#privApply(mitiv.linalg.Vector, mitiv.linalg.Vector, int)">privApply</a></code>&nbsp;in class&nbsp;<code><a href="../../mitiv/linalg/LinearOperator.html" title="class in mitiv.linalg">LinearOperator</a></code></dd>
+<dt><span class="strong">Parameters:</span></dt><dd><code>src</code> - the source vector</dd><dd><code>dst</code> - the destination vector</dd><dd><code>job</code> - the type of operation to apply (DIRECT, ADJOINT, etc.)</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="../../mitiv/exception/IncorrectSpaceException.html" title="class in mitiv.exception">IncorrectSpaceException</a></code> - If adjoint is false (resp. tour), src (resp. dst) must belongs to the input vector space
+ of the operator and dst (resp. src) must belongs to the output vector space of the operator.</dd></dl>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<!-- ========= END OF CLASS DATA ========= -->
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<div class="bottomNav"><a name="navbar_bottom">
+<!--   -->
+</a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+<li><a href="../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../mitiv/cost/DifferentiableInverseProblemCost.html" title="class in mitiv.cost"><span class="strong">PREV CLASS</span></a></li>
+<li><a href="../../mitiv/cost/GradientChecker.html" title="class in mitiv.cost"><span class="strong">NEXT CLASS</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../index.html?mitiv/cost/FiniteDifferenceOperator.html" target="_top">FRAMES</a></li>
+<li><a href="FiniteDifferenceOperator.html" target="_top">NO FRAMES</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_bottom");
+  if(window==top) {
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
+  }
+  //-->
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>SUMMARY:&nbsp;</li>
+<li>NESTED&nbsp;|&nbsp;</li>
+<li><a href="#fields_inherited_from_class_mitiv.linalg.LinearOperator">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_summary">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">METHOD</a></li>
+</ul>
+<ul class="subNavList">
+<li>DETAIL:&nbsp;</li>
+<li>FIELD&nbsp;|&nbsp;</li>
+<li><a href="#constructor_detail">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">METHOD</a></li>
+</ul>
+</div>
+<a name="skip-navbar_bottom">
+<!--   -->
+</a></div>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+</body>
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>DoubleShapedVector</title>
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css" title="Style">
+</head>
+<body>
+<script type="text/javascript"><!--
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="DoubleShapedVector";
+    }
+//-->
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="topNav"><a name="navbar_top">
+<!--   -->
+</a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+<li><a href="../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>PREV CLASS</li>
+<li><a href="../../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped"><span class="strong">NEXT CLASS</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../index.html?mitiv/linalg/shaped/DoubleShapedVector.html" target="_top">FRAMES</a></li>
+<li><a href="DoubleShapedVector.html" target="_top">NO FRAMES</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_top");
+  if(window==top) {
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
+  }
+  //-->
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>SUMMARY:&nbsp;</li>
+<li>NESTED&nbsp;|&nbsp;</li>
+<li><a href="#field_summary">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_summary">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">METHOD</a></li>
+</ul>
+<ul class="subNavList">
+<li>DETAIL:&nbsp;</li>
+<li><a href="#field_detail">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_detail">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">METHOD</a></li>
+</ul>
+</div>
+<a name="skip-navbar_top">
+<!--   -->
+</a></div>
+<!-- ========= END OF TOP NAVBAR ========= -->
+<!-- ======== START OF CLASS DATA ======== -->
+<div class="header">
+<p class="subTitle">mitiv.linalg.shaped</p>
+<h2 title="Class DoubleShapedVector" class="title">Class DoubleShapedVector</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li><a href="../../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">mitiv.linalg.Vector</a></li>
+<li>
+<ul class="inheritance">
+<li><a href="../../../mitiv/linalg/shaped/ShapedVector.html" title="class in mitiv.linalg.shaped">mitiv.linalg.shaped.ShapedVector</a></li>
+<li>
+<ul class="inheritance">
+<li>mitiv.linalg.shaped.DoubleShapedVector</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>All Implemented Interfaces:</dt>
+<dd><a href="../../../mitiv/base/Shaped.html" title="interface in mitiv.base">Shaped</a>, <a href="../../../mitiv/base/Traits.html" title="interface in mitiv.base">Traits</a>, <a href="../../../mitiv/base/Typed.html" title="interface in mitiv.base">Typed</a></dd>
+</dl>
+<hr>
+<br>
+<pre>public class <strong>DoubleShapedVector</strong>
+extends <a href="../../../mitiv/linalg/shaped/ShapedVector.html" title="class in mitiv.linalg.shaped">ShapedVector</a></pre>
+<div class="block">Class for vectors which belongs to an instance of the DoubleVectorSpace
+ class.
+ 
+ Implements (flat) vectors of double precision reals.</div>
+<dl><dt><span class="strong">Author:</span></dt>
+  <dd>Éric Thiébaut <eric.thiebaut@univ-lyon1.fr></dd></dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+<!-- =========== FIELD SUMMARY =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="field_summary">
+<!--   -->
+</a>
+<h3>Field Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Field Summary table, listing fields, and an explanation">
+<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Field and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected double[]</code></td>
+<td class="colLast"><code><strong><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html#data">data</a></strong></code>&nbsp;</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="fields_inherited_from_class_mitiv.linalg.Vector">
+<!--   -->
+</a>
+<h3>Fields inherited from class&nbsp;mitiv.linalg.<a href="../../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a></h3>
+<code><a href="../../../mitiv/linalg/Vector.html#number">number</a>, <a href="../../../mitiv/linalg/Vector.html#space">space</a></code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="fields_inherited_from_class_mitiv.base.Shaped">
+<!--   -->
+</a>
+<h3>Fields inherited from interface&nbsp;mitiv.base.<a href="../../../mitiv/base/Shaped.html" title="interface in mitiv.base">Shaped</a></h3>
+<code><a href="../../../mitiv/base/Shaped.html#COLUMN_MAJOR">COLUMN_MAJOR</a>, <a href="../../../mitiv/base/Shaped.html#NONSPECIFIC_ORDER">NONSPECIFIC_ORDER</a>, <a href="../../../mitiv/base/Shaped.html#ROW_MAJOR">ROW_MAJOR</a></code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="fields_inherited_from_class_mitiv.base.Traits">
+<!--   -->
+</a>
+<h3>Fields inherited from interface&nbsp;mitiv.base.<a href="../../../mitiv/base/Traits.html" title="interface in mitiv.base">Traits</a></h3>
+<code><a href="../../../mitiv/base/Traits.html#BIG_ENDIAN">BIG_ENDIAN</a>, <a href="../../../mitiv/base/Traits.html#BOOLEAN">BOOLEAN</a>, <a href="../../../mitiv/base/Traits.html#BYTE">BYTE</a>, <a href="../../../mitiv/base/Traits.html#CHAR">CHAR</a>, <a href="../../../mitiv/base/Traits.html#classes">classes</a>, <a href="../../../mitiv/base/Traits.html#DBL_EPSILON">DBL_EPSILON</a>, <a href="../../../mitiv/base/Traits.html#DOUBLE">DOUBLE</a>, <a href="../../../mitiv/base/Traits.html#FIRST_NUMERIC">FIRST_NUMERIC</a>, <a href="../../../mitiv/base/Traits.html#FLOAT">FLOAT</a>, <a href="../../../mitiv/base/Traits.html#FLT_EPSILON">FLT_EPSILON</a>, <a href="../../../mitiv/base/Traits.html#INT">INT</a>, <a href="../../../mitiv/base/Traits.html#isNumeric">isNumeric</a>, <a href="../../../mitiv/base/Traits.html#LAST_NUMERIC">LAST_NUMERIC</a>, <a href="../../../mitiv/base/Traits.html#LITTLE_ENDIAN">LITTLE_ENDIAN</a>, <a href="../../../mitiv/base/Traits.html#LONG">LONG</a>, <a href="../../../mitiv/base/Traits.html#names">names</a>, <a href="../../../mitiv/base/Traits.html#NATIVE_BYTE_ORDER">NATIVE_BYTE_ORDER</a>, <a href="../../../mitiv/base/Traits.html#OBJECT">OBJECT</a>, <a href="../../../mitiv/base/Traits.html#SHORT">SHORT</a>, <a href="../../../mitiv/base/Traits.html#sizes">sizes</a>, <a href="../../../mitiv/base/Traits.html#suffixes">suffixes</a>, <a href="../../../mitiv/base/Traits.html#UNKNOWN_BYTE_ORDER">UNKNOWN_BYTE_ORDER</a>, <a href="../../../mitiv/base/Traits.html#VOID">VOID</a></code></li>
+</ul>
+</li>
+</ul>
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+<ul class="blockList">
+<li class="blockList"><a name="constructor_summary">
+<!--   -->
+</a>
+<h3>Constructor Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><strong><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html#DoubleShapedVector(mitiv.linalg.shaped.DoubleShapedVectorSpace)">DoubleShapedVector</a></strong>(<a href="../../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a>&nbsp;owner)</code>
+<div class="block">Create a new instance of a DoubleVector with its own storage.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><strong><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html#DoubleShapedVector(mitiv.linalg.shaped.DoubleShapedVectorSpace, double[])">DoubleShapedVector</a></strong>(<a href="../../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a>&nbsp;owner,
+                  double[]&nbsp;data)</code>
+<div class="block">Wrap an array of doubles into a DoubleVector.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+<!-- ========== METHOD SUMMARY =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method_summary">
+<!--   -->
+</a>
+<h3>Method Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html#assign(mitiv.array.ShapedArray)">assign</a></strong>(<a href="../../../mitiv/array/ShapedArray.html" title="interface in mitiv.array">ShapedArray</a>&nbsp;arr)</code>
+<div class="block">Assign the elements of a shaped vector form those of an array.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html" title="class in mitiv.linalg.shaped">DoubleShapedVector</a></code></td>
+<td class="colLast"><code><strong><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html#clone()">clone</a></strong>()</code>
+<div class="block">Create a clone of the vector.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html#fill(mitiv.random.DoubleGenerator)">fill</a></strong>(<a href="../../../mitiv/random/DoubleGenerator.html" title="interface in mitiv.random">DoubleGenerator</a>&nbsp;generator)</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>double</code></td>
+<td class="colLast"><code><strong><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html#get(int)">get</a></strong>(int&nbsp;i)</code>
+<div class="block">Get one of the values gathered in the vector.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>double[]</code></td>
+<td class="colLast"><code><strong><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html#getData()">getData</a></strong>()</code>
+<div class="block">Get the array of reals which store the coefficients of the vector.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a></code></td>
+<td class="colLast"><code><strong><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html#getOwner()">getOwner</a></strong>()</code>
+<div class="block">Get the vector space which owns the vector.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a></code></td>
+<td class="colLast"><code><strong><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html#getSpace()">getSpace</a></strong>()</code>
+<div class="block">Get the vector space of the vector.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html#set(double[])">set</a></strong>(double[]&nbsp;arr)</code>
+<div class="block">Set the values of the vector from a Java array.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html#set(int, double)">set</a></strong>(int&nbsp;i,
+   double&nbsp;value)</code>
+<div class="block">Set one of the values gathered in the vector.</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_mitiv.linalg.shaped.ShapedVector">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;mitiv.linalg.shaped.<a href="../../../mitiv/linalg/shaped/ShapedVector.html" title="class in mitiv.linalg.shaped">ShapedVector</a></h3>
+<code><a href="../../../mitiv/linalg/shaped/ShapedVector.html#getDimension(int)">getDimension</a>, <a href="../../../mitiv/linalg/shaped/ShapedVector.html#getOrder()">getOrder</a>, <a href="../../../mitiv/linalg/shaped/ShapedVector.html#getRank()">getRank</a>, <a href="../../../mitiv/linalg/shaped/ShapedVector.html#getShape()">getShape</a>, <a href="../../../mitiv/linalg/shaped/ShapedVector.html#getType()">getType</a></code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_mitiv.linalg.Vector">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;mitiv.linalg.<a href="../../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a></h3>
+<code><a href="../../../mitiv/linalg/Vector.html#assertBelongsTo(mitiv.linalg.VectorSpace)">assertBelongsTo</a>, <a href="../../../mitiv/linalg/Vector.html#axpby(double, mitiv.linalg.Vector, double, mitiv.linalg.Vector)">axpby</a>, <a href="../../../mitiv/linalg/Vector.html#axpbypcz(double, mitiv.linalg.Vector, double, mitiv.linalg.Vector, double, mitiv.linalg.Vector)">axpbypcz</a>, <a href="../../../mitiv/linalg/Vector.html#belongsTo(mitiv.linalg.VectorSpace)">belongsTo</a>, <a href="../../../mitiv/linalg/Vector.html#copyFrom(mitiv.linalg.Vector)">copyFrom</a>, <a href="../../../mitiv/linalg/Vector.html#copyTo(mitiv.linalg.Vector)">copyTo</a>, <a href="../../../mitiv/linalg/Vector.html#dot(mitiv.linalg.Vector)">dot</a>, <a href="../../../mitiv/linalg/Vector.html#fill(double)">fill</a>, <a href="../../../mitiv/linalg/Vector.html#getNumber()">getNumber</a>, <a href="../../../mitiv/linalg/Vector.html#length()">length</a>, <a href="../../../mitiv/linalg/Vector.html#norm1()">norm1</a>, <a href="../../../mitiv/linalg/Vector.html#norm2()">norm2</a>, <a href="../../../mitiv/linalg/Vector.html#normInf()">normInf</a>, <a href="../../../mitiv/linalg/Vector.html#scale(double)">scale</a>, <a href="../../../mitiv/linalg/Vector.html#swap(mitiv.linalg.Vector)">swap</a>, <a href="../../../mitiv/linalg/Vector.html#toString()">toString</a>, <a href="../../../mitiv/linalg/Vector.html#zero()">zero</a></code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>equals, finalize, getClass, hashCode, notify, notifyAll, wait, wait, wait</code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_mitiv.base.Shaped">
+<!--   -->
+</a>
+<h3>Methods inherited from interface&nbsp;mitiv.base.<a href="../../../mitiv/base/Shaped.html" title="interface in mitiv.base">Shaped</a></h3>
+<code><a href="../../../mitiv/base/Shaped.html#getNumber()">getNumber</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+<!-- ============ FIELD DETAIL =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="field_detail">
+<!--   -->
+</a>
+<h3>Field Detail</h3>
+<a name="data">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>data</h4>
+<pre>protected&nbsp;double[] data</pre>
+</li>
+</ul>
+</li>
+</ul>
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<ul class="blockList">
+<li class="blockList"><a name="constructor_detail">
+<!--   -->
+</a>
+<h3>Constructor Detail</h3>
+<a name="DoubleShapedVector(mitiv.linalg.shaped.DoubleShapedVectorSpace)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>DoubleShapedVector</h4>
+<pre>public&nbsp;DoubleShapedVector(<a href="../../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a>&nbsp;owner)</pre>
+<div class="block">Create a new instance of a DoubleVector with its own storage.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>owner</code> - The vector space of the result.</dd></dl>
+</li>
+</ul>
+<a name="DoubleShapedVector(mitiv.linalg.shaped.DoubleShapedVectorSpace, double[])">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>DoubleShapedVector</h4>
+<pre>public&nbsp;DoubleShapedVector(<a href="../../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a>&nbsp;owner,
+                  double[]&nbsp;data)</pre>
+<div class="block">Wrap an array of doubles into a DoubleVector.
+ 
+ The created vector will share its storage with the provided array.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>owner</code> - The vector space of the result.</dd><dd><code>data</code> - The input data.</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code>java.lang.IllegalArgumentException</code> - The length of the input array does not match
+                                  the size of the vector space.</dd></dl>
+</li>
+</ul>
+</li>
+</ul>
+<!-- ============ METHOD DETAIL ========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method_detail">
+<!--   -->
+</a>
+<h3>Method Detail</h3>
+<a name="getOwner()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getOwner</h4>
+<pre>public&nbsp;<a href="../../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a>&nbsp;getOwner()</pre>
+<div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../mitiv/linalg/Vector.html#getOwner()">Vector</a></code></strong></div>
+<div class="block">Get the vector space which owns the vector.</div>
+<dl>
+<dt><strong>Overrides:</strong></dt>
+<dd><code><a href="../../../mitiv/linalg/shaped/ShapedVector.html#getOwner()">getOwner</a></code>&nbsp;in class&nbsp;<code><a href="../../../mitiv/linalg/shaped/ShapedVector.html" title="class in mitiv.linalg.shaped">ShapedVector</a></code></dd>
+<dt><span class="strong">Returns:</span></dt><dd>The vector space owning the vector.</dd></dl>
+</li>
+</ul>
+<a name="getSpace()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSpace</h4>
+<pre>public&nbsp;<a href="../../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped">DoubleShapedVectorSpace</a>&nbsp;getSpace()</pre>
+<div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../mitiv/linalg/Vector.html#getSpace()">Vector</a></code></strong></div>
+<div class="block">Get the vector space of the vector.</div>
+<dl>
+<dt><strong>Overrides:</strong></dt>
+<dd><code><a href="../../../mitiv/linalg/shaped/ShapedVector.html#getSpace()">getSpace</a></code>&nbsp;in class&nbsp;<code><a href="../../../mitiv/linalg/shaped/ShapedVector.html" title="class in mitiv.linalg.shaped">ShapedVector</a></code></dd>
+<dt><span class="strong">Returns:</span></dt><dd>The vector space of the vector.</dd></dl>
+</li>
+</ul>
+<a name="get(int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>get</h4>
+<pre>public final&nbsp;double&nbsp;get(int&nbsp;i)</pre>
+<div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../mitiv/linalg/Vector.html#get(int)">Vector</a></code></strong></div>
+<div class="block">Get one of the values gathered in the vector.
+ 
+ This method is not meant to be efficient, it is mainly provided for testing or
+ debugging purposes.  To remain efficient, vectors should be managed at a more
+ global level.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../mitiv/linalg/Vector.html#get(int)">get</a></code>&nbsp;in class&nbsp;<code><a href="../../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a></code></dd>
+<dt><span class="strong">Parameters:</span></dt><dd><code>i</code> - - The index of the value (runs from 0 to <code>n</code>-1, with <code>n</code>
+             the number of elements of the vector).</dd>
+<dt><span class="strong">Returns:</span></dt><dd>The value of the vector at the given index.</dd></dl>
+</li>
+</ul>
+<a name="set(int, double)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>set</h4>
+<pre>public final&nbsp;void&nbsp;set(int&nbsp;i,
+       double&nbsp;value)</pre>
+<div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../mitiv/linalg/Vector.html#set(int, double)">Vector</a></code></strong></div>
+<div class="block">Set one of the values gathered in the vector.
+ 
+ This method is not meant to be efficient, it is mainly provided for testing or
+ debugging purposes.  To remain efficient, vectors should be managed at a more
+ global level.</div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../mitiv/linalg/Vector.html#set(int, double)">set</a></code>&nbsp;in class&nbsp;<code><a href="../../../mitiv/linalg/Vector.html" title="class in mitiv.linalg">Vector</a></code></dd>
+<dt><span class="strong">Parameters:</span></dt><dd><code>i</code> - - The index of the value (runs from 0 to <code>n</code>-1, with <code>n</code>
+            the number of elements of the vector).</dd><dd><code>value</code> - - The value to store at the index position.</dd></dl>
+</li>
+</ul>
+<a name="set(double[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>set</h4>
+<pre>public&nbsp;void&nbsp;set(double[]&nbsp;arr)</pre>
+<div class="block">Set the values of the vector from a Java array.
+ 
+ This method copies the values of the input array arr into the vector
+ (their sizes must match). Note that it may be more efficient to wrap
+ a vector around the Java array.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>arr</code> - The Java array to copy.</dd></dl>
+</li>
+</ul>
+<a name="getData()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getData</h4>
+<pre>public&nbsp;double[]&nbsp;getData()</pre>
+<div class="block">Get the array of reals which store the coefficients of the vector.
+ 
+ This method may be removed later when efficient set and get methods will
+ be fully tested and implemented.</div>
+<dl><dt><span class="strong">Returns:</span></dt><dd>the array of vector coefficients.</dd></dl>
+</li>
+</ul>
+<a name="fill(mitiv.random.DoubleGenerator)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>fill</h4>
+<pre>public&nbsp;void&nbsp;fill(<a href="../../../mitiv/random/DoubleGenerator.html" title="interface in mitiv.random">DoubleGenerator</a>&nbsp;generator)</pre>
+</li>
+</ul>
+<a name="clone()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>clone</h4>
+<pre>public&nbsp;<a href="../../../mitiv/linalg/shaped/DoubleShapedVector.html" title="class in mitiv.linalg.shaped">DoubleShapedVector</a>&nbsp;clone()</pre>
+<div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../mitiv/linalg/Vector.html#clone()">Vector</a></code></strong></div>
+<div class="block">Create a clone of the vector.</div>
+<dl>
+<dt><strong>Overrides:</strong></dt>
+<dd><code><a href="../../../mitiv/linalg/shaped/ShapedVector.html#clone()">clone</a></code>&nbsp;in class&nbsp;<code><a href="../../../mitiv/linalg/shaped/ShapedVector.html" title="class in mitiv.linalg.shaped">ShapedVector</a></code></dd>
+<dt><span class="strong">Returns:</span></dt><dd>A clone of the vector.</dd></dl>
+</li>
+</ul>
+<a name="assign(mitiv.array.ShapedArray)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>assign</h4>
+<pre>public&nbsp;void&nbsp;assign(<a href="../../../mitiv/array/ShapedArray.html" title="interface in mitiv.array">ShapedArray</a>&nbsp;arr)</pre>
+<div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../mitiv/linalg/shaped/ShapedVector.html#assign(mitiv.array.ShapedArray)">ShapedVector</a></code></strong></div>
+<div class="block">Assign the elements of a shaped vector form those of an array.
+ 
+ <p>
+ The shape of the array must match that of the vector. Type
+ conversion is automatically performed and the copy is optimized
+ if the array and the vector already share the same contents.
+ </p></div>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="../../../mitiv/linalg/shaped/ShapedVector.html#assign(mitiv.array.ShapedArray)">assign</a></code>&nbsp;in class&nbsp;<code><a href="../../../mitiv/linalg/shaped/ShapedVector.html" title="class in mitiv.linalg.shaped">ShapedVector</a></code></dd>
+<dt><span class="strong">Parameters:</span></dt><dd><code>arr</code> - - The input array.</dd></dl>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<!-- ========= END OF CLASS DATA ========= -->
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<div class="bottomNav"><a name="navbar_bottom">
+<!--   -->
+</a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+<li><a href="../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>PREV CLASS</li>
+<li><a href="../../../mitiv/linalg/shaped/DoubleShapedVectorSpace.html" title="class in mitiv.linalg.shaped"><span class="strong">NEXT CLASS</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../index.html?mitiv/linalg/shaped/DoubleShapedVector.html" target="_top">FRAMES</a></li>
+<li><a href="DoubleShapedVector.html" target="_top">NO FRAMES</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_bottom");
+  if(window==top) {
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
+  }
+  //-->
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>SUMMARY:&nbsp;</li>
+<li>NESTED&nbsp;|&nbsp;</li>
+<li><a href="#field_summary">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_summary">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">METHOD</a></li>
+</ul>
+<ul class="subNavList">
+<li>DETAIL:&nbsp;</li>
+<li><a href="#field_detail">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_detail">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">METHOD</a></li>
+</ul>
+</div>
+<a name="skip-navbar_bottom">
+<!--   -->
+</a></div>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+</body>
+</html>
