@@ -102,6 +102,8 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
     /** Gradient at X0. */
     protected Vector g0 = null;
 
+    protected Vector tmp = null;
+
     /**
      * The (anti-)search direction.
      * 
@@ -262,15 +264,8 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
              * and take the first step along the search direction. */
             if (H.mp >= 1 || H.rule == InverseHessianApproximation.BY_USER) {
                 alpha = 1.0;
-            } else if (0.0 < epsilon && epsilon < 1.0) {
-                double xnorm = x.norm2();
-                if (xnorm > 0.0) {
-                    alpha = (xnorm/gnorm)*epsilon;
-                } else {
-                    alpha = 1.0/gnorm;
-                }
             } else {
-                alpha = 1.0/gnorm;
+                alpha = initialStep(x0, p);
             }
             double amin, amax;
             x.axpby(1.0, x0, -alpha, p);
@@ -281,9 +276,43 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             } else {
                 /* Project the first guess and set line search bounds to only
                  * do backtracking. */
-                projector.projectVariables(x, x);
-                p.axpby(1.0, x0, -1.0, x);
-                dg0 = -p.dot(g0);
+                if (tmp == null) {
+                    tmp = x.getOwner().create();
+                }
+                //for (;;) {
+                //    tmp.axpby(1.0, x0, -1.0, x);
+                //    projector.projectVariables(x, x);
+                //    dg0 = -tmp.dot(g0);
+                //    if (dg0 < 0.0) break; // FIXME: tolerance?
+                //    if (dg0 == 0.0) {
+                //        return schedule(OptimTask.FINAL_X);
+                //    }
+                //    alpha *= 0.5;
+                //    x.axpby(1.0, x0, -alpha, p);
+                //}
+                while (true) {
+                    projector.projectVariables(x, x);
+                    tmp.axpby(1.0, x0, -1.0, x);
+                    dg0 = -tmp.dot(g0);
+                    if (dg0 < 0.0) break; // FIXME: tolerance?
+                    if (dg0 == 0.0 && H.mp < 1) {
+                        return schedule(OptimTask.FINAL_X);
+                    }
+                    if (H.mp >= 1) {
+                        /* Restart the LBFGS recursion and loop to use H0 to compute
+                         * an initial search direction. */
+                        H.reset();
+                        ++restarts;
+                        H.apply(g, p);
+                        pnorm = p.norm2();
+                        // FIXME: check p.g0
+                        alpha = initialStep(x0, p);
+                    } else {
+                        alpha *= 0.5;
+                    }
+                    x.axpby(1.0, x0, -alpha, p);
+                }
+                p.copyFrom(tmp);
                 alpha = 1.0;
                 amin = stpmin;
                 amax = 1.0;
@@ -300,6 +329,17 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             return task;
 
         }
+    }
+
+    protected double initialStep(Vector x, Vector d) {
+        double dnorm = d.norm2();
+        if (0.0 < epsilon && epsilon < 1.0) {
+            double xnorm = x.norm2();
+            if (xnorm > 0.0) {
+                return (xnorm/dnorm)*epsilon;
+            }
+        }
+        return 1.0/dnorm;
     }
 
     /**
