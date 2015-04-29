@@ -708,7 +708,7 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
                             + ng + " gradient calls");
                     break;
                 } else {
-                    System.err.println("error/warning: " + task);
+                    System.err.println("TiPi: NonLinearConjugateGradient, error/warning: " + task);
                     break;
                 }
                 task = minimizer.iterate(x, fx, gx);

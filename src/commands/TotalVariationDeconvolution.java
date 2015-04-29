@@ -568,7 +568,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                     break;
                 }
             } else {
-                System.err.println("error/warning: " + task);
+                System.err.println("TiPi: TotalVariationDeconvolution, error/warning: " + task);
                 break;
             }
             if (synchronizer != null) {
