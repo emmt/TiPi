@@ -29,17 +29,15 @@ import mitiv.array.ArrayFactory;
 import mitiv.array.DoubleArray;
 import mitiv.base.Shape;
 import mitiv.cost.QuadraticCost;
-import mitiv.deconv.ConvolutionOperator;
-import mitiv.exception.IncorrectSpaceException;
+import mitiv.deconv.WeightedConvolutionOperator;
 import mitiv.invpb.ReconstructionJob;
 import mitiv.invpb.ReconstructionSynchronizer;
 import mitiv.invpb.ReconstructionViewer;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.LinearOperator;
-import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
-import mitiv.linalg.shaped.RealComplexFFT;
+import mitiv.linalg.shaped.ShapedLinearOperator;
 import mitiv.optim.ArmijoLineSearch;
 import mitiv.optim.BoundProjector;
 import mitiv.optim.LBFGS;
@@ -77,7 +75,7 @@ public class PSF_Estimation implements ReconstructionJob {
     private double[] synchronizedParameters = {0.0, 0.0};
     private boolean[] change = {false, false};
     private String[] synchronizedParameterNames = {"Regularization Level", "Relaxation Threshold"};
-    private double[] weights = null;
+    private DoubleArray weights = null;
 
     public static final int DEFOCUS = 1;
     public static final int ALPHA = 2;
@@ -92,6 +90,10 @@ public class PSF_Estimation implements ReconstructionJob {
     }
     public void deleteSynchronizer() {
         synchronizer = null;
+    }
+    
+    public void enablePositivity(Boolean positivity) {
+    	setLowerBound(positivity ? 0.0 : Double.NEGATIVE_INFINITY);
     }
     // FIXME: names should be part of the synchronizer...
     public String getSynchronizedParameterName(int i) {
@@ -114,7 +116,8 @@ public class PSF_Estimation implements ReconstructionJob {
         if (data == null) {
             fatal("Input data not specified.");
         }
-        Shape shape = data.getShape();
+        Shape dataShape = data.getShape();
+        Shape xShape = x.getShape();
         int rank = data.getRank();
 
         // Check the PSF.
@@ -125,7 +128,7 @@ public class PSF_Estimation implements ReconstructionJob {
             fatal("PSF must have same rank as data.");
         }
         for (int k = 0; k < rank; ++k) {
-            if (psf.getDimension(k) != shape.dimension(k)) {
+            if (psf.getDimension(k) != dataShape.dimension(k)) {
                 fatal("The dimensions of the PSF must match those of the input image.");
             }
         }
@@ -140,36 +143,25 @@ public class PSF_Estimation implements ReconstructionJob {
             }
         }
 
-        //DoubleShapedVectorSpace xSpace = new DoubleShapedVectorSpace(x.getDimension(0));
-        DoubleShapedVectorSpace xSpace = x.getSpace();
+        //DoubleShapedVectorSpace xSpace = x.getSpace();
         // Initialize a vector space and populate it with workspace vectors.
-        DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
-        RealComplexFFT FFT = new RealComplexFFT(space);
+        //DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
+        
+        DoubleShapedVectorSpace xSpace = x.getSpace();		//xSpace
+        DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(dataShape);	//space
+        
         LinearOperator W = null;
-        if (weights != null) {
-            // FIXME: for now the weights are stored as a simple Java vector.
-            if (weights.length != data.getNumber()) {
-                throw new IllegalArgumentException("Error weights and input data size don't match");
-            }
-            W = new LinearOperator(space) {
-                @Override
-                protected void privApply(Vector src, Vector dst, int job)
-                        throws IncorrectSpaceException {
-                    double[] inp = ((DoubleShapedVector)src).getData();
-                    double[] out = ((DoubleShapedVector)dst).getData();
-                    int number = src.getNumber();
-                    for (int i = 0; i < number; ++i) {
-                        out[i] = inp[i]*weights[i];
-                    }
-                }
-            };
-        }
-        double[] tmp = psf.flatten();
         DoubleShapedVector y = space.wrap(data.flatten());
-        DoubleShapedVector h = space.wrap(tmp);
+        result = ArrayFactory.wrap(x.getData(), xShape);
+ 
+        // Build convolution operator.
+        ShapedLinearOperator H = null;
 
-        result = ArrayFactory.wrap(x.getData(), x.getShape());
-        ConvolutionOperator H = new ConvolutionOperator(FFT, h);
+        WeightedConvolutionOperator A = WeightedConvolutionOperator.build(space);
+        A.setPSF(psf);
+        A.setWeights(weights);
+        H = A;
+
         if (debug) {
             System.out.println("Vector space initialization complete.");
         }
@@ -216,16 +208,16 @@ public class PSF_Estimation implements ReconstructionJob {
             lineSearch = new ArmijoLineSearch(0.5, 0.1);
             if (bounded == 1) {
                 /* Only a lower bound has been specified. */
-                projector = new SimpleLowerBound(space, lowerBound);
+                projector = new SimpleLowerBound(xSpace, lowerBound);
             } else if (bounded == 2) {
                 /* Only an upper bound has been specified. */
-                projector = new SimpleUpperBound(space, upperBound);
+                projector = new SimpleUpperBound(xSpace, upperBound);
             } else {
                 /* Both a lower and an upper bounds have been specified. */
-                projector = new SimpleBounds(space, lowerBound, upperBound);
+                projector = new SimpleBounds(xSpace, lowerBound, upperBound);
             }
             int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
-            vmlmb = new VMLMB(space, projector, m, lineSearch);
+            vmlmb = new VMLMB(xSpace, projector, m, lineSearch);
             vmlmb.setAbsoluteTolerance(gatol);
             vmlmb.setRelativeTolerance(grtol);
             minimizer = vmlmb;
@@ -309,7 +301,7 @@ public class PSF_Estimation implements ReconstructionJob {
                     break;
                 }
             } else {
-                System.err.println("error/warning: " + task);
+                System.err.println("TiPi: PSF_Estimation, error/warning: " + task);
                 break;
             }
             if (synchronizer != null) {
@@ -400,6 +392,7 @@ public class PSF_Estimation implements ReconstructionJob {
     public double getRelativeTolerance() {
         return grtol;
     }
+    //the same effect with preMade value is enablePositivity()
     public void setLowerBound(double value) {
         lowerBound = value;
     }
@@ -412,7 +405,7 @@ public class PSF_Estimation implements ReconstructionJob {
     public void start(){
         run = true;
     }
-    public void setWeight(double[] W){
+    public void setWeight(DoubleArray W){
         this.weights = W;
     }
     public ReconstructionViewer getViewer() {
