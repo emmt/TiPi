@@ -33,14 +33,13 @@ import mitiv.linalg.VectorSpace;
 
 /**
  * Implement limited memory quasi-Newton approximation of the inverse Hessian.
- * 
- * The approximation of the inverse of Hessian is based on BFGS
- * (Broyden, Fletcher, Goldfarb & Shanno) updates using the 2-loop recursive
- * algorithm of Strang (described by Nocedal, 1980) combined with a
- * preconditioner (initial approximation of the inverse Hessian) or
- * automatic scalings (along the ideas of Gilbert & Lemaréchal (1989); and
- * Shanno).
- * 
+ *
+ * The approximation of the inverse of Hessian is based on BFGS (Broyden,
+ * Fletcher, Goldfarb & Shanno) updates using the 2-loop recursive algorithm of
+ * Strang (described by Nocedal, 1980) combined with a preconditioner (initial
+ * approximation of the inverse Hessian) or automatic scalings (along the ideas
+ * of Gilbert & Lemaréchal (1989); and Shanno).
+ *
  * @author Éric Thiébaut.
  *
  */
@@ -50,30 +49,26 @@ public class LBFGSOperator extends LinearOperator {
      * and MARK is the index of the oldest one.  Therefore:
      *    (MARK + MP)%M  is the newest saved pair (if MP > 0)
      */
-    protected Vector[] s;    // to store variable changes (steps)
-    protected Vector[] y;    // to store gradient changes
-    protected final int m;   // maximum number of saved pairs
-    protected int mp;        // actual number of saved pairs
-    protected int mark;      // index of oldest saved pair
+    protected Vector[] s; // to store variable changes (steps)
+    protected Vector[] y; // to store gradient changes
+    protected final int m; // maximum number of saved pairs
+    protected int mp; // actual number of saved pairs
+    protected int mark; // number of successful updates
     protected double rho[];
-    protected double epsilon; // threshold to accept descent direction
-    protected double gamma;   // scaling parameter for H0
+    protected double gamma; // scaling parameter for H0
     protected double beta[];
-    protected LinearOperator H0; // crude approximation of inverse Hessian (preconditioner)
+    protected LinearOperator H0; // crude approximation of inverse Hessian
+    // (preconditioner)
     protected InverseHessianApproximation rule;
     private Vector tmp; // temporary vector for the apply() method
 
     /**
-     * Create a new rank-one linear operator.
-     * 
-     * A rank-one operator is A = u.v' thus:
-     * 
-     * A.x = (v'.x) u = <v|x> u
-     * 
-     * @param u
-     *            the left vector
-     * @param v
-     *            the right vector
+     * Create a limited memory BFGS operator without preconditioner.
+     *
+     * @param space
+     *            - The vector space to operate on.
+     * @param m
+     *            - The number of previous updates to memorize.
      */
     public LBFGSOperator(VectorSpace space, int m) {
         super(space);
@@ -85,19 +80,24 @@ public class LBFGSOperator extends LinearOperator {
 
     /**
      * Create a limited memory BFGS operator with a preconditioner.
-     * 
+     *
      * The LBFGS operator just stores a reference to the preconditioner
      * {@code H0} and does not assume that the preconditioner is a constant
-     * operator.  It is therefore possible for the caller to adjust the
-     * preconditioner at every iteration.  The LBFGS operator will have
-     * the same input and output spaces as the preconditioner and can be
-     * thought as a refined version of {@code H0}.
-     * 
-     * @param H0 - The preconditioner.
-     * @param m - The number of previous updates to memorize.
+     * operator. It is therefore possible for the caller to adjust the
+     * preconditioner at every iteration. The LBFGS operator will have the same
+     * input and output spaces as the preconditioner and can be thought as a
+     * refined version of {@code H0}.
+     *
+     * @param H0
+     *            - The preconditioner.
+     * @param m
+     *            - The number of previous updates to memorize.
      */
     public LBFGSOperator(LinearOperator H0, int m) {
-        super(H0.getInputSpace(), H0.getOutputSpace());
+        super(H0.getInputSpace());
+        if (! H0.isEndomorphism()) {
+            throw new IncorrectSpaceException("Preconditioner must be an endomorphism");
+        }
         this.m = m;
         this.H0 = H0;
         rule = InverseHessianApproximation.NONE;
@@ -115,28 +115,28 @@ public class LBFGSOperator extends LinearOperator {
         beta = new double[m];
         rho = new double[m];
         mp = 0;
-        mark = -1;
+        mark = 0;
         gamma = 1.0;
     }
 
     /**
      * Reset the operator.
-     * 
+     *
      * Forget all memorized pairs.
      */
     public void reset() {
         mp = 0;
-        //mark = -1; // FIXME: check this!!!
-        gamma = 1.0;
     }
 
     /**
      * Set the scaling of the initial approximation of the inverse Hessian.
-     * 
-     * The best scaling strategy is probably {@link #InverseHessianApproximation.BY_SY_OVER_YY}
-     * when no preconditioner {@code H0} is provided.
      *
-     * @param id - The strategy to use.
+     * The best scaling strategy is probably
+     * {@link #InverseHessianApproximation.BY_SY_OVER_YY} when no preconditioner {@code H0} is
+     * provided.
+     *
+     * @param id
+     *            - The strategy to use.
      */
     public void setScaling(InverseHessianApproximation value) {
         rule = value;
@@ -144,6 +144,7 @@ public class LBFGSOperator extends LinearOperator {
 
     /**
      * Get the current scaling strategy.
+     *
      * @return The identifier of the current strategy.
      */
     public InverseHessianApproximation getScaling() {
@@ -152,13 +153,16 @@ public class LBFGSOperator extends LinearOperator {
 
     /**
      * Set the scaling parameter.
-     * 
+     *
      * This automatically set the scaling strategy to {@link #USER_SCALING}.
-     * @param value - The value of gamma.  Must be strictly positive.
+     *
+     * @param value
+     *            - The value of gamma. Must be strictly positive.
      */
     public void setScale(double value) {
         if (value <= 0.0) {
-            throw new IllegalArgumentException("scale factor must be strictly positive");
+            throw new IllegalArgumentException(
+                    "scale factor must be strictly positive");
         }
         gamma = value;
         rule = InverseHessianApproximation.BY_USER;
@@ -166,42 +170,40 @@ public class LBFGSOperator extends LinearOperator {
 
     /**
      * Get the scaling parameter.
-     * @return The current value of {@code gamma}, the scaling parameter of
-     * the initial approximation of the inverse Hessian (that is the
-     * preconditioner {@code H0}, or the identity if no preconditioner is
-     * given).
+     *
+     * @return The current value of {@code gamma}, the scaling parameter of the
+     *         initial approximation of the inverse Hessian (that is the
+     *         preconditioner {@code H0}, or the identity if no preconditioner
+     *         is given).
      */
     public double getScale() {
         return gamma;
     }
 
-    public double getUpdateThrehold() {
-        return epsilon;
-    }
-
-    public void setUpdateThrehold(double value) {
-        if (value < 0.0 || value >= 1.0) {
-            throw new IllegalArgumentException("update threshold must be non-negative and strictly less than one");
-        }
-        epsilon = value;
-    }
-
     /**
      * Get slot index of a saved pair of variables and gradient differences.
      *
-     * The offset {@code k} must be greater or equal {@code 1 - mp};
-     * {@code slot(0)} is the last saved pair (newest one), {@code slot(-1)}
-     * is the previous pair, ..., {@code slot(1 - mp)} is the oldest saved
-     * pair.   Offset can also be positive, for instance, {@code slot(1)} is
-     * the index of the slot just after the last saved one, that is the next
-     * position of the mark.
-     * 
-     * @param k - The offset with respect to the last saved pair.
-     * @return The index of {@code k}-th slot relative to the last saved pair.
-     * 
+     * The offset {@code k} must be between {@code 0} and {@code mp}
+     * (inclusive); {@code slot(0)} is the index of the slot just after the last
+     * saved one, that is the one which will be used for the next update;
+     * {@code slot(1)} is the last saved pair (newest one), {@code slot(2)} is
+     * the previous pair, ..., {@code slot(mp)} is the oldest saved pair.
+     *
+     * In principle, {@code k} in the range {@code 1} to {@code mp} (inclusive)
+     * is used to apply the operator; while {@code k = 0} is only used to update
+     * the operator.
+     *
+     * @param k
+     *            - The offset.
+     * @return The index of {@code k}-th slot relative to the current iteration.
+     *
      */
     protected int slot(int k) {
-        return (m + mark + k)%m;
+        if (k < 0 || k > mp) {
+            throw new IndexOutOfBoundsException(
+                    "BFGS slot index is out of bounds");
+        }
+        return (mark - k) % m;
     }
 
     protected Vector s(int k) {
@@ -226,20 +228,18 @@ public class LBFGSOperator extends LinearOperator {
         } else {
             /* With a preconditioner, a scratch vector is needed. */
             if (this.tmp == null) {
-                this.tmp =  inputSpace.create();
+                this.tmp = inputSpace.create();
             }
             tmp = this.tmp;
         }
 
         /* First loop of the recursion (from the newest saved pair to the
          * oldest one). */
-        final int newest = 0;
-        final int oldest = 1 - mp;
         tmp.copyFrom(src);
-        for (int k = newest; k >= oldest; --k) {
+        for (int k = 1; k <= mp; ++k) {
             int j = slot(k);
             if (rho[j] > 0.0) {
-                beta[j] = rho[j]*tmp.dot(s[j]);
+                beta[j] = rho[j] * tmp.dot(s[j]);
                 tmp.axpby(1.0, tmp, -beta[j], y[j]);
             } else {
                 beta[j] = 0.0;
@@ -256,10 +256,10 @@ public class LBFGSOperator extends LinearOperator {
 
         /* Second loop of the recursion (from the oldest saved pair to the
          * newest one). */
-        for (int k = oldest; k <= newest; ++k) {
+        for (int k = mp; k >= 1; --k) {
             int j = slot(k);
             if (rho[j] > 0.0) {
-                double phi = rho[j]*dst.dot(y[j]);
+                double phi = rho[j] * dst.dot(y[j]);
                 dst.axpby(1.0, dst, beta[j] - phi, s[j]);
             }
         }
@@ -279,10 +279,15 @@ public class LBFGSOperator extends LinearOperator {
     /**
      * Update LBFGS operator with a new pair of variables and gradient
      * differences.
-     * @param x1 - The new variables.
-     * @param x0 - The previous variables.
-     * @param g1 - The gradient at {@code x1}.
-     * @param g0 - The gradient at {@code x0}.
+     *
+     * @param x1
+     *            - The new variables.
+     * @param x0
+     *            - The previous variables.
+     * @param g1
+     *            - The gradient at {@code x1}.
+     * @param g0
+     *            - The gradient at {@code x0}.
      * @throws IncorrectSpaceException
      */
     public void update(Vector x1, Vector x0, Vector g1, Vector g0)
@@ -291,32 +296,36 @@ public class LBFGSOperator extends LinearOperator {
          * just after the mark (which is the index of the last saved
          * pair or -1 if none).
          */
-        int j = slot(1);
+        int j = slot(0);
         s[j].axpby(1.0, x1, -1.0, x0);
-        double snorm = s[j].norm2();
         y[j].axpby(1.0, g1, -1.0, g0);
-        double ynorm = y[j].norm2();
 
         /* Compute RHO[j] and GAMMA.  If the update formula for GAMMA does
          * not yield a strictly positive value, the strategy is to keep the
          * previous value. */
         double sty = s[j].dot(y[j]);
-        if (sty <= epsilon*snorm*ynorm) {
-            /* This pair will be skipped. */
+        if (sty <= 0.0) {
+            /* This pair will be skipped.  This may however indicate a problem,
+             * see Nocedal & Wright "Numerical Optimization", section 8.1,
+             * p. 201 (1999). */
             rho[j] = 0.0;
         } else {
             /* Compute RHO[j] and GAMMA. */
             rho[j] = 1.0/sty;
             if (rule == InverseHessianApproximation.BY_STY_OVER_YTY
-                    || (rule == InverseHessianApproximation.BY_INITIAL_STY_OVER_YTY && (mp == 0 || gamma == 1.0))) {
+                    || (rule == InverseHessianApproximation.BY_INITIAL_STY_OVER_YTY && mark == 0)) {
+                double ynorm = y[j].norm2();
                 gamma = (sty/ynorm)/ynorm;
             } else if (rule == InverseHessianApproximation.BY_STS_OVER_STY
-                    || (rule == InverseHessianApproximation.BY_INITIAL_STS_OVER_STY && (mp == 0 || gamma == 1.0))) {
+                    || (rule == InverseHessianApproximation.BY_INITIAL_STS_OVER_STY && mark == 0)) {
+                double snorm = s[j].norm2();
                 gamma = (snorm/sty)*snorm;
             }
             /* Update the mark and the number of saved pairs. */
-            mark = j;
-            mp = Math.min(mp + 1, m);
+            ++mark;
+            if (mp < m) {
+                ++mp;
+            }
         }
     }
 
