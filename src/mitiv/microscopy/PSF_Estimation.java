@@ -91,9 +91,9 @@ public class PSF_Estimation implements ReconstructionJob {
     public void deleteSynchronizer() {
         synchronizer = null;
     }
-    
+
     public void enablePositivity(Boolean positivity) {
-    	setLowerBound(positivity ? 0.0 : Double.NEGATIVE_INFINITY);
+        setLowerBound(positivity ? 0.0 : Double.NEGATIVE_INFINITY);
     }
     // FIXME: names should be part of the synchronizer...
     public String getSynchronizedParameterName(int i) {
@@ -146,14 +146,14 @@ public class PSF_Estimation implements ReconstructionJob {
         //DoubleShapedVectorSpace xSpace = x.getSpace();
         // Initialize a vector space and populate it with workspace vectors.
         //DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
-        
+
         DoubleShapedVectorSpace xSpace = x.getSpace();		//xSpace
         DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(dataShape);	//space
-        
+
         LinearOperator W = null;
         DoubleShapedVector y = space.wrap(data.flatten());
         result = ArrayFactory.wrap(x.getData(), xShape);
- 
+
         // Build convolution operator.
         ShapedLinearOperator H = null;
 
@@ -221,8 +221,7 @@ public class PSF_Estimation implements ReconstructionJob {
             vmlmb.setAbsoluteTolerance(gatol);
             vmlmb.setRelativeTolerance(grtol);
             minimizer = vmlmb;
-            projector.projectGradient(x, x);
-
+            projector.projectVariables(x);
         }
 
         if (debug) {
