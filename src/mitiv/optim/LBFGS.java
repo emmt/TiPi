@@ -37,12 +37,12 @@ import mitiv.linalg.VectorSpace;
  * optimization with Broyden-Fletcher-Goldfarb-Shanno (BFGS) updates using
  * Strang's two-loop recursive formula (Nocedal, 1980).
  * </p>
- * 
+ *
  * <p>
  * Combined with a Moré & Thuente (1984) line search, the implemented method is
  * similar to VMLM (Nocedal, 1980) or L-BFGS (Liu & Nocedal, 1989) algorithms.
  * </p>
- * 
+ *
  * <h3>References</h3>
  *  <ul>
  *  <li>Nocedal, J. "<i>Updating Quasi-Newton Matrices with Limited Storage</i>,"
@@ -83,9 +83,6 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
     /** Norm or the initial gradient. */
     protected double ginit;
 
-    /** The norm of the search direction. */
-    protected double pnorm;
-
     /** Lower relative step bound. */
     protected double stpmin = 1e-20;
 
@@ -114,7 +111,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
     /**
      * The (anti-)search direction.
-     * 
+     *
      * <p>
      * An iterate is computed as: x = x0 - alpha*p with alpha > 0.
      * </p>
@@ -129,10 +126,6 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
     /** Euclidean norm of the gradient at the last accepted step. */
     protected double gnorm = 0.0;
-
-    /** Euclidean norm of the gradient at X0. */
-    protected  double g0norm = 0.0;
-
 
     public LBFGS(VectorSpace vsp, int m, LineSearch ls) {
         this(new LBFGSOperator(vsp, m), ls);
@@ -184,8 +177,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             if (evaluations > 1) {
                 /* A line search is in progress.  Compute directional
                  * derivative and check whether line search has converged. */
-                double pg = p.dot(g);
-                LineSearchStatus status = lnsrch.iterate(alpha, f, -pg);
+                LineSearchStatus status = lnsrch.iterate(alpha, f, -p.dot(g));
                 switch (status) {
                 case SEARCH:
                     return nextStep(x);
@@ -208,27 +200,28 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
         case NEW_X:
 
-            if (evaluations > 1) {
+            if (iterations >= 1) {
                 /* Update the LBFGS matrix. */
                 H.update(x, x0, g, g0);
             }
 
         case FINAL_X:
 
-            /* Compute a search direction, possibly after updating the LBFGS
-             * matrix.  We take care of checking whether D = -P is a
-             * sufficient descent direction.  As shown by Zoutendijk, this is
-             * true if: cos(theta) = -(D/|D|)'.(G/|G|) >= DELTA > 0
-             * where G is the gradient. */
+            /* Compute a anti-search direction P.  We take care of checking
+             * whether D = -P is a sufficient descent direction.  As shown by
+             * Zoutendijk, this is true if: -(D/|D|)'.(G/|G|) >= DELTA > 0
+             * where G is the gradient.  Below, R = DELTA*|D|*|G|.
+             * See Nocedal & Wright, "Numerical Optimization", section 3.2,
+             * p. 44 (1999). */
             while (true) {
                 H.apply(g, p);
-                pnorm = p.norm2(); // FIXME: in some cases, can be just GNORM*GAMMA
-                double pg = p.dot(g);
-                if (pg >= delta*pnorm*gnorm) {
-                    /* Accept P (respectively D = -P) as a sufficient ascent
-                     * (respectively descent) direction and set the directional
-                     * derivative. */
-                    dg0 = -pg;
+                dg0 = -p.dot(g);
+                double r = (delta > 0.0 ? delta*gnorm*p.norm2() : 0.0);
+                if (r > 0.0 ? (dg0 <= -r) : (dg0 < 0.0)) {
+                    /* Sufficient descent condition holds.  Estimate the
+                     * length of the first step and break to proceed with
+                     * first iterate along the new direction. */
+                    alpha = initialStep(x, gnorm);
                     break;
                 }
                 if (H.mp < 1) {
@@ -246,33 +239,23 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             /* Save current variables X0, gradient G0 and function value F0. */
             if (saveMemory) {
                 /* Use the slot just after the mark to store X0 and G0. */
-                x0 = H.s(1);
-                g0 = H.y(1);
-                H.mp = Math.min(H.mp,  H.m - 1);
+                x0 = H.s(0);
+                g0 = H.y(0);
+                if (H.mp == H.m) {
+                    --H.mp;
+                }
             }
             x0.copyFrom(x);
             g0.copyFrom(g);
-            g0norm = gnorm;
             f0 = f;
 
-            /* Estimate the length of the first step, start the line search
-             * and take the first step along the search direction. */
-            if (H.mp >= 1 || H.rule == InverseHessianApproximation.BY_USER) {
-                alpha = 1.0;
-            } else if (0.0 < epsilon && epsilon < 1.0) {
-                double xnorm = x.norm2();
-                if (xnorm > 0.0) {
-                    alpha = (xnorm/gnorm)*epsilon;
-                } else {
-                    alpha = 1.0/gnorm;
-                }
-            } else {
-                alpha = 1.0/gnorm;
-            }
+            /* Start the line search. */
             LineSearchStatus status = lnsrch.start(f0, dg0, alpha, stpmin*alpha, stpmax*alpha);
             if (status != LineSearchStatus.SEARCH) {
                 return lineSearchFailure(status);
             }
+
+            /* Take the first step along the search direction. */
             return nextStep(x);
 
         default:
@@ -282,6 +265,19 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
         }
 
+    }
+
+    protected double initialStep(Vector x, double dnorm) {
+        if (H.mp >= 1 || H.rule == InverseHessianApproximation.BY_USER) {
+            return 1.0;
+        }
+        if (0.0 < epsilon && epsilon < 1.0) {
+            double xnorm = x.norm2();
+            if (xnorm > 0.0) {
+                return (xnorm/dnorm)*epsilon;
+            }
+        }
+        return 1.0/dnorm;
     }
 
     /** Build the new step to try as: x = x0 - alpha*p. */
@@ -331,7 +327,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
     /**
      * Query the gradient threshold for the convergence criterion.
-     * 
+     *
      * The convergence of the optimization method is achieved when the
      * Euclidean norm of the gradient at a new iterate is less or equal
      * the threshold:
