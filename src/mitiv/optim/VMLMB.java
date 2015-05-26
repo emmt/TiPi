@@ -176,7 +176,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             /* Caller has computed the function value and the gradient at the
              * current point. */
             if (projector != null) {
-                projector.projectGradient(x, g, g);
+                projector.projectVariables(x);
             }
             ++evaluations;
             if (evaluations > 1) {
