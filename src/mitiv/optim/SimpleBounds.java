@@ -69,13 +69,11 @@ public class SimpleBounds extends BoundProjector {
         this.upperBound = upperBound;
     }
 
-    public double getUpperBound()
-    {
+    public double getUpperBound() {
         return upperBound;
     }
 
-    public double getLowerBound()
-    {
+    public double getLowerBound() {
         return lowerBound;
     }
 
@@ -152,7 +150,7 @@ public class SimpleBounds extends BoundProjector {
                         if (d[j] < zero) {
                             /* Variable will increase. */
                             if (x[j] < xmax) {
-                                /* Variable is unbinded. */
+                                /* Variable is unbound. */
                                 dp[j] = d[j];
                                 if (xmax == Float.POSITIVE_INFINITY) {
                                     amax = Float.POSITIVE_INFINITY;
@@ -166,13 +164,13 @@ public class SimpleBounds extends BoundProjector {
                                     }
                                 }
                             } else {
-                                /* Variable is binded. */
+                                /* Variable is bound. */
                                 dp[j] = zero;
                             }
                         } else if (d[j] > zero) {
                             /* Variable will decrease. */
                             if (x[j] > xmin) {
-                                /* Variable is unbinded. */
+                                /* Variable is unbound. */
                                 dp[j] = d[j];
                                 if (xmin == Float.NEGATIVE_INFINITY) {
                                     amax = Float.POSITIVE_INFINITY;
@@ -186,7 +184,7 @@ public class SimpleBounds extends BoundProjector {
                                     }
                                 }
                             } else {
-                                /* Variable is binded. */
+                                /* Variable is bound. */
                                 dp[j] = zero;
                             }
                         } else {
@@ -200,7 +198,7 @@ public class SimpleBounds extends BoundProjector {
                         if (d[j] > zero) {
                             /* Variable will increase. */
                             if (x[j] < xmax) {
-                                /* Variable is unbinded. */
+                                /* Variable is unbound. */
                                 dp[j] = d[j];
                                 if (xmax == Float.POSITIVE_INFINITY) {
                                     amax = Float.POSITIVE_INFINITY;
@@ -214,13 +212,13 @@ public class SimpleBounds extends BoundProjector {
                                     }
                                 }
                             } else {
-                                /* Variable is binded. */
+                                /* Variable is bound. */
                                 dp[j] = zero;
                             }
                         } else if (d[j] < zero) {
                             /* Variable will decrease. */
                             if (x[j] > xmin) {
-                                /* Variable is unbinded. */
+                                /* Variable is unbound. */
                                 dp[j] = d[j];
                                 if (xmin == Float.NEGATIVE_INFINITY) {
                                     amax = Float.POSITIVE_INFINITY;
@@ -234,7 +232,7 @@ public class SimpleBounds extends BoundProjector {
                                     }
                                 }
                             } else {
-                                /* Variable is binded. */
+                                /* Variable is bound. */
                                 dp[j] = zero;
                             }
                         } else {
@@ -294,7 +292,7 @@ public class SimpleBounds extends BoundProjector {
                         if (d[j] < zero) {
                             /* Variable will increase. */
                             if (x[j] < xmax) {
-                                /* Variable is unbinded. */
+                                /* Variable is unbound. */
                                 dp[j] = d[j];
                                 if (xmax == Double.POSITIVE_INFINITY) {
                                     amax = Double.POSITIVE_INFINITY;
@@ -308,13 +306,13 @@ public class SimpleBounds extends BoundProjector {
                                     }
                                 }
                             } else {
-                                /* Variable is binded. */
+                                /* Variable is bound. */
                                 dp[j] = zero;
                             }
                         } else if (d[j] > zero) {
                             /* Variable will decrease. */
                             if (x[j] > xmin) {
-                                /* Variable is unbinded. */
+                                /* Variable is unbound. */
                                 dp[j] = d[j];
                                 if (xmin == Double.NEGATIVE_INFINITY) {
                                     amax = Double.POSITIVE_INFINITY;
@@ -328,7 +326,7 @@ public class SimpleBounds extends BoundProjector {
                                     }
                                 }
                             } else {
-                                /* Variable is binded. */
+                                /* Variable is bound. */
                                 dp[j] = zero;
                             }
                         } else {
@@ -342,7 +340,7 @@ public class SimpleBounds extends BoundProjector {
                         if (d[j] > zero) {
                             /* Variable will increase. */
                             if (x[j] < xmax) {
-                                /* Variable is unbinded. */
+                                /* Variable is unbound. */
                                 dp[j] = d[j];
                                 if (xmax == Double.POSITIVE_INFINITY) {
                                     amax = Double.POSITIVE_INFINITY;
@@ -356,13 +354,13 @@ public class SimpleBounds extends BoundProjector {
                                     }
                                 }
                             } else {
-                                /* Variable is binded. */
+                                /* Variable is bound. */
                                 dp[j] = zero;
                             }
                         } else if (d[j] < zero) {
                             /* Variable will decrease. */
                             if (x[j] > xmin) {
-                                /* Variable is unbinded. */
+                                /* Variable is unbound. */
                                 dp[j] = d[j];
                                 if (xmin == Double.NEGATIVE_INFINITY) {
                                     amax = Double.POSITIVE_INFINITY;
@@ -376,7 +374,7 @@ public class SimpleBounds extends BoundProjector {
                                     }
                                 }
                             } else {
-                                /* Variable is binded. */
+                                /* Variable is bound. */
                                 dp[j] = zero;
                             }
                         } else {
