@@ -108,7 +108,7 @@ public abstract class BoundProjector extends ConvexSetProjector {
      * it is guaranteed to be called with checked arguments.  The input and
      * output vectors can be the same.
      * </p>
-     * @param x      - The variables (in principle they should be feasible).
+     * @param x      - The variables (they belongs to the feasible space).
      * @param d      - The input direction to be projected.
      * @param ascent - If true `d` is an ascent direction, otherwise
      *                 `d` is a descent direction.
