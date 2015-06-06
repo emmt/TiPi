@@ -32,7 +32,7 @@ import mitiv.linalg.VectorSpace;
 /**
  * Multivariate non-linear optimization with simple bound constraints by
  * VMLMB/BLMVM method.
- * 
+ *
  * <p>There are some differences compared to {@link LBFGS}, the unconstrained
  * version of the algorithm:
  * <ol>
@@ -44,7 +44,7 @@ import mitiv.linalg.VectorSpace;
  *     test (<i>e.g.</i> first Wolfe condition).</li>
  * </ol>
  * </p>
- * 
+ *
  * @author Éric Thiébaut.
  *
  */
@@ -106,7 +106,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
 
     /**
      * The (anti-)search direction.
-     * 
+     *
      * <p>
      * An iterate is computed as: x = x0 - alpha*p with alpha > 0.
      * </p>
@@ -176,7 +176,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             /* Caller has computed the function value and the gradient at the
              * current point. */
             if (projector != null) {
-                projector.projectGradient(x, g, g);
+                projector.projectDirection(x, g, true, g);
             }
             ++evaluations;
             if (evaluations > 1) {
@@ -251,9 +251,11 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             /* Save current variables X0, gradient G0 and function value F0. */
             if (saveMemory) {
                 /* Use the slot just after the mark to store X0 and G0. */
-                x0 = H.s(1);
-                g0 = H.y(1);
-                H.mp = Math.min(H.mp,  H.m - 1);
+                x0 = H.s(0);
+                g0 = H.y(0);
+                if (H.mp == H.m) {
+                    --H.mp;
+                }
             }
             x0.copyFrom(x);
             g0.copyFrom(g);
@@ -290,6 +292,12 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                 //    alpha *= 0.5;
                 //    x.axpby(1.0, x0, -alpha, p);
                 //}
+                /* Compute a anti-search direction P.  We take care of checking
+                 * whether D = -P is a sufficient descent direction.  As shown by
+                 * Zoutendijk, this is true if: -(D/|D|)'.(G/|G|) >= DELTA > 0
+                 * where G is the gradient.  Below, R = DELTA*|D|*|G|.
+                 * See Nocedal & Wright, "Numerical Optimization", section 3.2,
+                 * p. 44 (1999). */
                 while (true) {
                     projector.projectVariables(x, x);
                     tmp.axpby(1.0, x0, -1.0, x);
@@ -382,7 +390,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
 
     /**
      * Query the gradient threshold for the convergence criterion.
-     * 
+     *
      * The convergence of the optimization method is achieved when the
      * Euclidean norm of the gradient at a new iterate is less or equal
      * the threshold:
