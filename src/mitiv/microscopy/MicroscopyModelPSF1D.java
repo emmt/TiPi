@@ -843,6 +843,15 @@ public class MicroscopyModelPSF1D
     public double[] getRho() {
         return rho;
     }
+    
+    public double getLambda() {
+        return lambda;
+    }
+    
+    public double getNi() {
+        return ni;
+    }
+
 
     public double[] getPhi() {
         return phi;
