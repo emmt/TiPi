@@ -869,6 +869,11 @@ public class MicroscopyModelPSF1D
         return phase_coefs;
     }
 
+    public double[] getDefocusMultiplyByLambda() {
+        double[] defocus = {lambda_ni*lambda, deltaX*lambda, deltaY*lambda};
+        return defocus;
+    }
+    
     public double[] getDefocus() {
         double[] defocus = {lambda_ni, deltaX, deltaY};
         return defocus;
