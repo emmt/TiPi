@@ -53,7 +53,6 @@ import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
 import mitiv.linalg.shaped.ShapedLinearOperator;
-import mitiv.optim.ArmijoLineSearch;
 import mitiv.optim.BLMVM;
 import mitiv.optim.BoundProjector;
 import mitiv.optim.LBFGS;
@@ -65,7 +64,6 @@ import mitiv.optim.ReverseCommunicationOptimizer;
 import mitiv.optim.SimpleBounds;
 import mitiv.optim.SimpleLowerBound;
 import mitiv.optim.SimpleUpperBound;
-import mitiv.optim.VMLMB;
 import mitiv.utils.FFTUtils;
 import mitiv.utils.Timer;
 
@@ -78,6 +76,9 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
 
     @Option(name = "--output", aliases = {"-o"}, usage = "Name of output image.", metaVar = "OUTPUT")
     private String outName = "output.mda";
+
+    @Option(name = "--init", aliases = {"-i"}, usage = "Name of initial image.", metaVar = "INIT")
+    private String initName = null;
 
     @Option(name = "--eta", aliases = {"-e"}, usage = "Mean data error.", metaVar = "ETA")
     private double eta = 1.0;
@@ -313,6 +314,9 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         // Read the blurred image and the PSF.
         job.data = loadData(inputName);
         job.psf = loadData(psfName);
+        if (job.initName != null) {
+            job.result = loadData(job.initName);
+        }
 
         job.deconvolve(job.paddingMethod);
         try {
@@ -494,7 +498,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         timer.start();
         LineSearch lineSearch = null;
         LBFGS lbfgs = null;
-        VMLMB vmlmb = null;
+        //VMLMB vmlmb = null;
         BLMVM blmvm = null;
         NonLinearConjugateGradient nlcg = null;
         BoundProjector projector = null;
@@ -522,7 +526,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             }
         } else {
             /* Some bounds have been specified. */
-            lineSearch = new ArmijoLineSearch(0.5, 1e-4);
+            //lineSearch = new ArmijoLineSearch(0.5, 1e-4);
             if (bounded == 1) {
                 /* Only a lower bound has been specified. */
                 projector = new SimpleLowerBound(resultSpace, lowerBound);
@@ -574,7 +578,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                     break;
                 }
             } else {
-                System.err.println("TiPi: TotalVariationDeconvolution, error/warning: " + task);
+                System.err.println("TiPi: TotalVariationDeconvolution, error/warning: " + minimizer.getErrorMessage());
                 break;
             }
             if (synchronizer != null) {
