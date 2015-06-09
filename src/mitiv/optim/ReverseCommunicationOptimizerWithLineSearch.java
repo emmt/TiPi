@@ -33,7 +33,7 @@ ReverseCommunicationOptimizer {
     protected LineSearch lnsrch;
 
     @Override
-    public String getMessage() {
+    public String getErrorMessage() {
         switch (reason) {
         case NO_PROBLEMS:
             return "No problems";

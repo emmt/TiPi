@@ -375,11 +375,6 @@ public class BLMVM extends ReverseCommunicationOptimizer {
         return (a1 <= a2 ? a1 : a2);
     }
 
-    @Override
-    public String getMessage() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }
 
 /*

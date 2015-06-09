@@ -29,22 +29,22 @@ import mitiv.linalg.Vector;
 
 /**
  * Interface for multivariate optimization methods with reverse communication.
- * 
+ *
  * The typical usage of reverse communication optimization methods is as follows:
  * <pre>
  *   // Define the vector space to which belong the variables.
  *   VectorSpace space = new ...;
- * 
+ *
  *   // Create the optimizer and configure it.
  *   ReverseCommunicationOptimizer optimizer = new ...;
- * 
+ *
  *   // Allocate storage for the variables and the gradient.
  *   Vector x = space.create();
  *   Vector gx = space.create();
- * 
+ *
  *   // Choose initial variables.
  *   x.fill(0.0);
- * 
+ *
  *   // Loop to optimize.
  *   int eval = 0;
  *   int iter = 0;
@@ -72,7 +72,7 @@ import mitiv.linalg.Vector;
  *       }
  *       task = optimizer.iterate(x, fx, gx);
  *    }
- * 
+ *
  *    // On normal exit, X contains the solution (or at least the best
  *    // solution so far).
  * </pre>
@@ -89,6 +89,10 @@ public abstract class ReverseCommunicationOptimizer {
 
     /** Reason of failure. */
     protected int reason = NO_PROBLEMS;
+
+    /** Line search status (for error messages). */
+    protected LineSearchStatus lineSearchStatus = null;
+
 
     public static final int NO_PROBLEMS = 0;
     public static final int BAD_PRECONDITIONER = 1; /* preconditioner is not positive definite */
@@ -118,7 +122,7 @@ public abstract class ReverseCommunicationOptimizer {
 
     /**
      * Proceed with next iteration.
-     * 
+     *
      * @param x  - The current set of variables.
      * @param fx - The value of the function at {@code x}.
      * @param gx - The value of the gradient at {@code x}.
@@ -167,13 +171,27 @@ public abstract class ReverseCommunicationOptimizer {
      * @return A textual description of the reason of the abnormal
      *         termination.
      */
-    public abstract String getMessage();
+    public String getErrorMessage() {
+        String msg = new String();
+        if (reason == NO_PROBLEMS) {
+            msg = "no problem";
+        } else if (reason == BAD_PRECONDITIONER) {
+            msg = "preconditioner is not positive definite";
+        } else if (reason == LNSRCH_WARNING) {
+            msg = "warning in line search: " + lineSearchStatus.getDescription();
+        } else if (reason == LNSRCH_ERROR) {
+            msg = "error in line search: " + lineSearchStatus.getDescription();;
+        } else {
+            msg = "unknown problem!";
+        }
+        return msg;
+    }
 
     /**
      * Get the code corresponding to the reason of the abnormal termination.
      * @return A numerical code corresponding to the reason of the abnormal
      *         termination.
-     * @see {@link #getMessage}();
+     * @see {@link #getErrorMessage}();
      */
     public final int getReason() {
         return reason;
@@ -181,13 +199,15 @@ public abstract class ReverseCommunicationOptimizer {
 
     /** Set next pending task (not a failure). */
     protected final OptimTask schedule(OptimTask task) {
+        this.lineSearchStatus = null;
         this.reason = NO_PROBLEMS;
         this.task = task;
         return task;
     }
 
-    /** Set task so as to report a failure. */
+    /** Set task so as to report a failure (not related to line search). */
     protected final OptimTask failure(int reason) {
+        this.lineSearchStatus = null;
         this.reason = reason;
         this.task = OptimTask.ERROR;
         return this.task;
@@ -195,6 +215,7 @@ public abstract class ReverseCommunicationOptimizer {
 
     /** Set task so as to report a line search failure. */
     protected final OptimTask lineSearchFailure(LineSearchStatus status) {
+        lineSearchStatus = status;
         if (status.isWarning()) {
             reason = LNSRCH_WARNING;
             task = OptimTask.WARNING;
