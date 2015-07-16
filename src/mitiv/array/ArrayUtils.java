@@ -25,23 +25,6 @@
 
 package mitiv.array;
 
-import mitiv.array.Array1D;
-import mitiv.array.Array2D;
-import mitiv.array.Array3D;
-import mitiv.array.Array4D;
-import mitiv.array.Array5D;
-import mitiv.array.Array6D;
-import mitiv.array.Array7D;
-import mitiv.array.Array8D;
-import mitiv.array.Array9D;
-import mitiv.array.ArrayFactory;
-import mitiv.array.ByteArray;
-import mitiv.array.DoubleArray;
-import mitiv.array.FloatArray;
-import mitiv.array.IntArray;
-import mitiv.array.LongArray;
-import mitiv.array.ShapedArray;
-import mitiv.array.ShortArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
 import mitiv.base.indexing.Range;
@@ -754,7 +737,7 @@ public class ArrayUtils {
             if (outDim < inpDim) {
                 throw new NonConformableArrayException("Zero-padding cannot shrink dimensions.");
             }
-            int first = outDim/2 - inpDim/2;
+            int first = (outDim/2) - (inpDim/2);
             int last = first + inpDim - 1;
             range[k] = new Range(first, last, 1);
         }
