@@ -52,17 +52,17 @@ import mitiv.utils.Timer;
  * </p>
  * with <b>F</b> the FFT (Fast Fourier Transform) operator, <b><i>h</i></b> the
  * PSF (Point Spread Function) and <b>R</b> a linear operator which selects a
- * a sub-region of the output of the convolution and weights it.  The * superscript
+ * sub-region of the output of the convolution and weights it.  The * superscript
  * denotes the adjoint of the operator (complex transpose in this specific case) and
  * diag(<i><b>v</i></b>) is a diagonal operator whose diagonal elements are those of
  * the vector <i><b>v</i></b>.
  * </p>
- * 
+ *
  * <h3>Usage in deconvolution problems</h3>
  * <p>
  * Introducing the simple cyclic convolution operator:
  * </p><p align="center">
- * <b>H</b> = <b>F</b><sup>*</sup>.diag(<b>F</b>.<b><i>h</i></b>).<b>F</b>,
+ * <b>H</b> = <b>F</b><sup>-1</sup>.diag(<b>F</b>.<b><i>h</i></b>).<b>F</b>,
  * </p>
  * the model of the data <b><i>y</i></b> writes:
  * </p><p align="center">
@@ -70,7 +70,7 @@ import mitiv.utils.Timer;
  * = <b>S</b>.<b>H</b>.<b><i>x</i></b> + <i>noise</i>,
  * </p><p>
  * with <b>M</b> = <b>S</b>.<b>H</b> the linear model operator and <b>S</b> a
- * <i>selection</i> operator which extracts form the output of the cyclic convolution
+ * <i>selection</i> operator which extracts from the output of the cyclic convolution
  * the region corresponding to the measurements.  This selection is typically needed
  * when, to avoid border artifacts, the reconstructed object is larger than the size
  * of the observed region.
@@ -84,11 +84,11 @@ import mitiv.utils.Timer;
  * <b>W</b>&nbsp;=&nbsp;diag(<b><i>w</i></b>) and the likelihood penalty can be out
  * in the form:
  * </p><p align="center">
- * f(<b><i>x</i></b>) = &#8214;<b>R</b>.<b><i>x</i></b> - <b><i>z</i></b>&#8214;<sup>2</sup>,
+ * f(<b><i>x</i></b>) = &#8214;<b>A</b>.<b><i>x</i></b> - <b><i>z</i></b>&#8214;<sup>2</sup>,
  * </p><p>
  * with:
  * </p><p align="center">
- * <b>R</b> = diag(<b><i>u</i></b>).<b>S</b>,<br>
+ * <b>R</b> = (1/N) diag(<b><i>u</i></b>).<b>S</b>,<br>
  * <b><i>z</i></b> = diag(<b><i>u</i></b>).<b><i>y</i></b>,
  * </p><p>
  * where the elements of <b><i>u</i></b> are the square roots of the
@@ -100,7 +100,7 @@ import mitiv.utils.Timer;
  * </p><p>
  * <i>i.e.</i>, such that diag(<b><i>w</i></b>)&nbsp;=&nbsp;diag(<b><i>u</i></b>)<sup>2</sup>.
  * </p>
- * 
+ *
  * <h3>Summary</h3>
  * <p>
  * The weighted convolution operator <b>A</b> is defined by the PSF
@@ -113,10 +113,10 @@ import mitiv.utils.Timer;
  * <pre>
  * // Create operator:
  * WeightedConvolutionOperator A = WeightedConvolutionOperator.build(inputSpace, outputSpace, first);
- * 
+ *
  * // Specify the PSF (mandatory):
  * A.setPSF(h);
- * 
+ *
  * // Optionally specify the weights (actually the square roots of the statistical weights):
  * A.setWeights(u);
  *
@@ -264,18 +264,27 @@ public abstract class WeightedConvolutionOperator extends ShapedLinearOperator {
      * @param arr - The PSF in the form of a shaped array.  It is
      *              automatically converted to the correct data type,
      *              zero-padded and rolled.  It is assumed to be
-     *              geometrically centered.
+     *              geometrically centered (i.e. the center of the PSF
+     *              is at offset dim/2 along each dimension).
      */
-    public abstract void setPSF(ShapedArray arr);
+    public void setPSF(ShapedArray arr) {
+        Shape shape = arr.getShape();
+        int rank = shape.rank();
+        int[] cen = new int[rank];
+        for (int k = 0; k < rank; ++k) {
+            cen[k] = shape.dimension(k)/2;
+        }
+        setPSF(arr, cen);
+    }
 
     /**
      * Set the PSF of the operator with given center coordinates.
      * @param arr - The PSF in the form of a shaped array.  It is
      *              automatically converted to the correct data type,
      *              zero-padded and rolled.
-     * @param cen - The coordinates of the central element of the PSF.
+     * @param cen - The position of the central element of the PSF.
      *              There must be as many coordinates as the rank of
-     *              the PSF, each coordinate is the 0-based offset of
+     *              the PSF, each element is the 0-based offset of
      *              the center along the corresponding dimension.
      */
     public abstract void setPSF(ShapedArray arr, int[] cen);
@@ -405,20 +414,26 @@ public abstract class WeightedConvolutionOperator extends ShapedLinearOperator {
     }
 
     /**
-     * Check rank and dimensions.
-     * @return The offset of the output in the complex workspace.
+     * Check rank and input/output dimensions.
+     * @param rank         - The number of dimensions.
+     * @param inputShape   - The shape of input arrays.
+     * @param output Shape - The shape of output arrays (must be smaller or
+     *                       equal input shape for all dimensions).
+     * @param offset       - For each dimension, the offset in input array
+     *                       of the first element to copy in output array.
+     * @return The (univariate) offset of the output in the complex workspace.
      */
-    protected static int outputOffset(int rank, Shape inputShape, Shape outputShape, int[] first) {
+    protected static int outputOffset(int rank, Shape inputShape, Shape outputShape, int[] offset) {
         if (inputShape.rank() != rank) {
             throw new IllegalArgumentException("Bad rank for input space.");
         }
         if (outputShape.rank() != rank) {
             throw new IllegalArgumentException("Bad rank for output space.");
         }
-        if (first != null && first.length != rank) {
+        if (offset != null && offset.length != rank) {
             throw new IllegalArgumentException("Bad number of coordinates for the first position");
         }
-        int offset = 0;
+        int totalOffset = 0;
         int stride = 2; // stride1
         for (int k = 0; k < rank; ++k) {
             int inpDim = inputShape.dimension(k);
@@ -426,21 +441,20 @@ public abstract class WeightedConvolutionOperator extends ShapedLinearOperator {
             if (outDim > inpDim) {
                 throw new IllegalArgumentException("Output dimensions must be at most as large as input dimensions");
             }
-            int index;
-            if (first == null) {
-                index = (inpDim/2) - (outDim/2);
+            int thisOffset;
+            if (offset == null) {
+                thisOffset = (inpDim/2) - (outDim/2);
             } else {
-                index = first[k];
-                if (index < 0 || index + outDim > inpDim) {
+                thisOffset = offset[k];
+                if (thisOffset < 0 || thisOffset + outDim > inpDim) {
                     throw new IllegalArgumentException("Output region is outside bounds");
                 }
 
             }
-            offset += stride*index;
+            totalOffset += stride*thisOffset;
             stride *= inpDim;
         }
-
-        return offset;
+        return totalOffset;
     }
 
     /**

@@ -25,7 +25,6 @@
 
 package mitiv.deconv.impl;
 
-import mitiv.array.ArrayUtils;
 import mitiv.array.DoubleArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
@@ -99,13 +98,6 @@ public class ConvolutionDouble1D extends WeightedConvolutionOperator {
             throw new IncorrectSpaceException("PSF must belong to the input space of the operator.");
         }
         computeMTF(((DoubleShapedVector)vec).getData());
-    }
-
-    @Override
-    public void setPSF(ShapedArray arr) {
-        Shape shape = getInputSpace().getShape();
-        arr = ArrayUtils.roll(ArrayUtils.zeroPadding(arr.toDouble(), shape));
-        computeMTF(((DoubleArray)arr).flatten());
     }
 
     @Override
@@ -186,7 +178,7 @@ public class ConvolutionDouble1D extends WeightedConvolutionOperator {
     protected void privApply(Vector src, Vector dst, int job) {
         if (job != DIRECT && job != ADJOINT) {
             throw new NotImplementedException("For now we do not implement inverse convolution operations "+
-                    "(talk to Éric if you ignore the dangers of doing that!)");
+                    "(talk to a specialist if you ignore the dangers of doing that!)");
         }
         if (mtf == null) {
             throw new IllegalArgumentException("You must set the PSF or the MTF first.");
@@ -256,7 +248,9 @@ public class ConvolutionDouble1D extends WeightedConvolutionOperator {
         final double zero = 0;
         final double one = 1;
 
-        /* Zero-fill workspace. (FIXME: improve this part.) */
+        /* Zero-fill workspace. (FIXME: improve this part, it is not
+         * necessary to fill all parts, can be mixed with the next
+         * operation.) */
         for (int k = 0; k < number; ++k) {
             int real = k + k;
             int imag = real + 1;

@@ -25,7 +25,6 @@
 
 package mitiv.deconv.impl;
 
-import mitiv.array.ArrayUtils;
 import mitiv.array.DoubleArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
@@ -110,13 +109,6 @@ public class ConvolutionDouble3D extends WeightedConvolutionOperator {
     }
 
     @Override
-    public void setPSF(ShapedArray arr) {
-        Shape shape = getInputSpace().getShape();
-        arr = ArrayUtils.roll(ArrayUtils.zeroPadding(arr.toDouble(), shape));
-        computeMTF(((DoubleArray)arr).flatten());
-    }
-
-    @Override
     public void setPSF(ShapedArray arr, int[] cen) {
         arr = adjustPSF(arr.toDouble(), cen);
         computeMTF(((DoubleArray)arr).flatten());
@@ -194,7 +186,7 @@ public class ConvolutionDouble3D extends WeightedConvolutionOperator {
     protected void privApply(Vector src, Vector dst, int job) {
         if (job != DIRECT && job != ADJOINT) {
             throw new NotImplementedException("For now we do not implement inverse convolution operations "+
-                    "(talk to Éric if you ignore the dangers of doing that!)");
+                    "(talk to a specialist if you ignore the dangers of doing that!)");
         }
         if (mtf == null) {
             throw new IllegalArgumentException("You must set the PSF or the MTF first.");
@@ -247,8 +239,8 @@ public class ConvolutionDouble3D extends WeightedConvolutionOperator {
 
         /* Select and scale. */
         final double s = one/number;
+        int i = -1;
         if (w == null) {
-            int i = -1;
             for (int i3 = 0; i3 < dim3; ++i3) {
                 int j3 = offset + stride3*i3;
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -259,14 +251,13 @@ public class ConvolutionDouble3D extends WeightedConvolutionOperator {
                 }
             }
         } else {
-            int i = 0;
             for (int i3 = 0; i3 < dim3; ++i3) {
                 int j3 = offset + stride3*i3;
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     int j2 = j3 + stride2*i2;
                     for (int i1 = 0; i1 < dim1; ++i1) {
-                        y[i] = s*w[i]*z[j2 + stride1*i1];
                         ++i;
+                        y[i] = s*w[i]*z[j2 + stride1*i1];
                     }
                 }
             }
@@ -279,7 +270,9 @@ public class ConvolutionDouble3D extends WeightedConvolutionOperator {
         final double zero = 0;
         final double one = 1;
 
-        /* Zero-fill workspace. (FIXME: improve this part.) */
+        /* Zero-fill workspace. (FIXME: improve this part, it is not
+         * necessary to fill all parts, can be mixed with the next
+         * operation.) */
         for (int k = 0; k < number; ++k) {
             int real = k + k;
             int imag = real + 1;
@@ -289,8 +282,8 @@ public class ConvolutionDouble3D extends WeightedConvolutionOperator {
 
         /* Scale and expand. */
         final double s = one/number;
+        int i = -1;
         if (w == null) {
-            int i = -1;
             for (int i3 = 0; i3 < dim3; ++i3) {
                 int j3 = offset + stride3*i3;
                 for (int i2 = 0; i2 < dim2; ++i2) {
@@ -301,14 +294,13 @@ public class ConvolutionDouble3D extends WeightedConvolutionOperator {
                 }
             }
         } else {
-            int i = 0;
             for (int i3 = 0; i3 < dim3; ++i3) {
                 int j3 = offset + stride3*i3;
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     int j2 = j3 + stride2*i2;
                     for (int i1 = 0; i1 < dim1; ++i1) {
-                        z[j2 + stride1*i1] = s*w[i]*y[i];
                         ++i;
+                        z[j2 + stride1*i1] = s*w[i]*y[i];
                     }
                 }
             }
