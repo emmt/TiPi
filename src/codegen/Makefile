@@ -71,12 +71,16 @@ CONVOLUTION_OUTPUTS = $(foreach TYPE,$(CONVOLUTION_TYPES),$(foreach RANK,$(CONVO
 
 
 default:
+	@echo "No default target, try:"
+	@echo "     make all"
 
 all: all-array all-byte all-short all-int all-long all-float all-double \
      all-misc all-convolution
 
 clean:
 	rm -f *~
+
+.PHONY: default all clean
 
 #-----------------------------------------------------------------------------
 # Miscellaneaous
