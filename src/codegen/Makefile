@@ -96,7 +96,9 @@ clean:
 all-misc: $(MISC_OUTPUTS)
 
 Makefile: Makefile.x
+	$(RM) $@
 	$(CODGER) $< $@
+	chmod 444 $@
 
 $(ARRAY)ArrayFactory.java: ArrayFactory.javax
 	$(CODGER) -Dpackage=mitiv.array $< $@
@@ -130,7 +132,6 @@ $(CONVOLUTION_IMPL)ConvolutionFloat2D.java: ConvolutionTypeRank.javax common.jav
 	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionFloat2D -Drank=2 -Dtype=float $< $@
 $(CONVOLUTION_IMPL)ConvolutionFloat3D.java: ConvolutionTypeRank.javax common.javax
 	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionFloat3D -Drank=3 -Dtype=float $< $@
-
 $(CONVOLUTION_IMPL)ConvolutionDouble.java: ConvolutionType.javax common.javax
 	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionDouble -Dtype=double $< $@
 
@@ -150,7 +151,6 @@ $(CONVOLUTION_IMPL)WeightedConvolutionFloat2D.java: WeightedConvolutionTypeRank.
 	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolutionFloat2D -Drank=2 -Dtype=float $< $@
 $(CONVOLUTION_IMPL)WeightedConvolutionFloat3D.java: WeightedConvolutionTypeRank.javax common.javax
 	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolutionFloat3D -Drank=3 -Dtype=float $< $@
-
 $(CONVOLUTION_IMPL)WeightedConvolutionDouble.java: WeightedConvolutionType.javax common.javax
 	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolutionDouble -Dtype=double $< $@
 
