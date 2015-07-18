@@ -28,16 +28,13 @@ package mitiv.microscopy;
 import mitiv.array.ArrayFactory;
 import mitiv.array.DoubleArray;
 import mitiv.base.Shape;
-import mitiv.cost.QuadraticCost;
-import mitiv.deconv.WeightedConvolutionOperator;
+import mitiv.deconv.WeightedConvolutionCost;
 import mitiv.invpb.ReconstructionJob;
 import mitiv.invpb.ReconstructionSynchronizer;
 import mitiv.invpb.ReconstructionViewer;
 import mitiv.linalg.ArrayOps;
-import mitiv.linalg.LinearOperator;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
-import mitiv.linalg.shaped.ShapedLinearOperator;
 import mitiv.optim.ArmijoLineSearch;
 import mitiv.optim.BoundProjector;
 import mitiv.optim.LBFGS;
@@ -147,30 +144,23 @@ public class PSF_Estimation implements ReconstructionJob {
         // Initialize a vector space and populate it with workspace vectors.
         //DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
 
-        DoubleShapedVectorSpace xSpace = x.getSpace();		//xSpace
-        DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(dataShape);	//space
-
-        LinearOperator W = null;
-        DoubleShapedVector y = space.wrap(data.flatten());
+        DoubleShapedVectorSpace variableSpace = x.getSpace();
+        DoubleShapedVectorSpace dataSpace = new DoubleShapedVectorSpace(dataShape);
         result = ArrayFactory.wrap(x.getData(), xShape);
 
         // Build convolution operator.
-        ShapedLinearOperator H = null;
-
-        WeightedConvolutionOperator A = WeightedConvolutionOperator.build(space);
-        A.setPSF(psf);
-        A.setWeights(weights);
-        H = A;
+        WeightedConvolutionCost fdata = WeightedConvolutionCost.build(variableSpace, dataSpace);
+        fdata.setPSF(psf);
+        fdata.setWeightsAndData(weights, data);
 
         if (debug) {
             System.out.println("Vector space initialization complete.");
         }
 
         // Build the cost functions
-        QuadraticCost fdata = new QuadraticCost(H, y, W);
         //CompositeDifferentiableCostFunction cost = new CompositeDifferentiableCostFunction(1.0, fdata);
         fcost = 0.0;
-        gcost = space.create();
+        gcost = dataSpace.create();
         if (debug) {
             System.out.println("Cost function initialization complete.");
         }
@@ -192,13 +182,13 @@ public class PSF_Estimation implements ReconstructionJob {
             /* No bounds have been specified. */
             lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
             if (limitedMemorySize > 0) {
-                lbfgs = new LBFGS(xSpace, limitedMemorySize, lineSearch);
+                lbfgs = new LBFGS(variableSpace, limitedMemorySize, lineSearch);
                 lbfgs.setAbsoluteTolerance(gatol);
                 lbfgs.setRelativeTolerance(grtol);
                 minimizer = lbfgs;
             } else {
                 int method = NonLinearConjugateGradient.DEFAULT_METHOD;
-                nlcg = new NonLinearConjugateGradient(xSpace, method, lineSearch);
+                nlcg = new NonLinearConjugateGradient(variableSpace, method, lineSearch);
                 nlcg.setAbsoluteTolerance(gatol);
                 nlcg.setRelativeTolerance(grtol);
                 minimizer = nlcg;
@@ -208,16 +198,16 @@ public class PSF_Estimation implements ReconstructionJob {
             lineSearch = new ArmijoLineSearch(0.5, 0.1);
             if (bounded == 1) {
                 /* Only a lower bound has been specified. */
-                projector = new SimpleLowerBound(xSpace, lowerBound);
+                projector = new SimpleLowerBound(variableSpace, lowerBound);
             } else if (bounded == 2) {
                 /* Only an upper bound has been specified. */
-                projector = new SimpleUpperBound(xSpace, upperBound);
+                projector = new SimpleUpperBound(variableSpace, upperBound);
             } else {
                 /* Both a lower and an upper bounds have been specified. */
-                projector = new SimpleBounds(xSpace, lowerBound, upperBound);
+                projector = new SimpleBounds(variableSpace, lowerBound, upperBound);
             }
             int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
-            vmlmb = new VMLMB(xSpace, projector, m, lineSearch);
+            vmlmb = new VMLMB(variableSpace, projector, m, lineSearch);
             vmlmb.setAbsoluteTolerance(gatol);
             vmlmb.setRelativeTolerance(grtol);
             minimizer = vmlmb;
@@ -228,7 +218,7 @@ public class PSF_Estimation implements ReconstructionJob {
             System.out.println("Optimization method initialization complete.");
         }
 
-        DoubleShapedVector gX = xSpace.create();
+        DoubleShapedVector gX = variableSpace.create();
         // Launch the non linear conjugate gradient
         OptimTask task = minimizer.start();
         while (run) {
@@ -261,11 +251,11 @@ public class PSF_Estimation implements ReconstructionJob {
                     pupil.setRho(x.getData());
                 }
                 pupil.computePSF();
-                fcost = fdata.computeCostAndGradient(1.0, space.wrap(pupil.getPSF()), gcost, true);
+                fcost = fdata.computeCostAndGradient(1.0, dataSpace.wrap(pupil.getPSF()), gcost, true);
 
                 if(flag == DEFOCUS)
                 {
-                    gX = xSpace.wrap(pupil.apply_J_defocus(gcost.getData()));
+                    gX = variableSpace.wrap(pupil.apply_J_defocus(gcost.getData()));
                     if (debug) {
                         System.out.println("grd");
                         MathUtils.printArray(gX.getData());
@@ -273,7 +263,7 @@ public class PSF_Estimation implements ReconstructionJob {
                 }
                 else if (flag == ALPHA)
                 {
-                    gX = xSpace.wrap(pupil.apply_J_phi(gcost.getData()));
+                    gX = variableSpace.wrap(pupil.apply_J_phi(gcost.getData()));
                     if (debug) {
                         System.out.println("grd");
                         MathUtils.printArray(gX.getData());
@@ -281,7 +271,7 @@ public class PSF_Estimation implements ReconstructionJob {
                 }
                 else if(flag == BETA)
                 {
-                    gX = xSpace.wrap(pupil.apply_J_rho(gcost.getData()));
+                    gX = variableSpace.wrap(pupil.apply_J_rho(gcost.getData()));
                     if (debug) {
                         System.out.println("grd");
                         MathUtils.printArray(gX.getData());
