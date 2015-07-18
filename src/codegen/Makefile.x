@@ -75,6 +75,7 @@ TYPED_OUTPUTS = $(ARRAY)@TYPE@Array.java $(ARRAY)@TYPE@Scalar.java \
 MISC_OUTPUTS = $(ARRAY)ArrayFactory.java \
                $(ARRAY)ArrayUtils.java \
                $(BASE)Shape.java \
+               $(TOP)/cost/HyperbolicTotalVariation.java \
                $(TOP)/io/ColorModel.java \
                $(TOP)/io/DataFormat.java
 
@@ -109,11 +110,21 @@ SELECTED_ARRAY_INPUTS = SelectedArray.javax $(ARRAY_IMPL_INPUTS)
 CONVOLUTION_IMPL = $(TOP)/deconv/impl/
 CONVOLUTION_RANKS = 1 2 3
 CONVOLUTION_TYPES = Float Double
-CONVOLUTION_INPUTS = ConvolutionOperator.javax common.javax
-CONVOLUTION_OUTPUTS = $(foreach TYPE,$(CONVOLUTION_TYPES),$(foreach RANK,$(CONVOLUTION_RANKS),$(CONVOLUTION_IMPL)Convolution$(TYPE)$(RANK)D.java))
+CONVOLUTION_OUTPUTS = $(foreach TYPE, $(CONVOLUTION_TYPES), \
+                          $(CONVOLUTION_IMPL)Convolution$(TYPE).java) \
+                      $(foreach TYPE, $(CONVOLUTION_TYPES), \
+                          $(foreach RANK, $(CONVOLUTION_RANKS), \
+                              $(CONVOLUTION_IMPL)Convolution$(TYPE)$(RANK)D.java)) \
+                      $(foreach TYPE, $(CONVOLUTION_TYPES), \
+                          $(CONVOLUTION_IMPL)WeightedConvolution$(TYPE).java) \
+                      $(foreach TYPE, $(CONVOLUTION_TYPES), \
+                          $(foreach RANK, $(CONVOLUTION_RANKS), \
+                              $(CONVOLUTION_IMPL)WeightedConvolution$(TYPE)$(RANK)D.java))
 
 
 default:
+	@echo "No default target, try:"
+	@echo "     make all"
 
 all: all-array all-byte all-short all-int all-long all-float all-double \
      all-misc all-convolution
@@ -121,13 +132,17 @@ all: all-array all-byte all-short all-int all-long all-float all-double \
 clean:
 	rm -f *~
 
+.PHONY: default all clean
+
 #-----------------------------------------------------------------------------
 # Miscellaneaous
 
 all-misc: $(MISC_OUTPUTS)
 
 Makefile: Makefile.x
+	$(RM) $@
 	$(CODGER) $< $@
+	chmod 444 $@
 
 $(ARRAY)ArrayFactory.java: ArrayFactory.javax
 	$(CODGER) -Dpackage=mitiv.array $< $@
@@ -137,6 +152,9 @@ $(BASE)Shape.java: Shape.javax
 
 $(ARRAY)ArrayUtils.java: ArrayUtils.javax common.javax
 	$(CODGER) -Dpackage=mitiv.array $< $@
+
+$(TOP)/cost/HyperbolicTotalVariation.java: HyperbolicTotalVariation.javax
+	$(CODGER) -Dpackage=mitiv.cost $< $@
 
 $(TOP)/io/ColorModel.java: ColorModel.javax common.javax
 	$(CODGER) -Dpackage=mitiv.io $< $@
@@ -156,9 +174,28 @@ all-convolution: $(CONVOLUTION_OUTPUTS)
 //#     def Type = ${Type}
 //#     def TYPE = ${}{TYPE_${typeId}}
 //#     def TYPE = ${TYPE}
+$(CONVOLUTION_IMPL)Convolution${Type}.java: ConvolutionType.javax common.javax
+	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=Convolution${Type} -Dtype=${type} $< $@
+
 //#     for rank in 1:3
-$(CONVOLUTION_IMPL)Convolution${Type}${rank}D.java: $(CONVOLUTION_INPUTS)
+$(CONVOLUTION_IMPL)Convolution${Type}${rank}D.java: ConvolutionTypeRank.javax common.javax
 	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=Convolution${Type}${rank}D -Drank=${rank} -Dtype=${type} $< $@
+//#     end
+//# end
+
+//# for typeId in ${FLOAT} ${DOUBLE}
+//#     def type = ${}{type_${typeId}}
+//#     def type = ${type}
+//#     def Type = ${}{Type_${typeId}}
+//#     def Type = ${Type}
+//#     def TYPE = ${}{TYPE_${typeId}}
+//#     def TYPE = ${TYPE}
+$(CONVOLUTION_IMPL)WeightedConvolution${Type}.java: WeightedConvolutionType.javax common.javax
+	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolution${Type} -Dtype=${type} $< $@
+
+//#     for rank in 1:3
+$(CONVOLUTION_IMPL)WeightedConvolution${Type}${rank}D.java: WeightedConvolutionTypeRank.javax common.javax
+	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolution${Type}${rank}D -Drank=${rank} -Dtype=${type} $< $@
 //#     end
 //# end
 
