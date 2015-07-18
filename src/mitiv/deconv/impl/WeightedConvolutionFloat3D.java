@@ -26,7 +26,6 @@
 package mitiv.deconv.impl;
 
 import mitiv.array.ShapedArray;
-import mitiv.base.Shape;
 import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -87,34 +86,38 @@ public class WeightedConvolutionFloat3D
      */
     public WeightedConvolutionFloat3D(ShapedVectorSpace variableSpace,
             ShapedVectorSpace dataSpace, int[] dataOffset) {
-        /* Initialize super class and check rank and dimensions. */
+        /* Initialize super class and check rank and dimensions (element type
+           is checked by the super class constructor). */
         super(variableSpace, dataSpace);
-
-        Shape variableShape = variableSpace.getShape();
-        Shape dataShape = dataSpace.getShape();
-        number = (int)variableShape.number();
+        if (variableSpace.getRank() != 3) {
+            throw new IllegalArgumentException("Variable space is not 3D");
+        }
+        if (dataSpace.getRank() != 3) {
+            throw new IllegalArgumentException("Data space is not 3D");
+        }
+        number = (int)variableSpace.getNumber();
         scale = 1.0F/number;
-        dim1 = variableShape.dimension(0);
+        dim1 = variableSpace.getDimension(0);
         off1 = dataOffset[0];
-        end1 = off1 + dataShape.dimension(0);
+        end1 = off1 + dataSpace.getDimension(0);
         if (off1 < 0 || off1 >= dim1) {
             throw new IllegalArgumentException("Out of range offset along 1st dimension.");
         }
         if (end1 > dim1) {
             throw new IllegalArgumentException("Data (+ offset) beyond 1st dimension.");
         }
-        dim2 = variableShape.dimension(1);
+        dim2 = variableSpace.getDimension(1);
         off2 = dataOffset[1];
-        end2 = off2 + dataShape.dimension(1);
+        end2 = off2 + dataSpace.getDimension(1);
         if (off2 < 0 || off2 >= dim2) {
             throw new IllegalArgumentException("Out of range offset along 2nd dimension.");
         }
         if (end2 > dim2) {
             throw new IllegalArgumentException("Data (+ offset) beyond 2nd dimension.");
         }
-        dim3 = variableShape.dimension(2);
+        dim3 = variableSpace.getDimension(2);
         off3 = dataOffset[2];
-        end3 = off3 + dataShape.dimension(2);
+        end3 = off3 + dataSpace.getDimension(2);
         if (off3 < 0 || off3 >= dim3) {
             throw new IllegalArgumentException("Out of range offset along 3rd dimension.");
         }

@@ -182,69 +182,97 @@ implements DifferentiableCostFunction
     }
 
     public static WeightedConvolutionCost build(ShapedVectorSpace space) {
-        return build(space, space, null);
+        return build(space, space);
     }
 
     /**
-     * Build a weighted convolution cost function with centered output.
+     * Build a weighted convolution cost function with centered data.
      * <p>
-     * The returned object is not a valid operator until you set the
-     * point spread function (PSF) with one of the {@link #setPSF()} methods and,
-     * optionally, the weights with one of the {@link #setWeights()} methods.
-     * </p><p>
-     * The input space of the operator usually corresponds to the <i>object</i> (or
-     * parameters) space while the output space usually corresponds to the <i>data</i>.
-     * </p><p>
-     * The size of the output space must be smaller or equal that of the input
-     * space.  The rank of the output and input space must be the same and
-     * comparing the "<i>sizes</i>" involves a comparison between every dimension.
-     * If the shape of the output (data) space is smaller than that of the input
-     * (object) space, then the output is the central part of the result of the
-     * simple convolution.
-     * The factory {@link #build(ShapedVectorSpace, ShapedVectorSpace, int[])}
-     * can be used to select a different region for the output.
-     * </p><p>
-     * See {@link WeightedConvolutionCost}
-     * for a description of what exactly does this operator.
+     * The variables space of the operator usually corresponds to the
+     * <i>object</i> (denoted as <b><i>x</i></b> in
+     * {@link WeightedConvolutionCost}) while the data space usually corresponds
+     * to the <i>data</i> (denoted as <b><i>y</i></b> in
+     * {@link WeightedConvolutionCost}).
      * </p>
-     * @param variableSpace  - The variable space.
-     * @param dataSpace      - The data space.
+     * <p>
+     * The size of the data space must be smaller or equal that of the variables
+     * space which is also the input and output spaces of the cyclic
+     * convolution. The rank of the variables and data spaces must be the same
+     * and comparing their "<i>sizes</i>" involves a comparison for all
+     * dimensions. If the shape of the data space is smaller than that of the
+     * object space, then the central part of the result of the cyclic
+     * convolution is considered as the region corresponding to the data. The
+     * factory {@link #build(ShapedVectorSpace, ShapedVectorSpace, int[])} can
+     * be used to select a different region.
+     * </p>
+     * <p>
+     * The returned object is not a valid cost function until you set the point
+     * spread function (PSF) with one of the {@link #setPSF()} methods and the
+     * data and, optionally, the weights with one of the
+     * {@link #setWeightsAndData()} methods.
+     * </p>
+     * <p>
+     * See {@link WeightedConvolutionCost} for a detailed description of what is
+     * computed by this cost function.
+     * </p>
+     *
+     * @param variableSpace
+     *            - The variable space.
+     * @param dataSpace
+     *            - The data space.
      * @return An instance of the weighted convolution cost function.
      * @see {@link #build(ShapedVectorSpace, ShapedVectorSpace, int[])}
      */
     public static WeightedConvolutionCost build(ShapedVectorSpace variableSpace,
             ShapedVectorSpace dataSpace) {
-        return build(variableSpace, dataSpace, null);
+        /* Compute offsets (we take the least rank to avoid out of bound index exception
+         * although the subsequent call to the builder will fail if the ranks are not
+         * equal). */
+        int rank = Math.min(variableSpace.getRank(), dataSpace.getRank());
+        int[] dataOffset = new int[rank];
+        for (int k = 0; k < rank; ++k) {
+            dataOffset[k] = (variableSpace.getDimension(k)/2) - (dataSpace.getDimension(k)/2);
+        }
+        return build(variableSpace, dataSpace, dataOffset);
     }
 
     /**
      * Build a weighted convolution operator.
      * <p>
-     * This version of the factory to build a weighted convolution operator let you
-     * specify precisely the position of the region to select as the output of the
-     * operator (<i>e.g.</i> corresponding to the model of data).  The coordinates
-     * of the <i>first</i> element of the output with respect to the result of the
-     * simple convolution must be such that:
-     * <pre>0 <= first[k] <= inpDim[k] - outDim[k]</pre>where {@code inpDim}
-     * and {@code outDim} are the respective dimensions of the input and output spaces.
-     * If this does not hold (for all <i>k</i>), an {@link ArrayIndexOutOfBoundsException}
-     * is thrown.
-     * </p><p>
-     * See {@link #build(ShapedVectorSpace, ShapedVectorSpace)} for more details on
-     * the meaning of the input and output spaces and {@link WeightedConvolutionCost}
-     * for a description of what exactly does this operator.
+     * This version of the factory to build a weighted convolution cost function
+     * let you specify precisely the position of the region corresponding to the
+     * data in the result of the convolution. The offsets of this region must be
+     * such that:
+     *
+     * <pre>
+     * 0 &lt;= dataOffset[k] &lt;= variableDim[k] - dataDim[k]
+     * </pre>
+     *
+     * where {@code variableDim} and {@code dataDim} are the respective
+     * dimensions of the variables and data spaces. If this does not hold (for
+     * all <i>k</i>), an {@link ArrayIndexOutOfBoundsException} is thrown.
      * </p>
-     * @param variableSpace  - The input space of the operator.
-     * @param dataSpace - The output space of the operator.
-     * @param first       - The coordinates of the first element of the output
-     *                      in the result of the simple convolution.  It must
-     *                      have as many values as the rank of the input and output
-     *                      spaces of the operator.
-     * @return A weighted convolution operator.
+     * <p>
+     * See {@link #build(ShapedVectorSpace, ShapedVectorSpace)} for more details
+     * on the meaning of the variables and data spaces and
+     * {@link WeightedConvolutionCost} for a more general overview.
+     * </p>
+     *
+     * @param variableSpace
+     *            - The variables space.
+     * @param dataSpace
+     *            - The data space.
+     * @param dataOffset
+     *            - The relative position of the data within the output of the
+     *            convolution. It must have as many values as the rank of the
+     *            variables and data spaces of the operator. If this argument is
+     *            null the data is considered as approximately centered with
+     *            respect to the result of the convolution.
+     * @return A weighted convolution cost function.
      * @see {@link #build(ShapedVectorSpace, ShapedVectorSpace)}
      */
     public static WeightedConvolutionCost build(ShapedVectorSpace variableSpace,
-            ShapedVectorSpace dataSpace, int[] first) {
+            ShapedVectorSpace dataSpace, int[] dataOffset) {
         int type = variableSpace.getType();
         if (dataSpace.getType() != type) {
             throw new IllegalTypeException("Input and output spaces must have same element type.");
@@ -257,21 +285,21 @@ implements DifferentiableCostFunction
         case Traits.FLOAT:
             switch (rank) {
             case 1:
-                return new WeightedConvolutionFloat1D(variableSpace, dataSpace, first);
+                return new WeightedConvolutionFloat1D(variableSpace, dataSpace, dataOffset);
             case 2:
-                return new WeightedConvolutionFloat2D(variableSpace, dataSpace, first);
+                return new WeightedConvolutionFloat2D(variableSpace, dataSpace, dataOffset);
             case 3:
-                return new WeightedConvolutionFloat3D(variableSpace, dataSpace, first);
+                return new WeightedConvolutionFloat3D(variableSpace, dataSpace, dataOffset);
             }
             break;
         case Traits.DOUBLE:
             switch (rank) {
             case 1:
-                return new WeightedConvolutionDouble1D(variableSpace, dataSpace, first);
+                return new WeightedConvolutionDouble1D(variableSpace, dataSpace, dataOffset);
             case 2:
-                return new WeightedConvolutionDouble2D(variableSpace, dataSpace, first);
+                return new WeightedConvolutionDouble2D(variableSpace, dataSpace, dataOffset);
             case 3:
-                return new WeightedConvolutionDouble3D(variableSpace, dataSpace, first);
+                return new WeightedConvolutionDouble3D(variableSpace, dataSpace, dataOffset);
             }
             break;
         default:

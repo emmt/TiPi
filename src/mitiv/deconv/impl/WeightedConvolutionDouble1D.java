@@ -26,7 +26,6 @@
 package mitiv.deconv.impl;
 
 import mitiv.array.ShapedArray;
-import mitiv.base.Shape;
 import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -75,16 +74,20 @@ public class WeightedConvolutionDouble1D
      */
     public WeightedConvolutionDouble1D(ShapedVectorSpace variableSpace,
             ShapedVectorSpace dataSpace, int[] dataOffset) {
-        /* Initialize super class and check rank and dimensions. */
+        /* Initialize super class and check rank and dimensions (element type
+           is checked by the super class constructor). */
         super(variableSpace, dataSpace);
-
-        Shape variableShape = variableSpace.getShape();
-        Shape dataShape = dataSpace.getShape();
-        number = (int)variableShape.number();
+        if (variableSpace.getRank() != 1) {
+            throw new IllegalArgumentException("Variable space is not 1D");
+        }
+        if (dataSpace.getRank() != 1) {
+            throw new IllegalArgumentException("Data space is not 1D");
+        }
+        number = (int)variableSpace.getNumber();
         scale = 1.0/number;
-        dim1 = variableShape.dimension(0);
+        dim1 = variableSpace.getDimension(0);
         off1 = dataOffset[0];
-        end1 = off1 + dataShape.dimension(0);
+        end1 = off1 + dataSpace.getDimension(0);
         if (off1 < 0 || off1 >= dim1) {
             throw new IllegalArgumentException("Out of range offset along 1st dimension.");
         }
