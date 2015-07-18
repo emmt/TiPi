@@ -51,13 +51,13 @@ public abstract class WeightedConvolutionDouble
      * The following constructors make this class non instantiable, but still
      * let others inherit from this class.
      */
-    public WeightedConvolutionDouble(ShapedVectorSpace variableSpace,
+    public WeightedConvolutionDouble(ShapedVectorSpace objectSpace,
                         ShapedVectorSpace dataSpace)
     {
         /* Initialize super class and check types. */
-        super(variableSpace, dataSpace);
-        if (variableSpace.getType() != Traits.DOUBLE) {
-            throw new IllegalArgumentException("Variable space must be for double data type");
+        super(objectSpace, dataSpace);
+        if (objectSpace.getType() != Traits.DOUBLE) {
+            throw new IllegalArgumentException("Object space must be for double data type");
         }
         if (dataSpace.getType() != Traits.DOUBLE) {
             throw new IllegalArgumentException("Data space must be for double data type");

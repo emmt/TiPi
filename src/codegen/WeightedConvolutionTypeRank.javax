@@ -86,28 +86,30 @@ public class ${className}
     protected Convolution${Type}${rank}D cnvl = null;
 
     /**
-     * Create a new FFT-based convolution operator given the PSF.
+     * Create a new FFT-based weighted convolution cost function.
      *
-     * @param FFT - The Fast Fourier Transform operator.
-     * @param psf - The point spread function.
+     * @param objectSpace - The object space.
+     * @param dataSpace   - The data space.
+     * @param dataOffset  - The position of the data space relative
+     *                      to the object space.
      */
-    public ${className}(ShapedVectorSpace variableSpace,
+    public ${className}(ShapedVectorSpace objectSpace,
             ShapedVectorSpace dataSpace, int[] dataOffset) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
-        super(variableSpace, dataSpace);
-        if (variableSpace.getRank() != ${rank}) {
-            throw new IllegalArgumentException("Variable space is not ${rank}D");
+        super(objectSpace, dataSpace);
+        if (objectSpace.getRank() != ${rank}) {
+            throw new IllegalArgumentException("Object space is not ${rank}D");
         }
         if (dataSpace.getRank() != ${rank}) {
             throw new IllegalArgumentException("Data space is not ${rank}D");
         }
-        number = (int)variableSpace.getNumber();
+        number = (int)objectSpace.getNumber();
         scale = ${one}/number;
         //# for k in 1:${rank}
         //#     eval km1 = ${k} - 1
         //#     def  kth = ${}{nth_${k}}
-        dim${k} = variableSpace.getDimension(${km1});
+        dim${k} = objectSpace.getDimension(${km1});
         off${k} = dataOffset[${km1}];
         end${k} = off${k} + dataSpace.getDimension(${km1});
         if (off${k} < 0 || off${k} >= dim${k}) {
@@ -117,7 +119,7 @@ public class ${className}
             throw new IllegalArgumentException("Data (+ offset) beyond ${kth} dimension.");
         }
         //# end
-        cnvl = new Convolution${Type}${rank}D(variableSpace);
+        cnvl = new Convolution${Type}${rank}D(objectSpace);
     }
 
     @Override

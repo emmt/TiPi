@@ -89,7 +89,7 @@ import mitiv.utils.Timer;
  * a factory. A typical usage of the code is:
  * <pre>
  * // Create operator:
- * WeightedConvolutionCost cost = WeightedConvolutionCost.build(variableSpace, dataSpace);
+ * WeightedConvolutionCost cost = WeightedConvolutionCost.build(objectSpace, dataSpace);
  *
  * // Specify the PSF (mandatory):
  * cost.setPSF(h);
@@ -98,37 +98,43 @@ import mitiv.utils.Timer;
  * cost.setWeightsAndData(w, y);</pre>
  * where the arguments are:
  * <ul>
- *     <li>The vector space <b>variableSpace</b> of the variables
- *         <b><i>x</i></b>.</li>
- *     <li>The vector space <b>dataSpace</b> of the data
- *         <b><i>y</i></b>. The data space may be smaller than the
- *         variables space which involves zero padding (symbolically
- *         implemented by the operator <b>R</b>).  In our implementation,
- *         <b>R</b> is defined by the dimensions of the data space and the
- *         position of the first element to select in the result of the
- *         cyclic convolution <b>H</b> (thus we only consider
- *         <i>rectangular</i> output spaces).  By default, the data space
- *         (if smaller than the result of the convolution) is taken to be
- *         approximately the central part of the output of <b>H</b>.  It
- *         is possible to specify a different position by calling the build
- *         method with a list of offsets as additional argument.</li>
- *     <li>The PSF <b><i>h</i></b> is a shaped vector of the variables space
- *         or a shaped array (in the former case, the PSF must be appropriately
+ *
+ *     <li>The vector space <b>objectSpace</b> of the variables
+ *         <b><i>x</i></b> (the <i>object</i>).</li>
+ *
+ *     <li>The vector space <b>dataSpace</b> of the variables <b><i>y</i></b>
+ *         (the <i>data</i>).  The data space may be smaller than the object
+ *         space which involves zero padding (symbolically implemented by the
+ *         operator <b>R</b>).  In our implementation, <b>R</b> is defined by
+ *         the dimensions of the data space and the position of the first
+ *         element to select in the result of the cyclic convolution <b>H</b>
+ *         (thus we only consider <i>rectangular</i> output spaces).  By
+ *         default, the data space (if smaller than the result of the
+ *         convolution) is taken to be approximately the central part of the
+ *         output of <b>H</b>.  It is possible to specify a different position
+ *         by calling the build method with a list of offsets as additional
+ *         argument.</li>
+ *
+ *     <li>The PSF <b><i>h</i></b> is a shaped vector of the object space or a
+ *         shaped array (in the former case, the PSF must be appropriately
  *         centered, in the sense of the FFT; in the latter case, the shaped
- *         array is zero-padded and rolled for you; if the center of the PSF is
- *         not at the geometric center of the PSF array, you may specify its
- *         position).</li>
+ *         array is zero-padded and rolled for you; if the center of the PSF
+ *         is not at the geometric center of the PSF array, you may specify
+ *         its position).</li>
+
  *     <li>The data <b><i>y</i></b> is a shaped vector of the data space or a
  *         shaped array with the same dimensions as the those of the data
  *         space.</li>
+ *
  *     <li>The weights <b><i>w</i></b> can be unspecified (with
  *         <b><i>w</i></b>&nbsp;=&nbsp;<tt>null</tt>) which is the same as
  *         having all weights equal to 1; otherwise <b><i>w</i></b> must be
  *         the same kind of object as <b><i>y</i></b> (shaped array or shaped
- *         vector with the same dimensions) and all weights must be nonnegative.
- *         If weights are specified, the data are never used where the weights
- *         are equal to zero which is a consistent way to indicate missing
- *         data.</li>
+ *         vector with the same dimensions) and all weights must be
+ *         nonnegative.  If weights are specified, the data are never used
+ *         where the weights are equal to zero which is a consistent way to
+ *         indicate missing data.</li>
+ *
  * </ul>
  * </p>
  *
@@ -137,7 +143,7 @@ import mitiv.utils.Timer;
 public abstract class WeightedConvolutionCost
 implements DifferentiableCostFunction
 {
-    protected ShapedVectorSpace variableSpace;
+    protected ShapedVectorSpace objectSpace;
     protected ShapedVectorSpace dataSpace;
 
     /**
@@ -145,31 +151,31 @@ implements DifferentiableCostFunction
      * let others inherit from this class.  You must use the {@link #build()}
      * factory to build a convolution cost function.
      */
-    protected WeightedConvolutionCost(ShapedVectorSpace variableSpace,
+    protected WeightedConvolutionCost(ShapedVectorSpace objectSpace,
             ShapedVectorSpace dataSpace) {
-        this.variableSpace = variableSpace;
+        this.objectSpace = objectSpace;
         this.dataSpace = dataSpace;
     }
 
     /**
-     * Get the variable space of the cost function.
+     * Get the object space of the cost function.
      *
-     * @return The variable space of the cost function.
+     * @return The object space of the cost function.
      */
-    public VectorSpace getVariableSpace() {
-        return variableSpace;
+    public VectorSpace getObjectSpace() {
+        return objectSpace;
     }
 
     /**
      * Get the input space of the cost function.
      *
-     * The input space is the same as the variable space.
+     * The input space is the same as the object space.
      *
-     * @return The variable space of the cost function.
+     * @return The input space of the cost function.
      */
     @Override
     public VectorSpace getInputSpace() {
-        return variableSpace;
+        return objectSpace;
     }
 
     /**
@@ -188,16 +194,15 @@ implements DifferentiableCostFunction
     /**
      * Build a weighted convolution cost function with centered data.
      * <p>
-     * The variables space of the operator usually corresponds to the
-     * <i>object</i> (denoted as <b><i>x</i></b> in
-     * {@link WeightedConvolutionCost}) while the data space usually corresponds
-     * to the <i>data</i> (denoted as <b><i>y</i></b> in
-     * {@link WeightedConvolutionCost}).
+     * The object space of the operator corresponds to the variables denoted
+     * as <b><i>x</i></b> in {@link WeightedConvolutionCost}; while the data
+     * space corresponds to the variables denoted as <b><i>y</i></b> in
+     * {@link WeightedConvolutionCost}.
      * </p>
      * <p>
-     * The size of the data space must be smaller or equal that of the variables
+     * The size of the data space must be smaller or equal that of the object
      * space which is also the input and output spaces of the cyclic
-     * convolution. The rank of the variables and data spaces must be the same
+     * convolution. The rank of the object and data spaces must be the same
      * and comparing their "<i>sizes</i>" involves a comparison for all
      * dimensions. If the shape of the data space is smaller than that of the
      * object space, then the central part of the result of the cyclic
@@ -216,24 +221,24 @@ implements DifferentiableCostFunction
      * computed by this cost function.
      * </p>
      *
-     * @param variableSpace
-     *            - The variable space.
+     * @param objectSpace
+     *            - The object space.
      * @param dataSpace
      *            - The data space.
      * @return An instance of the weighted convolution cost function.
      * @see {@link #build(ShapedVectorSpace, ShapedVectorSpace, int[])}
      */
-    public static WeightedConvolutionCost build(ShapedVectorSpace variableSpace,
+    public static WeightedConvolutionCost build(ShapedVectorSpace objectSpace,
             ShapedVectorSpace dataSpace) {
         /* Compute offsets (we take the least rank to avoid out of bound index exception
          * although the subsequent call to the builder will fail if the ranks are not
          * equal). */
-        int rank = Math.min(variableSpace.getRank(), dataSpace.getRank());
+        int rank = Math.min(objectSpace.getRank(), dataSpace.getRank());
         int[] dataOffset = new int[rank];
         for (int k = 0; k < rank; ++k) {
-            dataOffset[k] = (variableSpace.getDimension(k)/2) - (dataSpace.getDimension(k)/2);
+            dataOffset[k] = (objectSpace.getDimension(k)/2) - (dataSpace.getDimension(k)/2);
         }
-        return build(variableSpace, dataSpace, dataOffset);
+        return build(objectSpace, dataSpace, dataOffset);
     }
 
     /**
@@ -245,37 +250,37 @@ implements DifferentiableCostFunction
      * such that:
      *
      * <pre>
-     * 0 &lt;= dataOffset[k] &lt;= variableDim[k] - dataDim[k]
+     * 0 &lt;= dataOffset[k] &lt;= objectDim[k] - dataDim[k]
      * </pre>
      *
-     * where {@code variableDim} and {@code dataDim} are the respective
-     * dimensions of the variables and data spaces. If this does not hold (for
+     * where {@code objectDim} and {@code dataDim} are the respective
+     * dimensions of the object and data spaces. If this does not hold (for
      * all <i>k</i>), an {@link ArrayIndexOutOfBoundsException} is thrown.
      * </p>
      * <p>
      * See {@link #build(ShapedVectorSpace, ShapedVectorSpace)} for more details
-     * on the meaning of the variables and data spaces and
+     * on the meaning of the object and data spaces and
      * {@link WeightedConvolutionCost} for a more general overview.
      * </p>
      *
-     * @param variableSpace
-     *            - The variables space.
+     * @param objectSpace
+     *            - The object space.
      * @param dataSpace
      *            - The data space.
      * @param dataOffset
      *            - The relative position of the data within the output of the
      *            convolution. It must have as many values as the rank of the
-     *            variables and data spaces of the operator.
+     *            object and data spaces of the operator.
      * @return A weighted convolution cost function.
      * @see {@link #build(ShapedVectorSpace, ShapedVectorSpace)}
      */
-    public static WeightedConvolutionCost build(ShapedVectorSpace variableSpace,
+    public static WeightedConvolutionCost build(ShapedVectorSpace objectSpace,
             ShapedVectorSpace dataSpace, int[] dataOffset) {
-        int type = variableSpace.getType();
+        int type = objectSpace.getType();
         if (dataSpace.getType() != type) {
             throw new IllegalTypeException("Input and output spaces must have same element type.");
         }
-        int rank = variableSpace.getRank();
+        int rank = objectSpace.getRank();
         if (dataSpace.getShape().rank() != rank) {
             throw new IllegalTypeException("Input and output spaces must have same rank.");
         }
@@ -283,21 +288,21 @@ implements DifferentiableCostFunction
         case Traits.FLOAT:
             switch (rank) {
             case 1:
-                return new WeightedConvolutionFloat1D(variableSpace, dataSpace, dataOffset);
+                return new WeightedConvolutionFloat1D(objectSpace, dataSpace, dataOffset);
             case 2:
-                return new WeightedConvolutionFloat2D(variableSpace, dataSpace, dataOffset);
+                return new WeightedConvolutionFloat2D(objectSpace, dataSpace, dataOffset);
             case 3:
-                return new WeightedConvolutionFloat3D(variableSpace, dataSpace, dataOffset);
+                return new WeightedConvolutionFloat3D(objectSpace, dataSpace, dataOffset);
             }
             break;
         case Traits.DOUBLE:
             switch (rank) {
             case 1:
-                return new WeightedConvolutionDouble1D(variableSpace, dataSpace, dataOffset);
+                return new WeightedConvolutionDouble1D(objectSpace, dataSpace, dataOffset);
             case 2:
-                return new WeightedConvolutionDouble2D(variableSpace, dataSpace, dataOffset);
+                return new WeightedConvolutionDouble2D(objectSpace, dataSpace, dataOffset);
             case 3:
-                return new WeightedConvolutionDouble3D(variableSpace, dataSpace, dataOffset);
+                return new WeightedConvolutionDouble3D(objectSpace, dataSpace, dataOffset);
             }
             break;
         default:
@@ -307,13 +312,13 @@ implements DifferentiableCostFunction
     }
 
     private final void checkObject(Vector x) {
-        if (! x.belongsTo(variableSpace)) {
+        if (! x.belongsTo(objectSpace)) {
             throw new IllegalArgumentException("Variables X does not belong to the object space.");
         }
     }
 
     private final void checkGradient(Vector gx) {
-        if (! gx.belongsTo(variableSpace)) {
+        if (! gx.belongsTo(objectSpace)) {
             throw new IllegalArgumentException("Gradient GX does not belong to the object space.");
         }
     }

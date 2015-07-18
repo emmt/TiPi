@@ -51,13 +51,13 @@ public abstract class WeightedConvolutionFloat
      * The following constructors make this class non instantiable, but still
      * let others inherit from this class.
      */
-    public WeightedConvolutionFloat(ShapedVectorSpace variableSpace,
+    public WeightedConvolutionFloat(ShapedVectorSpace objectSpace,
                         ShapedVectorSpace dataSpace)
     {
         /* Initialize super class and check types. */
-        super(variableSpace, dataSpace);
-        if (variableSpace.getType() != Traits.FLOAT) {
-            throw new IllegalArgumentException("Variable space must be for float data type");
+        super(objectSpace, dataSpace);
+        if (objectSpace.getType() != Traits.FLOAT) {
+            throw new IllegalArgumentException("Object space must be for float data type");
         }
         if (dataSpace.getType() != Traits.FLOAT) {
             throw new IllegalArgumentException("Data space must be for float data type");

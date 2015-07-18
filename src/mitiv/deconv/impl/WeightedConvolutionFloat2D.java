@@ -73,25 +73,27 @@ public class WeightedConvolutionFloat2D
     protected ConvolutionFloat2D cnvl = null;
 
     /**
-     * Create a new FFT-based convolution operator given the PSF.
+     * Create a new FFT-based weighted convolution cost function.
      *
-     * @param FFT - The Fast Fourier Transform operator.
-     * @param psf - The point spread function.
+     * @param objectSpace - The object space.
+     * @param dataSpace   - The data space.
+     * @param dataOffset  - The position of the data space relative
+     *                      to the object space.
      */
-    public WeightedConvolutionFloat2D(ShapedVectorSpace variableSpace,
+    public WeightedConvolutionFloat2D(ShapedVectorSpace objectSpace,
             ShapedVectorSpace dataSpace, int[] dataOffset) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
-        super(variableSpace, dataSpace);
-        if (variableSpace.getRank() != 2) {
-            throw new IllegalArgumentException("Variable space is not 2D");
+        super(objectSpace, dataSpace);
+        if (objectSpace.getRank() != 2) {
+            throw new IllegalArgumentException("Object space is not 2D");
         }
         if (dataSpace.getRank() != 2) {
             throw new IllegalArgumentException("Data space is not 2D");
         }
-        number = (int)variableSpace.getNumber();
+        number = (int)objectSpace.getNumber();
         scale = 1.0F/number;
-        dim1 = variableSpace.getDimension(0);
+        dim1 = objectSpace.getDimension(0);
         off1 = dataOffset[0];
         end1 = off1 + dataSpace.getDimension(0);
         if (off1 < 0 || off1 >= dim1) {
@@ -100,7 +102,7 @@ public class WeightedConvolutionFloat2D
         if (end1 > dim1) {
             throw new IllegalArgumentException("Data (+ offset) beyond 1st dimension.");
         }
-        dim2 = variableSpace.getDimension(1);
+        dim2 = objectSpace.getDimension(1);
         off2 = dataOffset[1];
         end2 = off2 + dataSpace.getDimension(1);
         if (off2 < 0 || off2 >= dim2) {
@@ -109,7 +111,7 @@ public class WeightedConvolutionFloat2D
         if (end2 > dim2) {
             throw new IllegalArgumentException("Data (+ offset) beyond 2nd dimension.");
         }
-        cnvl = new ConvolutionFloat2D(variableSpace);
+        cnvl = new ConvolutionFloat2D(objectSpace);
     }
 
     @Override

@@ -61,13 +61,13 @@ public abstract class ${className}
      * The following constructors make this class non instantiable, but still
      * let others inherit from this class.
      */
-    public ${className}(ShapedVectorSpace variableSpace,
+    public ${className}(ShapedVectorSpace objectSpace,
                         ShapedVectorSpace dataSpace)
     {
         /* Initialize super class and check types. */
-        super(variableSpace, dataSpace);
-        if (variableSpace.getType() != Traits.${TYPE}) {
-            throw new IllegalArgumentException("Variable space must be for ${type} data type");
+        super(objectSpace, dataSpace);
+        if (objectSpace.getType() != Traits.${TYPE}) {
+            throw new IllegalArgumentException("Object space must be for ${type} data type");
         }
         if (dataSpace.getType() != Traits.${TYPE}) {
             throw new IllegalArgumentException("Data space must be for ${type} data type");
