@@ -25,19 +25,12 @@
 
 package mitiv.deconv.impl;
 
-import mitiv.array.FloatArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
-import mitiv.base.Traits;
-import mitiv.deconv.WeightedConvolutionOperator;
-import mitiv.exception.IncorrectSpaceException;
-import mitiv.exception.NotImplementedException;
 import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
-
-import org.jtransforms.fft.FloatFFT_3D;
 
 /**
  * Implements a FFT-based weighted convolution for 3D arrays of float's.
@@ -53,24 +46,38 @@ import org.jtransforms.fft.FloatFFT_3D;
  *
  * @see {@link WeightedConvolutionOperator}
  */
-public class ConvolutionFloat3D extends WeightedConvolutionOperator {
+public class WeightedConvolutionFloat3D
+     extends WeightedConvolutionFloat
+{
+    /** Factor to scale the result of the backward FFT. */
+    private final float scale;
 
-    /* FFT operator and workspace arrays. */
-    private FloatFFT_3D fft = null;
-    private float[] tmp = null;   // complex workspace
-    private float[] wgt = null;   // array of weights (can be null)
-    private float[] mtf = null;   // complex MTF
+    /** Number of variables. */
+    private final int number;
 
-    /* Attributes that remains constant after creation. */
-    private final int number; // number of values in the direct space
-    private static final int rank = 3;
-    private final int dim1; // 1st output dimension
-    private final int dim2; // 2nd output dimension
-    private final int dim3; // 3rd output dimension
-    private final int offset; // offset of first output element in complex workspace
-    private static final int stride1 = 2; // stride along 1st input dimension
-    private final int stride2; // stride along 2nd input dimension
-    private final int stride3; // stride along 3rd input dimension
+    /** Number of element along 1st dimension of the variables. */
+    private final int dim1;
+    /** Number of element along 2nd dimension of the variables. */
+    private final int dim2;
+    /** Number of element along 3rd dimension of the variables. */
+    private final int dim3;
+
+    /** Offset of data along 1st dimension. */
+    private final int off1;
+    /** Offset of data along 2nd dimension. */
+    private final int off2;
+    /** Offset of data along 3rd dimension. */
+    private final int off3;
+
+    /** Offset of first cell after data along 1st dimension. */
+    private final int end1;
+    /** Offset of first cell after data along 2nd dimension. */
+    private final int end2;
+    /** Offset of first cell after data along 3rd dimension. */
+    private final int end3;
+
+    /** Convolution operator. */
+    protected ConvolutionFloat3D cnvl = null;
 
     /**
      * Create a new FFT-based convolution operator given the PSF.
@@ -78,257 +85,191 @@ public class ConvolutionFloat3D extends WeightedConvolutionOperator {
      * @param FFT - The Fast Fourier Transform operator.
      * @param psf - The point spread function.
      */
-    public ConvolutionFloat3D(ShapedVectorSpace inputSpace,
-            ShapedVectorSpace outputSpace, int[] first) {
-        super(inputSpace, outputSpace);
+    public WeightedConvolutionFloat3D(ShapedVectorSpace variableSpace,
+            ShapedVectorSpace dataSpace, int[] dataOffset) {
+        /* Initialize super class and check rank and dimensions. */
+        super(variableSpace, dataSpace);
 
-        /* Check type. */
-        if (inputSpace.getType() != Traits.FLOAT ||
-            outputSpace.getType() != Traits.FLOAT) {
-            throw new IllegalArgumentException("Input and output spaces must be for float data type");
+        Shape variableShape = variableSpace.getShape();
+        Shape dataShape = dataSpace.getShape();
+        number = (int)variableShape.number();
+        scale = 1.0F/number;
+        dim1 = variableShape.dimension(0);
+        off1 = dataOffset[0];
+        end1 = off1 + dataShape.dimension(0);
+        if (off1 < 0 || off1 >= dim1) {
+            throw new IllegalArgumentException("Out of range offset along 1st dimension.");
         }
-
-        /* Check rank and dimensions. */
-        Shape inputShape = inputSpace.getShape();
-        Shape outputShape = outputSpace.getShape();
-        offset = outputOffset(rank, inputShape, outputShape, first);
-        number = (int)inputShape.number();
-        dim1 = outputShape.dimension(0);
-        dim2 = outputShape.dimension(1);
-        dim3 = outputShape.dimension(2);
-        stride2 = stride1*inputShape.dimension(0);
-        stride3 = stride2*inputShape.dimension(1);
+        if (end1 > dim1) {
+            throw new IllegalArgumentException("Data (+ offset) beyond 1st dimension.");
+        }
+        dim2 = variableShape.dimension(1);
+        off2 = dataOffset[1];
+        end2 = off2 + dataShape.dimension(1);
+        if (off2 < 0 || off2 >= dim2) {
+            throw new IllegalArgumentException("Out of range offset along 2nd dimension.");
+        }
+        if (end2 > dim2) {
+            throw new IllegalArgumentException("Data (+ offset) beyond 2nd dimension.");
+        }
+        dim3 = variableShape.dimension(2);
+        off3 = dataOffset[2];
+        end3 = off3 + dataShape.dimension(2);
+        if (off3 < 0 || off3 >= dim3) {
+            throw new IllegalArgumentException("Out of range offset along 3rd dimension.");
+        }
+        if (end3 > dim3) {
+            throw new IllegalArgumentException("Data (+ offset) beyond 3rd dimension.");
+        }
+        cnvl = new ConvolutionFloat3D(variableSpace);
     }
 
     @Override
-    public void setPSF(ShapedVector vec) {
-        if (! vec.belongsTo(getInputSpace())) {
-            throw new IncorrectSpaceException("PSF must belong to the input space of the operator.");
-        }
-        computeMTF(((FloatShapedVector)vec).getData());
-    }
+    protected double cost(double alpha, Vector x)
+    {
+        /* Check whether instance has been fully initialized. */
+        checkData();
 
-    @Override
-    public void setPSF(ShapedArray arr, int[] cen) {
-        arr = adjustPSF(arr.toFloat(), cen);
-        computeMTF(((FloatArray)arr).flatten());
-    }
+        /* Compute the convolution. */
+        cnvl.push(((FloatShapedVector)x).getData());
+        float z[] = cnvl.convolve(false);
 
-    private final void computeMTF(float[] psf) {
-        final float zero = 0;
-        if (mtf == null) {
-            mtf = new float[2*number];
-        }
-        for (int k = 0; k < number; ++k) {
-            int real = k + k;
-            int imag = real + 1;
-            mtf[real] = psf[k];
-            mtf[imag] = zero;
-        }
-        forwardFFT(mtf);
-    }
-
-    @Override
-    public void setWeights(ShapedVector vec, boolean copy) {
-        if (vec == null) {
-            wgt = null;
-        } else {
-            if (! vec.belongsTo(getOutputSpace())) {
-                throw new IllegalArgumentException("Weights must be a vector of the output space of the operator.");
-            }
-            wgt = checkWeights(((FloatShapedVector)vec).getData(), copy);
-        }
-    }
-
-    @Override
-    public void setWeights(ShapedArray arr, boolean copy) {
-        if (arr == null) {
-            wgt = null;
-        } else {
-            if (! getOutputSpace().getShape().equals(arr.getShape())) {
-                throw new IllegalArgumentException("Weights must have the same shape as the vectors of the output space of the operator.");
-            }
-            wgt = checkWeights(arr.toFloat().flatten(copy), false);
-        }
-    }
-
-    /** Create low-level FFT operator. */
-    private final void createFFT() {
-        if (fft == null) {
-            Shape shape = getInputSpace().getShape();
-            timerForFFT.resume();
-            fft = new FloatFFT_3D(shape.dimension(2), shape.dimension(1), shape.dimension(0));
-            timerForFFT.stop();
-        }
-    }
-
-    /** Apply forward complex FFT. */
-    private final void forwardFFT(float[] z) {
-        if (fft == null) {
-            createFFT();
-        }
-        timerForFFT.resume();
-        fft.complexForward(z);
-        timerForFFT.stop();
-    }
-
-    /** Apply backward precision complex FFT. */
-    private final void backwardFFT(float[] z) {
-        if (fft == null) {
-            createFFT();
-        }
-        timerForFFT.resume();
-        fft.complexInverse(z, false);
-        timerForFFT.stop();
-    }
-
-    @Override
-    protected void privApply(Vector src, Vector dst, int job) {
-        if (job != DIRECT && job != ADJOINT) {
-            throw new NotImplementedException("For now we do not implement inverse convolution operations "+
-                    "(talk to a specialist if you ignore the dangers of doing that!)");
-        }
-        if (mtf == null) {
-            throw new IllegalArgumentException("You must set the PSF or the MTF first.");
-        }
-        if (fft == null) {
-            createFFT();
-        }
-        if (tmp == null) {
-            tmp = new float[2*number];
-        }
-        timer.resume();
-        if (job == DIRECT) {
-            applyDirect(mtf, wgt, ((FloatShapedVector)src).getData(),
-                        ((FloatShapedVector)dst).getData(), tmp);
-        } else {
-            applyAdjoint(mtf, wgt, ((FloatShapedVector)dst).getData(),
-                         ((FloatShapedVector)src).getData(), tmp);
-        }
-        timer.stop();
-    }
-
-    /** Direct operator for single precision variables. */
-    private final void applyDirect(float[] h, float[] w, float[] x,
-                                   float[] y, float[] z) {
-        final float zero = 0;
-        final float one = 1;
-
-        /* Copy input array in workspace and make it complex. */
-        for (int k = 0; k < number; ++k) {
-            int real = k + k;
-            int imag = real + 1;
-            z[real] = x[k];
-            z[imag] = zero;
-        }
-
-        /* Apply forward complex FFT, multiply by the MTF and
-         * apply backward FFT. */
-        forwardFFT(z);
-        for (int k = 0; k < number; ++k) {
-            int real = k + k;
-            int imag = real + 1;
-            float h_re = h[real];
-            float h_im = h[imag];
-            float z_re = z[real];
-            float z_im = z[imag];
-            z[real] = h_re*z_re - h_im*z_im;
-            z[imag] = h_re*z_im + h_im*z_re;
-        }
-        backwardFFT(z);
-
-        /* Select and scale. */
-        final float s = one/number;
-        int i = -1;
-        if (w == null) {
+        /* Integrate cost. */
+        double sum = 0.0;
+        int j = 0; // index in data and weight arrays
+        int real = 0; // index of real part in model and FFT arrays
+        if (wgt == null) {
             for (int i3 = 0; i3 < dim3; ++i3) {
-                int j3 = offset + stride3*i3;
+                boolean test = (off3 <= i3 && i3 < end3);
                 for (int i2 = 0; i2 < dim2; ++i2) {
-                    int j2 = j3 + stride2*i2;
+                    test = (test && off2 <= i2 && i2 < end2);
                     for (int i1 = 0; i1 < dim1; ++i1) {
-                        y[++i] = s*z[j2 + stride1*i1];
+                        if (test && off1 <= i1 && i1 < end1) {
+                            float r = scale*z[real] - dat[j];
+                            sum += r*r;
+                            ++j;
+                        }
+                        real += 2;
                     }
                 }
             }
         } else {
+            float w;
             for (int i3 = 0; i3 < dim3; ++i3) {
-                int j3 = offset + stride3*i3;
+                boolean test = (off3 <= i3 && i3 < end3);
                 for (int i2 = 0; i2 < dim2; ++i2) {
-                    int j2 = j3 + stride2*i2;
+                    test = (test && off2 <= i2 && i2 < end2);
                     for (int i1 = 0; i1 < dim1; ++i1) {
-                        ++i;
-                        y[i] = s*w[i]*z[j2 + stride1*i1];
+                        if (test && off1 <= i1 && i1 < end1) {
+                            if ((w = wgt[j]) > 0.0F) {
+                                float r = scale*z[real] - dat[j];
+                                sum += w*r*r;
+                            }
+                            ++j;
+                        }
+                        real += 2;
                     }
                 }
             }
         }
+        return alpha*sum;
     }
 
-    /** Adjoint operator for single precision variables. */
-    private final void applyAdjoint(float[] h, float[] w, float[] x,
-                                    float[] y, float[] z) {
-        final float zero = 0;
-        final float one = 1;
+    @Override
+    protected double cost(double alpha, Vector x, Vector gx, boolean clr)
+    {
+        /* Check whether instance has been fully initialized. */
+        checkData();
 
-        /* Zero-fill workspace. (FIXME: improve this part, it is not
-         * necessary to fill all parts, can be mixed with the next
-         * operation.) */
-        for (int k = 0; k < number; ++k) {
-            int real = k + k;
-            int imag = real + 1;
-            z[real] = zero;
-            z[imag] = zero;
-        }
+        /* Compute the convolution. */
+        cnvl.push(((FloatShapedVector)x).getData());
+        float z[] = cnvl.convolve(false);
 
-        /* Scale and expand. */
-        final float s = one/number;
-        int i = -1;
-        if (w == null) {
+        /* Integrate cost and gradient. */
+        final float q = 2*scale*(float)alpha;
+        double sum = 0.0;
+        int j = 0; // index in data and weight arrays
+        int real = 0; // index of real part in model and FFT arrays
+        int imag = 1; // index of imaginary parts in model and FFT arrays
+        if (wgt == null) {
             for (int i3 = 0; i3 < dim3; ++i3) {
-                int j3 = offset + stride3*i3;
+                boolean test = (off3 <= i3 && i3 < end3);
                 for (int i2 = 0; i2 < dim2; ++i2) {
-                    int j2 = j3 + stride2*i2;
+                    test = (test && off2 <= i2 && i2 < end2);
                     for (int i1 = 0; i1 < dim1; ++i1) {
-                        z[j2 + stride1*i1] = s*y[++i];
+                        if (test && off1 <= i1 && i1 < end1) {
+                            float r = scale*z[real] - dat[j];
+                            sum += r*r;
+                            z[real] = q*r;
+                            z[imag] = 0.0F;
+                            ++j;
+                        } else {
+                            z[real] = 0.0F;
+                            z[imag] = 0.0F;
+                        }
+                        real += 2;
+                        imag += 2;
                     }
                 }
             }
         } else {
+            float w;
             for (int i3 = 0; i3 < dim3; ++i3) {
-                int j3 = offset + stride3*i3;
+                boolean test = (off3 <= i3 && i3 < end3);
                 for (int i2 = 0; i2 < dim2; ++i2) {
-                    int j2 = j3 + stride2*i2;
+                    test = (test && off2 <= i2 && i2 < end2);
                     for (int i1 = 0; i1 < dim1; ++i1) {
-                        ++i;
-                        z[j2 + stride1*i1] = s*w[i]*y[i];
+                        if (test && off1 <= i1 && i1 < end1) {
+                            if ((w = wgt[j]) > 0.0F) {
+                                float r = scale*z[real] - dat[j];
+                                float wr = w*r;
+                                sum += wr*r;
+                                z[real] = q*wr;
+                            } else {
+                                z[real] = 0.0F;
+                            }
+                            z[imag] = 0.0F;
+                            ++j;
+                        } else {
+                            z[real] = 0.0F;
+                            z[imag] = 0.0F;
+                        }
+                        real += 2;
+                        imag += 2;
                     }
                 }
             }
         }
 
-        /* Apply forward FFT, multiply by the conjugate of the MTF and
-         * apply backward FFT. */
-        forwardFFT(z);
-        for (int k = 0; k < number; ++k) {
-            int real = k + k;
-            int imag = real + 1;
-            float h_re = h[real];
-            float h_im = h[imag];
-            float z_re = z[real];
-            float z_im = z[imag];
-            z[real] = h_re*z_re + h_im*z_im;
-            z[imag] = h_re*z_im - h_im*z_re;
-        }
-        backwardFFT(z);
-
-        /* Copy real part of workspace into output array. */
-        for (int k = 0; k < number; ++k) {
-            int real = k + k;
-            x[k] = z[real];
+        /* Finalize computation of gradient. */
+        float g[] = ((FloatShapedVector)gx).getData();
+        cnvl.convolve(true);
+        real = 0;
+        if (clr) {
+            for (int k = 0; k < number; ++k, real += 2) {
+                g[k] = z[real];
+            }
+        } else {
+            for (int k = 0; k < number; ++k, real += 2) {
+                g[k] += z[real];
+            }
         }
 
+        /* Returns cost. */
+        return alpha*sum;
     }
 
+    @Override
+    public void setPSF(ShapedArray psf, int[] off)
+    {
+        cnvl.setPSF(psf, off);
+    }
+
+    @Override
+    public void setPSF(ShapedVector psf)
+    {
+        cnvl.setPSF(psf);
+    }
 }
 
 /*

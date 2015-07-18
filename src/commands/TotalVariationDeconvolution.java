@@ -35,10 +35,11 @@ import mitiv.array.DoubleArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.cost.CompositeDifferentiableCostFunction;
+import mitiv.cost.DifferentiableCostFunction;
 import mitiv.cost.HyperbolicTotalVariation;
 import mitiv.cost.QuadraticCost;
 import mitiv.deconv.ConvolutionOperator;
-import mitiv.deconv.WeightedConvolutionOperator;
+import mitiv.deconv.WeightedConvolutionCost;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.invpb.ReconstructionJob;
 import mitiv.invpb.ReconstructionSynchronizer;
@@ -446,6 +447,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         result = ArrayFactory.wrap(x.getData(), resultShape);
 
         // Build convolution operator.
+        DifferentiableCostFunction fdata;
         ShapedLinearOperator H = null;
         if (old) {
             RealComplexFFT FFT = new RealComplexFFT(resultSpace);
@@ -470,19 +472,19 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             }
             DoubleShapedVector h = resultSpace.create(psf);
             H = new ConvolutionOperator(FFT, h);
+            fdata = new QuadraticCost(H, y, W);
         } else {
             // FIXME: add a method for that
-            WeightedConvolutionOperator A = WeightedConvolutionOperator.build(resultSpace, dataSpace);
-            A.setPSF(psf);
-            A.setWeights(weight);
-            H = A;
+            WeightedConvolutionCost cost = WeightedConvolutionCost.build(resultSpace, dataSpace);
+            cost.setPSF(psf);
+            cost.setWeightsAndData(weight, data);
+            fdata = cost;
         }
         if (debug) {
             System.out.println("Vector space initialization complete.");
         }
 
         // Build the cost functions
-        QuadraticCost fdata = new QuadraticCost(H, y, W);
         HyperbolicTotalVariation fprior = new HyperbolicTotalVariation(resultSpace, epsilon);
         CompositeDifferentiableCostFunction cost = new CompositeDifferentiableCostFunction(1.0, fdata, mu, fprior);
         fcost = 0.0;
@@ -606,12 +608,12 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             int nevals = getEvaluations();
             System.out.format("Total time in cost function: %.3f s (%.3f ms/eval.)\n",
                     elapsed, (nevals > 0 ? 1e3*elapsed/nevals : 0.0));
-            if (H instanceof WeightedConvolutionOperator) {
-                WeightedConvolutionOperator A = (WeightedConvolutionOperator)H;
-                elapsed = A.getElapsedTimeInFFT();
+            if (fdata instanceof WeightedConvolutionCost) {
+                WeightedConvolutionCost f = (WeightedConvolutionCost)fdata;
+                elapsed = f.getElapsedTimeInFFT();
                 System.out.format("Total time in FFT: %.3f s (%.3f ms/eval.)\n",
                         elapsed, (nevals > 0 ? 1e3*elapsed/nevals : 0.0));
-                elapsed = A.getElapsedTime() - elapsed;
+                elapsed = f.getElapsedTime() - elapsed;
                 System.out.format("Total time in other parts of the convolution operator: %.3f s (%.3f ms/eval.)\n",
                         elapsed, (nevals > 0 ? 1e3*elapsed/nevals : 0.0));
             }
