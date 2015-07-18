@@ -265,9 +265,7 @@ implements DifferentiableCostFunction
      * @param dataOffset
      *            - The relative position of the data within the output of the
      *            convolution. It must have as many values as the rank of the
-     *            variables and data spaces of the operator. If this argument is
-     *            null the data is considered as approximately centered with
-     *            respect to the result of the convolution.
+     *            variables and data spaces of the operator.
      * @return A weighted convolution cost function.
      * @see {@link #build(ShapedVectorSpace, ShapedVectorSpace)}
      */
