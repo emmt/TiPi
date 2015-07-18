@@ -1,0 +1,18 @@
+language: java
+jdk:
+- openjdk6
+before_install: wget http://mitiv.univ-lyon1.fr/${PROJECT}.zip && unzip ${PROJECT}.zip && rm ${PROJECT}.zip
+script:
+- ant build
+- ant doc > /dev/null
+after_success:
+- git config --global user.email "eric.thiebaut@univ-lyon1.fr"
+- git config --global user.name "emmt"
+- git config --global push.default matching
+- git clone --quiet --branch=gh-pages https://${GH_TOKEN}@github.com/emmt/${PROJECT}
+- cp -r doc/* ${PROJECT}
+- cd ${PROJECT} && git add * && git commit -am "Doc update" && (git push 2> /dev/null)
+env:
+  global:
+  - secure: GICFxPwmV9BCVTNJY6aK0eUm9O5tCRSZI2zpRh1MGMiUDx8qpeGxl7ha5bSKS3e/KFJ1HNmPd6jW17rsNeJr18Jl7Uk+LWDutOpLdmnaYqiQW4S9ylJ3r8sl9XqraMOngDzmU65lqmmKNNmO8cdjlje4QAkibx3tz2Plmy5N+AA=
+  - PROJECT=TiPi

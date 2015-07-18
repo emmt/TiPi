@@ -1,6 +1,8 @@
 TiPi
 ====
 
+![Travis build status](http://travis-ci.org/emmt/TiPi.png?branch=master)
+
 TiPi is a Java Toolkit for Inverse Problems and Imaging developed by the MiTiV project <http://mitiv.univ-lyon1.fr/>
 
 Library needed
@@ -60,6 +62,11 @@ look like:
 	clean = ./tools/code_cleanup
 	smudge = cat
 ```
+
+Javadoc
+=======
+
+The javadoc is auto generated at each push and is [HERE](http://emmt.github.io/TiPi/)
 
 Known Bugs
 ==========
