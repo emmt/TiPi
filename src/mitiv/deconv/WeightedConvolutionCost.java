@@ -306,12 +306,22 @@ implements DifferentiableCostFunction
         throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented.");
     }
 
+    private final void checkObject(Vector x) {
+        if (! x.belongsTo(variableSpace)) {
+            throw new IllegalArgumentException("Variables X does not belong to the object space.");
+        }
+    }
+
+    private final void checkGradient(Vector gx) {
+        if (! gx.belongsTo(variableSpace)) {
+            throw new IllegalArgumentException("Gradient GX does not belong to the object space.");
+        }
+    }
+
     @Override
     public double evaluate(double alpha, Vector x) {
-        /* Check arguments. */
-        if (x.belongsTo(getVariableSpace())) {
-            throw new IllegalArgumentException("Variables X does not belong to the correct space.");
-        }
+        /* Check argument. */
+        checkObject(x);
 
         /* Deal with a zero multiplier. */
         if (alpha == 0.0) {
@@ -325,12 +335,8 @@ implements DifferentiableCostFunction
     @Override
     public double computeCostAndGradient(double alpha, Vector x, Vector gx, boolean clr) {
         /* Check arguments. */
-        if (x.belongsTo(getVariableSpace())) {
-            throw new IllegalArgumentException("Variables X does not belong to the correct space.");
-        }
-        if (gx.belongsTo(getVariableSpace())) {
-            throw new IllegalArgumentException("Gradient GX does not belong to the correct space.");
-        }
+        checkObject(x);
+        checkGradient(gx);
 
         /* Deal with a zero multiplier. */
         if (alpha == 0.0) {
