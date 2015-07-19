@@ -56,23 +56,29 @@ public class WeightedConvolutionFloat3D
 
     /** Number of element along 1st dimension of the variables. */
     private final int dim1;
+
     /** Number of element along 2nd dimension of the variables. */
     private final int dim2;
+
     /** Number of element along 3rd dimension of the variables. */
     private final int dim3;
 
     /** Offset of data along 1st dimension. */
     private final int off1;
+
     /** Offset of data along 2nd dimension. */
     private final int off2;
+
     /** Offset of data along 3rd dimension. */
     private final int off3;
 
-    /** Offset of first cell after data along 1st dimension. */
+    /** End of data along 1st dimension. */
     private final int end1;
-    /** Offset of first cell after data along 2nd dimension. */
+
+    /** End of data along 2nd dimension. */
     private final int end2;
-    /** Offset of first cell after data along 3rd dimension. */
+
+    /** End of data along 3rd dimension. */
     private final int end3;
 
     /** Convolution operator. */

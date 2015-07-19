@@ -68,20 +68,20 @@ public class ${className}
     //#     def kth = ${}{nth_${k}}
     /** Number of element along ${kth} dimension of the variables. */
     private final int dim${k};
-    //# end
 
+    //# end
     //# for k in 1:${rank}
     //#     def kth = ${}{nth_${k}}
     /** Offset of data along ${kth} dimension. */
     private final int off${k};
-    //# end
 
+    //# end
     //# for k in 1:${rank}
     //#     def kth = ${}{nth_${k}}
-    /** Offset of first cell after data along ${kth} dimension. */
+    /** End of data along ${kth} dimension. */
     private final int end${k};
-    //# end
 
+    //# end
     /** Convolution operator. */
     private final Convolution${Type}${rank}D cnvl;
 

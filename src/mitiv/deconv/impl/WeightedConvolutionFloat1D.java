@@ -60,7 +60,7 @@ public class WeightedConvolutionFloat1D
     /** Offset of data along 1st dimension. */
     private final int off1;
 
-    /** Offset of first cell after data along 1st dimension. */
+    /** End of data along 1st dimension. */
     private final int end1;
 
     /** Convolution operator. */
