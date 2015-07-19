@@ -48,18 +48,34 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
  */
 public abstract class ${className} extends Convolution {
 
-    /* Workspace arrays. */
-    private ${type}[] tmp = null;   // complex workspace
-    private ${type}[] mtf = null;   // complex MTF
+    /** Workspace array. */
+    private ${type}[] tmp = null;
+
+    /** Complex modulation transfer function (MTF). */
+    private ${type}[] mtf = null;
 
     /**
-     * The following constructors make this class non instantiable, but still
+     * The following constructor make this class non instantiable, but still
      * let others inherit from this class.
      */
     protected ${className}(ShapedVectorSpace space) {
         super(space);
         if (space.getType() != Traits.${TYPE}) {
             throw new IllegalArgumentException("Vector space must be for ${type} data type");
+        }
+    }
+
+    /**
+     * The following constructor make this class non instantiable, but still
+     * let others inherit from this class.
+     */
+    protected ${className}(ShapedVectorSpace inp, ShapedVectorSpace out) {
+        super(inp, out);
+        if (inp.getType() != Traits.${TYPE}) {
+            throw new IllegalArgumentException("Input vector space must be for ${type} data type");
+        }
+        if (out.getType() != Traits.${TYPE}) {
+            throw new IllegalArgumentException("Output vector space must be for ${type} data type");
         }
     }
 
@@ -83,8 +99,8 @@ public abstract class ${className} extends Convolution {
 
     @Override
     public void push(ShapedVector inp) {
-        if (! inp.belongsTo(space)) {
-            throw new IllegalArgumentException("Input vector does not belong to correct vector space");
+        if (! inp.belongsTo(inputSpace)) {
+            throw new IncorrectSpaceException("Vector does not belong to input space");
         }
         push(((${Type}ShapedVector)inp).getData());
     }
@@ -106,23 +122,14 @@ public abstract class ${className} extends Convolution {
 
     @Override
     public void pull(ShapedVector out) {
-        if (! out.belongsTo(space)) {
-            throw new IllegalArgumentException("Output vector does not belong to correct vector space");
+        if (! out.belongsTo(outputSpace)) {
+            throw new IncorrectSpaceException("Vector does not belong to output space");
         }
         pull(((${Type}ShapedVector)out).getData());
     }
 
     /** Copy real part of workspace into output array. */
-    public void pull(${type} x[]) {
-        if (x == null || x.length != number) {
-            throw new IllegalArgumentException("Bad output size");
-        }
-        ${type} z[] = getWorkspace();
-        for (int k = 0; k < number; ++k) {
-            int real = k + k;
-            x[k] = z[real];
-        }
-    }
+    public abstract void pull(${type} x[]);
 
     /** Apply in-place forward complex FFT. */
     public abstract void forwardFFT(${type} z[]);
@@ -182,7 +189,7 @@ public abstract class ${className} extends Convolution {
 
     @Override
     public void setPSF(ShapedVector psf) {
-        if (! psf.belongsTo(space)) {
+        if (! psf.belongsTo(inputSpace)) {
             throw new IncorrectSpaceException("PSF does not belong to the correct space");
         }
         computeMTF(((${Type}ShapedVector)psf).getData());

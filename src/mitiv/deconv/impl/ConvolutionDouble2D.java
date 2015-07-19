@@ -35,28 +35,103 @@ import org.jtransforms.fft.DoubleFFT_2D;
  */
 public class ConvolutionDouble2D extends ConvolutionDouble {
 
-    /* FFT operator. */
+    /** FFT operator. */
     private DoubleFFT_2D fft = null;
 
+    /** Factor to scale the result of the backward FFT. */
+    private final double scale;
+
+    /** Number of input variables. */
+    private final int number;
+
+    /** Number of element along 1st dimension of the input variables. */
+    private final int dim1;
+
+    /** Number of element along 2nd dimension of the input variables. */
+    private final int dim2;
+
+    /** Offset of output along 1st input dimension. */
+    private final int off1;
+
+    /** Offset of output along 2nd input dimension. */
+    private final int off2;
+
+    /** End of output along 1st input dimension. */
+    private final int end1;
+
+    /** End of output along 2nd input dimension. */
+    private final int end2;
+
+    /** Fast pull operation? */
+    private final boolean fastPull;
+
     /**
-     * Create a new FFT-based convolution operator given the PSF.
+     * Create a new convolution operator for 2D arrays of double's.
      *
-     * @param FFT - The Fast Fourier Transform operator.
-     * @param psf - The point spread function.
+     * @param space - The input and output space.
      */
     public ConvolutionDouble2D(ShapedVectorSpace space) {
         super(space);
         if (space.getRank() != 2) {
             throw new IllegalArgumentException("Vector space must be have 2 dimension(s)");
         }
+        number = (int)space.getNumber();
+        scale = 1.0/number;
+        dim1 = space.getDimension(0);
+        off1 = 0;
+        end1 = dim1;
+        dim2 = space.getDimension(1);
+        off2 = 0;
+        end2 = dim2;
+        fastPull = true;
     }
+
+    /**
+     * Create a new convolution operator for 2D arrays of double's.
+     *
+     * @param inp - The input space.
+     * @param out - The output space.
+     * @param off - The position of the output relative to the result
+     *              of the convolution.
+     */
+    public ConvolutionDouble2D(ShapedVectorSpace inp, ShapedVectorSpace out, int[] off) {
+        /* Initialize super class and check rank and dimensions (element type
+           is checked by the super class constructor). */
+        super(inp, out);
+        if (inp.getRank() != 2) {
+            throw new IllegalArgumentException("Input space is not 2D");
+        }
+        if (out.getRank() != 2) {
+            throw new IllegalArgumentException("Output space is not 2D");
+        }
+        number = (int)inp.getNumber();
+        scale = 1.0/number;
+        dim1 = inp.getDimension(0);
+        off1 = off[0];
+        end1 = off1 + out.getDimension(0);
+        if (off1 < 0 || off1 >= dim1) {
+            throw new IllegalArgumentException("Out of range offset along 1st dimension.");
+        }
+        if (end1 > dim1) {
+            throw new IllegalArgumentException("Data (+ offset) beyond 1st dimension.");
+        }
+        dim2 = inp.getDimension(1);
+        off2 = off[1];
+        end2 = off2 + out.getDimension(1);
+        if (off2 < 0 || off2 >= dim2) {
+            throw new IllegalArgumentException("Out of range offset along 2nd dimension.");
+        }
+        if (end2 > dim2) {
+            throw new IllegalArgumentException("Data (+ offset) beyond 2nd dimension.");
+        }
+        fastPull = out.getShape().equals(inp.getShape());
+    }
+
 
     /** Create low-level FFT operator. */
     private final void createFFT() {
         if (fft == null) {
-            timerForFFT.resume();
-            fft = new DoubleFFT_2D(shape.dimension(1), shape.dimension(0));
-            timerForFFT.stop();
+            fft = new DoubleFFT_2D(dim1, dim2);
         }
     }
 
@@ -66,10 +141,10 @@ public class ConvolutionDouble2D extends ConvolutionDouble {
         if (z.length != 2*number) {
             throw new IllegalArgumentException("Bad workspace size");
         }
+        timerForFFT.resume();
         if (fft == null) {
             createFFT();
         }
-        timerForFFT.resume();
         fft.complexForward(z);
         timerForFFT.stop();
     }
@@ -78,14 +153,43 @@ public class ConvolutionDouble2D extends ConvolutionDouble {
     @Override
     public final void backwardFFT(double z[]) {
         if (z.length != 2*number) {
-            throw new IllegalArgumentException("Bad workspace size");
+            throw new IllegalArgumentException("Bad argument size");
         }
+        timerForFFT.resume();
         if (fft == null) {
             createFFT();
         }
-        timerForFFT.resume();
-        fft.complexInverse(z, false);
+       fft.complexInverse(z, false);
         timerForFFT.stop();
+    }
+
+    @Override
+    public void pull(double x[]) {
+        if (x == null || x.length != number) {
+            throw new IllegalArgumentException("Bad output size");
+        }
+        double z[] = getWorkspace();
+        int real = 0; // index of real part in model and FFT arrays
+        if (fastPull) {
+            /* Output and input have the same size. */
+            for (int k = 0; k < number; ++k) {
+                x[k] = scale*z[real];
+                real += 2;
+            }
+        } else {
+            /* Output size is smaller than input size. */
+            int k = 0; // index in data and weight arrays
+            for (int i2 = 0; i2 < dim2; ++i2) {
+               boolean test = (off2 <= i2 && i2 < end2);
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    if (test && off1 <= i1 && i1 < end1) {
+                        x[k] = scale*z[real];
+                        ++k;
+                    }
+                    real += 2;
+                }
+            }
+        }
     }
 
 }

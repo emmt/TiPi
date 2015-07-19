@@ -43,70 +43,83 @@ import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 import mitiv.utils.Timer;
 
+/**
+ * This class implements a linear operator to apply the convolution.
+ *
+ * <p>
+ * The convolution operator <b>H</b> writes:
+ * </p>
+ * <p align="center">
+ * <b>H</b> =
+ * <b>R</b>.<b>F</b><sup>*</sup>.diag(<b>F</b>.<b><i>h</i></b>).<b>F</b>
+ * </p>
+ * <p>
+ * with <b>F</b> the FFT (Fast Fourier Transform) operator, <b><i>h</i></b> the
+ * point spread function (PSF) and <b>R</b> a linear operator which selects a
+ * sub-region of the output of the convolution. The * superscript denotes the
+ * adjoint of the operator (complex transpose in this specific case) and
+ * diag(<i><b>v</i></b>) is a diagonal operator whose diagonal elements are
+ * those of the vector <i><b>v</i></b>.
+ * </p>
+ * <p>
+ * The vector space of the operator is that of the arguments of the
+ * convolution.  Currently only 1D, 2D or 3D arguments of type float
+ * or double are supported.
+ * </p><p>
+ * A convolution operator provides methods to perform the convolution
+ * but also to apply the forward or backward FFT -- see
+ * {@link #forwardFFT()} and {@link #backwardFFT()}.
+ * </p>
+ *
+ * @author Éric Thiébaut.
+ *
+ */
 public abstract class Convolution extends ShapedLinearOperator {
 
-    protected final ShapedVectorSpace space;
-    protected final Shape shape;
     protected final int number; // number of values in the direct space
 
     /**
-     * The following constructors make this class non instantiable, but still
+     * The following constructor make this class non instantiable, but still
      * let others inherit from this class.  You must use the {@link #build()}
      * factory to build a convolution operator.
      */
     protected Convolution(ShapedVectorSpace space) {
-        super(space, space);
-        this.shape = space.getShape();
-        this.number = (int)shape.number();
-        this.space = space;
+        this(space, space);
     }
 
-    /** Retrieve the vector space of arguments of the convolution. */
-    public final ShapedVectorSpace getSpace() {
-        return space;
+    /**
+     * The following constructor make this class non instantiable, but still
+     * let others inherit from this class.  You must use the {@link #build()}
+     * factory to build a convolution operator.
+     */
+    protected Convolution(ShapedVectorSpace inp, ShapedVectorSpace out) {
+        super(inp, out);
+        this.number = inp.getNumber();
     }
 
     /** Retrieve the rank of the convolution. */
     public final int getRank() {
-        return space.getRank();
+        return getInputSpace().getRank();
     }
 
-    /** Retrieve the type of the elements of the arguments of the convolution. */
+    /** Retrieve the type of the elements of the argument of the convolution. */
     public final int getType() {
-        return space.getType();
+        return getInputSpace().getType();
     }
 
-    /** Get the number of elements of the arguments of the convolution. */
+    /** Get the number of elements of the argument of the convolution. */
     public final int getNumber() {
         return number;
     }
 
     /**
-     * Get the length of a given dimension for the arguments of the convolution.
-     * @param k - The index of the dimension.
-     * @return The length of the {@code (k+1)}-th dimension.
-     */
-    public final int dimension(int k) {
-        return shape.dimension(k);
-    }
-
-    /**
      * Build a convolution operator.
-     * <p>
-     * The returned object is not a valid operator until you set the
-     * point spread function (PSF) with one of the {@link #setPSF()}
-     * methods.
-     * </p><p>
-     * The vector space of the operator is that of the arguments of the
-     * convolution.  Currently only 1D, 2D or 3D arguments of type float
-     * or double are supported.
-     * </p><p>
-     * A convolution operator provides methods to perform the convolution
-     * but also to apply the forward or backward FFT -- see
-     * {@link #forwardFFT()} and {@link #backwardFFT()}.
-     * </p>
-     * @param space - The vector space of the arguments of the convolution.
-     * @return An instance of the convolution operator.
+     *
+     * @param space - The input and output spaces.
+     *
+     * @return A new convolution operator.  The returned object is not a
+     *         valid operator until the point spread function (PSF) is set
+     *         with one of the {@link #setPSF()} methods.
      */
     public static Convolution build(ShapedVectorSpace space) {
         int type = space.getType();
@@ -138,6 +151,95 @@ public abstract class Convolution extends ShapedLinearOperator {
         throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented.");
     }
 
+    /**
+     * Build a convolution operator with centered output.
+     *
+     * @param inp - The input space.
+     * @param out - The output space.
+     *
+     * @return A new convolution operator.  The returned object is not a
+     *         valid operator until the point spread function (PSF) is set
+     *         with one of the {@link #setPSF()} methods.
+     */
+    public static Convolution build(ShapedVectorSpace inp,
+            ShapedVectorSpace out) {
+        /* Compute offsets (we take the least rank to avoid out of bound index exception
+         * although the subsequent call to the builder will fail if the ranks are not
+         * equal). */
+        int rank = Math.min(inp.getRank(), out.getRank());
+        int[] off = new int[rank];
+        for (int k = 0; k < rank; ++k) {
+            off[k] = (inp.getDimension(k)/2) - (out.getDimension(k)/2);
+        }
+        return build(inp, out, off);
+    }
+
+    /**
+     * Build a convolution operator.
+     * <p>
+     * This version of the factory for building a convolution operator
+     * let you specify precisely the position of the region corresponding to the
+     * output in the result of the convolution. The offsets of this region must be
+     * such that:
+     *
+     * <pre>
+     * 0 &lt;= off[k] &lt;= inpDim[k] - outDim[k]
+     * </pre>
+     *
+     * where {@code inpDim} and {@code outDim} are the respective dimensions of
+     * the input and output spaces. If this does not hold (for all <i>k</i>),
+     * an {@link ArrayIndexOutOfBoundsException} is thrown.
+     * </p>
+     *
+     * @param inp
+     *            - The input space.
+     * @param out
+     *            - The output space.
+     * @param off
+     *            - The relative position of the output with respect to the
+     *              result of the cyclic convolution. It must have as many
+     *              values as the rank of the input and output spaces of the
+     *              operator.
+     * @return A convolution operator.
+     * @see {@link #build(ShapedVectorSpace, ShapedVectorSpace)}
+     */
+    public static Convolution build(ShapedVectorSpace inp,
+            ShapedVectorSpace out, int[] off) {
+        int type = inp.getType();
+        if (out.getType() != type) {
+            throw new IllegalTypeException("Input and output spaces must have same element type.");
+        }
+        int rank = inp.getRank();
+        if (out.getShape().rank() != rank) {
+            throw new IllegalTypeException("Input and output spaces must have same rank.");
+        }
+        switch (type) {
+        case Traits.FLOAT:
+            switch (rank) {
+            case 1:
+                return new ConvolutionFloat1D(inp, out, off);
+            case 2:
+                return new ConvolutionFloat2D(inp, out, off);
+            case 3:
+                return new ConvolutionFloat3D(inp, out, off);
+            }
+            break;
+        case Traits.DOUBLE:
+            switch (rank) {
+            case 1:
+                return new ConvolutionDouble1D(inp, out, off);
+            case 2:
+                return new ConvolutionDouble2D(inp, out, off);
+            case 3:
+                return new ConvolutionDouble3D(inp, out, off);
+            }
+            break;
+        default:
+            throw new IllegalTypeException("Only float and double types are implemented.");
+        }
+        throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented.");
+    }
+
     /** Perform in-place forward FFT on the internal workspace. */
     public abstract void forwardFFT();
 
@@ -146,13 +248,24 @@ public abstract class Convolution extends ShapedLinearOperator {
 
     /**
      * Copy data to the internal workspace.
-     * @param inp - The real array to copy to the internal workspace.
+     *
+     * This operation should be done before calling the {@link #convolve}
+     * method.
+     *
+     * @param inp - The source vector to copy to the internal workspace.
      */
     public abstract void push(ShapedVector inp);
 
     /**
-     * Extract real part of the internal workspace.
-     * @param out - The real array to store the real part of the internal workspace.
+     * Retrieve the result of the convolution.
+     *
+     * After calling the {@link #convolve} method, this operation extracts the
+     * real part of the internal workspace for the output region and scales
+     * the values.
+     *
+     * @param out
+     *            - The destination vector to store the real part of the internal
+     *            workspace.
      */
     public abstract void pull(ShapedVector out);
 
@@ -241,7 +354,8 @@ public abstract class Convolution extends ShapedLinearOperator {
      */
     protected ShapedArray adjustPSF(ShapedArray psf, int[] off) {
         Shape psfShape = psf.getShape();
-        int rank = shape.rank();
+        Shape inpShape = getInputSpace().getShape();
+        int rank = inpShape.rank();
         if (psfShape.rank() != rank) {
             throw new IllegalArgumentException("PSF rank not conformable.");
         }
@@ -251,14 +365,14 @@ public abstract class Convolution extends ShapedLinearOperator {
         int [] shift = new int[rank];
         for (int k = 0; k < rank; ++k) {
             int srcDim = psfShape.dimension(k);
-            int dstDim = shape.dimension(k);
+            int dstDim = inpShape.dimension(k);
             if (srcDim > dstDim) {
                 throw new IllegalArgumentException("PSF dimension(s) too large.");
             }
             int margin = (dstDim/2) - (srcDim/2); // margin for zero-padding
             shift[k] = - (margin + off[k]);
         }
-        return ArrayUtils.roll(ArrayUtils.zeroPadding(psf, shape), shift);
+        return ArrayUtils.roll(ArrayUtils.zeroPadding(psf, inpShape), shift);
     }
 
     @Override

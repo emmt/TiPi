@@ -24,11 +24,14 @@
  */
 
 //# include <common.javax>
-//# def clasName = Convolution${Type}${rank}
 //# if ${type_id} != ${DOUBLE}
 //#     def cast = (${type})
+//#     def zero = 0.0F
+//#     def one  = 1.0F
 //# else
 //#     def cast =
+//#     def zero = 0.0
+//#     def one  = 1.0
 //# end
 package mitiv.deconv.impl;
 
@@ -42,33 +45,103 @@ import org.jtransforms.fft.${Type}FFT_${rank}D;
  */
 public class ${className} extends Convolution${Type} {
 
-    /* FFT operator. */
+    /** FFT operator. */
     private ${Type}FFT_${rank}D fft = null;
 
+    /** Factor to scale the result of the backward FFT. */
+    private final ${type} scale;
+
+    /** Number of input variables. */
+    private final int number;
+
+    //# for k in 1:${rank}
+    //#     def kth = ${}{nth_${k}}
+    /** Number of element along ${kth} dimension of the input variables. */
+    private final int dim${k};
+
+    //# end
+    //# for k in 1:${rank}
+    //#     def kth = ${}{nth_${k}}
+    /** Offset of output along ${kth} input dimension. */
+    private final int off${k};
+
+    //# end
+    //# for k in 1:${rank}
+    //#     def kth = ${}{nth_${k}}
+    /** End of output along ${kth} input dimension. */
+    private final int end${k};
+
+    //# end
+    /** Fast pull operation? */
+    private final boolean fastPull;
+
     /**
-     * Create a new FFT-based convolution operator given the PSF.
+     * Create a new convolution operator for ${rank}D arrays of ${type}'s.
      *
-     * @param FFT - The Fast Fourier Transform operator.
-     * @param psf - The point spread function.
+     * @param space - The input and output space.
      */
     public ${className}(ShapedVectorSpace space) {
         super(space);
         if (space.getRank() != ${rank}) {
             throw new IllegalArgumentException("Vector space must be have ${rank} dimension(s)");
         }
+        number = (int)space.getNumber();
+        scale = ${one}/number;
+        //# for k in 1:${rank}
+        //#     eval km1 = ${k} - 1
+        //#     def  kth = ${}{nth_${k}}
+        dim${k} = space.getDimension(${km1});
+        off${k} = 0;
+        end${k} = dim${k};
+        //# end
+        fastPull = true;
     }
+
+    /**
+     * Create a new convolution operator for ${rank}D arrays of ${type}'s.
+     *
+     * @param inp - The input space.
+     * @param out - The output space.
+     * @param off - The position of the output relative to the result
+     *              of the convolution.
+     */
+    public ${className}(ShapedVectorSpace inp, ShapedVectorSpace out, int[] off) {
+        /* Initialize super class and check rank and dimensions (element type
+           is checked by the super class constructor). */
+        super(inp, out);
+        if (inp.getRank() != ${rank}) {
+            throw new IllegalArgumentException("Input space is not ${rank}D");
+        }
+        if (out.getRank() != ${rank}) {
+            throw new IllegalArgumentException("Output space is not ${rank}D");
+        }
+        number = (int)inp.getNumber();
+        scale = ${one}/number;
+        //# for k in 1:${rank}
+        //#     eval km1 = ${k} - 1
+        //#     def  kth = ${}{nth_${k}}
+        dim${k} = inp.getDimension(${km1});
+        off${k} = off[${km1}];
+        end${k} = off${k} + out.getDimension(${km1});
+        if (off${k} < 0 || off${k} >= dim${k}) {
+            throw new IllegalArgumentException("Out of range offset along ${kth} dimension.");
+        }
+        if (end${k} > dim${k}) {
+            throw new IllegalArgumentException("Data (+ offset) beyond ${kth} dimension.");
+        }
+        //# end
+        fastPull = out.getShape().equals(inp.getShape());
+    }
+
 
     /** Create low-level FFT operator. */
     private final void createFFT() {
         if (fft == null) {
-            //# def dimList = shape.dimension(0)
-            //# eval n = ${rank} - 1
-            //# for k in 1:${n}
-            //#     def dimList = shape.dimension(${k}), ${dimList}
+            //# def dimList = dim1
+            //# for k in 2:${rank}
+            //#     def dimList = ${dimList}, dim${k}
             //# end
-            timerForFFT.resume();
             fft = new ${Type}FFT_${rank}D(${dimList});
-            timerForFFT.stop();
         }
     }
 
@@ -78,10 +151,10 @@ public class ${className} extends Convolution${Type} {
         if (z.length != 2*number) {
             throw new IllegalArgumentException("Bad workspace size");
         }
+        timerForFFT.resume();
         if (fft == null) {
             createFFT();
         }
-        timerForFFT.resume();
         fft.complexForward(z);
         timerForFFT.stop();
     }
@@ -90,14 +163,69 @@ public class ${className} extends Convolution${Type} {
     @Override
     public final void backwardFFT(${type} z[]) {
         if (z.length != 2*number) {
-            throw new IllegalArgumentException("Bad workspace size");
+            throw new IllegalArgumentException("Bad argument size");
         }
+        timerForFFT.resume();
         if (fft == null) {
             createFFT();
         }
-        timerForFFT.resume();
-        fft.complexInverse(z, false);
+       fft.complexInverse(z, false);
         timerForFFT.stop();
+    }
+
+    @Override
+    public void pull(${type} x[]) {
+        if (x == null || x.length != number) {
+            throw new IllegalArgumentException("Bad output size");
+        }
+        ${type} z[] = getWorkspace();
+        int real = 0; // index of real part in model and FFT arrays
+        if (fastPull) {
+            /* Output and input have the same size. */
+            for (int k = 0; k < number; ++k) {
+                x[k] = scale*z[real];
+                real += 2;
+            }
+        } else {
+            /* Output size is smaller than input size. */
+            int k = 0; // index in data and weight arrays
+            //# if ${rank} == 1
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                if (off1 <= i1 && i1 < end1) {
+                    x[k] = scale*z[real];
+                    ++k;
+                }
+                real += 2;
+            }
+            //# elif ${rank} == 2
+            for (int i2 = 0; i2 < dim2; ++i2) {
+               boolean test = (off2 <= i2 && i2 < end2);
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    if (test && off1 <= i1 && i1 < end1) {
+                        x[k] = scale*z[real];
+                        ++k;
+                    }
+                    real += 2;
+                }
+            }
+            //# elif ${rank} == 3
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                boolean test = (off3 <= i3 && i3 < end3);
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    test = (test && off2 <= i2 && i2 < end2);
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        if (test && off1 <= i1 && i1 < end1) {
+                            x[k] = scale*z[real];
+                            ++k;
+                        }
+                        real += 2;
+                    }
+                }
+            }
+            //# else
+            //#     error only 1D, 2D and 3D implemented
+            //# end
+        }
     }
 
 }

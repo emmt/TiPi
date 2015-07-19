@@ -35,28 +35,82 @@ import org.jtransforms.fft.FloatFFT_1D;
  */
 public class ConvolutionFloat1D extends ConvolutionFloat {
 
-    /* FFT operator. */
+    /** FFT operator. */
     private FloatFFT_1D fft = null;
 
+    /** Factor to scale the result of the backward FFT. */
+    private final float scale;
+
+    /** Number of input variables. */
+    private final int number;
+
+    /** Number of element along 1st dimension of the input variables. */
+    private final int dim1;
+
+    /** Offset of output along 1st input dimension. */
+    private final int off1;
+
+    /** End of output along 1st input dimension. */
+    private final int end1;
+
+    /** Fast pull operation? */
+    private final boolean fastPull;
+
     /**
-     * Create a new FFT-based convolution operator given the PSF.
+     * Create a new convolution operator for 1D arrays of float's.
      *
-     * @param FFT - The Fast Fourier Transform operator.
-     * @param psf - The point spread function.
+     * @param space - The input and output space.
      */
     public ConvolutionFloat1D(ShapedVectorSpace space) {
         super(space);
         if (space.getRank() != 1) {
             throw new IllegalArgumentException("Vector space must be have 1 dimension(s)");
         }
+        number = (int)space.getNumber();
+        scale = 1.0F/number;
+        dim1 = space.getDimension(0);
+        off1 = 0;
+        end1 = dim1;
+        fastPull = true;
     }
+
+    /**
+     * Create a new convolution operator for 1D arrays of float's.
+     *
+     * @param inp - The input space.
+     * @param out - The output space.
+     * @param off - The position of the output relative to the result
+     *              of the convolution.
+     */
+    public ConvolutionFloat1D(ShapedVectorSpace inp, ShapedVectorSpace out, int[] off) {
+        /* Initialize super class and check rank and dimensions (element type
+           is checked by the super class constructor). */
+        super(inp, out);
+        if (inp.getRank() != 1) {
+            throw new IllegalArgumentException("Input space is not 1D");
+        }
+        if (out.getRank() != 1) {
+            throw new IllegalArgumentException("Output space is not 1D");
+        }
+        number = (int)inp.getNumber();
+        scale = 1.0F/number;
+        dim1 = inp.getDimension(0);
+        off1 = off[0];
+        end1 = off1 + out.getDimension(0);
+        if (off1 < 0 || off1 >= dim1) {
+            throw new IllegalArgumentException("Out of range offset along 1st dimension.");
+        }
+        if (end1 > dim1) {
+            throw new IllegalArgumentException("Data (+ offset) beyond 1st dimension.");
+        }
+        fastPull = out.getShape().equals(inp.getShape());
+    }
+
 
     /** Create low-level FFT operator. */
     private final void createFFT() {
         if (fft == null) {
-            timerForFFT.resume();
-            fft = new FloatFFT_1D(shape.dimension(0));
-            timerForFFT.stop();
+            fft = new FloatFFT_1D(dim1);
         }
     }
 
@@ -66,10 +120,10 @@ public class ConvolutionFloat1D extends ConvolutionFloat {
         if (z.length != 2*number) {
             throw new IllegalArgumentException("Bad workspace size");
         }
+        timerForFFT.resume();
         if (fft == null) {
             createFFT();
         }
-        timerForFFT.resume();
         fft.complexForward(z);
         timerForFFT.stop();
     }
@@ -78,14 +132,40 @@ public class ConvolutionFloat1D extends ConvolutionFloat {
     @Override
     public final void backwardFFT(float z[]) {
         if (z.length != 2*number) {
-            throw new IllegalArgumentException("Bad workspace size");
+            throw new IllegalArgumentException("Bad argument size");
         }
+        timerForFFT.resume();
         if (fft == null) {
             createFFT();
         }
-        timerForFFT.resume();
-        fft.complexInverse(z, false);
+       fft.complexInverse(z, false);
         timerForFFT.stop();
+    }
+
+    @Override
+    public void pull(float x[]) {
+        if (x == null || x.length != number) {
+            throw new IllegalArgumentException("Bad output size");
+        }
+        float z[] = getWorkspace();
+        int real = 0; // index of real part in model and FFT arrays
+        if (fastPull) {
+            /* Output and input have the same size. */
+            for (int k = 0; k < number; ++k) {
+                x[k] = scale*z[real];
+                real += 2;
+            }
+        } else {
+            /* Output size is smaller than input size. */
+            int k = 0; // index in data and weight arrays
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                if (off1 <= i1 && i1 < end1) {
+                    x[k] = scale*z[real];
+                    ++k;
+                }
+                real += 2;
+            }
+        }
     }
 
 }

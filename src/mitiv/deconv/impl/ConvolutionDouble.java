@@ -41,18 +41,34 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
  */
 public abstract class ConvolutionDouble extends Convolution {
 
-    /* Workspace arrays. */
-    private double[] tmp = null;   // complex workspace
-    private double[] mtf = null;   // complex MTF
+    /** Workspace array. */
+    private double[] tmp = null;
+
+    /** Complex modulation transfer function (MTF). */
+    private double[] mtf = null;
 
     /**
-     * The following constructors make this class non instantiable, but still
+     * The following constructor make this class non instantiable, but still
      * let others inherit from this class.
      */
     protected ConvolutionDouble(ShapedVectorSpace space) {
         super(space);
         if (space.getType() != Traits.DOUBLE) {
             throw new IllegalArgumentException("Vector space must be for double data type");
+        }
+    }
+
+    /**
+     * The following constructor make this class non instantiable, but still
+     * let others inherit from this class.
+     */
+    protected ConvolutionDouble(ShapedVectorSpace inp, ShapedVectorSpace out) {
+        super(inp, out);
+        if (inp.getType() != Traits.DOUBLE) {
+            throw new IllegalArgumentException("Input vector space must be for double data type");
+        }
+        if (out.getType() != Traits.DOUBLE) {
+            throw new IllegalArgumentException("Output vector space must be for double data type");
         }
     }
 
@@ -76,8 +92,8 @@ public abstract class ConvolutionDouble extends Convolution {
 
     @Override
     public void push(ShapedVector inp) {
-        if (! inp.belongsTo(space)) {
-            throw new IllegalArgumentException("Input vector does not belong to correct vector space");
+        if (! inp.belongsTo(inputSpace)) {
+            throw new IncorrectSpaceException("Vector does not belong to input space");
         }
         push(((DoubleShapedVector)inp).getData());
     }
@@ -99,23 +115,14 @@ public abstract class ConvolutionDouble extends Convolution {
 
     @Override
     public void pull(ShapedVector out) {
-        if (! out.belongsTo(space)) {
-            throw new IllegalArgumentException("Output vector does not belong to correct vector space");
+        if (! out.belongsTo(outputSpace)) {
+            throw new IncorrectSpaceException("Vector does not belong to output space");
         }
         pull(((DoubleShapedVector)out).getData());
     }
 
     /** Copy real part of workspace into output array. */
-    public void pull(double x[]) {
-        if (x == null || x.length != number) {
-            throw new IllegalArgumentException("Bad output size");
-        }
-        double z[] = getWorkspace();
-        for (int k = 0; k < number; ++k) {
-            int real = k + k;
-            x[k] = z[real];
-        }
-    }
+    public abstract void pull(double x[]);
 
     /** Apply in-place forward complex FFT. */
     public abstract void forwardFFT(double z[]);
@@ -175,7 +182,7 @@ public abstract class ConvolutionDouble extends Convolution {
 
     @Override
     public void setPSF(ShapedVector psf) {
-        if (! psf.belongsTo(space)) {
+        if (! psf.belongsTo(inputSpace)) {
             throw new IncorrectSpaceException("PSF does not belong to the correct space");
         }
         computeMTF(((DoubleShapedVector)psf).getData());
