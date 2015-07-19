@@ -30,10 +30,10 @@ import mitiv.exception.IncorrectSpaceException;
 
 public abstract class LinearOperator {
     /** The input vector space. */
-    protected VectorSpace inputSpace;
+    protected final VectorSpace inputSpace;
 
     /** The output vector space. */
-    protected VectorSpace outputSpace;
+    protected final VectorSpace outputSpace;
 
     /** Job value to apply the linear operator. */
     public static int DIRECT = 0;

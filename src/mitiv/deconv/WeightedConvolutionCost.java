@@ -143,8 +143,8 @@ import mitiv.utils.Timer;
 public abstract class WeightedConvolutionCost
 implements DifferentiableCostFunction
 {
-    protected ShapedVectorSpace objectSpace;
-    protected ShapedVectorSpace dataSpace;
+    protected final ShapedVectorSpace objectSpace;
+    protected final ShapedVectorSpace dataSpace;
 
     /**
      * The following constructors make this class non instantiable, but still
