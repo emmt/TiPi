@@ -59,7 +59,7 @@ import mitiv.utils.Timer;
  * </p><p>
  * with <b>F</b> the FFT (Fast Fourier Transform) operator, <b><i>h</i></b> the
  * point spread function (PSF) and <b>R</b> a linear operator which selects a
- * sub-region of the output of the convolution and weights it.  The * superscript
+ * sub-region of the output of the convolution.  The * superscript
  * denotes the adjoint of the operator (complex transpose in this specific case) and
  * diag(<i><b>v</i></b>) is a diagonal operator whose diagonal elements are those of
  * the vector <i><b>v</i></b>.
@@ -242,7 +242,7 @@ implements DifferentiableCostFunction
     }
 
     /**
-     * Build a weighted convolution operator.
+     * Build a weighted convolution cost function.
      * <p>
      * This version of the factory to build a weighted convolution cost function
      * let you specify precisely the position of the region corresponding to the
