@@ -64,7 +64,7 @@ public class WeightedConvolutionFloat1D
     private final int end1;
 
     /** Convolution operator. */
-    protected ConvolutionFloat1D cnvl = null;
+    private final ConvolutionFloat1D cnvl;
 
     /**
      * Create a new FFT-based weighted convolution cost function.

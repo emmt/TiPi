@@ -70,7 +70,7 @@ public class WeightedConvolutionFloat2D
     private final int end2;
 
     /** Convolution operator. */
-    protected ConvolutionFloat2D cnvl = null;
+    private final ConvolutionFloat2D cnvl;
 
     /**
      * Create a new FFT-based weighted convolution cost function.

@@ -64,7 +64,7 @@ public class WeightedConvolutionDouble1D
     private final int end1;
 
     /** Convolution operator. */
-    protected ConvolutionDouble1D cnvl = null;
+    private final ConvolutionDouble1D cnvl;
 
     /**
      * Create a new FFT-based weighted convolution cost function.

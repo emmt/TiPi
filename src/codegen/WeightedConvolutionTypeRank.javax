@@ -83,7 +83,7 @@ public class ${className}
     //# end
 
     /** Convolution operator. */
-    protected Convolution${Type}${rank}D cnvl = null;
+    private final Convolution${Type}${rank}D cnvl;
 
     /**
      * Create a new FFT-based weighted convolution cost function.
