@@ -36,11 +36,14 @@ import mitiv.deconv.impl.ConvolutionFloat1D;
 import mitiv.deconv.impl.ConvolutionFloat2D;
 import mitiv.deconv.impl.ConvolutionFloat3D;
 import mitiv.exception.IllegalTypeException;
+import mitiv.exception.NotImplementedException;
+import mitiv.linalg.Vector;
+import mitiv.linalg.shaped.ShapedLinearOperator;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 import mitiv.utils.Timer;
 
-public abstract class Convolution {
+public abstract class Convolution extends ShapedLinearOperator {
 
     protected final ShapedVectorSpace space;
     protected final Shape shape;
@@ -52,6 +55,7 @@ public abstract class Convolution {
      * factory to build a convolution operator.
      */
     protected Convolution(ShapedVectorSpace space) {
+        super(space, space);
         this.shape = space.getShape();
         this.number = (int)shape.number();
         this.space = space;
@@ -153,6 +157,32 @@ public abstract class Convolution {
     public abstract void pull(ShapedVector out);
 
     /**
+     * Apply the operator to the internal workspace.
+     *
+     * <p>
+     * The linear operator which implements the convolution performs the
+     * following operations:
+     *
+     * <pre>
+     * push(src);
+     * convolve(adjoint);
+     * pull(dst);
+     * </pre>
+     *
+     * where <b>src</b> is the source vector, <b>dst</b> is the destination
+     * vector, and <b>adjoint</b> is true to apply the adjoint of the operator.
+     * </p>
+     * <p>
+     * This splitting is intended to implement other operators or classes on top
+     * of the convolution operator.
+     * <p>
+     *
+     * @param adjoint
+     *            - Apply the adjoint of the operator if true.
+     */
+    public abstract void convolve(boolean adjoint);
+
+    /**
      * Set the PSF of the operator.
      * @param vec - The PSF must belongs to the input space of the operator
      *              and must be centered in the sense of of the FFT.
@@ -229,6 +259,18 @@ public abstract class Convolution {
             shift[k] = - (margin + off[k]);
         }
         return ArrayUtils.roll(ArrayUtils.zeroPadding(psf, shape), shift);
+    }
+
+    @Override
+    protected void privApply(Vector src, Vector dst, int job) {
+        if (job != DIRECT && job != ADJOINT) {
+            throw new NotImplementedException("For now we do not implement inverse convolution operations "+
+                    "(talk to a specialist if you ignore the dangers of doing that!)");
+        }
+        push((ShapedVector)src);
+        convolve(job == ADJOINT);
+        pull((ShapedVector)dst);
+
     }
 
     /*======================================================================*/

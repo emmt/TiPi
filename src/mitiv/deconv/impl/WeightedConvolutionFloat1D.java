@@ -107,10 +107,11 @@ public class WeightedConvolutionFloat1D
 
         /* Compute the convolution. */
         cnvl.push(((FloatShapedVector)x).getData());
-        float z[] = cnvl.convolve(false);
+        cnvl.convolve(false);
 
         /* Integrate cost. */
         double sum = 0.0;
+        float z[] = cnvl.getWorkspace();
         int j = 0; // index in data and weight arrays
         int real = 0; // index of real part in model and FFT arrays
         if (wgt == null) {
@@ -146,11 +147,12 @@ public class WeightedConvolutionFloat1D
 
         /* Compute the convolution. */
         cnvl.push(((FloatShapedVector)x).getData());
-        float z[] = cnvl.convolve(false);
+        cnvl.convolve(false);
 
         /* Integrate cost and gradient. */
         final float q = 2*scale*(float)alpha;
         double sum = 0.0;
+        float z[] = cnvl.getWorkspace();
         int j = 0; // index in data and weight arrays
         int real = 0; // index of real part in model and FFT arrays
         int imag = 1; // index of imaginary parts in model and FFT arrays

@@ -137,7 +137,7 @@ public abstract class ConvolutionFloat extends Convolution {
      * Compute F^*.diag(mtf).F.x
      * where x is internal workspace.
      */
-    public float[] convolve(boolean conj) {
+    public void convolve(boolean conj) {
         if (mtf == null) {
             throw new IllegalArgumentException("You must set the PSF or the MTF first");
         }
@@ -171,7 +171,6 @@ public abstract class ConvolutionFloat extends Convolution {
             }
         }
         backwardFFT(z);
-        return z;
     }
 
     @Override

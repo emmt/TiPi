@@ -130,10 +130,11 @@ public class ${className}
 
         /* Compute the convolution. */
         cnvl.push(((${Type}ShapedVector)x).getData());
-        ${type} z[] = cnvl.convolve(false);
+        cnvl.convolve(false);
 
         /* Integrate cost. */
         double sum = 0.0;
+        ${type} z[] = cnvl.getWorkspace();
         int j = 0; // index in data and weight arrays
         int real = 0; // index of real part in model and FFT arrays
         if (wgt == null) {
@@ -235,11 +236,12 @@ public class ${className}
 
         /* Compute the convolution. */
         cnvl.push(((${Type}ShapedVector)x).getData());
-        ${type} z[] = cnvl.convolve(false);
+        cnvl.convolve(false);
 
         /* Integrate cost and gradient. */
         final ${type} q = 2*scale*${cast}alpha;
         double sum = 0.0;
+        ${type} z[] = cnvl.getWorkspace();
         int j = 0; // index in data and weight arrays
         int real = 0; // index of real part in model and FFT arrays
         int imag = 1; // index of imaginary parts in model and FFT arrays

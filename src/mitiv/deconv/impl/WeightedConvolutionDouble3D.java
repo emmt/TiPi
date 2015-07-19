@@ -137,10 +137,11 @@ public class WeightedConvolutionDouble3D
 
         /* Compute the convolution. */
         cnvl.push(((DoubleShapedVector)x).getData());
-        double z[] = cnvl.convolve(false);
+        cnvl.convolve(false);
 
         /* Integrate cost. */
         double sum = 0.0;
+        double z[] = cnvl.getWorkspace();
         int j = 0; // index in data and weight arrays
         int real = 0; // index of real part in model and FFT arrays
         if (wgt == null) {
@@ -188,11 +189,12 @@ public class WeightedConvolutionDouble3D
 
         /* Compute the convolution. */
         cnvl.push(((DoubleShapedVector)x).getData());
-        double z[] = cnvl.convolve(false);
+        cnvl.convolve(false);
 
         /* Integrate cost and gradient. */
         final double q = 2*scale*alpha;
         double sum = 0.0;
+        double z[] = cnvl.getWorkspace();
         int j = 0; // index in data and weight arrays
         int real = 0; // index of real part in model and FFT arrays
         int imag = 1; // index of imaginary parts in model and FFT arrays
