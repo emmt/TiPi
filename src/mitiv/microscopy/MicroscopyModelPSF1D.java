@@ -72,8 +72,8 @@ public class MicroscopyModelPSF1D
     protected int Ny; // number of samples along lateral Y-dimension
     protected int Nz; // number of samples along axial Z-dimension
     protected int Nzern; // number of Zernike modes
-    protected int PState;
-    protected double use_depth_scaling; //use_depth_scaling = 1, PSF are centered on the plan with maximum strehl
+    protected int PState=0;
+    protected boolean use_depth_scaling; //use_depth_scaling = 1, PSF are centered on the plan with maximum strehl
     protected double deltaX;
     protected double deltaY;
     protected double defocus_L2;
@@ -116,12 +116,11 @@ public class MicroscopyModelPSF1D
      *  Nx 256, number of samples along lateral X-dimension
      *  Ny 256, number of samples along lateral Y-dimension
      *  Nz 64, number of samples along axial Z-dimension
-     *  use_depth_scaling 0
-     */
-    public MicroscopyModelPSF1D()
+     *  use_depth_scaling 0    public MicroscopyModelPSF1D()
     {
-        this(1.4, 542e-9, 1.518, 0, 0, 64.5e-9, 160e-9, 256, 256, 64, 0);
+        this(1.4, 542e-9, 1.518, 0, 0, 64.5e-9, 160e-9, 256, 256, 64, true);
     }
+    */
 
     /** Initialize the WFFM PSF model containing parameters
      *  @param NA numerical aperture
@@ -137,7 +136,7 @@ public class MicroscopyModelPSF1D
      *  @param use_depth_scaling use_depth_scaling = 1, PSF are centered on the plan with maximum strehl
      */
     public MicroscopyModelPSF1D(double NA, double lambda, double ni,double ns,
-            double zdepth, double dxy, double dz, int Nx, int Ny, int Nz, int use_depth_scaling)
+            double zdepth, double dxy, double dz, int Nx, int Ny, int Nz, boolean use_depth_scaling)
     {
         this.NA = NA;
         this.lambda = lambda;
@@ -149,7 +148,7 @@ public class MicroscopyModelPSF1D
         this.Nx = Nx;
         this.Ny = Ny;
         this.Nz = Nz;
-        this.Nzern = 120;
+        this.Nzern = 4;
         this.radius = NA/lambda;
         this.lambda_ni = ni/lambda;
         this.lambda_ns = ns/lambda;
@@ -166,6 +165,7 @@ public class MicroscopyModelPSF1D
         this.use_depth_scaling = use_depth_scaling;
         this.Z = computeZernike(Nzern, Ny, Nx, radius*dxy*Nx);
         this.maskPupil = computeMaskPupil(Ny, Nx, radius);
+        this.PState = 0;
         setRho(new double[] {1.});
         setDefocus(new double[] {ni/lambda, 0., 0.});
     }
@@ -191,12 +191,13 @@ public class MicroscopyModelPSF1D
                 }
             }
         }
+        PState = 0;
         return maskPupil;
     }
 
     private double[] computeZernike(int Nzern, int Nx, int Ny, double radius)
     {
-        Zernike1D zernike = new Zernike1D(Nx, Ny);
+        Zernike zernike = new Zernike(Nx, Ny);
         Z = zernike.zernikePupilMultipleOpt(Nzern, Nx, Ny, radius, NORMALIZED);
         return Z = MathUtils.gram_schmidt_orthonormalization(Z, Nx, Ny, Nzern);
     }
@@ -210,6 +211,12 @@ public class MicroscopyModelPSF1D
      */
     public void setRho(double[] beta)
     {
+
+        if( beta.length+3 > Nzern)
+        {
+        	Nzern = beta.length;
+        	Z = computeZernike(Nzern, Ny, Nx, radius*dxy*Nx);
+        }
         nb_modulus_coefs = beta.length;
         modulus_coefs = new double[nb_modulus_coefs];
         for (int i = 0; i < nb_modulus_coefs; i++)
@@ -230,6 +237,7 @@ public class MicroscopyModelPSF1D
                 }
             }
         }
+        PState = 0;
     }
 
 
@@ -242,6 +250,12 @@ public class MicroscopyModelPSF1D
      */
     public void setPhi(double[] alpha)
     {
+
+        if( alpha.length+3 > Nzern)
+        {
+        	Nzern = alpha.length+3 ;
+        	Z = computeZernike(Nzern, Ny, Nx, radius*dxy*Nx);
+        }
         nb_phase_coefs = alpha.length;
         phase_coefs = new double[nb_phase_coefs];
         for (int i = 0; i < nb_phase_coefs; i++)
@@ -260,6 +274,7 @@ public class MicroscopyModelPSF1D
                 }
             }
         }
+    //    PState = 0;
     }
 
     /**
@@ -271,7 +286,7 @@ public class MicroscopyModelPSF1D
      * @param zdepth
      */
     public void computeDefocus(double deltaX, double deltaY, double zdepth)
-    {
+    {	
         maskPupil = computeMaskPupil(Nx, Ny, radius);
         double lambda_ns2 = lambda_ns*lambda_ns;
         double lambda_ni2 = lambda_ni*lambda_ni;
@@ -331,7 +346,7 @@ public class MicroscopyModelPSF1D
             }
         }
 
-        if(zdepth != 0 && use_depth_scaling == 1)
+        if(zdepth != 0 && use_depth_scaling == true)
         {
             double depth_dot_defocus = 0;
             double defocus_L2 = 0;
@@ -353,6 +368,8 @@ public class MicroscopyModelPSF1D
         {
             eta = 0;
         }
+
+        PState = 0;
     }
 
     /**
@@ -394,117 +411,7 @@ public class MicroscopyModelPSF1D
         computeDefocus(deltaX, deltaY, zdepth);
     }
 
-    /**
-     * Compute the point spread function
-     * <p>
-     * h_k(z) = |a_j(z)|² = |Σ_{j,k}A_k(z)|²
-     */
-    public void computePSF()
-    {
-        //computeDefocus(deltaX, deltaY, zdepth);
-        DoubleFFT_2D FFT2D = new DoubleFFT_2D(Ny, Nx);
-        double PSFnorm = 1.0/(Nx*Ny*Nz);
-        // double defoc_scale[] = Utils.indgen((-Nz+1)/2, Nz/2);
-        double defoc_scale;
-        double phasePupil;
-        int Npix = Nx*Ny, Ci;
-        double[] A = new double[2*Npix];
-        //System.out.println("sum phi 1");
-        //System.out.println(MathUtils.sum(phi));
-        
-        if (zdepth != 0)
-        {
-            for (int in = 0; in < Npix; in++)
-            {
-                phi[in] += DEUXPI*ni*zdepth*(gamma[in] - (1 - eta)*psi[in]);
-            }
-        }
-
-        for (int iz = 0; iz < Nz; iz++)
-        {
-            if (iz > Nz/2)
-            {
-                defoc_scale = DEUXPI*(iz - Nz)*dz;
-            }
-            else
-            {
-                defoc_scale = DEUXPI*iz*dz;
-            }
-
-            for (int in = 0; in < Npix; in++)
-            {
-                Ci = iz*Npix + in;
-                phasePupil = phi[in] + defoc_scale*psi[in];
-                PHASE[Ci] = phasePupil;
-                A[2*in] = rho[in]*Math.cos(phasePupil);
-                A[2*in + 1] = rho[in]*Math.sin(phasePupil);
-            }
-            /* Fourier transform of the pupil function A(z) */
-            FFT2D.complexForward(A);
-
-            for (int in = 0; in < Npix; in++)
-            {
-                Ci = iz*Npix + in;
-                psf[Ci] = (A[2*in]*A[2*in] + A[2*in + 1]*A[2*in + 1])*PSFnorm;
-                a[2*Ci] = A[2*in];
-                a[2*Ci + 1] = -A[2*in + 1];
-            }
-        }
-        //System.out.println("sum phi 3");
-        //System.out.println(MathUtils.sum(phi));
-        //System.out.println();
-    }
-
-    public void computePSF_3Dfft()
-    {
-        //computeDefocus(deltaX, deltaY, zdepth);
-        DoubleFFT_3D FFT3D = new DoubleFFT_3D(Nz, Ny, Nx);
-        double PSFnorm = 1.0/(Nx*Ny*Nz);
-        // double defoc_scale[] = Utils.indgen((-Nz+1)/2, Nz/2);
-        double defoc_scale;
-        double phasePupil;
-        int Npix = Nx*Ny, Ci;
-
-        if (zdepth != 0)
-        {
-            for (int in = 0; in < Npix; in++)
-            {
-                phi[in] += DEUXPI*ni*zdepth*(gamma[in] - (1 - eta)*psi[in]);
-            }
-        }
-
-        for (int iz = 0; iz < Nz; iz++)
-        {
-            if (iz > Nz/2)
-            {
-                defoc_scale = DEUXPI*(iz - Nz)*dz;
-            }
-            else
-            {
-                defoc_scale = DEUXPI*iz*dz;
-            }
-
-            for (int in = 0; in < Npix; in++)
-            {
-                Ci = iz*Npix + in;
-                phasePupil = phi[in] + defoc_scale*psi[in];
-                PHASE[Ci] = phasePupil;
-                a[2*in] = rho[in]*Math.cos(phasePupil);
-                a[2*in + 1] = rho[in]*Math.sin(phasePupil);
-            }
-        }
-        /* Fourier transform of the pupil function A(z) */
-        FFT3D.complexForward(a);
-
-        for (int in = 0; in < Npix*Nz; in++)
-        {
-            psf[in] = (a[2*in]*a[2*in] + a[2*in + 1]*a[2*in + 1])*PSFnorm;
-            a[2*in + 1] = -a[2*in + 1];
-        }
-
-    }
-
-    /**
+     /**
      * Compute the point spread function
      * <p>
      * h_k(z) = |a_j(z)|² = |Σ_{j,k}A_k(z)|²
@@ -514,16 +421,20 @@ public class MicroscopyModelPSF1D
      * @param deltaY
      * @param zdepth
      */
-    public void computePSF(final double[] alpha, final double[] beta, double deltaX, double deltaY, double zdepth)
+    public void computePSF(final double[] alpha, final double[] beta, double deltaX, double deltaY)
     {
-        if(alpha.length > Nzern || beta.length > Nzern)
-        {
-            throw new IllegalArgumentException("alpha and coefficients must be lower than number of zernike mod Nzern");
-        }
         computeDefocus(deltaX, deltaY, zdepth);
         setPhi(alpha);
         setRho(beta);
+    }
 
+    /**
+     * Compute the point spread function
+     * <p>
+     * h_k(z) = |a_j(z)|² = |Σ_{j,k}A_k(z)|²
+     */
+    public void computePSF()
+        {
         DoubleFFT_2D FFT2D = new DoubleFFT_2D(Ny, Nx);
 
         double a_2[];
@@ -705,7 +616,7 @@ public class MicroscopyModelPSF1D
             }
         }
 
-        if(use_depth_scaling == 1)
+        if(use_depth_scaling == true)
         {
             for (int j = 0; j < Ny; j++)
             {
@@ -748,7 +659,7 @@ public class MicroscopyModelPSF1D
 
             FFT2D.complexForward(Aq);
 
-            if(use_depth_scaling == 1)
+            if(use_depth_scaling == true)
             {
                 for (int j = 0; j < Ny; j++)
                 {

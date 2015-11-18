@@ -118,9 +118,10 @@ public class PSF_Estimation implements ReconstructionJob {
         int rank = data.getRank();
 
         // Check the PSF.
-        if (psf == null) {
+        if (pupil == null) {
             fatal("PSF not specified.");
         }
+        psf = pupil.psf();
         if (psf.getRank() != rank) {
             fatal("PSF must have same rank as data.");
         }
