@@ -57,7 +57,7 @@ import org.jtransforms.fft.DoubleFFT_3D;
  * Blind deconvolution of 3d data in wide field fluorescence microscopy.
  * <p>
  * @version
- * @author Boba Fett <boba.fett@bounty-hunter.sw>
+ * @author Ferréol Soulez	 <ferreol.soulez@epfl.ch>
  */
 public class MicroscopyModelPSF1D
 {
@@ -92,6 +92,7 @@ public class MicroscopyModelPSF1D
     protected double lambda_ni;
     protected double lambda_ns;
     protected double radius; // radius of the pupil in meter
+    protected double pupil_area;
     protected double NormZ1;
     protected double[] rho; // pupil modulus based on Zernike polynomials
     protected double[] phi; // part of the phase based on Zernike polynomials
@@ -104,7 +105,6 @@ public class MicroscopyModelPSF1D
     protected double psf[];
     protected double[] maskPupil; // mask of the pupil
     protected double eta;
- //   DoubleShapedVectorSpace space;
 
 
 
@@ -180,6 +180,7 @@ public class MicroscopyModelPSF1D
         double scale_x = Math.pow(1/dxy/Nx, 2);
         double rx, ry, ix, iy;
         double radius2 = radius*radius;
+        pupil_area =0.;
         for(int ny = 0; ny < Ny; ny++)
         {
             iy = Math.min(ny, Ny - ny);
@@ -191,17 +192,21 @@ public class MicroscopyModelPSF1D
                 if( (rx + ry) < radius2 )
                 {
                     maskPupil[nx + ny*Nx] = 1;
+                    pupil_area += 1;
+                    
                 }
             }
         }
+        pupil_area = Math.sqrt(pupil_area);
         PState = 0;
         return maskPupil;
     }
 
     private double[] computeZernike(){
         Zernike zernike = new Zernike(Nx, Ny);
-        Z = zernike.zernikePupilMultipleOpt(Nzern, Nx, Ny, radius, NORMALIZED);
-        return Z = MathUtils.gram_schmidt_orthonormalization(Z, Nx, Ny, Nzern);
+        Z = zernike.zernikePupilMultipleOpt(Nzern, Nx, Ny, radius*dxy*Nx, NORMALIZED);
+        Z= MathUtils.gram_schmidt_orthonormalization(Z, Nx, Ny, Nzern);
+        return Z ;
     }
 
     /**
@@ -233,12 +238,18 @@ public class MicroscopyModelPSF1D
         {
             if (maskPupil[in] == 1)
             {
-                for (int n = 0; n < nb_modulus_coefs; ++n)
+            	// rho[in]= 1./pupil_area;
+               for (int n = 0; n < nb_modulus_coefs; ++n)
                 {
                     rho[in] += Z[in + n*Npix]*modulus_coefs[n]*betaNorm;
                 }
             }
         }
+
+        System.out.println("----modulus----");
+        MathUtils.stat(modulus_coefs);
+     //   System.out.println(1./pupil_area);
+      //  System.out.println(betaNorm);
         PState = 0;
     }
 
@@ -496,6 +507,9 @@ public class MicroscopyModelPSF1D
         MathUtils.conj2(a);
 
         PState = 1;
+      /*  System.out.println("area : " );
+        System.out.println(pupil_area );
+        getInfo();*/
     }
 
     public double[] apply_J_rho(double[] q)
@@ -833,6 +847,10 @@ public class MicroscopyModelPSF1D
         return Z;
     }
 
+    public int getNZern() {
+        return Nzern;
+    }
+  
     public double[] getZernike(int k) {
         return MathUtils.getArray(Z, Nx, Ny, k);
     }
