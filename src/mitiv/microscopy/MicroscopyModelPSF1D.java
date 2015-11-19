@@ -26,6 +26,9 @@
 package mitiv.microscopy;
 
 
+import mitiv.array.Double3D;
+import mitiv.array.DoubleArray;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.utils.MathUtils;
 
 import org.jtransforms.fft.DoubleFFT_2D;
@@ -101,7 +104,7 @@ public class MicroscopyModelPSF1D
     protected double psf[];
     protected double[] maskPupil; // mask of the pupil
     protected double eta;
-
+ //   DoubleShapedVectorSpace space;
 
 
 
@@ -163,14 +166,14 @@ public class MicroscopyModelPSF1D
         this.a = new double[Nz*Ny*2*Nx];
         this.PHASE = new double [Nz*Ny*Nx];
         this.use_depth_scaling = use_depth_scaling;
-        this.Z = computeZernike(Nzern, Ny, Nx, radius*dxy*Nx);
-        this.maskPupil = computeMaskPupil(Ny, Nx, radius);
+        this.Z = computeZernike();
+        this.maskPupil = computeMaskPupil();
         this.PState = 0;
         setRho(new double[] {1.});
         setDefocus(new double[] {ni/lambda, 0., 0.});
     }
 
-    private double[] computeMaskPupil(int Nx, int Ny, double radius)
+    private double[] computeMaskPupil()
     {
         double[] maskPupil = new double[Nx*Ny];
         double scale_y = Math.pow(1/dxy/Ny, 2);
@@ -195,8 +198,7 @@ public class MicroscopyModelPSF1D
         return maskPupil;
     }
 
-    private double[] computeZernike(int Nzern, int Nx, int Ny, double radius)
-    {
+    private double[] computeZernike(){
         Zernike zernike = new Zernike(Nx, Ny);
         Z = zernike.zernikePupilMultipleOpt(Nzern, Nx, Ny, radius, NORMALIZED);
         return Z = MathUtils.gram_schmidt_orthonormalization(Z, Nx, Ny, Nzern);
@@ -212,10 +214,10 @@ public class MicroscopyModelPSF1D
     public void setRho(double[] beta)
     {
 
-        if( beta.length+3 > Nzern)
+        if( beta.length > Nzern)
         {
         	Nzern = beta.length;
-        	Z = computeZernike(Nzern, Ny, Nx, radius*dxy*Nx);
+        	Z = computeZernike();
         }
         nb_modulus_coefs = beta.length;
         modulus_coefs = new double[nb_modulus_coefs];
@@ -254,7 +256,7 @@ public class MicroscopyModelPSF1D
         if( alpha.length+3 > Nzern)
         {
         	Nzern = alpha.length+3 ;
-        	Z = computeZernike(Nzern, Ny, Nx, radius*dxy*Nx);
+        	Z = computeZernike();
         }
         nb_phase_coefs = alpha.length;
         phase_coefs = new double[nb_phase_coefs];
@@ -274,7 +276,7 @@ public class MicroscopyModelPSF1D
                 }
             }
         }
-    //    PState = 0;
+        PState = 0;
     }
 
     /**
@@ -287,7 +289,6 @@ public class MicroscopyModelPSF1D
      */
     public void computeDefocus(double deltaX, double deltaY, double zdepth)
     {	
-        maskPupil = computeMaskPupil(Nx, Ny, radius);
         double lambda_ns2 = lambda_ns*lambda_ns;
         double lambda_ni2 = lambda_ni*lambda_ni;
         double scale_x = 1/(Nx*dxy);
@@ -426,6 +427,7 @@ public class MicroscopyModelPSF1D
         computeDefocus(deltaX, deltaY, zdepth);
         setPhi(alpha);
         setRho(beta);
+        computePSF();
     }
 
     /**
@@ -492,6 +494,8 @@ public class MicroscopyModelPSF1D
         }
         /* Conjugate of a */
         MathUtils.conj2(a);
+
+        PState = 1;
     }
 
     public double[] apply_J_rho(double[] q)
@@ -799,11 +803,30 @@ public class MicroscopyModelPSF1D
     }
 
     public double[] getPSF() {
-        return psf;
+
+        if (PState<1){
+            computePSF();
+        }
+    return psf;
     }
 
+
+   /* public DoubleArray getPSF() {
+    	DoubleArray PSFA=null;
+        if (PState<1){
+            computePSF();
+        }
+        
+        ((Double3D) PSFA).wrap(psf, Nx,Ny, Nz);
+
+        return PSFA;
+    }*/
+
     public double[] getPSF(int k) {
-        return MathUtils.getArray(getPSF(), Nx, Ny, k);
+        if (PState<1){
+            computePSF();
+        }
+        return MathUtils.getArray(psf, Nx, Ny, k);
     }
 
     public double[] getZernike() {

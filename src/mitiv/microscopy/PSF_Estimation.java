@@ -27,6 +27,7 @@ package mitiv.microscopy;
 
 import mitiv.array.ArrayFactory;
 import mitiv.array.DoubleArray;
+import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.deconv.WeightedConvolutionCost;
 import mitiv.invpb.ReconstructionJob;
@@ -58,11 +59,12 @@ public class PSF_Estimation implements ReconstructionJob {
     private int limitedMemorySize = 0;
     private double lowerBound = Double.NEGATIVE_INFINITY;
     private double upperBound = Double.POSITIVE_INFINITY;
-    private boolean debug = false;
+    private boolean debug = true;
     private int maxiter = 200;
     private DoubleArray data = null;
-    private DoubleArray psf = null;
+    private ShapedArray obj = null;
     private DoubleArray result = null;
+    private ShapedArray psf = null;
     private double fcost = 0.0;
     private DoubleShapedVector gcost = null;
     private MicroscopyModelPSF1D pupil = null;
@@ -77,7 +79,6 @@ public class PSF_Estimation implements ReconstructionJob {
     public static final int DEFOCUS = 1;
     public static final int ALPHA = 2;
     public static final int BETA = 3;
-
     public void createSynchronizer() {
         if (synchronizer == null) {
             synchronizedParameters[0] = mu;
@@ -116,20 +117,24 @@ public class PSF_Estimation implements ReconstructionJob {
         Shape dataShape = data.getShape();
         Shape xShape = x.getShape();
         int rank = data.getRank();
+        DoubleShapedVectorSpace dataSpace = new DoubleShapedVectorSpace(dataShape);
 
         // Check the PSF.
-        if (pupil == null) {
-            fatal("PSF not specified.");
+        if (obj == null) {
+            fatal("pupil not specified.");
         }
-        psf = pupil.psf();
-        if (psf.getRank() != rank) {
-            fatal("PSF must have same rank as data.");
+       // psf =dataSpace.wrap(pupil.getPSF());
+        if (obj.getRank() != rank) {
+            fatal("Obj must have same rank as data.");
         }
         for (int k = 0; k < rank; ++k) {
-            if (psf.getDimension(k) != dataShape.dimension(k)) {
+            if (obj.getDimension(k) != dataShape.dimension(k)) {
                 fatal("The dimensions of the PSF must match those of the input image.");
             }
         }
+
+        DoubleShapedVectorSpace objSpace = new DoubleShapedVectorSpace(dataShape);
+        
         if (result != null) {
             /* We try to keep the previous result, at least its dimensions
              * must match. */
@@ -146,12 +151,11 @@ public class PSF_Estimation implements ReconstructionJob {
         //DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
 
         DoubleShapedVectorSpace variableSpace = x.getSpace();
-        DoubleShapedVectorSpace dataSpace = new DoubleShapedVectorSpace(dataShape);
         result = ArrayFactory.wrap(x.getData(), xShape);
 
         // Build convolution operator.
-        WeightedConvolutionCost fdata = WeightedConvolutionCost.build(variableSpace, dataSpace);
-        fdata.setPSF(psf);
+        WeightedConvolutionCost fdata = WeightedConvolutionCost.build(objSpace, dataSpace);
+        fdata.setPSF(obj);
         fdata.setWeightsAndData(weights, data);
 
         if (debug) {
@@ -161,7 +165,7 @@ public class PSF_Estimation implements ReconstructionJob {
         // Build the cost functions
         //CompositeDifferentiableCostFunction cost = new CompositeDifferentiableCostFunction(1.0, fdata);
         fcost = 0.0;
-        gcost = dataSpace.create();
+        gcost = objSpace.create();
         if (debug) {
             System.out.println("Cost function initialization complete.");
         }
@@ -252,7 +256,8 @@ public class PSF_Estimation implements ReconstructionJob {
                     pupil.setRho(x.getData());
                 }
                 pupil.computePSF();
-                fcost = fdata.computeCostAndGradient(1.0, dataSpace.wrap(pupil.getPSF()), gcost, true);
+
+                fcost = fdata.computeCostAndGradient(1.0, objSpace.wrap(pupil.getPSF()), gcost, true);
 
                 if(flag == DEFOCUS)
                 {
@@ -418,7 +423,7 @@ public class PSF_Estimation implements ReconstructionJob {
         this.data = data;
     }
 
-    public DoubleArray getPsf() {
+    public ShapedArray getPsf() {
         return psf;
     }
     public void setPsf(DoubleArray psf) {
@@ -466,6 +471,11 @@ public class PSF_Estimation implements ReconstructionJob {
     public double getGradientNormInf() {
         return (gcost == null ? 0.0 : gcost.normInf());
     }
+	public void setObj(ShapedArray obj) {
+		// TODO Auto-generated method stub
+        this.obj = obj;
+		
+	}
 }
 
 /*
