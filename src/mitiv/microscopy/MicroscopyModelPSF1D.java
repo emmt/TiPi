@@ -34,9 +34,8 @@ import mitiv.utils.MathUtils;
 import org.jtransforms.fft.DoubleFFT_2D;
 import org.jtransforms.fft.DoubleFFT_3D;
 
-
 /**
- * Compute a 3D point spread function of a wild field fluorescente microscope (WFFM)
+ * Compute a 3D point spread function of a wild field fluorescence microscope (WFFM)
  * <p>
  * The 3D PSF is modeled after a parametrized pupil function. It is a monochromatic
  * scalar model that defines the 3D PSF h from pupil function p. This pupil function
@@ -298,7 +297,7 @@ public class MicroscopyModelPSF1D
      * @param deltaY
      * @param zdepth
      */
-    public void computeDefocus(double deltaX, double deltaY, double zdepth)
+    public void computeDefocus()
     {	
         double lambda_ns2 = lambda_ns*lambda_ns;
         double lambda_ni2 = lambda_ni*lambda_ni;
@@ -420,7 +419,7 @@ public class MicroscopyModelPSF1D
         default:
             throw new IllegalArgumentException("bad defocus / depth parameters");
         }
-        computeDefocus(deltaX, deltaY, zdepth);
+        computeDefocus();
     }
 
      /**
@@ -435,7 +434,7 @@ public class MicroscopyModelPSF1D
      */
     public void computePSF(final double[] alpha, final double[] beta, double deltaX, double deltaY)
     {
-        computeDefocus(deltaX, deltaY, zdepth);
+        computeDefocus();
         setPhi(alpha);
         setRho(beta);
         computePSF();
@@ -493,7 +492,7 @@ public class MicroscopyModelPSF1D
             {
                 Ci = iz*Npix + in;
                 a[2*Ci] = A[2*in];
-                a[2*Ci + 1] = A[2*in + 1];
+                a[2*Ci + 1] = -A[2*in + 1];
             }
         }
 
@@ -504,7 +503,7 @@ public class MicroscopyModelPSF1D
             psf[in] = a_2[in]*PSFnorm;
         }
         /* Conjugate of a */
-        MathUtils.conj2(a);
+    //    MathUtils.conj2(a);
 
         PState = 1;
       /*  System.out.println("area : " );
@@ -605,12 +604,20 @@ public class MicroscopyModelPSF1D
         double sum_rx=0, sum_ry=0, etadx=0, etady=0, Npupil=0, etadni=0, etadns=0;
         double ni_depth = lambda_ni*lambda*zdepth;
         int Npix =  Nx*Ny;
+       // DoubleFFT_2D FFT2D = new DoubleFFT_2D(Ny, Nx);
         DoubleFFT_2D FFT2D = new DoubleFFT_2D(Ny, Nx);
         double Aq[] = new double[2*Npix];
         double PSFNorm = 1.0/(Nx*Ny*Nz);
         int Ci;
         double[] grd = new double[nb_defocus_coefs];
+        System.out.println("----A----");
+        MathUtils.stat(a);
+        System.out.println();
+        System.out.println("----Q----");
+        MathUtils.stat(q);
+        System.out.println();
 
+        
         for(int nx = 0; nx < Nx; nx++)
         {
             if(nx > Nx/2)
@@ -634,7 +641,7 @@ public class MicroscopyModelPSF1D
             }
         }
 
-        if(use_depth_scaling == true)
+     /*   if(use_depth_scaling == true)
         {
             for (int j = 0; j < Ny; j++)
             {
@@ -655,7 +662,7 @@ public class MicroscopyModelPSF1D
             etady = (etady * defocus_L2 + 2*depth_dot_defocus * sum_ry)/(defocus_L2*defocus_L2 );
             etadni =  lambda_ni * (sum_depth_over_defocus*defocus_L2 - 2* Npupil*depth_dot_defocus) /(defocus_L2 *defocus_L2 );
             etadns =  lambda_ns * sum_defocus_over_depth/(defocus_L2 *defocus_L2 );
-        }
+        }*/
 
         for (int iz = 0; iz < Nz; iz++)
         {
@@ -671,13 +678,25 @@ public class MicroscopyModelPSF1D
             for (int in = 0; in < Npix; in++)
             {
                 Ci = iz*Npix + in;
-                Aq[2*in] = a[2*Ci]*q[Ci];
-                Aq[2*in + 1] = a[2*Ci + 1]*q[Ci];
+              Aq[2*in] = a[2*Ci]*q[Ci];
+               Aq[2*in + 1] = a[2*Ci + 1]*q[Ci];
+           //     Aq[2*in] = q[Ci];
+            //    Aq[2*in + 1] =0;
+            }
+            if(iz<0){
+            System.out.println("----Aq----"+ iz);
+            MathUtils.stat(Aq);
+            System.out.println();
             }
 
             FFT2D.complexForward(Aq);
 
-            if(use_depth_scaling == true)
+            if(iz<0){
+            System.out.println("----Aq----"+ iz);
+            MathUtils.stat(Aq);
+            System.out.println();
+            }
+         /*   if(use_depth_scaling == true)
             {
                 for (int j = 0; j < Ny; j++)
                 {
@@ -715,7 +734,7 @@ public class MicroscopyModelPSF1D
                     }
                 }
             }
-            else
+            else*/
             {
                 for (int j = 0; j < Ny; j++)
                 {
@@ -728,25 +747,32 @@ public class MicroscopyModelPSF1D
                             idef= 1./psi[in];
                             idepth = 0 ;
                             tmpvar = -DEUXPI*rho[in]*( Aq[2*in]*Math.sin(PHASE[Ci]) + Aq[2*in + 1]*Math.cos(PHASE[Ci]) )*PSFNorm;
+                            // tmpvar =  -1 * DEUXPI  * cimag(A[Ci] *modulus[nxy] * cexp(I*( phi[nxy] + DEUXPI *defoc * defocus[nxy])))*(PSFnorm);
                             //tmpvar =  -1 * DEUXPI  * cimag(P2P->A[Ci] *P2P->modulus[nxy] * cexp(I*(P2P->phi[nxy] + DEUXPI *defoc * P2P->defocus[nxy])))*(P2P->PSFnorm);
-                            switch(nb_defocus_coefs)
+//                            switch(nb_defocus_coefs)
+//                            {
+//                            case 4:
+//                                idepth= 1./gamma[in];
+//                                d3 +=  tmpvar*ni_depth*lambda_ns*idepth;
+//                                d0 += tmpvar*( zdepth* (gamma[in] - psi[in])/lambda_ni*lambda );
+//                            case 3:
+//                                d1 -= tmpvar*( rx[i]*(defoc*idef + ni_depth*(idepth - idef)) );
+//                                d2 -= tmpvar*( ry[j]*(defoc*idef + ni_depth*(idepth - idef)) );
+//                            case 1:
+//                                d0 += tmpvar*( idef*lambda_ni*defoc*(1 - ni_depth) );
+//                                break;
+//                            case 2:
+//                                idepth= 1./gamma[in];
+//                                d0 += tmpvar*(  idef*lambda_ni*defoc*(1 - ni_depth) +
+//                                        zdepth*(gamma[in] - psi[in])/lambda_ni*lambda );
+//                                d1 += tmpvar*ni_depth*lambda_ns*idepth;
+//                                break;
+//                            }
+                            
                             {
-                            case 4:
-                                idepth= 1./gamma[in];
-                                d3 +=  tmpvar*ni_depth*lambda_ns*idepth;
-                                d0 += tmpvar*( zdepth* (gamma[in] - psi[in])/lambda_ni*lambda );
-                            case 3:
-                                d1 -= tmpvar*( rx[i]*(defoc*idef + ni_depth*(idepth - idef)) );
-                                d2 -= tmpvar*( ry[j]*(defoc*idef + ni_depth*(idepth - idef)) );
-                            case 1:
-                                d0 += tmpvar*( idef*lambda_ni*defoc*(1 - ni_depth) );
-                                break;
-                            case 2:
-                                idepth= 1./gamma[in];
-                                d0 += tmpvar*(  idef*lambda_ni*defoc*(1 - ni_depth) +
-                                        zdepth*(gamma[in] - psi[in])/lambda_ni*lambda );
-                                d1 += tmpvar*ni_depth*lambda_ns*idepth;
-                                break;
+                                d1 -= tmpvar*( rx[i]*(defoc*idef ));
+                                d2 -= tmpvar*( ry[j]*(defoc*idef) );
+                                d0 += tmpvar*( idef*lambda_ni*defoc );
                             }
                         }
                     }

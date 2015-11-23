@@ -56,11 +56,11 @@ public class PSF_Estimation implements ReconstructionJob {
     private double epsilon = 1.0;
     private double gatol = 0.0;
     private double grtol = 1e-3;
-    private int limitedMemorySize = 0;
+    private int limitedMemorySize = 5;
     private double lowerBound = Double.NEGATIVE_INFINITY;
     private double upperBound = Double.POSITIVE_INFINITY;
-    private boolean debug = true;
-    private int maxiter = 200;
+    private boolean debug = false;
+    private int maxiter = 20;
     private DoubleArray data = null;
     private ShapedArray obj = null;
     private DoubleArray result = null;
@@ -73,7 +73,7 @@ public class PSF_Estimation implements ReconstructionJob {
     private ReconstructionSynchronizer synchronizer = null;
     private double[] synchronizedParameters = {0.0, 0.0};
     private boolean[] change = {false, false};
-    private String[] synchronizedParameterNames = {"Regularization Level", "Relaxation Threshold"};
+  //  private String[] synchronizedParameterNames = {"Regularization Level", "Relaxation Threshold"};
     private DoubleArray weights = null;
 
     public static final int DEFOCUS = 1;
@@ -94,9 +94,9 @@ public class PSF_Estimation implements ReconstructionJob {
         setLowerBound(positivity ? 0.0 : Double.NEGATIVE_INFINITY);
     }
     // FIXME: names should be part of the synchronizer...
-    public String getSynchronizedParameterName(int i) {
-        return synchronizedParameterNames[i];
-    }
+   // public String getSynchronizedParameterName(int i) {
+   //     return synchronizedParameterNames[i];
+   // }
 
     private boolean run = true;
 
@@ -121,7 +121,7 @@ public class PSF_Estimation implements ReconstructionJob {
 
         // Check the PSF.
         if (obj == null) {
-            fatal("pupil not specified.");
+            fatal("Object not specified.");
         }
        // psf =dataSpace.wrap(pupil.getPSF());
         if (obj.getRank() != rank) {
@@ -152,10 +152,10 @@ public class PSF_Estimation implements ReconstructionJob {
 
         DoubleShapedVectorSpace variableSpace = x.getSpace();
         result = ArrayFactory.wrap(x.getData(), xShape);
-
+        int[] off ={0,0, 0};
         // Build convolution operator.
         WeightedConvolutionCost fdata = WeightedConvolutionCost.build(objSpace, dataSpace);
-        fdata.setPSF(obj);
+        fdata.setPSF(obj,off);
         fdata.setWeightsAndData(weights, data);
 
         if (debug) {
@@ -177,12 +177,14 @@ public class PSF_Estimation implements ReconstructionJob {
         NonLinearConjugateGradient nlcg = null;
         BoundProjector projector = null;
         int bounded = 0;
-        if (lowerBound != Double.NEGATIVE_INFINITY) {
+        limitedMemorySize = 0;
+        
+    /*   if (lowerBound != Double.NEGATIVE_INFINITY) {
             bounded |= 1;
         }
         if (upperBound != Double.POSITIVE_INFINITY) {
             bounded |= 2;
-        }
+        }*/
         if (bounded == 0) {
             /* No bounds have been specified. */
             lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
@@ -222,7 +224,12 @@ public class PSF_Estimation implements ReconstructionJob {
         if (debug) {
             System.out.println("Optimization method initialization complete.");
         }
-
+       int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
+        vmlmb = new VMLMB(variableSpace, projector, m, lineSearch);
+        vmlmb.setAbsoluteTolerance(gatol);
+        vmlmb.setRelativeTolerance(grtol);
+        minimizer = vmlmb;
+        
         DoubleShapedVector gX = variableSpace.create();
         // Launch the non linear conjugate gradient
         OptimTask task = minimizer.start();
@@ -261,8 +268,11 @@ public class PSF_Estimation implements ReconstructionJob {
 
                 if(flag == DEFOCUS)
                 {
-                    gX = variableSpace.wrap(pupil.apply_J_defocus(gcost.getData()));
+                  gX = variableSpace.wrap(pupil.apply_J_defocus(gcost.getData()));
+     //               gX = variableSpace.wrap(pupil.apply_J_defocus(data.flatten()));
                     if (debug) {
+                    	System.out.println("grdx");
+                    	MathUtils.stat(gcost.getData());
                         System.out.println("grd");
                         MathUtils.printArray(gX.getData());
                     }
@@ -279,6 +289,8 @@ public class PSF_Estimation implements ReconstructionJob {
                 {
                     gX = variableSpace.wrap(pupil.apply_J_rho(gcost.getData()));
                     if (debug) {
+                    	System.out.println("grdx");
+                    	MathUtils.stat(gcost.getData());
                         System.out.println("grd");
                         MathUtils.printArray(gX.getData());
                     }
@@ -296,7 +308,8 @@ public class PSF_Estimation implements ReconstructionJob {
                     break;
                 }
             } else {
-                System.err.println("TiPi: PSF_Estimation, error/warning: " + task);
+                System.err.println("TiPi: PSF_Estimation, error/warning: :\n");
+                System.err.println( "vl"+ task);
                 break;
             }
             if (synchronizer != null) {
@@ -326,10 +339,10 @@ public class PSF_Estimation implements ReconstructionJob {
             if(minimizer.getEvaluations() > 20)
                 break;
         }
-        if (debug) {
+      /*  if (debug) {
             System.out.format("min(x) = %g\n", ArrayOps.getMin(x.getData()));
             System.out.format("max(x) = %g\n", ArrayOps.getMax(x.getData()));
-        }
+        }*/
 
         if(flag == DEFOCUS)
         {
@@ -371,12 +384,12 @@ public class PSF_Estimation implements ReconstructionJob {
     public void setLimitedMemorySize(int value) {
         limitedMemorySize = value;
     }
-    public void setRegularizationWeight(double value) {
+   /* public void setRegularizationWeight(double value) {
         mu = value;
     }
     public void setRegularizationThreshold(double value) {
         epsilon = value;
-    }
+    }*/
     public void setAbsoluteTolerance(double value) {
         gatol = value;
     }
