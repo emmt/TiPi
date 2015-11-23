@@ -245,8 +245,8 @@ public class MicroscopyModelPSF1D
             }
         }
 
-        System.out.println("----modulus----");
-        MathUtils.stat(modulus_coefs);
+     //   System.out.println("----modulus----");
+     //   MathUtils.stat(modulus_coefs);
      //   System.out.println(1./pupil_area);
       //  System.out.println(betaNorm);
         PState = 0;
@@ -610,12 +610,12 @@ public class MicroscopyModelPSF1D
         double PSFNorm = 1.0/(Nx*Ny*Nz);
         int Ci;
         double[] grd = new double[nb_defocus_coefs];
-        System.out.println("----A----");
+       /* System.out.println("----A----");
         MathUtils.stat(a);
         System.out.println();
         System.out.println("----Q----");
         MathUtils.stat(q);
-        System.out.println();
+        System.out.println();*/
 
         
         for(int nx = 0; nx < Nx; nx++)
