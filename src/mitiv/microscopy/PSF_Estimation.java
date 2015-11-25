@@ -33,7 +33,6 @@ import mitiv.deconv.WeightedConvolutionCost;
 import mitiv.invpb.ReconstructionJob;
 import mitiv.invpb.ReconstructionSynchronizer;
 import mitiv.invpb.ReconstructionViewer;
-import mitiv.linalg.ArrayOps;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.optim.ArmijoLineSearch;
@@ -67,13 +66,12 @@ public class PSF_Estimation implements ReconstructionJob {
     private ShapedArray psf = null;
     private double fcost = 0.0;
     private DoubleShapedVector gcost = null;
-    private MicroscopyModelPSF1D pupil = null;
+    private WideFieldModel pupil = null;
     private ReverseCommunicationOptimizer minimizer = null;
     private ReconstructionViewer viewer = null;
     private ReconstructionSynchronizer synchronizer = null;
     private double[] synchronizedParameters = {0.0, 0.0};
     private boolean[] change = {false, false};
-  //  private String[] synchronizedParameterNames = {"Regularization Level", "Relaxation Threshold"};
     private DoubleArray weights = null;
 
     public static final int DEFOCUS = 1;
@@ -123,7 +121,6 @@ public class PSF_Estimation implements ReconstructionJob {
         if (obj == null) {
             fatal("Object not specified.");
         }
-       // psf =dataSpace.wrap(pupil.getPSF());
         if (obj.getRank() != rank) {
             fatal("Obj must have same rank as data.");
         }
@@ -146,9 +143,7 @@ public class PSF_Estimation implements ReconstructionJob {
             }
         }
 
-        //DoubleShapedVectorSpace xSpace = x.getSpace();
         // Initialize a vector space and populate it with workspace vectors.
-        //DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(shape);
 
         DoubleShapedVectorSpace variableSpace = x.getSpace();
         result = ArrayFactory.wrap(x.getData(), xShape);
@@ -163,7 +158,6 @@ public class PSF_Estimation implements ReconstructionJob {
         }
 
         // Build the cost functions
-        //CompositeDifferentiableCostFunction cost = new CompositeDifferentiableCostFunction(1.0, fdata);
         fcost = 0.0;
         gcost = objSpace.create();
         if (debug) {
@@ -269,7 +263,6 @@ public class PSF_Estimation implements ReconstructionJob {
                 if(flag == DEFOCUS)
                 {
                   gX = variableSpace.wrap(pupil.apply_J_defocus(gcost.getData()));
-     //               gX = variableSpace.wrap(pupil.apply_J_defocus(data.flatten()));
                     if (debug) {
                     	System.out.println("grdx");
                     	MathUtils.stat(gcost.getData());
@@ -339,10 +332,6 @@ public class PSF_Estimation implements ReconstructionJob {
             if(minimizer.getEvaluations() > 20)
                 break;
         }
-      /*  if (debug) {
-            System.out.format("min(x) = %g\n", ArrayOps.getMin(x.getData()));
-            System.out.format("max(x) = %g\n", ArrayOps.getMax(x.getData()));
-        }*/
 
         if(flag == DEFOCUS)
         {
@@ -384,12 +373,6 @@ public class PSF_Estimation implements ReconstructionJob {
     public void setLimitedMemorySize(int value) {
         limitedMemorySize = value;
     }
-   /* public void setRegularizationWeight(double value) {
-        mu = value;
-    }
-    public void setRegularizationThreshold(double value) {
-        epsilon = value;
-    }*/
     public void setAbsoluteTolerance(double value) {
         gatol = value;
     }
@@ -425,7 +408,7 @@ public class PSF_Estimation implements ReconstructionJob {
     public ReconstructionSynchronizer getSynchronizer() {
         return synchronizer;
     }
-    public void setPupil(MicroscopyModelPSF1D pupil) {
+    public void setPupil(WideFieldModel pupil) {
         this.pupil = pupil;
     }
     public DoubleArray getData() {
