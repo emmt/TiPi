@@ -81,6 +81,9 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     @Option(name = "--init", aliases = {"-i"}, usage = "Name of initial image.", metaVar = "INIT")
     private String initName = null;
 
+    @Option(name = "--weight", aliases = {"-w"}, usage = "Name of file with weights.", metaVar = "WEIGHT")
+    private String weightName = null;
+
     @Option(name = "--eta", aliases = {"-e"}, usage = "Mean data error.", metaVar = "ETA")
     private double eta = 1.0;
 
@@ -104,6 +107,9 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
 
     @Option(name = "--xmax", usage = "Upper bound for the variables.", metaVar = "VALUE")
     private double upperBound = Double.POSITIVE_INFINITY;
+
+    @Option(name = "--single", aliases = {"-s"}, usage = "Force single precision.")
+    private boolean single;
 
     @Option(name = "--help", aliases = {"-h", "-?"}, usage = "Display help.")
     private boolean help;
@@ -528,7 +534,6 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             }
         } else {
             /* Some bounds have been specified. */
-            //lineSearch = new ArmijoLineSearch(0.5, 1e-4);
             if (bounded == 1) {
                 /* Only a lower bound has been specified. */
                 projector = new SimpleLowerBound(resultSpace, lowerBound);
@@ -540,6 +545,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                 projector = new SimpleBounds(resultSpace, lowerBound, upperBound);
             }
             int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
+            //lineSearch = new ArmijoLineSearch(0.5, 1e-4);
             //vmlmb = new VMLMB(resultSpace, projector, m, lineSearch);
             //vmlmb.setAbsoluteTolerance(gatol);
             //vmlmb.setRelativeTolerance(grtol);
