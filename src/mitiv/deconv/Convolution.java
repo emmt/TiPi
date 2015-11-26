@@ -372,7 +372,7 @@ public abstract class Convolution extends ShapedLinearOperator {
             int margin = (dstDim/2) - (srcDim/2); // margin for zero-padding
             shift[k] = - (margin + off[k]);
         }
-        return ArrayUtils.roll(ArrayUtils.zeroPadding(psf, inpShape), shift);
+        return ArrayUtils.roll(ArrayUtils.pad(psf, inpShape), shift);
     }
 
     @Override
