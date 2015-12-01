@@ -34,39 +34,39 @@ import mitiv.tests.MinPack1Tests;
 /**
  * Non-linear conjugate gradient methods.
  *
- * References:
- * [1] Hestenes, M.R. & Stiefel, E., "Methods of Conjugate Gradients for
- *     Solving Linear Systems," Journal of Research of the National Bureau
- *     of Standards 49, 409-436 (1952).
+ * References: [1] Hestenes, M.R. & Stiefel, E., "Methods of Conjugate Gradients
+ * for Solving Linear Systems," Journal of Research of the National Bureau of
+ * Standards 49, 409-436 (1952).
  *
  * [2] Hager, W.W. & Zhang, H., "A survey of nonlinear conjugate gradient
- *     methods," Pacific Journal of Optimization, Vol. 2, pp. 35-58 (2006).
+ * methods," Pacific Journal of Optimization, Vol. 2, pp. 35-58 (2006).
  *
- * [3] Hager, W. W. & Zhang, H. "A New Conjugate Gradient Method with
- *     Guaranteed Descent and an Efficient Line Search," SIAM J. Optim.,
- *     Vol. 16, pp. 170-192 (2005).
+ * [3] Hager, W. W. & Zhang, H. "A New Conjugate Gradient Method with Guaranteed
+ * Descent and an Efficient Line Search," SIAM J. Optim., Vol. 16, pp. 170-192
+ * (2005).
  *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
-public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWithLineSearch {
+public class NonLinearConjugateGradient
+extends ReverseCommunicationOptimizerWithLineSearch {
 
     public static final double STPMIN = 1E-20;
-    public static final double STPMAX = 1E+6;
+    public static final double STPMAX = 1E+20;
 
     /* Non-linear optimization method.  POWELL (forcing beta to be
        non-negative) and SHANNO_PHUA (to use their formula in CONMIN to
        estimate the step size) can be combined to the chosen method. */
-    public static final int FLETCHER_REEVES      = 1;
-    public static final int HESTENES_STIEFEL     = 2;
+    public static final int FLETCHER_REEVES = 1;
+    public static final int HESTENES_STIEFEL = 2;
     public static final int POLAK_RIBIERE_POLYAK = 3;
-    public static final int FLETCHER             = 4;
-    public static final int LIU_STOREY           = 5;
-    public static final int DAI_YUAN             = 6;
-    public static final int PERRY_SHANNO         = 7;
-    public static final int HAGER_ZHANG          = 8;
-    public static final int POWELL               = (1<<8); /* force beta >= 0 */
-    public static final int SHANNO_PHUA          = (1<<9); /* compute scale from previous
-                                                       iteration */
+    public static final int FLETCHER = 4;
+    public static final int LIU_STOREY = 5;
+    public static final int DAI_YUAN = 6;
+    public static final int PERRY_SHANNO = 7;
+    public static final int HAGER_ZHANG = 8;
+    public static final int POWELL = (1 << 8); /* force beta >= 0 */
+    public static final int SHANNO_PHUA = (1 << 9); /* compute scale from previous
+                                                    iteration */
     /* For instance: (POLAK_RIBIERE_POLYAK | POWELL) merely
        corresponds to PRP+ (Polak, Ribiere, Polyak) while (PERRY_SHANNO |
        SHANNO_PHUA) merely corresponds to the conjugate gradient method
@@ -76,42 +76,37 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
        the method which is, in general, the most successful). */
     public static final int DEFAULT_METHOD = (HAGER_ZHANG | SHANNO_PHUA);
 
-
     private double f0;     /* Function value at the start of the line search. */
     private double g0norm; /* Euclidean norm of G0, the gradient at the start of the
-                              line search. */
-    private double g1norm; /* Euclidean norm of G1, the gradient of the end of the line
-                              search / last accepted point. */
-    private double dg0;    /* Directional derivative at the start of the line search;
-                              given by the inner product: <d,g0> = - <p,g0> */
-    private double dg1;    /* Directional derivative at the end or during the line search;
-                              given by the inner product: <d,g1> = - <p,g1> */
-    //private double alpha0; /* Scale factor for the initial step step size. */
+                               line search. */
+    private double gnorm;  /* Euclidean norm of G, the gradient of the last accepted point. */
+    private double dtg0;   /* Directional derivative at the start of the line search;
+                               given by the inner product: -<d,g0> */
+    private double dtg;    /* Directional derivative at the last tried point;
+                               given by the inner product: -<d,g> */
     private double grtol;  /* Relative threshold for the norm or the gradient (relative
-                              to GTEST the norm of the initial gradient) for convergence. */
+                               to GTEST the norm of the initial gradient) for convergence. */
     private double gatol;  /* Absolute threshold for the norm or the gradient for
-                              convergence. */
-    private double gtest;  /* Norm or the initial gradient. */
+                               convergence. */
+    private double ginit;  /* Norm or the initial gradient. */
     private double fmin;   /* Minimal function value if provided. */
     private double alpha;  /* Current step length. */
     private double beta;   /* Current parameter in conjugate gradient update rule (for
-                              information). */
+                               information). */
     private final double stpmin; /* Relative lower bound for the step length. */
     private final double stpmax; /* Relative upper bound for the step length. */
     private final VectorSpace vsp;
-    private final Vector x0;     /* Variables at start of line search. */
-    private final Vector g0;     /* Gradient at start of line search. */
-    private final Vector p;      /* (Anti-)search direction, new iterate is searched
-                              as: x1 = x0 - alpha*p, for alpha >= 0. */
-    private final Vector y;      /* Work vector (e.g., to store the gradient difference:
-                              Y = G1 - G0). */
-    private final int method;   /* Conjugate gradient method. */
-    private boolean starting;   /* Indicate whether algorithm is starting */
+    private final Vector x0; /* Variables at start of line search. */
+    private final Vector g0; /* Gradient at start of line search. */
+    private final Vector d;  /* (Anti-)search direction, new iterate is searched
+                                  as: x1 = x0 - alpha*d, for alpha >= 0. */
+    private final Vector y; /* Work vector (e.g., to store the gradient difference:
+                                Y = G - G0). */
+    private final int method; /* Conjugate gradient method. */
     private boolean fmin_given; /* Indicate whether FMIN is specified. */
     private final boolean update_Hager_Zhang_orig = false;
 
-    private static double max(double a1, double a2, double a3)
-    {
+    private static double max(double a1, double a2, double a3) {
         if (a3 >= a2) {
             return (a3 >= a1 ? a3 : a1);
         } else {
@@ -119,20 +114,19 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
         }
     }
 
-    public NonLinearConjugateGradient(VectorSpace vsp)
-    {
+    public NonLinearConjugateGradient(VectorSpace vsp) {
         this(vsp, DEFAULT_METHOD);
     }
 
-    public NonLinearConjugateGradient(VectorSpace vsp, int method)
-    {
+    public NonLinearConjugateGradient(VectorSpace vsp, int method) {
         /* FIXME: choose more suitable values (e.g., in CG+: FTOL=1E-4, GTOL=1E-1,
         not less than 1E-4, XTOL=1E-17, STPMIN=1E-20 STPMAX=1E+20 and MAXFEV=40) */
-        this(vsp, method, new MoreThuenteLineSearch(/* sftol */ 0.05, /* sgtol */ 0.1, /* sxtol */ 1E-17));
+        this(vsp, method, new MoreThuenteLineSearch(/* sftol */ 0.05,
+                /* sgtol */ 0.1, /* sxtol */ 1E-17));
     }
 
-    public NonLinearConjugateGradient(VectorSpace vsp, int method, LineSearch lnsrch)
-    {
+    public NonLinearConjugateGradient(VectorSpace vsp, int method,
+            LineSearch lnsrch) {
         /* Check the input arguments for errors. */
         boolean g0_needed, y_needed;
         if (vsp == null) {
@@ -185,99 +179,95 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
         this.lnsrch = lnsrch;
         this.grtol = 1e-3;
         this.gatol = 0.0;
-        this.gtest = 0.0;
+        this.ginit = 0.0;
         this.stpmin = STPMIN;
         this.stpmax = STPMAX;
         this.x0 = vsp.create();
         this.g0 = (g0_needed ? vsp.create() : null);
-        this.p = vsp.create();
+        this.d = vsp.create();
         this.y = (y_needed ? vsp.create() : null);
-        this.task = OptimTask.ERROR;
         this.evaluations = 0;
+        failure(OptimStatus.NOT_STARTED);
     }
 
     /*
-     * Most non-linear conjugate gradient methods, update the new search direction
-     * by the following rule:
+     * Most non-linear conjugate gradient methods, the new search direction
+     * is updated by the following rule:
      *
-     *     d' = -g1 + beta*d
+     *     d' = -g + beta*d
      *
-     * with d' the new search direction, g1 the current gradient, d the previous
-     * search direction and beta a parameter which depends on the method.  For us,
-     * the anti-search direction is:
+     * with d' the new search direction, g the current gradient, d the previous
+     * search direction and beta a parameter which depends on the method.
      *
-     *     p' = -d' = g1 + beta*p
+     * Some methods (e.g., Perry & Shanno) implement the following rule:
      *
-     * with p = -d the previous anti-search direction.  Some methods (e.g., Perry
-     * & Shanno) implement the following rule:
+     *     d' = (-g + beta*d + gamma*y)*delta
      *
-     *     d' = (-g1 + beta*d + gamma*y)*delta
+     * with y = g - g0.
      *
-     * with y = g1 - g0.
+     * For us, d is rather an anti-search direction thus:
+     *
+     *     d' = g + beta*d
      */
 
-    /* Helper function to compute search direction as: p' = g1 + beta*p. */
-    private int update0(Vector g1, double beta) {
+    /* Helper function to compute anti-search direction as: d' = g + beta*d. */
+    private int update0(Vector g, double beta) {
         this.beta = beta;
         if (this.beta != 0.0) {
-            vsp.axpby(1.0, g1, beta, p);
+            vsp.axpby(1.0, g, beta, d);
             return SUCCESS;
         } else {
             return FAILURE;
         }
     }
 
-    /* Helper function to compute search direction as: p' = g1 + beta*p
+    /* Helper function to compute search direction as: d' = g + beta*d
        possibly with the constraint that beta > 0. */
-    private int update1(Vector g1, double beta)
-    {
-        if ((method & POWELL) != 0 && beta < 0.0) {
+    private int update1(Vector g, double beta) {
+        if ((method & POWELL) == POWELL && beta < 0.0) {
             ++restarts;
             this.beta = 0.0;
         } else {
             this.beta = beta;
         }
         if (this.beta != 0.0) {
-            vsp.axpby(1.0, g1, beta, p, p);
+            vsp.axpby(1.0, g, beta, d, d);
             return SUCCESS;
         } else {
             return FAILURE;
         }
     }
 
-    /* Form: Y = G1 - G0 */
-    private void form_y(Vector g1)
-    {
-        vsp.axpby(1.0, g1, -1.0, g0, y);
+    /* Form: Y = G - G0 */
+    private void form_y(Vector g) {
+        vsp.axpby(1.0, g, -1.0, g0, y);
     }
 
     /*
      * For Hestenes & Stiefel method:
      *
-     *     beta = <g1,y>/<d,y> = - <g1,y>/<p,y>
+     *     beta = <g,y>/<d,y> = - <g,y>/<p,y>
      *
-     * with y = g1 - g0.
+     * with y = g - g0.
      */
-    private int update_Hestenes_Stiefel(Vector x1, Vector g1)
-    {
-        form_y(g1);
-        double g1y =  vsp.dot(g1, y);   /* Compute: g1y = <g1,y> */
-        double dy = -vsp.dot(p, y); /* Compute: dy = <d,y> = - <p,y> */
-        double beta = (dy != 0.0 ? g1y/dy : 0.0);
-        return update1(g1, beta);
+    private int update_Hestenes_Stiefel(Vector x, Vector g) {
+        form_y(g);
+        double gty =  g.dot(y);
+        double dty = -d.dot(y);
+        double beta = (dty != 0.0 ? gty/dty : 0.0);
+        return update1(g, beta);
     }
 
     /*
      * For Fletcher & Reeves method:
      *
-     *     beta = <g1,g1>/<g0,g0>
+     *     beta = <g,g>/<g0,g0>
      *
      * (this value is always >= 0 and can only be zero at a stationnary point).
      */
-    private int update_Fletcher_Reeves(Vector x1, Vector g1)
-    {
-        double r = g1norm/g0norm;
-        return update0(g1, r*r);
+    private int update_Fletcher_Reeves(Vector x, Vector g) {
+        double r = gnorm/g0norm;
+        return update0(g, r*r);
     }
 
     /*
@@ -285,85 +275,79 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
      *
      *     beta = <g1,y>/<g0,g0>
      */
-    private int update_Polak_Ribiere_Polyak(Vector x1, Vector g1)
-    {
-        form_y(g1);
-        double beta = vsp.dot(g1, y)/g0norm/g0norm;
-        return update1(g1, beta);
+    private int update_Polak_Ribiere_Polyak(Vector x, Vector g) {
+        form_y(g);
+        double beta = (g.dot(y)/g0norm)/g0norm;
+        return update1(g, beta);
     }
 
     /*
      * For Fletcher "Conjugate Descent" method:
      *
-     *     beta = <g1,g1>/(-<d,g0>)
+     *     beta = -<g,g>/<d,g0>
      *
      * (this value is always >= 0 and can only be zero at a stationary point).
      */
-    private int update_Fletcher(Vector x1, Vector g1)
-    {
-        double beta = g1norm*(g1norm/(-dg0));
-        return update0(g1, beta);
+    private int update_Fletcher(Vector x, Vector g) {
+        double beta = -gnorm*(gnorm/dtg0);
+        return update0(g, beta);
     }
 
     /*
      * For Liu & Storey method:
      *
-     *     beta = <g1,y>/(-<d,g0>)
+     *     beta = -<g,y>/<d,g0>
      */
-    private int update_Liu_Storey(Vector x1, Vector g1)
-    {
-        form_y(g1);
-        double g1y =  vsp.dot(g1, y);    /* Compute: g1y = <g1,y> */
-        double beta = g1y/(-dg0);
-        return update1(g1, beta);
+    private int update_Liu_Storey(Vector x, Vector g) {
+        form_y(g);
+        double gty = g.dot(y);
+        double beta = -gty/dtg0;
+        return update1(g, beta);
     }
 
     /*
      * For Dai & Yuan method:
      *
-     *     beta = <g1,g1>/<d,y>
+     *     beta = <g,g>/<d,y>
      */
-    private int update_Dai_Yuan(Vector x1, Vector g1)
-    {
-        form_y(g1);
-        double dy = -vsp.dot(p, y); /* Compute: dy = <d,y> = - <p,y> */
-        double beta = (dy != 0.0 ? g1norm*(g1norm/dy) : 0.0);
-        return update1(g1, beta);
+    private int update_Dai_Yuan(Vector x, Vector g) {
+        form_y(g);
+        double dty = -d.dot(y);
+        double beta = (dty != 0.0 ? gnorm*(gnorm/dty) : 0.0);
+        return update1(g, beta);
     }
 
     /*
      * For Hager & Zhang method:
      *
-     *     beta = <y - (2*<y,y>/<d,y>)*d,g1>
-     *          = (<g1,y> - 2*<y,y>*<d,g1>/<d,y>)/<d,y>
+     *     beta = <y - (2*<y,y>/<d,y>)*d,g>
+     *          = (<g,y> - 2*<y,y>*<d,g>/<d,y>)/<d,y>
      */
-    private int update_Hager_Zhang(Vector x1, Vector g1)
-    {
-        form_y(g1);
-        double dy = -vsp.dot(p, y);
+    private int update_Hager_Zhang(Vector x, Vector g) {
+        form_y(g);
+        double dty = -d.dot(y);
         double beta;
-        if (dy != 0.0) {
+        if (dty != 0.0) {
             if (update_Hager_Zhang_orig) {
                 /* Original formulation. */
-                double q = 1.0/dy;
+                double q = 1.0/dty;
                 double r = q*vsp.norm2(y);
-                vsp.axpby(q, y, 2.0*r*r, p, y);
-                beta = vsp.dot(y, g1);
+                vsp.axpby(q, y, 2.0*r*r, d, y);
+                beta = y.dot(g);
             } else {
                 /* Improved formulation which spares one linear combination and thus has
                    less overhead (only 3 scalar products plus 2 linear combinations
                    instead of 3 scalar products and 3 linear combinations).  The rounding
                    errors are however different, so one or the other formulation can be by
                    chance more efficient.  Though there is no systematic trend. */
-                double yg = vsp.dot(y, g1);
-                double dg = dg1;
-                double r = vsp.norm2(y)/dy;
-                beta = yg/dy - 2.0*r*r*dg;
+                double ytg = y.dot(g);
+                double r = vsp.norm2(y)/dty;
+                beta = ytg/dty - 2.0*r*r*dtg;
             }
         } else {
             beta = 0.0;
         }
-        return update1(g1, beta);
+        return update1(g, beta);
     }
 
     /* Perry & Shanno, update rule (used in CONMIN and see Eq. (1.4) in [2])
@@ -386,185 +370,170 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
      * with alpha the step length, s = x1 - x0 = alpha*d = -alpha*p.  For this
      * method, beta = c2/c1.
      */
-    private int update_Perry_Shanno(Vector x1, Vector g1)
-    {
-        form_y(g1);
-        double yy = vsp.dot(y, y);
-        if (yy <= 0.0) return FAILURE;
-        double dy = -vsp.dot(p, y);
-        if (dy == 0.0) return FAILURE;
-        double g1y = vsp.dot(g1, y);
-        double c1 = dy/yy;
-        double c2 = g1y/yy - 2.0*dg1/dy;
-        double c3 = -dg1/yy;
+    private int update_Perry_Shanno(Vector x, Vector g) {
+        form_y(g);
+        double yty = y.dot(y);
+        if (yty <= 0.0)
+            return FAILURE;
+        double dty = -d.dot(y);
+        if (dty == 0.0)
+            return FAILURE;
+        double gty = g.dot(y);
+        double c1 = dty/yty;
+        double c2 = gty/yty - 2.0*dtg/dty;
+        double c3 = -dtg/yty;
         beta = c2/c1;
-        vsp.axpbypcz(c1, g1, c2, p, c3, y, p);
+        vsp.axpbypcz(c1, g, c2, d, c3, y, d);
         return SUCCESS;
     }
 
     /* This method is called to update the search direction.  The returned
     value indicates whether the updating rule has been successful, otherwise
     a restart is needed. */
-    private int update(Vector x1, Vector g1)
-    {
+    private int update(Vector x, Vector g) {
         switch (method & 0xff) {
         case FLETCHER_REEVES:
-            return update_Fletcher_Reeves(x1, g1);
+            return update_Fletcher_Reeves(x, g);
         case HESTENES_STIEFEL:
-            return update_Hestenes_Stiefel(x1, g1);
+            return update_Hestenes_Stiefel(x, g);
         case POLAK_RIBIERE_POLYAK:
-            return update_Polak_Ribiere_Polyak(x1, g1);
+            return update_Polak_Ribiere_Polyak(x, g);
         case FLETCHER:
-            return update_Fletcher(x1, g1);
+            return update_Fletcher(x, g);
         case LIU_STOREY:
-            return update_Liu_Storey(x1, g1);
+            return update_Liu_Storey(x, g);
         case DAI_YUAN:
-            return update_Dai_Yuan(x1, g1);
+            return update_Dai_Yuan(x, g);
         case PERRY_SHANNO:
-            return update_Perry_Shanno(x1, g1);
+            return update_Perry_Shanno(x, g);
         case HAGER_ZHANG:
-            return update_Hager_Zhang(x1, g1);
+            return update_Hager_Zhang(x, g);
         default:
             return FAILURE;
         }
     }
 
     @Override
-    public OptimTask start()
-    {
+    public OptimTask start() {
         iterations = 0;
         evaluations = 0;
         restarts = 0;
-        starting = true;
-        gtest = 0.0;
-        return schedule(OptimTask.COMPUTE_FG);
+        ginit = 0.0;
+        return success(OptimTask.COMPUTE_FG);
     }
 
     @Override
-    public OptimTask restart()
-    {
+    public OptimTask restart() {
         ++restarts;
-        starting = true;
-        return schedule(OptimTask.COMPUTE_FG);
+        return success(OptimTask.COMPUTE_FG);
     }
 
     @Override
-    public OptimTask iterate(Vector x1, double f1, Vector g1)
-    {
+    public OptimTask iterate(Vector x, double f, Vector g) {
         /*
          * The new iterate is:
-         *    x_{k+1} = x_{k} + \alpha_{k} d_{k}
-         *            = x_{k} - \alpha_{k} p_{k}
-         * as we consider the anti-search direction p = -d here.
+         *    x_{k+1} = x_{k} - \alpha_{k} p_{k}
+         * as we consider the anti-search direction here.
          */
-        if (task == OptimTask.COMPUTE_FG) {
-            boolean accept;
+        switch (getTask()) {
+        case COMPUTE_FG:
             ++evaluations;
-            if (starting) {
-                g1norm = vsp.norm2(g1);
-                gtest = g1norm;
-                accept = true;
+            if (evaluations > 1) {
+                /* A line search is in progress.  Compute directional
+                 * derivative and check whether line search has converged. */
+                dtg = -d.dot(g);
+                LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, dtg);
+                if (lnsrchTask == LineSearchTask.SEARCH) {
+                    break;
+                } else if (lnsrchTask != LineSearchTask.CONVERGENCE) {
+                    OptimStatus lnsrchStatus = lnsrch.getStatus();
+                    if (lnsrchTask != LineSearchTask.WARNING
+                            || lnsrchStatus != OptimStatus.ROUNDING_ERRORS_PREVENT_PROGRESS) {
+                        return failure(lnsrchStatus);
+                    }
+                }
+                ++iterations;
             } else {
-                /* Compute directional derivative and check whether line search has
-                   converged. */
-                dg1 = -vsp.dot(p, g1);
-                LineSearchStatus status = lnsrch.iterate(alpha, f1, dg1);
-                alpha = lnsrch.getStep();
-                if (status == LineSearchStatus.SEARCH) {
-                    accept = false;
-                } else if (status == LineSearchStatus.CONVERGENCE ||
-                        status == LineSearchStatus.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS) {
-                    ++iterations;
-                    g1norm = vsp.norm2(g1);
-                    accept = true;
-                } else {
-                    /* FIXME: some warnings can be safely considered as a convergence */
-                    return lineSearchFailure(status);
-                }
+                dtg = 0.0;
             }
-            if (accept) {
-                /* Check for global convergence. */
-                if (g1norm <= getGradientThreshold()) {
-                    return schedule(OptimTask.FINAL_X);
-                } else {
-                    return schedule(OptimTask.NEW_X);
-                }
+
+            /* The current step is acceptable. Check for global convergence. */
+            gnorm = g.norm2();
+            if (evaluations == 1) {
+                ginit = gnorm;
             }
-        } else if (task == OptimTask.NEW_X) {
+            return success(gnorm <= getGradientThreshold() ? OptimTask.FINAL_X
+                    : OptimTask.NEW_X);
+
+        case NEW_X:
+        case FINAL_X:
             /* Compute a search direction and start line search. */
-            boolean restart;
-            if (starting) {
-                restart = true;
-                beta = 0.0;
-            } else {
-                restart = (update(x1, g1) != SUCCESS);
-                if (! restart) {
-                    double dg = -vsp.dot(p, g1);
-                    if (dg >= 0.0) {
-                        /* Restart if not a descent direction, not all updates warrant that.
-                           (FIXME: Generate an error instead?) */
-                        restart = true;
+            if (evaluations > 1) {
+                if (update(x, g) != SUCCESS) {
+                    dtg = 0.0;
+                } else {
+                    dtg = -d.dot(g);
+                    if (dtg >= 0.0) {
+                        /* Restart if the recursion does not yield a sufficient descent
+                           direction (not all methods warrant that). */
+                        ++restarts;
                     } else {
-                        /* Compute an initial step size ALPHA. */
-                        if ((method & SHANNO_PHUA) != 0) {
+                        /* Compute an initial step size ALPHA along the new direction. */
+                        if ((method & SHANNO_PHUA) == SHANNO_PHUA) {
                             /* Initial step size is such that:
                                <alpha_{k+1}*d_{k+1},g_{k+1}> = <alpha_{k}*d_{k},g_{k}> */
-                            alpha *= dg0/dg;
+                            alpha *= (dtg0/dtg);
                         }
                     }
-                    /* Save directional derivative. */
-                    dg0 = dg;
                 }
             }
-            if (restart) {
+            if (dtg >= 0.0) {
                 /* Initial search direction or recurrence has been restarted.  FIXME:
                    other possibility is to use Fletcher's formula, see BGLS p. 39) */
-                if (! starting) {
-                    ++restarts;
-                }
                 beta = 0.0;
                 // FIXME: cleanup code
-                //double x1norm = vsp.norm2(x1);
-                //if (x1norm > 0.0) {
-                //    alpha = (x1norm/g1norm)*tiny;
-                //} else {
-                //    alpha = (1e-3*Math.max(Math.abs(f1), 1.0)/g1norm)/g1norm;
-                //}
-                alpha = 1.0/g1norm;
-                vsp.copy(g1, p);
-                dg0 = -g1norm*g1norm;
+                // double x1norm = vsp.norm2(x1);
+                // if (x1norm > 0.0) {
+                // alpha = (x1norm/g1norm)*tiny;
+                // } else {
+                // alpha = (1e-3*Math.max(Math.abs(f1), 1.0)/g1norm)/g1norm;
+                // }
+                alpha = 1.0/gnorm;
+                vsp.copy(g, d);
+                dtg = -gnorm*gnorm;
             }
 
             /* Store current position as X0, f0, etc. */
-            vsp.copy(x1, x0);
-            f0 = f1;
+            vsp.copy(x, x0);
+            f0 = f;
             if (g0 != null) {
-                vsp.copy(g1, g0);
+                vsp.copy(g, g0);
             }
-            g0norm = g1norm;
+            g0norm = gnorm;
+            dtg0 = dtg;
 
             /* Start the line search. */
-            dg1 = dg0;
-            LineSearchStatus status = lnsrch.start(f0, dg0, alpha,
-                    stpmin*alpha,
-                    stpmax*alpha);
-            if (status != LineSearchStatus.SEARCH) {
-                return lineSearchFailure(status);
+            if (lnsrch.start(f0, dtg0, alpha, stpmin*alpha,
+                    stpmax*alpha) != LineSearchTask.SEARCH) {
+                return failure(lnsrch.getStatus());
             }
-        } else {
-            return task;
+            break;
+
+        default:
+            return getTask();
         }
 
         /* Build a new step to try. */
-        x1.axpby(1.0, x0, -alpha, p);
-        starting = false;
-        return schedule(OptimTask.COMPUTE_FG);
+        x.axpby(1.0, x0, -alpha, d);
+        return success(OptimTask.COMPUTE_FG);
 
     }
 
     /**
      * Set the absolute tolerance for the convergence criterion.
-     * @param gatol - Absolute tolerance for the convergence criterion.
+     *
+     * @param gatol
+     *            - Absolute tolerance for the convergence criterion.
      * @see {@link #setRelativeTolerance}, {@link #getAbsoluteTolerance},
      *      {@link #getGradientThreshold}.
      */
@@ -574,7 +543,9 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
 
     /**
      * Set the relative tolerance for the convergence criterion.
-     * @param grtol - Relative tolerance for the convergence criterion.
+     *
+     * @param grtol
+     *            - Relative tolerance for the convergence criterion.
      * @see {@link #setAbsoluteTolerance}, {@link #getRelativeTolerance},
      *      {@link #getGradientThreshold}.
      */
@@ -584,6 +555,7 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
 
     /**
      * Query the absolute tolerance for the convergence criterion.
+     *
      * @see {@link #setAbsoluteTolerance}, {@link #getRelativeTolerance},
      *      {@link #getGradientThreshold}.
      */
@@ -593,6 +565,7 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
 
     /**
      * Query the relative tolerance for the convergence criterion.
+     *
      * @see {@link #setRelativeTolerance}, {@link #getAbsoluteTolerance},
      *      {@link #getGradientThreshold}.
      */
@@ -603,39 +576,42 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
     /**
      * Query the gradient threshold for the convergence criterion.
      *
-     * The convergence of the optimization method is achieved when the
-     * Euclidean norm of the gradient at a new iterate is less or equal
-     * the threshold:
+     * The convergence of the optimization method is achieved when the Euclidean
+     * norm of the gradient at a new iterate is less or equal the threshold:
+     *
      * <pre>
-     *    max(0.0, gatol, grtol*gtest)
+     * max(0.0, gatol, grtol * gtest)
      * </pre>
+     *
      * where {@code gtest} is the norm of the initial gradient, {@code gatol}
      * {@code grtol} are the absolute and relative tolerances for the
      * convergence criterion.
+     *
      * @return The gradient threshold.
      * @see {@link #setAbsoluteTolerance}, {@link #setRelativeTolerance},
      *      {@link #getAbsoluteTolerance}, {@link #getRelativeTolerance}.
      */
     public double getGradientThreshold() {
-        return max(0.0, gatol, grtol*gtest);
+        return max(0.0, gatol, grtol * ginit);
     }
 
     /**
      * Query the assumed function least value.
+     *
      * @return The assumed function least value if it has been set,
      *         {@code Double.NaN} else.
      */
-    public double getFMin()
-    {
+    public double getFMin() {
         return (fmin_given ? fmin : Double.NaN);
     }
 
     /**
      * Set the assumed function least value.
-     * @param value - An estimate of the function least value.
+     *
+     * @param value
+     *            - An estimate of the function least value.
      */
-    public void setFMin(double value)
-    {
+    public void setFMin(double value) {
         if (Double.isInfinite(value) || Double.isNaN(value)) {
             unsetFMin();
         } else {
@@ -647,25 +623,28 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
     /**
      * Forget the assumed function least value.
      */
-    public void unsetFMin()
-    {
+    public void unsetFMin() {
         fmin = Double.NaN;
         fmin_given = false;
     }
 
     /**
      * Testing routine.
+     *
      * @param args
      */
     public static void main(String[] args) {
 
-        int[] prob = new int[] {1, 2, 3, 4, 5, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
-        int[] size = new int[] {3, 6, 3, 2, 3, 5, 6, 9, 6, 8,  2,  4,  3,  8,  8, 12,  2,  4, 30};
+        int[] prob = new int[] { 1, 2, 3, 4, 5, 6, 7, 7, 8, 9, 10, 11, 12, 13,
+                14, 15, 16, 17, 18 };
+        int[] size = new int[] { 3, 6, 3, 2, 3, 5, 6, 9, 6, 8, 2, 4, 3, 8, 8,
+                12, 2, 4, 30 };
         double factor = 1.0;
 
         /* Create line search object and set options. */
         int method = HAGER_ZHANG;
-        MoreThuenteLineSearch lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-8);
+        MoreThuenteLineSearch lineSearch = new MoreThuenteLineSearch(0.05, 0.1,
+                1E-8);
 
         for (int k = 0; k < prob.length; ++k) {
             int p = prob[k];
@@ -684,7 +663,8 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
             MinPack1Tests.umipt(xData, p, factor);
 
             /* Create conjugate gradient minimizer. */
-            NonLinearConjugateGradient minimizer = new NonLinearConjugateGradient(space, method, lineSearch);
+            NonLinearConjugateGradient minimizer = new NonLinearConjugateGradient(
+                    space, method, lineSearch);
 
             OptimTask task = minimizer.start();
             while (true) {
@@ -696,19 +676,24 @@ public class NonLinearConjugateGradient extends ReverseCommunicationOptimizerWit
                 } else if (task == OptimTask.NEW_X) {
                     ++iter;
                     if (iter == 0) {
-                        System.out.println("\nProblem #" + p + " with " + n + " variables.");
-                        System.out.println("|x0| = " + space.norm2(x) + " f0 = " + fx + " |g0| = " + space.norm2(gx));
+                        System.out.println("\nProblem #" + p + " with " + n
+                                + " variables.");
+                        System.out.println("|x0| = " + space.norm2(x) + " f0 = "
+                                + fx + " |g0| = " + space.norm2(gx));
                         /*} else {
                         System.out.println("iter = " + iter + " f(x) = " + fx + " |g(x)| = " + space.norm2(gx)); */
                     }
                 } else if (task == OptimTask.FINAL_X) {
                     ++iter;
-                    System.out.println("|xn| = " + space.norm2(x) + " f(xn) = " + fx + " |g(xn)| = " + space.norm2(gx));
-                    System.out.println("in " + iter + " iterations, " + nf + " function calls and "
-                            + ng + " gradient calls");
+                    System.out.println("|xn| = " + space.norm2(x) + " f(xn) = "
+                            + fx + " |g(xn)| = " + space.norm2(gx));
+                    System.out.println("in " + iter + " iterations, " + nf
+                            + " function calls and " + ng + " gradient calls");
                     break;
                 } else {
-                    System.err.println("TiPi: NonLinearConjugateGradient, error/warning: " + task);
+                    System.err.println(
+                            "TiPi: NonLinearConjugateGradient, error/warning: "
+                                    + task);
                     break;
                 }
                 task = minimizer.iterate(x, fx, gx);
