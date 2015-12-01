@@ -163,13 +163,13 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
 
     private OptimTask begin() {
         H.reset();
-        return schedule(OptimTask.COMPUTE_FG);
+        return success(OptimTask.COMPUTE_FG);
     }
 
     @Override
     public OptimTask iterate(Vector x, double f, Vector g) {
 
-        switch (task) {
+        switch (getTask()) {
 
         case COMPUTE_FG:
 
@@ -182,23 +182,15 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             if (evaluations > 1) {
                 /* A line search is in progress.  Compute directional
                  * derivative and check whether line search has converged. */
-                double pg = p.dot(g);
-                LineSearchStatus status = lnsrch.iterate(alpha, f, -pg);
-                if (status == LineSearchStatus.SEARCH) {
-                    alpha = lnsrch.getStep();
-                    x.axpby(1.0, x0, -alpha, p);
-                    if (projector != null) {
-                        projector.projectVariables(x, x);
+                LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, -p.dot(g));
+                if (lnsrchTask == LineSearchTask.SEARCH) {
+                    return nextStep(x);
+                } else if (lnsrchTask != LineSearchTask.CONVERGENCE) {
+                    OptimStatus lnsrchStatus = lnsrch.getStatus();
+                    if (lnsrchTask != LineSearchTask.WARNING ||
+                            lnsrchStatus != OptimStatus.ROUNDING_ERRORS_PREVENT_PROGRESS) {
+                        return failure(lnsrchStatus);
                     }
-                    return schedule(OptimTask.COMPUTE_FG);
-                }
-                if (status == LineSearchStatus.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS) {
-                    status = LineSearchStatus.CONVERGENCE;
-                } else if (status == LineSearchStatus.WARNING_STP_EQ_STPMAX && projector != null) {
-                    status = LineSearchStatus.CONVERGENCE;
-                }
-                if (status != LineSearchStatus.CONVERGENCE) {
-                    return lineSearchFailure(status);
                 }
                 ++iterations;
             }
@@ -209,7 +201,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                 ginit = gnorm;
             }
             double gtest = getGradientThreshold();
-            return schedule(gnorm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
+            return success(gnorm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
 
         case NEW_X:
 
@@ -240,7 +232,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                     /* Initial iteration or recursion has just been
                      * restarted.  This means that the initial inverse
                      * Hessian approximation is not positive definite. */
-                    return failure(BAD_PRECONDITIONER);
+                    return failure(OptimStatus.BAD_PRECONDITIONER);
                 }
                 /* Restart the LBFGS recursion and loop to use H0 to compute
                  * an initial search direction. */
@@ -304,7 +296,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                     dg0 = -tmp.dot(g0);
                     if (dg0 < 0.0) break; // FIXME: tolerance?
                     if (dg0 == 0.0 && H.mp < 1) {
-                        return schedule(OptimTask.FINAL_X);
+                        return success(OptimTask.FINAL_X);
                     }
                     if (H.mp >= 1) {
                         /* Restart the LBFGS recursion and loop to use H0 to compute
@@ -325,16 +317,16 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                 amin = stpmin;
                 amax = 1.0;
             }
-            LineSearchStatus status = lnsrch.start(f0, dg0, alpha, amin, amax);
-            if (status != LineSearchStatus.SEARCH) {
-                return lineSearchFailure(status);
+            LineSearchTask lnsrchTask = lnsrch.start(f0, dg0, alpha, amin, amax);
+            if (lnsrchTask != LineSearchTask.SEARCH) {
+                return failure(lnsrch.getStatus());
             }
-            return schedule(OptimTask.COMPUTE_FG);
+            return success(OptimTask.COMPUTE_FG);
 
         default:
 
             /* There must be something wrong. */
-            return task;
+            return getTask();
 
         }
     }
@@ -348,6 +340,16 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             }
         }
         return 1.0/dnorm;
+    }
+
+    /** Build the new step to try as: x = Proj(x0 - alpha*p). */
+    private OptimTask nextStep(Vector x) {
+        alpha = lnsrch.getStep();
+        x.axpby(1.0, x0, -alpha, p);
+        if (projector != null) {
+            projector.projectVariables(x, x);
+        }
+        return success(OptimTask.COMPUTE_FG);
     }
 
     /**
