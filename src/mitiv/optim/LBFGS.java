@@ -161,13 +161,13 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
     private OptimTask begin() {
         H.reset();
-        return schedule(OptimTask.COMPUTE_FG);
+        return success(OptimTask.COMPUTE_FG);
     }
 
     @Override
     public OptimTask iterate(Vector x, double f, Vector g) {
 
-        switch (task) {
+        switch (getTask()) {
 
         case COMPUTE_FG:
 
@@ -177,17 +177,17 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             if (evaluations > 1) {
                 /* A line search is in progress.  Compute directional
                  * derivative and check whether line search has converged. */
-                LineSearchStatus status = lnsrch.iterate(alpha, f, -p.dot(g));
-                switch (status) {
-                case SEARCH:
+                LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, -p.dot(g));
+                if (lnsrchTask == LineSearchTask.SEARCH) {
                     return nextStep(x);
-                case CONVERGENCE:
-                case WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS:
-                    ++iterations;
-                    break;
-                default:
-                    return lineSearchFailure(status);
+                } else if (lnsrchTask != LineSearchTask.CONVERGENCE) {
+                    OptimStatus lnsrchStatus = lnsrch.getStatus();
+                    if (lnsrchTask != LineSearchTask.WARNING ||
+                            lnsrchStatus != OptimStatus.ROUNDING_ERRORS_PREVENT_PROGRESS) {
+                        return failure(lnsrchStatus);
+                    }
                 }
+                ++iterations;
             }
 
             /* The current step is acceptable. Check for global convergence. */
@@ -196,16 +196,15 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
                 ginit = gnorm;
             }
             double gtest = getGradientThreshold();
-            return schedule(gnorm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
+            return success(gnorm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
 
         case NEW_X:
+        case FINAL_X:
 
             if (iterations >= 1) {
                 /* Update the LBFGS matrix. */
                 H.update(x, x0, g, g0);
             }
-
-        case FINAL_X:
 
             /* Compute a anti-search direction P.  We take care of checking
              * whether D = -P is a sufficient descent direction.  As shown by
@@ -228,7 +227,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
                     /* Initial iteration or recursion has just been
                      * restarted.  This means that the initial inverse
                      * Hessian approximation is not positive definite. */
-                    return failure(BAD_PRECONDITIONER);
+                    return failure(OptimStatus.BAD_PRECONDITIONER);
                 }
                 /* Restart the LBFGS recursion and loop to use H0 to compute
                  * an initial search direction. */
@@ -250,9 +249,9 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             f0 = f;
 
             /* Start the line search. */
-            LineSearchStatus status = lnsrch.start(f0, dg0, alpha, stpmin*alpha, stpmax*alpha);
-            if (status != LineSearchStatus.SEARCH) {
-                return lineSearchFailure(status);
+            LineSearchTask lnsrchTask = lnsrch.start(f0, dg0, alpha, stpmin*alpha, stpmax*alpha);
+            if (lnsrchTask != LineSearchTask.SEARCH) {
+                return failure(lnsrch.getStatus());
             }
 
             /* Take the first step along the search direction. */
@@ -261,7 +260,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
         default:
 
             /* There must be something wrong. */
-            return task;
+            return getTask();
 
         }
 
@@ -284,7 +283,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
     private OptimTask nextStep(Vector x) {
         alpha = lnsrch.getStep();
         x.axpby(1.0, x0, -alpha, p);
-        return schedule(OptimTask.COMPUTE_FG);
+        return success(OptimTask.COMPUTE_FG);
     }
 
     /**
