@@ -25,24 +25,25 @@
 
 package mitiv.optim;
 
-
 /**
  * Nonmonotone line search method.
- * 
+ *
  * <p>
- * This calls implements nonmonotone line search method of Birgin,
- * Martinez, and Raydan (2000).</p>
- * 
+ * This calls implements nonmonotone line search method of Birgin, Martinez, and
+ * Raydan (2000).
+ * </p>
+ *
  * <ol>
- * <li>Ernesto G. Birgin, José Mario Martínez, and Marcos Raydan. "<i>Nonmonotone
- *     spectral projected gradient methods on convex sets</i>." SIAM J. Optim.,
- *     <b>10</b>, pp. 1196–1211, (2000). [doi: 10.1137/S1052623497330963]</li>
+ * <li>Ernesto G. Birgin, José Mario Martínez, and Marcos Raydan. "
+ * <i>Nonmonotone spectral projected gradient methods on convex sets</i>." SIAM
+ * J. Optim., <b>10</b>, pp. 1196–1211, (2000). [doi: 10.1137/S1052623497330963]
+ * </li>
  * <li>Ernesto G Birgin, José Mario Martínez, and Marcos Raydan. "<i>Algorithm
- *     813: SPG — software for convex-constrained optimization</i>." ACM
- *     Transactions on Mathematical Software (TOMS), <b>27</b>, pp. 340–349
- *     (2001). [doi: 10.1145/502800]</li>
+ * 813: SPG — software for convex-constrained optimization</i>." ACM
+ * Transactions on Mathematical Software (TOMS), <b>27</b>, pp. 340–349 (2001).
+ * [doi: 10.1145/502800]</li>
  * </ul>
- * 
+ *
  * @author Éric Thiébaut.
  */
 public class NonmonotoneLineSearch extends LineSearch {
@@ -80,16 +81,19 @@ public class NonmonotoneLineSearch extends LineSearch {
      * <p>
      * The line search is assumed to have converged when the following
      * sufficient decrease (Armijo) condition holds:
+     *
      * <pre>
      *    f(x0 + alpha*d) <= fmax + alpha*ftol*<d|g(x0)>
      * </pre>
+     *
      * where <i>fmax</i> is the highest function value since the last <i>m</i>
      * steps, <i>alpha</i> is the step length and <i>ftol</i> is the parameter
-     * of the Armijo condition.</p>
+     * of the Armijo condition.
+     * </p>
      *
-     * @param ftol - The parameter value.  Must be in the range (0,1)
-     *                 otherwise an {@link IllegalArgumentException} is
-     *                 thrown.
+     * @param ftol
+     *            - The parameter value. Must be in the range (0,1) otherwise an
+     *            {@link IllegalArgumentException} is thrown.
      */
     public void setTolerance(double ftol) {
         if (Double.isNaN(ftol) || ftol <= 0.0 || ftol >= 1.0) {
@@ -99,14 +103,14 @@ public class NonmonotoneLineSearch extends LineSearch {
     }
 
     /**
-     * Get lower steplength bound to trigger bisection.
+     * Get lower step length bound to trigger bisection.
      */
     public double getLowerBound() {
         return sigma1;
     }
 
     /**
-     * Get upper steplength relative bound to trigger bisection.
+     * Get upper step length relative bound to trigger bisection.
      */
     public double getUpperBound() {
         return sigma2;
@@ -114,9 +118,11 @@ public class NonmonotoneLineSearch extends LineSearch {
 
     /**
      * Set bounds to trigger bisection.
-     * 
-     * @param lower  The lower steplength bound to trigger bisection.
-     * @param upper  The upper steplength relative bound to trigger bisection.
+     *
+     * @param lower
+     *            The lower step length bound to trigger bisection.
+     * @param upper
+     *            The upper step length relative bound to trigger bisection.
      */
     public void setBounds(double lower, double upper) {
         if (Double.isNaN(lower) || Double.isNaN(upper) || lower <= 0.0
@@ -136,8 +142,9 @@ public class NonmonotoneLineSearch extends LineSearch {
 
     /**
      * Constructor with given number of steps to memorize.
-     * 
-     * @param m  The number of previous steps to memorize.
+     *
+     * @param m
+     *            The number of previous steps to memorize.
      */
     public NonmonotoneLineSearch(int m) {
         if (m < 1) {
@@ -156,38 +163,40 @@ public class NonmonotoneLineSearch extends LineSearch {
     }
 
     @Override
-    protected LineSearchStatus startHook() {
+    protected void startHook() {
         /* Save function value. */
-        fsav[mp%m] = finit;
+        fsav[mp % m] = finit;
         ++mp;
 
         /* Get the worst function value among the N last steps. */
-        int n = Math.min(mp,  mp);
+        int n = Math.min(mp, mp);
         fmax = fsav[0];
         for (int k = 1; k < n; ++k) {
             if (fmax < fsav[k]) {
                 fmax = fsav[k];
             }
         }
-        return LineSearchStatus.SEARCH;
+        success(LineSearchTask.SEARCH);
     }
 
     @Override
-    public LineSearchStatus iterateHook(double f, double g) {
+    public void iterateHook(double f, double g) {
         /* Check whether Armijo-like condition satisfied. */
-        if (f <= fmax + stp*ftol*ginit) {
+        if (f <= fmax + stp * ftol * ginit) {
             /* Convergence criterion satisfied. */
-            return LineSearchStatus.CONVERGENCE;
+            success(LineSearchTask.CONVERGENCE);
+            return;
         }
 
         /* Check whether step is already at the lower bound. */
         if (stp <= stpmin) {
             stp = stpmin;
-            return LineSearchStatus.WARNING_STP_EQ_STPMIN;
+            warning(OptimStatus.STEP_EQ_STPMIN);
+            return;
         }
 
         /* Attempt to use safeguarded quadratic interpolation to find a better step.
-           The optimal steplength estimated by quadratic interpolation is q/r and
+           The optimal step length estimated by quadratic interpolation is q/r and
            r > 0 must hold for the quadratic approximation to be strictly convex. */
         double q = -ginit*stp*stp;
         double r = (f - finit - stp*ginit)*2.0;
@@ -197,12 +206,16 @@ public class NonmonotoneLineSearch extends LineSearch {
             stp = q/r;
         } else {
             /* Take the bisection step. */
-            stp = (stp + stpmin)/2.0;
+            stp = (stp + stpmin) / 2.0;
         }
 
         /* Safeguard the step. */
         stp = Math.max(stp, stpmin);
-        return (stp > 0.0 ? LineSearchStatus.SEARCH : LineSearchStatus.WARNING_STP_EQ_STPMIN);
+        if (stp > 0.0) {
+            success(LineSearchTask.SEARCH);
+        } else {
+            warning(OptimStatus.STEP_EQ_STPMIN);
+        }
     }
 
     public static void main(String[] args) {
@@ -211,13 +224,14 @@ public class NonmonotoneLineSearch extends LineSearch {
         double f0 = 0.0;
         double g0 = -1.0;
         double h0 = 5.0;
-        LineSearchStatus state = lineSearch.start(f0, g0, alpha, 0.0, 1e20*alpha);
+        LineSearchTask state = lineSearch.start(f0, g0, alpha, 0.0,
+                1e20 * alpha);
         System.out.println("state = " + state);
         System.out.println("finished = " + lineSearch.finished());
         for (int k = 1; k <= 6; ++k) {
             alpha = lineSearch.getStep();
-            double f1 = f0 + alpha*(g0 + 0.5*h0*alpha);
-            double g1 = g0 + h0*alpha;
+            double f1 = f0 + alpha * (g0 + 0.5 * h0 * alpha);
+            double g1 = g0 + h0 * alpha;
             state = lineSearch.iterate(alpha, f1, g1);
             System.out.println("alpha[" + k + "] = " + alpha + ";" + " f[" + k
                     + "] = " + f1 + ";" + " g[" + k + "] = " + g1 + ";"

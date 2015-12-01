@@ -30,6 +30,11 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Locale;
 
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+
 import mitiv.array.ArrayFactory;
 import mitiv.array.DoubleArray;
 import mitiv.array.ShapedArray;
@@ -67,11 +72,6 @@ import mitiv.optim.SimpleLowerBound;
 import mitiv.optim.SimpleUpperBound;
 import mitiv.utils.FFTUtils;
 import mitiv.utils.Timer;
-
-import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
 
 public class TotalVariationDeconvolution implements ReconstructionJob {
 
@@ -586,7 +586,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                     break;
                 }
             } else {
-                System.err.println("TiPi: TotalVariationDeconvolution, error/warning: " + minimizer.getErrorMessage());
+                System.err.println("TiPi: TotalVariationDeconvolution, error/warning: " + minimizer.getReason());
                 break;
             }
             if (synchronizer != null) {

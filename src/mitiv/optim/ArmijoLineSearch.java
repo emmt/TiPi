@@ -28,12 +28,12 @@ package mitiv.optim;
 
 /**
  * Simple backtracking line search method.
- * 
+ *
  * <p>
  * This simple strategy for terminating a line search is well suited for Newton
  * methods but is less appropriate for quasi-Newton nor conjugate gradient
  * methods.</p>
- * 
+ *
  * @author Éric Thiébaut.
  */
 public class ArmijoLineSearch extends LineSearch {
@@ -47,13 +47,18 @@ public class ArmijoLineSearch extends LineSearch {
     private boolean bypass = false;
 
     /**
+     * Parameter for the Armijo condition.
+     */
+    protected double sigma = 0.05;
+
+    /**
      * Step length gain.
      */
     protected double rho = 0.5;
 
     /**
      * Set the step gain.
-     * 
+     *
      * Until the sufficient decrease (Armijo) condition holds, the step
      * length is reduced by multiplying it by the gain.
      *
@@ -73,11 +78,6 @@ public class ArmijoLineSearch extends LineSearch {
     public double getGain() {
         return rho;
     }
-
-    /**
-     * Parameter for the Armijo condition.
-     */
-    protected double sigma = 0.05;
 
     /**
      * Set the parameter for the Armijo condition.
@@ -115,17 +115,17 @@ public class ArmijoLineSearch extends LineSearch {
         double f0 = 0.0;
         double g0 = -1.0;
         double h0 = 5.0;
-        LineSearchStatus state = lineSearch.start(f0, g0, alpha, 0.0, 1e20*alpha);
-        System.out.println("state = " + state);
+        LineSearchTask task = lineSearch.start(f0, g0, alpha, 0.0, 1e20*alpha);
+        System.out.println("state = " + task);
         System.out.println("finished = " + lineSearch.finished());
         for (int k = 1; k <= 6; ++k) {
             alpha = lineSearch.getStep();
             double f1 = f0 + alpha*(g0 + 0.5*h0*alpha);
             double g1 = g0 + h0*alpha;
-            state = lineSearch.iterate(alpha, f1, g1);
+            task = lineSearch.iterate(alpha, f1, g1);
             System.out.println("alpha[" + k + "] = " + alpha + ";" + " f[" + k
                     + "] = " + f1 + ";" + " g[" + k + "] = " + g1 + ";"
-                    + " state[" + k + "] = " + state + ";" + " finished[" + k
+                    + " state[" + k + "] = " + task + ";" + " finished[" + k
                     + "] = " + lineSearch.finished() + ";");
         }
     }
@@ -138,7 +138,7 @@ public class ArmijoLineSearch extends LineSearch {
 
     /**
      * Constructor with given parameters.
-     * 
+     *
      * @param rho   - The gain for reducing the step length.
      * @param sigma - The parameter of the sufficient decrease condition.
      */
@@ -148,20 +148,20 @@ public class ArmijoLineSearch extends LineSearch {
     }
 
     @Override
-    protected LineSearchStatus startHook() {
+    protected void startHook() {
         bestFunc = finit;
         bestStep = 0.0;
         bypass = false;
-        return LineSearchStatus.SEARCH;
+        success(LineSearchTask.SEARCH);
     }
 
-    // FIXME: by-passing the test means that we spend one more
-    //        function (and gradient) evaluation than really
-    //        necessary
+    // FIXME: Bypassing the test means that we spend one more
+    //         function (and gradient) evaluation than really
+    //         necessary.
     @Override
-    public LineSearchStatus iterateHook(double f, double g) {
+    public void iterateHook(double f, double g) {
         if (bypass || f - finit <= stp*sigma*ginit) {
-            status = LineSearchStatus.CONVERGENCE;
+            success(LineSearchTask.CONVERGENCE);
         } else {
             if (f < bestFunc) {
                 /* Register best function so far and reduce the step. */
@@ -178,9 +178,8 @@ public class ArmijoLineSearch extends LineSearch {
                 /* Reduce the length of the step. */
                 stp = rho*stp;
             }
-            status = LineSearchStatus.SEARCH;
+            success(LineSearchTask.SEARCH);
         }
-        return status;
     }
 
 }

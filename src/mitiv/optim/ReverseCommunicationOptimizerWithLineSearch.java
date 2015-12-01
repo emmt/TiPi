@@ -32,22 +32,6 @@ ReverseCommunicationOptimizer {
     /** Line search to use. */
     protected LineSearch lnsrch;
 
-    @Override
-    public String getErrorMessage() {
-        switch (reason) {
-        case NO_PROBLEMS:
-            return "No problems";
-        case BAD_PRECONDITIONER:
-            return "Preconditioner is not positive definite";
-        case LNSRCH_WARNING:
-            return "Warning in line search: " + lnsrch.status.getDescription();
-        case LNSRCH_ERROR:
-            return "Error in line search: " + lnsrch.status.getDescription();
-        default:
-            return "Unknown error (must be a bug!)";
-        }
-    }
-
 }
 
 

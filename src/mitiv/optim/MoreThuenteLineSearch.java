@@ -25,7 +25,7 @@
 
 /**
  * Moré & Thuente inexact line search based on cubic interpolation.
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 package mitiv.optim;
@@ -71,7 +71,7 @@ public class MoreThuenteLineSearch extends LineSearch {
     }
 
     @Override
-    protected LineSearchStatus startHook() {
+    protected void startHook() {
         /* Convergence threshold for this step. */
         gtest = ftol*ginit;
 
@@ -96,35 +96,40 @@ public class MoreThuenteLineSearch extends LineSearch {
 
         /* Algorithm starts with STAGE = 1. */
         stage = 1;
-        return LineSearchStatus.SEARCH;
+        success(LineSearchTask.SEARCH);
     }
 
     @Override
-    protected LineSearchStatus iterateHook(double f, double g)
+    protected void iterateHook(double f, double g)
     {
         /* Test for convergence. */
         double ftest = finit + stp*gtest;
         if (f <= ftest && Math.abs(g) <= -gtol*ginit) {
             /* Strong Wolfe conditions satisfied. */
-            return LineSearchStatus.CONVERGENCE;
+            success(LineSearchTask.CONVERGENCE);
+            return;
         }
 
         /* Test for warnings. */
         if (stp == stpmin && (f > ftest || g >= gtest)) {
-            return LineSearchStatus.WARNING_STP_EQ_STPMIN;
+            failure(OptimStatus.STEP_EQ_STPMIN);
+            return;
         }
         if (stp == stpmax && f <= ftest && g <= gtest) {
-            return LineSearchStatus.WARNING_STP_EQ_STPMAX;
+            warning(OptimStatus.STEP_EQ_STPMAX);
+            return;
         }
         if (brackt && stmax - stmin <= xtol*stmax) {
-            return LineSearchStatus.WARNING_XTOL_TEST_SATISFIED;
+            warning(OptimStatus.XTOL_TEST_SATISFIED);
+            return;
         }
         if (brackt && (stp <= stmin || stp >= stmax)) {
-            return LineSearchStatus.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS;
+            warning(OptimStatus.ROUNDING_ERRORS_PREVENT_PROGRESS);
+            return;
         }
 
         /* If psi(stp) <= 0 and f'(stp) >= 0 for some step, then the
-         algorithm enters the second stage. */
+           algorithm enters the second stage. */
         if (stage == 1 && f <= ftest && g >= 0.0) {
             stage = 2;
         }
@@ -145,9 +150,10 @@ public class MoreThuenteLineSearch extends LineSearch {
             ws[6] = stp;
             ws[7] = f - gtest*stp;
             ws[8] = g - gtest;
-            int result = cstep();
-            if (result < 0) {
-                return status;
+            OptimStatus result = cstep();
+            if (result != OptimStatus.SUCCESS) {
+                failure(result);
+                return;
             }
             stx = ws[0];
             fx  = ws[1] + gtest*stx;
@@ -167,9 +173,10 @@ public class MoreThuenteLineSearch extends LineSearch {
             ws[6] = stp;
             ws[7] = f;
             ws[8] = g;
-            int result = cstep();
-            if (result < 0) {
-                return status;
+            OptimStatus result = cstep();
+            if (result != OptimStatus.SUCCESS) {
+                failure(result);
+                return;
             }
             stx = ws[0];
             fx  = ws[1];
@@ -211,7 +218,7 @@ public class MoreThuenteLineSearch extends LineSearch {
         }
 
         /* Obtain another function and derivative. */
-        return LineSearchStatus.SEARCH;
+        success(LineSearchTask.SEARCH);
     }
 
 
@@ -223,7 +230,7 @@ public class MoreThuenteLineSearch extends LineSearch {
         return result;
     }
 
-    private final int cstep()
+    private final OptimStatus cstep()
     {
         /* Constants. */
         final double ZERO = 0.0;
@@ -247,19 +254,15 @@ public class MoreThuenteLineSearch extends LineSearch {
         double stpq; /* quadratic step */
         double stpf;
         boolean opposite;
-        int result;
 
         /* Check the input parameters for errors. */
         if (brackt && (stx < sty ? (stp <= stx || stp >= sty)
                 : (stp <= sty || stp >= stx))) {
-            status = LineSearchStatus.ERROR_STP_OUTSIDE_BRACKET;
-            return -1;
+            return OptimStatus.STEP_OUTSIDE_BRACKET;
         } else if (dx*(stp - stx) >= ZERO) {
-            status = LineSearchStatus.ERROR_NOT_A_DESCENT;
-            return -1;
+            return OptimStatus.NOT_A_DESCENT;
         } else if (stpmin > stpmax) {
-            status = LineSearchStatus.ERROR_STPMIN_GT_STPMAX;
-            return -1;
+            return OptimStatus.STPMIN_GT_STPMAX;
         }
 
         /* Determine if the derivatives have opposite signs. */
@@ -270,7 +273,6 @@ public class MoreThuenteLineSearch extends LineSearch {
                the cubic step is closer to STX than the quadratic step, the cubic step
                is taken, otherwise the average of the cubic and quadratic steps is
                taken. */
-            result = 1;
             brackt = true;
             theta = THREE*(fx - fp)/(stp - stx) + dx + dp;
             s = max3(Math.abs(theta), Math.abs(dx), Math.abs(dp));
@@ -292,7 +294,6 @@ public class MoreThuenteLineSearch extends LineSearch {
                The minimum is bracketed.  If the cubic step is farther from STP than
                the secant (quadratic) step, the cubic step is taken, otherwise the
                secant step is taken. */
-            result = 2;
             brackt = true;
             theta = THREE*(fx - fp)/(stp - stx) + dx + dp;
             s = max3(Math.abs(theta), Math.abs(dx), Math.abs(dp));
@@ -316,7 +317,6 @@ public class MoreThuenteLineSearch extends LineSearch {
                the minimum of the cubic is beyond STP.  Otherwise the cubic step is
                defined to be the secant step.  The case GAMMA = 0 only arises if the
                cubic does not tend to infinity in the direction of the step. */
-            result = 3;
             theta = THREE*(fx - fp)/(stp - stx) + dx + dp;
             s = max3(Math.abs(theta), Math.abs(dx), Math.abs(dp));
             temp = theta/s;
@@ -369,7 +369,6 @@ public class MoreThuenteLineSearch extends LineSearch {
                the magnitude of the derivative does not decrease.  If the minimum is
                not bracketed, the step is either STPMIN or STPMAX, otherwise the cubic
                step is taken. */
-            result = 4;
             if (brackt) {
                 theta = THREE*(fp - fy)/(sty - stp) + dy + dp;
                 s = max3(Math.abs(theta), Math.abs(dy), Math.abs(dp));
@@ -412,7 +411,7 @@ public class MoreThuenteLineSearch extends LineSearch {
         ws[4] = fy;
         ws[5] = dy;
         ws[6] = stpf; /* stp */
-        return result;
+        return OptimStatus.SUCCESS;
     }
 }
 

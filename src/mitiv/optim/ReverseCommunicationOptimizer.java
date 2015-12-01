@@ -30,7 +30,9 @@ import mitiv.linalg.Vector;
 /**
  * Interface for multivariate optimization methods with reverse communication.
  *
- * The typical usage of reverse communication optimization methods is as follows:
+ * The typical usage of reverse communication optimization methods is as
+ * follows:
+ *
  * <pre>
  *   // Define the vector space to which belong the variables.
  *   VectorSpace space = new ...;
@@ -81,23 +83,14 @@ import mitiv.linalg.Vector;
  */
 
 public abstract class ReverseCommunicationOptimizer {
-    public static final int SUCCESS =  0;
+    public static final int SUCCESS = 0;
     public static final int FAILURE = -1;
 
     /** Pending task for the caller. */
-    protected OptimTask task = null;
+    private OptimTask task;
 
     /** Reason of failure. */
-    protected int reason = NO_PROBLEMS;
-
-    /** Line search status (for error messages). */
-    protected LineSearchStatus lineSearchStatus = null;
-
-
-    public static final int NO_PROBLEMS = 0;
-    public static final int BAD_PRECONDITIONER = 1; /* preconditioner is not positive definite */
-    public static final int LNSRCH_WARNING = 2; /* warning in line search */
-    public static final int LNSRCH_ERROR = 3; /* error in line search */
+    private OptimStatus status;
 
     /** Number of function (and gradient) evaluations since start. */
     protected int evaluations = 0;
@@ -110,12 +103,14 @@ public abstract class ReverseCommunicationOptimizer {
 
     /**
      * Start the search.
+     *
      * @return The next task to perform.
      */
     public abstract OptimTask start();
 
     /**
      * Restart the search.
+     *
      * @return The next task to perform.
      */
     public abstract OptimTask restart();
@@ -123,15 +118,19 @@ public abstract class ReverseCommunicationOptimizer {
     /**
      * Proceed with next iteration.
      *
-     * @param x  - The current set of variables.
-     * @param fx - The value of the function at {@code x}.
-     * @param gx - The value of the gradient at {@code x}.
+     * @param x
+     *            - The current set of variables.
+     * @param fx
+     *            - The value of the function at {@code x}.
+     * @param gx
+     *            - The value of the gradient at {@code x}.
      * @return The next task to perform.
      */
     public abstract OptimTask iterate(Vector x, double fx, Vector gx);
 
     /**
      * Get the current pending task.
+     *
      * @return The pending task to perform..
      */
     public final OptimTask getTask() {
@@ -140,6 +139,7 @@ public abstract class ReverseCommunicationOptimizer {
 
     /**
      * Get the iteration number.
+     *
      * @return The number of iterations since last start.
      */
     public final int getIterations() {
@@ -147,10 +147,9 @@ public abstract class ReverseCommunicationOptimizer {
     }
 
     /**
-     * Get the number of function (and gradient) evaluations since
-     * last start.
-     * @return The number of function and gradient evaluations since
-     *         last start.
+     * Get the number of function (and gradient) evaluations since last start.
+     *
+     * @return The number of function and gradient evaluations since last start.
      */
     public final int getEvaluations() {
         return evaluations;
@@ -158,72 +157,76 @@ public abstract class ReverseCommunicationOptimizer {
 
     /**
      * Get the number of restarts.
-     * @return The number of times algorithm has been restarted since
-     *         last start.
+     *
+     * @return The number of times algorithm has been restarted since last
+     *         start.
      */
     public final int getRestarts() {
         return restarts;
     }
 
     /**
-     * Query a textual description of the reason of an abnormal
-     * termination.
-     * @return A textual description of the reason of the abnormal
-     *         termination.
+     * Set internal state to indicate a failure.
+     *
+     * @param status
+     *            - The reason of failure (must not be
+     *             {@link #OptimStatus.SUCCESS}).
+     * @return The next pending task which has been set to
+     *         {@link LineSearchTask.ERROR}.
      */
-    public String getErrorMessage() {
-        String msg = new String();
-        if (reason == NO_PROBLEMS) {
-            msg = "no problem";
-        } else if (reason == BAD_PRECONDITIONER) {
-            msg = "preconditioner is not positive definite";
-        } else if (reason == LNSRCH_WARNING) {
-            msg = "warning in line search: " + lineSearchStatus.getDescription();
-        } else if (reason == LNSRCH_ERROR) {
-            msg = "error in line search: " + lineSearchStatus.getDescription();;
-        } else {
-            msg = "unknown problem!";
-        }
-        return msg;
-    }
-
-    /**
-     * Get the code corresponding to the reason of the abnormal termination.
-     * @return A numerical code corresponding to the reason of the abnormal
-     *         termination.
-     * @see {@link #getErrorMessage}();
-     */
-    public final int getReason() {
-        return reason;
-    }
-
-    /** Set next pending task (not a failure). */
-    protected final OptimTask schedule(OptimTask task) {
-        this.lineSearchStatus = null;
-        this.reason = NO_PROBLEMS;
-        this.task = task;
-        return task;
-    }
-
-    /** Set task so as to report a failure (not related to line search). */
-    protected final OptimTask failure(int reason) {
-        this.lineSearchStatus = null;
-        this.reason = reason;
+    protected final OptimTask failure(OptimStatus status) {
+        this.status = status;
         this.task = OptimTask.ERROR;
         return this.task;
     }
 
-    /** Set task so as to report a line search failure. */
-    protected final OptimTask lineSearchFailure(LineSearchStatus status) {
-        lineSearchStatus = status;
-        if (status.isWarning()) {
-            reason = LNSRCH_WARNING;
-            task = OptimTask.WARNING;
-        } else {
-            reason = LNSRCH_ERROR;
-            task = OptimTask.ERROR;
-        }
-        return task;
+    /**
+     * Set internal state to indicate a non-fatal abnormal termination.
+     *
+     * @param task
+     *            - The reason of the termination (must not be
+     *            {@link OptimStatus.SUCCESS}).
+     * @return The next pending task which has been set to
+     *         {@link #LineSearchTask.WARNING}.
+     */
+    protected final OptimTask warning(OptimStatus status) {
+        this.status = status;
+        this.task = OptimTask.WARNING;
+        return this.task;
+    }
+
+    /**
+     * Set next pending task.
+     *
+     * @param task
+     *            - The next pending task (must not be
+     *            {@link LineSearchTask.ERROR}).
+     * @return The next pending task.
+     */
+    protected final OptimTask success(OptimTask task) {
+        this.status = OptimStatus.SUCCESS;
+        this.task = task;
+        return this.task;
+    }
+
+    /**
+     * Get a literal description of the current optimizer state.
+     *
+     * @return A string describing the state.
+     */
+    public final String getReason() {
+        return (status == OptimStatus.SUCCESS ?
+                task.toString() : status.toString());
+    }
+
+    /**
+     * Get the optimizer internal status.
+     *
+     * @return The current optimizer status.
+     * @see {@link #getMessage}();
+     */
+    public final OptimStatus getStatus() {
+        return status;
     }
 
 }
