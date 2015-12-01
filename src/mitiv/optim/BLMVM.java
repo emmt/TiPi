@@ -185,13 +185,13 @@ public class BLMVM extends ReverseCommunicationOptimizer {
 
     private OptimTask begin() {
         H.reset();
-        return schedule(OptimTask.COMPUTE_FG);
+        return success(OptimTask.COMPUTE_FG);
     }
 
     @Override
     public OptimTask iterate(Vector x, double f, Vector g) {
 
-        switch (task) {
+        switch (getTask()) {
 
         case COMPUTE_FG:
 
@@ -206,12 +206,12 @@ public class BLMVM extends ReverseCommunicationOptimizer {
             }
             if (pgnorm <= max(0.0, gatol, grtol*pginit)) {
                 /* Global convergence. */
-                return schedule(OptimTask.FINAL_X);
+                return success(OptimTask.FINAL_X);
             }
             if (evaluations == 1) {
                 /* This is the first evaluation.  Return to caller with the
                  * initial solution. */
-                return schedule(OptimTask.NEW_X);
+                return success(OptimTask.NEW_X);
             }
             /* A line search is in progress.  Compute directional
              * derivative and check whether line search has converged. */
@@ -219,7 +219,7 @@ public class BLMVM extends ReverseCommunicationOptimizer {
             if (f <= f0 + sftol*tmp.dot(g0)) {
                 /* Line search has converged. */
                 ++iterations;
-                return schedule(OptimTask.NEW_X);
+                return success(OptimTask.NEW_X);
             }
             /* Reduce the step length and try a new point. */
             alpha /= 2.0; // FIXME: check alpha not too small and that s is significant
@@ -251,7 +251,7 @@ public class BLMVM extends ReverseCommunicationOptimizer {
                     /* Initial iteration or recursion has just been
                      * restarted.  This means that the initial inverse
                      * Hessian approximation is not positive definite. */
-                    return failure(BAD_PRECONDITIONER);
+                    return failure(OptimStatus.BAD_PRECONDITIONER);
                 }
                 /* Restart the LBFGS recursion and loop to use H0 for
                  * computing an initial search direction. */
@@ -280,7 +280,7 @@ public class BLMVM extends ReverseCommunicationOptimizer {
         default:
 
             /* There must be something wrong. */
-            return task;
+            return getTask();
 
         }
     }
@@ -288,7 +288,7 @@ public class BLMVM extends ReverseCommunicationOptimizer {
     protected OptimTask nextStep(Vector x) {
         x.axpby(1.0, x0, -alpha, p);
         projector.projectVariables(x);
-        return schedule(OptimTask.COMPUTE_FG);
+        return success(OptimTask.COMPUTE_FG);
     }
 
     protected double initialStep(Vector x, double dnorm) {
