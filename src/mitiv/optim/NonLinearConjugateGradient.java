@@ -50,8 +50,10 @@ import mitiv.tests.MinPack1Tests;
 public class NonLinearConjugateGradient
 extends ReverseCommunicationOptimizerWithLineSearch {
 
-    public static final double STPMIN = 1E-20;
-    public static final double STPMAX = 1E+20;
+    public static final double STPMIN  = 1.0E-20;
+    public static final double STPMAX  = 1.0E+20;
+    public static final double DELTA   = 5.0E-2;
+    public static final double EPSILON = 1.0E-2;
 
     /* Non-linear optimization method.  POWELL (forcing beta to be
        non-negative) and SHANNO_PHUA (to use their formula in CONMIN to
@@ -74,24 +76,26 @@ extends ReverseCommunicationOptimizerWithLineSearch {
 
     /* Default settings for non linear conjugate gradient (should correspond to
        the method which is, in general, the most successful). */
-    public static final int DEFAULT_METHOD = (HAGER_ZHANG | SHANNO_PHUA);
+    public static final int DEFAULT_METHOD = (POLAK_RIBIERE_POLYAK | POWELL | SHANNO_PHUA);
 
-    private double f0;     /* Function value at the start of the line search. */
-    private double g0norm; /* Euclidean norm of G0, the gradient at the start of the
-                               line search. */
-    private double gnorm;  /* Euclidean norm of G, the gradient of the last accepted point. */
-    private double dtg0;   /* Directional derivative at the start of the line search;
+    private double f0;      /* Function value at the start of the line search. */
+    private double g0norm;  /* Euclidean norm of G0, the gradient at the start of the
+                                line search. */
+    private double gnorm;   /* Euclidean norm of G, the gradient of the last accepted point. */
+    private double dtg0;    /* Directional derivative at the start of the line search;
                                given by the inner product: -<d,g0> */
-    private double dtg;    /* Directional derivative at the last tried point;
-                               given by the inner product: -<d,g> */
-    private double grtol;  /* Relative threshold for the norm or the gradient (relative
-                               to GTEST the norm of the initial gradient) for convergence. */
-    private double gatol;  /* Absolute threshold for the norm or the gradient for
+    private double dtg;     /* Directional derivative at the last trial point;
+                              given by the inner product: -<d,g> */
+    private double grtol;   /* Relative threshold for the norm or the gradient (relative
+                                to GTEST the norm of the initial gradient) for convergence. */
+    private double gatol;   /* Absolute threshold for the norm or the gradient for
                                convergence. */
-    private double ginit;  /* Norm or the initial gradient. */
-    private double fmin;   /* Minimal function value if provided. */
-    private double alpha;  /* Current step length. */
-    private double beta;   /* Current parameter in conjugate gradient update rule (for
+    private double ginit;   /* Norm or the initial gradient. */
+    private double fmin;    /* Minimal function value if provided. */
+    private double delta;   /* Relative size for a small step. */
+    private double epsilon; /* Threshold to accept descent direction. */
+    private double alpha;   /* Current step length. */
+    private double beta;    /* Current parameter in conjugate gradient update rule (for
                                information). */
     private final double stpmin; /* Relative lower bound for the step length. */
     private final double stpmax; /* Relative upper bound for the step length. */
@@ -99,8 +103,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
     private final Vector x0; /* Variables at start of line search. */
     private final Vector g0; /* Gradient at start of line search. */
     private final Vector d;  /* (Anti-)search direction, new iterate is searched
-                                  as: x1 = x0 - alpha*d, for alpha >= 0. */
-    private final Vector y; /* Work vector (e.g., to store the gradient difference:
+                                 as: x1 = x0 - alpha*d, for alpha >= 0. */
+    private final Vector y;  /* Work vector (e.g., to store the gradient difference:
                                 Y = G - G0). */
     private final int method; /* Conjugate gradient method. */
     private boolean fmin_given; /* Indicate whether FMIN is specified. */
@@ -182,6 +186,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
         this.ginit = 0.0;
         this.stpmin = STPMIN;
         this.stpmax = STPMAX;
+        this.delta = DELTA;
+        this.epsilon = EPSILON;
         this.x0 = vsp.create();
         this.g0 = (g0_needed ? vsp.create() : null);
         this.d = vsp.create();
@@ -329,7 +335,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
         double beta;
         if (dty != 0.0) {
             if (update_Hager_Zhang_orig) {
-                /* Original formulation. */
+                /* Original formulation, using Y as a scratch vector. */
                 double q = 1.0/dty;
                 double r = q*vsp.norm2(y);
                 vsp.axpby(q, y, 2.0*r*r, d, y);
@@ -341,8 +347,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                    errors are however different, so one or the other formulation can be by
                    chance more efficient.  Though there is no systematic trend. */
                 double ytg = y.dot(g);
-                double r = vsp.norm2(y)/dty;
-                beta = ytg/dty - 2.0*r*r*dtg;
+                double ynorm = vsp.norm2(y);
+                beta = (ytg - 2.0*(ynorm/dty)*ynorm*dtg)/dty;
             }
         } else {
             beta = 0.0;
@@ -436,30 +442,34 @@ extends ReverseCommunicationOptimizerWithLineSearch {
          * as we consider the anti-search direction here.
          */
         switch (getTask()) {
+
         case COMPUTE_FG:
+
             ++evaluations;
             if (evaluations > 1) {
                 /* A line search is in progress.  Compute directional
-                 * derivative and check whether line search has converged. */
+                   derivative and check whether line search has converged. */
                 dtg = -d.dot(g);
                 LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, dtg);
-                if (lnsrchTask == LineSearchTask.SEARCH) {
-                    break;
-                } else if (lnsrchTask != LineSearchTask.CONVERGENCE) {
+                if (lnsrchTask != LineSearchTask.CONVERGENCE) {
+                    if (lnsrchTask == LineSearchTask.SEARCH) {
+                        /* Line search has not converged, break to compute a
+                           new trial point along the search direction. */
+                        break;
+                    }
                     OptimStatus lnsrchStatus = lnsrch.getStatus();
-                    if (lnsrchTask != LineSearchTask.WARNING
-                            || lnsrchStatus != OptimStatus.ROUNDING_ERRORS_PREVENT_PROGRESS) {
+                    if (lnsrchTask != LineSearchTask.WARNING ||
+                            lnsrchStatus != OptimStatus.ROUNDING_ERRORS_PREVENT_PROGRESS) {
                         return failure(lnsrchStatus);
                     }
                 }
+                /* Line search has converged. */
                 ++iterations;
-            } else {
-                dtg = 0.0;
             }
 
-            /* The current step is acceptable. Check for global convergence. */
+            /* The current step is acceptable.  Check for global convergence. */
             gnorm = g.norm2();
-            if (evaluations == 1) {
+            if (evaluations <= 1) {
                 ginit = gnorm;
             }
             return success(gnorm <= getGradientThreshold() ? OptimTask.FINAL_X
@@ -467,40 +477,51 @@ extends ReverseCommunicationOptimizerWithLineSearch {
 
         case NEW_X:
         case FINAL_X:
+
             /* Compute a search direction and start line search. */
-            if (evaluations > 1) {
-                if (update(x, g) != SUCCESS) {
+            if (evaluations <= 1|| update(x, g) != SUCCESS) {
+                /* First evaluation or update failed, set DTG to zero to use
+                   the steepest descent direction. */
+                dtg = 0.0;
+            } else {
+                dtg = -d.dot(g);
+                if (epsilon > 0 &&
+                        dtg > -epsilon*d.norm2()*gnorm) {
+                    /* Set DTG to zero to indicate that we do not have a sufficient
+                       descent direction. */
                     dtg = 0.0;
-                } else {
-                    dtg = -d.dot(g);
-                    if (dtg >= 0.0) {
-                        /* Restart if the recursion does not yield a sufficient descent
-                           direction (not all methods warrant that). */
-                        ++restarts;
-                    } else {
-                        /* Compute an initial step size ALPHA along the new direction. */
-                        if ((method & SHANNO_PHUA) == SHANNO_PHUA) {
-                            /* Initial step size is such that:
-                               <alpha_{k+1}*d_{k+1},g_{k+1}> = <alpha_{k}*d_{k},g_{k}> */
-                            alpha *= (dtg0/dtg);
-                        }
-                    }
                 }
             }
-            if (dtg >= 0.0) {
-                /* Initial search direction or recurrence has been restarted.  FIXME:
-                   other possibility is to use Fletcher's formula, see BGLS p. 39) */
-                beta = 0.0;
-                // FIXME: cleanup code
-                // double x1norm = vsp.norm2(x1);
-                // if (x1norm > 0.0) {
-                // alpha = (x1norm/g1norm)*tiny;
-                // } else {
-                // alpha = (1e-3*Math.max(Math.abs(f1), 1.0)/g1norm)/g1norm;
-                // }
-                alpha = 1.0/gnorm;
+            if (dtg < 0.0) {
+                /* The recursion yields a sufficient descent direction
+                   (not all methods warrant that).  Compute an initial
+                   step size ALPHA along the new direction. */
+                if ((method & SHANNO_PHUA) == SHANNO_PHUA) {
+                    /* Initial step size is such that:
+                           <alpha_{k+1}*d_{k+1},g_{k+1}> = <alpha_{k}*d_{k},g_{k}> */
+                    alpha *= (dtg0/dtg);
+                }
+            } else {
+                /* Initial search direction or recurrence has been restarted.
+                   Other possibility is to use Fletcher's formula, see BGLS
+                   p. 39) */
+                if (evaluations > 1) {
+                    ++restarts;
+                }
                 vsp.copy(g, d);
                 dtg = -gnorm*gnorm;
+                if (f != 0.0) {
+                    alpha = 2.0*Math.abs(f/dtg);
+                } else {
+                    double dnorm = gnorm;
+                    double xnorm = x.norm2();
+                    if (xnorm > 0.0) {
+                        alpha = delta*xnorm/dnorm;
+                    } else {
+                        alpha = delta/dnorm;
+                    }
+                }
+                beta = 0.0;
             }
 
             /* Store current position as X0, f0, etc. */
@@ -512,7 +533,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             g0norm = gnorm;
             dtg0 = dtg;
 
-            /* Start the line search. */
+            /* Start the line search and break to compute the first trial
+               point along the line search. */
             if (lnsrch.start(f0, dtg0, alpha, stpmin*alpha,
                     stpmax*alpha) != LineSearchTask.SEARCH) {
                 return failure(lnsrch.getStatus());
@@ -523,7 +545,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             return getTask();
         }
 
-        /* Build a new step to try. */
+        /* Compute a trial point along the line search. */
         x.axpby(1.0, x0, -alpha, d);
         return success(OptimTask.COMPUTE_FG);
 
