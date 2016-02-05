@@ -77,10 +77,10 @@ public class ConvolutionFloat2D extends ConvolutionFloat {
         }
         number = (int)space.getNumber();
         scale = 1.0F/number;
-        dim1 = space.getDimension(0);
+        dim1 = space.getDimension(1);
         off1 = 0;
         end1 = dim1;
-        dim2 = space.getDimension(1);
+        dim2 = space.getDimension(0);
         off2 = 0;
         end2 = dim2;
         fastPull = true;

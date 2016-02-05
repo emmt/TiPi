@@ -88,7 +88,7 @@ public class ${className} extends Convolution${Type} {
         number = (int)space.getNumber();
         scale = ${one}/number;
         //# for k in 1:${rank}
-        //#     eval km1 = ${k} - 1
+        //#     eval km1 = ${rank} - ${k}
         //#     def  kth = ${}{nth_${k}}
         dim${k} = space.getDimension(${km1});
         off${k} = 0;

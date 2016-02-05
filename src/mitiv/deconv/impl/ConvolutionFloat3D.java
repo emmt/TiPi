@@ -86,13 +86,13 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
         }
         number = (int)space.getNumber();
         scale = 1.0F/number;
-        dim1 = space.getDimension(0);
+        dim1 = space.getDimension(2);
         off1 = 0;
         end1 = dim1;
         dim2 = space.getDimension(1);
         off2 = 0;
         end2 = dim2;
-        dim3 = space.getDimension(2);
+        dim3 = space.getDimension(0);
         off3 = 0;
         end3 = dim3;
         fastPull = true;
