@@ -616,7 +616,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image
+     * Use the conjugate gradients to deconvolve the image
      * 
      * @param alpha
      * @return The bufferedImage for the input value given
@@ -626,7 +626,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image
+     * Use the conjugate gradients to deconvolve the image
      * 
      * @param alpha
      * @param isPsfSplitted If the psf is centered or not
@@ -637,7 +637,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image
+     * Use the conjugate gradients to deconvolve the image
      * 
      * @param alpha
      * @param job see static PROCESSING_?
@@ -657,7 +657,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image.<br>
+     * Use the conjugate gradients to deconvolve the image.<br>
      * Do less computations and allocations.
      * 
      * @param alpha
@@ -668,7 +668,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image.<br>
+     * Use the conjugate gradients to deconvolve the image.<br>
      * Do less computations and allocations.
      * 
      * @param alpha
@@ -687,7 +687,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image
+     * Use the conjugate gradients to deconvolve the image
      * 
      * @param alpha
      * @return The bufferedImage for the input value given
@@ -722,7 +722,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image.<br>
+     * Use the conjugate gradients to deconvolve the image.<br>
      * Do less computations and allocations.
      * 
      * @param alpha

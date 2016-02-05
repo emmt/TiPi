@@ -39,7 +39,7 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
  * one of the factory methods of the parent class
  * {@link  WeightedConvolutionOperator}.{@code build()}.  Have a look at the
  * documentation of {@link  WeightedConvolutionOperator} for a description
- * of what exaclty does this kind of operator.
+ * of what exactly does this kind of operator.
  * </p>
  * @author Éric Thiébaut
  *

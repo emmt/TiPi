@@ -33,7 +33,7 @@ import mitiv.utils.*;
  * @author Beaubras Ludovic
  * @version beta 5.32, février 2013
  */
-public class Zernike1D
+public class Zernike
 {
     protected int J;
     protected int n;
@@ -57,13 +57,13 @@ public class Zernike1D
      *  J mod number of the Zernike polynomials (Noll indexing)
      *
      */
-    public Zernike1D(int Width, int Height)
+    public Zernike(int Width, int Height)
     {
         this.r = MathUtils.fftDist1D(Width, Height);
         this.theta = MathUtils.fftAngle1D(Width, Height);
     }
 
-    public Zernike1D(int J, int Width, int Height, double radius)
+    public Zernike(int J, int Width, int Height, double radius)
     {
         this.J = J;
         int nm[] = zernumeroNoll(J);
@@ -497,7 +497,7 @@ public class Zernike1D
         }
         return Z;
     }
-
+/*
     public static void main(String[] args)
     {
         int NZernike = 36;
@@ -548,7 +548,7 @@ public class Zernike1D
             System.out.println((end-begin)*1e-9);
         }      
     }
-
+*/
 }
 
 /*
