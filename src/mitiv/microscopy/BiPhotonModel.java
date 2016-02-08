@@ -28,10 +28,28 @@ package mitiv.microscopy;
 
 
 import mitiv.utils.MathUtils;
-import org.jtransforms.fft.DoubleFFT_2D;
 
 public class BiPhotonModel {
- protected WideFieldModel WFFM;
+ private static final double[] JRho = null;
+private static final double[] psi = null;
+protected WideFieldModel WFFM;
+private double[] rho;
+private double ni;
+private int PState;
+private double[] phi;
+private double[] modulus_coefs;
+private double[] phase_coefs;
+private int lambda_ni;
+private int lambda;
+private int deltaX;
+private int deltaY;
+private double[] maskPupil;
+private double[] psf;
+private int Nx;
+private int Ny;
+private int Nzern;
+private double[] Z;
+private double[] a;
 
     /** Initialize the WFFM PSF model containing parameters
      *  @param NA numerical aperture
@@ -111,11 +129,13 @@ public class BiPhotonModel {
     public double[] apply_J_phi(double[] q)
     {
     	// TODO
+        return new double[]{};
       }
 
     public double[] apply_J_defocus(double[] q)
     {
     	// TODO
+        return new double[]{};
     }
 
 
@@ -139,6 +159,10 @@ public class BiPhotonModel {
         return phi;
     }
 
+    private void computePSF() {
+        // TODO Auto-generated method stub
+        
+    }
     public double[] getPsi() {
         if (PState<1){
             computePSF();
@@ -193,7 +217,7 @@ public class BiPhotonModel {
     }
 
 
-    public double[] getPSF(int k) 
+    public double[] getPSF(int k) {
 
     // TODO 
         if (PState<1){
