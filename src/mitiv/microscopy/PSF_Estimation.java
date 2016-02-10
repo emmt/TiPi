@@ -301,8 +301,7 @@ public class PSF_Estimation implements ReconstructionJob {
                     break;
                 }
             } else {
-                System.err.println("TiPi: PSF_Estimation, error/warning: :\n");
-                System.err.println( "vl"+ task);
+                System.err.println("TiPi: PSF_Estimation, "+task+" : "+minimizer.getReason());
                 break;
             }
             if (synchronizer != null) {
