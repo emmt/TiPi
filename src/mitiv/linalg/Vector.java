@@ -223,6 +223,28 @@ public abstract class Vector {
     }
 
     /**
+     * Compute the inner product of this vector with two other vectors.
+     *
+     * The inner product of three vectors is the sum of the products of the
+     * corresponding elements of the three vectors.  The inner product is
+     * defined on a vector space, the three vectors must belong to this vector
+     * space.
+     *
+     * @param v1 - Another vector of this vector space.
+     * @param v2 - Yet another vector of this vector space.
+     * @return The inner product of {@code this}, {@code v1} and {@code v2}.
+     * @throws IncorrectSpaceException {@code v1} and {@code v2} must belong
+     * to the vector space of {@code this} .
+     */
+    public double dot(Vector v1, Vector v2) {
+        if (v1 == null || ! v1.belongsTo(space) ||
+            v2 == null || ! v2.belongsTo(space)) {
+            throw new IncorrectSpaceException();
+        }
+        return space._dot(this, v1, v2);
+    }
+
+    /**
      * Compute the L1 norm of the vector.
      *
      * @return The sum of absolute values of the vector.

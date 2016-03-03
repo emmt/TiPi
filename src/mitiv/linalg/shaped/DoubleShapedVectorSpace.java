@@ -33,9 +33,9 @@ import mitiv.linalg.Vector;
 
 /**
  * Class vector spaces which own instances of the DoubleVector class.
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
- * 
+ *
  */
 public class DoubleShapedVectorSpace extends ShapedVectorSpace {
 
@@ -183,7 +183,16 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
 
     @Override
     protected double _dot(final Vector x, final Vector y) {
-        return ArrayOps.dot(number, ((DoubleShapedVector) x).getData(),
+        return ArrayOps.dot(number,
+                ((DoubleShapedVector) x).getData(),
+                ((DoubleShapedVector) y).getData());
+    }
+
+    @Override
+    protected double _dot(final Vector w, final Vector x, final Vector y) {
+        return ArrayOps.dot(number,
+                ((DoubleShapedVector) w).getData(),
+                ((DoubleShapedVector) x).getData(),
                 ((DoubleShapedVector) y).getData());
     }
 

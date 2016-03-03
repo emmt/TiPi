@@ -119,6 +119,29 @@ public abstract class VectorSpace {
     }
 
     /**
+     * Compute the inner product of three vectors or a weighted inner product
+     * of two vectors.
+     *
+     * The inner product of three vectors is the sum of the products of the
+     * corresponding elements of the three vectors.  The inner product is
+     * defined on a vector space, the three vectors must belong to this vector
+     * space.
+     *
+     * @param w - A vector of this vector space.
+     * @param x - Another vector of this vector space.
+     * @param y - Yet another vector of this vector space.
+     * @return The inner product of <b>w</b>, <b>x</b> and <b>y</b>.
+     * @throws IncorrectSpaceException <b>w</b>, <b>x</b> and <b>y</b> must
+     * belong to this vector space.
+     */
+    public final double dot(Vector w, Vector x, Vector y) {
+        check(w);
+        check(x);
+        check(y);
+        return _dot(w, x, y);
+    }
+
+    /**
      * Compute the inner product of two vectors.
      * <p>
      * This abstract method must be overwritten by its descendants to

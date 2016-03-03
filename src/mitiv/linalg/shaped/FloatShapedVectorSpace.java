@@ -33,9 +33,9 @@ import mitiv.linalg.Vector;
 
 /**
  * Class vector spaces which own instances of the FloatVector class.
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
- * 
+ *
  */
 public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
@@ -180,7 +180,15 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
     @Override
     protected double _dot(final Vector x, final Vector y) {
-        return ArrayOps.dot(number, ((FloatShapedVector) x).getData(),
+        return ArrayOps.dot(number,
+                ((FloatShapedVector) x).getData(),
+                ((FloatShapedVector) y).getData());
+    }
+    @Override
+    protected double _dot(final Vector w, final Vector x, final Vector y) {
+        return ArrayOps.dot(number,
+                ((FloatShapedVector) w).getData(),
+                ((FloatShapedVector) x).getData(),
                 ((FloatShapedVector) y).getData());
     }
 
