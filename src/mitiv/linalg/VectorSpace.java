@@ -257,7 +257,7 @@ public abstract class VectorSpace {
     /**
      * Compute a linear combination of two vectors.
      *
-     * In pseudo-code, this method does:
+     * In pseudo-code, this method performs the following operation:
      * <pre>
      * dst[i] = alpha*x[i] + beta*y[i];
      * </pre>
@@ -269,16 +269,11 @@ public abstract class VectorSpace {
      * equal to +/-1 or 0.  In particular when ALPHA (or BETA) is zero, then X
      * (or Y) must not be referenced.
      *
-     * @param alpha
-     *            the scalar factor for vector X
-     * @param x
-     *            the vector X
-     * @param beta
-     *            the scalar factor for vector Y
-     * @param y
-     *            the vector Y
-     * @param dst
-     *            the destination vector
+     * @param alpha - The scalar factor for vector {@code x}.
+     * @param x     - A vector.
+     * @param beta  - The scalar factor for vector {@code y}.
+     * @param y     - Another vector.
+     * @param dst   - The destination vector.
      *
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
      */
@@ -290,6 +285,25 @@ public abstract class VectorSpace {
         _axpby(alpha, x, beta, y, dst);
     }
 
+    /**
+     * Compute a linear combination of two vectors (low level).
+     *
+     * This abstract method must be overwritten by the descendants of this
+     * class.  It is guaranteed that all passed vectors belong to the same
+     * vector space.
+     *
+     * As this method can be used to emulate other operations (as copy, zero,
+     * etc.), actual code should be optimized for specific factors alpha
+     * and/or {@code beta} equal to +/-1 or 0.  In particular when {@code
+     * alpha} (or {@code beta}) is zero, then {@code x} (or {@code y}) must
+     * not be referenced.
+     *
+     * @param alpha - The scalar factor for vector {@code x}.
+     * @param x     - A vector.
+     * @param beta  - The scalar factor for vector {@code y}.
+     * @param y     - Another vector.
+     * @param dst   - The destination vector.
+     */
     protected abstract void _axpby(double alpha, Vector x,
             double beta, Vector y, Vector dst);
 
@@ -302,24 +316,16 @@ public abstract class VectorSpace {
      * </pre>
      * for all indices {@code i}.
      *
-     * This abstract method must be overwritten by its descendants.
+     * @param alpha - The scalar factor for vector {@code x}.
+     * @param x     - A vector.
+     * @param beta  - The scalar factor for vector {@code y}.
+     * @param y     - Another vector.
+     * @param gamma - The scalar factor for vector {@code z}.
+     * @param z     - Yet another vector.
+     * @param dst   - The destination vector.
      *
-     * @param alpha
-     *            the scalar factor for vector X
-     * @param x
-     *            the vector X
-     * @param beta
-     *            the scalar factor for vector Y
-     * @param y
-     *            the vector Y
-     * @param gamma
-     *            the scalar factor for vector Z
-     * @param z
-     *            the vector Z
-     * @param dst
-     *            the destination vector
-     *
-     * @throws IncorrectSpaceException X and Y must belong to this vector space.
+     * @throws IncorrectSpaceException all vectors must belong to the same
+     * vector space.
      */
     public final void axpbypcz(double alpha, Vector x,
             double beta,  Vector y,
@@ -332,6 +338,21 @@ public abstract class VectorSpace {
         _axpbypcz(alpha, x, beta, y, gamma, z, dst);
     }
 
+    /**
+     * Compute a linear combination of two vectors (low level).
+     *
+     * This abstract method must be overwritten by the descendants of this
+     * class.  It is guaranteed that all passed vectors belong to the same
+     * vector space.
+     *
+     * @param alpha - The scalar factor for vector {@code x}.
+     * @param x     - A vector.
+     * @param beta  - The scalar factor for vector {@code y}.
+     * @param y     - Another vector.
+     * @param gamma - The scalar factor for vector {@code z}.
+     * @param z     - Yet another vector.
+     * @param dst   - The destination vector.
+     */
     protected abstract void _axpbypcz(double alpha, Vector x,
             double beta,  Vector y,
             double gamma, Vector z, Vector dst);
