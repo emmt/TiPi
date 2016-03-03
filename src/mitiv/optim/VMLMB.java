@@ -31,7 +31,7 @@ import mitiv.linalg.VectorSpace;
 
 /**
  * Multivariate non-linear optimization with simple bound constraints by
- * VMLMB/BLMVM method.
+ * VMLMB method.
  *
  * <p>There are some differences compared to {@link LBFGS}, the unconstrained
  * version of the algorithm:
@@ -418,15 +418,3 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
         }
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
