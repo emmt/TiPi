@@ -92,7 +92,7 @@ public class RealComplexFFT extends ShapedLinearOperator {
     }
 
     @Override
-    protected void privApply(Vector src, Vector dst, int job) {
+    protected void _apply(Vector src, Vector dst, int job) {
         if (single) {
             /* Single precision version of the code. */
             if (xform == null) {

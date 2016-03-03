@@ -56,7 +56,7 @@ public class ScaleOperator extends LinearOperator {
         this.scale = alpha;
     }
 
-    protected void privApply(final Vector src, Vector dst, int job) {
+    protected void _apply(final Vector src, Vector dst, int job) {
         if (job == DIRECT || job == ADJOINT) {
             if (scale == 0.0) {
                 outputSpace.zero(dst);

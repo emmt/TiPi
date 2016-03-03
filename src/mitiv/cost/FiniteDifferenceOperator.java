@@ -251,7 +251,7 @@ public class FiniteDifferenceOperator extends LinearOperator {
     }
 
     @Override
-    protected void privApply(Vector src, Vector dst, int job)
+    protected void _apply(Vector src, Vector dst, int job)
             throws IncorrectSpaceException {
         boolean transpose;
         if (job == ADJOINT) {

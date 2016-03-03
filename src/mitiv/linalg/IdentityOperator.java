@@ -39,7 +39,7 @@ public class IdentityOperator extends LinearOperator {
         super(vsp);
     }
 
-    protected void privApply(final Vector src, Vector dst, int job)
+    protected void _apply(final Vector src, Vector dst, int job)
             throws IncorrectSpaceException {
         if (dst != src) {
             inputSpace.copy(src, dst);

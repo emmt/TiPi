@@ -125,7 +125,7 @@ public abstract class LinearOperator {
      *             (resp. src) must belongs to the output vector space of the
      *             operator.
      */
-    protected abstract void privApply(final Vector src, Vector dst, int job)
+    protected abstract void _apply(final Vector src, Vector dst, int job)
             throws IncorrectSpaceException;
 
     /**
@@ -168,7 +168,7 @@ public abstract class LinearOperator {
         } else {
             throw new IllegalLinearOperationException();
         }
-        this.privApply(src, dst, job);
+        this._apply(src, dst, job);
     }
 
     /**
@@ -224,15 +224,3 @@ public abstract class LinearOperator {
         }
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

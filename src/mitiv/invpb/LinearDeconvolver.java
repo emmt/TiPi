@@ -119,7 +119,7 @@ public class LinearDeconvolver {
             generateIsotropicQ(shape, ((FloatShapedVector)q).getData());
             Q = new LinearOperator(space) {
                 @Override
-                protected void privApply(Vector src, Vector dst, int job) {
+                protected void _apply(Vector src, Vector dst, int job) {
                     if (job == DIRECT || job == ADJOINT) {
                         FFT.apply(src, z, DIRECT);
                         multiplyByQ(((FloatShapedVector)q).getData(), ((FloatShapedVector)z).getData());
@@ -133,7 +133,7 @@ public class LinearDeconvolver {
             generateIsotropicQ(shape, ((DoubleShapedVector)q).getData());
             Q = new LinearOperator(space) {
                 @Override
-                protected void privApply(Vector src, Vector dst, int job) {
+                protected void _apply(Vector src, Vector dst, int job) {
                     if (job == DIRECT || job == ADJOINT) {
                         FFT.apply(src, z, DIRECT);
                         multiplyByQ(((DoubleShapedVector)q).getData(), ((DoubleShapedVector)z).getData());
@@ -180,7 +180,7 @@ public class LinearDeconvolver {
                 if (single) {
                     W = new LinearOperator(space) {
                         @Override
-                        protected void privApply(Vector src, Vector dst, int job) {
+                        protected void _apply(Vector src, Vector dst, int job) {
                             if (job == DIRECT || job == ADJOINT) {
                                 multiplyByW(((FloatShapedVector)w).getData(),
                                         ((FloatShapedVector)src).getData(),
@@ -193,7 +193,7 @@ public class LinearDeconvolver {
                 } else {
                     W = new LinearOperator(space) {
                         @Override
-                        protected void privApply(Vector src, Vector dst, int job) {
+                        protected void _apply(Vector src, Vector dst, int job) {
                             if (job == DIRECT || job == ADJOINT) {
                                 multiplyByW(((DoubleShapedVector)w).getData(),
                                         ((DoubleShapedVector)src).getData(),

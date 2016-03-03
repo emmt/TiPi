@@ -53,7 +53,7 @@ public class LinearConjGradTest {
         // Create LHS matrix A as a linear operator:
         LinearOperator A = new LinearOperator(vsp) {
             @Override
-            protected void privApply(final Vector src, Vector dst, int job) {
+            protected void _apply(final Vector src, Vector dst, int job) {
                 if (job != DIRECT && job != ADJOINT) {
                     throw new IllegalLinearOperationException();
                 }

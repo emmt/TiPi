@@ -215,7 +215,7 @@ public class LBFGSOperator extends LinearOperator {
     }
 
     @Override
-    protected void privApply(Vector src, Vector dst, int job) {
+    protected void _apply(Vector src, Vector dst, int job) {
         if (job != DIRECT && job != ADJOINT) {
             throw new IllegalLinearOperationException();
         }

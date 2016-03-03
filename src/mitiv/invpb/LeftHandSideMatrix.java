@@ -91,7 +91,7 @@ public class LeftHandSideMatrix extends LinearOperator {
     /**
      * Apply the LHS operator A = Ht.W.H + mu*Q
      */
-    protected void privApply(Vector src, Vector dst, int job) {
+    protected void _apply(Vector src, Vector dst, int job) {
         if (job != DIRECT) {
             throw new IllegalLinearOperationException();
         }

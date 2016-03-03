@@ -464,7 +464,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                 }
                 W = new LinearOperator(resultSpace) {
                     @Override
-                    protected void privApply(Vector src, Vector dst, int job)
+                    protected void _apply(Vector src, Vector dst, int job)
                             throws IncorrectSpaceException {
                         double[] inp = ((DoubleShapedVector)src).getData();
                         double[] out = ((DoubleShapedVector)dst).getData();
