@@ -77,6 +77,10 @@ public abstract class VectorSpace {
         this.number = number;
     }
 
+    /**
+     * Get the number of components of the vectors of a vector space.
+     * @return The number of components of the vectors of this vector space.
+     */
     public final int getNumber() {
         return number;
     }
@@ -98,14 +102,15 @@ public abstract class VectorSpace {
      * Compute the inner product of two vectors.
      *
      * The inner product, also called dot or scalar product of two vectors, is
-     * the sum of the products of the corresponding elements of the two vectors.
-     * The inner product is defined on a vector space, the two vectors must belong
-     * to this vector space.
-     * 
+     * the sum of the products of the corresponding elements of the two
+     * vectors.  The inner product is defined on a vector space, the two
+     * vectors must belong to this vector space.
+     *
      * @param x - A vector of this vector space.
      * @param y - Another vector of this vector space.
      * @return The inner product of <b>x</b> and <b>y</b>.
-     * @throws IncorrectSpaceException <b>x</b> and <b>y</b> must belong to this vector space.
+     * @throws IncorrectSpaceException <b>x</b> and <b>y</b> must belong to
+     * this vector space.
      */
     public final double dot(Vector x, Vector y) {
         check(x);
@@ -116,17 +121,30 @@ public abstract class VectorSpace {
     /**
      * Compute the inner product of two vectors.
      * <p>
-     * This abstract method must be overwritten by its descendants to implement the
-     * inner product.  The passed arguments are guaranteed to belong to this vector
-     * space.
+     * This abstract method must be overwritten by its descendants to
+     * implement the inner product.  The passed arguments are guaranteed to
+     * belong to this vector space.
      * </p>
      * @param x - A vector of this vector space.
      * @param y - Another vector of this vector space.
      * @return The inner product of <b>x</b> and <b>y</b>.
-     * @throws IncorrectSpaceException <b>x</b> and <b>y</b> must belong to this vector space.
      */
-    protected abstract double _dot(Vector x, Vector y)
-            throws IncorrectSpaceException;
+    protected abstract double _dot(Vector x, Vector y);
+
+    /**
+     * Compute the inner product of three vectors or a weighted inner product
+     * of two vectors.
+     * <p>
+     * This abstract method must be overwritten by its descendants to
+     * implement the inner product.  The passed arguments are guaranteed to
+     * belong to this vector space.
+     * </p>
+     * @param w - A vector of this vector space.
+     * @param x - Another vector of this vector space.
+     * @param y - Yet another vector of this vector space.
+     * @return The inner product of <b>w</b>, <b>x</b> and <b>y</b>.
+     */
+    protected abstract double _dot(Vector w, Vector x, Vector y);
 
     /**
      * Compute the Euclidean (L2) norm of a vector.
@@ -138,7 +156,7 @@ public abstract class VectorSpace {
      * @param x - A vector.
      *
      * @return The square root of the sum of squared elements of x.
-     * 
+     *
      * @throws IncorrectSpaceException x must belong to this vector space.
      */
     public final double norm2(Vector x) throws IncorrectSpaceException {
@@ -154,7 +172,7 @@ public abstract class VectorSpace {
      * Compute the L1 norm of a vector.
      *
      * @param x   A vector.
-     * 
+     *
      * @return The sum of absolute values of x.
      *
      * @throws IncorrectSpaceException x must belong to this vector space.
@@ -170,7 +188,7 @@ public abstract class VectorSpace {
      * Compute the infinite norm of a vector.
      *
      * @param x   A vector.
-     * 
+     *
      * @return The maximum absolute value of x.
      *
      * @throws IncorrectSpaceException x must belong to this vector space.
@@ -184,7 +202,7 @@ public abstract class VectorSpace {
 
 
     /**
-     * Multiply the values of the vector by a constant factor.
+     * Multiply the components of a vector by a constant factor.
      *
      * @param alpha - The scale factor.
      */
@@ -202,10 +220,10 @@ public abstract class VectorSpace {
      * Compute a linear combination of two vectors.
      *
      * In pseudo-code, this method does:
-     *
+     * <pre>
      * y[i] = alpha*x[i] + beta*y[i];
-     *
-     * for all indices i.
+     * </pre>
+     * for all indices {@code i}.
      *
      * This abstract method must be overwritten by its descendants. As this
      * method can be used to emulate other operations (as copy, zero, etc.),
@@ -214,11 +232,11 @@ public abstract class VectorSpace {
      * be referenced.
      *
      * @param alpha
-     *            scalar factor for vector X
+     *            the scalar factor for vector X
      * @param x
      *            the vector X
      * @param beta
-     *            scalar factor for vector Y
+     *            the scalar factor for vector Y
      * @param y
      *            the vector Y (also used to store the result)
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
@@ -240,10 +258,10 @@ public abstract class VectorSpace {
      * Compute a linear combination of two vectors.
      *
      * In pseudo-code, this method does:
-     *
+     * <pre>
      * dst[i] = alpha*x[i] + beta*y[i];
-     *
-     * for all indices i.
+     * </pre>
+     * for all indices {@code i}.
      *
      * This abstract method must be overwritten by its descendants. As this
      * method can be used to emulate other operations (as copy, zero, etc.),
@@ -252,14 +270,13 @@ public abstract class VectorSpace {
      * (or Y) must not be referenced.
      *
      * @param alpha
-     *            scalar factor for vector X
+     *            the scalar factor for vector X
      * @param x
      *            the vector X
      * @param beta
-     *            scalar factor for vector Y
+     *            the scalar factor for vector Y
      * @param y
      *            the vector Y
-     * 
      * @param dst
      *            the destination vector
      *
@@ -279,25 +296,24 @@ public abstract class VectorSpace {
     /**
      * Compute a linear combination of three vectors.
      *
-     * In pseudo-code, this method does:
-     *
+     * In pseudo-code, this method performs the following operation:
+     * <pre>
      * dst[i] = alpha*x[i] + beta*y[i] + gamma*z[i];
-     *
-     * for all indices i.
+     * </pre>
+     * for all indices {@code i}.
      *
      * This abstract method must be overwritten by its descendants.
      *
      * @param alpha
-     *            scalar factor for vector X
+     *            the scalar factor for vector X
      * @param x
      *            the vector X
      * @param beta
-     *            scalar factor for vector Y
+     *            the scalar factor for vector Y
      * @param y
      *            the vector Y
-     * 
      * @param gamma
-     *            scalar factor for vector Z
+     *            the scalar factor for vector Z
      * @param z
      *            the vector Z
      * @param dst
@@ -382,10 +398,11 @@ public abstract class VectorSpace {
     /**
      * Create a new vector from this vector space as a copy of another vector.
      *
-     * This protected method is called by {@link #clone} to do the real work after
-     * checking the argument.  Derived classes can implement a more efficient
-     * version than this one which is based on the {@link #create} method and the
-     * {@link #_copy} protected method.
+     * This protected method is called by {@link #clone} to do the real work
+     * after checking the argument.  Derived classes can implement a more
+     * efficient version than this one which is based on the {@link #create}
+     * method and the {@link #_copy} protected method.
+     *
      * @param vec - A vector from this space (this has been checked).
      * @return A new duplicate copy of the vector {@code v}.
      */
@@ -397,6 +414,7 @@ public abstract class VectorSpace {
 
     /**
      * Create a new vector of one's.
+     *
      * @return A new vector of this space filled with ones.
      */
     public Vector one() {
@@ -405,6 +423,7 @@ public abstract class VectorSpace {
 
     /**
      * Create a new vector of zero's.
+     *
      * @return A new vector of this space filled with zeros.
      */
     public Vector zero() {
@@ -414,9 +433,7 @@ public abstract class VectorSpace {
     /**
      * Fill a vector with zeros.
      *
-     * This basic implementation calls axpby() method and is expected to be
-     * overwritten with a more efficient version by the descendants of this
-     * class.
+     * This method set to zero all elements of a vector.
      *
      * @param v   A vector of this space.
      * @throws IncorrectSpaceException V must belong to this vector space.
@@ -430,6 +447,16 @@ public abstract class VectorSpace {
         _fill(v, 0.0);
     }
 
+    /**
+     * Fill a vector with a value.
+     *
+     * This method set all elements of a vector with a value.
+     *
+     * @param x       A vector of this space.
+     * @param alpha   A scalar value.
+     *
+     * @throws IncorrectSpaceException V must belong to this vector space.
+     */
     public void fill(Vector x, double alpha) {
         check(x);
         _fill(x, alpha);
@@ -464,15 +491,3 @@ public abstract class VectorSpace {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
