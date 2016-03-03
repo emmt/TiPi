@@ -240,7 +240,7 @@ public class LBFGSOperator extends LinearOperator {
             int j = slot(k);
             if (rho[j] > 0.0) {
                 beta[j] = rho[j] * tmp.dot(s[j]);
-                tmp.axpby(1.0, tmp, -beta[j], y[j]);
+                tmp.combine(1.0, tmp, -beta[j], y[j]);
             } else {
                 beta[j] = 0.0;
             }
@@ -260,7 +260,7 @@ public class LBFGSOperator extends LinearOperator {
             int j = slot(k);
             if (rho[j] > 0.0) {
                 double phi = rho[j] * dst.dot(y[j]);
-                dst.axpby(1.0, dst, beta[j] - phi, s[j]);
+                dst.combine(1.0, dst, beta[j] - phi, s[j]);
             }
         }
     }
@@ -297,8 +297,8 @@ public class LBFGSOperator extends LinearOperator {
          * pair or -1 if none).
          */
         int j = slot(0);
-        s[j].axpby(1.0, x1, -1.0, x0);
-        y[j].axpby(1.0, g1, -1.0, g0);
+        s[j].combine(1.0, x1, -1.0, x0);
+        y[j].combine(1.0, g1, -1.0, g0);
 
         /* Compute RHO[j] and GAMMA.  If the update formula for GAMMA does
          * not yield a strictly positive value, the strategy is to keep the

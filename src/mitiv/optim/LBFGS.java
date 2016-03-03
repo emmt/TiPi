@@ -282,7 +282,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
     /** Build the new step to try as: x = x0 - alpha*p. */
     private OptimTask nextStep(Vector x) {
         alpha = lnsrch.getStep();
-        x.axpby(1.0, x0, -alpha, p);
+        x.combine(1.0, x0, -alpha, p);
         return success(OptimTask.COMPUTE_FG);
     }
 

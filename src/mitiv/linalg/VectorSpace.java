@@ -235,7 +235,7 @@ public abstract class VectorSpace {
     }
 
     protected void _scale(Vector v, double alpha) {
-        _axpby(alpha, v, 0.0, v, v);
+        _combine(alpha, v, 0.0, v, v);
 
     }
 
@@ -251,29 +251,26 @@ public abstract class VectorSpace {
      * This abstract method must be overwritten by its descendants. As this
      * method can be used to emulate other operations (as copy, zero, etc.),
      * actual code should be optimized for specific factors alpha and/or beta
-     * equal to +/-1 or 0.  In particular when ALPHA is zero, then X must not
-     * be referenced.
+     * equal to +/-1 or 0.  In particular when {@code alpha} is zero, then
+     * {@code x} must not be referenced.
      *
-     * @param alpha
-     *            the scalar factor for vector X
-     * @param x
-     *            the vector X
-     * @param beta
-     *            the scalar factor for vector Y
-     * @param y
-     *            the vector Y (also used to store the result)
+     * @param alpha - The scalar factor for vector {@code x}.
+     * @param x     - A vector.
+     * @param beta  - The scalar factor for vector {@code y}.
+     * @param y     - Another vector.
+     *
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
      */
-    public final void axpby(double alpha, Vector x,
+    public final void combine(double alpha, Vector x,
             double beta, Vector y) throws IncorrectSpaceException {
         check(x);
         check(y);
-        _axpby(alpha, x, beta, y);
+        _combine(alpha, x, beta, y);
     }
 
-    protected void _axpby(double alpha, Vector x,
+    protected void _combine(double alpha, Vector x,
             double beta, Vector y) {
-        _axpby(alpha, x, beta, y, y);
+        _combine(alpha, x, beta, y, y);
     }
 
 
@@ -300,12 +297,12 @@ public abstract class VectorSpace {
      *
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
      */
-    public final void axpby(double alpha, Vector x,
+    public final void combine(double alpha, Vector x,
             double beta, Vector y, Vector dst) throws IncorrectSpaceException {
         check(x);
         check(y);
         check(dst);
-        _axpby(alpha, x, beta, y, dst);
+        _combine(alpha, x, beta, y, dst);
     }
 
     /**
@@ -327,7 +324,7 @@ public abstract class VectorSpace {
      * @param y     - Another vector.
      * @param dst   - The destination vector.
      */
-    protected abstract void _axpby(double alpha, Vector x,
+    protected abstract void _combine(double alpha, Vector x,
             double beta, Vector y, Vector dst);
 
     /**
@@ -350,7 +347,7 @@ public abstract class VectorSpace {
      * @throws IncorrectSpaceException all vectors must belong to the same
      * vector space.
      */
-    public final void axpbypcz(double alpha, Vector x,
+    public final void combine(double alpha, Vector x,
             double beta,  Vector y,
             double gamma, Vector z,
             Vector dst) throws IncorrectSpaceException {
@@ -358,7 +355,7 @@ public abstract class VectorSpace {
         check(y);
         check(z);
         check(dst);
-        _axpbypcz(alpha, x, beta, y, gamma, z, dst);
+        _combine(alpha, x, beta, y, gamma, z, dst);
     }
 
     /**
@@ -376,16 +373,12 @@ public abstract class VectorSpace {
      * @param z     - Yet another vector.
      * @param dst   - The destination vector.
      */
-    protected abstract void _axpbypcz(double alpha, Vector x,
+    protected abstract void _combine(double alpha, Vector x,
             double beta,  Vector y,
             double gamma, Vector z, Vector dst);
 
     /**
      * Copy the contents of a vector into another one.
-     *
-     * This basic implementation calls axpby() method and is expected to be
-     * overwritten with a more efficient version by the descendants of this
-     * class.
      *
      * @param src
      *            - source vector
@@ -402,8 +395,23 @@ public abstract class VectorSpace {
         }
     }
 
+    /**
+     * Copy the contents of a vector into another one (low level).
+     *
+     * This basic implementation calls {@link #_combine(double, Vector, double, Vector)}
+     * method and is expected to be overwritten with a more efficient version by the
+     * descendants of this class.
+     *
+     * @param src
+     *            - source vector
+     * @param dst
+     *            - destination vector
+     *
+     * @throws IncorrectSpaceException {@code src} and {@code dst} must belong to
+     * this vector space.
+     */
     protected void _copy(Vector src, Vector dst) {
-        _axpby(1.0, src, 0.0, dst);
+        _combine(1.0, src, 0.0, dst);
     }
 
     /**

@@ -141,7 +141,7 @@ public class LinearConjugateGradient {
         } else {
             /* r = b - A.x */
             A.apply(x, r);
-            vsp.axpby(1.0, b, -1.0, r);
+            vsp.combine(1.0, b, -1.0, r);
         }
         if (P != null) {
             P.apply(r, z);
@@ -173,7 +173,7 @@ public class LinearConjugateGradient {
                 vsp.copy(z, p);
             } else {
                 double beta = rho / rho_prev;
-                vsp.axpby(1.0, z, beta, p);
+                vsp.combine(1.0, z, beta, p);
             }
             /* Compute optimal step length and update unknown x and residuals r. */
             A.apply(p, q);
@@ -182,8 +182,8 @@ public class LinearConjugateGradient {
                 return A_IS_NOT_POSITIVE_DEFINITE;
             }
             double alpha = rho / gamma;
-            vsp.axpby(+alpha, p, 1.0, x);
-            vsp.axpby(-alpha, q, 1.0, r);
+            vsp.combine(+alpha, p, 1.0, x);
+            vsp.combine(-alpha, q, 1.0, r);
             if (P != null) {
                 P.apply(r, z);
             }

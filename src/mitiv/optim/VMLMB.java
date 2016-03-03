@@ -262,7 +262,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                 alpha = initialStep(x0, p);
             }
             double amin, amax;
-            x.axpby(1.0, x0, -alpha, p);
+            x.combine(1.0, x0, -alpha, p);
             if (projector == null) {
                 /* Unconstrained optimization. */
                 amin = stpmin*alpha;
@@ -274,7 +274,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                     tmp = x.getOwner().create();
                 }
                 //for (;;) {
-                //    tmp.axpby(1.0, x0, -1.0, x);
+                //    tmp.combine(1.0, x0, -1.0, x);
                 //    projector.projectVariables(x, x);
                 //    dg0 = -tmp.dot(g0);
                 //    if (dg0 < 0.0) break; // FIXME: tolerance?
@@ -282,7 +282,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                 //        return schedule(OptimTask.FINAL_X);
                 //    }
                 //    alpha *= 0.5;
-                //    x.axpby(1.0, x0, -alpha, p);
+                //    x.combine(1.0, x0, -alpha, p);
                 //}
                 /* Compute a anti-search direction P.  We take care of checking
                  * whether D = -P is a sufficient descent direction.  As shown by
@@ -292,7 +292,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                  * p. 44 (1999). */
                 while (true) {
                     projector.projectVariables(x, x);
-                    tmp.axpby(1.0, x0, -1.0, x);
+                    tmp.combine(1.0, x0, -1.0, x);
                     dg0 = -tmp.dot(g0);
                     if (dg0 < 0.0) break; // FIXME: tolerance?
                     if (dg0 == 0.0 && H.mp < 1) {
@@ -310,7 +310,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                     } else {
                         alpha *= 0.5;
                     }
-                    x.axpby(1.0, x0, -alpha, p);
+                    x.combine(1.0, x0, -alpha, p);
                 }
                 p.copyFrom(tmp);
                 alpha = 1.0;
@@ -345,7 +345,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
     /** Build the new step to try as: x = Proj(x0 - alpha*p). */
     private OptimTask nextStep(Vector x) {
         alpha = lnsrch.getStep();
-        x.axpby(1.0, x0, -alpha, p);
+        x.combine(1.0, x0, -alpha, p);
         if (projector != null) {
             projector.projectVariables(x, x);
         }

@@ -65,9 +65,9 @@ public class RankOneOperator extends LinearOperator {
 
     protected void privApply(final Vector src, Vector dst, int job) {
         if (job == DIRECT) {
-            outputSpace.axpby(inputSpace.dot(this.v, src), this.u, 0.0, dst);
+            outputSpace.combine(inputSpace.dot(this.v, src), this.u, 0.0, dst);
         } else if (job == ADJOINT) {
-            inputSpace.axpby(outputSpace.dot(this.u, src), this.v, 0.0, dst);
+            inputSpace.combine(outputSpace.dot(this.u, src), this.v, 0.0, dst);
         } else {
             throw new NotImplementedException();
         }

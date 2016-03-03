@@ -220,7 +220,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
     private int update0(Vector g, double beta) {
         this.beta = beta;
         if (this.beta != 0.0) {
-            vsp.axpby(1.0, g, beta, d);
+            vsp.combine(1.0, g, beta, d);
             return SUCCESS;
         } else {
             return FAILURE;
@@ -237,7 +237,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             this.beta = beta;
         }
         if (this.beta != 0.0) {
-            vsp.axpby(1.0, g, beta, d, d);
+            vsp.combine(1.0, g, beta, d, d);
             return SUCCESS;
         } else {
             return FAILURE;
@@ -246,7 +246,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
 
     /* Form: Y = G - G0 */
     private void form_y(Vector g) {
-        vsp.axpby(1.0, g, -1.0, g0, y);
+        vsp.combine(1.0, g, -1.0, g0, y);
     }
 
     /*
@@ -338,7 +338,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                 /* Original formulation, using Y as a scratch vector. */
                 double q = 1.0/dty;
                 double r = q*vsp.norm2(y);
-                vsp.axpby(q, y, 2.0*r*r, d, y);
+                vsp.combine(q, y, 2.0*r*r, d, y);
                 beta = y.dot(g);
             } else {
                 /* Improved formulation which spares one linear combination and thus has
@@ -389,7 +389,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
         double c2 = gty/yty - 2.0*dtg/dty;
         double c3 = -dtg/yty;
         beta = c2/c1;
-        vsp.axpbypcz(c1, g, c2, d, c3, y, d);
+        vsp.combine(c1, g, c2, d, c3, y, d);
         return SUCCESS;
     }
 
@@ -546,7 +546,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
         }
 
         /* Compute a trial point along the line search. */
-        x.axpby(1.0, x0, -alpha, d);
+        x.combine(1.0, x0, -alpha, d);
         return success(OptimTask.COMPUTE_FG);
 
     }

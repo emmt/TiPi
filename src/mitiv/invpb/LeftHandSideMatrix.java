@@ -121,7 +121,7 @@ public class LeftHandSideMatrix extends LinearOperator {
                 }
             }
             Q.apply(src, tmp2);
-            outputSpace.axpby(mu, tmp2, 1.0, dst);    
+            outputSpace.combine(mu, tmp2, 1.0, dst);    
         }
     }
 

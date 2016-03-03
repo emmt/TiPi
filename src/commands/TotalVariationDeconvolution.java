@@ -442,7 +442,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             x = resultSpace.create();
             if (psf_sum != 1.0) {
                 if (psf_sum != 0.0) {
-                    x.axpby(0.0, x, 1.0/psf_sum, y);
+                    x.combine(0.0, x, 1.0/psf_sum, y);
                 } else {
                     x.fill(0.0);
                 }

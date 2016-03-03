@@ -308,11 +308,11 @@ public abstract class Vector {
      * @throws IncorrectSpaceException all vectors must belong to the same
      * vector space.
      */
-    public final void axpby(double alpha, Vector x,
+    public final void combine(double alpha, Vector x,
             double beta, Vector y) throws IncorrectSpaceException {
         space.check(x);
         space.check(y);
-        space._axpby(alpha, x, beta, y, this);
+        space._combine(alpha, x, beta, y, this);
     }
 
     /**
@@ -334,14 +334,14 @@ public abstract class Vector {
      * @throws IncorrectSpaceException all vectors must belong to the same
      * vector space.
      */
-    public final void axpbypcz(double alpha, Vector x,
+    public final void combine(double alpha, Vector x,
             double beta, Vector y,
             double gamma, Vector z)
                     throws IncorrectSpaceException {
         space.check(x);
         space.check(y);
         space.check(z);
-        space._axpbypcz(alpha, x, beta, y, gamma, z, this);
+        space._combine(alpha, x, beta, y, gamma, z, this);
     }
 
     /**

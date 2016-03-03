@@ -208,26 +208,26 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
     }
 
     @Override
-    protected void _axpby(double alpha, final Vector x,
+    protected void _combine(double alpha, final Vector x,
             double beta, Vector y) {
-        ArrayOps.axpby(number,
+        ArrayOps.combine(number,
                 alpha, ((FloatShapedVector) x).getData(),
                 beta,  ((FloatShapedVector) y).getData());
     }
 
     @Override
-    protected void _axpby(double alpha, final Vector x,
+    protected void _combine(double alpha, final Vector x,
             double beta, final Vector y, Vector dst) {
-        ArrayOps.axpby(number,
+        ArrayOps.combine(number,
                 alpha, ((FloatShapedVector) x).getData(),
                 beta,  ((FloatShapedVector) y).getData(), ((FloatShapedVector) dst).getData());
     }
 
     @Override
-    protected void _axpbypcz(double alpha, final Vector x,
+    protected void _combine(double alpha, final Vector x,
             double beta,  final Vector y,
             double gamma, final Vector z, Vector dst) {
-        ArrayOps.axpbypcz(number,
+        ArrayOps.combine(number,
                 alpha, ((FloatShapedVector) x).getData(),
                 beta,  ((FloatShapedVector) y).getData(),
                 gamma, ((FloatShapedVector) z).getData(), ((FloatShapedVector) dst).getData());

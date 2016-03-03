@@ -38,7 +38,7 @@ import mitiv.exception.NonConformableArrayException;
  *
  * TODO: The code for most static methods should be automatically written from
  *       template code (easier maintenance and less bugs).
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 public class ArrayOps {
@@ -802,7 +802,7 @@ public class ArrayOps {
     /*-----------------------------------------------------------------------*/
     /* ALPHA*X + BETA*Y */
 
-    public static void axpby(int n, double alpha, final double[] x,
+    public static void combine(int n, double alpha, final double[] x,
             double beta, double[] y) {
         if (beta == 1.0) {
             /* Job: Y += ALPHA*X */
@@ -882,7 +882,7 @@ public class ArrayOps {
         }
     }
 
-    public static void axpby(int n, double alpha, final double[] x,
+    public static void combine(int n, double alpha, final double[] x,
             double beta, final double[] y, double[] dst) {
         if (beta == 1.0) {
             if (alpha == 1.0) {
@@ -955,17 +955,17 @@ public class ArrayOps {
         }
     }
 
-    public static void axpby(double alpha, final double[] x, double beta,
+    public static void combine(double alpha, final double[] x, double beta,
             double[] y) {
-        axpby(getLength(x, y), alpha, x, beta, y);
+        combine(getLength(x, y), alpha, x, beta, y);
     }
 
-    public static void axpby(double alpha, final double[] x, double beta,
+    public static void combine(double alpha, final double[] x, double beta,
             final double[] y, double dst[]) {
-        axpby(getLength(x, y, dst), alpha, x, beta, y, dst);
+        combine(getLength(x, y, dst), alpha, x, beta, y, dst);
     }
 
-    public static void axpby(int n, double alpha, final float[] x,
+    public static void combine(int n, double alpha, final float[] x,
             double beta, float[] y) {
         if (beta == 1.0) {
             /* Job: Y += ALPHA*X */
@@ -1050,7 +1050,7 @@ public class ArrayOps {
         }
     }
 
-    public static void axpby(int n, double alpha, final float[] x,
+    public static void combine(int n, double alpha, final float[] x,
             double beta, final float[] y, float[] dst) {
         if (beta == 1.0) {
             if (alpha == 1.0) {
@@ -1128,29 +1128,29 @@ public class ArrayOps {
         }
     }
 
-    public static void axpby(double alpha, final float[] x, double beta, float[] y) {
-        axpby(getLength(x, y), alpha, x, beta, y);
+    public static void combine(double alpha, final float[] x, double beta, float[] y) {
+        combine(getLength(x, y), alpha, x, beta, y);
     }
 
-    public static void axpby(double alpha, final float[] x, double beta, final float[] y, float dst[]) {
-        axpby(getLength(x, y, dst), alpha, x, beta, y, dst);
+    public static void combine(double alpha, final float[] x, double beta, final float[] y, float dst[]) {
+        combine(getLength(x, y, dst), alpha, x, beta, y, dst);
     }
 
     /*-----------------------------------------------------------------------*/
     /* ALPHA*X + BETA*Y + GAMMA*Z */
 
-    public static void axpbypcz(int n,
+    public static void combine(int n,
             double alpha, final double[] x,
             double beta,  final double[] y,
             double gamma, final double[] z,
             double[] dst)
     {
         if (alpha == 0.0) {
-            axpby(beta, y, gamma, z, dst);
+            combine(beta, y, gamma, z, dst);
         } else if (beta == 0.0) {
-            axpby(alpha, x, gamma, z, dst);
+            combine(alpha, x, gamma, z, dst);
         } else if (gamma == 0.0) {
-            axpby(alpha, x, beta, y, dst);
+            combine(alpha, x, beta, y, dst);
         } else {
             for (int i = 0; i < n; ++i) {
                 dst[i] = alpha*x[i] + beta*y[i] + gamma*z[i];
@@ -1158,23 +1158,23 @@ public class ArrayOps {
         }
     }
 
-    public static void axpbypcz(double alpha, final double[] x, double beta,
+    public static void combine(double alpha, final double[] x, double beta,
             final double[] y, double gamma, final double[] z, double[] dst) {
-        axpbypcz(getLength(x, y, z, dst), alpha, x, beta, y, gamma, z, dst);
+        combine(getLength(x, y, z, dst), alpha, x, beta, y, gamma, z, dst);
     }
 
-    public static void axpbypcz(int n,
+    public static void combine(int n,
             double alpha, final float[] x,
             double beta,  final float[] y,
             double gamma, final float[] z,
             float[] dst)
     {
         if (alpha == 0.0) {
-            axpby(beta, y, gamma, z, dst);
+            combine(beta, y, gamma, z, dst);
         } else if (beta == 0.0) {
-            axpby(alpha, x, gamma, z, dst);
+            combine(alpha, x, gamma, z, dst);
         } else if (gamma == 0.0) {
-            axpby(alpha, x, beta, y, dst);
+            combine(alpha, x, beta, y, dst);
         } else {
             float a = (float)alpha;
             float b = (float)beta;
@@ -1185,9 +1185,9 @@ public class ArrayOps {
         }
     }
 
-    public static void axpbypcz(float alpha, final float[] x, float beta,
+    public static void combine(float alpha, final float[] x, float beta,
             final float[] y, float gamma, final float[] z, float[] dst) {
-        axpbypcz(getLength(x, y, z, dst), alpha, x, beta, y, gamma, z, dst);
+        combine(getLength(x, y, z, dst), alpha, x, beta, y, gamma, z, dst);
     }
 
     /*-----------------------------------------------------------------------*/

@@ -248,7 +248,7 @@ public class QuadraticCost implements DifferentiableCostFunction {
             }
             H.apply(Wr, HtWr, LinearOperator.ADJOINT);
         }
-        inputSpace.axpby((clr ? 0.0 : 1.0), gx, 2.0*alpha, HtWr, gx);
+        inputSpace.combine((clr ? 0.0 : 1.0), gx, 2.0*alpha, HtWr, gx);
 
         /* Cleanup any alias made so far. */
         if (quickResiduals) {
@@ -299,12 +299,12 @@ public class QuadraticCost implements DifferentiableCostFunction {
             }
             if (H == null) {
                 /* The (anti-)residuals are: r = x - y. */
-                innerSpace.axpby(1.0, x, -1.0, y, r);
+                innerSpace.combine(1.0, x, -1.0, y, r);
             } else {
                 /* The (anti-)residuals are: r = H.x or r = H.x - y. */
                 H.apply(x, r);
                 if (y != null) {
-                    innerSpace.axpby(1.0, r, -1.0, y, r);
+                    innerSpace.combine(1.0, r, -1.0, y, r);
                 }
             }
         }

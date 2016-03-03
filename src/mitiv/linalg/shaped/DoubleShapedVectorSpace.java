@@ -212,26 +212,26 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
     }
 
     @Override
-    protected void _axpby(double alpha, final Vector x,
+    protected void _combine(double alpha, final Vector x,
             double beta, Vector y) {
-        ArrayOps.axpby(number,
+        ArrayOps.combine(number,
                 alpha, ((DoubleShapedVector) x).getData(),
                 beta,  ((DoubleShapedVector) y).getData());
     }
 
     @Override
-    protected void _axpby(double alpha, final Vector x,
+    protected void _combine(double alpha, final Vector x,
             double beta, final Vector y, Vector dst) {
-        ArrayOps.axpby(number,
+        ArrayOps.combine(number,
                 alpha, ((DoubleShapedVector) x).getData(),
                 beta,  ((DoubleShapedVector) y).getData(), ((DoubleShapedVector) dst).getData());
     }
 
     @Override
-    protected void _axpbypcz(double alpha, final Vector x,
+    protected void _combine(double alpha, final Vector x,
             double beta,  final Vector y,
             double gamma, final Vector z, Vector dst) {
-        ArrayOps.axpbypcz(number,
+        ArrayOps.combine(number,
                 alpha, ((DoubleShapedVector) x).getData(),
                 beta,  ((DoubleShapedVector) y).getData(),
                 gamma, ((DoubleShapedVector) z).getData(), ((DoubleShapedVector) dst).getData());

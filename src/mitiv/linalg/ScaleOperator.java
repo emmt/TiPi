@@ -62,11 +62,11 @@ public class ScaleOperator extends LinearOperator {
                 outputSpace.zero(dst);
             } else if (dst == src) {
                 if (scale != 1.0) {
-                    outputSpace.axpby(0.0, src, scale, dst);
+                    outputSpace.combine(0.0, src, scale, dst);
                 }
             } else {
                 if (scale != 1.0) {
-                    outputSpace.axpby(scale, src, 0.0, dst);
+                    outputSpace.combine(scale, src, 0.0, dst);
                 } else {
                     outputSpace.copy(src, dst);
                 }

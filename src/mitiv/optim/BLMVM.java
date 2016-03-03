@@ -215,7 +215,7 @@ public class BLMVM extends ReverseCommunicationOptimizer {
             }
             /* A line search is in progress.  Compute directional
              * derivative and check whether line search has converged. */
-            tmp.axpby(1.0, x, -1.0, x0);
+            tmp.combine(1.0, x, -1.0, x0);
             if (f <= f0 + sftol*tmp.dot(g0)) {
                 /* Line search has converged. */
                 ++iterations;
@@ -286,7 +286,7 @@ public class BLMVM extends ReverseCommunicationOptimizer {
     }
 
     protected OptimTask nextStep(Vector x) {
-        x.axpby(1.0, x0, -alpha, p);
+        x.combine(1.0, x0, -alpha, p);
         projector.projectVariables(x);
         return success(OptimTask.COMPUTE_FG);
     }
