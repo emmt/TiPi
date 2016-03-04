@@ -76,7 +76,7 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
     @Override
     public DoubleShapedVector create(double value) {
         DoubleShapedVector v = new DoubleShapedVector(this);
-        ArrayOps.fill(number, v.getData(), value);
+        ArrayOps.fill(v.getData(), number, value);
         return v;
     }
 
@@ -157,12 +157,12 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
     }
 
     protected void _copy(DoubleShapedVector src, DoubleShapedVector dst) {
-        ArrayOps.copy(number, src.getData(), dst.getData());
+        ArrayOps.copy(dst.getData(), number, src.getData());
     }
 
     @Override
     protected void _copy(Vector src, Vector dst) {
-        ArrayOps.copy(number, getData(src),  getData(dst));
+        ArrayOps.copy(getData(dst), number,  getData(src));
     }
 
     @Override
@@ -179,7 +179,7 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
 
     @Override
     protected void _fill(Vector x, double alpha) {
-        ArrayOps.fill(number, getData(x), alpha);
+        ArrayOps.fill(getData(x), number, alpha);
     }
 
     @Override
@@ -218,19 +218,19 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
     @Override
     protected void _combine(double alpha, final Vector x,
             double beta, final Vector y, Vector dst) {
-        ArrayOps.combine(number,
-                alpha, getData(x),
-                beta,  getData(y), getData(dst));
+        ArrayOps.combine(getData(dst),
+                number, alpha,
+                getData(x),  beta, getData(y));
     }
 
     @Override
     protected void _combine(double alpha, final Vector x,
             double beta,  final Vector y,
             double gamma, final Vector z, Vector dst) {
-        ArrayOps.combine(number,
-                alpha, getData(x),
-                beta,  getData(y),
-                gamma, getData(z), getData(dst));
+        ArrayOps.combine(getData(dst),
+                number, alpha,
+                getData(x),  beta,
+                getData(y), gamma, getData(z));
     }
 
     @Override

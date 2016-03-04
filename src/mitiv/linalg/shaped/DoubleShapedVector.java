@@ -100,7 +100,7 @@ public class DoubleShapedVector extends ShapedVector {
      * @param arr     The Java array to copy.
      */
     public void set(final double arr[]) {
-        ArrayOps.copy(arr, data);
+        ArrayOps.copy(data, arr);
     }
 
     /**

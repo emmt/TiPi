@@ -112,7 +112,7 @@ public class FloatShapedVector extends ShapedVector {
      * @param arr     The Java array to copy.
      */
     public void set(final float arr[]) {
-        ArrayOps.copy(arr, data);
+        ArrayOps.copy(data, arr);
     }
 
     /**

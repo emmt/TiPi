@@ -76,7 +76,7 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
     @Override
     public FloatShapedVector create(double value) {
         FloatShapedVector v = new FloatShapedVector(this);
-        ArrayOps.fill(number, v.getData(), value);
+        ArrayOps.fill(v.getData(), number, value);
         return v;
     }
 
@@ -158,7 +158,7 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
     @Override
     protected void _copy(Vector src, Vector dst) {
-        ArrayOps.copy(number, getData(src),  getData(dst));
+        ArrayOps.copy(getData(dst), number,  getData(src));
     }
 
     @Override
@@ -175,7 +175,7 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
     @Override
     protected void _fill(Vector x, double alpha) {
-        ArrayOps.fill(number, getData(x), alpha);
+        ArrayOps.fill(getData(x), number, alpha);
     }
 
     @Override
@@ -213,19 +213,19 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
     @Override
     protected void _combine(double alpha, final Vector x,
             double beta, final Vector y, Vector dst) {
-        ArrayOps.combine(number,
-                alpha, getData(x),
-                beta,  getData(y), getData(dst));
+        ArrayOps.combine(getData(dst),
+                number, alpha,
+                getData(x),  beta, getData(y));
     }
 
     @Override
     protected void _combine(double alpha, final Vector x,
             double beta,  final Vector y,
             double gamma, final Vector z, Vector dst) {
-        ArrayOps.combine(number,
-                alpha, getData(x),
-                beta,  getData(y),
-                gamma, getData(z), getData(dst));
+        ArrayOps.combine(getData(dst),
+                number, alpha,
+                getData(x),  beta,
+                getData(y), gamma, getData(z));
     }
 
     @Override
