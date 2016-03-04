@@ -131,7 +131,7 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
     protected FloatShapedVector _clone(FloatShapedVector vec) {
         FloatShapedVector cpy = new FloatShapedVector(this);
-        _copy(vec, cpy);
+        _copy(cpy, vec);
         return cpy;
     }
 
@@ -157,7 +157,7 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
     }
 
     @Override
-    protected void _copy(Vector src, Vector dst) {
+    protected void _copy(Vector dst, Vector src) {
         ArrayOps.copy(getData(dst), number,  getData(src));
     }
 
@@ -211,17 +211,17 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
     }
 
     @Override
-    protected void _combine(double alpha, final Vector x,
-            double beta, final Vector y, Vector dst) {
+    protected void _combine(Vector dst, double alpha,
+            final Vector x, double beta, final Vector y) {
         ArrayOps.combine(getData(dst),
                 number, alpha,
                 getData(x),  beta, getData(y));
     }
 
     @Override
-    protected void _combine(double alpha, final Vector x,
-            double beta,  final Vector y,
-            double gamma, final Vector z, Vector dst) {
+    protected void _combine(Vector dst, double alpha,
+            final Vector x,  double beta,
+            final Vector y, double gamma, final Vector z) {
         ArrayOps.combine(getData(dst),
                 number, alpha,
                 getData(x),  beta,
@@ -229,7 +229,7 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
     }
 
     @Override
-    protected void _multiply(Vector vx, Vector vy, Vector dst)
+    protected void _multiply(Vector dst, Vector vx, Vector vy)
     {
         float[] x = getData(vx);
         float[] y = getData(vy);

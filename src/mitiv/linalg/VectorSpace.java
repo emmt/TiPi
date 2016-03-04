@@ -235,7 +235,7 @@ public abstract class VectorSpace {
     }
 
     protected void _scale(Vector v, double alpha) {
-        _combine(alpha, v, 0.0, v, v);
+        _combine(v, alpha, v, 0.0, v);
 
     }
 
@@ -270,7 +270,7 @@ public abstract class VectorSpace {
 
     protected void _combine(double alpha, Vector x,
             double beta, Vector y) {
-        _combine(alpha, x, beta, y, y);
+        _combine(y, alpha, x, beta, y);
     }
 
 
@@ -288,21 +288,20 @@ public abstract class VectorSpace {
      * actual code should be optimized for specific factors alpha and/or beta
      * equal to +/-1 or 0.  In particular when ALPHA (or BETA) is zero, then X
      * (or Y) must not be referenced.
-     *
+     * @param dst   - The destination vector.
      * @param alpha - The scalar factor for vector {@code x}.
      * @param x     - A vector.
      * @param beta  - The scalar factor for vector {@code y}.
      * @param y     - Another vector.
-     * @param dst   - The destination vector.
      *
      * @throws IncorrectSpaceException X and Y must belong to this vector space.
      */
-    public final void combine(double alpha, Vector x,
-            double beta, Vector y, Vector dst) throws IncorrectSpaceException {
+    public final void combine(Vector dst, double alpha,
+            Vector x, double beta, Vector y) throws IncorrectSpaceException {
         check(x);
         check(y);
         check(dst);
-        _combine(alpha, x, beta, y, dst);
+        _combine(dst, alpha, x, beta, y);
     }
 
     /**
@@ -317,15 +316,14 @@ public abstract class VectorSpace {
      * and/or {@code beta} equal to +/-1 or 0.  In particular when {@code
      * alpha} (or {@code beta}) is zero, then {@code x} (or {@code y}) must
      * not be referenced.
-     *
+     * @param dst   - The destination vector.
      * @param alpha - The scalar factor for vector {@code x}.
      * @param x     - A vector.
      * @param beta  - The scalar factor for vector {@code y}.
      * @param y     - Another vector.
-     * @param dst   - The destination vector.
      */
-    protected abstract void _combine(double alpha, Vector x,
-            double beta, Vector y, Vector dst);
+    protected abstract void _combine(Vector dst, double alpha,
+            Vector x, double beta, Vector y);
 
     /**
      * Compute a linear combination of three vectors.
@@ -335,27 +333,25 @@ public abstract class VectorSpace {
      * dst[i] = alpha*x[i] + beta*y[i] + gamma*z[i];
      * </pre>
      * for all indices {@code i}.
-     *
+     * @param dst   - The destination vector.
      * @param alpha - The scalar factor for vector {@code x}.
      * @param x     - A vector.
      * @param beta  - The scalar factor for vector {@code y}.
      * @param y     - Another vector.
      * @param gamma - The scalar factor for vector {@code z}.
      * @param z     - Yet another vector.
-     * @param dst   - The destination vector.
      *
      * @throws IncorrectSpaceException all vectors must belong to the same
      * vector space.
      */
-    public final void combine(double alpha, Vector x,
-            double beta,  Vector y,
-            double gamma, Vector z,
-            Vector dst) throws IncorrectSpaceException {
+    public final void combine(Vector dst, double alpha, Vector x,
+            double beta, Vector y, double gamma, Vector z)
+                    throws IncorrectSpaceException {
         check(x);
         check(y);
         check(z);
         check(dst);
-        _combine(alpha, x, beta, y, gamma, z, dst);
+        _combine(dst, alpha, x, beta, y, gamma, z);
     }
 
     /**
@@ -364,18 +360,16 @@ public abstract class VectorSpace {
      * This abstract method must be overwritten by the descendants of this
      * class.  It is guaranteed that all passed vectors belong to the same
      * vector space.
-     *
+     * @param dst   - The destination vector.
      * @param alpha - The scalar factor for vector {@code x}.
      * @param x     - A vector.
      * @param beta  - The scalar factor for vector {@code y}.
      * @param y     - Another vector.
      * @param gamma - The scalar factor for vector {@code z}.
      * @param z     - Yet another vector.
-     * @param dst   - The destination vector.
      */
-    protected abstract void _combine(double alpha, Vector x,
-            double beta,  Vector y,
-            double gamma, Vector z, Vector dst);
+    protected abstract void _combine(Vector dst, double alpha,
+            Vector x, double beta, Vector y, double gamma, Vector z);
 
     /**
      * Perform a component-wise multiplication of two vectors.
@@ -385,37 +379,36 @@ public abstract class VectorSpace {
      * dst[i] = x[i]*y[i];
      * </pre>
      * for all indices {@code i}.
-     *
+     * @param dst -The destination vector.
      * @param x - A vector.
      * @param y - Another vector.
-     * @param dst -The destination vector.
      *
      * @throws IncorrectSpaceException All arguments must belong to this vector space.
      */
-    public final void multiply(Vector x, Vector y, Vector dst)
+    public final void multiply(Vector dst, Vector x, Vector y)
             throws IncorrectSpaceException {
         check(x);
         check(y);
         check(dst);
-        _multiply(x, y, dst);
+        _multiply(dst, x, y);
     }
-    protected abstract void _multiply(Vector x, Vector y, Vector dst);
+    protected abstract void _multiply(Vector dst, Vector x, Vector y);
 
     /**
      * Copy the contents of a vector into another one.
-     *
-     * @param src
-     *            - source vector
      * @param dst
      *            - destination vector
+     * @param src
+     *            - source vector
+     *
      * @throws IncorrectSpaceException SRC and DST must belong to this vector space.
      */
-    public final void copy(Vector src, Vector dst)
+    public final void copy(Vector dst, Vector src)
             throws IncorrectSpaceException {
         check(src);
         if (dst != src) {
             check(dst);
-            _copy(src, dst);
+            _copy(dst, src);
         }
     }
 
@@ -425,16 +418,15 @@ public abstract class VectorSpace {
      * This basic implementation calls {@link #_combine(double, Vector, double, Vector)}
      * method and is expected to be overwritten with a more efficient version by the
      * descendants of this class.
-     *
-     * @param src
-     *            - source vector
      * @param dst
      *            - destination vector
+     * @param src
+     *            - source vector
      *
      * @throws IncorrectSpaceException {@code src} and {@code dst} must belong to
      * this vector space.
      */
-    protected void _copy(Vector src, Vector dst) {
+    protected void _copy(Vector dst, Vector src) {
         _combine(1.0, src, 0.0, dst);
     }
 
@@ -484,7 +476,7 @@ public abstract class VectorSpace {
      */
     protected Vector _clone(Vector vec) {
         Vector cpy = create();
-        _copy(vec, cpy);
+        _copy(cpy, vec);
         return cpy;
     }
 

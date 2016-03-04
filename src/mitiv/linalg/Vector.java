@@ -161,7 +161,7 @@ public abstract class Vector {
             throws IncorrectSpaceException {
         if (dst != this) {
             space.check(dst);
-            space._copy(this, dst);
+            space._copy(dst, this);
         }
     }
 
@@ -175,7 +175,7 @@ public abstract class Vector {
             throws IncorrectSpaceException {
         if (src != this) {
             space.check(src);
-            space._copy(src, this);
+            space._copy(this, src);
         }
     }
 
@@ -312,7 +312,7 @@ public abstract class Vector {
             double beta, Vector y) throws IncorrectSpaceException {
         space.check(x);
         space.check(y);
-        space._combine(alpha, x, beta, y, this);
+        space._combine(this, alpha, x, beta, y);
     }
 
     /**
@@ -341,7 +341,7 @@ public abstract class Vector {
         space.check(x);
         space.check(y);
         space.check(z);
-        space._combine(alpha, x, beta, y, gamma, z, this);
+        space._combine(this, alpha, x, beta, y, gamma, z);
     }
 
     /**

@@ -56,19 +56,20 @@ public class ScaleOperator extends LinearOperator {
         this.scale = alpha;
     }
 
+    @Override
     protected void _apply(final Vector src, Vector dst, int job) {
         if (job == DIRECT || job == ADJOINT) {
             if (scale == 0.0) {
-                outputSpace.zero(dst);
+                dst.zero();
             } else if (dst == src) {
                 if (scale != 1.0) {
-                    outputSpace.combine(0.0, src, scale, dst);
+                    dst.scale(scale);
                 }
             } else {
                 if (scale != 1.0) {
-                    outputSpace.combine(scale, src, 0.0, dst);
+                    dst.combine(scale, src, 0.0, dst);
                 } else {
-                    outputSpace.copy(src, dst);
+                    dst.copyFrom(src);
                 }
             }
         } else {
@@ -95,15 +96,3 @@ public class ScaleOperator extends LinearOperator {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

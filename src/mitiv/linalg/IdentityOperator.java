@@ -39,22 +39,11 @@ public class IdentityOperator extends LinearOperator {
         super(vsp);
     }
 
+    @Override
     protected void _apply(final Vector src, Vector dst, int job)
             throws IncorrectSpaceException {
         if (dst != src) {
-            inputSpace.copy(src, dst);
+            inputSpace.copy(dst, src);
         }
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

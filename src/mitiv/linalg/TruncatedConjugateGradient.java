@@ -29,13 +29,13 @@ import mitiv.exception.IncorrectSpaceException;
 
 /**
  * Implement trust region conjugate gradient algorithm of Steihaug.
- * 
+ *
  * References: Trond Steihaug, "The conjugate gradient method and trust regions
  * in large scale optimization," SIAM J. Numer. Anal., vol. 20, pp. 626-637
  * (1983).
- * 
+ *
  * @author eric
- * 
+ *
  */
 public class TruncatedConjugateGradient {
     public static final int SUCCESS = 0;
@@ -43,21 +43,21 @@ public class TruncatedConjugateGradient {
 
     public static final int IN_PROGRESS = 0; /* Algorithm is running. */
     public static final int CONVERGED = 1; /*
-                                            * Algorithm has converged within
-                                            * tolerances.
-                                            */
+     * Algorithm has converged within
+     * tolerances.
+     */
     public static final int TRUNCATED = 2;
     public static final int TOO_MANY_ITERATIONS = 3; /* Too many iterations. */
     public static final int A_IS_NOT_POSITIVE_DEFINITE = 4; /*
-                                                             * RHS matrix A is
-                                                             * not positive
-                                                             * definite.
-                                                             */
+     * RHS matrix A is
+     * not positive
+     * definite.
+     */
     public static final int P_IS_NOT_POSITIVE_DEFINITE = 5; /*
-                                                             * Preconditioner P
-                                                             * is not positive
-                                                             * definite.
-                                                             */
+     * Preconditioner P
+     * is not positive
+     * definite.
+     */
     public static final int BUG = 7;
 
     public static final int FOREVER = -1;
@@ -126,28 +126,28 @@ public class TruncatedConjugateGradient {
 
     /**
      * Compute the roots of a 2nd degree polynomial.
-     * 
+     *
      * Solve the quadratic equation:
-     * 
+     *
      * a*x^2 + b*x + c = 0
-     * 
+     *
      * for real x. The number n of distinct real roots is returned and the roots
      * if any are stored into x. If there is no roots, the contents of x is left
      * unchanged; otherwise (n = 1 or 2) the two values of x are set with the
      * roots in ascending order, i.e. such that x[0] <= x[1].
-     * 
+     * @param x
+     *            2-element output array to store the result
      * @param a
      *            2nd degree coefficient
      * @param b
      *            1st degree coefficient
      * @param c
      *            0th degree coefficient
-     * @param x
-     *            2-element output array to store the result
+     *
      * @return The number n of distinct real roots. If n >= 1, then x[0] <=
      *         x[1]; otherwise (n = 0) and x contents is left unchanged.
      */
-    public static int solveQuadratic(double a, double b, double c, double x[]) {
+    public static int solveQuadratic(double x[], double a, double b, double c) {
         if (a != 0.0) {
             double p = a + a;
             double q = c + c;
@@ -181,9 +181,9 @@ public class TruncatedConjugateGradient {
 
     /**
      * Adjust vector length along a given direction.
-     * 
+     *
      * Replace x by x + alpha*p so that ||x - alpha*p|| = delta.
-     * 
+     *
      * @param x
      *            the vector to adjust
      * @param p
@@ -204,22 +204,22 @@ public class TruncatedConjugateGradient {
         }
         /*
          * ||x + alpha*p|| = delta <==> a*t^2 + b*t + c = 0
-         * 
+         *
          * with:
-         * 
+         *
          * a = ||p||^2
-         * 
+         *
          * b = 2*<x|p>
-         * 
+         *
          * c = ||x||^2 - delta^2 = (||x|| - delta)*(||x|| - delta)
          */
         VectorSpace vsp = p.getSpace();
-        double a = vsp.dot(p, p);
-        double b = 2.0 * vsp.dot(p, x);
-        double c = (xnrm + delta) * (xnrm - delta);
+        double a = p.dot(p);
+        double b = 2.0*p.dot(x);
+        double c = (xnrm + delta)*(xnrm - delta);
         double[] t = new double[2];
         double alpha = 0.0;
-        if (solveQuadratic(a, b, c, t) >= 1) {
+        if (solveQuadratic(t, a, b, c) >= 1) {
             if (xnrm > delta) {
                 /* Compute a backward step. */
                 alpha = Math.min(0.0, t[0]);
@@ -231,21 +231,21 @@ public class TruncatedConjugateGradient {
         if (alpha == 0.0) {
             return FAILURE;
         }
-        vsp.combine(alpha, p, 1.0, x);
+        x.combine(1.0, x, alpha, p);
         return SUCCESS;
     }
 
     public int truncatedConjugateGradient(LinearOperator A, Vector b, Vector x,
             double delta, int maxiter)
-            throws IncorrectSpaceException {
+                    throws IncorrectSpaceException {
         return truncatedConjugateGradient(A, b, x, null, delta, maxiter);
     }
 
     /**
      * Compute a trust-region step by means of preconditioned truncated linear
      * conjugate gradient.
-     * 
-     * 
+     *
+     *
      * @param A
      *            The LHS operator.
      * @param b
@@ -263,7 +263,7 @@ public class TruncatedConjugateGradient {
      */
     public int truncatedConjugateGradient(LinearOperator A, Vector b, Vector x,
             LinearOperator P, double delta, int maxiter)
-            throws IncorrectSpaceException {
+                    throws IncorrectSpaceException {
         /*
          * Check that A.x = b makes sense and whether A input and output spaces
          * are the same.
@@ -280,7 +280,7 @@ public class TruncatedConjugateGradient {
          */
         vsp.zero(x);
         double xnrm = 0.0;
-        vsp.copy(b, r);
+        r.copyFrom(b);
         if (P != null) {
             /* Check preconditioner P and allocate vector for Z. */
             if (P.getInputSpace() != vsp || P.getOutputSpace() != vsp) {
@@ -295,7 +295,7 @@ public class TruncatedConjugateGradient {
              */
             z = r;
         }
-        double rho = vsp.dot(z, r);
+        double rho = z.dot(r);
         double rho_prev = 0.0;
         double epsilon = 0.0;
         int iter = 0;
@@ -309,14 +309,14 @@ public class TruncatedConjugateGradient {
             }
             /* Compute new search direction: p = z + beta*p */
             if (iter == 0) {
-                vsp.copy(z, p);
+                p.copyFrom(z);
             } else {
                 double beta = rho / rho_prev;
-                vsp.combine(1.0, z, beta, p);
+                p.combine(1.0, z, beta, p);
             }
             /* Compute optimal step length and update unknown x and residuals r. */
             A.apply(p, q);
-            double gamma = vsp.dot(p, q);
+            double gamma = p.dot(q);
             if (gamma <= 0.0) {
                 /*
                  * Non positivedefiniteness of A. Apply a truncated forward
@@ -325,33 +325,21 @@ public class TruncatedConjugateGradient {
                 adjustStep(x, p, delta, xnrm);
                 return A_IS_NOT_POSITIVE_DEFINITE;
             }
-            double alpha = rho / gamma;
-            vsp.combine(+alpha, p, 1.0, x);
-            xnrm = Math.sqrt(vsp.dot(x, x));
+            double alpha = rho/gamma;
+            x.combine(1.0, x, +alpha, p);
+            xnrm = Math.sqrt(x.dot(x));
             if (xnrm >= delta) {
                 /* Apply a truncated backward step. */
                 adjustStep(x, p, delta, xnrm);
                 return TRUNCATED;
             }
-            vsp.combine(-alpha, q, 1.0, r);
+            r.combine(1.0, r, -alpha, q);
             if (P != null) {
                 P.apply(r, z);
             }
             rho_prev = rho;
-            rho = vsp.dot(z, r);
+            rho = z.dot(r);
             ++iter;
         }
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

@@ -59,13 +59,12 @@ public interface ProximalOperator extends CostFunction {
      * with respect to vector {@code out} and given weight {@code alpha} and
      * the input vector {@code out}.  The argument {@code tol} is a relative
      * tolerance parameter to find an approximate solution to the problem.
-     * 
+     * @param out    - The vector of output variables.
      * @param alpha  - A non-negative weight for the cost.
      * @param inp    - The vector of input variables.
-     * @param out    - The vector of output variables.
      * @param tol    - A non-negative tolerance parameter.
      */
-    abstract public void applyProx(double alpha, Vector inp, Vector out, double tol);
+    abstract public void applyProx(Vector out, double alpha, Vector inp, double tol);
 }
 
 /*

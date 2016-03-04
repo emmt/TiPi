@@ -34,7 +34,7 @@ public class LinearConjugateGradient {
     public static final int IN_PROGRESS = 0;
 
     /** Algorithm has converged within tolerances. */
-    public static final int CONVERGED = 1; 
+    public static final int CONVERGED = 1;
 
     /** Too many iterations. */
     public static final int TOO_MANY_ITERATIONS = 2;
@@ -136,19 +136,19 @@ public class LinearConjugateGradient {
          */
         if (reset) {
             /* x = 0 and r = b */
-            vsp.zero(x);
-            vsp.copy(b, r);
+            x.zero();
+            r.copyFrom(b);
         } else {
             /* r = b - A.x */
             A.apply(x, r);
-            vsp.combine(1.0, b, -1.0, r);
+            r.combine(1.0, b, -1.0, r);
         }
         if (P != null) {
             P.apply(r, z);
         }
 
         /* Compute convergence threshold: EPSILON = max(0, ATOL, RTOL*RHO)) */
-        double rho = vsp.dot(z, r);
+        double rho = z.dot(r);
         double rho_prev = 0.0;
         double epsilon = Math.max(0.0, Math.max(atol, rtol * rho));
         int iter = 0;
@@ -170,25 +170,25 @@ public class LinearConjugateGradient {
             }
             /* Compute new search direction: p = z + beta*p */
             if (iter == 0) {
-                vsp.copy(z, p);
+                p.copyFrom(p);
             } else {
                 double beta = rho / rho_prev;
-                vsp.combine(1.0, z, beta, p);
+                p.combine(1.0, z, beta, p);
             }
             /* Compute optimal step length and update unknown x and residuals r. */
             A.apply(p, q);
-            double gamma = vsp.dot(p, q);
+            double gamma = p.dot(q);
             if (gamma <= 0.0) {
                 return A_IS_NOT_POSITIVE_DEFINITE;
             }
-            double alpha = rho / gamma;
-            vsp.combine(+alpha, p, 1.0, x);
-            vsp.combine(-alpha, q, 1.0, r);
+            double alpha = rho/gamma;
+            x.combine(1.0, x, +alpha, p);
+            r.combine(1.0, r, -alpha, q);
             if (P != null) {
                 P.apply(r, z);
             }
             rho_prev = rho;
-            rho = vsp.dot(z, r);
+            rho = z.dot(r);
             ++iter;
         }
     }
@@ -212,15 +212,3 @@ public class LinearConjugateGradient {
         return cg.solve(x, maxiter, reset);
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

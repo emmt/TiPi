@@ -122,7 +122,7 @@ public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, T
         } else {
             cpy = new FloatShapedVector((FloatShapedVectorSpace)vec.getOwner());
         }
-        _copy(vec, cpy);
+        _copy(cpy, vec);
         return cpy;
     }
 
