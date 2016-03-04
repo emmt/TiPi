@@ -238,7 +238,7 @@ public abstract class Vector {
      */
     public double dot(Vector v1, Vector v2) {
         if (v1 == null || ! v1.belongsTo(space) ||
-            v2 == null || ! v2.belongsTo(space)) {
+                v2 == null || ! v2.belongsTo(space)) {
             throw new IncorrectSpaceException();
         }
         return space._dot(this, v1, v2);
@@ -342,6 +342,24 @@ public abstract class Vector {
         space.check(y);
         space.check(z);
         space._combine(this, alpha, x, beta, y, gamma, z);
+    }
+
+    /**
+     * Perform a component-wise multiplication by another vector.
+     *
+     * In pseudo-code, this method performs the following operation:
+     * <pre>
+     * this[i] *= other[i];
+     * </pre>
+     * for all indices {@code i}.
+     * @param other - Another vector.
+     *
+     * @throws IncorrectSpaceException The argument must belong to this vector space.
+     */
+    public final void multiply(Vector other)
+            throws IncorrectSpaceException {
+        space.check(other);
+        space._multiply(this, this, other);
     }
 
     /**
