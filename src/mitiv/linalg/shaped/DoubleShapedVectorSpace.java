@@ -101,8 +101,8 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
      * This is a variant of {@link #create(ShapedArray)} for an array of
      * known data type.
      * </p>
-     * @param arr       - A shaped array with elements of type {@code double}.
-     * @return A new FloatShapedVector.
+     * @param arr - A shaped array with elements of type {@code double}.
+     * @return A new DoubleShapedVector.
      */
     public DoubleShapedVector create(DoubleArray arr) {
         return create(arr, false);
@@ -117,7 +117,7 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
      * </p>
      * @param arr       - A shaped array with elements of type {@code double}.
      * @param forceCopy - A flag to force a copy of the contents if true.
-     * @return A new FloatShapedVector.
+     * @return A new DoubleShapedVector.
      */
     public DoubleShapedVector create(DoubleArray arr, boolean forceCopy) {
         checkShape(arr);
@@ -162,74 +162,65 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
 
     @Override
     protected void _copy(Vector src, Vector dst) {
-        _copy((DoubleShapedVector)src, (DoubleShapedVector)dst);
+        ArrayOps.copy(number, getData(src),  getData(dst));
     }
 
     @Override
-    protected void _swap(Vector x, Vector y) {
-        _copy((DoubleShapedVector)x, (DoubleShapedVector)y);
-    }
-
-    protected void _swap(DoubleShapedVector vx, DoubleShapedVector vy) {
-        double[] x = vx.getData();
-        double[] y = vy.getData();
-        int n = vx.getNumber();
-        for (int j = 0; j < n; ++j) {
-            double a = x[j];
-            x[j] = y[j];
-            y[j] = a;
+    protected void _swap(Vector vx, Vector vy) {
+        double[] x = getData(vx);
+        double[] y = getData(vy);
+        int n = x.length;
+        for (int i = 0; i < n; ++i) {
+            double xi = x[i];
+            x[i] = y[i];
+            y[i] = xi;
         }
     }
 
     @Override
     protected void _fill(Vector x, double alpha) {
-        ArrayOps.fill(number, ((DoubleShapedVector) x).getData(), alpha);
+        ArrayOps.fill(number, getData(x), alpha);
     }
 
     @Override
     protected double _dot(final Vector x, final Vector y) {
-        return ArrayOps.dot(number,
-                ((DoubleShapedVector) x).getData(),
-                ((DoubleShapedVector) y).getData());
+        return ArrayOps.dot(number, getData(x), getData(y));
     }
 
     @Override
     protected double _dot(final Vector w, final Vector x, final Vector y) {
-        return ArrayOps.dot(number,
-                ((DoubleShapedVector) w).getData(),
-                ((DoubleShapedVector) x).getData(),
-                ((DoubleShapedVector) y).getData());
+        return ArrayOps.dot(number, getData(w), getData(x), getData(y));
     }
 
     @Override
     protected double _norm2(Vector x) {
-        return ArrayOps.norm2(((DoubleShapedVector) x).getData());
+        return ArrayOps.norm2(getData(x));
     }
 
     @Override
     protected double _norm1(Vector x) {
-        return ArrayOps.norm1(((DoubleShapedVector) x).getData());
+        return ArrayOps.norm1(getData(x));
     }
 
     @Override
     protected double _normInf(Vector x) {
-        return ArrayOps.normInf(((DoubleShapedVector) x).getData());
+        return ArrayOps.normInf(getData(x));
     }
 
     @Override
     protected void _combine(double alpha, final Vector x,
             double beta, Vector y) {
         ArrayOps.combine(number,
-                alpha, ((DoubleShapedVector) x).getData(),
-                beta,  ((DoubleShapedVector) y).getData());
+                alpha, getData(x),
+                beta,  getData(y));
     }
 
     @Override
     protected void _combine(double alpha, final Vector x,
             double beta, final Vector y, Vector dst) {
         ArrayOps.combine(number,
-                alpha, ((DoubleShapedVector) x).getData(),
-                beta,  ((DoubleShapedVector) y).getData(), ((DoubleShapedVector) dst).getData());
+                alpha, getData(x),
+                beta,  getData(y), getData(dst));
     }
 
     @Override
@@ -237,9 +228,9 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
             double beta,  final Vector y,
             double gamma, final Vector z, Vector dst) {
         ArrayOps.combine(number,
-                alpha, ((DoubleShapedVector) x).getData(),
-                beta,  ((DoubleShapedVector) y).getData(),
-                gamma, ((DoubleShapedVector) z).getData(), ((DoubleShapedVector) dst).getData());
+                alpha, getData(x),
+                beta,  getData(y),
+                gamma, getData(z), getData(dst));
     }
 
     @Override
@@ -254,15 +245,3 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
         }
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

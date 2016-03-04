@@ -158,74 +158,64 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
     @Override
     protected void _copy(Vector src, Vector dst) {
-        ArrayOps.copy(number, ((FloatShapedVector) src).getData(),
-                ((FloatShapedVector) dst).getData());
+        ArrayOps.copy(number, getData(src),  getData(dst));
     }
 
     @Override
-    protected void _swap(Vector x, Vector y) {
-        _copy(x, y);
-    }
-
-    protected void _swap(FloatShapedVector vx, FloatShapedVector vy) {
-        float[] x = vx.getData();
-        float[] y = vy.getData();
-        int n = vx.getNumber();
-        for (int j = 0; j < n; ++j) {
-            float a = x[j];
-            x[j] = y[j];
-            y[j] = a;
+    protected void _swap(Vector vx, Vector vy) {
+        float[] x = getData(vx);
+        float[] y = getData(vy);
+        int n = x.length;
+        for (int i = 0; i < n; ++i) {
+            float xi = x[i];
+            x[i] = y[i];
+            y[i] = xi;
         }
     }
 
     @Override
     protected void _fill(Vector x, double alpha) {
-        ArrayOps.fill(number, ((FloatShapedVector) x).getData(), alpha);
+        ArrayOps.fill(number, getData(x), alpha);
     }
 
     @Override
     protected double _dot(final Vector x, final Vector y) {
-        return ArrayOps.dot(number,
-                ((FloatShapedVector) x).getData(),
-                ((FloatShapedVector) y).getData());
+        return ArrayOps.dot(number, getData(x), getData(y));
     }
     @Override
     protected double _dot(final Vector w, final Vector x, final Vector y) {
-        return ArrayOps.dot(number,
-                ((FloatShapedVector) w).getData(),
-                ((FloatShapedVector) x).getData(),
-                ((FloatShapedVector) y).getData());
+        return ArrayOps.dot(number, getData(w), getData(x), getData(y));
     }
 
     @Override
     protected double _norm2(Vector x) {
-        return ArrayOps.norm2(((FloatShapedVector) x).getData());
+        return ArrayOps.norm2(getData(x));
     }
 
     @Override
     protected double _norm1(Vector x) {
-        return ArrayOps.norm1(((FloatShapedVector) x).getData());
+        return ArrayOps.norm1(getData(x));
     }
 
     @Override
     protected double _normInf(Vector x) {
-        return ArrayOps.normInf(((FloatShapedVector) x).getData());
+        return ArrayOps.normInf(getData(x));
     }
 
     @Override
     protected void _combine(double alpha, final Vector x,
             double beta, Vector y) {
         ArrayOps.combine(number,
-                alpha, ((FloatShapedVector) x).getData(),
-                beta,  ((FloatShapedVector) y).getData());
+                alpha, getData(x),
+                beta,  getData(y));
     }
 
     @Override
     protected void _combine(double alpha, final Vector x,
             double beta, final Vector y, Vector dst) {
         ArrayOps.combine(number,
-                alpha, ((FloatShapedVector) x).getData(),
-                beta,  ((FloatShapedVector) y).getData(), ((FloatShapedVector) dst).getData());
+                alpha, getData(x),
+                beta,  getData(y), getData(dst));
     }
 
     @Override
@@ -233,9 +223,9 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
             double beta,  final Vector y,
             double gamma, final Vector z, Vector dst) {
         ArrayOps.combine(number,
-                alpha, ((FloatShapedVector) x).getData(),
-                beta,  ((FloatShapedVector) y).getData(),
-                gamma, ((FloatShapedVector) z).getData(), ((FloatShapedVector) dst).getData());
+                alpha, getData(x),
+                beta,  getData(y),
+                gamma, getData(z), getData(dst));
     }
 
     @Override
@@ -250,15 +240,3 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
         }
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
