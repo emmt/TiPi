@@ -63,6 +63,11 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
         super(DOUBLE, dim1, dim2, dim3, dim4);
     }
 
+    private double[] getData(Vector v)
+    {
+        return ((DoubleShapedVector) v).getData();
+    }
+
     @Override
     public DoubleShapedVector create() {
         return new DoubleShapedVector(this);
@@ -235,6 +240,18 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
                 alpha, ((DoubleShapedVector) x).getData(),
                 beta,  ((DoubleShapedVector) y).getData(),
                 gamma, ((DoubleShapedVector) z).getData(), ((DoubleShapedVector) dst).getData());
+    }
+
+    @Override
+    protected void _multiply(Vector vx, Vector vy, Vector dst)
+    {
+        double[] x = getData(vx);
+        double[] y = getData(vy);
+        double[] z = getData(dst);
+        int n = x.length;
+        for (int i = 0; i < n; ++i) {
+            z[i] = x[i]*y[i];
+        }
     }
 }
 

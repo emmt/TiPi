@@ -63,6 +63,11 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
         super(FLOAT, dim1, dim2, dim3, dim4);
     }
 
+    private float[] getData(Vector v)
+    {
+        return ((FloatShapedVector) v).getData();
+    }
+
     @Override
     public FloatShapedVector create() {
         return new FloatShapedVector(this);
@@ -233,6 +238,17 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
                 gamma, ((FloatShapedVector) z).getData(), ((FloatShapedVector) dst).getData());
     }
 
+    @Override
+    protected void _multiply(Vector vx, Vector vy, Vector dst)
+    {
+        float[] x = getData(vx);
+        float[] y = getData(vy);
+        float[] z = getData(dst);
+        int n = x.length;
+        for (int i = 0; i < n; ++i) {
+            z[i] = x[i]*y[i];
+        }
+    }
 }
 
 /*

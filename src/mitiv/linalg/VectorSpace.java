@@ -378,6 +378,30 @@ public abstract class VectorSpace {
             double gamma, Vector z, Vector dst);
 
     /**
+     * Perform a component-wise multiplication of two vectors.
+     *
+     * In pseudo-code, this method performs the following operation:
+     * <pre>
+     * dst[i] = x[i]*y[i];
+     * </pre>
+     * for all indices {@code i}.
+     *
+     * @param x - A vector.
+     * @param y - Another vector.
+     * @param dst -The destination vector.
+     *
+     * @throws IncorrectSpaceException All arguments must belong to this vector space.
+     */
+    public final void multiply(Vector x, Vector y, Vector dst)
+            throws IncorrectSpaceException {
+        check(x);
+        check(y);
+        check(dst);
+        _multiply(x, y, dst);
+    }
+    protected abstract void _multiply(Vector x, Vector y, Vector dst);
+
+    /**
      * Copy the contents of a vector into another one.
      *
      * @param src
