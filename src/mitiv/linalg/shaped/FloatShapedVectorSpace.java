@@ -158,7 +158,9 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
     @Override
     protected void _copy(Vector dst, Vector src) {
-        ArrayOps.copy(getData(dst), number,  getData(src));
+        if (dst != src) {
+            System.arraycopy(getData(src), 0, getData(dst), 0, number);
+        }
     }
 
     @Override
@@ -174,8 +176,12 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
     }
 
     @Override
-    protected void _fill(Vector x, double alpha) {
-        ArrayOps.fill(getData(x), number, alpha);
+    protected void _fill(Vector vec, double alpha) {
+        float[] x = getData(vec);
+        float a = (float)alpha;
+        for (int i = 0; i < number; ++i) {
+            x[i] = a;
+        }
     }
 
     @Override
@@ -200,6 +206,37 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
     @Override
     protected double _normInf(Vector x) {
         return ArrayOps.normInf(getData(x));
+    }
+
+    @Override
+    protected void _scale(Vector vec, double alpha)
+    {
+        if (alpha == 0.0) {
+            _fill(vec, 0.0);
+        } else if (alpha != 1.0) {
+            float[] x = getData(vec);
+            float a = (float)alpha;
+            for (int i = 0; i < number; ++i) {
+                x[i] *= a;
+            }
+        }
+    }
+
+    @Override
+    protected void _scale(Vector dst, double alpha, Vector src)
+    {
+        if (alpha == 0.0) {
+            _fill(dst, 0.0);
+        } else if (alpha == 1.0) {
+            _copy(dst, src);
+        } else {
+            float[] x = getData(src);
+            float[] y = getData(dst);
+            float a = (float)alpha;
+            for (int i = 0; i < number; ++i) {
+                y[i] = a*x[i];
+            }
+        }
     }
 
     @Override

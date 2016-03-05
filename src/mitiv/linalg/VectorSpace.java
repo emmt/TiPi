@@ -2,7 +2,7 @@
  * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
  * developed by the MitiV project.
  *
- * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ * Copyright (c) 2014-2016 the MiTiV project, http://mitiv.univ-lyon1.fr/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -223,10 +223,10 @@ public abstract class VectorSpace {
 
     protected abstract double _normInf(Vector x);
 
-
     /**
      * Multiply the components of a vector by a constant factor.
      *
+     * @param v - The target vector.
      * @param alpha - The scale factor.
      */
     public void scale(Vector v, double alpha) {
@@ -234,8 +234,23 @@ public abstract class VectorSpace {
         _scale(v, alpha);
     }
 
+    /**
+     * Multiply the components of a vector by a constant factor.
+     *
+     * @param dst - The destination vector.
+     * @param alpha - The scale factor.
+     * @param src - The source vector.
+     */
+    public void scale(Vector dst, double alpha, Vector src) {
+        check(dst);
+        check(src);
+        _scale(dst, alpha, src);
+    }
+
+    protected abstract void _scale(Vector dst, double alpha, Vector src);
+
     protected void _scale(Vector v, double alpha) {
-        _combine(v, alpha, v, 0.0, v);
+        _scale(v, alpha, v);
 
     }
 

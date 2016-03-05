@@ -162,7 +162,9 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
 
     @Override
     protected void _copy(Vector dst, Vector src) {
-        ArrayOps.copy(getData(dst), number,  getData(src));
+        if (dst != src) {
+            System.arraycopy(getData(src), 0, getData(dst), 0, number);
+        }
     }
 
     @Override
@@ -178,8 +180,11 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
     }
 
     @Override
-    protected void _fill(Vector x, double alpha) {
-        ArrayOps.fill(getData(x), number, alpha);
+    protected void _fill(Vector vec, double alpha) {
+        double[] x = getData(vec);
+        for (int i = 0; i < number; ++i) {
+            x[i] = alpha;
+        }
     }
 
     @Override
@@ -231,6 +236,35 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
                 number, alpha,
                 getData(x),  beta,
                 getData(y), gamma, getData(z));
+    }
+
+    @Override
+    protected void _scale(Vector vec, double alpha)
+    {
+        if (alpha == 0.0) {
+            _fill(vec, 0.0);
+        } else if (alpha != 1.0) {
+            double[] x = getData(vec);
+            for (int i = 0; i < number; ++i) {
+                x[i] *= alpha;
+            }
+        }
+    }
+
+    @Override
+    protected void _scale(Vector dst, double alpha, Vector src)
+    {
+        if (alpha == 0.0) {
+            _fill(dst, 0.0);
+        } else if (alpha == 1.0) {
+            _copy(dst, src);
+        } else {
+            double[] x = getData(src);
+            double[] y = getData(dst);
+            for (int i = 0; i < number; ++i) {
+                y[i] = alpha*x[i];
+            }
+        }
     }
 
     @Override

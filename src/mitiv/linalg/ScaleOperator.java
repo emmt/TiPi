@@ -56,38 +56,28 @@ public class ScaleOperator extends LinearEndomorphism {
         this.scale = alpha;
     }
 
+    /* Override this method because in-place operation does not necessitate
+     * a temporary vector. */
+    @Override
+    protected void _apply(Vector vec, int job) {
+        if (job == DIRECT || job == ADJOINT) {
+            space._scale(vec,  scale);
+        } else if (scale != 0.0) {
+            space._scale(vec,  1.0/scale);
+        } else {
+            throw new SingularOperatorException();
+        }
+    }
+
     @Override
     protected void _apply(Vector dst, final Vector src, int job) {
         if (job == DIRECT || job == ADJOINT) {
-            if (scale == 0.0) {
-                space._fill(dst, 0.0);
-            } else if (scale == 1.0) {
-                if (dst != src) {
-                    space._copy(dst, src);
-                }
-            } else {
-                if (dst == src) {
-                    space._scale(dst, scale);
-                } else {
-                    space._combine(dst, scale, src, 0.0, dst);
-                }
-            }
+            space._scale(dst,  scale, src);
+        } else if (scale != 0.0) {
+            space._scale(dst,  1.0/scale, src);
         } else {
-            if (scale == 1.0) {
-                if (dst != src) {
-                    space._copy(dst, src);
-                }
-            } else if (scale != 0.0) {
-                if (dst == src) {
-                    space._scale(dst, 1.0/scale);
-                } else {
-                    space._combine(dst, 1.0/scale, src, 0.0, dst);
-                }
-            } else {
-                throw new SingularOperatorException();
-            }
+            throw new SingularOperatorException();
         }
-
     }
 
     /**
