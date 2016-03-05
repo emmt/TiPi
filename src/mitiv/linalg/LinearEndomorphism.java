@@ -25,35 +25,37 @@
 
 package mitiv.linalg;
 
-import mitiv.exception.IncorrectSpaceException;
-import mitiv.exception.NotImplementedException;
+public abstract class LinearEndomorphism extends LinearOperator {
 
-public class IdentityOperator extends DiagonalOperator {
+    protected VectorSpace space;
+
+    protected LinearEndomorphism(VectorSpace vsp) {
+        super(vsp);
+        this.space = vsp;
+    }
+
+    @Override
+    public VectorSpace getInputSpace() {
+        return space;
+    }
+
+    @Override
+    public VectorSpace getOutputSpace() {
+        return space;
+    }
 
     /**
-     * Create a new identity operator which operates on a given vector space.
+     * Get the space on which operates the linear endomorphism.
      *
-     * @param space - The vector space on which operates the operator.
+     * @return The space on which operates the linear endomorphism.
      */
-    public IdentityOperator(VectorSpace space) {
-        super(space);
+    public VectorSpace getSpace() {
+        return space;
     }
 
     @Override
-    public Vector getDiagonal() {
-        return space.one();
+    public boolean isEndomorphism() {
+        return true;
     }
 
-    @Override
-    public void setDiagonal(Vector diag) {
-        throw new NotImplementedException("attempting to set the diagonal of the identity operator");
-    }
-
-    @Override
-    protected void _apply(final Vector src, Vector dst, int job)
-            throws IncorrectSpaceException {
-        if (dst != src) {
-            space.copy(dst, src);
-        }
-    }
 }
