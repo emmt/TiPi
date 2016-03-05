@@ -51,13 +51,13 @@ import mitiv.linalg.VectorSpace;
 public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
 
     /** LBFGS approximation of the inverse Hessian */
-    protected LBFGSOperator H = null;
+    private LBFGSOperator H = null;
 
     /** Relative threshold for the sufficient descent condition. */
-    protected double delta = 0.01;
+    private double delta = 5e-2;
 
     /** Small relative size for the initial step or after a restart. */
-    protected double epsilon = 1e-3;
+    private double epsilon = 0.0;
 
     /**
      * Relative threshold for the norm or the gradient (relative to the norm
@@ -87,7 +87,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
      *
      * <p>
      * To save space, the variable and gradient at the start of a line search
-     * may be references to the (s,y) pair of vectors of the LBFGS operator
+     * may be references to the `(s,y)` pair of vectors of the LBFGS operator
      * just after the mark.
      * </p>
      */
@@ -256,7 +256,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
 
             /* Estimate the length of the first step, start the line search
              * and take the first step along the search direction. */
-            if (H.mp >= 1 || H.rule == InverseHessianApproximation.BY_USER) {
+            if (H.mp >= 1 || H.rule == LBFGSOperator.NO_SCALING) {
                 alpha = 1.0;
             } else {
                 alpha = initialStep(x0, p);

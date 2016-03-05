@@ -267,7 +267,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
     }
 
     protected double initialStep(Vector x, double dnorm) {
-        if (H.mp >= 1 || H.rule == InverseHessianApproximation.BY_USER) {
+        if (H.mp >= 1 || H.rule == LBFGSOperator.NO_SCALING) {
             return 1.0;
         }
         if (0.0 < epsilon && epsilon < 1.0) {
