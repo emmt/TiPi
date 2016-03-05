@@ -53,7 +53,7 @@ public class LinearConjGradTest {
         // Create LHS matrix A as a linear operator:
         LinearOperator A = new LinearOperator(vsp) {
             @Override
-            protected void _apply(final Vector src, Vector dst, int job) {
+            protected void _apply(Vector dst, final Vector src, int job) {
                 if (job != DIRECT && job != ADJOINT) {
                     throw new IllegalLinearOperationException();
                 }
@@ -66,7 +66,7 @@ public class LinearConjGradTest {
         };
 
         /* Compute RHS vector b. */
-        A.apply(x0,b);
+        A.apply(b,x0);
 
         /* Create conjugate gradient method. */
         int maxiter = 100; // algorithm should converge in, at most, as many iterations as the size of the problem

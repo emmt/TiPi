@@ -57,7 +57,7 @@ public class ScaleOperator extends LinearOperator {
     }
 
     @Override
-    protected void _apply(final Vector src, Vector dst, int job) {
+    protected void _apply(Vector dst, final Vector src, int job) {
         if (job == DIRECT || job == ADJOINT) {
             if (scale == 0.0) {
                 dst.zero();

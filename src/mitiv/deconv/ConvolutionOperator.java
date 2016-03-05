@@ -102,7 +102,7 @@ public class ConvolutionOperator extends ShapedLinearOperator {
                 throw new NullPointerException("At least one of PSF or MTF must be non-null");
             }
             this.mtf = complexSpace.create();
-            FFT.apply(psf, this.mtf);
+            FFT.apply(this.mtf, psf);
         } else {
             this.mtf = mtf;
         }
@@ -117,12 +117,12 @@ public class ConvolutionOperator extends ShapedLinearOperator {
     }
 
     @Override
-    protected void _apply(final Vector src, Vector dst, int job) {
+    protected void _apply(Vector dst, final Vector src, int job) {
         if (job != DIRECT && job != ADJOINT) {
             throw new NotImplementedException("For now we do not implement inverse convolution operations "+
                     "(talk to Éric if you ignore the dangers of doing that!)");
         }
-        FFT.apply(src, tmp, DIRECT);
+        FFT.apply(tmp, src, DIRECT);
         if (single) {
             /* Single precision version. */
             float[] h = ((FloatShapedVector)mtf).getData();
@@ -178,7 +178,7 @@ public class ConvolutionOperator extends ShapedLinearOperator {
                 }
             }
         }
-        FFT.apply(tmp, dst, INVERSE);
+        FFT.apply(dst, tmp, INVERSE);
     }
 }
 

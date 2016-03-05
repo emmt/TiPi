@@ -140,11 +140,11 @@ public class LinearConjugateGradient {
             r.copyFrom(b);
         } else {
             /* r = b - A.x */
-            A.apply(x, r);
+            A.apply(r, x);
             r.combine(1.0, b, -1.0, r);
         }
         if (P != null) {
-            P.apply(r, z);
+            P.apply(z, r);
         }
 
         /* Compute convergence threshold: EPSILON = max(0, ATOL, RTOL*RHO)) */
@@ -176,7 +176,7 @@ public class LinearConjugateGradient {
                 p.combine(1.0, z, beta, p);
             }
             /* Compute optimal step length and update unknown x and residuals r. */
-            A.apply(p, q);
+            A.apply(q, p);
             double gamma = p.dot(q);
             if (gamma <= 0.0) {
                 return A_IS_NOT_POSITIVE_DEFINITE;
@@ -185,7 +185,7 @@ public class LinearConjugateGradient {
             x.combine(1.0, x, +alpha, p);
             r.combine(1.0, r, -alpha, q);
             if (P != null) {
-                P.apply(r, z);
+                P.apply(z, r);
             }
             rho_prev = rho;
             rho = z.dot(r);

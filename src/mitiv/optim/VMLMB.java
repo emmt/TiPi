@@ -218,7 +218,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
              * true if: cos(theta) = -(D/|D|)'.(G/|G|) >= DELTA > 0
              * where G is the gradient. */
             while (true) {
-                H.apply(g, p);
+                H.apply(p, g);
                 pnorm = p.norm2(); // FIXME: in some cases, can be just GNORM*GAMMA
                 double pg = p.dot(g);
                 if (pg >= delta*pnorm*gnorm) {
@@ -303,7 +303,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                          * an initial search direction. */
                         H.reset();
                         ++restarts;
-                        H.apply(g, p);
+                        H.apply(p, g);
                         pnorm = p.norm2();
                         // FIXME: check p.g0
                         alpha = initialStep(x0, p);

@@ -326,15 +326,15 @@ public class Deconvolution{
         DoubleShapedVector imgComplex = complexSpace.create(0);
         DoubleShapedVector psfComplex = complexSpace.create(0);
         DoubleShapedVector wgtComplex = complexSpace.create(0);
-        fft.apply(vectorWgt, wgtComplex);
-        fft.apply(vectorPsf, psfComplex);
-        fft.apply(vectorImage, imgComplex);
+        fft.apply(wgtComplex, vectorWgt);
+        fft.apply(psfComplex, vectorPsf);
+        fft.apply(imgComplex, vectorImage);
         vectorPsf = psfComplex;
         vectorImage = imgComplex;
         DoubleShapedVector out = complexSpace.wrap(wiener.wiener3D(alpha, psfComplex.getData(), imgComplex.getData() , wgtComplex.getData() ,utils.width,utils.height, utils.sizeZ, coef));
         //DoubleShapedVector out = complexSpace.clone(imgComplex);
         DoubleShapedVector outReal = space.create();
-        fft.apply(out, outReal, RealComplexFFT.ADJOINT);
+        fft.apply(outReal, out, RealComplexFFT.ADJOINT);
         
         return Double3D.wrap(outReal.getData(), space.getShape());
         //return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
@@ -387,7 +387,7 @@ public class Deconvolution{
         DoubleShapedVector out = complexSpace.wrap(wiener.wiener3D(alpha));
         //DoubleShapedVector out = complexSpace.clone(vector_image);
         DoubleShapedVector outReal = space.create();
-        fft.apply(out, outReal, RealComplexFFT.ADJOINT);
+        fft.apply(outReal, out, RealComplexFFT.ADJOINT);
         return Double3D.wrap(outReal.getData(), space.getShape());
         //return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
     }
@@ -556,14 +556,14 @@ public class Deconvolution{
         DoubleShapedVector imgComplex = complexSpace.create(0);
         DoubleShapedVector psfComplex = complexSpace.create(0);
 
-        fft.apply(vectorPsf, psfComplex);
-        fft.apply(vectorImage, imgComplex);
+        fft.apply(psfComplex, vectorPsf);
+        fft.apply(imgComplex, vectorImage);
         vectorPsf = psfComplex;
         vectorImage = imgComplex;
 
         DoubleShapedVector out = complexSpace.wrap(wiener.wienerQuad3D(alpha, psfComplex.getData(), imgComplex.getData(),utils.width,utils.height, utils.sizeZ,utils.sizePadding));
         DoubleShapedVector outReal = space.create();
-        fft.apply(out, outReal,RealComplexFFT.ADJOINT);
+        fft.apply(outReal, out,RealComplexFFT.ADJOINT);
         
         return Double3D.wrap(outReal.getData(), space.getShape());
         //return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
@@ -579,7 +579,7 @@ public class Deconvolution{
     private ShapedArray nextDeconvolutionQuad3D(double alpha){
         DoubleShapedVector out = complexSpace.wrap(wiener.wienerQuad3D(alpha));
         DoubleShapedVector outReal = space.create();
-        fft.apply(out, outReal,RealComplexFFT.ADJOINT);
+        fft.apply(outReal, out,RealComplexFFT.ADJOINT);
         return Double3D.wrap(outReal.getData(), space.getShape());
         //return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
     }

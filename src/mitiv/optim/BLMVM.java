@@ -238,7 +238,7 @@ public class BLMVM extends ReverseCommunicationOptimizer {
              * the Hessian approximation to take the projected steepest
              * descent. */
             while (true) {
-                H.apply(g, p);
+                H.apply(p, g);
                 projector.projectDirection(x, p, true, tmp, bnd);
                 if (tmp.dot(g) > 0.0) {
                     /* Sufficient descent condition holds.  Estimate the

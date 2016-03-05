@@ -63,7 +63,7 @@ public class RankOneOperator extends LinearOperator {
         }
     }
 
-    protected void _apply(final Vector src, Vector dst, int job) {
+    protected void _apply(Vector dst, final Vector src, int job) {
         if (job == DIRECT) {
             outputSpace.combine(inputSpace.dot(this.v, src), this.u, 0.0, dst);
         } else if (job == ADJOINT) {

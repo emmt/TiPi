@@ -235,7 +235,7 @@ public class MathUtils {
         RealComplexFFT FFT = new RealComplexFFT(space);
         ConvolutionOperator H = new ConvolutionOperator(FFT, hVector);
         DoubleShapedVector y = space.create();
-        H.apply(xVector, y);
+        H.apply(y, xVector);
         return y;
     }
 
@@ -250,7 +250,7 @@ public class MathUtils {
         RealComplexFFT FFT = new RealComplexFFT(space);
         ConvolutionOperator H = new ConvolutionOperator(FFT, hVector);
         DoubleShapedVector y = space.create();
-        H.apply(xVector, y);
+        H.apply(y, xVector);
 
         return y.getData();
     }

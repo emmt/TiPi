@@ -213,7 +213,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
              * See Nocedal & Wright, "Numerical Optimization", section 3.2,
              * p. 44 (1999). */
             while (true) {
-                H.apply(g, p);
+                H.apply(p, g);
                 dg0 = -p.dot(g);
                 double r = (delta > 0.0 ? delta*gnorm*p.norm2() : 0.0);
                 if (r > 0.0 ? (dg0 <= -r) : (dg0 < 0.0)) {

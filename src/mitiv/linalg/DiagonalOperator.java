@@ -87,7 +87,7 @@ public class DiagonalOperator extends LinearEndomorphism {
     }
 
     @Override
-    protected void _apply(final Vector src, Vector dst, int job)
+    protected void _apply(Vector dst, final Vector src, int job)
             throws IncorrectSpaceException, NotImplementedException {
         if (job != DIRECT && job != ADJOINT) {
             throw new NotImplementedException();

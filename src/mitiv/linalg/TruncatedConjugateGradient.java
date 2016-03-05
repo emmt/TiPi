@@ -286,7 +286,7 @@ public class TruncatedConjugateGradient {
                 throw new IncorrectSpaceException();
             }
             z = vsp.create();
-            P.apply(r, z);
+            P.apply(z, r);
         } else {
             /*
              * Unpreconditioned version of the linear conjugate gradient. Vector
@@ -314,7 +314,7 @@ public class TruncatedConjugateGradient {
                 p.combine(1.0, z, beta, p);
             }
             /* Compute optimal step length and update unknown x and residuals r. */
-            A.apply(p, q);
+            A.apply(q, p);
             double gamma = p.dot(q);
             if (gamma <= 0.0) {
                 /*
@@ -334,7 +334,7 @@ public class TruncatedConjugateGradient {
             }
             r.combine(1.0, r, -alpha, q);
             if (P != null) {
-                P.apply(r, z);
+                P.apply(z, r);
             }
             rho_prev = rho;
             rho = z.dot(r);

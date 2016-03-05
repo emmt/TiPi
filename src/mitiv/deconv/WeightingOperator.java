@@ -52,7 +52,7 @@ public class WeightingOperator extends LinearOperator {
     }
 
     @Override
-    protected void _apply(Vector src, Vector dst, int job)
+    protected void _apply(Vector dst, Vector src, int job)
             throws IncorrectSpaceException {
         int n = inputSpace.getNumber();
         DoubleShapedVector vectSrc = (DoubleShapedVector)src; // FIXME: should be more general

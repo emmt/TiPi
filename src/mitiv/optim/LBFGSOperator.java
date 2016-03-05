@@ -356,7 +356,7 @@ public class LBFGSOperator extends LinearOperator {
 
     /* Apply inverse Hessian approximation (out-of-place operation). */
     @Override
-    protected void _apply(Vector src, Vector dst, int job) {
+    protected void _apply(Vector dst, Vector src, int job) {
         dst.copyFrom(src);
         _apply(dst, job);
     }

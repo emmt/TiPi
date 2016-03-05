@@ -376,7 +376,7 @@ public abstract class Convolution extends ShapedLinearOperator {
     }
 
     @Override
-    protected void _apply(Vector src, Vector dst, int job) {
+    protected void _apply(Vector dst, Vector src, int job) {
         if (job != DIRECT && job != ADJOINT) {
             throw new NotImplementedException("For now we do not implement inverse convolution operations "+
                     "(talk to a specialist if you ignore the dangers of doing that!)");
