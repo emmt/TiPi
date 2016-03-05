@@ -237,7 +237,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             this.beta = beta;
         }
         if (this.beta != 0.0) {
-            vsp.combine(1.0, g, beta, d, d);
+            vsp.combine(d, 1.0, g, beta, d);
             return SUCCESS;
         } else {
             return FAILURE;
@@ -246,7 +246,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
 
     /* Form: Y = G - G0 */
     private void form_y(Vector g) {
-        vsp.combine(1.0, g, -1.0, g0, y);
+        vsp.combine(y, 1.0, g, -1.0, g0);
     }
 
     /*
@@ -338,7 +338,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                 /* Original formulation, using Y as a scratch vector. */
                 double q = 1.0/dty;
                 double r = q*vsp.norm2(y);
-                vsp.combine(q, y, 2.0*r*r, d, y);
+                vsp.combine(y, q, y, 2.0*r*r, d);
                 beta = y.dot(g);
             } else {
                 /* Improved formulation which spares one linear combination and thus has
@@ -389,7 +389,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
         double c2 = gty/yty - 2.0*dtg/dty;
         double c3 = -dtg/yty;
         beta = c2/c1;
-        vsp.combine(c1, g, c2, d, c3, y, d);
+        vsp.combine(d, c1, g, c2, d, c3, y);
         return SUCCESS;
     }
 
@@ -508,7 +508,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                 if (evaluations > 1) {
                     ++restarts;
                 }
-                vsp.copy(g, d);
+                vsp.copy(d, g);
                 dtg = -gnorm*gnorm;
                 if (f != 0.0) {
                     alpha = 2.0*Math.abs(f/dtg);
@@ -525,10 +525,10 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             }
 
             /* Store current position as X0, f0, etc. */
-            vsp.copy(x, x0);
+            vsp.copy(x0, x);
             f0 = f;
             if (g0 != null) {
-                vsp.copy(g, g0);
+                vsp.copy(g0, g);
             }
             g0norm = gnorm;
             dtg0 = dtg;
