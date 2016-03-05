@@ -2,7 +2,7 @@
  * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
  * developed by the MitiV project.
  *
- * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ * Copyright (c) 2014-2016 the MiTiV project, http://mitiv.univ-lyon1.fr/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -25,9 +25,9 @@
 
 package mitiv.linalg;
 
-import mitiv.exception.NotImplementedException;
+import mitiv.exception.SingularOperatorException;
 
-public class ScaleOperator extends LinearOperator {
+public class ScaleOperator extends LinearEndomorphism {
 
     protected double scale = 1.0;
 
@@ -60,20 +60,32 @@ public class ScaleOperator extends LinearOperator {
     protected void _apply(Vector dst, final Vector src, int job) {
         if (job == DIRECT || job == ADJOINT) {
             if (scale == 0.0) {
-                dst.zero();
-            } else if (dst == src) {
-                if (scale != 1.0) {
-                    dst.scale(scale);
+                space._fill(dst, 0.0);
+            } else if (scale == 1.0) {
+                if (dst != src) {
+                    space._copy(dst, src);
                 }
             } else {
-                if (scale != 1.0) {
-                    dst.combine(scale, src, 0.0, dst);
+                if (dst == src) {
+                    space._scale(dst, scale);
                 } else {
-                    dst.copyFrom(src);
+                    space._combine(dst, scale, src, 0.0, dst);
                 }
             }
         } else {
-            throw new NotImplementedException();
+            if (scale == 1.0) {
+                if (dst != src) {
+                    space._copy(dst, src);
+                }
+            } else if (scale != 0.0) {
+                if (dst == src) {
+                    space._scale(dst, 1.0/scale);
+                } else {
+                    space._combine(dst, 1.0/scale, src, 0.0, dst);
+                }
+            } else {
+                throw new SingularOperatorException();
+            }
         }
 
     }
