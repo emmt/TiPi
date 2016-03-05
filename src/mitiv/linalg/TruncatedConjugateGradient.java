@@ -213,7 +213,6 @@ public class TruncatedConjugateGradient {
          *
          * c = ||x||^2 - delta^2 = (||x|| - delta)*(||x|| - delta)
          */
-        VectorSpace vsp = p.getSpace();
         double a = p.dot(p);
         double b = 2.0*p.dot(x);
         double c = (xnrm + delta)*(xnrm - delta);
