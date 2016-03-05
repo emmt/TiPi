@@ -72,26 +72,26 @@ public abstract class ConvexSetProjector {
      * and output variables can be stored in the same vector (<i>i.e.</i>
      * the method can be applied <i>in-place</i>).
      * </p>
-     * @param x  - The source.
-     * @param xp - The destination.
+     * @param xp - The output projected variables.
+     * @param x  - The input variables.
      * @throws IncorrectSpaceException if its arguments do not belong to the
-     *         correct vector space.
+     *          correct vector space.
      */
-    public void projectVariables(Vector x, Vector xp) {
+    public void projectVariables(Vector xp, Vector x) {
         if (x == null || ! x.belongsTo(space) ||
                 xp == null || ! xp.belongsTo(space)) {
             throw new IncorrectSpaceException();
         }
-        _projectVariables(x, xp);
+        _projectVariables(xp, x);
     }
 
     /**
      * Project the variables to the feasible set (in-place version).
      *
-     * @param x  - On entry, the unconstrained variables; on exit, the
+     * @param x - On entry, the unconstrained variables; on exit, the
      *             projected variables.
      * @throws IncorrectSpaceException if its arguments do not belong to the
-     *         correct vector space.
+     *          correct vector space.
      */
     public void projectVariables(Vector x) {
         if (x == null || ! x.belongsTo(space)) {
@@ -108,21 +108,9 @@ public abstract class ConvexSetProjector {
      * it is guaranteed to be called with checked arguments.  The input and
      * output vectors can be the same.
      * </p>
-     * @param x  - The source.
-     * @param xp - The destination.
+     * @param xp - The output projected variables.
+     * @param x  - The input variables.
      */
-    protected abstract void _projectVariables(Vector x, Vector xp);
+    protected abstract void _projectVariables(Vector xp, Vector x);
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

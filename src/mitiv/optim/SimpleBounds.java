@@ -78,7 +78,7 @@ public class SimpleBounds extends BoundProjector {
     }
 
     @Override
-    protected void _projectVariables(Vector src, Vector dst) {
+    protected void _projectVariables(Vector dst, Vector src) {
         final int n = src.getNumber();
         if (single) {
             final float xmin = convertToFloat(getLowerBound());
