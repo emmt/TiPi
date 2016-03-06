@@ -92,7 +92,7 @@ public class RankOneOperator extends LinearOperator {
      * Get the left vector of a rank-one linear operator.
      * @return The left vector of the rank-one linear operator.
      */
-    public Vector getU() {
+    public Vector getLeftVector() {
         return u;
     }
 
@@ -112,7 +112,7 @@ public class RankOneOperator extends LinearOperator {
      * Get the right vector of a rank-one linear operator.
      * @return The right vector of the rank-one linear operator.
      */
-    public Vector getV() {
+    public Vector getRightVector() {
         return v;
     }
 
