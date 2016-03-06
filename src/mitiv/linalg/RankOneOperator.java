@@ -35,11 +35,12 @@ public class RankOneOperator extends LinearOperator {
 
     /**
      * Create a new rank-one linear operator.
-     * 
-     * A rank-one operator is A = u.v' thus:
-     * 
-     * A.x = (v'.x) u = <v|x> u
-     * 
+     *
+     * A rank-one operator is {@code A = u.v'} thus:
+     * <pre>
+     * A.x = (v'.x) u
+     * </pre>
+     *
      * @param u
      *            the left vector
      * @param v
@@ -63,11 +64,25 @@ public class RankOneOperator extends LinearOperator {
         }
     }
 
-    protected void _apply(Vector dst, final Vector src, int job) {
+    @Override
+    protected void _apply(Vector dst, Vector src, int job) {
         if (job == DIRECT) {
-            outputSpace.combine(inputSpace.dot(this.v, src), this.u, 0.0, dst);
+            outputSpace.scale(dst, this.v.dot(src), this.u);
         } else if (job == ADJOINT) {
-            inputSpace.combine(outputSpace.dot(this.u, src), this.v, 0.0, dst);
+            inputSpace.scale(dst, this.u.dot(src), this.v);
+        } else {
+            throw new NotImplementedException();
+        }
+    }
+
+    /* Override this method because in-place operation does not necessitate
+     * a temporary vector. */
+    @Override
+    protected void _apply(Vector vec, int job) {
+        if (job == DIRECT) {
+            outputSpace.scale(vec, this.v.dot(vec), this.u);
+        } else if (job == ADJOINT) {
+            inputSpace.scale(vec, this.u.dot(vec), this.v);
         } else {
             throw new NotImplementedException();
         }
@@ -81,14 +96,12 @@ public class RankOneOperator extends LinearOperator {
         return u;
     }
 
-    /* FIXME: provide means to clone the left/right vectors. */
-    
     /**
      * Set the left vector of a rank-one linear operator.
      * @param u  the new left vector.
      * @throws IncorrectSpaceException
      */
-    public void setU(Vector u) throws IncorrectSpaceException {
+    public void setLeftVector(Vector u) throws IncorrectSpaceException {
         if (u.getSpace() != outputSpace) {
             throw new IncorrectSpaceException();
         }
@@ -108,7 +121,7 @@ public class RankOneOperator extends LinearOperator {
      * @param v  the new right vector.
      * @throws IncorrectSpaceException
      */
-    public void setV(Vector v) throws IncorrectSpaceException {
+    public void setRightVector(Vector v) throws IncorrectSpaceException {
         if (v.getSpace() != inputSpace) {
             throw new IncorrectSpaceException();
         }
@@ -116,15 +129,3 @@ public class RankOneOperator extends LinearOperator {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
