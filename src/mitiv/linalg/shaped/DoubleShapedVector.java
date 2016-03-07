@@ -33,18 +33,18 @@ import mitiv.random.DoubleGenerator;
 /**
  * Class for vectors which belongs to an instance of the DoubleVectorSpace
  * class.
- * 
+ *
  * Implements (flat) vectors of double precision reals.
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
- * 
+ *
  */
 public class DoubleShapedVector extends ShapedVector {
     protected double[] data;
 
     /**
      * Create a new instance of a DoubleVector with its own storage.
-     * 
+     *
      * @param owner   The vector space of the result.
      */
     public DoubleShapedVector(DoubleShapedVectorSpace owner) {
@@ -54,9 +54,9 @@ public class DoubleShapedVector extends ShapedVector {
 
     /**
      * Wrap an array of doubles into a DoubleVector.
-     * 
+     *
      * The created vector will share its storage with the provided array.
-     * 
+     *
      * @param owner  The vector space of the result.
      * @param data   The input data.
      * @throws IllegalArgumentException The length of the input array does not match
@@ -72,7 +72,7 @@ public class DoubleShapedVector extends ShapedVector {
 
     @Override
     public DoubleShapedVectorSpace getOwner() {
-        return (DoubleShapedVectorSpace) space;
+        return (DoubleShapedVectorSpace)space;
     }
 
     @Override
@@ -92,11 +92,11 @@ public class DoubleShapedVector extends ShapedVector {
 
     /**
      * Set the values of the vector from a Java array.
-     * 
+     *
      * This method copies the values of the input array arr into the vector
      * (their sizes must match). Note that it may be more efficient to wrap
      * a vector around the Java array.
-     * 
+     *
      * @param arr     The Java array to copy.
      */
     public void set(final double arr[]) {
@@ -105,10 +105,10 @@ public class DoubleShapedVector extends ShapedVector {
 
     /**
      * Get the array of reals which store the coefficients of the vector.
-     * 
+     *
      * This method may be removed later when efficient set and get methods will
      * be fully tested and implemented.
-     * 
+     *
      * @return the array of vector coefficients.
      */
     public double[] getData() {
@@ -135,15 +135,3 @@ public class DoubleShapedVector extends ShapedVector {
         }
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

@@ -33,18 +33,18 @@ import mitiv.random.FloatGenerator;
 /**
  * Class for vectors which belongs to an instance of the FloatVectorSpace
  * class.
- * 
+ *
  * Implements (flat) vectors of float precision reals.
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
- * 
+ *
  */
 public class FloatShapedVector extends ShapedVector {
     protected float[] data;
 
     /**
      * Create a new instance of a FloatVector with its own storage.
-     * 
+     *
      * @param owner   The vector space of the result.
      */
     public FloatShapedVector(FloatShapedVectorSpace owner) {
@@ -54,9 +54,9 @@ public class FloatShapedVector extends ShapedVector {
 
     /**
      * Wrap an array of floats into a FloatVector.
-     * 
+     *
      * The created vector will share its storage with the provided array.
-     * 
+     *
      * @param owner  The vector space of the result.
      * @param data   The input data.
      * @throws IllegalArgumentException The length of the input array does not match
@@ -80,6 +80,7 @@ public class FloatShapedVector extends ShapedVector {
         return getOwner();
     }
 
+    /* Return a given element as a scalar (which is a double by convention). */
     @Override
     public final double get(int i) {
         return data[i];
@@ -92,7 +93,7 @@ public class FloatShapedVector extends ShapedVector {
 
     /**
      * Set the value of a given coefficient of a vector.
-     * 
+     *
      * @param i
      *            The index of the coefficient.
      * @param value
@@ -104,11 +105,11 @@ public class FloatShapedVector extends ShapedVector {
 
     /**
      * Set the values of the vector from a Java array.
-     * 
+     *
      * This method copies the values of the input array arr into the vector
      * (their sizes must match). Note that it may be more efficient to wrap
      * a vector around the Java array.
-     * 
+     *
      * @param arr     The Java array to copy.
      */
     public void set(final float arr[]) {
@@ -117,10 +118,10 @@ public class FloatShapedVector extends ShapedVector {
 
     /**
      * Get the array of reals which store the coefficients of the vector.
-     * 
+     *
      * This method may be removed later when efficient set and get methods will
      * be fully tested and implemented.
-     * 
+     *
      * @return the array of vector coefficients.
      */
     public float[] getData() {
@@ -148,15 +149,3 @@ public class FloatShapedVector extends ShapedVector {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
