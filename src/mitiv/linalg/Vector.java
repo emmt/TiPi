@@ -47,7 +47,7 @@ public abstract class Vector {
      * Reference to the VectorSpace to which this vector belongs.
      */
     protected final VectorSpace space;
-    protected final  int number;
+    protected final int number;
 
     /**
      * Create a vector from a given vector space.
@@ -97,7 +97,7 @@ public abstract class Vector {
      *            a vector space.
      * @return true or false.
      */
-    public boolean belongsTo(VectorSpace space) {
+    public final boolean belongsTo(VectorSpace space) {
         return (this.space == space);
     }
 
@@ -106,7 +106,7 @@ public abstract class Vector {
      * @param space  The vector space.
      * @throws IncorrectSpaceException The instance must belong to the given vector space.
      */
-    public void assertBelongsTo(VectorSpace space)
+    public final void assertBelongsTo(VectorSpace space)
             throws IncorrectSpaceException {
         if (!belongsTo(space)) {
             throw new IncorrectSpaceException();
@@ -198,7 +198,7 @@ public abstract class Vector {
      *
      * @param alpha - The scale factor.
      */
-    public void scale(double alpha) {
+    public final void scale(double alpha) {
         space._scale(this, alpha);
     }
 
@@ -215,7 +215,7 @@ public abstract class Vector {
      * @throws IncorrectSpaceException {@code other} must belong to the vector
      *         space of {@code this} .
      */
-    public double dot(Vector other) {
+    public final double dot(Vector other) {
         if (other == null || ! other.belongsTo(space)) {
             throw new IncorrectSpaceException();
         }
@@ -236,7 +236,7 @@ public abstract class Vector {
      * @throws IncorrectSpaceException {@code v1} and {@code v2} must belong
      * to the vector space of {@code this} .
      */
-    public double dot(Vector v1, Vector v2) {
+    public final double dot(Vector v1, Vector v2) {
         if (v1 == null || ! v1.belongsTo(space) ||
                 v2 == null || ! v2.belongsTo(space)) {
             throw new IncorrectSpaceException();
@@ -249,7 +249,7 @@ public abstract class Vector {
      *
      * @return The sum of absolute values of the vector.
      */
-    public double norm1() {
+    public final double norm1() {
         return space._norm1(this);
     }
 
@@ -258,7 +258,7 @@ public abstract class Vector {
      *
      * @return The square root of the sum of squared elements of the vector.
      */
-    public double norm2() {
+    public final double norm2() {
         return space._norm2(this);
     }
 
@@ -267,7 +267,7 @@ public abstract class Vector {
      *
      * @return The maximum absolute value of the vector.
      */
-    public double normInf() {
+    public final double normInf() {
         return space._normInf(this);
     }
 
@@ -278,7 +278,7 @@ public abstract class Vector {
      *
      * @param alpha   A scalar value.
      */
-    public void fill(double value) {
+    public final void fill(double value) {
         space._fill(this, value);
     }
 
@@ -287,7 +287,7 @@ public abstract class Vector {
      *
      * Set to zero all elements of the vector.
      */
-    public void zero() {
+    public final void zero() {
         space._zero(this);
     }
 

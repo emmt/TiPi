@@ -411,12 +411,12 @@ public abstract class VectorSpace {
 
     /**
      * Copy the contents of a vector into another one.
-     * @param dst
-     *            - destination vector
-     * @param src
-     *            - source vector
      *
-     * @throws IncorrectSpaceException SRC and DST must belong to this vector space.
+     * @param dst - The destination vector.
+     * @param src - The source vector.
+     *
+     * @throws IncorrectSpaceException {@code src} and {@code dst}
+     * must belong to this vector space.
      */
     public final void copy(Vector dst, Vector src)
             throws IncorrectSpaceException {
@@ -430,13 +430,15 @@ public abstract class VectorSpace {
     /**
      * Copy the contents of a vector into another one (low level).
      *
+     * Low level method which is guaranteed to be called with checked
+     * arguments by {@link #copy}.
+     * <p>
      * This basic implementation calls {@link #_combine(double, Vector, double, Vector)}
      * method and is expected to be overwritten with a more efficient version by the
      * descendants of this class.
-     * @param dst
-     *            - destination vector
-     * @param src
-     *            - source vector
+     *
+     * @param dst - The destination vector.
+     * @param src - The source vector.
      *
      * @throws IncorrectSpaceException {@code src} and {@code dst} must belong to
      * this vector space.
@@ -450,6 +452,7 @@ public abstract class VectorSpace {
      *
      * @param x - A Vector.
      * @param y - Another vector
+     *
      * @throws IncorrectSpaceException the two vectors must belong to this vector space.
      */
     public final void swap(Vector x, Vector y)
@@ -461,6 +464,15 @@ public abstract class VectorSpace {
         }
     }
 
+    /**
+     * Exchange the contents of two vectors (low level).
+     *
+     * Any concrete derived class must implement this low level method
+     * which is guaranteed to be called with checked arguments by {@link #swap}.
+     *
+     * @param x - A Vector.
+     * @param y - Another vector
+     */
     protected abstract void _swap(Vector x, Vector y);
 
     /**
@@ -521,7 +533,7 @@ public abstract class VectorSpace {
      * @param v   A vector of this space.
      * @throws IncorrectSpaceException V must belong to this vector space.
      */
-    public void zero(Vector v) {
+    public final void zero(Vector v) {
         check(v);
         _zero(v);
     }
@@ -540,7 +552,7 @@ public abstract class VectorSpace {
      *
      * @throws IncorrectSpaceException V must belong to this vector space.
      */
-    public void fill(Vector x, double alpha) {
+    public final void fill(Vector x, double alpha) {
         check(x);
         _fill(x, alpha);
     }
