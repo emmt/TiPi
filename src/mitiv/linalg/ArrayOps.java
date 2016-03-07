@@ -750,15 +750,11 @@ public class ArrayOps {
     }
 
     public static void copy(double[] dst, int n, final double[] src) {
-        for (int i = 0; i < n; ++i) {
-            dst[i] = src[i];
-        }
+        System.arraycopy(src, 0, dst, 0, n);
     }
 
     public static void copy(float[] dst, int n, final float[] src) {
-        for (int i = 0; i < n; ++i) {
-            dst[i] = src[i];
-        }
+        System.arraycopy(src, 0, dst, 0, n);
     }
 
     public static void copy(double[] dst, final double[] src) {
