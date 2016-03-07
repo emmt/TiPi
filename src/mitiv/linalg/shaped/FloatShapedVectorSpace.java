@@ -150,10 +150,9 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
         return new FloatShapedVector(this, x);
     }
 
-    // FIXME:
-    public void copy(float[] src, Vector dst) {
+    public void copy(Vector dst, float[] src) {
         check(dst);
-        ((FloatShapedVector)dst).set(src);
+        ArrayOps.copy(getData(dst), src);
     }
 
     @Override

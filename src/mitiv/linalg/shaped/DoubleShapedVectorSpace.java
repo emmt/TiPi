@@ -131,7 +131,7 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
 
     protected DoubleShapedVector _clone(DoubleShapedVector vec) {
         DoubleShapedVector cpy = new DoubleShapedVector(this);
-        _copy(vec, cpy);
+        _copy(cpy, vec);
         return cpy;
     }
 
@@ -150,14 +150,9 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
         return new DoubleShapedVector(this, x);
     }
 
-    // FIXME:
-    public void copy(double[] src, Vector dst) {
+    public void copy(Vector dst, double[] src) {
         check(dst);
-        ((DoubleShapedVector)dst).set(src);
-    }
-
-    protected void _copy(DoubleShapedVector src, DoubleShapedVector dst) {
-        ArrayOps.copy(dst.getData(), number, src.getData());
+        ArrayOps.copy(getData(dst), src);
     }
 
     @Override
@@ -213,32 +208,6 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
     }
 
     @Override
-    protected void _combine(double alpha, final Vector x,
-            double beta, Vector y) {
-        ArrayOps.combine(number,
-                alpha, getData(x),
-                beta,  getData(y));
-    }
-
-    @Override
-    protected void _combine(Vector dst, double alpha,
-            final Vector x, double beta, final Vector y) {
-        ArrayOps.combine(getData(dst),
-                number, alpha,
-                getData(x),  beta, getData(y));
-    }
-
-    @Override
-    protected void _combine(Vector dst, double alpha,
-            final Vector x,  double beta,
-            final Vector y, double gamma, final Vector z) {
-        ArrayOps.combine(getData(dst),
-                number, alpha,
-                getData(x),  beta,
-                getData(y), gamma, getData(z));
-    }
-
-    @Override
     protected void _scale(Vector vec, double alpha)
     {
         if (alpha == 0.0) {
@@ -265,6 +234,32 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
                 y[i] = alpha*x[i];
             }
         }
+    }
+
+    @Override
+    protected void _combine(double alpha, final Vector x,
+            double beta, Vector y) {
+        ArrayOps.combine(number,
+                alpha, getData(x),
+                beta,  getData(y));
+    }
+
+    @Override
+    protected void _combine(Vector dst, double alpha,
+            final Vector x, double beta, final Vector y) {
+        ArrayOps.combine(getData(dst),
+                number, alpha,
+                getData(x),  beta, getData(y));
+    }
+
+    @Override
+    protected void _combine(Vector dst, double alpha,
+            final Vector x,  double beta,
+            final Vector y, double gamma, final Vector z) {
+        ArrayOps.combine(getData(dst),
+                number, alpha,
+                getData(x),  beta,
+                getData(y), gamma, getData(z));
     }
 
     @Override
