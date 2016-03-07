@@ -87,10 +87,10 @@ public abstract class ReverseCommunicationOptimizer {
     public static final int FAILURE = -1;
 
     /** Pending task for the caller. */
-    private OptimTask task;
+    protected OptimTask task;
 
     /** Reason of failure. */
-    private OptimStatus status;
+    protected OptimStatus status;
 
     /** Number of function (and gradient) evaluations since start. */
     protected int evaluations = 0;
@@ -230,15 +230,3 @@ public abstract class ReverseCommunicationOptimizer {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
