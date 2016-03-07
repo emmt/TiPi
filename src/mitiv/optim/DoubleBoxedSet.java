@@ -36,7 +36,7 @@ import mitiv.linalg.shaped.DoubleShapedVectorSpace;
  *
  * @author Éric Thiébaut.
  */
-public class DoubleBoxedSet extends BoxedSet {
+public class DoubleBoxedSet extends SimpleBoxedSet {
     //static final double zero = 0.0;
     //static final double one  = 1.0;
     //static final double inf  = Double.POSITIVE_INFINITY;

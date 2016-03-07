@@ -36,7 +36,7 @@ import mitiv.linalg.shaped.FloatShapedVectorSpace;
  *
  * @author Éric Thiébaut.
  */
-public class FloatBoxedSet extends BoxedSet {
+public class FloatBoxedSet extends SimpleBoxedSet {
     //static final float zero = 0.0F;
     //static final float one  = 1.0F;
     //static final float inf  = Float.POSITIVE_INFINITY;
