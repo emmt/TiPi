@@ -56,4 +56,9 @@ public class IdentityOperator extends DiagonalOperator {
             space.copy(dst, src);
         }
     }
+
+    @Override
+    protected void _apply(Vector vec, int job)
+            throws IncorrectSpaceException {
+    }
 }
