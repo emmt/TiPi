@@ -148,6 +148,12 @@ public class ArmijoLineSearch extends LineSearch {
     }
 
     @Override
+    public boolean useDerivative()
+    {
+        return true;
+    }
+
+    @Override
     protected void startHook() {
         bestFunc = finit;
         bestStep = 0.0;

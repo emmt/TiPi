@@ -155,6 +155,12 @@ public class NonmonotoneLineSearch extends LineSearch {
         reset();
     }
 
+    @Override
+    public boolean useDerivative()
+    {
+        return true;
+    }
+
     private void reset() {
         mp = 0;
         for (int k = 0; k < m; ++k) {

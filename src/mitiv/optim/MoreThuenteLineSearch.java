@@ -71,6 +71,12 @@ public class MoreThuenteLineSearch extends LineSearch {
     }
 
     @Override
+    public boolean useDerivative()
+    {
+        return true;
+    }
+
+    @Override
     protected void startHook() {
         /* Convergence threshold for this step. */
         gtest = ftol*ginit;

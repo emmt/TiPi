@@ -286,16 +286,18 @@ public abstract class LineSearch {
      * new step to try.
      *
      * @param alpha
-     *            The value of the step (same as the value returned by
+     *          - The value of the step (same as the value returned by
      *            {@link #getStep}).
      * @param f
-     *            The value of the function at {@code x = x0 + alpha*p} where
+     *          - The value of the function at {@code x = x0 + alpha*p} where
      *            {@code x0} are the variables at the start of the line search
      *            and {@code p} is the search direction.
      * @param df
-     *            The directional derivative at {@code x}, that is
+     *          - The directional derivative at {@code x}, that is
      *            {@code p'.g(x)} the inner product between the search direction
-     *            and the function gradient at {@code x}.
+     *            and the function gradient at {@code x}.  The {@link #useDerivative}
+     *            method may be used to check whether this term is required or is
+     *            ignored and may thus be set to any value saving some computations.
      *
      * @return The new status of the line search instance.
      */
@@ -324,6 +326,14 @@ public abstract class LineSearch {
         }
         return task;
     }
+
+    /**
+     * Check whether directional derivatives are needed by the line search.
+     *
+     * @return A boolean value, true if the line search needs the
+     * directional derivative of the objective function.
+     */
+    public abstract boolean useDerivative();
 
     /**
      * Protected method to set internals at the start of a line search.
