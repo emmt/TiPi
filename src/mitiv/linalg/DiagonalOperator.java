@@ -80,19 +80,28 @@ public class DiagonalOperator extends LinearEndomorphism {
      * the vector space on which operates the operator.
      */
     public void setDiagonal(Vector diag) {
-        if (diag == null || ! diag.belongsTo(inputSpace)) {
+        if (diag == null || ! diag.belongsTo(space)) {
             throw new IncorrectSpaceException();
         }
         this.diag = diag;
     }
 
     @Override
-    protected void _apply(Vector dst, final Vector src, int job)
+    protected void _apply(Vector dst, Vector src, int job)
             throws IncorrectSpaceException, NotImplementedException {
         if (job != DIRECT && job != ADJOINT) {
             throw new NotImplementedException();
         }
         space._multiply(dst, src, diag);
+    }
+
+    @Override
+    protected void _apply(Vector vec, int job)
+            throws IncorrectSpaceException, NotImplementedException {
+        if (job != DIRECT && job != ADJOINT) {
+            throw new NotImplementedException();
+        }
+        space._multiply(vec, vec, diag);
     }
 
 }
