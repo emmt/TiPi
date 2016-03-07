@@ -36,9 +36,6 @@ public abstract class LinearOperator {
     /** The output vector space. */
     protected final VectorSpace outputSpace;
 
-    /** A work vector. */
-    private Vector tmp = null;
-
     /** Job value to apply the linear operator. */
     public static int DIRECT = 0;
 
@@ -248,11 +245,7 @@ public abstract class LinearOperator {
      */
     protected void _apply(Vector vec, int job)
     {
-        if (tmp == null) {
-            tmp = inputSpace.create();
-        }
-        tmp.copyFrom(vec);
-        _apply(vec, tmp, job);
+        _apply(vec, vec.clone(), job);
     }
 
     /**
