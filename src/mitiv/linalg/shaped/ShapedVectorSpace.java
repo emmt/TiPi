@@ -145,7 +145,7 @@ public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, T
 
     /**
      * Create a new vector initialized with the contents of an array.
-     * 
+     *
      * <p>
      * The values of the elements of the returned vector will be copied (or
      * shared, see below) or converted from those of the input array.  Type
@@ -170,7 +170,7 @@ public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, T
 
     /**
      * Create a new vector initialized with the contents of an array.
-     * 
+     *
      * @param arr         - The input array.
      * @param forceCopy   - A flag to force a copy of the contents if true.
      *                      See {@link #create(ShapedArray)} for a

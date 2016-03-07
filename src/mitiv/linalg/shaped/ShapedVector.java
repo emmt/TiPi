@@ -83,7 +83,7 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
 
     /**
      * Assign the elements of a shaped vector form those of an array.
-     * 
+     *
      * <p>
      * The shape of the array must match that of the vector. Type
      * conversion is automatically performed and the copy is optimized
@@ -94,15 +94,3 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
     public abstract void assign(ShapedArray arr);
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
