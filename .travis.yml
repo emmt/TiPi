@@ -1,7 +1,20 @@
 language: java
 jdk:
 - openjdk6
-before_install: wget --no-check-certificate http://mitiv.univ-lyon1.fr/${PROJECT}.zip && unzip ${PROJECT}.zip && rm ${PROJECT}.zip
+before_install:
+# First icy dependies
+- wget http://www.icy.bioimageanalysis.org/downloadIcy/icy.zip && unzip icy.zip -d icy && rm icy.zip
+- mkdir lib
+- mv icy/icy.jar lib/
+- mv icy/lib/bioformats.jar lib/
+- mv icy/plugins/adufour/blocks/Blocks.jar lib/
+- mv icy/plugins/adufour/ezplug/EzPlug.jar lib/
+- mv icy/plugins/adufour/protocols/Protocols.jar lib/
+# Then build TiPi
+- git clone --quiet --branch=develop https://github.com/emmt/TiPi.git
+- cd TiPi && wget --no-check-certificate http://mitiv.univ-lyon1.fr/TiPi.zip && unzip TiPi.zip && rm TiPi.zip
+- ant build && ant build-jar
+- mv lib/TiPi.jar ../lib && cd ..
 script:
 - ant build
 - ant doc > /dev/null
@@ -14,5 +27,5 @@ after_success:
 - cd ${PROJECT} && git add * && git commit -am "Doc update" && (git push 2> /dev/null)
 env:
   global:
-  - secure: GICFxPwmV9BCVTNJY6aK0eUm9O5tCRSZI2zpRh1MGMiUDx8qpeGxl7ha5bSKS3e/KFJ1HNmPd6jW17rsNeJr18Jl7Uk+LWDutOpLdmnaYqiQW4S9ylJ3r8sl9XqraMOngDzmU65lqmmKNNmO8cdjlje4QAkibx3tz2Plmy5N+AA=
-  - PROJECT=TiPi
+  - secure: G0VNj4mO734iePeYNDA0aqYy2mid4dBTEeupwmPEoGEf6yVMYgPrOLvYA0gJYD5MrUMZJ50tFIWWc9rWqsk8CTXCy8a3sAapQZma5TsggrnGOv6IK2emEHx9Znj4kdRRpX3MdxZhLwVTszUkejtoUOmAS4EOtUub4Ky7CUq0WJs=
+  - PROJECT=tipi4icy
