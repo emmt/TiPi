@@ -67,4 +67,9 @@
     <target name="doc" depends="init" description="generate documentation">
         <javadoc  encoding="UTF-8" charset="UTF-8" docencoding="UTF-8" additionalparam="-notimestamp" sourcepath="${source.dir}" destdir="${doc.dir}"/>
     </target>
+    <target name="build-jar">
+        <jar destfile = "lib/TiPi.jar"
+           basedir = "bin">
+        </jar>
+    </target>
 </project>
