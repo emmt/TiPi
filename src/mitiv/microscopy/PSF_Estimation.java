@@ -60,6 +60,7 @@ public class PSF_Estimation implements ReconstructionJob {
     private double upperBound = Double.POSITIVE_INFINITY;
     private boolean debug = true;
     private int maxiter = 20;
+    private int maxeval = 20;
     private DoubleArray data = null;
     private ShapedArray obj = null;
     private DoubleArray result = null;
@@ -328,7 +329,7 @@ public class PSF_Estimation implements ReconstructionJob {
                 System.out.println(minimizer.getIterations());
             }
             task = minimizer.iterate(x, fcost, gX);
-            if(minimizer.getEvaluations() > 20) // FIXME SHOULD NOT BE HARDCODED
+            if(minimizer.getEvaluations() > maxeval) 
                 break;
         }
 
@@ -368,6 +369,7 @@ public class PSF_Estimation implements ReconstructionJob {
     }
     public void setMaximumIterations(int value) {
         maxiter = value;
+        maxeval = 2* value; // 2 or 3 times more evaluations than iterations seems reasonable 
     }
     public void setLimitedMemorySize(int value) {
         limitedMemorySize = value;
