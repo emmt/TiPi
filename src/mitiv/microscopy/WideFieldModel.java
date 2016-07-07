@@ -61,8 +61,8 @@ public class WideFieldModel
     protected double NA; // the numerical aperture
     protected double lambda; // the emission wavelength in meters
     protected double ni; // the refractive index of the immersion medium
-    protected double ns; // the refractive index of the specimen
-    protected double zdepth;
+   // protected double ns; // the refractive index of the specimen to be used in future depth varying framework 
+    protected double zdepth=0; // to be used in future depth varying framework 
     protected double dxy; // the lateral pixel size in meter
     protected double dz; // the axial sampling step size in meter
     protected int Nx; // number of samples along lateral X-dimension
@@ -70,7 +70,7 @@ public class WideFieldModel
     protected int Nz; // number of samples along axial Z-dimension
     protected int Nzern; // number of Zernike modes
     protected int PState=0;
-    protected boolean use_depth_scaling; //use_depth_scaling = 1, PSF are centered on the plan with maximum strehl
+  //  protected boolean use_depth_scaling; //use_depth_scaling = 1, PSF are centered on the plan with maximum strehl
     protected double deltaX;
     protected double deltaY;
     protected double defocus_L2;
@@ -84,7 +84,7 @@ public class WideFieldModel
     protected double[] phase_coefs;
 
     protected double lambda_ni;
-    protected double lambda_ns;
+  //  protected double lambda_ns;
     protected double radius; // radius of the pupil in meter
     protected double pupil_area;
     protected double NormZ1;
@@ -97,7 +97,7 @@ public class WideFieldModel
     public double[] Z; // Zernike polynomials
     protected double psf[];
     protected double[] maskPupil; // mask of the pupil
-    protected double eta;
+//    protected double eta;
 
 
 
@@ -105,14 +105,12 @@ public class WideFieldModel
      *  NA 1.4, numerical aperture
      *  lambda 542e-9,  emission wavelength
      *  ni 1.518, ni refractive index of the immersion medium
-     *  ns 0, refractive index of the specimen
-     *  zdepth 0, zdepth
      *  dxy 64.5e-9, lateral pixel size
      *  dz 160e-9 axial sampling step size
      *  Nx 256, number of samples along lateral X-dimension
      *  Ny 256, number of samples along lateral Y-dimension
      *  Nz 64, number of samples along axial Z-dimension
-     *  use_depth_scaling 0    public MicroscopyModelPSF1D()
+     *  public MicroscopyModelPSF1D()
     {
         this(1.4, 542e-9, 1.518, 0, 0, 64.5e-9, 160e-9, 256, 256, 64, true);
     }
@@ -122,23 +120,19 @@ public class WideFieldModel
      *  @param NA numerical aperture
      *  @param lambda emission wavelength
      *  @param ni refractive index of the immersion medium
-     *  @param ns refractive index of the specimen
-     *  @param zdepth
      *  @param dxy lateral pixel size
      *  @param dz axial sampling step size
      *  @param Nx number of samples along lateral X-dimension
      *  @param Ny number of samples along lateral Y-dimension
      *  @param Nz number of samples along axial Z-dimension
-     *  @param use_depth_scaling use_depth_scaling = 1, PSF are centered on the plan with maximum strehl
      */
-    public WideFieldModel(double NA, double lambda, double ni,double ns,
-            double zdepth, double dxy, double dz, int Nx, int Ny, int Nz, boolean use_depth_scaling)
+    public WideFieldModel(double NA, double lambda, double ni, double dxy, double dz, int Nx, int Ny, int Nz)
     {
         this.NA = NA;
         this.lambda = lambda;
         this.ni = ni;
-        this.ns = ns;
-        this.zdepth = zdepth;
+  //      this.ns = ns;
+ //       this.zdepth = zdepth;
         this.dxy = dxy;
         this.dz = dz;
         this.Nx = Nx;
@@ -147,7 +141,7 @@ public class WideFieldModel
         this.Nzern = 4;
         this.radius = NA/lambda;
         this.lambda_ni = ni/lambda;
-        this.lambda_ns = ns/lambda;
+ //       this.lambda_ns = ns/lambda;
         this.nb_defocus_coefs = 0;
         this.nb_modulus_coefs = 0;
         this.nb_phase_coefs = 0;
@@ -157,7 +151,7 @@ public class WideFieldModel
         this.psf = new double[Nz*Ny*Nx];
         this.gamma = new double[Ny*Nx];
         this.a = new double[Nz*Ny*2*Nx];
-        this.use_depth_scaling = use_depth_scaling;
+ //       this.use_depth_scaling = use_depth_scaling;
         this.Z = computeZernike();
         this.maskPupil = computeMaskPupil();
         this.PState = 0;
@@ -288,11 +282,11 @@ public class WideFieldModel
      */
     public void computeDefocus()
     {	
-        double lambda_ns2 = lambda_ns*lambda_ns;
+ //       double lambda_ns2 = lambda_ns*lambda_ns;
         double lambda_ni2 = lambda_ni*lambda_ni;
         double scale_x = 1/(Nx*dxy);
         double scale_y = 1/(Ny*dxy);
-        double q, rx, ry, tmpdepth;
+        double q, rx, ry;
         for (int ny = 0; ny < Ny; ny++)
         {
             if(ny > Ny/2)
@@ -329,45 +323,45 @@ public class WideFieldModel
                     else
                     {
                         psi[nxy] = Math.sqrt(q);
-                        if(zdepth != 0)
-                        {
-                            tmpdepth = lambda_ns2 - rx - ry;
-                            if(tmpdepth<0)
-                            {
-                                maskPupil[nxy] = 0;
-                            }
-                            else
-                            {
-                                gamma[nxy] =  Math.sqrt(tmpdepth);
-                            }
-                        }
+//                        if(zdepth != 0)
+//                        {
+//                            tmpdepth = lambda_ns2 - rx - ry;
+//                            if(tmpdepth<0)
+//                            {
+//                                maskPupil[nxy] = 0;
+//                            }
+//                            else
+//                            {
+//                                gamma[nxy] =  Math.sqrt(tmpdepth);
+//                            }
+//                        }
                     }
                 }
             }
         }
 
-        if(zdepth != 0 && use_depth_scaling == true)
-        {
-            double depth_dot_defocus = 0;
-            double defocus_L2 = 0;
-            sum_depth_over_defocus = 0;
-            sum_defocus_over_depth = 0;
-            for (int Nxy = 0; Nxy < Nx*Ny; Nxy++)
-            {
-                if(maskPupil[Nxy] == 1)
-                {
-                    depth_dot_defocus += gamma[Nxy]*psi[Nxy];
-                    defocus_L2 += psi[Nxy]*psi[Nxy];
-                    sum_depth_over_defocus += gamma[Nxy]/gamma[Nxy];
-                    sum_defocus_over_depth += psi[Nxy]/gamma[Nxy];
-                }
-            }
-            eta =(depth_dot_defocus/defocus_L2) - 1;
-        }
-        else
-        {
-            eta = 0;
-        }
+//        if(zdepth != 0 && use_depth_scaling == true)
+//        {
+//            double depth_dot_defocus = 0;
+//            double defocus_L2 = 0;
+//            sum_depth_over_defocus = 0;
+//            sum_defocus_over_depth = 0;
+//            for (int Nxy = 0; Nxy < Nx*Ny; Nxy++)
+//            {
+//                if(maskPupil[Nxy] == 1)
+//                {
+//                    depth_dot_defocus += gamma[Nxy]*psi[Nxy];
+//                    defocus_L2 += psi[Nxy]*psi[Nxy];
+//                    sum_depth_over_defocus += gamma[Nxy]/gamma[Nxy];
+//                    sum_defocus_over_depth += psi[Nxy]/gamma[Nxy];
+//                }
+//            }
+//            eta =(depth_dot_defocus/defocus_L2) - 1;
+//        }
+//        else
+//        {
+//            eta = 0;
+//        }
 
         PState = 0;
     }
@@ -389,12 +383,12 @@ public class WideFieldModel
         nb_defocus_coefs = defocus.length;
         switch (nb_defocus_coefs)
         {
-        case 4:
-            lambda_ns = defocus[3];
-            if(zdepth==0)
-            {
-                throw new IllegalArgumentException("zdepth == 0!!!");
-            }
+//        case 4:
+//            lambda_ns = defocus[3];
+//            if(zdepth==0)
+//            {
+//                throw new IllegalArgumentException("zdepth == 0!!!");
+//            }
         case 3:
             deltaX = defocus[1];
             deltaY = defocus[2];
@@ -402,8 +396,10 @@ public class WideFieldModel
             lambda_ni = defocus[0];
             break;
         case 2:
-            lambda_ni = defocus[0];
-            lambda_ns = defocus[1];
+            deltaX = defocus[1];
+            deltaY = defocus[2];
+//            lambda_ni = defocus[0];
+//            lambda_ns = defocus[1];
             break;
         default:
             throw new IllegalArgumentException("bad defocus / depth parameters");
@@ -449,13 +445,13 @@ public class WideFieldModel
         int Npix = Nx*Ny, Ci;
         double[] A = new double[2*Npix];
 
-        if (zdepth != 0)
-        {
-            for (int in = 0; in < Npix; in++)
-            {
-                phi[in] += DEUXPI*ni*zdepth*(gamma[in] - (1 - eta)*psi[in]);
-            }
-        }
+//        if (zdepth != 0)
+//        {
+//            for (int in = 0; in < Npix; in++)
+//            {
+//                phi[in] += DEUXPI*ni*zdepth*(gamma[in] - (1 - eta)*psi[in]);
+//            }
+//        }
 
         for (int iz = 0; iz < Nz; iz++)
         {
@@ -606,11 +602,11 @@ public class WideFieldModel
 
         double scale_x = 1/(Nx*dxy);
         double scale_y = 1/(Ny*dxy);
-        double defoc, tmpvar, idef, idepth, d0 = 0, d1 = 0, d2 = 0, d3 = 0;
+        double defoc, tmpvar, idef, d0 = 0, d1 = 0, d2 = 0, d3 = 0;
         double[] rx = new double[Nx];
         double[] ry = new double[Ny];
-        double sum_rx=0, sum_ry=0, etadx=0, etady=0, Npupil=0, etadni=0, etadns=0;
-        double ni_depth = lambda_ni*lambda*zdepth;
+//        double sum_rx=0, sum_ry=0, etadx=0, etady=0, Npupil=0, etadni=0, etadns=0;
+//        double idepth, ni_depth = lambda_ni*lambda*zdepth;
         int Npix =  Nx*Ny;
         DoubleFFT_2D FFT2D = new DoubleFFT_2D(Ny, Nx);
         double Aq[] = new double[2*Npix];
@@ -737,7 +733,7 @@ public class WideFieldModel
                         {
                             Ci = iz*Npix + in;
                             idef= 1./psi[in];
-                            idepth = 0 ;
+//                            idepth = 0 ;
                             double ph = phi[in] + defoc_scale*psi[in];
                             tmpvar = -DEUXPI*rho[in]*( Aq[2*in]*Math.sin(ph) + Aq[2*in + 1]*Math.cos(ph) )*PSFNorm;
 //                            switch(nb_defocus_coefs)

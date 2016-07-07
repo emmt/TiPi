@@ -58,7 +58,7 @@ public class PSF_Estimation implements ReconstructionJob {
     private int limitedMemorySize = 5;
     private double lowerBound = Double.NEGATIVE_INFINITY;
     private double upperBound = Double.POSITIVE_INFINITY;
-    private boolean debug = false;
+    private boolean debug = true;
     private int maxiter = 20;
     private DoubleArray data = null;
     private ShapedArray obj = null;
@@ -107,7 +107,7 @@ public class PSF_Estimation implements ReconstructionJob {
 
 
     public void fitPSF(DoubleShapedVector x, int flag) {
-
+// FIXME set a best X
         // Check input data and get dimensions.
         if (data == null) {
             fatal("Input data not specified.");
@@ -328,7 +328,7 @@ public class PSF_Estimation implements ReconstructionJob {
                 System.out.println(minimizer.getIterations());
             }
             task = minimizer.iterate(x, fcost, gX);
-            if(minimizer.getEvaluations() > 20)
+            if(minimizer.getEvaluations() > 20) // FIXME SHOULD NOT BE HARDCODED
                 break;
         }
 
