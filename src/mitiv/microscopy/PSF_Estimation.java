@@ -109,6 +109,7 @@ public class PSF_Estimation implements ReconstructionJob {
 
     public void fitPSF(DoubleShapedVector x, int flag) {
 // FIXME set a best X
+    	double best_cost = Double.POSITIVE_INFINITY;
         // Check input data and get dimensions.
         if (data == null) {
             fatal("Input data not specified.");
@@ -117,7 +118,7 @@ public class PSF_Estimation implements ReconstructionJob {
         Shape xShape = x.getShape();
         int rank = data.getRank();
         DoubleShapedVectorSpace dataSpace = new DoubleShapedVectorSpace(dataShape);
-
+        DoubleShapedVector best_x = x.clone();
         // Check the PSF.
         if (obj == null) {
             fatal("Object not specified.");
@@ -174,12 +175,12 @@ public class PSF_Estimation implements ReconstructionJob {
         int bounded = 0;
         limitedMemorySize = 0;
         
-    /*   if (lowerBound != Double.NEGATIVE_INFINITY) {
+       if (lowerBound != Double.NEGATIVE_INFINITY) {
             bounded |= 1;
         }
         if (upperBound != Double.POSITIVE_INFINITY) {
             bounded |= 2;
-        }*/
+        }
         if (bounded == 0) {
             /* No bounds have been specified. */
             lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
@@ -224,7 +225,7 @@ public class PSF_Estimation implements ReconstructionJob {
         vmlmb.setAbsoluteTolerance(gatol);
         vmlmb.setRelativeTolerance(grtol);
         minimizer = vmlmb;
-        
+//        
         DoubleShapedVector gX = variableSpace.create();
         // Launch the non linear conjugate gradient
         OptimTask task = minimizer.start();
@@ -260,7 +261,11 @@ public class PSF_Estimation implements ReconstructionJob {
                 pupil.computePSF();
 
                 fcost = fdata.computeCostAndGradient(1.0, objSpace.wrap(pupil.getPSF()), gcost, true);
-
+                
+                if(fcost<best_cost){
+                	best_cost = fcost;
+                	best_x = x.clone();
+                }
                 if(flag == DEFOCUS)
                 {
                   gX = variableSpace.wrap(pupil.apply_J_defocus(gcost.getData()));
@@ -328,9 +333,12 @@ public class PSF_Estimation implements ReconstructionJob {
                 System.out.println("Iterations");
                 System.out.println(minimizer.getIterations());
             }
-            task = minimizer.iterate(x, fcost, gX);
-            if(minimizer.getEvaluations() > maxeval) 
+
+            if (minimizer.getEvaluations() >= maxeval) {
+                System.err.format("Warning: too many evaluation (%d).\n", maxeval);
                 break;
+            }
+            task = minimizer.iterate(x, fcost, gX);
         }
 
         if(flag == DEFOCUS)
@@ -338,31 +346,31 @@ public class PSF_Estimation implements ReconstructionJob {
             if (debug) {
                 System.out.println("--------------");
                 System.out.println("defocus");
-                MathUtils.printArray(x.getData());
+                MathUtils.printArray(best_x.getData());
             }
-            pupil.setDefocus(x.getData());
+            pupil.setDefocus(best_x.getData());
         }
         else if (flag == ALPHA)
         {
             if (debug) {
                 System.out.println("--------------");
                 System.out.println("alpha");
-                MathUtils.printArray(x.getData());
+                MathUtils.printArray(best_x.getData());
             }
-            pupil.setPhi(x.getData());
+            pupil.setPhi(best_x.getData());
         }
         else if(flag == BETA)
         {
             if (debug) {
                 System.out.println("--------------");
                 System.out.println("beta");
-                MathUtils.printArray(x.getData());
+                MathUtils.printArray(best_x.getData());
             }
-            pupil.setRho(x.getData());
+            pupil.setRho(best_x.getData());
         }
     }
 
-    /* Below are all methods required for a RecosntructionJob. */
+    /* Below are all methods required for a ReconstructionJob. */
 
     public void setDebugMode(boolean value) {
         debug = value;
