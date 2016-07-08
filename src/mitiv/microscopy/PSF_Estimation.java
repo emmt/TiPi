@@ -181,51 +181,27 @@ public class PSF_Estimation implements ReconstructionJob {
         if (upperBound != Double.POSITIVE_INFINITY) {
             bounded |= 2;
         }
-        if (bounded == 0) {
-            /* No bounds have been specified. */
-            lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
-            if (limitedMemorySize > 0) {
-                lbfgs = new LBFGS(variableSpace, limitedMemorySize, lineSearch);
-                lbfgs.setAbsoluteTolerance(gatol);
-                lbfgs.setRelativeTolerance(grtol);
-                minimizer = lbfgs;
-            } else {
-                int method = NonLinearConjugateGradient.DEFAULT_METHOD;
-                nlcg = new NonLinearConjugateGradient(variableSpace, method, lineSearch);
-                nlcg.setAbsoluteTolerance(gatol);
-                nlcg.setRelativeTolerance(grtol);
-                minimizer = nlcg;
-            }
-        } else {
-            /* Some bounds have been specified. */
-            lineSearch = new ArmijoLineSearch(0.5, 0.1);
-            if (bounded == 1) {
-                /* Only a lower bound has been specified. */
-                projector = new SimpleLowerBound(variableSpace, lowerBound);
-            } else if (bounded == 2) {
-                /* Only an upper bound has been specified. */
-                projector = new SimpleUpperBound(variableSpace, upperBound);
-            } else {
-                /* Both a lower and an upper bounds have been specified. */
-                projector = new SimpleBounds(variableSpace, lowerBound, upperBound);
-            }
-            int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
-            vmlmb = new VMLMB(variableSpace, projector, m, lineSearch);
-            vmlmb.setAbsoluteTolerance(gatol);
-            vmlmb.setRelativeTolerance(grtol);
-            minimizer = vmlmb;
-            projector.projectVariables(x);
-        }
+
 
         if (debug) {
-            System.out.println("Optimization method initialization complete.");
+            System.out.println("bounded");
+            System.out.println(bounded);
         }
+        
+            /* No bounds have been specified. */
+            lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
+     
        int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
         vmlmb = new VMLMB(variableSpace, projector, m, lineSearch);
         vmlmb.setAbsoluteTolerance(gatol);
         vmlmb.setRelativeTolerance(grtol);
         minimizer = vmlmb;
 //        
+
+        if (debug) {
+            System.out.println("Optimization method initialization complete.");
+        }
+        
         DoubleShapedVector gX = variableSpace.create();
         // Launch the non linear conjugate gradient
         OptimTask task = minimizer.start();
