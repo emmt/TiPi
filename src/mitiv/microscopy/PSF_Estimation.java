@@ -35,17 +35,11 @@ import mitiv.invpb.ReconstructionSynchronizer;
 import mitiv.invpb.ReconstructionViewer;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
-import mitiv.optim.ArmijoLineSearch;
 import mitiv.optim.BoundProjector;
-import mitiv.optim.LBFGS;
 import mitiv.optim.LineSearch;
 import mitiv.optim.MoreThuenteLineSearch;
-import mitiv.optim.NonLinearConjugateGradient;
 import mitiv.optim.OptimTask;
 import mitiv.optim.ReverseCommunicationOptimizer;
-import mitiv.optim.SimpleBounds;
-import mitiv.optim.SimpleLowerBound;
-import mitiv.optim.SimpleUpperBound;
 import mitiv.optim.VMLMB;
 import mitiv.utils.MathUtils;
 

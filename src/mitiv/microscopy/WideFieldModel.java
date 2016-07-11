@@ -91,7 +91,7 @@ public class WideFieldModel
     protected double[] phasePupil; // phase of the pupil
     protected double[] gamma; // phase of the pupil
     protected double[] a; // fourier transform of the pupil function
-    public double[] Z; // Zernike polynomials
+    protected double[] Z; // Zernike polynomials
     protected double psf[];
     protected double[] maskPupil; // mask of the pupil
 
@@ -166,9 +166,8 @@ public class WideFieldModel
     }
 
     private double[] computeZernike(){
-        Zernike zernike = new Zernike(Nx, Ny);
-        Z = zernike.zernikePupilMultipleOpt(Nzern, Nx, Ny, radius*dxy*Nx, NORMALIZED);
-        Z= MathUtils.gram_schmidt_orthonormalization(Z, Nx, Ny, Nzern);
+        Z = Zernike.zernikeArray(Nzern, Nx, Ny, radius*dxy*Nx, NORMALIZED,true);
+        Z = MathUtils.gram_schmidt_orthonormalization(Z, Nx, Ny, Nzern);
         return Z ;
     }
 
@@ -338,23 +337,6 @@ public class WideFieldModel
         PState = 0;
     }
 
-     /**
-     * Compute the point spread function
-     * <p>
-     * h_k(z) = |a_j(z)|² = |Σ_{j,k}A_k(z)|²
-     * @param alpha
-     * @param beta
-     * @param deltaX
-     * @param deltaY
-     * @param zdepth
-     */
-    public void computePSF(final double[] alpha, final double[] beta, double deltaX, double deltaY)
-    {
-        computeDefocus();
-        setPhi(alpha);
-        setRho(beta);
-        computePSF();
-    }
 
     /**
      * Compute the point spread function
