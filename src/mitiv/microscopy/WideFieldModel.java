@@ -55,7 +55,7 @@ import org.jtransforms.fft.DoubleFFT_2D;
  */
 public class WideFieldModel
 {
-    protected final static int NORMALIZED = 1;
+    protected final static boolean NORMALIZED = true;
     protected static final double DEUXPI = 2*Math.PI;
 
     protected double NA; // the numerical aperture

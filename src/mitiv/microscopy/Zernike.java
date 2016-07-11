@@ -280,7 +280,7 @@ public class Zernike
      * @param normalise 
      * @return Nzern Zernike polynomials over a radius
      */
-    public double[] zernikePupilMultipleOpt(int Nzer, int W, int H, double radius, int normalise)
+    public double[] zernikePupilMultipleOpt(int Nzer, int W, int H, double radius, boolean normalise)
     {
         int nm[] = zernumeroNoll(Nzer + 1);
         n = nm[0];
@@ -299,7 +299,7 @@ public class Zernike
             }
         }
 
-        if( normalise == 1)
+        if( normalise)
         {
             double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, 0, W + WH - 1, 0)));
             for (int l = 0; l < WH; l++) // PUPIL
@@ -338,7 +338,7 @@ public class Zernike
                     }
                     Z[l + nz*WH] = N*zr;
                 }
-                if( normalise == 1)
+                if( normalise)
                 {
                     double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, nz*WH, nz*WH + WH - 1, 0)));
                     for (int l = 0; l < WH; l++) // PUPIL
@@ -362,7 +362,7 @@ public class Zernike
                         }
                         Z[l + nz*WH] = N*zr*Math.cos(m*theta[l]);
                     }
-                    if( normalise == 1)
+                    if( normalise)
                     {
                         double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, nz*WH, nz*WH + WH - 1, 0)));
                         for (int l = 0; l < WH; l++)
@@ -384,7 +384,7 @@ public class Zernike
                         }
                         Z[l + nz*WH] = N*zr*Math.sin(m*theta[l]);
                     }
-                    if( normalise == 1)
+                    if( normalise)
                     {
                         double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, nz*WH, nz*WH + WH - 1, 0)));
                         for (int l = 0; l < WH; l++)
@@ -409,7 +409,7 @@ public class Zernike
      * @param normalise 
      * @return Nzern Zernike polynomials over a radius
      */
-    public double[] zernikePupilMultipleOptTab(int Nzer, int H, int W, double radius, int normalise)
+    public double[] zernikePupilMultipleOptTab(int Nzer, int H, int W, double radius, boolean normalise)
     {
         int nm[] = zernumeroNoll(Nzer + 1);
         n = nm[0];
@@ -497,68 +497,4 @@ public class Zernike
         }
         return Z;
     }
-/*
-    public static void main(String[] args)
-    {
-        int NZernike = 36;
-        int Nx = 6;
-        int Ny = 6;
-        int radius = 2;
-        int NORMALIZED = 0;
-        Zernike1D zernike = new Zernike1D(Nx, Ny);
-
-        double[] z = zernike.zernikeNoll(NZernike, Nx, Ny, radius);
-        double[] Z1 = zernike.zernikePupilMultipleOpt(NZernike, Nx, Ny, radius, NORMALIZED);
-        double[] Z2 = zernike.zernikePupilMultipleOptTab(NZernike, Nx, Ny, radius, NORMALIZED);
-
-        MathUtils.printArray(z, Nx, Ny, 1, 0);
-
-        System.out.println("zernikePupilMultipleOpt");
-        MathUtils.printArray(Z1, 35*Nx*Ny, 36*Ny*Nx - 1, 0);
-        System.out.println();
-
-        System.out.println("zernikePupilMultipleOpt with cosinus sinus separation");
-        MathUtils.printArray(Z2, 35*Nx*Ny, 36*Ny*Nx - 1, 0);
-        System.out.println();
-
-
-        
-        int Nxy = 500;
-        double radius2 = 200;
-        int NbZernike = 105;  //use zernumeroNoll
-        long begin;
-        long end;
-
-        Zernike1D zernike1D = new Zernike1D(Nxy, Nxy);
-        System.out.println("Multiple Zernike 1D");
-        for (int k = 0; k < 3; k++)
-        {
-            begin = System.nanoTime();
-            zernike1D.zernikePupilMultipleOpt(NbZernike, Nxy, Nxy, radius2, 0);
-            end = System.nanoTime();
-            System.out.println((end-begin)*1e-9);
-        }
-
-        System.out.println("Multiple zernikePupilMultipleOptTab 1D");
-        for (int k = 0; k < 3; k++)
-        {
-            begin = System.nanoTime();
-            zernike1D.zernikePupilMultipleOptTab(NbZernike, Nxy, Nxy, radius2, 0);
-            end = System.nanoTime();
-            System.out.println((end-begin)*1e-9);
-        }      
-    }
-*/
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

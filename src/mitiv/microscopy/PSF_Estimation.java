@@ -168,9 +168,7 @@ public class PSF_Estimation implements ReconstructionJob {
 
         // Initialize the non linear conjugate gradient
         LineSearch lineSearch = null;
-        LBFGS lbfgs = null;
         VMLMB vmlmb = null;
-        NonLinearConjugateGradient nlcg = null;
         BoundProjector projector = null;
         int bounded = 0;
         limitedMemorySize = 0;
