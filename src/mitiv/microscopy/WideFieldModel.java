@@ -68,6 +68,7 @@ public class WideFieldModel
     protected int Ny; // number of samples along lateral Y-dimension
     protected int Nz; // number of samples along axial Z-dimension
     protected int Nzern; // number of Zernike modes
+    protected boolean radial=false; // when true, the PSF is radially symmetric  
     protected int PState=0;
     protected double deltaX;
     protected double deltaY;
@@ -107,7 +108,7 @@ public class WideFieldModel
      *  @param Ny number of samples along lateral Y-dimension
      *  @param Nz number of samples along axial Z-dimension
      */
-    public WideFieldModel(double NA, double lambda, double ni, double dxy, double dz, int Nx, int Ny, int Nz)
+    public WideFieldModel(double NA, double lambda, double ni, double dxy, double dz, int Nx, int Ny, int Nz,boolean radial)
     {
         this.NA = NA;
         this.lambda = lambda;
@@ -118,6 +119,7 @@ public class WideFieldModel
         this.Ny = Ny;
         this.Nz = Nz;
         this.Nzern = 4;
+        this.radial = radial;
         this.radius = NA/lambda;
         this.lambda_ni = ni/lambda;
         this.nb_defocus_coefs = 0;
@@ -166,7 +168,7 @@ public class WideFieldModel
     }
 
     private double[] computeZernike(){
-        Z = Zernike.zernikeArray(Nzern, Nx, Ny, radius*dxy*Nx, NORMALIZED,true);
+        Z = Zernike.zernikeArray(Nzern, Nx, Ny, radius*dxy*Nx, NORMALIZED,radial);
         Z = MathUtils.gram_schmidt_orthonormalization(Z, Nx, Ny, Nzern);
         return Z ;
     }
@@ -220,12 +222,19 @@ public class WideFieldModel
      */
     public void setPhi(double[] alpha)
     {
-
-        if( alpha.length+3 > Nzern)
+    	if(radial){
+        if( alpha.length+1 > Nzern)
         {
-        	Nzern = alpha.length+3 ;
+        	Nzern = alpha.length+1 ;
         	Z = computeZernike();
         }
+    	}else{
+            if( alpha.length+3 > Nzern)
+            {
+            	Nzern = alpha.length+3 ;
+            	Z = computeZernike();
+            }   		
+    	}
         nb_phase_coefs = alpha.length;
         phase_coefs = new double[nb_phase_coefs];
         for (int i = 0; i < nb_phase_coefs; i++)
@@ -240,7 +249,11 @@ public class WideFieldModel
             {
                 for (int n = 0; n < nb_phase_coefs; ++n)
                 {
+                	if(radial){
+                    phi[in] += Z[in + (n + 1)*Npix]*phase_coefs[n];
+                }else{
                     phi[in] += Z[in + (n + 3)*Npix]*phase_coefs[n];
+                }
                 }
             }
         }
@@ -490,13 +503,17 @@ public class WideFieldModel
 
         for (int k = 0; k < nb_phase_coefs; k++)
         {
-            double tmp = 0;
-            for (int in = 0; in < Npix; in++)
-            {
-                Ci = k*Npix + in;
-                tmp += J[in]*Z[Ci + 3*Npix];
-            }
-            JPhi[k] = -2*PSFNorm*tmp;
+        	double tmp = 0;
+        	for (int in = 0; in < Npix; in++)
+        	{
+        		Ci = k*Npix + in;
+        		if(radial){
+        			tmp += J[in]*Z[Ci + 1*Npix];
+        		}else{
+        			tmp += J[in]*Z[Ci + 3*Npix];
+        		}
+        	}
+        	JPhi[k] = -2*PSFNorm*tmp;
         }
         return JPhi;
     }
