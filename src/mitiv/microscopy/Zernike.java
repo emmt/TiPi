@@ -120,19 +120,27 @@ public class Zernike
      */
     public static double[] zernikeArray(int nbZernike, int width, int height, double radius, boolean normalize,boolean radial)
     {
-    	int nm[] = zernumeroNoll(nbZernike + 1);
-    	int n = nm[0];
-    	int m = nm[1];
-    	double rPowers[] = new double[(n + 1)*width*height];
+    	
     	double Z[] =  new double[nbZernike*width*height];
     	int WH = width*height;
 
     	double r[] = MathUtils.fftDist1D(width, height);
     	double theta[] = MathUtils.fftAngle1D(width, height);
 
+    
+    	int nm[],n,m;
+    	double rPowers[] ;
 
+    	if(radial){
+    		n = nbZernike + 1;
+    	}else{
+    		nm = zernumeroNoll(nbZernike + 1);
+    		n = nm[0];
+            m = nm[1];
+    	}
 
-
+    	rPowers = new double[(n + 1)*width*height];
+    		
 
     	/* Initialize rPowers */
     	for (int l = 0; l < WH; l++)
@@ -155,15 +163,16 @@ public class Zernike
     	}
 
 
-    	for (int k = 2; k < n + 1; k++)
-    	{
-    		for (int l = 0; l < WH; l++)
-    		{
-    			rPowers[l + k*WH] = rPowers[l + (k - 1)*WH]*rPowers[l + WH]; // rPowers(X) = rPowers(X-1)*rPowers(1)
-    		}
-    	}
 
     	if(radial)  { // Compute only radial polynomial (m=0)
+
+        	for (int k = 2; k < nbZernike + 1; k++)
+        	{
+        		for (int l = 0; l < WH; l++)
+        		{
+        			rPowers[l + k*WH] = rPowers[l + (k - 1)*WH]*rPowers[l + WH]; // rPowers(X) = rPowers(X-1)*rPowers(1)
+        		}
+        	}
     		for (int nz = 1; nz < nbZernike; nz++)
     		{
     			double[] R_mn = coeffRadialZCumSumLog(nz, 0);
@@ -190,6 +199,14 @@ public class Zernike
     				}
     			}
     	}else{
+
+        	for (int k = 2; k < n + 1; k++)
+        	{
+        		for (int l = 0; l < WH; l++)
+        		{
+        			rPowers[l + k*WH] = rPowers[l + (k - 1)*WH]*rPowers[l + WH]; // rPowers(X) = rPowers(X-1)*rPowers(1)
+        		}
+        	}
     		for (int nz = 1; nz < nbZernike; nz++)
     		{
     			nm = zernumeroNoll(nz + 1);

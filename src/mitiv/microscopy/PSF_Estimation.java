@@ -94,9 +94,16 @@ public class PSF_Estimation implements ReconstructionJob {
     private boolean run = true;
 
     public PSF_Estimation() {
+    	
     }
-
-    private static void fatal(String reason) {
+	public PSF_Estimation(WideFieldModel pupil) {
+    	if (pupil!=null){
+    	this.pupil = pupil;
+    	}else{
+    		 fatal("pupil not specified");
+    	}
+	}
+	private static void fatal(String reason) {
         throw new IllegalArgumentException(reason);
     }
 
@@ -387,6 +394,9 @@ public class PSF_Estimation implements ReconstructionJob {
     }
     public void setPupil(WideFieldModel pupil) {
         this.pupil = pupil;
+    }
+    public WideFieldModel getPupil() {
+        return pupil;
     }
     public DoubleArray getData() {
         return data;
