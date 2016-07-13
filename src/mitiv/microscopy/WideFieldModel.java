@@ -223,41 +223,41 @@ public class WideFieldModel
     public void setPhi(double[] alpha)
     {
     	if(radial){
-        if( alpha.length+1 > Nzern)
-        {
-        	Nzern = alpha.length+1 ;
-        	Z = computeZernike();
-        }
+    		if( alpha.length+1 > Nzern)
+    		{
+    			Nzern = alpha.length+1 ;
+    			Z = computeZernike();
+    		}
     	}else{
-            if( alpha.length+3 > Nzern)
-            {
-            	Nzern = alpha.length+3 ;
-            	Z = computeZernike();
-            }   		
+    		if( alpha.length+3 > Nzern)
+    		{
+    			Nzern = alpha.length+3 ;
+    			Z = computeZernike();
+    		}   		
     	}
-        nb_phase_coefs = alpha.length;
-        phase_coefs = new double[nb_phase_coefs];
-        for (int i = 0; i < nb_phase_coefs; i++)
-        {
-            phase_coefs[i] = alpha[i];
-        }
-        int Npix = Nx*Ny;
-        phi = new double[Npix];
-        for(int in = 0; in < Npix; in++)
-        {
-            if (maskPupil[in] == 1)
-            {
-                for (int n = 0; n < nb_phase_coefs; ++n)
-                {
-                	if(radial){
-                    phi[in] += Z[in + (n + 1)*Npix]*phase_coefs[n];
-                }else{
-                    phi[in] += Z[in + (n + 3)*Npix]*phase_coefs[n];
-                }
-                }
-            }
-        }
-        PState = 0;
+    	nb_phase_coefs = alpha.length;
+    	phase_coefs = new double[nb_phase_coefs];
+    	for (int i = 0; i < nb_phase_coefs; i++)
+    	{
+    		phase_coefs[i] = alpha[i];
+    	}
+    	int Npix = Nx*Ny;
+    	phi = new double[Npix];
+    	for(int in = 0; in < Npix; in++)
+    	{
+    		if (maskPupil[in] == 1)
+    		{
+    			for (int n = 0; n < nb_phase_coefs; ++n)
+    			{
+    				if(radial){
+    					phi[in] += Z[in + (n + 1)*Npix]*phase_coefs[n];
+    				}else{
+    					phi[in] += Z[in + (n + 3)*Npix]*phase_coefs[n];
+    				}
+    			}
+    		}
+    	}
+    	PState = 0;
     }
 
     /**

@@ -52,7 +52,7 @@ public class PSF_Estimation implements ReconstructionJob {
     private int limitedMemorySize = 5;
     private double lowerBound = Double.NEGATIVE_INFINITY;
     private double upperBound = Double.POSITIVE_INFINITY;
-    private boolean debug = true;
+    private boolean debug = false;
     private int maxiter = 20;
     private int maxeval = 20;
     private DoubleArray data = null;
@@ -240,6 +240,7 @@ public class PSF_Estimation implements ReconstructionJob {
                 if(fcost<best_cost){
                 	best_cost = fcost;
                 	best_x = x.clone();
+                	System.out.println("Cost: " + best_cost);
                 }
                 if(flag == DEFOCUS)
                 {
