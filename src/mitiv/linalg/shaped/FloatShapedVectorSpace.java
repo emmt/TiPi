@@ -33,9 +33,9 @@ import mitiv.linalg.Vector;
 
 /**
  * Class vector spaces which own instances of the FloatVector class.
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
- * 
+ *
  */
 public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
@@ -63,6 +63,11 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
         super(FLOAT, dim1, dim2, dim3, dim4);
     }
 
+    private float[] getData(Vector v)
+    {
+        return ((FloatShapedVector) v).getData();
+    }
+
     @Override
     public FloatShapedVector create() {
         return new FloatShapedVector(this);
@@ -71,7 +76,7 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
     @Override
     public FloatShapedVector create(double value) {
         FloatShapedVector v = new FloatShapedVector(this);
-        ArrayOps.fill(number, v.getData(), value);
+        ArrayOps.fill(v.getData(), number, value);
         return v;
     }
 
@@ -126,7 +131,7 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
     protected FloatShapedVector _clone(FloatShapedVector vec) {
         FloatShapedVector cpy = new FloatShapedVector(this);
-        _copy(vec, cpy);
+        _copy(cpy, vec);
         return cpy;
     }
 
@@ -145,96 +150,129 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
         return new FloatShapedVector(this, x);
     }
 
-    // FIXME:
-    public void copy(float[] src, Vector dst) {
+    public void copy(Vector dst, float[] src) {
         check(dst);
-        ((FloatShapedVector)dst).set(src);
+        ArrayOps.copy(getData(dst), src);
     }
 
     @Override
-    protected void _copy(Vector src, Vector dst) {
-        ArrayOps.copy(number, ((FloatShapedVector) src).getData(),
-                ((FloatShapedVector) dst).getData());
-    }
-
-    @Override
-    protected void _swap(Vector x, Vector y) {
-        _copy(x, y);
-    }
-
-    protected void _swap(FloatShapedVector vx, FloatShapedVector vy) {
-        float[] x = vx.getData();
-        float[] y = vy.getData();
-        int n = vx.getNumber();
-        for (int j = 0; j < n; ++j) {
-            float a = x[j];
-            x[j] = y[j];
-            y[j] = a;
+    protected void _copy(Vector dst, Vector src) {
+        if (dst != src) {
+            System.arraycopy(getData(src), 0, getData(dst), 0, number);
         }
     }
 
     @Override
-    protected void _fill(Vector x, double alpha) {
-        ArrayOps.fill(number, ((FloatShapedVector) x).getData(), alpha);
+    protected void _swap(Vector vx, Vector vy) {
+        float[] x = getData(vx);
+        float[] y = getData(vy);
+        int n = x.length;
+        for (int i = 0; i < n; ++i) {
+            float xi = x[i];
+            x[i] = y[i];
+            y[i] = xi;
+        }
+    }
+
+    @Override
+    protected void _fill(Vector vec, double alpha) {
+        float[] x = getData(vec);
+        float a = (float)alpha;
+        for (int i = 0; i < number; ++i) {
+            x[i] = a;
+        }
     }
 
     @Override
     protected double _dot(final Vector x, final Vector y) {
-        return ArrayOps.dot(number, ((FloatShapedVector) x).getData(),
-                ((FloatShapedVector) y).getData());
+        return ArrayOps.dot(number, getData(x), getData(y));
+    }
+    @Override
+    protected double _dot(final Vector w, final Vector x, final Vector y) {
+        return ArrayOps.dot(number, getData(w), getData(x), getData(y));
     }
 
     @Override
     protected double _norm2(Vector x) {
-        return ArrayOps.norm2(((FloatShapedVector) x).getData());
+        return ArrayOps.norm2(getData(x));
     }
 
     @Override
     protected double _norm1(Vector x) {
-        return ArrayOps.norm1(((FloatShapedVector) x).getData());
+        return ArrayOps.norm1(getData(x));
     }
 
     @Override
     protected double _normInf(Vector x) {
-        return ArrayOps.normInf(((FloatShapedVector) x).getData());
+        return ArrayOps.normInf(getData(x));
     }
 
     @Override
-    protected void _axpby(double alpha, final Vector x,
+    protected void _scale(Vector vec, double alpha)
+    {
+        if (alpha == 0.0) {
+            _fill(vec, 0.0);
+        } else if (alpha != 1.0) {
+            float[] x = getData(vec);
+            float a = (float)alpha;
+            for (int i = 0; i < number; ++i) {
+                x[i] *= a;
+            }
+        }
+    }
+
+    @Override
+    protected void _scale(Vector dst, double alpha, Vector src)
+    {
+        if (alpha == 0.0) {
+            _fill(dst, 0.0);
+        } else if (alpha == 1.0) {
+            _copy(dst, src);
+        } else {
+            float[] x = getData(src);
+            float[] y = getData(dst);
+            float a = (float)alpha;
+            for (int i = 0; i < number; ++i) {
+                y[i] = a*x[i];
+            }
+        }
+    }
+
+    @Override
+    protected void _combine(double alpha, final Vector x,
             double beta, Vector y) {
-        ArrayOps.axpby(number,
-                alpha, ((FloatShapedVector) x).getData(),
-                beta,  ((FloatShapedVector) y).getData());
+        ArrayOps.combine(number,
+                alpha, getData(x),
+                beta,  getData(y));
     }
 
     @Override
-    protected void _axpby(double alpha, final Vector x,
-            double beta, final Vector y, Vector dst) {
-        ArrayOps.axpby(number,
-                alpha, ((FloatShapedVector) x).getData(),
-                beta,  ((FloatShapedVector) y).getData(), ((FloatShapedVector) dst).getData());
+    protected void _combine(Vector dst, double alpha,
+            final Vector x, double beta, final Vector y) {
+        ArrayOps.combine(getData(dst),
+                number, alpha,
+                getData(x),  beta, getData(y));
     }
 
     @Override
-    protected void _axpbypcz(double alpha, final Vector x,
-            double beta,  final Vector y,
-            double gamma, final Vector z, Vector dst) {
-        ArrayOps.axpbypcz(number,
-                alpha, ((FloatShapedVector) x).getData(),
-                beta,  ((FloatShapedVector) y).getData(),
-                gamma, ((FloatShapedVector) z).getData(), ((FloatShapedVector) dst).getData());
+    protected void _combine(Vector dst, double alpha,
+            final Vector x,  double beta,
+            final Vector y, double gamma, final Vector z) {
+        ArrayOps.combine(getData(dst),
+                number, alpha,
+                getData(x),  beta,
+                getData(y), gamma, getData(z));
     }
 
+    @Override
+    protected void _multiply(Vector dst, Vector vx, Vector vy)
+    {
+        float[] x = getData(vx);
+        float[] y = getData(vy);
+        float[] z = getData(dst);
+        int n = x.length;
+        for (int i = 0; i < n; ++i) {
+            z[i] = x[i]*y[i];
+        }
+    }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

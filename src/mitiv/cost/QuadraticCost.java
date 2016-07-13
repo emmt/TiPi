@@ -32,14 +32,14 @@ import mitiv.linalg.VectorSpace;
 
 /**
  * Implementation of a quadratic cost function.
- * 
+ *
  * A general form of a quadratic cost is:
  * <pre>
  *     f(x) = (H.x - y)'.W.(H.x - y)
  * </pre>
  * where {@code H} and {@code W} are linear operators and {@code y} is a vector
  * of the the output space of {@code H}.
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 public class QuadraticCost implements DifferentiableCostFunction {
@@ -74,7 +74,7 @@ public class QuadraticCost implements DifferentiableCostFunction {
     protected boolean shareMemory;            // share storage between residuals r and quasi-gradients HtWr
 
     /** Constructor for a general quadratic cost function.
-     * 
+     *
      * Create an instance of the differentiable cost function:
      * <pre>
      *     f(x) = (H.x - y)'.W.(H.x - y)
@@ -84,7 +84,7 @@ public class QuadraticCost implements DifferentiableCostFunction {
      * space of {@code H} to the output space of {@code H}.  Operator {@code W} should
      * be symmetric and positive definite (respectively semi-definite) for {@code f(x)}
      * to be strictly convex (respectively convex).
-     * 
+     *
      * <p>
      * Having any of these arguments equal to {@code null} amounts to ignore them in the
      * formula.  Thats is, {@code y = null} is the same (but faster) as having {@code y}
@@ -92,14 +92,14 @@ public class QuadraticCost implements DifferentiableCostFunction {
      * as assuming that {@code H} (or of {@code W}) is the identity.  Though not all the
      * arguments can be {@code null} as at least one of these is needed to determine the
      * input space of {@code f(x)}.
-     * 
+     *
      * <p>
      * Note that none of the components {@code H}, {@code y}, nor {@code W} are copied.
      * If the caller does change one of these while using the cost function, the cost
      * function will use the actual contents of the components.  If this is inappropriate,
      * the cost must be instantiated with copies of the components which are subject to
      * changes.
-     * 
+     *
      * @param H  - A linear operator.
      * @param y  - A vector of the output space of {@code H}.
      * @param W  - An endomorphism of the output space of {@code H}..
@@ -113,7 +113,7 @@ public class QuadraticCost implements DifferentiableCostFunction {
      * <pre>
      *     f(x) = ||x||^2
      * </pre>
-     * 
+     *
      * @param space - The vector space of the variables.
      */
     public QuadraticCost(VectorSpace space) {
@@ -246,9 +246,9 @@ public class QuadraticCost implements DifferentiableCostFunction {
                     HtWr = inputSpace.create();
                 }
             }
-            H.apply(Wr, HtWr, LinearOperator.ADJOINT);
+            H.apply(HtWr, Wr, LinearOperator.ADJOINT);
         }
-        inputSpace.axpby((clr ? 0.0 : 1.0), gx, 2.0*alpha, HtWr, gx);
+        inputSpace.combine(gx, (clr ? 0.0 : 1.0), gx, 2.0*alpha, HtWr);
 
         /* Cleanup any alias made so far. */
         if (quickResiduals) {
@@ -266,7 +266,7 @@ public class QuadraticCost implements DifferentiableCostFunction {
     }
 
     /** Form the (anti-)residuals and their weighted counterpart.
-     * 
+     *
      * This method updates the (anti-)residuals {@code r = H.x - y} and their weighted
      * counterpart {@code Wr = W.r} which are internally stored by the instance.
      * <p>
@@ -299,12 +299,12 @@ public class QuadraticCost implements DifferentiableCostFunction {
             }
             if (H == null) {
                 /* The (anti-)residuals are: r = x - y. */
-                innerSpace.axpby(1.0, x, -1.0, y, r);
+                innerSpace.combine(r, 1.0, x, -1.0, y);
             } else {
                 /* The (anti-)residuals are: r = H.x or r = H.x - y. */
-                H.apply(x, r);
+                H.apply(r, x);
                 if (y != null) {
-                    innerSpace.axpby(1.0, r, -1.0, y, r);
+                    innerSpace.combine(r, 1.0, r, -1.0, y);
                 }
             }
         }
@@ -318,19 +318,7 @@ public class QuadraticCost implements DifferentiableCostFunction {
             if (Wr == null || ! Wr.belongsTo(innerSpace)) {
                 Wr = innerSpace.create();
             }
-            W.apply(r, Wr);
+            W.apply(Wr, r);
         }
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

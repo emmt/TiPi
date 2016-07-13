@@ -32,7 +32,7 @@ import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 
 /**
  * Implement proximal operator for pseudo L1 norm, possibly with bounds.
- * 
+ *
  * <p>
  * The proximal operator of the pseudo L1 norm is a soft thresholding.
  *
@@ -97,9 +97,9 @@ public class PseudoL1NormOfBoundedDoubleVector extends PseudoL1NormOfDoubleVecto
      * @see mitiv.cost.ProximalOperator#applyProx(double, mitiv.linalg.Vector, mitiv.linalg.Vector, double)
      */
     @Override
-    public void applyProx(double alpha, Vector inp, Vector out, double tol) {
+    public void applyProx(Vector out, double alpha, Vector inp, double tol) {
         if (alpha == 0.0) {
-            inputSpace.copy(inp, out);
+            out.copyFrom(inp);
         } else if (alpha > 0.0) {
             if (! inp.belongsTo(inputSpace) || ! out.belongsTo(inputSpace)) {
                 throw new IncorrectSpaceException();

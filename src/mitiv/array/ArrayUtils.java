@@ -25,23 +25,6 @@
 
 package mitiv.array;
 
-import mitiv.array.Array1D;
-import mitiv.array.Array2D;
-import mitiv.array.Array3D;
-import mitiv.array.Array4D;
-import mitiv.array.Array5D;
-import mitiv.array.Array6D;
-import mitiv.array.Array7D;
-import mitiv.array.Array8D;
-import mitiv.array.Array9D;
-import mitiv.array.ArrayFactory;
-import mitiv.array.ByteArray;
-import mitiv.array.DoubleArray;
-import mitiv.array.FloatArray;
-import mitiv.array.IntArray;
-import mitiv.array.LongArray;
-import mitiv.array.ShapedArray;
-import mitiv.array.ShortArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
 import mitiv.base.indexing.Range;
@@ -709,7 +692,7 @@ public class ArrayUtils {
 
 
     /*=======================================================================*/
-    /* ZERO-PADDING */
+    /* PAD/CROP AN ARRAY */
 
     /**
      * Zero-pad a shaped array.
@@ -722,64 +705,128 @@ public class ArrayUtils {
      * in the input array.  The operation is lazy: if no padding is needed
      * (that is, if the shapes are the same), the input array is returned.
      * Otherwise, the contents of the input array is pasted into a larger
-     * output array approximately at the geometrical center of this former
+     * output array approximately at the geometric center of this former
      * array.  More specifically, the number of zeros at the beginning of a
      * given dimension is equal to:
      * <pre>
      * (outDim/2) - (inpDim/2)
      * </pre>
      * assuming integer arithmetic and where {@code outDim} and {@code inpDim}
-     * are the respective length of the given dimension in the output and
+     * are the respective lengths of the given dimension in the output and
      * input arrays.
      * </p>
-     * @param inputArray  - The input array.
-     * @param outputShape - The shape of the result.
+     * @param array - The input array.
+     * @param shape - The shape of the result.
      * @return A shaped array of the given shape.
      */
-    public static ShapedArray zeroPadding(ShapedArray inputArray, Shape outputShape) {
-        /* Check output shape and build list of ranges for pasting
-         * the input array into the result. */
-        Shape inputShape = inputArray.getShape();
-        if (outputShape.equals(inputShape)) {
-            return inputArray;
-        }
-        int rank = inputShape.rank();
-        if (outputShape.rank() != rank) {
-            throw new NonConformableArrayException("Not same rank.");
-        }
-        Range[] range = new Range[rank];
-        for (int k = 0; k < rank; ++k) {
-            int inpDim = inputShape.dimension(k);
-            int outDim = outputShape.dimension(k);
-            if (outDim < inpDim) {
-                throw new NonConformableArrayException("Zero-padding cannot shrink dimensions.");
-            }
-            int first = outDim/2 - inpDim/2;
-            int last = first + inpDim - 1;
-            range[k] = new Range(first, last, 1);
+    public static ShapedArray pad(ShapedArray array, Shape shape) {
+        return pad(array, shape, null, 0.0);
+    }
+
+    /**
+     * Pad a shaped array with a specific value.
+     * <p>
+     * This function behaves as {@link #pad(ShapedArray,Shape)} except that
+     * the padding elements are set to the given value.
+     * </p>
+     * @param array - The input array.
+     * @param shape - The shape of the result.
+     * @param value - The value of the padding elements (it is silently
+     *                converted to the element type of the output array which
+     *                is the same as that of the input array).
+     *
+     * @return A shaped array of the given shape.
+     */
+    public static ShapedArray pad(ShapedArray array, Shape shape,
+            Double value) {
+        return pad(array, shape, null, value);
+    }
+
+    /**
+     * Zero-pad a shaped array with given offsets.
+     * <p>
+     * This function behaves as {@link #pad(ShapedArray,Shape)} except that
+     * specific offsets are given.
+     * </p>
+     * @param array  - The input array.
+     * @param shape  - The shape of the result.
+     * @param offset - The offsets along each dimenions of the input array
+     *                 relative to the result.  If {@code null}, the contents
+     *                 of the array is approximately at the geometric center
+     *                 of the result.
+     *
+     * @return A shaped array of the given shape.
+     */
+    public static ShapedArray pad(ShapedArray array, Shape shape,
+            int[] offset) {
+        return pad(array, shape, offset, 0.0);
+    }
+
+    /**
+     * Pad a shaped array with a given value and given offsets.
+     * <p>
+     * Padding consists in adding elements with a given value around an array
+     * to build a larger array.
+     * </p><p>
+     * There must be as many dimensions in the result as in the input array
+     * and all dimensions must be greater or equal the corresponding dimension
+     * in the input array.  The operation is lazy: if no padding is needed
+     * (that is, if the shapes are the same), the input array is returned.
+     * Otherwise, the contents of the input array is pasted into a larger
+     * output array approximately at the geometric center of this former
+     * array.  More specifically, the number of elements added at the
+     * beginning of a given dimension is equal to:
+     * <pre>
+     * (outDim/2) - (inpDim/2)
+     * </pre>
+     * assuming integer arithmetic and where {@code outDim} and {@code inpDim}
+     * are the respective lengths of the given dimension in the output and
+     * input arrays.
+     * </p>
+     * @param array  - The input array.
+     * @param shape  - The shape of the result.
+     * @param offset - The offsets along each dimension of the input array
+     *                 relative to the result.  If {@code null}, the contents
+     *                 of the array is approximately at the geometric center
+     *                 of the result.
+     * @param value  - The value of the padding elements (it is silently
+     *                 converted to the element type of the output array which
+     *                 is the same as that of the input array).
+     *
+     * @return A shaped array of the given shape.
+     */
+    public static ShapedArray pad(ShapedArray array,
+            Shape shape, int[] offset, double value) {
+
+        /* Get bounds of the region of interest. */
+        Range[] range = getROI(shape, array.getShape(), offset);
+        if (range == null) {
+            /* Nothing has to be done. */
+            return array;
         }
 
-        /* Create the output array and fill it with zeroes. */
-        int type = inputArray.getType();
-        ShapedArray outputArray = ArrayFactory.create(type, outputShape);
+        /* Create the output array and fill it with the padding value. */
+        int rank = range.length;
+        int type = array.getType();
+        ShapedArray result = ArrayFactory.create(type, shape);
         switch (type) {
         case Traits.BYTE:
-            ((ByteArray)outputArray).fill((byte)0);
+            ((ByteArray)result).fill((byte)value);
             break;
         case Traits.SHORT:
-            ((ShortArray)outputArray).fill((short)0);
+            ((ShortArray)result).fill((short)value);
             break;
         case Traits.INT:
-            ((IntArray)outputArray).fill((int)0);
+            ((IntArray)result).fill((int)value);
             break;
         case Traits.LONG:
-            ((LongArray)outputArray).fill((long)0);
+            ((LongArray)result).fill((long)value);
             break;
         case Traits.FLOAT:
-            ((FloatArray)outputArray).fill((float)0);
+            ((FloatArray)result).fill((float)value);
             break;
         case Traits.DOUBLE:
-            ((DoubleArray)outputArray).fill((double)0);
+            ((DoubleArray)result).fill((double)value);
             break;
         default:
             throw new IllegalTypeException();
@@ -789,37 +836,178 @@ public class ArrayUtils {
         ShapedArray roi;
         switch (rank) {
         case 1:
-            roi = ((Array1D)outputArray).view(range[0]);
+            roi = ((Array1D)result).view(range[0]);
             break;
         case 2:
-            roi = ((Array2D)outputArray).view(range[0], range[1]);
+            roi = ((Array2D)result).view(range[0], range[1]);
             break;
         case 3:
-            roi = ((Array3D)outputArray).view(range[0], range[1], range[2]);
+            roi = ((Array3D)result).view(range[0], range[1], range[2]);
             break;
         case 4:
-            roi = ((Array4D)outputArray).view(range[0], range[1], range[2], range[3]);
+            roi = ((Array4D)result).view(range[0], range[1], range[2], range[3]);
             break;
         case 5:
-            roi = ((Array5D)outputArray).view(range[0], range[1], range[2], range[3], range[4]);
+            roi = ((Array5D)result).view(range[0], range[1], range[2], range[3], range[4]);
             break;
         case 6:
-            roi = ((Array6D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5]);
+            roi = ((Array6D)result).view(range[0], range[1], range[2], range[3], range[4], range[5]);
             break;
         case 7:
-            roi = ((Array7D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]);
+            roi = ((Array7D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]);
             break;
         case 8:
-            roi = ((Array8D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]);
+            roi = ((Array8D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]);
             break;
         case 9:
-            roi = ((Array9D)outputArray).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]);
+            roi = ((Array9D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]);
             break;
         default:
             throw new IllegalArgumentException("Unsupported rank.");
         }
-        roi.assign(inputArray);
-        return outputArray;
+        roi.assign(array);
+        return result;
+    }
+
+    /**
+     * Crop the central part of a shaped array.
+     * <p>
+     * This function returns the central region of the input array.  More
+     * specifically, the first element taken along a given dimension is at
+     * offset:
+     * <pre>
+     * (inpDim/2) - (outDim/2)
+     * </pre>
+     * assuming integer arithmetic and where {@code outDim} and {@code inpDim}
+     * are the respective lengths of the considerd dimension in the output and
+     * input arrays.
+     * </p><p>
+     * The operation is lazzy in the sense that it returns either the input
+     * array (if the cropped region is the same as the input array) or a view
+     * inside the input array.
+     * </p>
+     * @param array  - The input array.
+     * @param shape  - The shape of the result.
+     *
+     * @return A shaped array of the given shape.
+     */
+    public static ShapedArray crop(ShapedArray array, Shape shape) {
+        return crop(array, shape, null);
+    }
+
+    /**
+     * Crop a specific part of a shaped array.
+     * <p>
+     * Padding consists in adding elements with a given value around an array
+     * to build a larger array.
+     * </p><p>
+     * The operation is lazzy in the sense that it returns either the input
+     * array (if the cropped region is the same as the input array) or a view
+     * inside the input array.
+     * </p>
+     * @param array  - The input array.
+     * @param shape  - The shape of the result.
+     * @param offset - The offsets along each dimensions of the cropped region
+     *                 relative to the input array.  If {@code null}, the
+     *                 cropped region corresponds to approximately the central
+     *                 part of the input array.
+     *
+     * @return A shaped array of the given shape.
+     */
+    public static ShapedArray crop(ShapedArray array, Shape shape,
+            int[] offset) {
+        /* Get bounds of the region of interest. */
+        Range[] range = getROI(array.getShape(), shape, offset);
+        if (range == null) {
+            /* Nothing has to be done. */
+            return array;
+        }
+
+        /* Return a view to the ROI. */
+        switch (range.length) {
+        case 1:
+            return ((Array1D)array).view(range[0]);
+        case 2:
+            return ((Array2D)array).view(range[0], range[1]);
+        case 3:
+            return ((Array3D)array).view(range[0], range[1], range[2]);
+        case 4:
+            return ((Array4D)array).view(range[0], range[1], range[2], range[3]);
+        case 5:
+            return ((Array5D)array).view(range[0], range[1], range[2], range[3], range[4]);
+        case 6:
+            return ((Array6D)array).view(range[0], range[1], range[2], range[3], range[4], range[5]);
+        case 7:
+            return ((Array7D)array).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]);
+        case 8:
+            return ((Array8D)array).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]);
+        case 9:
+            return ((Array9D)array).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]);
+        default:
+            throw new IllegalArgumentException("Unsupported rank.");
+        }
+    }
+
+
+    private static Range[] getROI(Shape large, Shape small, int[] offset) {
+        int rank = large.rank();
+        if (small.rank() != rank) {
+            throw new NonConformableArrayException("Not same rank.");
+        }
+        Boolean nothing = true;
+        Boolean outOfBounds = false;
+        if (offset == null) {
+            for (int k = 0; k < rank; ++k) {
+                int largeDim = large.dimension(k);
+                int smallDim = small.dimension(k);
+                if (smallDim > largeDim) {
+                    outOfBounds = true;
+                    break;
+                }
+                if (smallDim != largeDim) {
+                    nothing = false;
+                }
+            }
+        } else {
+            if (offset.length != rank) {
+                throw new NonConformableArrayException("Bad number of offsets.");
+            }
+            for (int k = 0; k < rank; ++k) {
+                int largeDim = large.dimension(k);
+                int smallDim = small.dimension(k);
+                if (offset[k] < 0 || smallDim + offset[k] > largeDim) {
+                    outOfBounds = true;
+                    break;
+                }
+                if (smallDim != largeDim) {
+                    nothing = false;
+                }
+            }
+        }
+        if (outOfBounds) {
+            throw new ArrayIndexOutOfBoundsException("Out of bounds region of interest.");
+        }
+        if (nothing) {
+            return null;
+        }
+        Range[] range = new Range[rank];
+        if (offset == null) {
+            for (int k = 0; k < rank; ++k) {
+                int largeDim = large.dimension(k);
+                int smallDim = small.dimension(k);
+                int first = (largeDim/2) - (smallDim/2);
+                int last = first + smallDim - 1;
+                range[k] = new Range(first, last, 1);
+            }
+        } else {
+            for (int k = 0; k < rank; ++k) {
+                int smallDim = small.dimension(k);
+                int first = offset[k];
+                int last = first + smallDim - 1;
+                range[k] = new Range(first, last, 1);
+            }
+        }
+        return range;
     }
 
 

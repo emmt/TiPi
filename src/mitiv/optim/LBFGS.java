@@ -31,46 +31,72 @@ import mitiv.linalg.VectorSpace;
 
 /**
  * Multivariate non-linear optimization by L-BFGS/VMLM method.
- * 
+ *
+ * <p>
+ * LBFGS implements a limited memory quasi-Newton method for unconstrained
+ * optimization with Broyden-Fletcher-Goldfarb-Shanno (BFGS) updates using
+ * Strang's two-loop recursive formula (Nocedal, 1980).
+ * </p>
+ *
+ * <p>
+ * Combined with a Moré & Thuente (1984) line search, the implemented method is
+ * similar to VMLM (Nocedal, 1980) or L-BFGS (Liu & Nocedal, 1989) algorithms.
+ * </p>
+ *
+ * <h3>References</h3>
+ *  <ul>
+ *  <li>Nocedal, J. "<i>Updating Quasi-Newton Matrices with Limited Storage</i>,"
+ *      Mathematics of Computation <b>35</b>, pp.&nbsp;773-782 (1980).</li>
+ *  <li>Moré, J. J. & Thuente, D. J. "<i>Line search algorithms with guaranteed
+ *      sufficient decrease</i>," TOMS, ACM Press <b>20</b>, pp.&nbsp;286-307
+ *      (1994).</li>
+ *  <li>Liu, D. C. & Nocedal, J. "<i>On the limited memory BFGS method for
+ *      large scale optimization</i>," Mathematical programming <b>45</b>,
+ *      pp.&nbsp;503-528 (1989).</li>
+ *  </ul>
+
  * @author Éric Thiébaut.
  *
  */
-public class LBFGS implements ReverseCommunicationOptimizer {
+public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
-    public static int NO_PROBLEM = 0;
-    public static int BAD_H0 = 1; /* H0 is not positive definite */
-    public static int LNSRCH_WARNING = 2; /* warning in line search */
-    public static int LNSRCH_ERROR = 3; /* error in line search */
-
+    /** LBFGS approximation of the inverse Hessian */
     protected LBFGSOperator H = null;
-    protected LineSearch lnsrch;
-    protected OptimTask task = null;
-    protected int reason = NO_PROBLEM;
 
-    /* Number of function (and gradient) evaluations since start. */
-    protected int evaluations = 0;
+    /** Relative threshold for the sufficient descent condition. */
+    protected double delta = 0.01;
 
-    /* Number of iterations since start. */
-    protected int iterations = 0;
+    /** Small relative size for the initial step or after a restart. */
+    protected double epsilon = 1e-3;
 
-    /* Number of restarts. */
-    protected int restarts = 0;
+    /**
+     * Relative threshold for the norm or the gradient (relative to the norm
+     * of the initial gradient) for convergence.
+     */
+    protected double grtol;
 
-    protected double epsilon = 0.01;
-    protected double tiny = 1e-3;
-    protected double pnorm; // the norm of P
-    protected double grtol;  /* Relative threshold for the norm or the gradient (relative
-    to GTEST the norm of the initial gradient) for convergence. */
-    protected double gatol;  /* Absolute threshold for the norm or the gradient for
-    convergence. */
-    protected double gtest;  /* Norm or the initial gradient. */
+    /**
+     * Absolute threshold for the norm or the gradient for convergence.
+     */
+    protected double gatol;
 
+    /** Norm or the initial gradient. */
+    protected double ginit;
+
+    /** Lower relative step bound. */
     protected double stpmin = 1e-20;
-    protected double stpmax = 1e6;
 
-    /* To save space, the variable and gradient at the start of a line
-     * search are references to the (s,y) pair of vectors of the LBFGS
-     * operator just after the mark.
+    /** Upper relative step bound. */
+    protected double stpmax = 1e+20;
+
+    /**
+     * Attempt to save some memory?
+     *
+     * <p>
+     * To save space, the variable and gradient at the start of a line search
+     * may be references to the (s,y) pair of vectors of the LBFGS operator
+     * just after the mark.
+     * </p>
      */
     private boolean saveMemory = true;
 
@@ -85,9 +111,10 @@ public class LBFGS implements ReverseCommunicationOptimizer {
 
     /**
      * The (anti-)search direction.
-     * 
-     * An iterate is computed as: x1 = x0 - alpha*p
-     * with alpha > 0.
+     *
+     * <p>
+     * An iterate is computed as: x = x0 - alpha*p with alpha > 0.
+     * </p>
      */
     protected Vector p = null;
 
@@ -98,51 +125,24 @@ public class LBFGS implements ReverseCommunicationOptimizer {
     protected  double dg0 = 0.0;
 
     /** Euclidean norm of the gradient at the last accepted step. */
-    protected double g1norm = 0.0;
-
-    /** Euclidean norm of the gradient at X0. */
-    protected  double g0norm = 0.0;
-
+    protected double gnorm = 0.0;
 
     public LBFGS(VectorSpace vsp, int m, LineSearch ls) {
-        H = new LBFGSOperator(vsp, m);
-        lnsrch = ls;
+        this(new LBFGSOperator(vsp, m), ls);
     }
 
     public LBFGS(LinearOperator H0, int m, LineSearch ls) {
-        H = new LBFGSOperator(H0, m);
-        lnsrch = ls;
+        this(new LBFGSOperator(H0, m), ls);
     }
 
-    @Override
-    public OptimTask getTask() {
-        return task;
-    }
-
-    @Override
-    public int getIterations() {
-        return iterations;
-    }
-
-    @Override
-    public int getEvaluations() {
-        return evaluations;
-    }
-
-    @Override
-    public int getRestarts() {
-        return restarts;
-    }
-
-    @Override
-    public String getMessage(int reason) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public int getReason() {
-        return reason;
+    private LBFGS(LBFGSOperator H, LineSearch ls) {
+        this.H = H;
+        this.p = H.getOutputSpace().create();
+        if (! this.saveMemory) {
+            this.x0 = H.getOutputSpace().create();
+            this.g0 = H.getInputSpace().create();
+        }
+        this.lnsrch = ls;
     }
 
     @Override
@@ -161,77 +161,73 @@ public class LBFGS implements ReverseCommunicationOptimizer {
 
     private OptimTask begin() {
         H.reset();
-        task = OptimTask.COMPUTE_FG;
-        return task;
+        return success(OptimTask.COMPUTE_FG);
     }
 
     @Override
-    public OptimTask iterate(Vector x1, double f1, Vector g1) {
+    public OptimTask iterate(Vector x, double f, Vector g) {
 
-        if (task == OptimTask.COMPUTE_FG) {
+        switch (getTask()) {
 
+        case COMPUTE_FG:
+
+            /* Caller has computed the function value and the gradient at the
+             * current point. */
             ++evaluations;
             if (evaluations > 1) {
                 /* A line search is in progress.  Compute directional
                  * derivative and check whether line search has converged. */
-                int status = lnsrch.iterate(alpha, f1, -p.dot(g1));
-                if (status == LineSearch.SEARCH) {
-                    return nextStep(x1);
-                }
-                if (status != LineSearch.CONVERGENCE &&
-                        status != LineSearch.WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS) {
-                    return lineSearchFailure(status);
+                LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, -p.dot(g));
+                if (lnsrchTask == LineSearchTask.SEARCH) {
+                    return nextStep(x);
+                } else if (lnsrchTask != LineSearchTask.CONVERGENCE) {
+                    OptimStatus lnsrchStatus = lnsrch.getStatus();
+                    if (lnsrchTask != LineSearchTask.WARNING ||
+                            lnsrchStatus != OptimStatus.ROUNDING_ERRORS_PREVENT_PROGRESS) {
+                        return failure(lnsrchStatus);
+                    }
                 }
                 ++iterations;
             }
 
             /* The current step is acceptable. Check for global convergence. */
-            g1norm = g1.norm2();
+            gnorm = g.norm2();
             if (evaluations == 1) {
-                gtest = g1norm;
+                ginit = gnorm;
             }
-            reason = NO_PROBLEM;
-            task = (g1norm <= getGradientThreshold() ? OptimTask.FINAL_X : OptimTask.NEW_X);
+            double gtest = getGradientThreshold();
+            return success(gnorm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
 
-        } else if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
+        case NEW_X:
+        case FINAL_X:
 
-            /* Compute a search direction, possibly after updating the LBFGS
-             * matrix.  We take care of checking whether D = -P is a
-             * sufficient descent direction.  As shown by Zoutendijk, this is
-             * true if:
-             *      cos(theta) = (D/|D|)'.(G/|G|) >= EPSILON > 0
-             * where G is the gradient. */
-            if (evaluations == 1) {
-                if (p == null) {
-                    p = H.getOutputSpace().create();
-                }
-                if (! saveMemory && x0 == null) {
-                    x0 = H.getOutputSpace().create();
-                }
-                if (! saveMemory && g0 == null) {
-                    g0 = H.getInputSpace().create();
-                }
-            } else {
-                H.update(x1, x0, g1, g0);
+            if (iterations >= 1) {
+                /* Update the LBFGS matrix. */
+                H.update(x, x0, g, g0);
             }
+
+            /* Compute a anti-search direction P.  We take care of checking
+             * whether D = -P is a sufficient descent direction.  As shown by
+             * Zoutendijk, this is true if: -(D/|D|)'.(G/|G|) >= DELTA > 0
+             * where G is the gradient.  Below, R = DELTA*|D|*|G|.
+             * See Nocedal & Wright, "Numerical Optimization", section 3.2,
+             * p. 44 (1999). */
             while (true) {
-                H.apply(g1, p);
-                pnorm = p.norm2(); // FIXME: in some cases, can be just GNORM*GAMMA
-                double pg = p.dot(g1);
-                if (pg >= epsilon*pnorm*g1norm) {
-                    /* Accept P (respectively D = -P) as a sufficient ascent
-                     * (respectively descent) direction and set the directional
-                     * derivative. */
-                    dg0 = -pg;
+                H.apply(p, g);
+                dg0 = -p.dot(g);
+                double r = (delta > 0.0 ? delta*gnorm*p.norm2() : 0.0);
+                if (r > 0.0 ? (dg0 <= -r) : (dg0 < 0.0)) {
+                    /* Sufficient descent condition holds.  Estimate the
+                     * length of the first step and break to proceed with
+                     * first iterate along the new direction. */
+                    alpha = initialStep(x, gnorm);
                     break;
                 }
                 if (H.mp < 1) {
                     /* Initial iteration or recursion has just been
                      * restarted.  This means that the initial inverse
                      * Hessian approximation is not positive definite. */
-                    reason = BAD_H0;
-                    task = OptimTask.ERROR;
-                    return task;
+                    return failure(OptimStatus.BAD_PRECONDITIONER);
                 }
                 /* Restart the LBFGS recursion and loop to use H0 to compute
                  * an initial search direction. */
@@ -242,57 +238,52 @@ public class LBFGS implements ReverseCommunicationOptimizer {
             /* Save current variables X0, gradient G0 and function value F0. */
             if (saveMemory) {
                 /* Use the slot just after the mark to store X0 and G0. */
-                x0 = H.s(1);
-                g0 = H.y(1);
-                H.mp = Math.min(H.mp,  H.m - 1);
-            }
-            x0.copyFrom(x1);
-            g0.copyFrom(g1);
-            g0norm = g1norm;
-            f0 = f1;
-
-            /* Estimate the length of the first step, start the line search
-             * and take the first step along the search direction. */
-            if (H.mp >= 1 || H.rule == InverseHessianApproximation.BY_USER) {
-                alpha = 1.0;
-            } else if (0.0 < tiny && tiny < 1.0) {
-                double xnorm = x1.norm2();
-                if (xnorm > 0.0) {
-                    alpha = (xnorm/g1norm)*tiny;
-                } else {
-                    alpha = 1.0/g1norm;
+                x0 = H.s(0);
+                g0 = H.y(0);
+                if (H.mp == H.m) {
+                    --H.mp;
                 }
-            } else {
-                alpha = 1.0/g1norm;
             }
-            int status = lnsrch.start(f0, dg0, alpha, stpmin*alpha, stpmax*alpha);
-            if (status != LineSearch.SEARCH) {
-                return lineSearchFailure(status);
+            x0.copyFrom(x);
+            g0.copyFrom(g);
+            f0 = f;
+
+            /* Start the line search. */
+            LineSearchTask lnsrchTask = lnsrch.start(f0, dg0, alpha, stpmin*alpha, stpmax*alpha);
+            if (lnsrchTask != LineSearchTask.SEARCH) {
+                return failure(lnsrch.getStatus());
             }
-            return nextStep(x1);
+
+            /* Take the first step along the search direction. */
+            return nextStep(x);
+
+        default:
+
+            /* There must be something wrong. */
+            return getTask();
+
         }
 
-        return task;
     }
 
-    /** Build the new step to try as: x1 = x0 - alpha*p. */
-    private OptimTask nextStep(Vector x1) {
+    protected double initialStep(Vector x, double dnorm) {
+        if (H.mp >= 1 || H.rule == LBFGSOperator.NO_SCALING) {
+            return 1.0;
+        }
+        if (0.0 < epsilon && epsilon < 1.0) {
+            double xnorm = x.norm2();
+            if (xnorm > 0.0) {
+                return (xnorm/dnorm)*epsilon;
+            }
+        }
+        return 1.0/dnorm;
+    }
+
+    /** Build the new step to try as: x = x0 - alpha*p. */
+    private OptimTask nextStep(Vector x) {
         alpha = lnsrch.getStep();
-        x1.axpby(1.0, x0, -alpha, p);
-        reason = NO_PROBLEM;
-        task = OptimTask.COMPUTE_FG;
-        return task;
-    }
-
-    private OptimTask lineSearchFailure(int status) {
-        if (lnsrch.hasWarnings()) {
-            reason = LNSRCH_WARNING;
-            task = OptimTask.WARNING;
-        } else {
-            reason = LNSRCH_ERROR;
-            task = OptimTask.ERROR;
-        }
-        return task;
+        x.combine(1.0, x0, -alpha, p);
+        return success(OptimTask.COMPUTE_FG);
     }
 
     /**
@@ -335,7 +326,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
 
     /**
      * Query the gradient threshold for the convergence criterion.
-     * 
+     *
      * The convergence of the optimization method is achieved when the
      * Euclidean norm of the gradient at a new iterate is less or equal
      * the threshold:
@@ -350,7 +341,7 @@ public class LBFGS implements ReverseCommunicationOptimizer {
      *      {@link #getAbsoluteTolerance}, {@link #getRelativeTolerance}.
      */
     public double getGradientThreshold() {
-        return max(0.0, gatol, grtol*gtest);
+        return max(0.0, gatol, grtol*ginit);
     }
 
     private static final double max(double a1, double a2, double a3) {

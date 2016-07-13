@@ -70,7 +70,7 @@ public class GradientChecker {
             if (this.x == null) {
                 this.x = space.clone(x);
             } else {
-                space.copy(x,  this.x);
+                this.x.copyFrom(x);
             }
         } else {
             this.x = x;
@@ -156,7 +156,7 @@ public class GradientChecker {
         if (y == null) {
             y = space.clone(x);
         } else {
-            space.copy(x, y);
+            y.copyFrom(x);
         }
         for (int k = 0; k < idx.length; ++k) {
             int j = idx[k];

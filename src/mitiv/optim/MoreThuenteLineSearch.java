@@ -25,7 +25,7 @@
 
 /**
  * Moré & Thuente inexact line search based on cubic interpolation.
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 package mitiv.optim;
@@ -38,10 +38,10 @@ public class MoreThuenteLineSearch extends LineSearch {
     private double ftol = 0.0;
     private double gtol = 0.0;
     private double xtol = 0.0;
-    
-    /* GTEST is used to check for Wolfe conditions. */ 
+
+    /* GTEST is used to check for Wolfe conditions. */
     private double gtest = 0.0;
-    
+
     /* The variables STX, FX, GX contain the values of the step, function, and
        derivative at the best step. */
     double stx, fx, gx;
@@ -50,7 +50,7 @@ public class MoreThuenteLineSearch extends LineSearch {
        derivative at STY. */
     double sty, fy, gy;
 
-    /* Parameters to track the interval where to seek for the step. */ 
+    /* Parameters to track the interval where to seek for the step. */
     private double stmin = 0.0; // FIXME: merge with stpmin?
     private double stmax = 0.0; // FIXME: merge with stpmax?
     private double width = 0.0;
@@ -58,7 +58,7 @@ public class MoreThuenteLineSearch extends LineSearch {
     private boolean brackt = false;
     private double[] ws;
 
-    /* The algorithm has two different stages. */ 
+    /* The algorithm has two different stages. */
     private int stage = 0;
 
     public MoreThuenteLineSearch(double ftol, double gtol, double xtol)
@@ -69,9 +69,15 @@ public class MoreThuenteLineSearch extends LineSearch {
         this.gtol = Math.max(gtol, 0.0);
         this.xtol = Math.max(xtol, 0.0);
     }
-   
+
     @Override
-    protected int startHook() {
+    public boolean useDerivative()
+    {
+        return true;
+    }
+
+    @Override
+    protected void startHook() {
         /* Convergence threshold for this step. */
         gtest = ftol*ginit;
 
@@ -81,156 +87,163 @@ public class MoreThuenteLineSearch extends LineSearch {
         width = stpmax - stpmin;
         width1 = 2.0*width;
         brackt = false;
-        
+
         /* The variables STX, FX, GX contain the values of the step,
            function, and derivative at the best step. */
         stx = 0.0;
         fx = finit;
         gx = ginit;
-        
+
         /* The variables STY, FY, GY contain the value of the step,
-           function, and derivative at STY. */        
+           function, and derivative at STY. */
         sty = 0.0;
         fy = finit;
         gy = ginit;
 
         /* Algorithm starts with STAGE = 1. */
         stage = 1;
-        return SEARCH;
+        success(LineSearchTask.SEARCH);
     }
 
     @Override
-    protected int iterateHook(double s1, double f1, double g1)
+    protected void iterateHook(double f, double g)
     {
-      /* Test for convergence. */
-      double ftest = finit + s1*gtest;
-      if (f1 <= ftest && Math.abs(g1) <= -this.gtol*this.ginit) {
-        /* Strong Wolfe conditions satisfied. */
-        return CONVERGENCE;
-      }
+        /* Test for convergence. */
+        double ftest = finit + stp*gtest;
+        if (f <= ftest && Math.abs(g) <= -gtol*ginit) {
+            /* Strong Wolfe conditions satisfied. */
+            success(LineSearchTask.CONVERGENCE);
+            return;
+        }
 
-      /* Test for warnings. */
-      if (s1 == this.stpmin && (f1 > ftest || g1 >= this.gtest)) {
-        return WARNING_STP_EQ_STPMIN;
-      }
-      if (s1 == this.stpmax && f1 <= ftest && g1 <= this.gtest) {
-        return WARNING_STP_EQ_STPMAX;
-      }
-      if (brackt && stmax - stmin <= xtol*stmax) {
-        return WARNING_XTOL_TEST_SATISFIED;
-      }
-      if (brackt && (s1 <= stmin || s1 >= stmax)) {
-        return WARNING_ROUNDING_ERRORS_PREVENT_PROGRESS;
-      }
+        /* Test for warnings. */
+        if (stp == stpmin && (f > ftest || g >= gtest)) {
+            failure(OptimStatus.STEP_EQ_STPMIN);
+            return;
+        }
+        if (stp == stpmax && f <= ftest && g <= gtest) {
+            warning(OptimStatus.STEP_EQ_STPMAX);
+            return;
+        }
+        if (brackt && stmax - stmin <= xtol*stmax) {
+            warning(OptimStatus.XTOL_TEST_SATISFIED);
+            return;
+        }
+        if (brackt && (stp <= stmin || stp >= stmax)) {
+            warning(OptimStatus.ROUNDING_ERRORS_PREVENT_PROGRESS);
+            return;
+        }
 
-      /* If psi(stp) <= 0 and f'(stp) >= 0 for some step, then the
-         algorithm enters the second stage. */
-      if (stage == 1 && f1 <= ftest && g1 >= 0.0) {
-        stage = 2;
-      }
+        /* If psi(stp) <= 0 and f'(stp) >= 0 for some step, then the
+           algorithm enters the second stage. */
+        if (stage == 1 && f <= ftest && g >= 0.0) {
+            stage = 2;
+        }
 
-      /* A modified function is used to predict the step during the first stage if
+        /* A modified function is used to predict the step during the first stage if
          a lower function value has been obtained but the decrease is not
          sufficient. */
-      if (this.stage == 1 && f1 <= this.fx && f1 > ftest) {
-          /* Define the modified function and derivative values and call CSTEP to
+        if (this.stage == 1 && f <= this.fx && f > ftest) {
+            /* Define the modified function and derivative values and call CSTEP to
              update STX, STY, and to compute the new step.  Then restore the
              function and derivative values for F. */
-        ws[0] = stx;
-        ws[1] = fx - gtest*stx;
-        ws[2] = gx - gtest;
-        ws[3] = sty;
-        ws[4] = fy - gtest*sty;
-        ws[5] = gy - gtest;
-        ws[6] = s1;
-        ws[7] = f1 - gtest*s1;
-        ws[8] = g1 - gtest;
-        int result = cstep();
-        if (result < 0) {
-          return result;
+            ws[0] = stx;
+            ws[1] = fx - gtest*stx;
+            ws[2] = gx - gtest;
+            ws[3] = sty;
+            ws[4] = fy - gtest*sty;
+            ws[5] = gy - gtest;
+            ws[6] = stp;
+            ws[7] = f - gtest*stp;
+            ws[8] = g - gtest;
+            OptimStatus result = cstep();
+            if (result != OptimStatus.SUCCESS) {
+                failure(result);
+                return;
+            }
+            stx = ws[0];
+            fx  = ws[1] + gtest*stx;
+            gx  = ws[2] + gtest;
+            sty = ws[3];
+            fy  = ws[4] + gtest*sty;
+            gy  = ws[5] + gtest;
+            stp = ws[6];
+        } else {
+            /* Call CSTEP to update STX, STY, and to compute the new step. */
+            ws[0] = stx;
+            ws[1] = fx;
+            ws[2] = gx;
+            ws[3] = sty;
+            ws[4] = fy;
+            ws[5] = gy;
+            ws[6] = stp;
+            ws[7] = f;
+            ws[8] = g;
+            OptimStatus result = cstep();
+            if (result != OptimStatus.SUCCESS) {
+                failure(result);
+                return;
+            }
+            stx = ws[0];
+            fx  = ws[1];
+            gx  = ws[2];
+            sty = ws[3];
+            fy  = ws[4];
+            gy  = ws[5];
+            stp = ws[6];
         }
-        stx = ws[0];
-        fx  = ws[1] + gtest*stx;
-        gx  = ws[2] + gtest;
-        sty = ws[3];
-        fy  = ws[4] + gtest*sty;
-        gy  = ws[5] + gtest;
-        stp = ws[6];
-      } else {
-        /* Call CSTEP to update STX, STY, and to compute the new step. */
-        ws[0] = stx;
-        ws[1] = fx;
-        ws[2] = gx;
-        ws[3] = sty;
-        ws[4] = fy;
-        ws[5] = gy;
-        ws[6] = s1;
-        ws[7] = f1;
-        ws[8] = g1;
-        int result = cstep();
-        if (result < 0) {
-          return result;
+
+        /* Decide if a bisection step is needed. */
+        if (this.brackt) {
+            double new_width = Math.abs(this.sty - this.stx);
+            if (new_width >= 0.66*this.width1) {
+                stp = this.stx + 0.5*(this.sty - this.stx);
+            }
+            this.width1 = this.width;
+            this.width = new_width;
         }
-        stx = ws[0];
-        fx  = ws[1];
-        gx  = ws[2];
-        sty = ws[3];
-        fy  = ws[4];
-        gy  = ws[5];
-        stp = ws[6];
-      }
 
-      /* Decide if a bisection step is needed. */
-      if (this.brackt) {
-        double new_width = Math.abs(this.sty - this.stx);
-        if (new_width >= 0.66*this.width1) {
-          s1 = this.stx + 0.5*(this.sty - this.stx);
+        /* Set the minimum and maximum steps allowed for stp. */
+        if (this.brackt) {
+            this.stmin = Math.min(this.stx, this.sty);
+            this.stmax = Math.max(this.stx, this.sty);
+        } else {
+            this.stmin = stp + (stp - this.stx)*1.1;
+            this.stmax = stp + (stp - this.stx)*4.0;
         }
-        this.width1 = this.width;
-        this.width = new_width;
-      }
 
-      /* Set the minimum and maximum steps allowed for stp. */
-      if (this.brackt) {
-        this.stmin = Math.min(this.stx, this.sty);
-        this.stmax = Math.max(this.stx, this.sty);
-      } else {
-        this.stmin = s1 + (s1 - this.stx)*1.1;
-        this.stmax = s1 + (s1 - this.stx)*4.0;
-      }
+        /* Force the step to be within the bounds stpmax and stpmin. */
+        stp = Math.max(stp, this.stpmin);
+        stp = Math.min(stp, this.stpmax);
 
-      /* Force the step to be within the bounds stpmax and stpmin. */
-      s1 = Math.max(s1, this.stpmin);
-      s1 = Math.min(s1, this.stpmax);
-
-      /* If further progress is not possible, let stp be the best
+        /* If further progress is not possible, let stp be the best
          point obtained during the search. */
-      if (this.brackt && (s1 <= this.stmin || s1 >= this.stmax ||
-                          this.stmax - this.stmin <= this.xtol * this.stmax)) {
-        s1 = this.stx;
-      }
+        if (this.brackt && (stp <= this.stmin || stp >= this.stmax ||
+                this.stmax - this.stmin <= this.xtol * this.stmax)) {
+            stp = this.stx;
+        }
 
-      /* Obtain another function and derivative. */
-      return SEARCH;
+        /* Obtain another function and derivative. */
+        success(LineSearchTask.SEARCH);
     }
 
 
     private final static double max3(double val1, double val2, double val3)
     {
-      double result = val1;
-      if (val2 > result) result = val2;
-      if (val3 > result) result = val3;
-      return result;
+        double result = val1;
+        if (val2 > result) result = val2;
+        if (val3 > result) result = val3;
+        return result;
     }
 
-    private final int cstep()
+    private final OptimStatus cstep()
     {
         /* Constants. */
         final double ZERO = 0.0;
         final double TWO = 2.0;
         final double THREE = 3.0;
 
-        /* Extract curve parameters. */ 
+        /* Extract curve parameters. */
         double stx = ws[0];
         double fx  = ws[1];
         double dx  = ws[2];
@@ -247,16 +260,15 @@ public class MoreThuenteLineSearch extends LineSearch {
         double stpq; /* quadratic step */
         double stpf;
         boolean opposite;
-        int result;
 
         /* Check the input parameters for errors. */
         if (brackt && (stx < sty ? (stp <= stx || stp >= sty)
                 : (stp <= sty || stp >= stx))) {
-            return MoreThuenteLineSearch.ERROR_STP_OUTSIDE_BRACKET;
+            return OptimStatus.STEP_OUTSIDE_BRACKET;
         } else if (dx*(stp - stx) >= ZERO) {
-            return MoreThuenteLineSearch.ERROR_NOT_A_DESCENT;
+            return OptimStatus.NOT_A_DESCENT;
         } else if (stpmin > stpmax) {
-            return MoreThuenteLineSearch.ERROR_STPMIN_GT_STPMAX;
+            return OptimStatus.STPMIN_GT_STPMAX;
         }
 
         /* Determine if the derivatives have opposite signs. */
@@ -267,7 +279,6 @@ public class MoreThuenteLineSearch extends LineSearch {
                the cubic step is closer to STX than the quadratic step, the cubic step
                is taken, otherwise the average of the cubic and quadratic steps is
                taken. */
-            result = 1;
             brackt = true;
             theta = THREE*(fx - fp)/(stp - stx) + dx + dp;
             s = max3(Math.abs(theta), Math.abs(dx), Math.abs(dp));
@@ -289,7 +300,6 @@ public class MoreThuenteLineSearch extends LineSearch {
                The minimum is bracketed.  If the cubic step is farther from STP than
                the secant (quadratic) step, the cubic step is taken, otherwise the
                secant step is taken. */
-            result = 2;
             brackt = true;
             theta = THREE*(fx - fp)/(stp - stx) + dx + dp;
             s = max3(Math.abs(theta), Math.abs(dx), Math.abs(dp));
@@ -313,7 +323,6 @@ public class MoreThuenteLineSearch extends LineSearch {
                the minimum of the cubic is beyond STP.  Otherwise the cubic step is
                defined to be the secant step.  The case GAMMA = 0 only arises if the
                cubic does not tend to infinity in the direction of the step. */
-            result = 3;
             theta = THREE*(fx - fp)/(stp - stx) + dx + dp;
             s = max3(Math.abs(theta), Math.abs(dx), Math.abs(dp));
             temp = theta/s;
@@ -366,7 +375,6 @@ public class MoreThuenteLineSearch extends LineSearch {
                the magnitude of the derivative does not decrease.  If the minimum is
                not bracketed, the step is either STPMIN or STPMAX, otherwise the cubic
                step is taken. */
-            result = 4;
             if (brackt) {
                 theta = THREE*(fp - fy)/(sty - stp) + dy + dp;
                 s = max3(Math.abs(theta), Math.abs(dy), Math.abs(dp));
@@ -409,7 +417,7 @@ public class MoreThuenteLineSearch extends LineSearch {
         ws[4] = fy;
         ws[5] = dy;
         ws[6] = stpf; /* stp */
-        return result;
+        return OptimStatus.SUCCESS;
     }
 }
 

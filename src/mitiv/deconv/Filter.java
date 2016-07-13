@@ -126,7 +126,7 @@ public class Filter{
      * @return An array
      */
     public double[] wiener3D(double alpha) {
-        double a,b,c,d,q,wr,wi;
+        double a,b,c,d,q;
         double[]out = new double[2*sizeZ*width*height];
         int pos;
         for(int i = 0; i < sizeZ*width*height; i++){
@@ -233,17 +233,10 @@ public class Filter{
      * Apply the Wiener filter with quadratic approximation on 1D input
      * 
      * @param alpha
-<<<<<<< HEAD
      * @param psfFFT
      * @param imageFFT
      * @param width 
      * @param height 
-=======
-     * @param FFT_PSF
-     * @param FFTImage
-     * @param Width
-     * @param Height
->>>>>>> 51ad26bd7d046d3a58bbf0f307a53bef0ebd8e6e
      * @return An array
      */
     public double[] wienerQuad1D(double alpha, double[] psfFFT,double[] imageFFT, int width, int height) {

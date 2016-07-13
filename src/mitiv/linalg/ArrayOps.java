@@ -38,7 +38,7 @@ import mitiv.exception.NonConformableArrayException;
  *
  * TODO: The code for most static methods should be automatically written from
  *       template code (easier maintenance and less bugs).
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 public class ArrayOps {
@@ -705,20 +705,20 @@ public class ArrayOps {
     /*-----------------------------------------------------------------------*/
     /* ZERO */
 
-    public static void zero(int n, double[] x) {
-        fill(n, x, 0.0);
+    public static void zero(double[] x, int n) {
+        fill(x, n, 0.0);
     }
 
-    public static void zero(int n, float[] x) {
-        fill(n, x, 0.0);
+    public static void zero(float[] x, int n) {
+        fill(x, n, 0.0);
     }
 
     public static void zero(double[] x) {
-        zero(x.length, x);
+        zero(x, x.length);
     }
 
     public static void zero(float[] x) {
-        zero(x.length, x);
+        zero(x, x.length);
     }
 
     public static void zero(double[][] x) {
@@ -749,50 +749,46 @@ public class ArrayOps {
         }
     }
 
-    public static void copy(int n, final double[] src, double[] dst) {
-        for (int i = 0; i < n; ++i) {
-            dst[i] = src[i];
-        }
+    public static void copy(double[] dst, int n, final double[] src) {
+        System.arraycopy(src, 0, dst, 0, n);
     }
 
-    public static void copy(int n, final float[] src, float[] dst) {
-        for (int i = 0; i < n; ++i) {
-            dst[i] = src[i];
-        }
+    public static void copy(float[] dst, int n, final float[] src) {
+        System.arraycopy(src, 0, dst, 0, n);
     }
 
-    public static void copy(final double[] src, double[] dst) {
-        copy(getLength(src, dst), src, dst);
+    public static void copy(double[] dst, final double[] src) {
+        copy(dst, getLength(src, dst), src);
     }
 
-    public static void copy(final float[] src, float[] dst) {
-        copy(getLength(src, dst), src, dst);
+    public static void copy(float[] dst, final float[] src) {
+        copy(dst, getLength(src, dst), src);
     }
 
-    public static void copy(final double[][] src, double[][] dst) {
+    public static void copy(double[][] dst, final double[][] src) {
         int n = getLength(src, dst);
         for (int i = 0; i < n; ++i) {
-            copy(src[i], dst[i]);
+            copy(dst[i], src[i]);
         }
     }
 
-    public static void copy(final float[][] src, float[][] dst) {
+    public static void copy(float[][] dst, final float[][] src) {
         int n = getLength(src, dst);
         for (int i = 0; i < n; ++i) {
-            copy(src[i], dst[i]);
+            copy(dst[i], src[i]);
         }
     }
 
     /*-----------------------------------------------------------------------*/
     /* FILL */
 
-    public static void fill(int n, double[] x, double alpha) {
+    public static void fill(double[] x, int n, double alpha) {
         for (int i = 0; i < n; ++i) {
             x[i] = alpha;
         }
     }
 
-    public static void fill(int n, float[] x, double alpha) {
+    public static void fill(float[] x, int n, double alpha) {
         float a = (float)alpha;
         for (int i = 0; i < n; ++i) {
             x[i] = a;
@@ -802,7 +798,7 @@ public class ArrayOps {
     /*-----------------------------------------------------------------------*/
     /* ALPHA*X + BETA*Y */
 
-    public static void axpby(int n, double alpha, final double[] x,
+    public static void combine(int n, double alpha, final double[] x,
             double beta, double[] y) {
         if (beta == 1.0) {
             /* Job: Y += ALPHA*X */
@@ -826,10 +822,10 @@ public class ArrayOps {
             /* Job: Y = ALPHA*X */
             if (alpha == 1.0) {
                 /* Job: Y = X */
-                copy(n, x, y);
+                copy(y, n, x);
             } else if (alpha == 0.0) {
                 /* Job: Y = 0 */
-                zero(n, y);
+                zero(y, n);
             } else if (alpha == -1.0) {
                 /* Job: Y = -X */
                 for (int i = 0; i < n; ++i) {
@@ -882,8 +878,8 @@ public class ArrayOps {
         }
     }
 
-    public static void axpby(int n, double alpha, final double[] x,
-            double beta, final double[] y, double[] dst) {
+    public static void combine(double[] dst, int n, double alpha,
+            final double[] x, double beta, final double[] y) {
         if (beta == 1.0) {
             if (alpha == 1.0) {
                 for (int i = 0; i < n; ++i) {
@@ -895,7 +891,7 @@ public class ArrayOps {
                 }
             } else if (alpha == 0.0) {
                 for (int i = 0; i < n; ++i) {
-                    copy(n, y, dst);
+                    copy(dst, n, y);
                 }
             } else {
                 for (int i = 0; i < n; ++i) {
@@ -922,13 +918,13 @@ public class ArrayOps {
             }
         } else if (beta == 0.0) {
             if (alpha == 1.0) {
-                copy(n, x, dst);
+                copy(dst, n, x);
             } else if (alpha == -1.0) {
                 for (int i = 0; i < n; ++i) {
                     dst[i] = -x[i];
                 }
             } else if (alpha == 0.0) {
-                zero(n, dst);
+                zero(dst, n);
             } else {
                 for (int i = 0; i < n; ++i) {
                     dst[i] = alpha*x[i];
@@ -955,17 +951,17 @@ public class ArrayOps {
         }
     }
 
-    public static void axpby(double alpha, final double[] x, double beta,
+    public static void combine(double alpha, final double[] x, double beta,
             double[] y) {
-        axpby(getLength(x, y), alpha, x, beta, y);
+        combine(getLength(x, y), alpha, x, beta, y);
     }
 
-    public static void axpby(double alpha, final double[] x, double beta,
-            final double[] y, double dst[]) {
-        axpby(getLength(x, y, dst), alpha, x, beta, y, dst);
+    public static void combine(double dst[], double alpha, final double[] x,
+            double beta, final double[] y) {
+        combine(dst, getLength(dst, x, y), alpha, x, beta, y);
     }
 
-    public static void axpby(int n, double alpha, final float[] x,
+    public static void combine(int n, double alpha, final float[] x,
             double beta, float[] y) {
         if (beta == 1.0) {
             /* Job: Y += ALPHA*X */
@@ -990,10 +986,10 @@ public class ArrayOps {
             /* Job: Y = ALPHA*X */
             if (alpha == 1.0) {
                 /* Job: Y = X */
-                copy(n, x, y);
+                copy(y, n, x);
             } else if (alpha == 0.0) {
                 /* Job: Y = 0 */
-                zero(n, y);
+                zero(y, n);
             } else if (alpha == -1.0) {
                 /* Job: Y = -X */
                 for (int i = 0; i < n; ++i) {
@@ -1050,8 +1046,8 @@ public class ArrayOps {
         }
     }
 
-    public static void axpby(int n, double alpha, final float[] x,
-            double beta, final float[] y, float[] dst) {
+    public static void combine(float[] dst, int n, double alpha,
+            final float[] x, double beta, final float[] y) {
         if (beta == 1.0) {
             if (alpha == 1.0) {
                 for (int i = 0; i < n; ++i) {
@@ -1063,7 +1059,7 @@ public class ArrayOps {
                 }
             } else if (alpha == 0.0) {
                 for (int i = 0; i < n; ++i) {
-                    copy(n, y, dst);
+                    copy(dst, n, y);
                 }
             } else {
                 float a = (float)alpha;
@@ -1092,13 +1088,13 @@ public class ArrayOps {
             }
         } else if (beta == 0.0) {
             if (alpha == 1.0) {
-                copy(n, x, dst);
+                copy(dst, n, x);
             } else if (alpha == -1.0) {
                 for (int i = 0; i < n; ++i) {
                     dst[i] = -x[i];
                 }
             } else if (alpha == 0.0) {
-                zero(n, dst);
+                zero(dst, n);
             } else {
                 float a = (float)alpha;
                 for (int i = 0; i < n; ++i) {
@@ -1128,29 +1124,29 @@ public class ArrayOps {
         }
     }
 
-    public static void axpby(double alpha, final float[] x, double beta, float[] y) {
-        axpby(getLength(x, y), alpha, x, beta, y);
+    public static void combine(double alpha, final float[] x, double beta, float[] y) {
+        combine(getLength(x, y), alpha, x, beta, y);
     }
 
-    public static void axpby(double alpha, final float[] x, double beta, final float[] y, float dst[]) {
-        axpby(getLength(x, y, dst), alpha, x, beta, y, dst);
+    public static void combine(float dst[], double alpha, final float[] x, double beta, final float[] y) {
+        combine(dst, getLength(dst, x, y), alpha, x, beta, y);
     }
 
     /*-----------------------------------------------------------------------*/
     /* ALPHA*X + BETA*Y + GAMMA*Z */
 
-    public static void axpbypcz(int n,
-            double alpha, final double[] x,
-            double beta,  final double[] y,
-            double gamma, final double[] z,
-            double[] dst)
+    public static void combine(double[] dst,
+            int n, double alpha,
+            final double[] x,  double beta,
+            final double[] y, double gamma,
+            final double[] z)
     {
         if (alpha == 0.0) {
-            axpby(beta, y, gamma, z, dst);
+            combine(dst, beta, y, gamma, z);
         } else if (beta == 0.0) {
-            axpby(alpha, x, gamma, z, dst);
+            combine(dst, alpha, x, gamma, z);
         } else if (gamma == 0.0) {
-            axpby(alpha, x, beta, y, dst);
+            combine(dst, alpha, x, beta, y);
         } else {
             for (int i = 0; i < n; ++i) {
                 dst[i] = alpha*x[i] + beta*y[i] + gamma*z[i];
@@ -1158,23 +1154,23 @@ public class ArrayOps {
         }
     }
 
-    public static void axpbypcz(double alpha, final double[] x, double beta,
-            final double[] y, double gamma, final double[] z, double[] dst) {
-        axpbypcz(getLength(x, y, z, dst), alpha, x, beta, y, gamma, z, dst);
+    public static void combine(double[] dst, double alpha, final double[] x,
+            double beta, final double[] y, double gamma, final double[] z) {
+        combine(dst, getLength(dst, x, y, z), alpha, x, beta, y, gamma, z);
     }
 
-    public static void axpbypcz(int n,
-            double alpha, final float[] x,
-            double beta,  final float[] y,
-            double gamma, final float[] z,
-            float[] dst)
+    public static void combine(float[] dst,
+            int n, double alpha,
+            final float[] x,  double beta,
+            final float[] y, double gamma,
+            final float[] z)
     {
         if (alpha == 0.0) {
-            axpby(beta, y, gamma, z, dst);
+            combine(dst, beta, y, gamma, z);
         } else if (beta == 0.0) {
-            axpby(alpha, x, gamma, z, dst);
+            combine(dst, alpha, x, gamma, z);
         } else if (gamma == 0.0) {
-            axpby(alpha, x, beta, y, dst);
+            combine(dst, alpha, x, beta, y);
         } else {
             float a = (float)alpha;
             float b = (float)beta;
@@ -1185,9 +1181,9 @@ public class ArrayOps {
         }
     }
 
-    public static void axpbypcz(float alpha, final float[] x, float beta,
-            final float[] y, float gamma, final float[] z, float[] dst) {
-        axpbypcz(getLength(x, y, z, dst), alpha, x, beta, y, gamma, z, dst);
+    public static void combine(float[] dst, float alpha, final float[] x,
+            float beta, final float[] y, float gamma, final float[] z) {
+        combine(dst, getLength(dst, x, y, z), alpha, x, beta, y, gamma, z);
     }
 
     /*-----------------------------------------------------------------------*/
@@ -1232,9 +1228,6 @@ public class ArrayOps {
     }
     public static void printArray(Object obj, PrintStream stream) {
         printArray(obj, stream, true);
-    }
-    private static void printArrayHelper(Object obj, PrintStream stream, boolean first) {
-        //FIXME Empty ?
     }
     public static void printArray(Object obj, PrintStream stream, boolean newline) {
         if (obj == null) {
@@ -1317,27 +1310,6 @@ public class ArrayOps {
         if (newline) {
             stream.println();
         }
-        /*
-        StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < number; ++i) {
-            buf.append(i == 0 ? "{" : ", ");
-            buf.append(get(i));
-        }
-        buf.append("}");
-        return buf.toString();
-         */
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

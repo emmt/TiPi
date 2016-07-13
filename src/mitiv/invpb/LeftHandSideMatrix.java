@@ -91,7 +91,7 @@ public class LeftHandSideMatrix extends LinearOperator {
     /**
      * Apply the LHS operator A = Ht.W.H + mu*Q
      */
-    protected void privApply(Vector src, Vector dst, int job) {
+    protected void _apply(Vector dst, Vector src, int job) {
         if (job != DIRECT) {
             throw new IllegalLinearOperationException();
         }
@@ -104,9 +104,9 @@ public class LeftHandSideMatrix extends LinearOperator {
         if (tmp1 == null) {
             tmp1 = H.getOutputSpace().create();
         }
-        H.apply(src, tmp1);
+        H.apply(tmp1, src);
         W.apply(tmp1, tmp1); // W can be done in place
-        H.apply(tmp1, dst, ADJOINT);
+        H.apply(dst, tmp1, ADJOINT);
 
         if (mu > 0.0) {
             /*
@@ -120,8 +120,8 @@ public class LeftHandSideMatrix extends LinearOperator {
                     tmp2 = space.create();
                 }
             }
-            Q.apply(src, tmp2);
-            outputSpace.axpby(mu, tmp2, 1.0, dst);    
+            Q.apply(tmp2, src);
+            outputSpace.combine(mu, tmp2, 1.0, dst);    
         }
     }
 
@@ -153,8 +153,8 @@ public class LeftHandSideMatrix extends LinearOperator {
         if (tmp1 == null) {
             tmp1 = H.getOutputSpace().create();
         }
-        W.apply(y, tmp1);
-        H.apply(tmp1, b, ADJOINT);
+        W.apply(tmp1, y);
+        H.apply(b, tmp1, ADJOINT);
     }
 
 }

@@ -2,7 +2,7 @@
  * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
  * developed by the MitiV project.
  *
- * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ * Copyright (c) 2014-2016 the MiTiV project, http://mitiv.univ-lyon1.fr/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -25,9 +25,9 @@
 
 package mitiv.linalg;
 
-import mitiv.exception.NotImplementedException;
+import mitiv.exception.SingularOperatorException;
 
-public class ScaleOperator extends LinearOperator {
+public class ScaleOperator extends LinearEndomorphism {
 
     protected double scale = 1.0;
 
@@ -56,25 +56,28 @@ public class ScaleOperator extends LinearOperator {
         this.scale = alpha;
     }
 
-    protected void privApply(final Vector src, Vector dst, int job) {
+    /* Override this method because in-place operation does not necessitate
+     * a temporary vector. */
+    @Override
+    protected void _apply(Vector vec, int job) {
         if (job == DIRECT || job == ADJOINT) {
-            if (scale == 0.0) {
-                outputSpace.zero(dst);
-            } else if (dst == src) {
-                if (scale != 1.0) {
-                    outputSpace.axpby(0.0, src, scale, dst);
-                }
-            } else {
-                if (scale != 1.0) {
-                    outputSpace.axpby(scale, src, 0.0, dst);
-                } else {
-                    outputSpace.copy(src, dst);
-                }
-            }
+            space._scale(vec,  scale);
+        } else if (scale != 0.0) {
+            space._scale(vec,  1.0/scale);
         } else {
-            throw new NotImplementedException();
+            throw new SingularOperatorException();
         }
+    }
 
+    @Override
+    protected void _apply(Vector dst, final Vector src, int job) {
+        if (job == DIRECT || job == ADJOINT) {
+            space._scale(dst,  scale, src);
+        } else if (scale != 0.0) {
+            space._scale(dst,  1.0/scale, src);
+        } else {
+            throw new SingularOperatorException();
+        }
     }
 
     /**
@@ -95,15 +98,3 @@ public class ScaleOperator extends LinearOperator {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

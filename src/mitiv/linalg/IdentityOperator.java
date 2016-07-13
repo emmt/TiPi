@@ -26,35 +26,39 @@
 package mitiv.linalg;
 
 import mitiv.exception.IncorrectSpaceException;
+import mitiv.exception.NotImplementedException;
 
-public class IdentityOperator extends LinearOperator {
+public class IdentityOperator extends DiagonalOperator {
 
     /**
      * Create a new identity operator which operates on a given vector space.
      *
-     * @param vsp
-     *            the vector space
+     * @param space - The vector space on which operates the operator.
      */
-    public IdentityOperator(VectorSpace vsp) {
-        super(vsp);
+    public IdentityOperator(VectorSpace space) {
+        super(space);
     }
 
-    protected void privApply(final Vector src, Vector dst, int job)
+    @Override
+    public Vector getDiagonal() {
+        return space.one();
+    }
+
+    @Override
+    public void setDiagonal(Vector diag) {
+        throw new NotImplementedException("attempting to set the diagonal of the identity operator");
+    }
+
+    @Override
+    protected void _apply(Vector dst, final Vector src, int job)
             throws IncorrectSpaceException {
         if (dst != src) {
-            inputSpace.copy(src, dst);
+            space.copy(dst, src);
         }
     }
-}
 
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
+    @Override
+    protected void _apply(Vector vec, int job)
+            throws IncorrectSpaceException {
+    }
+}

@@ -33,10 +33,9 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
 
 /**
  * Implements a simple bounds projector.
- * 
- * The lower and upper bounds are scalars, they the same values for all
- * the variables.
- * 
+ *
+ * The bound is a scalar, it has the same value for all the variables.
+ *
  * @author Éric Thiébaut.
  */
 public class SimpleBounds extends BoundProjector {
@@ -51,15 +50,13 @@ public class SimpleBounds extends BoundProjector {
     private final boolean single;
 
     /**
-     * Create a projector with scalar lower and upper bounds.
-     * @param vsp _ The input and output vector space for the variables.
-     * @param lowerBound - The value of the lower bound.
+     * Create a projector with scalar upper bound.
+     * @param vsp        - The input and output vector space for the variables.
      * @param upperBound - The value of the upper bound.
+     * @param lowerBound - The value of the lower bound.
      */
     public SimpleBounds(ShapedVectorSpace vsp, double lowerBound, double upperBound) {
         super(vsp);
-        this.lowerBound = lowerBound;
-        this.upperBound = upperBound;
         if (vsp.getType() == Traits.DOUBLE) {
             single = false;
         } else if (vsp.getType() == Traits.FLOAT) {
@@ -67,74 +64,327 @@ public class SimpleBounds extends BoundProjector {
         } else {
             throw new IllegalArgumentException("Only double/double type supported");
         }
+        checkBounds(lowerBound, upperBound, single);
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+    }
+
+    public double getUpperBound() {
+        return upperBound;
+    }
+
+    public double getLowerBound() {
+        return lowerBound;
     }
 
     @Override
-    protected void _projectGradient(Vector vecX, Vector vecG, Vector vecGP) {
-        final int n = vecX.getNumber();
+    protected void _projectVariables(Vector dst, Vector src) {
+        final int n = src.getNumber();
         if (single) {
-            final float lowerBound = (float)this.lowerBound;
-            final float upperBound = (float)this.upperBound;
-            final float zero = 0.0F;
-            float[] x = ((FloatShapedVector)vecX).getData();
-            float[] g = ((FloatShapedVector)vecG).getData();
-            float[] gp = ((FloatShapedVector)vecGP).getData();
+            final float xmin = convertToFloat(getLowerBound());
+            final float xmax = convertToFloat(getUpperBound());
+            float[] x    = ((FloatShapedVector)src).getData();
+            float[] xp   = ((FloatShapedVector)dst).getData();
             for (int j = 0; j < n; ++j) {
-                if (x[j] <= lowerBound) {
-                    gp[j] = min(zero, g[j]);
-                } else if (x[j] >= upperBound) {
-                    gp[j] = max(zero, g[j]);
-                } else {
-                    gp[j] = g[j];
-                }
+                xp[j] = clamp(x[j], xmin, xmax);
             }
         } else {
-            final double zero = 0.0;
-            double[] x = ((DoubleShapedVector)vecG).getData();
-            double[] g = ((DoubleShapedVector)vecG).getData();
-            double[] gp = ((DoubleShapedVector)vecGP).getData();
+            final double xmin = getLowerBound();
+            final double xmax = getUpperBound();
+            double[] x    = ((DoubleShapedVector)src).getData();
+            double[] xp   = ((DoubleShapedVector)dst).getData();
             for (int j = 0; j < n; ++j) {
-                if (x[j] <= lowerBound) {
-                    gp[j] = min(zero, g[j]);
-                } else if (x[j] >= upperBound) {
-                    gp[j] = max(zero, g[j]);
-                } else {
-                    gp[j] = g[j];
-                }
+                xp[j] = clamp(x[j], xmin, xmax);
             }
         }
     }
 
     @Override
-    protected void _apply(Vector src, Vector dst) {
-        final int n = src.getNumber();
+    protected void _projectDirection(Vector vx, Vector vd, boolean ascent,
+            Vector vdp, double[] bnd) {
+        final int n = vx.getNumber();
         if (single) {
-            final float lowerBound = (float)this.lowerBound;
-            final float upperBound = (float)this.upperBound;
-            float[] inp = ((FloatShapedVector)src).getData();
-            float[] out = ((FloatShapedVector)dst).getData();
-            for (int j = 0; j < n; ++j) {
-                float value = inp[j];
-                if (value <= lowerBound) {
-                    out[j] = lowerBound;
-                } else if (value >= upperBound) {
-                    out[j] = upperBound;
+            final float zero = 0;
+            final float xmin = convertToFloat(getLowerBound());
+            final float xmax = convertToFloat(getUpperBound());
+            float[] x    = ((FloatShapedVector)vx).getData();
+            float[] d    = ((FloatShapedVector)vd).getData();
+            float[] dp   = ((FloatShapedVector)vdp).getData();
+            if (bnd == null) {
+                /* Step length bounds not required. */
+                if (ascent) {
+                    /* Ascent direction. */
+                    for (int j = 0; j < n; ++j) {
+                        if (d[j] < zero) {
+                            /* Variable will increase. */
+                            dp[j] = (x[j] < xmax ? d[j] : zero);
+                        } else if (d[j] > zero) {
+                            /* Variable will decrease. */
+                            dp[j] = (x[j] > xmin ? d[j] : zero);
+                        } else {
+                            /* Variable will not change. */
+                            dp[j] = zero;
+                        }
+                    }
                 } else {
-                    out[j] = value;
+                    /* Descent direction. */
+                    for (int j = 0; j < n; ++j) {
+                        if (d[j] > zero) {
+                            /* Variable will increase. */
+                            dp[j] = (x[j] < xmax ? d[j] : zero);
+                        } else if (d[j] < zero) {
+                            /* Variable will decrease. */
+                            dp[j] = (x[j] > xmin ? d[j] : zero);
+                        } else {
+                            /* Variable will not change. */
+                            dp[j] = zero;
+                        }
+                    }
                 }
+            } else {
+                /* Compute step length bounds. */
+                float tmp, amin = Float.POSITIVE_INFINITY, amax = zero;
+                if (ascent) {
+                    /* Ascent direction. */
+                    for (int j = 0; j < n; ++j) {
+                        if (d[j] < zero) {
+                            /* Variable will increase. */
+                            if (x[j] < xmax) {
+                                /* Variable is unbound. */
+                                dp[j] = d[j];
+                                if (xmax == Float.POSITIVE_INFINITY) {
+                                    amax = Float.POSITIVE_INFINITY;
+                                } else {
+                                    tmp = (x[j] - xmax)/d[j];
+                                    if (tmp < amin) {
+                                        amin = tmp;
+                                    }
+                                    if (tmp > amax) {
+                                        amax = tmp;
+                                    }
+                                }
+                            } else {
+                                /* Variable is bound. */
+                                dp[j] = zero;
+                            }
+                        } else if (d[j] > zero) {
+                            /* Variable will decrease. */
+                            if (x[j] > xmin) {
+                                /* Variable is unbound. */
+                                dp[j] = d[j];
+                                if (xmin == Float.NEGATIVE_INFINITY) {
+                                    amax = Float.POSITIVE_INFINITY;
+                                } else {
+                                    tmp = (x[j] - xmin)/d[j];
+                                    if (tmp < amin) {
+                                        amin = tmp;
+                                    }
+                                    if (tmp > amax) {
+                                        amax = tmp;
+                                    }
+                                }
+                            } else {
+                                /* Variable is bound. */
+                                dp[j] = zero;
+                            }
+                        } else {
+                            /* Variable will not change. */
+                            dp[j] = zero;
+                        }
+                    }
+                } else {
+                    /* Descent direction. */
+                    for (int j = 0; j < n; ++j) {
+                        if (d[j] > zero) {
+                            /* Variable will increase. */
+                            if (x[j] < xmax) {
+                                /* Variable is unbound. */
+                                dp[j] = d[j];
+                                if (xmax == Float.POSITIVE_INFINITY) {
+                                    amax = Float.POSITIVE_INFINITY;
+                                } else {
+                                    tmp = (xmax - x[j])/d[j];
+                                    if (tmp < amin) {
+                                        amin = tmp;
+                                    }
+                                    if (tmp > amax) {
+                                        amax = tmp;
+                                    }
+                                }
+                            } else {
+                                /* Variable is bound. */
+                                dp[j] = zero;
+                            }
+                        } else if (d[j] < zero) {
+                            /* Variable will decrease. */
+                            if (x[j] > xmin) {
+                                /* Variable is unbound. */
+                                dp[j] = d[j];
+                                if (xmin == Float.NEGATIVE_INFINITY) {
+                                    amax = Float.POSITIVE_INFINITY;
+                                } else {
+                                    tmp = (xmin - x[j])/d[j];
+                                    if (tmp < amin) {
+                                        amin = tmp;
+                                    }
+                                    if (tmp > amax) {
+                                        amax = tmp;
+                                    }
+                                }
+                            } else {
+                                /* Variable is bound. */
+                                dp[j] = zero;
+                            }
+                        } else {
+                            /* Variable will not change. */
+                            dp[j] = zero;
+                        }
+                    }
+                }
+                bnd[0] = amin;
+                bnd[1] = amax;
             }
+
         } else {
-            double[] inp = ((DoubleShapedVector)src).getData();
-            double[] out = ((DoubleShapedVector)dst).getData();
-            for (int j = 0; j < n; ++j) {
-                double value = inp[j];
-                if (value <= lowerBound) {
-                    out[j] = lowerBound;
-                } else if (value >= upperBound) {
-                    out[j] = upperBound;
+            final double zero = 0;
+            final double xmin = getLowerBound();
+            final double xmax = getUpperBound();
+            double[] x    = ((DoubleShapedVector)vx).getData();
+            double[] d    = ((DoubleShapedVector)vd).getData();
+            double[] dp   = ((DoubleShapedVector)vdp).getData();
+            if (bnd == null) {
+                /* Step length bounds not required. */
+                if (ascent) {
+                    /* Ascent direction. */
+                    for (int j = 0; j < n; ++j) {
+                        if (d[j] < zero) {
+                            /* Variable will increase. */
+                            dp[j] = (x[j] < xmax ? d[j] : zero);
+                        } else if (d[j] > zero) {
+                            /* Variable will decrease. */
+                            dp[j] = (x[j] > xmin ? d[j] : zero);
+                        } else {
+                            /* Variable will not change. */
+                            dp[j] = zero;
+                        }
+                    }
                 } else {
-                    out[j] = value;
+                    /* Descent direction. */
+                    for (int j = 0; j < n; ++j) {
+                        if (d[j] > zero) {
+                            /* Variable will increase. */
+                            dp[j] = (x[j] < xmax ? d[j] : zero);
+                        } else if (d[j] < zero) {
+                            /* Variable will decrease. */
+                            dp[j] = (x[j] > xmin ? d[j] : zero);
+                        } else {
+                            /* Variable will not change. */
+                            dp[j] = zero;
+                        }
+                    }
                 }
+            } else {
+                /* Compute step length bounds. */
+                double tmp, amin = Double.POSITIVE_INFINITY, amax = zero;
+                if (ascent) {
+                    /* Ascent direction. */
+                    for (int j = 0; j < n; ++j) {
+                        if (d[j] < zero) {
+                            /* Variable will increase. */
+                            if (x[j] < xmax) {
+                                /* Variable is unbound. */
+                                dp[j] = d[j];
+                                if (xmax == Double.POSITIVE_INFINITY) {
+                                    amax = Double.POSITIVE_INFINITY;
+                                } else {
+                                    tmp = (x[j] - xmax)/d[j];
+                                    if (tmp < amin) {
+                                        amin = tmp;
+                                    }
+                                    if (tmp > amax) {
+                                        amax = tmp;
+                                    }
+                                }
+                            } else {
+                                /* Variable is bound. */
+                                dp[j] = zero;
+                            }
+                        } else if (d[j] > zero) {
+                            /* Variable will decrease. */
+                            if (x[j] > xmin) {
+                                /* Variable is unbound. */
+                                dp[j] = d[j];
+                                if (xmin == Double.NEGATIVE_INFINITY) {
+                                    amax = Double.POSITIVE_INFINITY;
+                                } else {
+                                    tmp = (x[j] - xmin)/d[j];
+                                    if (tmp < amin) {
+                                        amin = tmp;
+                                    }
+                                    if (tmp > amax) {
+                                        amax = tmp;
+                                    }
+                                }
+                            } else {
+                                /* Variable is bound. */
+                                dp[j] = zero;
+                            }
+                        } else {
+                            /* Variable will not change. */
+                            dp[j] = zero;
+                        }
+                    }
+                } else {
+                    /* Descent direction. */
+                    for (int j = 0; j < n; ++j) {
+                        if (d[j] > zero) {
+                            /* Variable will increase. */
+                            if (x[j] < xmax) {
+                                /* Variable is unbound. */
+                                dp[j] = d[j];
+                                if (xmax == Double.POSITIVE_INFINITY) {
+                                    amax = Double.POSITIVE_INFINITY;
+                                } else {
+                                    tmp = (xmax - x[j])/d[j];
+                                    if (tmp < amin) {
+                                        amin = tmp;
+                                    }
+                                    if (tmp > amax) {
+                                        amax = tmp;
+                                    }
+                                }
+                            } else {
+                                /* Variable is bound. */
+                                dp[j] = zero;
+                            }
+                        } else if (d[j] < zero) {
+                            /* Variable will decrease. */
+                            if (x[j] > xmin) {
+                                /* Variable is unbound. */
+                                dp[j] = d[j];
+                                if (xmin == Double.NEGATIVE_INFINITY) {
+                                    amax = Double.POSITIVE_INFINITY;
+                                } else {
+                                    tmp = (xmin - x[j])/d[j];
+                                    if (tmp < amin) {
+                                        amin = tmp;
+                                    }
+                                    if (tmp > amax) {
+                                        amax = tmp;
+                                    }
+                                }
+                            } else {
+                                /* Variable is bound. */
+                                dp[j] = zero;
+                            }
+                        } else {
+                            /* Variable will not change. */
+                            dp[j] = zero;
+                        }
+                    }
+                }
+                bnd[0] = amin;
+                bnd[1] = amax;
             }
         }
     }

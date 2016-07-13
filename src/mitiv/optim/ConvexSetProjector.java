@@ -36,7 +36,8 @@ import mitiv.linalg.VectorSpace;
  * A ConvexSetProjector can be used to implement convex constraints.
  * Although it operates on a vector space, a ConvexSetProjector is not
  * a linear operator.  It is an idempotent endomorphism and can be
- * applied <i>in-place</i> that is with the same input and output vector.</p>
+ * applied <i>in-place</i> that is with the same input and output vector.
+ * </p>
  *
  * @author Éric Thiébaut.
  */
@@ -63,85 +64,53 @@ public abstract class ConvexSetProjector {
     }
 
     /**
-     * Apply the projector.
-     * 
+     * Project the variables to the feasible set.
+     *
      * <p>
      * Given input variables <i>x</i>, the projection produces feasible
      * output variables <i>xp</i> that are within the bounds.  The input
      * and output variables can be stored in the same vector (<i>i.e.</i>
      * the method can be applied <i>in-place</i>).
      * </p>
-     * @param x  - The source.
-     * @param xp - The destination.
+     * @param xp - The output projected variables.
+     * @param x  - The input variables.
      * @throws IncorrectSpaceException if its arguments do not belong to the
-     *         correct vector space.
+     *          correct vector space.
      */
-    public void apply(Vector x, Vector xp) {
+    public void projectVariables(Vector xp, Vector x) {
         if (x == null || ! x.belongsTo(space) ||
                 xp == null || ! xp.belongsTo(space)) {
             throw new IncorrectSpaceException();
         }
-        _apply(x, xp);
+        _projectVariables(xp, x);
     }
 
     /**
-     * Apply the projector (in-place version).
-     * 
-     * @param x  - On entry, the unconstrained variables; on exit, the
+     * Project the variables to the feasible set (in-place version).
+     *
+     * @param x - On entry, the unconstrained variables; on exit, the
      *             projected variables.
      * @throws IncorrectSpaceException if its arguments do not belong to the
-     *         correct vector space.
+     *          correct vector space.
      */
-    public void apply(Vector x) {
+    public void projectVariables(Vector x) {
         if (x == null || ! x.belongsTo(space)) {
             throw new IncorrectSpaceException();
         }
-        _apply(x, x);
+        _projectVariables(x, x);
     }
 
     /**
-     * Protected method to apply the projector to the variables.
-     * 
+     * Protected method to project the variables to the feasible set.
+     *
      * <p>
      * This abstract method must be overridden by instantiable sub-classes,
      * it is guaranteed to be called with checked arguments.  The input and
      * output vectors can be the same.
      * </p>
-     * @param x  - The source.
-     * @param xp - The destination.
+     * @param xp - The output projected variables.
+     * @param x  - The input variables.
      */
-    protected abstract void _apply(Vector x, Vector xp);
-
-    /** Get the minimum of two single precision floating point values. */
-    protected static final float min(float a, float b) {
-        return (a <= b ? a : b);
-    }
-
-    /** Get the maximum of two single precision floating point values. */
-    protected static final float max(float a, float b) {
-        return (a >= b ? a : b);
-    }
-
-    /** Get the minimum of two double precision floating point values. */
-    protected static final double min(double a, double b) {
-        return (a <= b ? a : b);
-    }
-
-    /** Get the maximum of two double precision floating point values. */
-    protected static final double max(double a, double b) {
-        return (a >= b ? a : b);
-    }
+    protected abstract void _projectVariables(Vector xp, Vector x);
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

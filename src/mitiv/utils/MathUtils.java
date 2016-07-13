@@ -206,6 +206,7 @@ public class MathUtils {
      * Standard deviation of the matrix σ.
      *
      * @param a the a
+     * @param b 
      * @return the double
      */
     public static double[] catArray(double a[], double[] b)
@@ -234,7 +235,7 @@ public class MathUtils {
         RealComplexFFT FFT = new RealComplexFFT(space);
         ConvolutionOperator H = new ConvolutionOperator(FFT, hVector);
         DoubleShapedVector y = space.create();
-        H.apply(xVector, y);
+        H.apply(y, xVector);
         return y;
     }
 
@@ -249,7 +250,7 @@ public class MathUtils {
         RealComplexFFT FFT = new RealComplexFFT(space);
         ConvolutionOperator H = new ConvolutionOperator(FFT, hVector);
         DoubleShapedVector y = space.create();
-        H.apply(xVector, y);
+        H.apply(y, xVector);
 
         return y.getData();
     }
@@ -877,8 +878,8 @@ public class MathUtils {
 
     /**
      * Returns the squared absolute value of 1d array.
-     *
-     * @param IN array
+     * @param x array
+     * @param isComplex 
      * @return square absolute value.
      */
     public static double[] abs2(double[] x, int isComplex)
@@ -907,8 +908,10 @@ public class MathUtils {
 
     /**
      * Returns the squared absolute value of 1d array.
-     *
-     * @param IN array
+     * @param x 
+     * @param begin 
+     * @param end 
+     * @param isComplex 
      * @return square absolute value.
      */
     public static double[] abs2(double[] x, int begin, int end, int isComplex)
@@ -1206,6 +1209,8 @@ public class MathUtils {
      * Different from the "pli" function, uses "naviguablePanel" for a better displaying.
      *
      * @param A the a
+     * @param W 
+     * @param H 
      * @param colorMap the color map
      */
     public static void pli2(double A[], int W, int H, int colorMap)
@@ -1329,6 +1334,9 @@ public class MathUtils {
      * Shift zero-frequency component to center of spectrum.
      *
      * @param A the a
+     * @param w 
+     * @param h 
+     * @param d 
      * @return the double[][]
      */
     public static double[] fftShift1D(double A[], int w, int h, int d)
@@ -1355,6 +1363,8 @@ public class MathUtils {
      * Shift zero-frequency component to center of spectrum.
      *
      * @param A the a
+     * @param w 
+     * @param h 
      * @return the double[][]
      */
     public static double[] fftShift1D(double A[], int w, int h)
@@ -1473,6 +1483,8 @@ public class MathUtils {
 
     /**
      * Average or mean value of array
+     * @param a 
+     * @return 
      */
     public static double avg(double[] a)
     {
@@ -1481,14 +1493,19 @@ public class MathUtils {
 
     /**
      * Average or mean value of array
+     * @param a 
+     * @return 
      */
     public static double avg(long[] a)
+    
     {
         return sum(a)/(a.length);
     }
 
     /**
      * Average or mean value of array
+     * @param a 
+     * @return 
      */
     public static double avg(double[][] a)
     {
@@ -1499,6 +1516,8 @@ public class MathUtils {
 
     /**
      * Average or mean value of array
+     * @param a 
+     * @return 
      */
     public static double avg(double[][][] a)
     {
@@ -1510,6 +1529,8 @@ public class MathUtils {
 
     /**
      * Sum of the values in the array
+     * @param a 
+     * @return 
      */
     public static double sum(double a[])
     {
@@ -1524,6 +1545,10 @@ public class MathUtils {
 
     /**
      * Sum of the values in the array
+     * @param a 
+     * @param begin 
+     * @param end 
+     * @return 
      */
     public static double sum(double a[], int begin, int end)
     {
@@ -1537,6 +1562,8 @@ public class MathUtils {
 
     /**
      * Sum of the values in the array
+     * @param array 
+     * @return 
      */
     public static long sum(long array[])
     {
@@ -1551,6 +1578,8 @@ public class MathUtils {
 
     /**
      * Sum of the values in the array
+     * @param array 
+     * @return 
      */
     public static double sum(double array[][])
     {
@@ -1565,6 +1594,8 @@ public class MathUtils {
 
     /**
      * Sum of the values in the array
+     * @param array 
+     * @return 
      */
     public static double sum(double array[][][])
     {
@@ -1935,6 +1966,8 @@ public class MathUtils {
 
     /**
      * Standard deviation of an 1d array σ
+     * @param a 
+     * @return 
      */
     public static double std(double a[])
     {
@@ -1944,6 +1977,8 @@ public class MathUtils {
 
     /**
      * Standard deviation of the matrix σ
+     * @param a 
+     * @return 
      */
     public static double std(double a[][])
     {
@@ -1953,6 +1988,8 @@ public class MathUtils {
 
     /**
      * Standard deviation of the matrix σ
+     * @param a 
+     * @return 
      */
     public static double std(double a[][][])
     {
@@ -1963,6 +2000,8 @@ public class MathUtils {
     /**
      * Variance σ² of a 1d array
      * var = 1/N \sum_i (x_i - E[x])^2 = E[x'x]-E[x]^2
+     * @param a 
+     * @return 
      */
     public static double var(double a[])
     {
@@ -1977,6 +2016,8 @@ public class MathUtils {
 
     /**
      * Variance of the matrix
+     * @param a 
+     * @return 
      */
     public static double var(double a[][])
     {
@@ -1989,6 +2030,8 @@ public class MathUtils {
     /**
      * Variance σ² of the 3d matrix
      * var = 1/N \sum_i (x_i - E[x])^2
+     * @param a 
+     * @return 
      */
     public static double var(double a[][][])
     {
@@ -2238,8 +2281,8 @@ public class MathUtils {
             return ha;
         case GAUSSIAN:
             double[] hg = new double[L];
-            double A = 2*arg2*arg2;
-            double B = 1/Math.sqrt(Math.PI*A);
+            //double A = 2*arg2*arg2;
+            //double B = 1/Math.sqrt(Math.PI*A);
             int bk1 = (-arg1[1]+1)/2;
             int ek1 = arg1[1]/2;
             int bk2 = (-arg1[0]+1)/2;
@@ -2373,7 +2416,9 @@ public class MathUtils {
      * Returns 2d array (column major) of a 1d array.
      *
      * @param In 1d array of double
-     * @param H the h
+     * @param width 
+     * @param height 
+     * @param depth 
      * @return 2d array
      */
     public static double[] getArray(double[] In, int width, int height, int depth)
@@ -2476,8 +2521,8 @@ public class MathUtils {
 
     /**
      * Cum sum.
-     *
-     * @param tab the tab
+     * @param yEstimate 
+     * @param yTrue 
      * @return the double[]
      */
     public static double mse(double yEstimate[], double[] yTrue)

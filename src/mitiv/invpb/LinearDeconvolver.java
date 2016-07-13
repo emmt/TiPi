@@ -119,11 +119,11 @@ public class LinearDeconvolver {
             generateIsotropicQ(shape, ((FloatShapedVector)q).getData());
             Q = new LinearOperator(space) {
                 @Override
-                protected void privApply(Vector src, Vector dst, int job) {
+                protected void _apply(Vector dst, Vector src, int job) {
                     if (job == DIRECT || job == ADJOINT) {
-                        FFT.apply(src, z, DIRECT);
+                        FFT.apply(z, src, DIRECT);
                         multiplyByQ(((FloatShapedVector)q).getData(), ((FloatShapedVector)z).getData());
-                        FFT.apply(z, dst, INVERSE);
+                        FFT.apply(dst, z, INVERSE);
                     } else {
                         throw new NotImplementedException();
                     }
@@ -133,11 +133,11 @@ public class LinearDeconvolver {
             generateIsotropicQ(shape, ((DoubleShapedVector)q).getData());
             Q = new LinearOperator(space) {
                 @Override
-                protected void privApply(Vector src, Vector dst, int job) {
+                protected void _apply(Vector dst, Vector src, int job) {
                     if (job == DIRECT || job == ADJOINT) {
-                        FFT.apply(src, z, DIRECT);
+                        FFT.apply(z, src, DIRECT);
                         multiplyByQ(((DoubleShapedVector)q).getData(), ((DoubleShapedVector)z).getData());
-                        FFT.apply(z, dst, INVERSE);
+                        FFT.apply(dst, z, INVERSE);
                     } else {
                         throw new NotImplementedException();
                     }
@@ -180,7 +180,7 @@ public class LinearDeconvolver {
                 if (single) {
                     W = new LinearOperator(space) {
                         @Override
-                        protected void privApply(Vector src, Vector dst, int job) {
+                        protected void _apply(Vector dst, Vector src, int job) {
                             if (job == DIRECT || job == ADJOINT) {
                                 multiplyByW(((FloatShapedVector)w).getData(),
                                         ((FloatShapedVector)src).getData(),
@@ -193,7 +193,7 @@ public class LinearDeconvolver {
                 } else {
                     W = new LinearOperator(space) {
                         @Override
-                        protected void privApply(Vector src, Vector dst, int job) {
+                        protected void _apply(Vector dst, Vector src, int job) {
                             if (job == DIRECT || job == ADJOINT) {
                                 multiplyByW(((DoubleShapedVector)w).getData(),
                                         ((DoubleShapedVector)src).getData(),

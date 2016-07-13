@@ -29,7 +29,7 @@ import mitiv.exception.IncorrectSpaceException;
 
 /**
  * A Vector is an element of a VectorSpace.
- * 
+ *
  * An instance of this class is a collection of real values which can be addressed
  * individually and for which it makes sense to apply the operations supported by
  * the elements of a vector space (inner product, linear combination, etc.).
@@ -37,9 +37,9 @@ import mitiv.exception.IncorrectSpaceException;
  * At this level of abstraction nothing more has to be known.  For instance, the
  * restriction that indexed elements of a vector are reals is not an issue for
  * complex valued vectors (a complex is just two reals).
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
- * 
+ *
  */
 public abstract class Vector {
 
@@ -47,7 +47,7 @@ public abstract class Vector {
      * Reference to the VectorSpace to which this vector belongs.
      */
     protected final VectorSpace space;
-    protected final  int number;
+    protected final int number;
 
     /**
      * Create a vector from a given vector space.
@@ -92,12 +92,12 @@ public abstract class Vector {
 
     /**
      * Check whether a vector belongs to a given vector space.
-     * 
+     *
      * @param space
      *            a vector space.
      * @return true or false.
      */
-    public boolean belongsTo(VectorSpace space) {
+    public final boolean belongsTo(VectorSpace space) {
         return (this.space == space);
     }
 
@@ -106,7 +106,7 @@ public abstract class Vector {
      * @param space  The vector space.
      * @throws IncorrectSpaceException The instance must belong to the given vector space.
      */
-    public void assertBelongsTo(VectorSpace space)
+    public final void assertBelongsTo(VectorSpace space)
             throws IncorrectSpaceException {
         if (!belongsTo(space)) {
             throw new IncorrectSpaceException();
@@ -115,11 +115,11 @@ public abstract class Vector {
 
     /**
      * Get one of the values gathered in the vector.
-     * 
+     *
      * This method is not meant to be efficient, it is mainly provided for testing or
      * debugging purposes.  To remain efficient, vectors should be managed at a more
      * global level.
-     * 
+     *
      * @param i  - The index of the value (runs from 0 to {@code n}-1, with {@code n}
      *             the number of elements of the vector).
      * @return The value of the vector at the given index.
@@ -129,11 +129,11 @@ public abstract class Vector {
 
     /**
      * Set one of the values gathered in the vector.
-     * 
+     *
      * This method is not meant to be efficient, it is mainly provided for testing or
      * debugging purposes.  To remain efficient, vectors should be managed at a more
      * global level.
-     * 
+     *
      * @param i - The index of the value (runs from 0 to {@code n}-1, with {@code n}
      *            the number of elements of the vector).
      * @param value - The value to store at the index position.
@@ -161,7 +161,7 @@ public abstract class Vector {
             throws IncorrectSpaceException {
         if (dst != this) {
             space.check(dst);
-            space._copy(this, dst);
+            space._copy(dst, this);
         }
     }
 
@@ -175,7 +175,7 @@ public abstract class Vector {
             throws IncorrectSpaceException {
         if (src != this) {
             space.check(src);
-            space._copy(src, this);
+            space._copy(this, src);
         }
     }
 
@@ -198,46 +198,103 @@ public abstract class Vector {
      *
      * @param alpha - The scale factor.
      */
-    public void scale(double alpha) {
+    public final void scale(double alpha) {
         space._scale(this, alpha);
     }
 
     /**
      * Compute the inner product of this vector with another vector.
      *
+     * The inner product, also called dot or scalar product of two vectors, is
+     * the sum of the products of the corresponding elements of the two
+     * vectors.  The inner product is defined on a vector space, the two
+     * vectors must belong to this vector space.
+     *
      * @param other - Another vector of this vector space.
      * @return The inner product of {@code this} and {@code other}.
      * @throws IncorrectSpaceException {@code other} must belong to the vector
      *         space of {@code this} .
      */
-    public double dot(Vector other) {
+    public final double dot(Vector other) {
         if (other == null || ! other.belongsTo(space)) {
             throw new IncorrectSpaceException();
         }
         return space._dot(this, other);
     }
 
-    public double norm1() {
+    /**
+     * Compute the inner product of this vector with two other vectors.
+     *
+     * The inner product of three vectors is the sum of the products of the
+     * corresponding elements of the three vectors.  The inner product is
+     * defined on a vector space, the three vectors must belong to this vector
+     * space.
+     *
+     * @param v1 - Another vector of this vector space.
+     * @param v2 - Yet another vector of this vector space.
+     * @return The inner product of {@code this}, {@code v1} and {@code v2}.
+     * @throws IncorrectSpaceException {@code v1} and {@code v2} must belong
+     * to the vector space of {@code this} .
+     */
+    public final double dot(Vector v1, Vector v2) {
+        if (v1 == null || ! v1.belongsTo(space) ||
+                v2 == null || ! v2.belongsTo(space)) {
+            throw new IncorrectSpaceException();
+        }
+        return space._dot(this, v1, v2);
+    }
+
+    /**
+     * Compute the L1 norm of the vector.
+     *
+     * @return The sum of absolute values of the vector.
+     */
+    public final double norm1() {
         return space._norm1(this);
     }
-    public double norm2() {
+
+    /**
+     * Compute the Euclidean (L2) norm of the vector.
+     *
+     * @return The square root of the sum of squared elements of the vector.
+     */
+    public final double norm2() {
         return space._norm2(this);
     }
-    public double normInf() {
+
+    /**
+     * Compute the infinite norm of the vector.
+     *
+     * @return The maximum absolute value of the vector.
+     */
+    public final double normInf() {
         return space._normInf(this);
     }
 
-    public void fill(double value) {
+    /**
+     * Fill the vector with a value.
+     *
+     * Set all elements of the vector with a value.
+     *
+     * @param alpha   A scalar value.
+     */
+    public final void fill(double value) {
         space._fill(this, value);
     }
-    public void zero() {
+
+    /**
+     * Fill the vector with zeros.
+     *
+     * Set to zero all elements of the vector.
+     */
+    public final void zero() {
         space._zero(this);
     }
 
     /**
-     * Compute a linear combination of two vectors.
+     * Compute the linear combination of two vectors.
      *
-     * In pseudo-code, this method does:
+     * In pseudo-code, this method performs the following operation:
      * <pre>
      * this[i] = alpha*x[i] + beta*y[i];
      * </pre>
@@ -247,23 +304,62 @@ public abstract class Vector {
      * @param x     - A vector.
      * @param beta  - The scalar factor for vector {@code y}.
      * @param y     - Another vector.
-     * @throws IncorrectSpaceException all vectors must belong to the same vector space.
+     *
+     * @throws IncorrectSpaceException all vectors must belong to the same
+     * vector space.
      */
-    public final void axpby(double alpha, Vector x,
+    public final void combine(double alpha, Vector x,
             double beta, Vector y) throws IncorrectSpaceException {
         space.check(x);
         space.check(y);
-        space._axpby(alpha, x, beta, y, this);
+        space._combine(this, alpha, x, beta, y);
     }
 
-    public final void axpbypcz(double alpha, Vector x,
+    /**
+     * Compute the linear combination of three vectors.
+     *
+     * In pseudo-code, this method performs the following operation:
+     * <pre>
+     * this[i] = alpha*x[i] + beta*y[i] + gamma*z[i];
+     * </pre>
+     * for all indices {@code i}.
+     *
+     * @param alpha - The scalar factor for vector {@code x}.
+     * @param x     - A vector.
+     * @param beta  - The scalar factor for vector {@code y}.
+     * @param y     - Another vector.
+     * @param gamma - The scalar factor for vector {@code z}.
+     * @param z     - Yet another vector.
+     *
+     * @throws IncorrectSpaceException all vectors must belong to the same
+     * vector space.
+     */
+    public final void combine(double alpha, Vector x,
             double beta, Vector y,
             double gamma, Vector z)
                     throws IncorrectSpaceException {
         space.check(x);
         space.check(y);
         space.check(z);
-        space._axpbypcz(alpha, x, beta, y, gamma, z, this);
+        space._combine(this, alpha, x, beta, y, gamma, z);
+    }
+
+    /**
+     * Perform a component-wise multiplication by another vector.
+     *
+     * In pseudo-code, this method performs the following operation:
+     * <pre>
+     * this[i] *= other[i];
+     * </pre>
+     * for all indices {@code i}.
+     * @param other - Another vector.
+     *
+     * @throws IncorrectSpaceException The argument must belong to this vector space.
+     */
+    public final void multiply(Vector other)
+            throws IncorrectSpaceException {
+        space.check(other);
+        space._multiply(this, this, other);
     }
 
     /**
@@ -280,15 +376,3 @@ public abstract class Vector {
         return buf.toString();
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

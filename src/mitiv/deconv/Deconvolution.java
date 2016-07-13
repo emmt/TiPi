@@ -268,7 +268,6 @@ public class Deconvolution{
         double[] out = wiener.wiener1D(alpha, psf1D, image1D,utils.width,utils.height);
         utils.IFFT1D(out);
 
-        System.out.println(out.length+" "+utils.width*2+"  "+utils.height);
         Double2D outArray =  Double2D.wrap(out, utils.width*2, utils.height);
         return outArray.view(new Range(0,-1,2), null);
         
@@ -327,15 +326,15 @@ public class Deconvolution{
         DoubleShapedVector imgComplex = complexSpace.create(0);
         DoubleShapedVector psfComplex = complexSpace.create(0);
         DoubleShapedVector wgtComplex = complexSpace.create(0);
-        fft.apply(vectorWgt, wgtComplex);
-        fft.apply(vectorPsf, psfComplex);
-        fft.apply(vectorImage, imgComplex);
+        fft.apply(wgtComplex, vectorWgt);
+        fft.apply(psfComplex, vectorPsf);
+        fft.apply(imgComplex, vectorImage);
         vectorPsf = psfComplex;
         vectorImage = imgComplex;
         DoubleShapedVector out = complexSpace.wrap(wiener.wiener3D(alpha, psfComplex.getData(), imgComplex.getData() , wgtComplex.getData() ,utils.width,utils.height, utils.sizeZ, coef));
         //DoubleShapedVector out = complexSpace.clone(imgComplex);
         DoubleShapedVector outReal = space.create();
-        fft.apply(out, outReal, RealComplexFFT.ADJOINT);
+        fft.apply(outReal, out, RealComplexFFT.ADJOINT);
         
         return Double3D.wrap(outReal.getData(), space.getShape());
         //return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
@@ -388,7 +387,7 @@ public class Deconvolution{
         DoubleShapedVector out = complexSpace.wrap(wiener.wiener3D(alpha));
         //DoubleShapedVector out = complexSpace.clone(vector_image);
         DoubleShapedVector outReal = space.create();
-        fft.apply(out, outReal, RealComplexFFT.ADJOINT);
+        fft.apply(outReal, out, RealComplexFFT.ADJOINT);
         return Double3D.wrap(outReal.getData(), space.getShape());
         //return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
     }
@@ -557,14 +556,14 @@ public class Deconvolution{
         DoubleShapedVector imgComplex = complexSpace.create(0);
         DoubleShapedVector psfComplex = complexSpace.create(0);
 
-        fft.apply(vectorPsf, psfComplex);
-        fft.apply(vectorImage, imgComplex);
+        fft.apply(psfComplex, vectorPsf);
+        fft.apply(imgComplex, vectorImage);
         vectorPsf = psfComplex;
         vectorImage = imgComplex;
 
         DoubleShapedVector out = complexSpace.wrap(wiener.wienerQuad3D(alpha, psfComplex.getData(), imgComplex.getData(),utils.width,utils.height, utils.sizeZ,utils.sizePadding));
         DoubleShapedVector outReal = space.create();
-        fft.apply(out, outReal,RealComplexFFT.ADJOINT);
+        fft.apply(outReal, out,RealComplexFFT.ADJOINT);
         
         return Double3D.wrap(outReal.getData(), space.getShape());
         //return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
@@ -580,7 +579,7 @@ public class Deconvolution{
     private ShapedArray nextDeconvolutionQuad3D(double alpha){
         DoubleShapedVector out = complexSpace.wrap(wiener.wienerQuad3D(alpha));
         DoubleShapedVector outReal = space.create();
-        fft.apply(out, outReal,RealComplexFFT.ADJOINT);
+        fft.apply(outReal, out,RealComplexFFT.ADJOINT);
         return Double3D.wrap(outReal.getData(), space.getShape());
         //return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
     }
@@ -617,7 +616,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image
+     * Use the conjugate gradients to deconvolve the image
      * 
      * @param alpha
      * @return The bufferedImage for the input value given
@@ -627,7 +626,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image
+     * Use the conjugate gradients to deconvolve the image
      * 
      * @param alpha
      * @param isPsfSplitted If the psf is centered or not
@@ -638,7 +637,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image
+     * Use the conjugate gradients to deconvolve the image
      * 
      * @param alpha
      * @param job see static PROCESSING_?
@@ -658,7 +657,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image.<br>
+     * Use the conjugate gradients to deconvolve the image.<br>
      * Do less computations and allocations.
      * 
      * @param alpha
@@ -669,7 +668,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image.<br>
+     * Use the conjugate gradients to deconvolve the image.<br>
      * Do less computations and allocations.
      * 
      * @param alpha
@@ -688,7 +687,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image
+     * Use the conjugate gradients to deconvolve the image
      * 
      * @param alpha
      * @return The bufferedImage for the input value given
@@ -723,7 +722,7 @@ public class Deconvolution{
     }
 
     /**
-     * Use the conjugate gradients to deconvoluate the image.<br>
+     * Use the conjugate gradients to deconvolve the image.<br>
      * Do less computations and allocations.
      * 
      * @param alpha

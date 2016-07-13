@@ -77,9 +77,16 @@ public class ReconstructionSynchronizer {
      * </p>
      * @param i - The index of the parameter to change.
      * @param value - The new value of the parameter.
+     * 
+     * @return Whether the parameter has changed.
      */
-    public synchronized void setParameter(int i, double value) {
-        parameters[i] = value;
+    public synchronized boolean setParameter(int i, double value) {
+        if (parameters[i] != value) {
+            parameters[i] = value;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

@@ -94,9 +94,9 @@ public class FiniteDifferenceOperator extends LinearOperator {
         System.out.println("  relative error = " + dif.checkAdjoint(a, b));
         System.out.println("");
         System.out.println("Testing the operator:");
-        dif.apply(a, b);
+        dif.apply(b, a);
         DoubleShapedVector c = inp.create();
-        dif.apply(b, c, LinearOperator.ADJOINT);
+        dif.apply(c, b, LinearOperator.ADJOINT);
         System.out.println("a = " + a);
         System.out.println("b = " + b);
         System.out.println("c = " + c);
@@ -251,7 +251,7 @@ public class FiniteDifferenceOperator extends LinearOperator {
     }
 
     @Override
-    protected void privApply(Vector src, Vector dst, int job)
+    protected void _apply(Vector dst, Vector src, int job)
             throws IncorrectSpaceException {
         boolean transpose;
         if (job == ADJOINT) {

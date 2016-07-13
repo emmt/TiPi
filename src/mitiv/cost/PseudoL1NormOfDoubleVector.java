@@ -39,9 +39,9 @@ public class PseudoL1NormOfDoubleVector extends PseudoL1Norm {
      * @see mitiv.cost.ProximalOperator#applyProx(double, mitiv.linalg.Vector, mitiv.linalg.Vector, double)
      */
     @Override
-    public void applyProx(double alpha, Vector inp, Vector out, double tol) {
+    public void applyProx(Vector out, double alpha, Vector inp, double tol) {
         if (alpha == 0.0) {
-            inputSpace.copy(inp, out);
+            out.copyFrom(inp);
         } else if (alpha > 0.0) {
             if (! inp.belongsTo(inputSpace) || ! out.belongsTo(inputSpace)) {
                 throw new IncorrectSpaceException();
@@ -64,16 +64,3 @@ public class PseudoL1NormOfDoubleVector extends PseudoL1Norm {
         }
     }
 }
-
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

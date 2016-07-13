@@ -1,0 +1,423 @@
+/*
+ * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
+ * developed by the MitiV project.
+ *
+ * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+//# include <common.javax>
+//# if ${type_id} != ${DOUBLE}
+//#     def cast = (${type})
+//#     def zero = 0.0F
+//#     def one  = 1.0F
+//# else
+//#     def cast =
+//#     def zero = 0.0
+//#     def one  = 1.0
+//# end
+package mitiv.deconv.impl;
+
+import mitiv.array.ShapedArray;
+import mitiv.linalg.Vector;
+import mitiv.linalg.shaped.${Type}ShapedVector;
+import mitiv.linalg.shaped.ShapedVector;
+import mitiv.linalg.shaped.ShapedVectorSpace;
+
+/**
+ * Implements a FFT-based weighted convolution for ${rank}D arrays of ${type}'s.
+ *
+ * <p>
+ * It is recommended not to directly instantiate this class but rather use
+ * one of the factory methods of the parent class
+ * {@link  WeightedConvolutionOperator}.{@code build()}.  Have a look at the
+ * documentation of {@link  WeightedConvolutionOperator} for a description
+ * of what exaclty does this kind of operator.
+ * </p>
+ * @author Éric Thiébaut
+ *
+ * @see {@link WeightedConvolutionOperator}
+ */
+public class ${className}
+     extends WeightedConvolution${Type}
+{
+    /** Factor to scale the result of the backward FFT. */
+    private final ${type} scale;
+
+    /** Number of variables. */
+    private final int number;
+
+    //# for k in 1:${rank}
+    //#     def kth = ${}{nth_${k}}
+    /** Number of element along ${kth} dimension of the variables. */
+    private final int dim${k};
+
+    //# end
+    //# for k in 1:${rank}
+    //#     def kth = ${}{nth_${k}}
+    /** Offset of data along ${kth} dimension. */
+    private final int off${k};
+
+    //# end
+    //# for k in 1:${rank}
+    //#     def kth = ${}{nth_${k}}
+    /** End of data along ${kth} dimension. */
+    private final int end${k};
+
+    //# end
+    /** Convolution operator. */
+    private final Convolution${Type}${rank}D cnvl;
+
+    /**
+     * Create a new FFT-based weighted convolution cost function.
+     *
+     * @param objectSpace - The object space.
+     * @param dataSpace   - The data space.
+     * @param dataOffset  - The position of the data space relative
+     *                      to the object space.
+     */
+    public ${className}(ShapedVectorSpace objectSpace,
+            ShapedVectorSpace dataSpace, int[] dataOffset) {
+        /* Initialize super class and check rank and dimensions (element type
+           is checked by the super class constructor). */
+        super(objectSpace, dataSpace);
+        if (objectSpace.getRank() != ${rank}) {
+            throw new IllegalArgumentException("Object space is not ${rank}D");
+        }
+        if (dataSpace.getRank() != ${rank}) {
+            throw new IllegalArgumentException("Data space is not ${rank}D");
+        }
+        number = (int)objectSpace.getNumber();
+        scale = ${one}/number;
+        //# for k in 1:${rank}
+        //#     eval km1 = ${k} - 1
+        //#     def  kth = ${}{nth_${k}}
+        dim${k} = objectSpace.getDimension(${km1});
+        off${k} = dataOffset[${km1}];
+        end${k} = off${k} + dataSpace.getDimension(${km1});
+        if (off${k} < 0 || off${k} >= dim${k}) {
+            throw new IllegalArgumentException("Out of range offset along ${kth} dimension.");
+        }
+        if (end${k} > dim${k}) {
+            throw new IllegalArgumentException("Data (+ offset) beyond ${kth} dimension.");
+        }
+        //# end
+        cnvl = new Convolution${Type}${rank}D(objectSpace);
+    }
+
+    @Override
+    protected double cost(double alpha, Vector x)
+    {
+        /* Check whether instance has been fully initialized. */
+        checkData();
+
+        /* Compute the convolution. */
+        cnvl.push(((${Type}ShapedVector)x).getData());
+        cnvl.convolve(false);
+
+        /* Integrate cost. */
+        double sum = 0.0;
+        ${type} z[] = cnvl.getWorkspace();
+        int j = 0; // index in data and weight arrays
+        int real = 0; // index of real part in model and FFT arrays
+        if (wgt == null) {
+            //# if ${rank} == 1
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                if (off1 <= i1 && i1 < end1) {
+                    ${type} r = scale*z[real] - dat[j];
+                    sum += r*r;
+                    ++j;
+                }
+                real += 2;
+            }
+            //# elif ${rank} == 2
+            for (int i2 = 0; i2 < dim2; ++i2) {
+               boolean test = (off2 <= i2 && i2 < end2);
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    if (test && off1 <= i1 && i1 < end1) {
+                        ${type} r = scale*z[real] - dat[j];
+                        sum += r*r;
+                        ++j;
+                    }
+                    real += 2;
+                }
+            }
+            //# elif ${rank} == 3
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                boolean test = (off3 <= i3 && i3 < end3);
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    test = (test && off2 <= i2 && i2 < end2);
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        if (test && off1 <= i1 && i1 < end1) {
+                            ${type} r = scale*z[real] - dat[j];
+                            sum += r*r;
+                            ++j;
+                        }
+                        real += 2;
+                    }
+                }
+            }
+            //# else
+            //#     error only 1D, 2D and 3D implemented
+            //# end
+        } else {
+            ${type} w;
+            //# if ${rank} == 1
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                if (off1 <= i1 && i1 < end1) {
+                    if ((w = wgt[j]) > ${zero}) {
+                        ${type} r = scale*z[real] - dat[j];
+                        sum += w*r*r;
+                    }
+                    ++j;
+                }
+                real += 2;
+            }
+            //# elif ${rank} == 2
+            for (int i2 = 0; i2 < dim2; ++i2) {
+               boolean test = (off2 <= i2 && i2 < end2);
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    if (test && off1 <= i1 && i1 < end1) {
+                        if ((w = wgt[j]) > ${zero}) {
+                            ${type} r = scale*z[real] - dat[j];
+                            sum += w*r*r;
+                        }
+                        ++j;
+                    }
+                    real += 2;
+                }
+            }
+            //# elif ${rank} == 3
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                boolean test = (off3 <= i3 && i3 < end3);
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    test = (test && off2 <= i2 && i2 < end2);
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        if (test && off1 <= i1 && i1 < end1) {
+                            if ((w = wgt[j]) > ${zero}) {
+                                ${type} r = scale*z[real] - dat[j];
+                                sum += w*r*r;
+                            }
+                            ++j;
+                        }
+                        real += 2;
+                    }
+                }
+            }
+            //# else
+            //#     error only 1D, 2D and 3D implemented
+            //# end
+        }
+        return alpha*sum;
+    }
+
+    @Override
+    protected double cost(double alpha, Vector x, Vector gx, boolean clr)
+    {
+        /* Check whether instance has been fully initialized. */
+        checkData();
+
+        /* Compute the convolution. */
+        cnvl.push(((${Type}ShapedVector)x).getData());
+        cnvl.convolve(false);
+
+        /* Integrate cost and gradient. */
+        final ${type} q = 2*scale*${cast}alpha;
+        double sum = 0.0;
+        ${type} z[] = cnvl.getWorkspace();
+        int j = 0; // index in data and weight arrays
+        int real = 0; // index of real part in model and FFT arrays
+        int imag = 1; // index of imaginary parts in model and FFT arrays
+        if (wgt == null) {
+            //# if ${rank} == 1
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                if (off1 <= i1 && i1 < end1) {
+                    ${type} r = scale*z[real] - dat[j];
+                    sum += r*r;
+                    z[real] = q*r;
+                    z[imag] = ${zero};
+                    ++j;
+                } else {
+                    z[real] = ${zero};
+                    z[imag] = ${zero};
+                }
+                real += 2;
+                imag += 2;
+            }
+            //# elif ${rank} == 2
+            for (int i2 = 0; i2 < dim2; ++i2) {
+               boolean test = (off2 <= i2 && i2 < end2);
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    if (test && off1 <= i1 && i1 < end1) {
+                        ${type} r = scale*z[real] - dat[j];
+                        sum += r*r;
+                        z[real] = q*r;
+                        z[imag] = ${zero};
+                        ++j;
+                    } else {
+                        z[real] = ${zero};
+                        z[imag] = ${zero};
+                    }
+                    real += 2;
+                    imag += 2;
+                }
+            }
+            //# elif ${rank} == 3
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                boolean test = (off3 <= i3 && i3 < end3);
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    test = (test && off2 <= i2 && i2 < end2);
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        if (test && off1 <= i1 && i1 < end1) {
+                            ${type} r = scale*z[real] - dat[j];
+                            sum += r*r;
+                            z[real] = q*r;
+                            z[imag] = ${zero};
+                            ++j;
+                        } else {
+                            z[real] = ${zero};
+                            z[imag] = ${zero};
+                        }
+                        real += 2;
+                        imag += 2;
+                    }
+                }
+            }
+            //# else
+            //#     error only 1D, 2D and 3D implemented
+            //# end
+        } else {
+            ${type} w;
+            //# if ${rank} == 1
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                if (off1 <= i1 && i1 < end1) {
+                    if ((w = wgt[j]) > ${zero}) {
+                        ${type} r = scale*z[real] - dat[j];
+                        ${type} wr = w*r;
+                        sum += wr*r;
+                        z[real] = q*wr;
+                    } else {
+                        z[real] = ${zero};
+                    }
+                    z[imag] = ${zero};
+                    ++j;
+                } else {
+                    z[real] = ${zero};
+                    z[imag] = ${zero};
+                }
+                real += 2;
+                imag += 2;
+            }
+            //# elif ${rank} == 2
+            for (int i2 = 0; i2 < dim2; ++i2) {
+               boolean test = (off2 <= i2 && i2 < end2);
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    if (test && off1 <= i1 && i1 < end1) {
+                        if ((w = wgt[j]) > ${zero}) {
+                            ${type} r = scale*z[real] - dat[j];
+                            ${type} wr = w*r;
+                            sum += wr*r;
+                            z[real] = q*wr;
+                        } else {
+                            z[real] = ${zero};
+                        }
+                        z[imag] = ${zero};
+                        ++j;
+                    } else {
+                        z[real] = ${zero};
+                        z[imag] = ${zero};
+                    }
+                    real += 2;
+                    imag += 2;
+                }
+            }
+            //# elif ${rank} == 3
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                boolean test = (off3 <= i3 && i3 < end3);
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    test = (test && off2 <= i2 && i2 < end2);
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        if (test && off1 <= i1 && i1 < end1) {
+                            if ((w = wgt[j]) > ${zero}) {
+                                ${type} r = scale*z[real] - dat[j];
+                                ${type} wr = w*r;
+                                sum += wr*r;
+                                z[real] = q*wr;
+                            } else {
+                                z[real] = ${zero};
+                            }
+                            z[imag] = ${zero};
+                            ++j;
+                        } else {
+                            z[real] = ${zero};
+                            z[imag] = ${zero};
+                        }
+                        real += 2;
+                        imag += 2;
+                    }
+                }
+            }
+            //# else
+            //#     error only 1D, 2D and 3D implemented
+            //# end
+        }
+
+        /* Finalize computation of gradient. */
+        ${type} g[] = ((${Type}ShapedVector)gx).getData();
+        cnvl.convolve(true);
+        real = 0;
+        if (clr) {
+            for (int k = 0; k < number; ++k, real += 2) {
+                g[k] = z[real];
+            }
+        } else {
+            for (int k = 0; k < number; ++k, real += 2) {
+                g[k] += z[real];
+            }
+        }
+
+        /* Returns cost. */
+        return alpha*sum;
+    }
+
+    @Override
+    public void setPSF(ShapedArray psf, int[] off)
+    {
+        cnvl.setPSF(psf, off);
+    }
+
+    @Override
+    public void setPSF(ShapedVector psf)
+    {
+        cnvl.setPSF(psf);
+    }
+}
+
+/*
+ * Local Variables:
+ * mode: Java
+ * tab-width: 8
+ * indent-tabs-mode: nil
+ * c-basic-offset: 4
+ * fill-column: 78
+ * coding: utf-8
+ * ispell-local-dictionary: "american"
+ * End:
+ */
