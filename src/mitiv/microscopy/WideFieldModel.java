@@ -69,7 +69,7 @@ public class WideFieldModel
     protected int Nz; // number of samples along axial Z-dimension
     protected int Nzern; // number of Zernike modes
     protected boolean radial=false; // when true, the PSF is radially symmetric  
-    protected int PState=0;
+    protected int PState=0;   // flag to prevent useless recomputation of the PSF
     protected double deltaX;
     protected double deltaY;
     protected double defocus_L2;
@@ -128,9 +128,7 @@ public class WideFieldModel
         this.phi = new double[Ny*Nx];
         this.psi = new double[Ny*Nx];
         this.phasePupil = new double[Ny*Nx];
-        this.psf = new double[Nz*Ny*Nx];
         this.gamma = new double[Ny*Nx];
-        this.a = new double[Nz*Ny*2*Nx];
         this.Z = computeZernike();
         this.maskPupil = computeMaskPupil();
         this.PState = 0;
@@ -163,7 +161,7 @@ public class WideFieldModel
             }
         }
         pupil_area = Math.sqrt(pupil_area);
-        PState = 0;
+        freePSF();
         return maskPupil;
     }
 
@@ -209,7 +207,7 @@ public class WideFieldModel
             }
         }
 
-        PState = 0;
+        freePSF();
     }
 
 
@@ -257,7 +255,7 @@ public class WideFieldModel
     			}
     		}
     	}
-    	PState = 0;
+    	freePSF();
     }
 
     /**
@@ -313,7 +311,7 @@ public class WideFieldModel
                 }
             }
         }
-        PState = 0;
+        freePSF();
     }
 
     /**
@@ -347,7 +345,7 @@ public class WideFieldModel
             throw new IllegalArgumentException("bad defocus / depth parameters");
         }
         computeDefocus();
-        PState = 0;
+        freePSF();
     }
 
 
@@ -360,10 +358,12 @@ public class WideFieldModel
         {
     	if (PState>0)
     		return;
+
+        this.psf = new double[Nz*Ny*Nx];
+        this.a = new double[Nz*Ny*2*Nx];
     	
         DoubleFFT_2D FFT2D = new DoubleFFT_2D(Ny, Nx);
 
-        double a_2[];
         double PSFnorm = 1.0/(Nx*Ny*Nz);
         double defoc_scale;
         double phasePupil;
@@ -396,16 +396,17 @@ public class WideFieldModel
             {
                 Ci = iz*Npix + in;
                 a[2*Ci] = A[2*in];
-                a[2*Ci + 1] = -A[2*in + 1]; // Conjugate a
+                a[2*Ci + 1] = -A[2*in + 1]; // store conjugate of A
+                psf[Ci] = (A[2*in]*A[2*in] + A[2*in+1]*A[2*in+1])*PSFnorm ; 
             }
         }
 
-        /* Square modulus */
-        a_2 = MathUtils.abs2(a, 1);
-        for (int in = 0; in < Npix*Nz; in++)
-        {
-            psf[in] = a_2[in]*PSFnorm;
-        }
+//        /* Square modulus */
+//        a_2 = MathUtils.abs2(a, 1);
+//        for (int in = 0; in < Npix*Nz; in++)
+//        {
+//            psf[in] = a_2[in]*PSFnorm;
+//        }
 
         PState = 1;
     }
@@ -749,6 +750,17 @@ public class WideFieldModel
 
         System.out.println("----ZERNIKES----");
         MathUtils.stat(Z);
+    }
+
+    /**
+     * reset psf and its complex a  to free some memory 
+     * Set the flag PState to 0
+     */
+    public void freePSF() {
+    	// TODO Auto-generated method stub
+    	PState =0;
+    	a = null;
+    	psf = null;
     }
 
 }
