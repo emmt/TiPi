@@ -30,20 +30,15 @@ import mitiv.utils.MathUtils;
 import org.jtransforms.fft.DoubleFFT_2D;
 
 /**
- * Compute a 3D point spread function of a wild field fluorescence microscope (WFFM)
+ * Compute a 3D point spread function of a wide field fluorescence microscope (WFFM)
  * <p>
  * The 3D PSF is modeled after a parameterized pupil function. It is a monochromatic
- * scalar model that defines the 3D PSF h from pupil function p. This pupil function
- * is the in-focus point source wavefront phase and modulus at the exit pupil of the
- * objective.
+ * scalar model that defines the 3D PSF h from pupil function p. 
  * Both modulus ρ(i,j) and phase φ(i,j) of pupil function p are expressed on a basis
  * of Zernike polynomials Zn.
  * <p>
- * A(z) = ρ.exp(iΦ(z)) with Φ(z) = φ + 2π(d.ω + z.ψ)
- * φ
- * d depth within the system
- * ω
- * ψ the defocus aberration
+ * A(z) = ρ.exp(iΦ(z)) with Φ(z) = φ + 2π( z.ψ)
+ * ψ the defocus function :  ψ 
  * <p>
  * <p>
  * References:
@@ -70,31 +65,24 @@ public class WideFieldModel
     protected int Nzern; // number of Zernike modes
     protected boolean radial=false; // when true, the PSF is radially symmetric  
     protected int PState=0;   // flag to prevent useless recomputation of the PSF
-    protected double deltaX;
-    protected double deltaY;
-    protected double defocus_L2;
-    protected double depth_dot_defocus;
-    protected double sum_depth_over_defocus;
-    protected double sum_defocus_over_depth;
-    protected int nb_defocus_coefs;
-    protected int nb_modulus_coefs;
-    protected int nb_phase_coefs;
-    protected double[] modulus_coefs;
-    protected double[] phase_coefs;
+    protected double deltaX;   // position in X of the center of the defocus function inside the pupil  
+    protected double deltaY;    // position in X of the center of the defocus function inside the pupil 
+    protected int nb_defocus_coefs; // number of  defocus coefficients 1: (ni/lambda) 2: {deltaX, deltaX} 3: { (ni/lambda) , deltaX, deltaX}
+    protected int nb_modulus_coefs; // number of Zernike coefficients to describe the modulus
+    protected int nb_phase_coefs; // number of Zernike coefficients to describe the phase
+    protected double[] modulus_coefs;  // array of Zernike coefficients that describe the modulus
+    protected double[] phase_coefs;  // array of Zernike coefficients that describe the phase
 
-    protected double lambda_ni;
+    protected double lambda_ni;  // (ni / \lambda)  
     protected double radius; // radius of the pupil in meter
-    protected double pupil_area;
-    protected double NormZ1;
+    protected double pupil_area; // area of the pupil 
     protected double[] rho; // pupil modulus based on Zernike polynomials
-    protected double[] phi; // part of the phase based on Zernike polynomials
-    protected double[] psi; // defocus
-    protected double[] phasePupil; // phase of the pupil
-    protected double[] gamma; // phase of the pupil
+    protected double[] phi; // pupil phase based on Zernike polynomials
+    protected double[] psi; // defocus function
     protected double[] a; // fourier transform of the pupil function
-    protected double[] Z; // Zernike polynomials
-    protected double psf[];
-    protected double[] maskPupil; // mask of the pupil
+    protected double[] Z; // Zernike polynomials basis
+    protected double psf[]; // P3D point spread function
+    protected double[] maskPupil; // position in the where the pupil is non null
 
 
 
@@ -107,6 +95,7 @@ public class WideFieldModel
      *  @param Nx number of samples along lateral X-dimension
      *  @param Ny number of samples along lateral Y-dimension
      *  @param Nz number of samples along axial Z-dimension
+     *  @param radial when true use only radial zernike polynomial
      */
     public WideFieldModel(double NA, double lambda, double ni, double dxy, double dz, int Nx, int Ny, int Nz,boolean radial)
     {
@@ -127,18 +116,18 @@ public class WideFieldModel
         this.nb_phase_coefs = 0;
         this.phi = new double[Ny*Nx];
         this.psi = new double[Ny*Nx];
-        this.phasePupil = new double[Ny*Nx];
-        this.gamma = new double[Ny*Nx];
-        this.Z = computeZernike();
-        this.maskPupil = computeMaskPupil();
+        computeZernike();
+        computeMaskPupil();
         this.PState = 0;
         setRho(new double[] {1.});
         setDefocus(new double[] {ni/lambda, 0., 0.});
     }
 
-    private double[] computeMaskPupil()
+    /** Determine the map where the pupil in non null.  It sets  maskPupil and its area pupil_area
+     */
+    private void computeMaskPupil()
     {
-        double[] maskPupil = new double[Nx*Ny];
+    	maskPupil = new double[Nx*Ny];
         double scale_y = Math.pow(1/dxy/Ny, 2);
         double scale_x = Math.pow(1/dxy/Nx, 2);
         double rx, ry, ix, iy;
@@ -162,13 +151,14 @@ public class WideFieldModel
         }
         pupil_area = Math.sqrt(pupil_area);
         freePSF();
-        return maskPupil;
     }
 
-    private double[] computeZernike(){
+    /**
+     * Compute the Zernike basis Z.
+     */
+    private void computeZernike(){
         Z = Zernike.zernikeArray(Nzern, Nx, Ny, radius*dxy*Nx, NORMALIZED,radial);
         Z = MathUtils.gram_schmidt_orthonormalization(Z, Nx, Ny, Nzern);
-        return Z ;
     }
 
     /**
@@ -184,7 +174,7 @@ public class WideFieldModel
         if( beta.length > Nzern)
         {
         	Nzern = beta.length;
-        	Z = computeZernike();
+        	computeZernike();
         }
         nb_modulus_coefs = beta.length;
         modulus_coefs = new double[nb_modulus_coefs];
@@ -224,13 +214,13 @@ public class WideFieldModel
     		if( alpha.length+1 > Nzern)
     		{
     			Nzern = alpha.length+1 ;
-    			Z = computeZernike();
+    			 computeZernike();
     		}
     	}else{
     		if( alpha.length+3 > Nzern)
     		{
     			Nzern = alpha.length+3 ;
-    			Z = computeZernike();
+    			computeZernike();
     		}   		
     	}
     	nb_phase_coefs = alpha.length;
@@ -259,12 +249,8 @@ public class WideFieldModel
     }
 
     /**
-     * Compute the defocus aberration ψ and depth aberration
-     * γ of the phase pupil
-     * <p>
-     * @param deltaX
-     * @param deltaY
-     * @param zdepth
+     * Compute the defocus aberration ψ of the phase pupil
+     * <p> 
      */
     public void computeDefocus()
     {	
@@ -316,15 +302,10 @@ public class WideFieldModel
 
     /**
      * @param defocus Update the defocus and the depth functions according the parameters
-     * defocus. Depending on the number of elements of defocus:
-     * 4 :  defocus = {nu_s, c_x, c_y, \nu_i}
-     * 3 :  defocus = {c_x, c_y, \nu_i}
-     * 2 :  defocus = {\nu_s, \nu_i}
-     * 1 :  defocus = {\nu_i}
-     * where
-     * \NU_S : wavenumber in specimen medium (n_s/lambda)
-     * \NU_I : wavenumber in specimen medium (n_i/lambda)
-     * [c_y, c_x] : center of both defocus and depth function
+     * defocus. Depending on the number of elements of defocus: 
+     * 3 :  defocus = {n_i / \lambda, \delta_x, \delta_y}
+     * 2 :  defocus = { \delta_x, \delta_y}
+     * 1 :  defocus = {n_i / \lambda}
      */
     public void setDefocus(double[] defocus)
     {
@@ -342,7 +323,7 @@ public class WideFieldModel
             deltaY = defocus[2];
             break;
         default:
-            throw new IllegalArgumentException("bad defocus / depth parameters");
+            throw new IllegalArgumentException("bad defocus  parameters");
         }
         computeDefocus();
         freePSF();
@@ -352,7 +333,7 @@ public class WideFieldModel
     /**
      * Compute the point spread function
      * <p>
-     * h_k(z) = |a_j(z)|² = |Σ_{j,k}A_k(z)|²
+     * h_k(z) = |a_k(z)|² = |Σ_j F_{j,k} A_j(z)|²
      */
     public void computePSF()
         {
@@ -401,16 +382,14 @@ public class WideFieldModel
             }
         }
 
-//        /* Square modulus */
-//        a_2 = MathUtils.abs2(a, 1);
-//        for (int in = 0; in < Npix*Nz; in++)
-//        {
-//            psf[in] = a_2[in]*PSFnorm;
-//        }
-
         PState = 1;
     }
 
+    /**
+     * Apply the Jacobian matrix to go from  the PSF space to modulus coefficients space.
+     * @param q : the gradient of some criterion in the PSF space
+     * @return the gradient of this criterion in the modulus coefficients space.
+     */
     public double[] apply_J_rho(double[] q)
     {
         int Ci, Npix = Nx*Ny;
@@ -464,6 +443,12 @@ public class WideFieldModel
         return JRho;
     }
 
+
+    /**
+     * Apply the Jacobian matrix to go from  the PSF space to phase coefficients space.
+     * @param q : the gradient of some criterion in the PSF space
+     * @return the gradient of this criterion in the phase coefficients space.
+     */
     public double[] apply_J_phi(double[] q)
     {
         int Ci, Npix = Nx*Ny;
@@ -519,6 +504,12 @@ public class WideFieldModel
         return JPhi;
     }
 
+
+    /**
+     * Apply the Jacobian matrix to go from  the PSF space to defocus coefficients space.
+     * @param q : the gradient of some criterion in the PSF space
+     * @return the gradient of this criterion in the defocus coefficients space.
+     */
     public double[] apply_J_defocus(double[] q)
     {
 
@@ -619,6 +610,9 @@ public class WideFieldModel
     }
 
 
+    /**
+     * @return the modulus of the pupil
+     */
     public double[] getRho() {
         if (PState<1){
             computePSF();
@@ -626,15 +620,24 @@ public class WideFieldModel
         return rho;
     }
     
+    /**
+     * @return the wavelength used in the computation
+     */
     public double getLambda() {
         return lambda;
     }
     
+    /**
+     * @return the refractive index of the immersion medium used in the computation
+     */
     public double getNi() {
         return ni;
     }
 
 
+    /**
+     * @return the phase of the pupil
+     */
     public double[] getPhi() {
         if (PState<1){
             computePSF();
@@ -642,6 +645,9 @@ public class WideFieldModel
         return phi;
     }
 
+    /**
+     * @return the defocus function
+     */
     public double[] getPsi() {
         if (PState<1){
             computePSF();
@@ -649,14 +655,23 @@ public class WideFieldModel
         return psi;
     }
 
+    /**
+     * @return modulus coefficients
+     */
     public double[] getBeta() {
         return modulus_coefs;
     }
 
+    /**
+     * @return phase coefficients
+     */
     public double[] getAlpha() {
         return phase_coefs;
     }
 
+    /**
+     * @return defocus coefficients in 1./wavelength 
+     */
     public double[] getDefocusMultiplyByLambda() {
         if (PState<1){
             computePSF();
@@ -664,7 +679,10 @@ public class WideFieldModel
         double[] defocus = {lambda_ni*lambda, deltaX*lambda, deltaY*lambda};
         return defocus;
     }
-    
+
+    /**
+     * @return defocus coefficients
+     */
     public double[] getDefocus() {
         if (PState<1){
             computePSF();
@@ -673,13 +691,10 @@ public class WideFieldModel
         return defocus;
     }
 
-    public double[] getGamma() {
-        if (PState<1){
-            computePSF();
-        }
-        return psi;
-    }
 
+    /**
+     * @return the pupil mask
+     */
     public double[] getMaskPupil() {
         if (PState<1){
             computePSF();
@@ -687,6 +702,9 @@ public class WideFieldModel
         return maskPupil;
     }
 
+    /**
+     * @return the PSF
+     */
     public double[] getPSF() {
 
         if (PState<1){
@@ -696,25 +714,42 @@ public class WideFieldModel
     }
 
 
-    public double[] getPSF(int k) {
+    /**
+     * @param z
+     * @return the  PSF at depth z
+     */
+    public double[] getPSF(int z) {
         if (PState<1){
             computePSF();
         }
-        return MathUtils.getArray(psf, Nx, Ny, k);
+        return MathUtils.getArray(psf, Nx, Ny, z);
     }
 
+    /**
+     * @return the Zernike basis
+     */
     public double[] getZernike() {
         return Z;
     }
 
+    /**
+     * @return the number of zernike polynomial used in the Zernike basis
+     */
     public int getNZern() {
         return Nzern;
     }
   
+    /**
+     * @param k
+     * @return the k-th zernike of the basis
+     */
     public double[] getZernike(int k) {
         return MathUtils.getArray(Z, Nx, Ny, k);
     }
 
+    /**
+     * @return the complex PSF
+     */
     public double[] get_a() {
         if (PState<1){
             computePSF();
@@ -722,6 +757,9 @@ public class WideFieldModel
         return a;
     }
 
+    /**
+     * Plot some information about the WideFieldModel object for debugging purpose 
+     */
     public void getInfo()
     {
         System.out.println("----PSF----");
@@ -753,7 +791,7 @@ public class WideFieldModel
     }
 
     /**
-     * reset psf and its complex a  to free some memory 
+     * reset PSF and its complex a  to free some memory 
      * Set the flag PState to 0
      */
     public void freePSF() {
