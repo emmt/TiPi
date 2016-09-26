@@ -161,8 +161,12 @@ public class PSF_Estimation implements ReconstructionJob {
         }
 
         // Build the cost functions
-        fcost = 0.0;
+     //   fcost = 0.0;
         gcost = objSpace.create();
+        fcost = fdata.computeCostAndGradient(1.0, objSpace.wrap(pupil.getPSF()), gcost, true);
+    	best_cost = fcost;
+    	best_x = x.clone();
+    	
         if (debug) {
             System.out.println("Cost function initialization complete.");
         }
