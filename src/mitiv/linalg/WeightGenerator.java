@@ -47,7 +47,7 @@ public class WeightGenerator {
     public ShapedArray getWeightMap(Shape outputShape){
         double[] output = null;
         if ( weightMap != null) {
-            output = weightMap.toDouble().flatten().clone();//Flatten make a copy so we are sure that we are not braking anything
+            output = weightMap.toDouble().flatten().clone();//Flatten make a copy so we are sure that we are not breaking anything
             for (int i = 0; i < output.length; i++) {
                 if (output[i] < 0) {
                     throw new IllegalArgumentException("A weight map can not contain negative values");
@@ -67,7 +67,7 @@ public class WeightGenerator {
             throw new IllegalArgumentException("Before getting a weight map you should give something");
         }
         applyDeadPixelMapAndVerify(output);
-        if (outputShape.rank() == 2 || (outputShape.rank() == 3 && outputShape.dimension(2) == 1)) {
+        if (outputShape.rank() == 2 || (outputShape.rank() == 3 && outputShape.dimension(2) == 1)) { 
             return Double2D.wrap(output, outputShape);
         } else if (outputShape.rank() == 3) {
             return Double3D.wrap(output, outputShape);
@@ -79,7 +79,7 @@ public class WeightGenerator {
 
     private void applyDeadPixelMapAndVerify(double[] input){
         for (int i = 0; i < input.length; i++) {
-            if (input[i] == saturationLevel || Double.isNaN(input[i]) || input[i] > 255.0) {
+            if (input[i] == saturationLevel || Double.isNaN(input[i]) || input[i] > 255.0) { //FIXME weird 255
                 input[i] = 0.0;
             }
         }
@@ -115,7 +115,7 @@ public class WeightGenerator {
     }
     public void setComputedVariance(ShapedArray data, double alpha, double beta){
         if (alpha < 0 || beta < 0) {
-            throw new IllegalArgumentException("Computed variance canno't be negative");
+            throw new IllegalArgumentException("gain and noise std cannot be negative");
         }
         this.gain = alpha;
         this.readNoise = beta;
@@ -123,14 +123,3 @@ public class WeightGenerator {
     }
 }
 
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
