@@ -160,6 +160,11 @@ public class FloatScalar extends Scalar implements FloatArray {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public final float[] flatten() {
         return flatten(false);
     }

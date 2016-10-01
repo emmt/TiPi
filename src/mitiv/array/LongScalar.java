@@ -160,6 +160,11 @@ public class LongScalar extends Scalar implements LongArray {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public final long[] flatten() {
         return flatten(false);
     }

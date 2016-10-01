@@ -160,6 +160,11 @@ public class ByteScalar extends Scalar implements ByteArray {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public final byte[] flatten() {
         return flatten(false);
     }

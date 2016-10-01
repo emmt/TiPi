@@ -407,6 +407,11 @@ public class SelectedDouble9D extends Double9D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return false;
+    }
+
+    @Override
     public double[] flatten(boolean forceCopy) {
         double[] out = new double[number];
         int j = -1;

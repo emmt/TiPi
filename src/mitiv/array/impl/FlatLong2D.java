@@ -164,6 +164,11 @@ public class FlatLong2D extends Long2D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public long[] flatten(boolean forceCopy) {
         if (forceCopy) {
             long[] result = new long[number];

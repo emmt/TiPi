@@ -186,6 +186,11 @@ public class FlatShort5D extends Short5D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public short[] flatten(boolean forceCopy) {
         if (forceCopy) {
             short[] result = new short[number];

@@ -283,6 +283,11 @@ public class SelectedShort5D extends Short5D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return false;
+    }
+
+    @Override
     public short[] flatten(boolean forceCopy) {
         short[] out = new short[number];
         int j = -1;

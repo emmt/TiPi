@@ -283,6 +283,11 @@ public class SelectedFloat5D extends Float5D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return false;
+    }
+
+    @Override
     public float[] flatten(boolean forceCopy) {
         float[] out = new float[number];
         int j = -1;

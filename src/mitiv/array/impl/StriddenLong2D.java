@@ -72,10 +72,6 @@ public class StriddenLong2D extends Long2D {
         Long2D.checkViewStrides(data.length, offset, stride1, stride2, dim1, dim2);
     }
 
-    private boolean isFlat() {
-        return (offset == 0 && stride1 == 1 && stride2 == dim1);
-    }
-
     final int index(int i1, int i2) {
         return offset + stride2*i2 + stride1*i1;
     }
@@ -258,6 +254,11 @@ public class StriddenLong2D extends Long2D {
                 }
             }
         }
+    }
+
+    @Override
+    public final boolean isFlat() {
+        return (offset == 0 && stride1 == 1 && stride2 == dim1);
     }
 
     @Override

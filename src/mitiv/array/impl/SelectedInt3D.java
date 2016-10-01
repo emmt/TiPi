@@ -221,6 +221,11 @@ public class SelectedInt3D extends Int3D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return false;
+    }
+
+    @Override
     public int[] flatten(boolean forceCopy) {
         int[] out = new int[number];
         int j = -1;

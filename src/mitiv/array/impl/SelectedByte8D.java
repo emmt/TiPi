@@ -376,6 +376,11 @@ public class SelectedByte8D extends Byte8D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return false;
+    }
+
+    @Override
     public byte[] flatten(boolean forceCopy) {
         byte[] out = new byte[number];
         int j = -1;

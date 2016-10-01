@@ -207,6 +207,11 @@ public class FlatInt8D extends Int8D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public int[] flatten(boolean forceCopy) {
         if (forceCopy) {
             int[] result = new int[number];

@@ -376,6 +376,11 @@ public class SelectedInt8D extends Int8D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return false;
+    }
+
+    @Override
     public int[] flatten(boolean forceCopy) {
         int[] out = new int[number];
         int j = -1;

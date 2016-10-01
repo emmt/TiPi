@@ -164,6 +164,11 @@ public class FlatShort1D extends Short1D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public short[] flatten(boolean forceCopy) {
         if (forceCopy) {
             short[] result = new short[number];

@@ -193,6 +193,11 @@ public class FlatByte6D extends Byte6D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public byte[] flatten(boolean forceCopy) {
         if (forceCopy) {
             byte[] result = new byte[number];

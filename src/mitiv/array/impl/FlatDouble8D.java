@@ -207,6 +207,11 @@ public class FlatDouble8D extends Double8D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public double[] flatten(boolean forceCopy) {
         if (forceCopy) {
             double[] result = new double[number];

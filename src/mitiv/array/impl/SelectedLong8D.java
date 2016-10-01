@@ -376,6 +376,11 @@ public class SelectedLong8D extends Long8D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return false;
+    }
+
+    @Override
     public long[] flatten(boolean forceCopy) {
         long[] out = new long[number];
         int j = -1;

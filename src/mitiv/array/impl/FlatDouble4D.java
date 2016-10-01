@@ -179,6 +179,11 @@ public class FlatDouble4D extends Double4D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public double[] flatten(boolean forceCopy) {
         if (forceCopy) {
             double[] result = new double[number];

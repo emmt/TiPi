@@ -200,6 +200,11 @@ public class FlatLong7D extends Long7D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public long[] flatten(boolean forceCopy) {
         if (forceCopy) {
             long[] result = new long[number];

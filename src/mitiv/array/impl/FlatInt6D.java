@@ -193,6 +193,11 @@ public class FlatInt6D extends Int6D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public int[] flatten(boolean forceCopy) {
         if (forceCopy) {
             int[] result = new int[number];

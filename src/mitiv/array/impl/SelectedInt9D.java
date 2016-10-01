@@ -407,6 +407,11 @@ public class SelectedInt9D extends Int9D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return false;
+    }
+
+    @Override
     public int[] flatten(boolean forceCopy) {
         int[] out = new int[number];
         int j = -1;

@@ -160,6 +160,11 @@ public class DoubleScalar extends Scalar implements DoubleArray {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public final double[] flatten() {
         return flatten(false);
     }

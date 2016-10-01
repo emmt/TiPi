@@ -166,6 +166,11 @@ public class ${className} extends Scalar implements ${Type}Array {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public final ${type}[] flatten() {
         return flatten(false);
     }

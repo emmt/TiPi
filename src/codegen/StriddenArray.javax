@@ -88,22 +88,6 @@ public class ${className} extends ${superName} {
         ${checkStrides};
     }
 
-    private boolean isFlat() {
-        //# def expr = offset == 0
-        //# for k in 1:${rank}
-        //#     eval j = ${k} - 1
-        //#     if ${k} == 1
-        //#         def value = 1
-        //#     elif ${k} == 2
-        //#         def value = dim${j}
-        //#     else
-        //#         def value = dim${j}*stride${j}
-        //#     end
-        //#     def expr = ${expr} && stride${k} == ${value}
-        //# end
-        return (${expr});
-    }
-
     //# def indexExpr = offset
     //# for k in 1:${rank}
     //#     eval j = ${rank} - ${k} + 1
@@ -279,6 +263,23 @@ public class ${className} extends ${superName} {
             //# emit ${loopColMaj}
         }
         //# end
+    }
+
+    @Override
+    public final boolean isFlat() {
+        //# def expr = offset == 0
+        //# for k in 1:${rank}
+        //#     eval j = ${k} - 1
+        //#     if ${k} == 1
+        //#         def value = 1
+        //#     elif ${k} == 2
+        //#         def value = dim${j}
+        //#     else
+        //#         def value = dim${j}*stride${j}
+        //#     end
+        //#     def expr = ${expr} && stride${k} == ${value}
+        //# end
+        return (${expr});
     }
 
     @Override

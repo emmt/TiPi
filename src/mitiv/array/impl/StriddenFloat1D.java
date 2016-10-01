@@ -69,10 +69,6 @@ public class StriddenFloat1D extends Float1D {
         Float1D.checkViewStrides(data.length, offset, stride1, dim1);
     }
 
-    private boolean isFlat() {
-        return (offset == 0 && stride1 == 1);
-    }
-
     final int index(int i1) {
         return offset + stride1*i1;
     }
@@ -152,6 +148,11 @@ public class StriddenFloat1D extends Float1D {
                     initialized = true;
                 }
             }
+    }
+
+    @Override
+    public final boolean isFlat() {
+        return (offset == 0 && stride1 == 1);
     }
 
     @Override

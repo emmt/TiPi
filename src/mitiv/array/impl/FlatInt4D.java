@@ -179,6 +179,11 @@ public class FlatInt4D extends Int4D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public int[] flatten(boolean forceCopy) {
         if (forceCopy) {
             int[] result = new int[number];

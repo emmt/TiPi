@@ -182,6 +182,11 @@ public class ${className} extends ${superName} {
     }
 
     @Override
+    public final boolean isFlat() {
+        return false;
+    }
+
+    @Override
     public ${type}[] flatten(boolean forceCopy) {
         ${type}[] out = new ${type}[number];
         int j = -1;

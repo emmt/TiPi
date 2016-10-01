@@ -252,6 +252,11 @@ public class SelectedDouble4D extends Double4D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return false;
+    }
+
+    @Override
     public double[] flatten(boolean forceCopy) {
         double[] out = new double[number];
         int j = -1;

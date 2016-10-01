@@ -186,6 +186,11 @@ public class FlatFloat5D extends Float5D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public float[] flatten(boolean forceCopy) {
         if (forceCopy) {
             float[] result = new float[number];

@@ -88,10 +88,6 @@ public class StriddenByte7D extends Byte7D {
         Byte7D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, stride5, stride6, stride7, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
-    private boolean isFlat() {
-        return (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4 && stride6 == dim5*stride5 && stride7 == dim6*stride6);
-    }
-
     final int index(int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
         return offset + stride7*i7 + stride6*i6 + stride5*i5 + stride4*i4 + stride3*i3 + stride2*i2 + stride1*i1;
     }
@@ -484,6 +480,11 @@ public class StriddenByte7D extends Byte7D {
                 }
             }
         }
+    }
+
+    @Override
+    public final boolean isFlat() {
+        return (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4 && stride6 == dim5*stride5 && stride7 == dim6*stride6);
     }
 
     @Override

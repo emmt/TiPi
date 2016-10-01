@@ -160,6 +160,11 @@ public class ShortScalar extends Scalar implements ShortArray {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public final short[] flatten() {
         return flatten(false);
     }

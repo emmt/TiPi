@@ -283,6 +283,11 @@ public class SelectedByte5D extends Byte5D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return false;
+    }
+
+    @Override
     public byte[] flatten(boolean forceCopy) {
         byte[] out = new byte[number];
         int j = -1;

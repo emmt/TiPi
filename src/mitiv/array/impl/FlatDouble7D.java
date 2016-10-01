@@ -200,6 +200,11 @@ public class FlatDouble7D extends Double7D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public double[] flatten(boolean forceCopy) {
         if (forceCopy) {
             double[] result = new double[number];

@@ -41,6 +41,14 @@ import mitiv.linalg.shaped.ShapedVector;
  * @author Éric Thiébaut.
  */
 public interface ShapedArray extends Shaped, Typed {
+	/**
+	 * Check whether a `ShapedArray` is stored a flat Java array.
+	 * 
+	 * @return True if the result of `this.flatten(false)` is guaranteed to be a
+     *         direct reference (not a copy) to the contents of the array. 
+	 */
+	public abstract boolean isFlat();
+	
     /**
      * Convert array elements to type {@code byte}.
      * @return A {@link ByteArray} object which may be the object itself

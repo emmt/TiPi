@@ -76,10 +76,6 @@ public class StriddenInt3D extends Int3D {
         Int3D.checkViewStrides(data.length, offset, stride1, stride2, stride3, dim1, dim2, dim3);
     }
 
-    private boolean isFlat() {
-        return (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2);
-    }
-
     final int index(int i1, int i2, int i3) {
         return offset + stride3*i3 + stride2*i2 + stride1*i1;
     }
@@ -304,6 +300,11 @@ public class StriddenInt3D extends Int3D {
                 }
             }
         }
+    }
+
+    @Override
+    public final boolean isFlat() {
+        return (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2);
     }
 
     @Override

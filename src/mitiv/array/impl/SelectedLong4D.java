@@ -252,6 +252,11 @@ public class SelectedLong4D extends Long4D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return false;
+    }
+
+    @Override
     public long[] flatten(boolean forceCopy) {
         long[] out = new long[number];
         int j = -1;

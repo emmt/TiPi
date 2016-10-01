@@ -408,11 +408,6 @@ public enum DataFormat {
         return makeBufferedImage(arr, new FormatOptions());
     }
 
-    protected static boolean isFlat(ShapedArray arr) {
-        // FIXME: dummy method for further optimization
-        return false;
-    }
-
     /**
      * Make a buffered image from a shaped array with given options.
      * <p>
@@ -473,7 +468,7 @@ public enum DataFormat {
                 raster.getTransferType() != DataBuffer.TYPE_BYTE) {
                 throw new IllegalArgumentException("assertion failed for TYPE_BYTE_GRAY");
             }
-            if (isFlat(src)) {
+            if (src.isFlat()) {
                 raster.setDataElements(minX, minY, width, height, src.flatten());
             } else {
                 byte[] data = new byte[1];
@@ -580,7 +575,7 @@ public enum DataFormat {
             switch (arrayType) {
             case Traits.BYTE: {
                 Byte3D src = (Byte3D)arr;
-                if (isFlat(src)) {
+                if (src.isFlat()) {
                     raster.setDataElements(minX, minY, width, height, src.flatten());
                 } else {
                     for (int y = 0; y < height; ++y) {
@@ -688,7 +683,7 @@ public enum DataFormat {
                 raster.getTransferType() != DataBuffer.TYPE_BYTE) {
                 throw new IllegalArgumentException("assertion failed for TYPE_4BYTE_ABGR");
             }
-            if (isFlat(src)) {
+            if (src.isFlat()) {
                 raster.setDataElements(minX, minY, width, height, src.flatten());
             } else {
                 byte[] data = new byte[4];

@@ -179,6 +179,11 @@ public class FlatLong4D extends Long4D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public long[] flatten(boolean forceCopy) {
         if (forceCopy) {
             long[] result = new long[number];

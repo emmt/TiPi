@@ -160,6 +160,11 @@ public class IntScalar extends Scalar implements IntArray {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public final int[] flatten() {
         return flatten(false);
     }

@@ -200,6 +200,11 @@ public class FlatInt7D extends Int7D {
     }
 
     @Override
+    public final boolean isFlat() {
+        return true;
+    }
+
+    @Override
     public int[] flatten(boolean forceCopy) {
         if (forceCopy) {
             int[] result = new int[number];
