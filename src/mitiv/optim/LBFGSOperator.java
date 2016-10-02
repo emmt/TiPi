@@ -27,6 +27,7 @@ package mitiv.optim;
 
 import mitiv.exception.IllegalLinearOperationException;
 import mitiv.exception.IncorrectSpaceException;
+import mitiv.linalg.LinearEndomorphism;
 import mitiv.linalg.LinearOperator;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
@@ -42,7 +43,7 @@ import mitiv.linalg.VectorSpace;
  *
  * @author Éric Thiébaut.
  */
-public class LBFGSOperator extends LinearOperator {
+public class LBFGSOperator extends LinearEndomorphism {
 
     /** Do not scale the computed direction. */
     static final int NO_SCALING = 0;
@@ -91,10 +92,8 @@ public class LBFGSOperator extends LinearOperator {
     /**
      * Create a limited memory BFGS operator without preconditioner.
      *
-     * @param space
-     *            - The vector space to operate on.
-     * @param m
-     *            - The number of previous updates to memorize.
+     * @param space - The vector space to operate on.
+     * @param m     - The number of previous updates to memorize.
      */
     public LBFGSOperator(VectorSpace space, int m) {
         super(space);
@@ -118,11 +117,8 @@ public class LBFGSOperator extends LinearOperator {
      * @param m
      *            - The number of previous updates to memorize.
      */
-    public LBFGSOperator(LinearOperator H0, int m) {
-        super(H0.getInputSpace());
-        if (! H0.isEndomorphism()) {
-            throw new IncorrectSpaceException("Preconditioner must be an endomorphism");
-        }
+    public LBFGSOperator(LinearEndomorphism H0, int m) {
+        super(H0.getSpace());
         this.m = m;
         this.H0 = H0;
         allocateWorkspace();
@@ -132,8 +128,8 @@ public class LBFGSOperator extends LinearOperator {
         s = new Vector[m];
         y = new Vector[m];
         for (int i = 0; i < m; ++i) {
-            s[i] = outputSpace.create();
-            y[i] = inputSpace.create();
+            s[i] = space.create();
+            y[i] = space.create();
         }
         alpha = new double[m];
         rho = new double[m];
@@ -245,7 +241,7 @@ public class LBFGSOperator extends LinearOperator {
     {
         /* First loop of the recursion. */
         for (int j = 1; j <= mp; ++j) {
-            int k = slot(j);
+            final int k = slot(j);
             if (rho[k] > 0.0) {
                 alpha[k] = rho[k]*vec.dot(s[k]);
                 vec.combine(1.0, vec, -alpha[k], y[k]);
@@ -261,9 +257,9 @@ public class LBFGSOperator extends LinearOperator {
 
         /* Second loop of the recursion. */
         for (int j = mp; j >= 1; --j) {
-            int k = slot(j);
+            final int k = slot(j);
             if (rho[k] > 0.0) {
-                double beta = rho[k]*vec.dot(y[k]);
+                final double beta = rho[k]*vec.dot(y[k]);
                 vec.combine(1.0, vec, alpha[k] - beta, s[k]);
             }
         }
@@ -279,8 +275,8 @@ public class LBFGSOperator extends LinearOperator {
         boolean flag = (H0 == null);
         gamma = 0.0;
         for (int j = 1; j <= mp; ++j) {
-            int k = slot(j);
-            double sty = wgt.dot(y[k], s[k]);
+            final int k = slot(j);
+            final double sty = wgt.dot(y[k], s[k]);
             if (sty <= 0.0) {
                 rho[k] = 0.0;
             } else {
@@ -290,7 +286,7 @@ public class LBFGSOperator extends LinearOperator {
                 if (flag) {
                     /* No initial inverse Hessian approximation has been
                      * provided, we compute a simple scaling GAMMA. */
-                    double yty = wgt.dot(y[k], y[k]);
+                    final double yty = wgt.dot(y[k], y[k]);
                     if (yty > 0.0) {
                         gamma = sty/yty;
                         flag = false;
@@ -314,9 +310,9 @@ public class LBFGSOperator extends LinearOperator {
 
         /* Second loop of the recursion. */
         for (int j = mp; j >= 1; --j) {
-            int k = slot(j);
+            final int k = slot(j);
             if (rho[k] > 0) {
-                double beta = rho[k]*wgt.dot(vec, y[k]);
+                final double beta = rho[k]*wgt.dot(vec, y[k]);
                 vec.combine(1.0, vec, alpha[k] - beta, s[k]);
             }
         }
@@ -325,9 +321,9 @@ public class LBFGSOperator extends LinearOperator {
 
     public boolean apply(Vector wgt, Vector vec, Vector dst)
     {
-        if ((wgt != null && ! wgt.belongsTo(inputSpace)) ||
-                ! vec.belongsTo(inputSpace) ||
-                ! dst.belongsTo(inputSpace)) {
+        if ((wgt != null && ! wgt.belongsTo(space)) ||
+                ! vec.belongsTo(space) ||
+                ! dst.belongsTo(space)) {
             throw new IncorrectSpaceException();
         }
         if (mp < 1) {
@@ -395,7 +391,7 @@ public class LBFGSOperator extends LinearOperator {
          * just after the mark (which is the index of the last saved
          * pair or -1 if none).
          */
-        int k = slot(0);
+        final int k = slot(0);
         s[k].combine(1.0, x1, -1.0, x0);
         y[k].combine(1.0, g1, -1.0, g0);
 
@@ -407,7 +403,7 @@ public class LBFGSOperator extends LinearOperator {
             /* Compute RHO[k] and GAMMA.  If the update formula for GAMMA does
              * not yield a strictly positive value, the strategy is to keep the
              * previous value.  FIXME: should we restart? */
-            double sty = s[k].dot(y[k]);
+            final double sty = s[k].dot(y[k]);
             if (sty <= 0.0) {
                 /* This pair will be skipped.  This may however indicate a
                  * problem, see Nocedal & Wright "Numerical Optimization",
@@ -420,12 +416,12 @@ public class LBFGSOperator extends LinearOperator {
                 if (rule == OREN_SPEDICATO_SCALING
                         || (rule == (OREN_SPEDICATO_SCALING|CONSTANT_SCALING) &&
                         updates == 0)) {
-                    double ynorm = y[k].norm2();
+                    final double ynorm = y[k].norm2();
                     gamma = (sty/ynorm)/ynorm;
                 } else if (rule == BARZILAI_BORWEIN_SCALING
                         || (rule == (BARZILAI_BORWEIN_SCALING|CONSTANT_SCALING) &&
                         updates == 0)) {
-                    double snorm = s[k].norm2();
+                    final double snorm = s[k].norm2();
                     gamma = (snorm/sty)*snorm;
                 }
             }

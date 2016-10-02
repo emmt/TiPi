@@ -25,7 +25,7 @@
 
 package mitiv.optim;
 
-import mitiv.linalg.LinearOperator;
+import mitiv.linalg.LinearEndomorphism;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 
@@ -98,7 +98,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
      * just after the mark.
      * </p>
      */
-    private boolean saveMemory = true;
+    private final boolean saveMemory = true;
 
     /** Variables at the start of the line search. */
     protected Vector x0 = null;
@@ -131,17 +131,17 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
         this(new LBFGSOperator(space, m), lnsrch);
     }
 
-    public LBFGS(LinearOperator H0, int m, LineSearch lnsrch) {
+    public LBFGS(LinearEndomorphism H0, int m, LineSearch lnsrch) {
         this(new LBFGSOperator(H0, m), lnsrch);
     }
 
     private LBFGS(LBFGSOperator H, LineSearch lnsrch) {
-    	super(H.getOutputSpace(), lnsrch);
+        super(H.getSpace(), lnsrch);
         this.H = H;
-        this.p = H.getOutputSpace().create();
+        this.p = H.getSpace().create();
         if (! this.saveMemory) {
-            this.x0 = H.getOutputSpace().create();
-            this.g0 = H.getInputSpace().create();
+            this.x0 = H.getSpace().create();
+            this.g0 = H.getSpace().create();
         }
     }
 
@@ -177,11 +177,11 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             if (evaluations > 1) {
                 /* A line search is in progress.  Compute directional
                  * derivative and check whether line search has converged. */
-                LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, -p.dot(g));
+                final LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, -p.dot(g));
                 if (lnsrchTask == LineSearchTask.SEARCH) {
                     return nextStep(x);
                 } else if (lnsrchTask != LineSearchTask.CONVERGENCE) {
-                    OptimStatus lnsrchStatus = lnsrch.getStatus();
+                    final OptimStatus lnsrchStatus = lnsrch.getStatus();
                     if (lnsrchTask != LineSearchTask.WARNING ||
                             lnsrchStatus != OptimStatus.ROUNDING_ERRORS_PREVENT_PROGRESS) {
                         return failure(lnsrchStatus);
@@ -195,7 +195,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             if (evaluations == 1) {
                 ginit = gnorm;
             }
-            double gtest = getGradientThreshold();
+            final double gtest = getGradientThreshold();
             return success(gnorm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
 
         case NEW_X:
@@ -215,7 +215,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             while (true) {
                 H.apply(p, g);
                 dg0 = -p.dot(g);
-                double r = (delta > 0.0 ? delta*gnorm*p.norm2() : 0.0);
+                final double r = (delta > 0.0 ? delta*gnorm*p.norm2() : 0.0);
                 if (r > 0.0 ? (dg0 <= -r) : (dg0 < 0.0)) {
                     /* Sufficient descent condition holds.  Estimate the
                      * length of the first step and break to proceed with
@@ -249,7 +249,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             f0 = f;
 
             /* Start the line search. */
-            LineSearchTask lnsrchTask = lnsrch.start(f0, dg0, alpha, stpmin*alpha, stpmax*alpha);
+            final LineSearchTask lnsrchTask = lnsrch.start(f0, dg0, alpha, stpmin*alpha, stpmax*alpha);
             if (lnsrchTask != LineSearchTask.SEARCH) {
                 return failure(lnsrch.getStatus());
             }
@@ -271,7 +271,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             return 1.0;
         }
         if (0.0 < epsilon && epsilon < 1.0) {
-            double xnorm = x.norm2();
+            final double xnorm = x.norm2();
             if (xnorm > 0.0) {
                 return (xnorm/dnorm)*epsilon;
             }

@@ -25,7 +25,7 @@
 
 package mitiv.optim;
 
-import mitiv.linalg.LinearOperator;
+import mitiv.linalg.LinearEndomorphism;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 
@@ -54,10 +54,10 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
     private LBFGSOperator H = null;
 
     /** Relative threshold for the sufficient descent condition. */
-    private double delta = 5e-2;
+    private final double delta = 5e-2;
 
     /** Small relative size for the initial step or after a restart. */
-    private double epsilon = 0.0;
+    private final double epsilon = 0.0;
 
     /**
      * Relative threshold for the norm or the gradient (relative to the norm
@@ -91,7 +91,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
      * just after the mark.
      * </p>
      */
-    private boolean saveMemory = true;
+    private final boolean saveMemory = true;
 
     /** Variables at the start of the line search. */
     protected Vector x0 = null;
@@ -132,18 +132,18 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
         this(new LBFGSOperator(vsp, m), bp, ls);
     }
 
-    public VMLMB(LinearOperator H0, BoundProjector bp, int m, LineSearch ls) {
+    public VMLMB(LinearEndomorphism H0, BoundProjector bp, int m, LineSearch ls) {
         this(new LBFGSOperator(H0, m), bp, ls);
     }
 
     private VMLMB(LBFGSOperator H, BoundProjector bp, LineSearch ls) {
-    	super(H.getOutputSpace(), ls);
+        super(H.getSpace(), ls);
         this.H = H;
         this.projector = bp;
-        this.p = H.getOutputSpace().create();
+        this.p = H.getSpace().create();
         if (! this.saveMemory) {
-            this.x0 = H.getOutputSpace().create();
-            this.g0 = H.getInputSpace().create();
+            this.x0 = H.getSpace().create();
+            this.g0 = H.getSpace().create();
         }
         this.lnsrch = ls;
     }
@@ -183,11 +183,11 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             if (evaluations > 1) {
                 /* A line search is in progress.  Compute directional
                  * derivative and check whether line search has converged. */
-                LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, -p.dot(g));
+                final LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, -p.dot(g));
                 if (lnsrchTask == LineSearchTask.SEARCH) {
                     return nextStep(x);
                 } else if (lnsrchTask != LineSearchTask.CONVERGENCE) {
-                    OptimStatus lnsrchStatus = lnsrch.getStatus();
+                    final OptimStatus lnsrchStatus = lnsrch.getStatus();
                     if (lnsrchTask != LineSearchTask.WARNING ||
                             lnsrchStatus != OptimStatus.ROUNDING_ERRORS_PREVENT_PROGRESS) {
                         return failure(lnsrchStatus);
@@ -201,7 +201,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             if (evaluations == 1) {
                 ginit = gnorm;
             }
-            double gtest = getGradientThreshold();
+            final double gtest = getGradientThreshold();
             return success(gnorm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
 
         case NEW_X:
@@ -221,7 +221,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             while (true) {
                 H.apply(p, g);
                 pnorm = p.norm2(); // FIXME: in some cases, can be just GNORM*GAMMA
-                double pg = p.dot(g);
+                final double pg = p.dot(g);
                 if (pg >= delta*pnorm*gnorm) {
                     /* Accept P (respectively D = -P) as a sufficient ascent
                      * (respectively descent) direction and set the directional
@@ -318,7 +318,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                 amin = stpmin;
                 amax = 1.0;
             }
-            LineSearchTask lnsrchTask = lnsrch.start(f0, dg0, alpha, amin, amax);
+            final LineSearchTask lnsrchTask = lnsrch.start(f0, dg0, alpha, amin, amax);
             if (lnsrchTask != LineSearchTask.SEARCH) {
                 return failure(lnsrch.getStatus());
             }
@@ -333,9 +333,9 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
     }
 
     protected double initialStep(Vector x, Vector d) {
-        double dnorm = d.norm2();
+        final double dnorm = d.norm2();
         if (0.0 < epsilon && epsilon < 1.0) {
-            double xnorm = x.norm2();
+            final double xnorm = x.norm2();
             if (xnorm > 0.0) {
                 return (xnorm/dnorm)*epsilon;
             }

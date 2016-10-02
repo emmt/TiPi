@@ -25,7 +25,7 @@
 
 package mitiv.optim;
 
-import mitiv.linalg.LinearOperator;
+import mitiv.linalg.LinearEndomorphism;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 
@@ -101,7 +101,7 @@ public class BLMVM extends ReverseCommunicationOptimizer {
      * just after the mark.
      * </p>
      */
-    private boolean saveMemory = true;
+    private final boolean saveMemory = true;
 
     /** Variables at the start of the line search. */
     protected Vector x0 = null;
@@ -149,25 +149,25 @@ public class BLMVM extends ReverseCommunicationOptimizer {
         this(new LBFGSOperator(vsp, m), bp);
     }
 
-    public BLMVM(LinearOperator H0, BoundProjector bp, int m) {
+    public BLMVM(LinearEndomorphism H0, BoundProjector bp, int m) {
         this(new LBFGSOperator(H0, m), bp);
     }
 
     private BLMVM(LBFGSOperator H, BoundProjector bp) {
-    	super(H.getOutputSpace());
+        super(H.getSpace());
         this.H = H;
         if (bp == null) {
             throw new IllegalArgumentException("Illegal null projector");
         }
         this.projector = bp;
-        this.p = H.getOutputSpace().create();
+        this.p = H.getSpace().create();
         if (! this.saveMemory) {
-            this.x0 = H.getOutputSpace().create();
-            this.g0 = H.getInputSpace().create();
+            this.x0 = H.getSpace().create();
+            this.g0 = H.getSpace().create();
         }
-        this.pg0 = H.getInputSpace().create();
-        this.pg = H.getInputSpace().create();
-        this.tmp = H.getInputSpace().create();
+        this.pg0 = H.getSpace().create();
+        this.pg = H.getSpace().create();
+        this.tmp = H.getSpace().create();
     }
 
     @Override
@@ -297,7 +297,7 @@ public class BLMVM extends ReverseCommunicationOptimizer {
             return 1.0;
         }
         if (0.0 < epsilon && epsilon < 1.0) {
-            double xnorm = x.norm2();
+            final double xnorm = x.norm2();
             if (xnorm > 0.0) {
                 return (xnorm/dnorm)*epsilon;
             }
