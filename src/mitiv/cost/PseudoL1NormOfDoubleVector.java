@@ -41,7 +41,7 @@ public class PseudoL1NormOfDoubleVector extends PseudoL1Norm {
     @Override
     public void applyProx(Vector out, double alpha, Vector inp, double tol) {
         if (alpha == 0.0) {
-            out.copyFrom(inp);
+            out.copy(inp);
         } else if (alpha > 0.0) {
             if (! inp.belongsTo(inputSpace) || ! out.belongsTo(inputSpace)) {
                 throw new IncorrectSpaceException();

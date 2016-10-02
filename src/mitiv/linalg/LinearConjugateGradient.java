@@ -137,7 +137,7 @@ public class LinearConjugateGradient {
         if (reset) {
             /* x = 0 and r = b */
             x.zero();
-            r.copyFrom(b);
+            r.copy(b);
         } else {
             /* r = b - A.x */
             A.apply(r, x);
@@ -170,7 +170,7 @@ public class LinearConjugateGradient {
             }
             /* Compute new search direction: p = z + beta*p */
             if (iter == 0) {
-                p.copyFrom(p);
+                p.copy(p);
             } else {
                 double beta = rho / rho_prev;
                 p.combine(1.0, z, beta, p);

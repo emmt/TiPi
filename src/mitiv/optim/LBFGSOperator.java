@@ -335,7 +335,7 @@ public class LBFGSOperator extends LinearOperator {
             return false;
         }
         if (vec != dst) {
-            dst.copyFrom(vec);
+            dst.copy(vec);
         }
         if (wgt == null) {
             return solveInPlace(vec);
@@ -357,7 +357,7 @@ public class LBFGSOperator extends LinearOperator {
     /* Apply inverse Hessian approximation (out-of-place operation). */
     @Override
     protected void _apply(Vector dst, Vector src, int job) {
-        dst.copyFrom(src);
+        dst.copy(src);
         _apply(dst, job);
     }
 

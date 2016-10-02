@@ -250,8 +250,8 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                     --H.mp;
                 }
             }
-            x0.copyFrom(x);
-            g0.copyFrom(g);
+            x0.copy(x);
+            g0.copy(g);
             g0norm = gnorm;
             f0 = f;
 
@@ -313,7 +313,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
                     }
                     x.combine(1.0, x0, -alpha, p);
                 }
-                p.copyFrom(tmp);
+                p.copy(tmp);
                 alpha = 1.0;
                 amin = stpmin;
                 amax = 1.0;

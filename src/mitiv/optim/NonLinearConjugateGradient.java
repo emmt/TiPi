@@ -502,7 +502,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                 if (evaluations > 1) {
                     ++restarts;
                 }
-                d.copyFrom(g);
+                d.copy(g);
                 dtg = -gnorm*gnorm;
                 if (f != 0.0) {
                     alpha = 2.0*Math.abs(f/dtg);
@@ -519,10 +519,10 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             }
 
             /* Store current position as X0, f0, etc. */
-            x0.copyFrom(x);
+            x0.copy(x);
             f0 = f;
             if (g0 != null) {
-                g0.copyFrom(g);
+                g0.copy(g);
             }
             g0norm = gnorm;
             dtg0 = dtg;

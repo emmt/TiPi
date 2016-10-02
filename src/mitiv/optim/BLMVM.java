@@ -270,9 +270,9 @@ public class BLMVM extends ReverseCommunicationOptimizer {
                     --H.mp;
                 }
             }
-            x0.copyFrom(x);
-            g0.copyFrom(g);
-            pg0.copyFrom(pg);
+            x0.copy(x);
+            g0.copy(g);
+            pg0.copy(pg);
             f0 = f;
 
             /* Take the first step along the search direction. */

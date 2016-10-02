@@ -279,7 +279,7 @@ public class TruncatedConjugateGradient {
          */
         vsp.zero(x);
         double xnrm = 0.0;
-        r.copyFrom(b);
+        r.copy(b);
         if (P != null) {
             /* Check preconditioner P and allocate vector for Z. */
             if (P.getInputSpace() != vsp || P.getOutputSpace() != vsp) {
@@ -308,7 +308,7 @@ public class TruncatedConjugateGradient {
             }
             /* Compute new search direction: p = z + beta*p */
             if (iter == 0) {
-                p.copyFrom(z);
+                p.copy(z);
             } else {
                 double beta = rho / rho_prev;
                 p.combine(1.0, z, beta, p);

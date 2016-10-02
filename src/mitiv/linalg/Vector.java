@@ -152,26 +152,19 @@ public abstract class Vector {
     }
 
     /**
-     * Copy the contents of the vector into another one.
-     *
-     * @param dst - The destination vector.
-     * @throws IncorrectSpaceException {@code dst} must belong to the same vector space.
-     */
-    public final void copyTo(Vector dst)
-            throws IncorrectSpaceException {
-        if (dst != this) {
-            space.check(dst);
-            space._copy(dst, this);
-        }
-    }
-
-    /**
      * Copy the contents of the vector from another one.
      *
+     * <p>
+     * This method copies the components of the source vector <i>src</i> into <i>this</i>.
+     * In pseudo-code (for all indices <i>i</i>): 
+     * <pre>
+     * this[i] = src[i];
+     * </pre>
      * @param src - The source vector.
+     * 
      * @throws IncorrectSpaceException {@code src} must belong to the same vector space.
      */
-    public final void copyFrom(Vector src)
+    public final void copy(Vector src)
             throws IncorrectSpaceException {
         if (src != this) {
             space.check(src);

@@ -244,8 +244,8 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
                     --H.mp;
                 }
             }
-            x0.copyFrom(x);
-            g0.copyFrom(g);
+            x0.copy(x);
+            g0.copy(g);
             f0 = f;
 
             /* Start the line search. */
