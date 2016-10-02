@@ -29,7 +29,6 @@ import mitiv.base.Shaped;
 import mitiv.base.Typed;
 import mitiv.linalg.shaped.ShapedVector;
 
-
 /**
  * A ShapedArray is a shaped object with a primitive type.
  * <p>
@@ -37,18 +36,18 @@ import mitiv.linalg.shaped.ShapedVector;
  * the same data type.  Compared to a {@link #ShapedVector}, the elements
  * of a ShapedArray reside in conventional memory and may be stored in arbitrary
  * order and in a non-contiguous way.
- * 
+ *
  * @author Éric Thiébaut.
  */
 public interface ShapedArray extends Shaped, Typed {
-	/**
-	 * Check whether a `ShapedArray` is stored a flat Java array.
-	 * 
-	 * @return True if the result of `this.flatten(false)` is guaranteed to be a
-     *         direct reference (not a copy) to the contents of the array. 
-	 */
-	public abstract boolean isFlat();
-	
+    /**
+     * Check whether a `ShapedArray` is stored a flat Java array.
+     *
+     * @return True if the result of `this.flatten(false)` is guaranteed to be a
+     *         direct reference (not a copy) to the contents of the array.
+     */
+    public abstract boolean isFlat();
+
     /**
      * Convert array elements to type {@code byte}.
      * @return A {@link ByteArray} object which may be the object itself
@@ -147,7 +146,7 @@ public interface ShapedArray extends Shaped, Typed {
 
     /**
      * Perform some sanity tests.
-     * 
+     *
      * <p>
      * For performance reasons, not all errors are checked by TiPi code.
      * This means that arguments may be simply trusted for being correct.

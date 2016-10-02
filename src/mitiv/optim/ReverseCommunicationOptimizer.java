@@ -85,7 +85,7 @@ import mitiv.linalg.VectorSpace;
 
 public abstract class ReverseCommunicationOptimizer {
 
-	public static final int SUCCESS = 0;
+    public static final int SUCCESS = 0;
     public static final int FAILURE = -1;
 
     /** Vector space of the variables. */
@@ -108,16 +108,16 @@ public abstract class ReverseCommunicationOptimizer {
 
     /**
      * Create a reverse communication optimizer.
-     * 
+     *
      * @param space - The vector space to which belong the variables of the optimization problem.
      */
     protected ReverseCommunicationOptimizer(VectorSpace space) {
         if (space == null) {
             throw new IllegalArgumentException("Illegal null vector space");
         }
-       this.space = space;
+        this.space = space;
     }
-    
+
     /**
      * Start the search.
      *
