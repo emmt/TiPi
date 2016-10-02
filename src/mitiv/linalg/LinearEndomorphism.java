@@ -27,6 +27,7 @@ package mitiv.linalg;
 
 public abstract class LinearEndomorphism extends LinearOperator {
 
+    /** The input and output vector space. */
     protected final VectorSpace space;
 
     protected LinearEndomorphism(VectorSpace vsp) {
