@@ -122,28 +122,28 @@ public class ConvolutionDouble3D extends ConvolutionDouble {
         off1 = off[0];
         end1 = off1 + out.getDimension(0);
         if (off1 < 0 || off1 >= dim1) {
-            throw new IllegalArgumentException("Out of range offset along 1st dimension.");
+            throw new IllegalArgumentException("Out of range offset along 1st dimension");
         }
         if (end1 > dim1) {
-            throw new IllegalArgumentException("Data (+ offset) beyond 1st dimension.");
+            throw new IllegalArgumentException("Data (+ offset) beyond 1st dimension");
         }
         dim2 = inp.getDimension(1);
         off2 = off[1];
         end2 = off2 + out.getDimension(1);
         if (off2 < 0 || off2 >= dim2) {
-            throw new IllegalArgumentException("Out of range offset along 2nd dimension.");
+            throw new IllegalArgumentException("Out of range offset along 2nd dimension");
         }
         if (end2 > dim2) {
-            throw new IllegalArgumentException("Data (+ offset) beyond 2nd dimension.");
+            throw new IllegalArgumentException("Data (+ offset) beyond 2nd dimension");
         }
         dim3 = inp.getDimension(2);
         off3 = off[2];
         end3 = off3 + out.getDimension(2);
         if (off3 < 0 || off3 >= dim3) {
-            throw new IllegalArgumentException("Out of range offset along 3rd dimension.");
+            throw new IllegalArgumentException("Out of range offset along 3rd dimension");
         }
         if (end3 > dim3) {
-            throw new IllegalArgumentException("Data (+ offset) beyond 3rd dimension.");
+            throw new IllegalArgumentException("Data (+ offset) beyond 3rd dimension");
         }
         fastPull = out.getShape().equals(inp.getShape());
     }
@@ -190,7 +190,7 @@ public class ConvolutionDouble3D extends ConvolutionDouble {
             throw new IllegalArgumentException("Bad output size");
         }
         double z[] = getWorkspace();
-        int real = 0; // index of real part in model and FFT arrays
+        int real = 0; // index of real part in z array
         if (fastPull) {
             /* Output and input have the same size. */
             for (int k = 0; k < number; ++k) {
@@ -199,15 +199,14 @@ public class ConvolutionDouble3D extends ConvolutionDouble {
             }
         } else {
             /* Output size is smaller than input size. */
-            int k = 0; // index in data and weight arrays
+            int k = 0; // index in x array
             for (int i3 = 0; i3 < dim3; ++i3) {
                 boolean test = (off3 <= i3 && i3 < end3);
                 for (int i2 = 0; i2 < dim2; ++i2) {
                     test = (test && off2 <= i2 && i2 < end2);
                     for (int i1 = 0; i1 < dim1; ++i1) {
                         if (test && off1 <= i1 && i1 < end1) {
-                            x[k] = scale*z[real];
-                            ++k;
+                            x[k++] = scale*z[real];
                         }
                         real += 2;
                     }

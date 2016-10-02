@@ -64,7 +64,7 @@ import mitiv.utils.Timer;
  * <p>
  * The vector space of the operator is that of the arguments of the
  * convolution.  Currently only 1D, 2D or 3D arguments of type float
- * or double are supported.
+ * or double are supported due to a limitation of the FFT in JTransforms.
  * </p><p>
  * A convolution operator provides methods to perform the convolution
  * but also to apply the forward or backward FFT -- see
@@ -79,8 +79,8 @@ public abstract class Convolution extends ShapedLinearOperator {
     protected final int number; // number of values in the direct space
 
     /**
-     * The following constructor make this class non instantiable, but still
-     * let others inherit from this class.  You must use the {@link #build()}
+     * The following constructor makes this class non instantiable, but still
+     * let others inherit from this class.  Users shall use the {@link #build()}
      * factory to build a convolution operator.
      */
     protected Convolution(ShapedVectorSpace space) {
@@ -88,8 +88,8 @@ public abstract class Convolution extends ShapedLinearOperator {
     }
 
     /**
-     * The following constructor make this class non instantiable, but still
-     * let others inherit from this class.  You must use the {@link #build()}
+     * The following constructor makes this class non instantiable, but still
+     * let others inherit from this class.  Users shall use the {@link #build()}
      * factory to build a convolution operator.
      */
     protected Convolution(ShapedVectorSpace inp, ShapedVectorSpace out) {
@@ -122,8 +122,8 @@ public abstract class Convolution extends ShapedLinearOperator {
      *         with one of the {@link #setPSF()} methods.
      */
     public static Convolution build(ShapedVectorSpace space) {
-        int type = space.getType();
-        int rank = space.getRank();
+        final int type = space.getType();
+        final int rank = space.getRank();
         switch (type) {
         case Traits.FLOAT:
             switch (rank) {
@@ -166,7 +166,7 @@ public abstract class Convolution extends ShapedLinearOperator {
         /* Compute offsets (we take the least rank to avoid out of bound index exception
          * although the subsequent call to the builder will fail if the ranks are not
          * equal). */
-        int rank = Math.min(inp.getRank(), out.getRank());
+        final int rank = Math.min(inp.getRank(), out.getRank());
         int[] off = new int[rank];
         for (int k = 0; k < rank; ++k) {
             off[k] = (inp.getDimension(k)/2) - (out.getDimension(k)/2);
@@ -178,7 +178,7 @@ public abstract class Convolution extends ShapedLinearOperator {
      * Build a convolution operator.
      * <p>
      * This version of the factory for building a convolution operator
-     * let you specify precisely the position of the region corresponding to the
+     * let the caller specify precisely the position of the region corresponding to the
      * output in the result of the convolution. The offsets of this region must be
      * such that:
      *
@@ -205,11 +205,11 @@ public abstract class Convolution extends ShapedLinearOperator {
      */
     public static Convolution build(ShapedVectorSpace inp,
             ShapedVectorSpace out, int[] off) {
-        int type = inp.getType();
+        final int type = inp.getType();
         if (out.getType() != type) {
             throw new IllegalTypeException("Input and output spaces must have same element type.");
         }
-        int rank = inp.getRank();
+        final int rank = inp.getRank();
         if (out.getShape().rank() != rank) {
             throw new IllegalTypeException("Input and output spaces must have same rank.");
         }
@@ -277,9 +277,9 @@ public abstract class Convolution extends ShapedLinearOperator {
      * following operations:
      *
      * <pre>
-     * push(src);
-     * convolve(adjoint);
-     * pull(dst);
+     * this.push(src);
+     * this.convolve(adjoint);
+     * this.pull(dst);
      * </pre>
      *
      * where <b>src</b> is the source vector, <b>dst</b> is the destination
@@ -355,7 +355,7 @@ public abstract class Convolution extends ShapedLinearOperator {
     protected ShapedArray adjustPSF(ShapedArray psf, int[] off) {
         Shape psfShape = psf.getShape();
         Shape inpShape = getInputSpace().getShape();
-        int rank = inpShape.rank();
+        final int rank = inpShape.rank();
         if (psfShape.rank() != rank) {
             throw new IllegalArgumentException("PSF rank not conformable.");
         }
@@ -405,16 +405,3 @@ public abstract class Convolution extends ShapedLinearOperator {
         return timerForFFT.getElapsedTime();
     }
 }
-
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

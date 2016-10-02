@@ -124,10 +124,10 @@ public class ${className} extends Convolution${Type} {
         off${k} = off[${km1}];
         end${k} = off${k} + out.getDimension(${km1});
         if (off${k} < 0 || off${k} >= dim${k}) {
-            throw new IllegalArgumentException("Out of range offset along ${kth} dimension.");
+            throw new IllegalArgumentException("Out of range offset along ${kth} dimension");
         }
         if (end${k} > dim${k}) {
-            throw new IllegalArgumentException("Data (+ offset) beyond ${kth} dimension.");
+            throw new IllegalArgumentException("Data (+ offset) beyond ${kth} dimension");
         }
         //# end
         fastPull = out.getShape().equals(inp.getShape());
@@ -179,7 +179,7 @@ public class ${className} extends Convolution${Type} {
             throw new IllegalArgumentException("Bad output size");
         }
         ${type} z[] = getWorkspace();
-        int real = 0; // index of real part in model and FFT arrays
+        int real = 0; // index of real part in z array
         if (fastPull) {
             /* Output and input have the same size. */
             for (int k = 0; k < number; ++k) {
@@ -188,22 +188,20 @@ public class ${className} extends Convolution${Type} {
             }
         } else {
             /* Output size is smaller than input size. */
-            int k = 0; // index in data and weight arrays
+            int k = 0; // index in x array
             //# if ${rank} == 1
             for (int i1 = 0; i1 < dim1; ++i1) {
                 if (off1 <= i1 && i1 < end1) {
-                    x[k] = scale*z[real];
-                    ++k;
+                    x[k++] = scale*z[real];
                 }
                 real += 2;
             }
             //# elif ${rank} == 2
             for (int i2 = 0; i2 < dim2; ++i2) {
-               boolean test = (off2 <= i2 && i2 < end2);
+                boolean test = (off2 <= i2 && i2 < end2);
                 for (int i1 = 0; i1 < dim1; ++i1) {
                     if (test && off1 <= i1 && i1 < end1) {
-                        x[k] = scale*z[real];
-                        ++k;
+                        x[k++] = scale*z[real];
                     }
                     real += 2;
                 }
@@ -215,8 +213,7 @@ public class ${className} extends Convolution${Type} {
                     test = (test && off2 <= i2 && i2 < end2);
                     for (int i1 = 0; i1 < dim1; ++i1) {
                         if (test && off1 <= i1 && i1 < end1) {
-                            x[k] = scale*z[real];
-                            ++k;
+                            x[k++] = scale*z[real];
                         }
                         real += 2;
                     }

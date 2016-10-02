@@ -147,7 +147,7 @@ implements DifferentiableCostFunction
     protected final ShapedVectorSpace dataSpace;
 
     /**
-     * The following constructors make this class non instantiable, but still
+     * The following constructors makes this class non instantiable, but still
      * let others inherit from this class.  You must use the {@link #build()}
      * factory to build a convolution cost function.
      */
@@ -244,9 +244,9 @@ implements DifferentiableCostFunction
     /**
      * Build a weighted convolution cost function.
      * <p>
-     * This version of the factory to build a weighted convolution cost function
-     * let you specify precisely the position of the region corresponding to the
-     * data in the result of the convolution. The offsets of this region must be
+     * This version of the factory for building a weighted convolution cost function
+     * let the caller specify precisely the position of the region corresponding to the
+     * data in the result of the convolution.  The offsets of this region must be
      * such that:
      *
      * <pre>
