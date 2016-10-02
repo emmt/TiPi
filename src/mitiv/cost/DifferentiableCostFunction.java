@@ -68,28 +68,17 @@ public interface DifferentiableCostFunction extends CostFunction {
      * ({@code j == 0}) function of the list.
      *
      * @param alpha - A non-negative multiplier for the cost.
-     * @param x     - The vector of variables.
+     * @param x     - The vector of variables (must belongs to the input space of the
+     *                cost function).
      * @param gx    - The vector to store the gradient of the cost function times the
-     *                weight.
+     *                weight  (must belongs to the input space of the cost function).
      * @param clr   - Indicate whether the gradient vector has to be cleared (that is,
-     *                filled with zero) prior to the computation.  If false, the
+     *                filled with zeros) prior to the computation.  If false, the
      *                contents of the gradient vector is incremented with the gradient
-     *                of the cost function.
+     *                of the cost function (times {@code alpha}).
      * 
      * @return The value of the cost function times the weight.
      */
     abstract public double computeCostAndGradient(double alpha, Vector x,
             Vector gx, boolean clr);
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
