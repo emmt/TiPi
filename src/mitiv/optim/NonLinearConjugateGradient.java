@@ -92,8 +92,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                                convergence. */
     private double ginit;   /* Norm or the initial gradient. */
     private double fmin;    /* Minimal function value if provided. */
-    private double delta;   /* Relative size for a small step. */
-    private double epsilon; /* Threshold to accept descent direction. */
+    private final double delta;   /* Relative size for a small step. */
+    private final double epsilon; /* Threshold to accept descent direction. */
     private double alpha;   /* Current step length. */
     private double beta;    /* Current parameter in conjugate gradient update rule (for
                                information). */
@@ -129,7 +129,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
     }
 
     public NonLinearConjugateGradient(VectorSpace space, int method, LineSearch lnsrch) {
-    	super(space, lnsrch);
+        super(space, lnsrch);
         /* Check the input arguments for errors. */
         boolean g0_needed, y_needed;
         if (method == 0) {
@@ -252,9 +252,9 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      */
     private int update_Hestenes_Stiefel(Vector x, Vector g) {
         form_y(g);
-        double gty =  g.dot(y);
-        double dty = -d.dot(y);
-        double beta = (dty != 0.0 ? gty/dty : 0.0);
+        final double gty =  g.dot(y);
+        final double dty = -d.dot(y);
+        final double beta = (dty != 0.0 ? gty/dty : 0.0);
         return update1(g, beta);
     }
 
@@ -266,7 +266,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      * (this value is always >= 0 and can only be zero at a stationnary point).
      */
     private int update_Fletcher_Reeves(Vector x, Vector g) {
-        double r = gnorm/g0norm;
+        final double r = gnorm/g0norm;
         return update0(g, r*r);
     }
 
@@ -277,7 +277,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      */
     private int update_Polak_Ribiere_Polyak(Vector x, Vector g) {
         form_y(g);
-        double beta = (g.dot(y)/g0norm)/g0norm;
+        final double beta = (g.dot(y)/g0norm)/g0norm;
         return update1(g, beta);
     }
 
@@ -289,7 +289,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      * (this value is always >= 0 and can only be zero at a stationary point).
      */
     private int update_Fletcher(Vector x, Vector g) {
-        double beta = -gnorm*(gnorm/dtg0);
+        final double beta = -gnorm*(gnorm/dtg0);
         return update0(g, beta);
     }
 
@@ -300,8 +300,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      */
     private int update_Liu_Storey(Vector x, Vector g) {
         form_y(g);
-        double gty = g.dot(y);
-        double beta = -gty/dtg0;
+        final double gty = g.dot(y);
+        final double beta = -gty/dtg0;
         return update1(g, beta);
     }
 
@@ -312,8 +312,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      */
     private int update_Dai_Yuan(Vector x, Vector g) {
         form_y(g);
-        double dty = -d.dot(y);
-        double beta = (dty != 0.0 ? gnorm*(gnorm/dty) : 0.0);
+        final double dty = -d.dot(y);
+        final double beta = (dty != 0.0 ? gnorm*(gnorm/dty) : 0.0);
         return update1(g, beta);
     }
 
@@ -325,13 +325,13 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      */
     private int update_Hager_Zhang(Vector x, Vector g) {
         form_y(g);
-        double dty = -d.dot(y);
+        final double dty = -d.dot(y);
         double beta;
         if (dty != 0.0) {
             if (update_Hager_Zhang_orig) {
                 /* Original formulation, using Y as a scratch vector. */
-                double q = 1.0/dty;
-                double r = q*y.norm2();
+                final double q = 1.0/dty;
+                final double r = q*y.norm2();
                 y.combine(q, y, 2.0*r*r, d);
                 beta = y.dot(g);
             } else {
@@ -340,8 +340,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                    instead of 3 scalar products and 3 linear combinations).  The rounding
                    errors are however different, so one or the other formulation can be by
                    chance more efficient.  Though there is no systematic trend. */
-                double ytg = y.dot(g);
-                double ynorm = y.norm2();
+                final double ytg = y.dot(g);
+                final double ynorm = y.norm2();
                 beta = (ytg - 2.0*(ynorm/dty)*ynorm*dtg)/dty;
             }
         } else {
@@ -360,8 +360,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      *        = -<p,y>/<y,y>
      *
      *     c2 = <g1,y>/<y,y> - 2*<s,g1>/<s,y>
-     *	  = <g1,y>/<y,y> - 2*<d,g1>/<d,y>
-     *	  = <g1,y>/<y,y> - 2*<p,g1>/<p,y>
+     *        = <g1,y>/<y,y> - 2*<d,g1>/<d,y>
+     *        = <g1,y>/<y,y> - 2*<p,g1>/<p,y>
      *
      *     c3 = -(1/alpha)*<s,g1>/<y,y>
      *        = -<d,g1>/<y,y>
@@ -372,16 +372,16 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      */
     private int update_Perry_Shanno(Vector x, Vector g) {
         form_y(g);
-        double yty = y.dot(y);
+        final double yty = y.dot(y);
         if (yty <= 0.0)
             return FAILURE;
-        double dty = -d.dot(y);
+        final double dty = -d.dot(y);
         if (dty == 0.0)
             return FAILURE;
-        double gty = g.dot(y);
-        double c1 = dty/yty;
-        double c2 = gty/yty - 2.0*dtg/dty;
-        double c3 = -dtg/yty;
+        final double gty = g.dot(y);
+        final double c1 = dty/yty;
+        final double c2 = gty/yty - 2.0*dtg/dty;
+        final double c3 = -dtg/yty;
         beta = c2/c1;
         d.combine(c1, g, c2, d, c3, y);
         return SUCCESS;
@@ -444,14 +444,14 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                 /* A line search is in progress.  Compute directional
                    derivative and check whether line search has converged. */
                 dtg = -d.dot(g);
-                LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, dtg);
+                final LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, dtg);
                 if (lnsrchTask != LineSearchTask.CONVERGENCE) {
                     if (lnsrchTask == LineSearchTask.SEARCH) {
                         /* Line search has not converged, break to compute a
                            new trial point along the search direction. */
                         break;
                     }
-                    OptimStatus lnsrchStatus = lnsrch.getStatus();
+                    final OptimStatus lnsrchStatus = lnsrch.getStatus();
                     if (lnsrchTask != LineSearchTask.WARNING ||
                             lnsrchStatus != OptimStatus.ROUNDING_ERRORS_PREVENT_PROGRESS) {
                         return failure(lnsrchStatus);
@@ -507,8 +507,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                 if (f != 0.0) {
                     alpha = 2.0*Math.abs(f/dtg);
                 } else {
-                    double dnorm = gnorm;
-                    double xnorm = x.norm2();
+                    final double dnorm = gnorm;
+                    final double xnorm = x.norm2();
                     if (xnorm > 0.0) {
                         alpha = delta*xnorm/dnorm;
                     } else {
@@ -651,35 +651,35 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      */
     public static void main(String[] args) {
 
-        int[] prob = new int[] { 1, 2, 3, 4, 5, 6, 7, 7, 8, 9, 10, 11, 12, 13,
+        final int[] prob = new int[] { 1, 2, 3, 4, 5, 6, 7, 7, 8, 9, 10, 11, 12, 13,
                 14, 15, 16, 17, 18 };
-        int[] size = new int[] { 3, 6, 3, 2, 3, 5, 6, 9, 6, 8, 2, 4, 3, 8, 8,
+        final int[] size = new int[] { 3, 6, 3, 2, 3, 5, 6, 9, 6, 8, 2, 4, 3, 8, 8,
                 12, 2, 4, 30 };
-        double factor = 1.0;
+        final double factor = 1.0;
 
         /* Create line search object and set options. */
-        int method = HAGER_ZHANG;
-        MoreThuenteLineSearch lineSearch = new MoreThuenteLineSearch(0.05, 0.1,
+        final int method = HAGER_ZHANG;
+        final MoreThuenteLineSearch lineSearch = new MoreThuenteLineSearch(0.05, 0.1,
                 1E-8);
 
         for (int k = 0; k < prob.length; ++k) {
-            int p = prob[k];
-            int n = size[k];
-            DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(n);
-            double[] xData = new double[n];
-            double[] gData = new double[n];
+            final int p = prob[k];
+            final int n = size[k];
+            final DoubleShapedVectorSpace space = new DoubleShapedVectorSpace(n);
+            final double[] xData = new double[n];
+            final double[] gData = new double[n];
             int iter = -1;
             int nf = 0;
             int ng = 0;
             double fx = 0.0;
-            DoubleShapedVector x = space.wrap(xData);
-            DoubleShapedVector gx = space.wrap(gData);
+            final DoubleShapedVector x = space.wrap(xData);
+            final DoubleShapedVector gx = space.wrap(gData);
 
             /* Store initial solution. */
             MinPack1Tests.umipt(xData, p, factor);
 
             /* Create conjugate gradient minimizer. */
-            NonLinearConjugateGradient minimizer = new NonLinearConjugateGradient(
+            final NonLinearConjugateGradient minimizer = new NonLinearConjugateGradient(
                     space, method, lineSearch);
 
             OptimTask task = minimizer.start();
