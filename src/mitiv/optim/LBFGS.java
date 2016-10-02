@@ -127,22 +127,22 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
     /** Euclidean norm of the gradient at the last accepted step. */
     protected double gnorm = 0.0;
 
-    public LBFGS(VectorSpace vsp, int m, LineSearch ls) {
-        this(new LBFGSOperator(vsp, m), ls);
+    public LBFGS(VectorSpace space, int m, LineSearch lnsrch) {
+        this(new LBFGSOperator(space, m), lnsrch);
     }
 
-    public LBFGS(LinearOperator H0, int m, LineSearch ls) {
-        this(new LBFGSOperator(H0, m), ls);
+    public LBFGS(LinearOperator H0, int m, LineSearch lnsrch) {
+        this(new LBFGSOperator(H0, m), lnsrch);
     }
 
-    private LBFGS(LBFGSOperator H, LineSearch ls) {
+    private LBFGS(LBFGSOperator H, LineSearch lnsrch) {
+    	super(H.getOutputSpace(), lnsrch);
         this.H = H;
         this.p = H.getOutputSpace().create();
         if (! this.saveMemory) {
             this.x0 = H.getOutputSpace().create();
             this.g0 = H.getInputSpace().create();
         }
-        this.lnsrch = ls;
     }
 
     @Override

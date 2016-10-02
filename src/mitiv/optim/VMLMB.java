@@ -137,6 +137,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
     }
 
     private VMLMB(LBFGSOperator H, BoundProjector bp, LineSearch ls) {
+    	super(H.getOutputSpace(), ls);
         this.H = H;
         this.projector = bp;
         this.p = H.getOutputSpace().create();

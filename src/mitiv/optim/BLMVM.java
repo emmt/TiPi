@@ -154,6 +154,7 @@ public class BLMVM extends ReverseCommunicationOptimizer {
     }
 
     private BLMVM(LBFGSOperator H, BoundProjector bp) {
+    	super(H.getOutputSpace());
         this.H = H;
         if (bp == null) {
             throw new IllegalArgumentException("Illegal null projector");

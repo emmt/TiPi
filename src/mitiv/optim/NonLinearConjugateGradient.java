@@ -80,14 +80,14 @@ extends ReverseCommunicationOptimizerWithLineSearch {
 
     private double f0;      /* Function value at the start of the line search. */
     private double g0norm;  /* Euclidean norm of G0, the gradient at the start of the
-                                line search. */
+                               line search. */
     private double gnorm;   /* Euclidean norm of G, the gradient of the last accepted point. */
     private double dtg0;    /* Directional derivative at the start of the line search;
                                given by the inner product: -<d,g0> */
     private double dtg;     /* Directional derivative at the last trial point;
-                              given by the inner product: -<d,g> */
+                               given by the inner product: -<d,g> */
     private double grtol;   /* Relative threshold for the norm or the gradient (relative
-                                to GTEST the norm of the initial gradient) for convergence. */
+                               to GTEST the norm of the initial gradient) for convergence. */
     private double gatol;   /* Absolute threshold for the norm or the gradient for
                                convergence. */
     private double ginit;   /* Norm or the initial gradient. */
@@ -99,11 +99,10 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                                information). */
     private final double stpmin; /* Relative lower bound for the step length. */
     private final double stpmax; /* Relative upper bound for the step length. */
-    private final VectorSpace vsp;
     private final Vector x0; /* Variables at start of line search. */
     private final Vector g0; /* Gradient at start of line search. */
     private final Vector d;  /* (Anti-)search direction, new iterate is searched
-                                 as: x1 = x0 - alpha*d, for alpha >= 0. */
+                                as: x1 = x0 - alpha*d, for alpha >= 0. */
     private final Vector y;  /* Work vector (e.g., to store the gradient difference:
                                 Y = G - G0). */
     private final int method; /* Conjugate gradient method. */
@@ -118,24 +117,21 @@ extends ReverseCommunicationOptimizerWithLineSearch {
         }
     }
 
-    public NonLinearConjugateGradient(VectorSpace vsp) {
-        this(vsp, DEFAULT_METHOD);
+    public NonLinearConjugateGradient(VectorSpace space) {
+        this(space, DEFAULT_METHOD);
     }
 
-    public NonLinearConjugateGradient(VectorSpace vsp, int method) {
+    public NonLinearConjugateGradient(VectorSpace space, int method) {
         /* FIXME: choose more suitable values (e.g., in CG+: FTOL=1E-4, GTOL=1E-1,
         not less than 1E-4, XTOL=1E-17, STPMIN=1E-20 STPMAX=1E+20 and MAXFEV=40) */
-        this(vsp, method, new MoreThuenteLineSearch(/* sftol */ 0.05,
+        this(space, method, new MoreThuenteLineSearch(/* sftol */ 0.05,
                 /* sgtol */ 0.1, /* sxtol */ 1E-17));
     }
 
-    public NonLinearConjugateGradient(VectorSpace vsp, int method,
-            LineSearch lnsrch) {
+    public NonLinearConjugateGradient(VectorSpace space, int method, LineSearch lnsrch) {
+    	super(space, lnsrch);
         /* Check the input arguments for errors. */
         boolean g0_needed, y_needed;
-        if (vsp == null) {
-            throw new IllegalArgumentException("illegal null vector space");
-        }
         if (method == 0) {
             method = DEFAULT_METHOD;
         }
@@ -173,14 +169,12 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             y_needed = true;
             break;
         default:
-            throw new IllegalArgumentException("illegal method value");
+            throw new IllegalArgumentException("Illegal method value");
         }
 
         /* We allocate work vectors. */
-        this.vsp = vsp; /* must be set early in case of errors */
         unsetFMin();
         this.method = method;
-        this.lnsrch = lnsrch;
         this.grtol = 1e-3;
         this.gatol = 0.0;
         this.ginit = 0.0;
@@ -188,10 +182,10 @@ extends ReverseCommunicationOptimizerWithLineSearch {
         this.stpmax = STPMAX;
         this.delta = DELTA;
         this.epsilon = EPSILON;
-        this.x0 = vsp.create();
-        this.g0 = (g0_needed ? vsp.create() : null);
-        this.d = vsp.create();
-        this.y = (y_needed ? vsp.create() : null);
+        this.x0 = space.create();
+        this.g0 = (g0_needed ? space.create() : null);
+        this.d = space.create();
+        this.y = (y_needed ? space.create() : null);
         this.evaluations = 0;
         failure(OptimStatus.NOT_STARTED);
     }
@@ -220,7 +214,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
     private int update0(Vector g, double beta) {
         this.beta = beta;
         if (this.beta != 0.0) {
-            vsp.combine(1.0, g, beta, d);
+            space.combine(1.0, g, beta, d);
             return SUCCESS;
         } else {
             return FAILURE;
@@ -237,7 +231,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             this.beta = beta;
         }
         if (this.beta != 0.0) {
-            vsp.combine(d, 1.0, g, beta, d);
+            space.combine(d, 1.0, g, beta, d);
             return SUCCESS;
         } else {
             return FAILURE;
@@ -246,7 +240,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
 
     /* Form: Y = G - G0 */
     private void form_y(Vector g) {
-        vsp.combine(y, 1.0, g, -1.0, g0);
+        space.combine(y, 1.0, g, -1.0, g0);
     }
 
     /*
@@ -337,8 +331,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             if (update_Hager_Zhang_orig) {
                 /* Original formulation, using Y as a scratch vector. */
                 double q = 1.0/dty;
-                double r = q*vsp.norm2(y);
-                vsp.combine(y, q, y, 2.0*r*r, d);
+                double r = q*space.norm2(y);
+                space.combine(y, q, y, 2.0*r*r, d);
                 beta = y.dot(g);
             } else {
                 /* Improved formulation which spares one linear combination and thus has
@@ -347,7 +341,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                    errors are however different, so one or the other formulation can be by
                    chance more efficient.  Though there is no systematic trend. */
                 double ytg = y.dot(g);
-                double ynorm = vsp.norm2(y);
+                double ynorm = space.norm2(y);
                 beta = (ytg - 2.0*(ynorm/dty)*ynorm*dtg)/dty;
             }
         } else {
@@ -389,7 +383,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
         double c2 = gty/yty - 2.0*dtg/dty;
         double c3 = -dtg/yty;
         beta = c2/c1;
-        vsp.combine(d, c1, g, c2, d, c3, y);
+        space.combine(d, c1, g, c2, d, c3, y);
         return SUCCESS;
     }
 
@@ -508,7 +502,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                 if (evaluations > 1) {
                     ++restarts;
                 }
-                vsp.copy(d, g);
+                space.copy(d, g);
                 dtg = -gnorm*gnorm;
                 if (f != 0.0) {
                     alpha = 2.0*Math.abs(f/dtg);
@@ -525,10 +519,10 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             }
 
             /* Store current position as X0, f0, etc. */
-            vsp.copy(x0, x);
+            space.copy(x0, x);
             f0 = f;
             if (g0 != null) {
-                vsp.copy(g0, g);
+                space.copy(g0, g);
             }
             g0norm = gnorm;
             dtg0 = dtg;

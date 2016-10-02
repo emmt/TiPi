@@ -26,6 +26,7 @@
 package mitiv.optim;
 
 import mitiv.linalg.Vector;
+import mitiv.linalg.VectorSpace;
 
 /**
  * Interface for multivariate optimization methods with reverse communication.
@@ -83,8 +84,12 @@ import mitiv.linalg.Vector;
  */
 
 public abstract class ReverseCommunicationOptimizer {
-    public static final int SUCCESS = 0;
+
+	public static final int SUCCESS = 0;
     public static final int FAILURE = -1;
+
+    /** Vector space of the variables. */
+    protected final VectorSpace space;
 
     /** Pending task for the caller. */
     protected OptimTask task;
@@ -101,6 +106,18 @@ public abstract class ReverseCommunicationOptimizer {
     /** Number of restarts. */
     protected int restarts = 0;
 
+    /**
+     * Create a reverse communication optimizer.
+     * 
+     * @param space - The vector space to which belong the variables of the optimization problem.
+     */
+    protected ReverseCommunicationOptimizer(VectorSpace space) {
+        if (space == null) {
+            throw new IllegalArgumentException("Illegal null vector space");
+        }
+       this.space = space;
+    }
+    
     /**
      * Start the search.
      *
@@ -131,10 +148,19 @@ public abstract class ReverseCommunicationOptimizer {
     /**
      * Get the current pending task.
      *
-     * @return The pending task to perform..
+     * @return The pending task to perform.
      */
     public final OptimTask getTask() {
         return task;
+    }
+
+    /**
+     * Get the vector space of the variables.
+     *
+     * @return The vector space to which belong the variables of the optimization problem.
+     */
+    public final VectorSpace getSpace() {
+        return space;
     }
 
     /**

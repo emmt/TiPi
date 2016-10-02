@@ -25,24 +25,22 @@
 
 package mitiv.optim;
 
+import mitiv.linalg.VectorSpace;
 
-public abstract class ReverseCommunicationOptimizerWithLineSearch extends
-ReverseCommunicationOptimizer {
+public abstract class ReverseCommunicationOptimizerWithLineSearch extends ReverseCommunicationOptimizer {
 
-    /** Line search to use. */
+	/** Line search to use. */
     protected LineSearch lnsrch;
 
+    /**
+     * Create a reverse communication optimizer with a line search.
+     * 
+     * @param space - The vector space to which belong the variables of the optimization problem.
+     * @param lnsrch - The line search method.
+     */
+    protected ReverseCommunicationOptimizerWithLineSearch(VectorSpace space, LineSearch lnsrch) {
+		super(space);
+		this.lnsrch = lnsrch;
+	}
+
 }
-
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
