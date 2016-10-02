@@ -31,13 +31,13 @@ import mitiv.linalg.VectorSpace;
 
 /**
  * Class implementing a combination of differentiable cost functions.
- * 
+ *
  * An instance of this class is a weighted sum of differentiable cost functions
  * and is itself a differentiable cost function.  When computing the function value
  * and its gradient, it takes care of avoiding unnecessary calculations.  A
  * restriction is that the input spaces of all the combined costs functions must
  * be the same.
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 public class CompositeDifferentiableCostFunction implements DifferentiableCostFunction {
@@ -45,14 +45,59 @@ public class CompositeDifferentiableCostFunction implements DifferentiableCostFu
     private final DifferentiableCostFunction[] func;
     private final double[] wght;
 
+    /** Number of function evaluations. */
+    protected int nfx = 0;
+
+    /** Number of gradient evaluations. */
+    protected int ngx = 0;
+
+    /**
+     * Combine a single cost function in a composite cost function.
+     *
+     * @param w1 - The weight of the cost function (must be finite and nonnegative).
+     * @param f1 - The cost function.
+     *
+     * @throws IllegalArgumentException if any one of the weights is invalid or if the cost
+     * functions do not have the same input space.
+     */
     public CompositeDifferentiableCostFunction(double w1, DifferentiableCostFunction f1) {
+        checkWeight(w1);
         inputSpace = f1.getInputSpace();
         func = new DifferentiableCostFunction[]{f1};
         wght = new double[]{w1};
     }
 
+
+    /**
+     * Combine two cost functions in a composite cost function.
+     *
+     * The cost function of a typical inverse problem writes:
+     * <pre>
+     *     f(x) = fdata(x) + mu*fprior(x);
+     * </pre>
+     * with:
+     * <ul>
+     * <li> fdata  - A likelihood term which imposes consistency with the data.</li>
+     * <li> mu     - The regularization level.</li>
+     * <li> fprior - A regularization term which imposes consistency with the priors.</li>
+     * </ul>
+     * Such a composite cost function is created by:
+     * <pre>
+     *     f = new CompositeDifferentiableCostFunction(1.0, fdata, mu, fprior);
+     * </pre>
+     *
+     * @param w1 - The weight of the first cost function (must be finite and nonnegative).
+     * @param f1 - The first cost function.
+     * @param w2 - The weight of the second cost function (must be finite and nonnegative).
+     * @param f2 - The second cost function.
+     *
+     * @throws IllegalArgumentException if any one of the weights is invalid or if the cost
+     * functions do not have the same input space.
+     */
     public CompositeDifferentiableCostFunction(double w1, DifferentiableCostFunction f1,
             double w2, DifferentiableCostFunction f2) {
+        checkWeight(w1);
+        checkWeight(w2);
         inputSpace = f1.getInputSpace();
         if (f2.getInputSpace() != inputSpace) {
             throw new IncorrectSpaceException("All functions must have the same input space.");
@@ -61,9 +106,25 @@ public class CompositeDifferentiableCostFunction implements DifferentiableCostFu
         wght = new double[]{w1, w2};
     }
 
+    /**
+     * Combine three cost functions in a composite cost function.
+     *
+     * @param w1 - The weight of the first cost function (must be finite and nonnegative).
+     * @param f1 - The first cost function.
+     * @param w2 - The weight of the second cost function (must be finite and nonnegative).
+     * @param f2 - The second cost function.
+     * @param w3 - The weight of the third cost function (must be finite and nonnegative).
+     * @param f3 - The third cost function.
+     *
+     * @throws IllegalArgumentException if any one of the weights is invalid or if the cost
+     * functions do not have the same input space.
+     */
     public CompositeDifferentiableCostFunction(double w1, DifferentiableCostFunction f1,
             double w2, DifferentiableCostFunction f2,
             double w3, DifferentiableCostFunction f3) {
+        checkWeight(w1);
+        checkWeight(w2);
+        checkWeight(w3);
         inputSpace = f1.getInputSpace();
         if (f2.getInputSpace() != inputSpace || f3.getInputSpace() != inputSpace) {
             throw new IncorrectSpaceException("All functions must have the same input space.");
@@ -87,6 +148,8 @@ public class CompositeDifferentiableCostFunction implements DifferentiableCostFu
                 }
             }
         }
+        ++nfx;
+        ++ngx;
         return cost;
     }
 
@@ -105,18 +168,30 @@ public class CompositeDifferentiableCostFunction implements DifferentiableCostFu
                 }
             }
         }
+        ++nfx;
         return cost;
     }
-}
 
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
+    /**
+     * Get number of function evaluations.
+     * @return The number of function evaluations.
+     */
+    public int getNumberOfFunctionCalls() {
+        return nfx;
+    }
+
+    /**
+     * Get number of gradient evaluations.
+     * @return The number of gradient evaluations.
+     */
+    public int getNumberOfGradientCalls() {
+        return ngx;
+    }
+
+    static final private void checkWeight(double w)
+    {
+       if (Double.isNaN(w) || Double.isInfinite(w) || w < 0.0) {
+           throw new IllegalArgumentException("Cost function weight must be finite and nonnegative");
+       }
+    }
+}
