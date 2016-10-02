@@ -214,7 +214,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
     private int update0(Vector g, double beta) {
         this.beta = beta;
         if (this.beta != 0.0) {
-            space.combine(1.0, g, beta, d);
+            d.combine(1.0, g, beta, d);
             return SUCCESS;
         } else {
             return FAILURE;
@@ -231,7 +231,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             this.beta = beta;
         }
         if (this.beta != 0.0) {
-            space.combine(d, 1.0, g, beta, d);
+            d.combine(1.0, g, beta, d);
             return SUCCESS;
         } else {
             return FAILURE;
@@ -240,7 +240,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
 
     /* Form: Y = G - G0 */
     private void form_y(Vector g) {
-        space.combine(y, 1.0, g, -1.0, g0);
+        y.combine(1.0, g, -1.0, g0);
     }
 
     /*
@@ -331,8 +331,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             if (update_Hager_Zhang_orig) {
                 /* Original formulation, using Y as a scratch vector. */
                 double q = 1.0/dty;
-                double r = q*space.norm2(y);
-                space.combine(y, q, y, 2.0*r*r, d);
+                double r = q*y.norm2();
+                y.combine(q, y, 2.0*r*r, d);
                 beta = y.dot(g);
             } else {
                 /* Improved formulation which spares one linear combination and thus has
@@ -341,7 +341,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                    errors are however different, so one or the other formulation can be by
                    chance more efficient.  Though there is no systematic trend. */
                 double ytg = y.dot(g);
-                double ynorm = space.norm2(y);
+                double ynorm = y.norm2();
                 beta = (ytg - 2.0*(ynorm/dty)*ynorm*dtg)/dty;
             }
         } else {
@@ -383,7 +383,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
         double c2 = gty/yty - 2.0*dtg/dty;
         double c3 = -dtg/yty;
         beta = c2/c1;
-        space.combine(d, c1, g, c2, d, c3, y);
+        d.combine(c1, g, c2, d, c3, y);
         return SUCCESS;
     }
 
@@ -502,7 +502,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                 if (evaluations > 1) {
                     ++restarts;
                 }
-                space.copy(d, g);
+                d.copyFrom(g);
                 dtg = -gnorm*gnorm;
                 if (f != 0.0) {
                     alpha = 2.0*Math.abs(f/dtg);
@@ -519,10 +519,10 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             }
 
             /* Store current position as X0, f0, etc. */
-            space.copy(x0, x);
+            x0.copyFrom(x);
             f0 = f;
             if (g0 != null) {
-                space.copy(g0, g);
+                g0.copyFrom(g);
             }
             g0norm = gnorm;
             dtg0 = dtg;
@@ -694,15 +694,15 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                     if (iter == 0) {
                         System.out.println("\nProblem #" + p + " with " + n
                                 + " variables.");
-                        System.out.println("|x0| = " + space.norm2(x) + " f0 = "
-                                + fx + " |g0| = " + space.norm2(gx));
+                        System.out.println("|x0| = " + x.norm2() + " f0 = "
+                                + fx + " |g0| = " + gx.norm2());
                         /*} else {
-                        System.out.println("iter = " + iter + " f(x) = " + fx + " |g(x)| = " + space.norm2(gx)); */
+                        System.out.println("iter = " + iter + " f(x) = " + fx + " |g(x)| = " + gx.norm2()); */
                     }
                 } else if (task == OptimTask.FINAL_X) {
                     ++iter;
-                    System.out.println("|xn| = " + space.norm2(x) + " f(xn) = "
-                            + fx + " |g(xn)| = " + space.norm2(gx));
+                    System.out.println("|xn| = " + x.norm2() + " f(xn) = "
+                            + fx + " |g(xn)| = " + gx.norm2());
                     System.out.println("in " + iter + " iterations, " + nf
                             + " function calls and " + ng + " gradient calls");
                     break;
