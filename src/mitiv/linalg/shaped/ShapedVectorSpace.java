@@ -132,7 +132,7 @@ public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, T
      * @throws NonConformableArrayException
      */
     public void checkShape(ShapedArray arr) {
-        int rank = getRank();
+        final int rank = getRank();
         if (rank != arr.getRank()) {
             throw new NonConformableArrayException("Shaped array rank mismatch.");
         }
@@ -142,6 +142,9 @@ public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, T
             }
         }
     }
+
+    @Override
+    public abstract ShapedVector create();
 
     /**
      * Create a new vector initialized with the contents of an array.
@@ -180,16 +183,3 @@ public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, T
     public abstract ShapedVector create(ShapedArray arr, boolean forceCopy);
 
 }
-
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
