@@ -75,19 +75,6 @@ public class RankOneOperator extends LinearOperator {
         }
     }
 
-    /* Override this method because in-place operation does not necessitate
-     * a temporary vector. */
-    @Override
-    protected void _apply(Vector vec, int job) {
-        if (job == DIRECT) {
-            outputSpace.scale(vec, this.v.dot(vec), this.u);
-        } else if (job == ADJOINT) {
-            inputSpace.scale(vec, this.u.dot(vec), this.v);
-        } else {
-            throw new NotImplementedException();
-        }
-    }
-
     /**
      * Get the left vector of a rank-one linear operator.
      * @return The left vector of the rank-one linear operator.

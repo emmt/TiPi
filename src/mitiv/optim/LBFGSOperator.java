@@ -48,7 +48,8 @@ public class LBFGSOperator extends LinearEndomorphism {
     /** Do not scale the computed direction. */
     static final int NO_SCALING = 0;
 
-    /** Use Oren-Spedicato approximation of the inverse Hessian.
+    /**
+     * Use Oren-Spedicato approximation of the inverse Hessian.
      *
      * This approximation is a simple scaling by:
      * <pre>
@@ -57,7 +58,8 @@ public class LBFGSOperator extends LinearEndomorphism {
      */
     static final int OREN_SPEDICATO_SCALING = 1;
 
-    /** Use Barzilai-Borwein approximation of the inverse Hessian.
+    /**
+     * Use Barzilai-Borwein approximation of the inverse Hessian.
      *
      * This approximation is a simple scaling by:
      * <pre>
@@ -66,7 +68,8 @@ public class LBFGSOperator extends LinearEndomorphism {
      */
     static final int BARZILAI_BORWEIN_SCALING = 2;
 
-    /** Do not update the scaling.
+    /**
+     * Do not update the scaling.
      *
      * The scaling is only computed at the first update.
      */
@@ -107,10 +110,15 @@ public class LBFGSOperator extends LinearEndomorphism {
      *
      * The LBFGS operator just stores a reference to the preconditioner
      * {@code H0} and does not assume that the preconditioner is a constant
-     * operator. It is therefore possible for the caller to adjust the
-     * preconditioner at every iteration. The LBFGS operator will have the same
-     * input and output spaces as the preconditioner and can be thought as a
-     * refined version of {@code H0}.
+     * operator.  It is therefore possible for the caller to adjust the
+     * preconditioner at every iteration.  The LBFGS operator will have the
+     * same input and output spaces as the preconditioner and can be thought
+     * as a refined version of {@code H0}.  The preconditioner {@code H0} will
+     * be used <i>in-place</i>, that is with the same source and destination
+     * vector, it is the user responsibility to make sure that this is
+     * possible.  In addition, if bound constraints are applied to the
+     * variables, the preconditioner {@code H0} must be a diagonal operator
+     * (this is not checked).
      *
      * @param H0
      *            - The preconditioner.
@@ -234,10 +242,18 @@ public class LBFGSOperator extends LinearEndomorphism {
         return y[slot(j)];
     }
 
-    /* Apply the original L-BFGS Strang's two-loop recursion.  This private
-     * method assumes that the argments are correct.  The result indicates
-     * whether the operation was a success. */
-    private boolean solveInPlace(Vector vec)
+    /**
+     * Apply L-BFGS operator in-place.
+     *
+     * <p>
+     * Apply the original L-BFGS Strang's two-loop recursion.  This private
+     * method assumes that the arguments are correct.
+     *
+     * @param vec - The vector to which apply the operator (operation is done in-place).
+     *
+     * @return The result indicates whether the operation was a success.
+     */
+    private boolean applyInPlace(Vector vec)
     {
         /* First loop of the recursion. */
         for (int j = 1; j <= mp; ++j) {
@@ -248,9 +264,9 @@ public class LBFGSOperator extends LinearEndomorphism {
             }
         }
 
-        /* Apply intial inverse Hessian approximation. */
+        /* Apply initial inverse Hessian approximation. */
         if (H0 != null) {
-            H0.apply(vec);
+            H0.apply(vec, vec);
         } else if (gamma != 1.0) {
             vec.scale(gamma);
         }
@@ -266,10 +282,20 @@ public class LBFGSOperator extends LinearEndomorphism {
         return true;
     }
 
-    /* Apply the L-BFGS Strang's two-loop recursion modified to account for
-     * free variables.  This private method assumes that the argments are
-     * correct.  The result indicates whether the operation was a success. */
-    private boolean solveInPlace(Vector wgt, Vector vec)
+    /**
+     * Apply L-BFGS operator in-place.
+     *
+     * <p>
+     * Apply the L-BFGS Strang's two-loop recursion modified to account for
+     * free variables.  This private method assumes that the arguments are
+     * correct.
+     *
+     * @param wgt - The weight to use for all inner products.
+     * @param vec - The vector to which apply the operator (operation is done in-place).
+     *
+     * @return The result indicates whether the operation was a success.
+     */
+    private boolean applyInPlace(Vector wgt, Vector vec)
     {
         /* First loop of the recursion. */
         boolean flag = (H0 == null);
@@ -301,9 +327,7 @@ public class LBFGSOperator extends LinearEndomorphism {
 
         /* Apply initial inverse Hessian approximation. */
         if (H0 != null) {
-            /* FIXME: the given initial inverse Hessian approximation must be a
-             * diagonal operator, this is not checked. */
-            H0.apply(vec);
+            H0.apply(vec, vec);
         } else if (gamma != 1) {
             vec.scale(gamma);
         }
@@ -334,27 +358,23 @@ public class LBFGSOperator extends LinearEndomorphism {
             dst.copy(vec);
         }
         if (wgt == null) {
-            return solveInPlace(vec);
+            return applyInPlace(vec);
         } else {
-            return solveInPlace(wgt, vec);
+            return applyInPlace(wgt, vec);
         }
 
-    }
-
-    /* Apply inverse Hessian approximation (in-place operation). */
-    @Override
-    protected void _apply(Vector vec, int job) {
-        if (job != DIRECT && job != ADJOINT) {
-            throw new IllegalLinearOperationException();
-        }
-        solveInPlace(vec);
     }
 
     /* Apply inverse Hessian approximation (out-of-place operation). */
     @Override
     protected void _apply(Vector dst, Vector src, int job) {
-        dst.copy(src);
-        _apply(dst, job);
+        if (job != DIRECT && job != ADJOINT) {
+            throw new IllegalLinearOperationException();
+        }
+        if (dst != src) {
+            dst.copy(src);
+        }
+        applyInPlace(dst);
     }
 
     /**
@@ -385,8 +405,7 @@ public class LBFGSOperator extends LinearEndomorphism {
      * @throws IncorrectSpaceException
      */
     public void update(Vector x1, Vector x0, Vector g1, Vector g0,
-            boolean partial)
-                    throws IncorrectSpaceException {
+            boolean partial) throws IncorrectSpaceException {
         /* Store the variables and gradient differences in the slot
          * just after the mark (which is the index of the last saved
          * pair or -1 if none).

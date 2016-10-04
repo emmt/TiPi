@@ -25,17 +25,12 @@
 
 package mitiv.linalg;
 
+import mitiv.base.mapping.DifferentiableMapping;
 import mitiv.exception.IllegalLinearOperationException;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.exception.NotImplementedException;
 
-public abstract class LinearOperator {
-    /** The input vector space. */
-    protected final VectorSpace inputSpace;
-
-    /** The output vector space. */
-    protected final VectorSpace outputSpace;
-
+public abstract class LinearOperator extends DifferentiableMapping {
     /** Job value to apply the linear operator. */
     public static int DIRECT = 0;
 
@@ -58,8 +53,7 @@ public abstract class LinearOperator {
      *            - The vector space.
      */
     public LinearOperator(VectorSpace vsp) {
-        inputSpace = vsp;
-        outputSpace = vsp;
+        super(vsp);
     }
 
     /**
@@ -74,51 +68,7 @@ public abstract class LinearOperator {
      *            - The output vector space.
      */
     protected LinearOperator(VectorSpace inp, VectorSpace out) {
-        inputSpace = inp;
-        outputSpace = out;
-    }
-
-    /**
-     * Get the input space of a linear operator.
-     *
-     * @return The input space of the linear operator.
-     */
-    public VectorSpace getInputSpace() {
-        return inputSpace;
-    }
-
-    /**
-     * Get the output space of a linear operator.
-     *
-     * @return The output space of the linear operator.
-     */
-    public VectorSpace getOutputSpace() {
-        return outputSpace;
-    }
-
-    /**
-     * Check whether a linear operator is an endomorphism.
-     *
-     * @return <tt>true</tt> is the input and output spaces of the linear
-     *         operator are the same; <tt>false</tt> otherwise.
-     */
-    public boolean isEndomorphism() {
-        return (outputSpace == inputSpace);
-    }
-
-    /**
-     * Apply linear operator.
-     * @param dst - The destination vector.
-     * @param src - The source vector.
-     *
-     * @throws IncorrectSpaceException
-     *         {@code src} must belongs to the input vector space of the operator
-     *         and {@code dst} must belongs to the output vector space of the
-     *         operator.
-     */
-    public void apply(Vector dst, final Vector src)
-            throws IncorrectSpaceException {
-        apply(dst, src, DIRECT);
+        super(inp, out);
     }
 
     /**
@@ -145,72 +95,16 @@ public abstract class LinearOperator {
     public void apply(Vector dst, Vector src, int job)
             throws IncorrectSpaceException, IllegalLinearOperationException,
             NotImplementedException {
-        if (dst == src) {
-            apply(src, job);
+        if (job == DIRECT || job == (INVERSE|ADJOINT)) {
+            inputSpace.check(src);
+            outputSpace.check(dst);
+        } else if (job == ADJOINT || job == INVERSE) {
+            outputSpace.check(src);
+            inputSpace.check(dst);
         } else {
-            if (job == DIRECT || job == (INVERSE|ADJOINT)) {
-                inputSpace.check(src);
-                outputSpace.check(dst);
-            } else if (job == ADJOINT || job == INVERSE) {
-                outputSpace.check(src);
-                inputSpace.check(dst);
-            } else {
-                throw new IllegalLinearOperationException();
-            }
-            this._apply(dst, src, job);
-        }
-    }
-
-    /**
-     * Apply linear operator in-place.
-     *
-     * @param vec - The source and destination vector.
-     *
-     * @throws IllegalLinearOperationException
-     *             The operator must be an endomorphism.
-     *
-     * @throws IncorrectSpaceException
-     *             {@code vec} must belongs to the vector space of the operator.
-     *
-     * @throws NotImplementedException
-     *              Operation is not supported or cannot be performed
-     *              in-place.
-     */
-    public void apply(Vector vec)
-            throws IncorrectSpaceException,
-            NotImplementedException,
-            IllegalLinearOperationException {
-        apply(vec, DIRECT);
-    }
-
-    /**
-     * Apply in-place a given operation implemented a linear operator.
-     *
-     * @param vec - The source and destination vector.
-     * @param job - The type of operation to perform ({@link #DIRECT},
-     *              {@link #ADJOINT}, {@link INVERSE} or
-     *              {@link INVERSE_ADJOINT}).
-     *
-     * @throws IllegalLinearOperationException
-     *             The operator must be an endomorphism or invalid {@code job}.
-     *
-     * @throws IncorrectSpaceException
-     *             {@code vec} must belongs to the vector space of the operator.
-     *
-     * @throws NotImplementedException
-     *              Operation is not supported or cannot be performed
-     *              in-place.
-     */
-    public void apply(Vector vec, int job)
-            throws IncorrectSpaceException,
-            NotImplementedException,
-            IllegalLinearOperationException {
-        if (! isEndomorphism() ||
-                (job & (DIRECT|ADJOINT|INVERSE)) != job) {
             throw new IllegalLinearOperationException();
         }
-        inputSpace.check(vec);
-        this._apply(vec, job);
+        this._apply(dst, src, job);
     }
 
     /**
@@ -229,23 +123,14 @@ public abstract class LinearOperator {
     protected abstract void _apply(Vector dst, Vector src, int job)
             throws NotImplementedException;
 
-    /**
-     * Implement the operations performed by a linear operator in-place.
-     *
-     * This protected method is called by the `apply` method after checking of
-     * the arguments.  Operation is done in-place which is only possible for
-     * endomorphisms.  If this method is not overridden by the derived class, a
-     * default implementation which uses a temporary vector is provided.
-     *
-     * @param vec - The source and destination vector.
-     * @param job - The type of operation to perform.
-     *
-     * @throws NotImplementedException
-     *              Operation is not supported.
-     */
-    protected void _apply(Vector vec, int job)
-    {
-        _apply(vec, vec.clone(), job);
+    @Override
+    protected void _apply(Vector dst, Vector src) {
+        _apply(dst, src, DIRECT);
+    }
+
+    @Override
+    protected void _applyJacobian(Vector y, Vector x, Vector v) {
+        _apply(y, v, ADJOINT);
     }
 
     /**
@@ -288,16 +173,17 @@ public abstract class LinearOperator {
      *         {@code <x|A'.y>}.
      */
     public double checkAdjoint(Vector x, Vector y) {
-        Vector Ax = outputSpace.create();
+        final Vector Ax = outputSpace.create();
         apply(Ax, x);
-        Vector Aty = inputSpace.create();
+        final Vector Aty = inputSpace.create();
         apply(Aty, y, ADJOINT);
-        double a = outputSpace.dot(y,  Ax);
-        double b = inputSpace.dot(Aty,  x);
+        final double a = outputSpace.dot(y,  Ax);
+        final double b = inputSpace.dot(Aty,  x);
         if (a == b) {
             return 0.0;
         } else {
             return Math.abs(a - b)/Math.max(Math.abs(a),  Math.abs(b));
         }
     }
+
 }

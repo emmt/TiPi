@@ -95,13 +95,4 @@ public class DiagonalOperator extends LinearEndomorphism {
         space._multiply(dst, src, diag);
     }
 
-    @Override
-    protected void _apply(Vector vec, int job)
-            throws IncorrectSpaceException, NotImplementedException {
-        if (job != DIRECT && job != ADJOINT) {
-            throw new NotImplementedException();
-        }
-        space._multiply(vec, vec, diag);
-    }
-
 }
