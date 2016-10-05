@@ -29,6 +29,7 @@ import mitiv.array.ShapedArray;
 import mitiv.base.ArrayDescriptor;
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.Typed;
 import mitiv.exception.NonConformableArrayException;
 import mitiv.linalg.VectorSpace;
@@ -117,7 +118,7 @@ public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, T
 
     protected ShapedVector _clone(ShapedVector vec) {
         ShapedVector cpy;
-        if (vec.getType() == DOUBLE) {
+        if (vec.getType() == Traits.DOUBLE) {
             cpy = new DoubleShapedVector((DoubleShapedVectorSpace)vec.getOwner());
         } else {
             cpy = new FloatShapedVector((FloatShapedVectorSpace)vec.getOwner());

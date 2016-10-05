@@ -28,7 +28,7 @@ package mitiv.base;
 
 
 /**
- * Shape object to store list of dimensions.
+ * Shape object to store dimesnions list.
  * <p>
  * A Shape object is unmodifiable and is used to store the dimensions of a
  * shaped object in an efficient way.  To preserve its properties, Shape
@@ -37,6 +37,11 @@ package mitiv.base;
  * @author Éric Thiébaut
  */
 public class Shape {
+    /* The following (long) constants are used to check for integer
+       overflows. */
+    private final static long LONG_MAX = Long.MAX_VALUE;
+    private final static long INT_MAX = Integer.MAX_VALUE;
+
     private final long number;
     private final int rank;
     private final int[] dims;
@@ -48,6 +53,7 @@ public class Shape {
      * Get the shape of scalar objects.
      * @return The shape of a scalar object.
      */
+    @Deprecated
     public static Shape make() {
         return scalarShape;
     }
@@ -59,6 +65,7 @@ public class Shape {
      *               shape of a scalar object).
      * @return A new shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(int[] dims) {
         if (dims == null || dims.length == 0) {
             return scalarShape;
@@ -74,6 +81,7 @@ public class Shape {
      *               shape of a scalar object).
      * @return A new shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(long[] dims) {
         if (dims == null || dims.length == 0) {
             return scalarShape;
@@ -87,6 +95,7 @@ public class Shape {
      * @param dim1 - The 1st dimension.
      * @return A new 1-dimensional shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(int dim1) {
         return new Shape(new int[]{dim1}, true);
     }
@@ -97,6 +106,7 @@ public class Shape {
      * @param dim2 - The 2nd dimension.
      * @return A new 2-dimensional shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(int dim1, int dim2) {
         return new Shape(new int[]{dim1, dim2}, true);
     }
@@ -108,6 +118,7 @@ public class Shape {
      * @param dim3 - The 3rd dimension.
      * @return A new 3-dimensional shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(int dim1, int dim2, int dim3) {
         return new Shape(new int[]{dim1, dim2, dim3}, true);
     }
@@ -120,6 +131,7 @@ public class Shape {
      * @param dim4 - The 4th dimension.
      * @return A new 4-dimensional shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(int dim1, int dim2, int dim3, int dim4) {
         return new Shape(new int[]{dim1, dim2, dim3, dim4}, true);
     }
@@ -133,6 +145,7 @@ public class Shape {
      * @param dim5 - The 5th dimension.
      * @return A new 5-dimensional shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(int dim1, int dim2, int dim3, int dim4, int dim5) {
         return new Shape(new int[]{dim1, dim2, dim3, dim4, dim5}, true);
     }
@@ -147,6 +160,7 @@ public class Shape {
      * @param dim6 - The 6th dimension.
      * @return A new 6-dimensional shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return new Shape(new int[]{dim1, dim2, dim3, dim4, dim5, dim6}, true);
     }
@@ -162,6 +176,7 @@ public class Shape {
      * @param dim7 - The 7th dimension.
      * @return A new 7-dimensional shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return new Shape(new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7}, true);
     }
@@ -178,6 +193,7 @@ public class Shape {
      * @param dim8 - The 8th dimension.
      * @return A new 8-dimensional shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return new Shape(new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8}, true);
     }
@@ -195,6 +211,7 @@ public class Shape {
      * @param dim9 - The 9th dimension.
      * @return A new 9-dimensional shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return new Shape(new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9}, true);
     }
@@ -262,21 +279,21 @@ public class Shape {
     /**
      * Build a Shape object given a list of dimensions.
      * <p>
-     * The only constructors of the class are private to prevent any
-     * uncontrolled construction.
+     * This constructor of the class is private to prevent any
+     * uncontrolled construction with shared dimensions and to
+     * force all scalars the share the same shape.
      * <p>
      * @param dims  - The list of dimensions.
      * @param share - The caller guarantees that the contents of the list of
      *                dimensions will never change.
      */
     private Shape(int[] dims, boolean share) {
-        final long LONG_MAX = Long.MAX_VALUE;
         long number = 1L;
         rank = dims.length;
         if (share) {
             this.dims = dims;
             for (int k = 0; k < rank; ++k) {
-                int dim = dims[k];
+                final int dim = dims[k];
                 if (dim < 1) {
                     dimensionTooSmall();
                 }
@@ -288,7 +305,7 @@ public class Shape {
         } else {
             this.dims = new int[rank];
             for (int k = 0; k < rank; ++k) {
-                int dim = dims[k];
+                final int dim = dims[k];
                 if (dim < 1) {
                     dimensionTooSmall();
                 }
@@ -304,20 +321,32 @@ public class Shape {
 
     /**
      * Build a Shape object given a list of dimensions.
+     *
      * <p>
-     * The only constructors of the class are private to prevent any
-     * uncontrolled construction.
-     * <p>
+     * The input dimensions are copied into a private array and are
+     * never shared with the returned shape instance.
+     *
      * @param dims - The list of dimensions.
      */
-    private Shape(long[] dims) {
-        final long LONG_MAX = Long.MAX_VALUE;
-        final long INT_MAX = Integer.MAX_VALUE;
+    public Shape(int[] dims) {
+        this(dims, false);
+    }
+
+    /**
+     * Build a Shape object given a list of dimensions.
+     *
+     * <p>
+     * The input dimensions are copied into a private array and are
+     * never shared with the returned shape instance.
+     *
+     * @param dims - The list of dimensions.
+     */
+    public Shape(long[] dims) {
         long number = 1L;
         rank = dims.length;
         this.dims = new int[rank];
         for (int k = 0; k < rank; ++k) {
-            long dim = dims[k];
+            final long dim = dims[k];
             if (dim < 1L) {
                 dimensionTooSmall();
             }
@@ -333,6 +362,135 @@ public class Shape {
         this.number = number;
     }
 
+    /**
+     * Create a 1-D shape
+     * @param dim1 - The 1st dimension.
+     * @return A new 1-dimensional shape built from the given dimensions.
+     */
+    public Shape(int dim1) {
+        this(new int[]{dim1}, true);
+    }
+
+    /**
+     * Create a 2-D shape
+     * @param dim1 - The 1st dimension.
+     * @param dim2 - The 2nd dimension.
+     * @return A new 2-dimensional shape built from the given dimensions.
+     */
+    public Shape(int dim1, int dim2) {
+        this(new int[]{dim1, dim2}, true);
+    }
+
+    /**
+     * Create a 3-D shape
+     * @param dim1 - The 1st dimension.
+     * @param dim2 - The 2nd dimension.
+     * @param dim3 - The 3rd dimension.
+     * @return A new 3-dimensional shape built from the given dimensions.
+     */
+    public Shape(int dim1, int dim2, int dim3) {
+        this(new int[]{dim1, dim2, dim3}, true);
+    }
+
+    /**
+     * Create a 4-D shape
+     * @param dim1 - The 1st dimension.
+     * @param dim2 - The 2nd dimension.
+     * @param dim3 - The 3rd dimension.
+     * @param dim4 - The 4th dimension.
+     * @return A new 4-dimensional shape built from the given dimensions.
+     */
+    public Shape(int dim1, int dim2, int dim3, int dim4) {
+        this(new int[]{dim1, dim2, dim3, dim4}, true);
+    }
+
+    /**
+     * Create a 5-D shape
+     * @param dim1 - The 1st dimension.
+     * @param dim2 - The 2nd dimension.
+     * @param dim3 - The 3rd dimension.
+     * @param dim4 - The 4th dimension.
+     * @param dim5 - The 5th dimension.
+     * @return A new 5-dimensional shape built from the given dimensions.
+     */
+    public Shape(int dim1, int dim2, int dim3, int dim4, int dim5) {
+        this(new int[]{dim1, dim2, dim3, dim4, dim5}, true);
+    }
+
+    /**
+     * Create a 6-D shape
+     * @param dim1 - The 1st dimension.
+     * @param dim2 - The 2nd dimension.
+     * @param dim3 - The 3rd dimension.
+     * @param dim4 - The 4th dimension.
+     * @param dim5 - The 5th dimension.
+     * @param dim6 - The 6th dimension.
+     * @return A new 6-dimensional shape built from the given dimensions.
+     */
+    public Shape(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
+        this(new int[]{dim1, dim2, dim3, dim4, dim5, dim6}, true);
+    }
+
+    /**
+     * Create a 7-D shape
+     * @param dim1 - The 1st dimension.
+     * @param dim2 - The 2nd dimension.
+     * @param dim3 - The 3rd dimension.
+     * @param dim4 - The 4th dimension.
+     * @param dim5 - The 5th dimension.
+     * @param dim6 - The 6th dimension.
+     * @param dim7 - The 7th dimension.
+     * @return A new 7-dimensional shape built from the given dimensions.
+     */
+    public Shape(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
+        this(new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7}, true);
+    }
+
+    /**
+     * Create a 8-D shape
+     * @param dim1 - The 1st dimension.
+     * @param dim2 - The 2nd dimension.
+     * @param dim3 - The 3rd dimension.
+     * @param dim4 - The 4th dimension.
+     * @param dim5 - The 5th dimension.
+     * @param dim6 - The 6th dimension.
+     * @param dim7 - The 7th dimension.
+     * @param dim8 - The 8th dimension.
+     * @return A new 8-dimensional shape built from the given dimensions.
+     */
+    public Shape(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
+        this(new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8}, true);
+    }
+
+    /**
+     * Create a 9-D shape
+     * @param dim1 - The 1st dimension.
+     * @param dim2 - The 2nd dimension.
+     * @param dim3 - The 3rd dimension.
+     * @param dim4 - The 4th dimension.
+     * @param dim5 - The 5th dimension.
+     * @param dim6 - The 6th dimension.
+     * @param dim7 - The 7th dimension.
+     * @param dim8 - The 8th dimension.
+     * @param dim9 - The 9th dimension.
+     * @return A new 9-dimensional shape built from the given dimensions.
+     */
+    public Shape(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
+        this(new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9}, true);
+    }
+
+    /**
+     * Query the string representation of a shape.
+     */
+    @Override
+    public String toString() {
+        String str = "[";
+        for (int k = 0; k < rank; ++k) {
+            str += String.format((k > 0 ? ",%d" : "%d"), dims[k]);
+        }
+        return str + "]";
+    }
+
     private static void dimensionTooSmall() {
         throw new IllegalArgumentException("Dimensions must be at least 1.");
     }
@@ -346,15 +504,3 @@ public class Shape {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

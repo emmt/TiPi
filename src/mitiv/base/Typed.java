@@ -31,7 +31,7 @@ package mitiv.base;
  * @author Éric Thiébaut
  *
  */
-public interface Typed extends Traits {
+public interface Typed {
     /**
      * Query the type of the elements stored by the typed object.
      * @return One of: {@link Traits#BYTE}, {@link Traits#SHORT}, {@link Traits#INT},
@@ -41,15 +41,3 @@ public interface Typed extends Traits {
     public abstract int getType();
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

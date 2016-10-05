@@ -42,6 +42,11 @@ package mitiv.base;
  * @author Éric Thiébaut
  */
 public class Shape {
+    /* The following (long) constants are used to check for integer
+       overflows. */
+    private final static long LONG_MAX = Long.MAX_VALUE;
+    private final static long INT_MAX = Integer.MAX_VALUE;
+
     private final long number;
     private final int rank;
     private final int[] dims;
@@ -62,6 +67,7 @@ public class Shape {
      * Get the shape of scalar objects.
      * @return The shape of a scalar object.
      */
+    @Deprecated
     public static Shape make() {
         return scalarShape;
     }
@@ -73,6 +79,7 @@ public class Shape {
      *               shape of a scalar object).
      * @return A new shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(int[] dims) {
         if (dims == null || dims.length == 0) {
             return scalarShape;
@@ -88,6 +95,7 @@ public class Shape {
      *               shape of a scalar object).
      * @return A new shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(long[] dims) {
         if (dims == null || dims.length == 0) {
             return scalarShape;
@@ -115,6 +123,7 @@ public class Shape {
     //#     end
      * @return A new ${rank}-dimensional shape built from the given dimensions.
      */
+    @Deprecated
     public static Shape make(${argList}) {
         return new Shape(new int[]{${dimList}}, true);
     }
@@ -194,21 +203,21 @@ public class Shape {
     /**
      * Build a Shape object given a list of dimensions.
      * <p>
-     * The only constructors of the class are private to prevent any
-     * uncontrolled construction.
+     * This constructor of the class is private to prevent any
+     * uncontrolled construction with shared dimensions and to
+     * force all scalars the share the same shape.
      * <p>
      * @param dims  - The list of dimensions.
      * @param share - The caller guarantees that the contents of the list of
      *                dimensions will never change.
      */
     private Shape(int[] dims, boolean share) {
-        final long LONG_MAX = Long.MAX_VALUE;
         long number = 1L;
         rank = dims.length;
         if (share) {
             this.dims = dims;
             for (int k = 0; k < rank; ++k) {
-                int dim = dims[k];
+                final int dim = dims[k];
                 if (dim < 1) {
                     dimensionTooSmall();
                 }
@@ -220,7 +229,7 @@ public class Shape {
         } else {
             this.dims = new int[rank];
             for (int k = 0; k < rank; ++k) {
-                int dim = dims[k];
+                final int dim = dims[k];
                 if (dim < 1) {
                     dimensionTooSmall();
                 }
@@ -236,20 +245,32 @@ public class Shape {
 
     /**
      * Build a Shape object given a list of dimensions.
+     *
      * <p>
-     * The only constructors of the class are private to prevent any
-     * uncontrolled construction.
-     * <p>
+     * The input dimensions are copied into a private array and are
+     * never shared with the returned shape instance.
+     *
      * @param dims - The list of dimensions.
      */
-    private Shape(long[] dims) {
-        final long LONG_MAX = Long.MAX_VALUE;
-        final long INT_MAX = Integer.MAX_VALUE;
+    public Shape(int[] dims) {
+        this(dims, false);
+    }
+
+    /**
+     * Build a Shape object given a list of dimensions.
+     *
+     * <p>
+     * The input dimensions are copied into a private array and are
+     * never shared with the returned shape instance.
+     *
+     * @param dims - The list of dimensions.
+     */
+    public Shape(long[] dims) {
         long number = 1L;
         rank = dims.length;
         this.dims = new int[rank];
         for (int k = 0; k < rank; ++k) {
-            long dim = dims[k];
+            final long dim = dims[k];
             if (dim < 1L) {
                 dimensionTooSmall();
             }
@@ -265,6 +286,42 @@ public class Shape {
         this.number = number;
     }
 
+    //# for rank in 1:9
+    /**
+     * Create a ${rank}-D shape
+    //#     def k = 0
+    //#     while ${k} < ${rank}
+    //#         eval k += 1
+    //#         def arg = dim${k}
+    //#         if ${k} == 1
+    //#             def argList = int ${arg}
+    //#             def dimList = ${arg}
+    //#         else
+    //#             def argList = ${argList}, int ${arg}
+    //#             def dimList = ${dimList}, ${arg}
+    //#         end
+    //#         def k_th = ${}{nth_${k}}
+     * @param ${arg} - The ${k_th} dimension.
+    //#     end
+     * @return A new ${rank}-dimensional shape built from the given dimensions.
+     */
+    public Shape(${argList}) {
+        this(new int[]{${dimList}}, true);
+    }
+
+    //# end
+    /**
+     * Query the string representation of a shape.
+     */
+    @Override
+    public String toString() {
+        String str = "[";
+        for (int k = 0; k < rank; ++k) {
+            str += String.format((k > 0 ? ",%d" : "%d"), dims[k]);
+        }
+        return str + "]";
+    }
+
     private static void dimensionTooSmall() {
         throw new IllegalArgumentException("Dimensions must be at least 1.");
     }
@@ -278,15 +335,3 @@ public class Shape {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

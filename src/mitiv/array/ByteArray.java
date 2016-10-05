@@ -26,6 +26,7 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.ByteFunction;
 import mitiv.base.mapping.ByteScanner;
 import mitiv.random.ByteGenerator;
@@ -38,7 +39,7 @@ import mitiv.random.ByteGenerator;
  */
 public interface ByteArray extends ShapedArray {
 
-    static public final int type = BYTE;
+    static public final int type = Traits.BYTE;
 
     /**
      * Set all the values of the array of byte's.

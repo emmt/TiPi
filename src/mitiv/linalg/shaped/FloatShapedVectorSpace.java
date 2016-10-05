@@ -28,6 +28,7 @@ package mitiv.linalg.shaped;
 import mitiv.array.FloatArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
+import mitiv.base.Traits;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.Vector;
 
@@ -40,27 +41,27 @@ import mitiv.linalg.Vector;
 public class FloatShapedVectorSpace extends ShapedVectorSpace {
 
     public FloatShapedVectorSpace(Shape shape) {
-        super(FLOAT, shape);
+        super(Traits.FLOAT, shape);
     }
 
     public FloatShapedVectorSpace(int[] dims) {
-        super(FLOAT, dims);
+        super(Traits.FLOAT, dims);
     }
 
     public FloatShapedVectorSpace(int dim1) {
-        super(FLOAT, dim1);
+        super(Traits.FLOAT, dim1);
     }
 
     public FloatShapedVectorSpace(int dim1, int dim2) {
-        super(FLOAT, dim1, dim2);
+        super(Traits.FLOAT, dim1, dim2);
     }
 
     public FloatShapedVectorSpace(int dim1, int dim2, int dim3) {
-        super(FLOAT, dim1, dim2, dim3);
+        super(Traits.FLOAT, dim1, dim2, dim3);
     }
 
     public FloatShapedVectorSpace(int dim1, int dim2, int dim3, int dim4) {
-        super(FLOAT, dim1, dim2, dim3, dim4);
+        super(Traits.FLOAT, dim1, dim2, dim3, dim4);
     }
 
     private float[] getData(Vector v)

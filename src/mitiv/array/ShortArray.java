@@ -26,6 +26,7 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.ShortFunction;
 import mitiv.base.mapping.ShortScanner;
 import mitiv.random.ShortGenerator;
@@ -38,7 +39,7 @@ import mitiv.random.ShortGenerator;
  */
 public interface ShortArray extends ShapedArray {
 
-    static public final int type = SHORT;
+    static public final int type = Traits.SHORT;
 
     /**
      * Set all the values of the array of short's.

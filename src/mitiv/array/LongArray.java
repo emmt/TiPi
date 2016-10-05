@@ -26,6 +26,7 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.LongFunction;
 import mitiv.base.mapping.LongScanner;
 import mitiv.random.LongGenerator;
@@ -38,7 +39,7 @@ import mitiv.random.LongGenerator;
  */
 public interface LongArray extends ShapedArray {
 
-    static public final int type = LONG;
+    static public final int type = Traits.LONG;
 
     /**
      * Set all the values of the array of long's.

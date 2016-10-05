@@ -26,6 +26,7 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.base.mapping.FloatScanner;
 import mitiv.random.FloatGenerator;
@@ -38,7 +39,7 @@ import mitiv.random.FloatGenerator;
  */
 public interface FloatArray extends ShapedArray {
 
-    static public final int type = FLOAT;
+    static public final int type = Traits.FLOAT;
 
     /**
      * Set all the values of the array of float's.

@@ -27,7 +27,7 @@ package mitiv.base;
 
 /**
  * A Shaped object stores rectangular multi-dimensional arrays of elements.
- * 
+ *
  * <p>
  * Here "rectangular" means that the lengths of each dimension are the same everywhere.
  * </p><p>
@@ -59,7 +59,7 @@ public interface Shaped {
 
     /**
      * Query the ordering of the dimensions in the view.
-     * 
+     *
      * This is useful for ordering the loops through the elements of a view.
      * In case of a tie, the method shall privilege {@link #COLUMN_MAJOR} which
      * is the preferred default in this library.
@@ -99,15 +99,3 @@ public interface Shaped {
     public Shape getShape();
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

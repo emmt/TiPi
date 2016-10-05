@@ -54,7 +54,7 @@ public class BufferedImageUtils {
      * Convert a image to an 1D array of double.
      *
      * @param image the image
-     * @param single 
+     * @param single
      * @return the double[]
      */
     public static ShapedArray imageToArray(BufferedImage image, boolean single) {
@@ -98,7 +98,7 @@ public class BufferedImageUtils {
 
     /**
      * By default we use double precision
-     * 
+     *
      * @param listImage
      * @return
      */
@@ -153,7 +153,7 @@ public class BufferedImageUtils {
      * Create a buffered image, simply copy array to buffered image.
      *
      * @param array the array
-     * @param shape 
+     * @param shape
      * @return the buffered image
      */
     public static ShapedArray arrayToImage(double[] array, Shape shape) {
@@ -182,9 +182,9 @@ public class BufferedImageUtils {
      * Create a buffered image, simply copy array to buffered image.
      *
      * @param array the array
-     * @param width 
-     * @param height 
-     * @param depth 
+     * @param width
+     * @param height
+     * @param depth
      * @return the buffered image
      */
     public static ShapedArray arrayToImage(double[] array, int width, int height, int depth) {
@@ -195,7 +195,7 @@ public class BufferedImageUtils {
      * Create a buffered image, simply copy array to buffered image.
      *
      * @param array the array
-     * @param shape 
+     * @param shape
      * @return the buffered image
      */
     public static ShapedArray arrayToImage(float[] array, Shape shape){
@@ -226,7 +226,7 @@ public class BufferedImageUtils {
      * @param array the array
      * @param width the width
      * @param height the height
-     * @param sizeZ 
+     * @param sizeZ
      * @return the buffered image
      */
     public static ShapedArray arrayToImage(float[] array, int width, int height, int sizeZ){
@@ -280,7 +280,7 @@ public class BufferedImageUtils {
             }
         }
     }
-    
+
     private static ArrayList<BufferedImage> fill(BufferedImage img){
         ArrayList<BufferedImage> list = new ArrayList<BufferedImage>();
         list.add(img);
@@ -292,7 +292,7 @@ public class BufferedImageUtils {
     /**********************************************************/
 
     /**
-     * 
+     *
      * @param input
      * @param coef
      * @return
@@ -304,11 +304,11 @@ public class BufferedImageUtils {
         } else {
             return imagePad(input, shape.dimension(0), shape.dimension(1), shape.dimension(2), coef, coef);
         }
-        
+
     }
 
     /**
-     * 
+     *
      * @param input
      * @param width
      * @param height
@@ -321,12 +321,12 @@ public class BufferedImageUtils {
     }
 
     /**
-     * Pad the input Shaped Array with the coefficient given, 
+     * Pad the input Shaped Array with the coefficient given,
      * <br>
      * A coefficient equal to one mean that we are not doing anything.
      * A coefficient equal to two mean that the padding will be of same size as the input image.
      * i.e: The image will be 8 time bigger weight*2, height*2, sizeZ*2
-     * 
+     *
      * @param input
      * @param width
      * @param height
@@ -346,7 +346,7 @@ public class BufferedImageUtils {
 
         Shape shape = Shape.make(width+sizePadW, height+sizePadH, sizeZ+sizePadZ);
         //If we are in double else we will work in FLOAt
-        if (input.getType() == ShapedArray.DOUBLE) {
+        if (input.getType() == Traits.DOUBLE) {
             double[] output = new double[(width+sizePadW)*(height+sizePadH)*(sizeZ+sizePadZ)];
             double[] inputDbl = input.toDouble().flatten();
             for (int i = 0; i < output.length; i++) {
@@ -523,8 +523,8 @@ public class BufferedImageUtils {
     /**
      * Save array to image.
      *
-     * @param A the Shapped 
-     * @param name the name
+     * @param A - The shaped array.
+     * @param name - The file name.
      */
     public static void saveArrayToImage(ShapedArray A, String name)
     {
@@ -535,16 +535,3 @@ public class BufferedImageUtils {
         saveBufferedImage(I, name);
     }
 }
-
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

@@ -26,6 +26,7 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.IntFunction;
 import mitiv.base.mapping.IntScanner;
 import mitiv.random.IntGenerator;
@@ -38,7 +39,7 @@ import mitiv.random.IntGenerator;
  */
 public interface IntArray extends ShapedArray {
 
-    static public final int type = INT;
+    static public final int type = Traits.INT;
 
     /**
      * Set all the values of the array of int's.

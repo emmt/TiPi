@@ -24,10 +24,6 @@
  */
 
 package mitiv.linalg.shaped;
-import mitiv.base.Shape;
-import mitiv.linalg.LinearOperator;
-import mitiv.linalg.Vector;
-
 /* The following lines are for the 3.0 version of JTransforms. */
 import org.jtransforms.fft.DoubleFFT_1D;
 import org.jtransforms.fft.DoubleFFT_2D;
@@ -35,6 +31,11 @@ import org.jtransforms.fft.DoubleFFT_3D;
 import org.jtransforms.fft.FloatFFT_1D;
 import org.jtransforms.fft.FloatFFT_2D;
 import org.jtransforms.fft.FloatFFT_3D;
+
+import mitiv.base.Shape;
+import mitiv.base.Traits;
+import mitiv.linalg.LinearOperator;
+import mitiv.linalg.Vector;
 
 /* The following lines are for the 2.4 version of JTransforms. */
 //import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
@@ -46,7 +47,7 @@ import org.jtransforms.fft.FloatFFT_3D;
 
 /**
  * Emulate real-complex FFT-1D/2D/3D.
- * 
+ *
  * @author Éric and Jonathan
  */
 public class RealComplexFFT extends ShapedLinearOperator {
@@ -64,7 +65,7 @@ public class RealComplexFFT extends ShapedLinearOperator {
         super(space, complexSpace(space));
         this.number = space.getNumber();
         this.shape = space.getShape();
-        single = (space.getType() == FLOAT);
+        single = (space.getType() == Traits.FLOAT);
         this.rank = space.getRank();
         if (this.rank < 1 || this.rank > 3) {
             throw new IllegalArgumentException("Only 1D, 2D or 3D transforms supported");
@@ -81,9 +82,9 @@ public class RealComplexFFT extends ShapedLinearOperator {
         complexDims[0] *= 2;
         Shape complexShape = Shape.make(complexDims);
         int type = realSpace.getType();
-        if (type == FLOAT) {
+        if (type == Traits.FLOAT) {
             complexSpace = new FloatShapedVectorSpace(complexShape);
-        } else if (type == DOUBLE) {
+        } else if (type == Traits.DOUBLE) {
             complexSpace = new DoubleShapedVectorSpace(complexShape);
         } else {
             throw new IllegalArgumentException("Only float or double supported");
@@ -236,15 +237,3 @@ public class RealComplexFFT extends ShapedLinearOperator {
         }
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

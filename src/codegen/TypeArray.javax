@@ -28,6 +28,7 @@
 package ${package};
 
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.${Type}Function;
 import mitiv.base.mapping.${Type}Scanner;
 import mitiv.random.${Type}Generator;
@@ -40,7 +41,7 @@ import mitiv.random.${Type}Generator;
  */
 public interface ${className} extends ShapedArray {
 
-    static public final int type = ${TYPE};
+    static public final int type = Traits.${TYPE};
 
     /**
      * Set all the values of the array of ${type}'s.

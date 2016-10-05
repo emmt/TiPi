@@ -25,10 +25,9 @@
 
 package mitiv.linalg.shaped;
 
-import mitiv.base.Traits;
 import mitiv.linalg.LinearOperator;
 
-public abstract class ShapedLinearOperator extends LinearOperator implements Traits {
+public abstract class ShapedLinearOperator extends LinearOperator {
 
     protected ShapedLinearOperator(ShapedVectorSpace space) {
         super(space);
@@ -49,15 +48,3 @@ public abstract class ShapedLinearOperator extends LinearOperator implements Tra
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

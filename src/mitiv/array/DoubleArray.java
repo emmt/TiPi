@@ -26,6 +26,7 @@
 package mitiv.array;
 
 import mitiv.base.Shaped;
+import mitiv.base.Traits;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.DoubleScanner;
 import mitiv.random.DoubleGenerator;
@@ -38,7 +39,7 @@ import mitiv.random.DoubleGenerator;
  */
 public interface DoubleArray extends ShapedArray {
 
-    static public final int type = DOUBLE;
+    static public final int type = Traits.DOUBLE;
 
     /**
      * Set all the values of the array of double's.
