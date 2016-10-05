@@ -58,7 +58,9 @@ public enum OptimStatus {
     BAD_PRECONDITIONER("Preconditioner is not positive definite"),
     INFEASIBLE_BOUNDS("Box set is infeasible"),
     WOULD_BLOCK("Variables cannot be improved (would block)"),
-    UNDEFINED_VALUE("Undefined value");
+    UNDEFINED_VALUE("Undefined value"),
+    TOO_MANY_ITERATIONS("Too many iterations"),
+    TOO_MANY_EVALUATIONS("Too many evaluations");
 
     private final String description;
 
@@ -75,15 +77,3 @@ public enum OptimStatus {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
