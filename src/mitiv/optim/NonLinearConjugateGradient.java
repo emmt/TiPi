@@ -25,6 +25,7 @@
 
 package mitiv.optim;
 
+import mitiv.base.Traits;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 import mitiv.linalg.shaped.DoubleShapedVector;
@@ -49,6 +50,17 @@ import mitiv.tests.MinPack1Tests;
  */
 public class NonLinearConjugateGradient
 extends ReverseCommunicationOptimizerWithLineSearch {
+
+    /** Default value for {@code ftol} parameter in More & Thuente line search. */
+    static public final double SFTOL = 0.05;
+
+    /** Default value for {@code gtol} parameter in More & Thuente line search. */
+    static public final double SGTOL = 0.1;
+
+    /** Default value for {@code xtol} parameter in More & Thuente line search. */
+    static public final double SXTOL = Traits.DBL_EPSILON;
+
+
 
     public static final double STPMIN  = 1.0E-20;
     public static final double STPMAX  = 1.0E+20;
@@ -123,8 +135,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
     public NonLinearConjugateGradient(VectorSpace space, int method) {
         /* FIXME: choose more suitable values (e.g., in CG+: FTOL=1E-4, GTOL=1E-1,
         not less than 1E-4, XTOL=1E-17, STPMIN=1E-20 STPMAX=1E+20 and MAXFEV=40) */
-        this(space, method, new MoreThuenteLineSearch(/* sftol */ 0.05,
-                /* sgtol */ 0.1, /* sxtol */ 1E-17));
+        this(space, method, new MoreThuenteLineSearch(SFTOL, SGTOL, SXTOL));
     }
 
     public NonLinearConjugateGradient(VectorSpace space, int method, LineSearch lnsrch) {
