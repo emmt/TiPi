@@ -38,7 +38,6 @@ import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
-import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 import mitiv.optim.BLMVM;
 import mitiv.optim.BoundProjector;
@@ -131,7 +130,7 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
     }
 
     public void setObjectShape(int[] dims) {
-        setObjectShape(Shape.make(dims));
+        setObjectShape(new Shape(dims));
     }
 
     /** Regularization level. */
@@ -264,11 +263,16 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
         }
     }
 
-    /** Verbose mode. */
-    public boolean verbose = false;
-
     /** Debug mode. */
     public boolean debug = false;
+
+    public boolean getDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean value) {
+        debug = value;
+    }
 
     /**
      * Create an edge preserving deconvolution instance.
@@ -314,9 +318,6 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
     private LineSearch lineSearch = null;
     private Vector x = null; // current solution
 
-    /*
-     * FIXME: deal with conversions and writable arrays
-     */
     private void update() {
 
         /* Interdependent attributes have not been checked.  Perform these checks now. */
@@ -386,7 +387,7 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
                     cropDims[k] = Math.max(objectShape.dimension(k), object.getDimension(k));
                 }
                 if (crop) {
-                    object = ArrayUtils.crop(object, Shape.make(cropDims));
+                    object = ArrayUtils.crop(object, new Shape(cropDims));
                 }
                 if (pad) {
                     object = ArrayUtils.pad(object, objectShape);
@@ -400,14 +401,14 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
                     final int minDim = dataShape.dimension(k) + psfShape.dimension(k) - 1;
                     objectDims[k] = FFTUtils.bestDimension(minDim);
                 }
-                objectShape = Shape.make(objectDims);
+                objectShape = new Shape(objectDims);
             } else {
                 for (int k = 0; k < rank; ++k) {
                     final int minDim = Math.max(dataShape.dimension(k) + psfShape.dimension(k) - 1,
                             object.getDimension(k));
                     objectDims[k] = FFTUtils.bestDimension(minDim);
                 }
-                objectShape = Shape.make(objectDims);
+                objectShape = new Shape(objectDims);
                 object = ArrayUtils.pad(object, objectShape);
             }
         }
@@ -470,9 +471,9 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
         }
         if (bounded == 0) {
             /* No bounds have been specified. */
-            lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
+            lineSearch = new MoreThuenteLineSearch(LBFGS.SFTOL, LBFGS.SGTOL, LBFGS.SXTOL);
             if (limitedMemorySize > 0) {
-                final LBFGS lbfgs = new LBFGS(objectSpace, limitedMemorySize, lineSearch);
+                LBFGS lbfgs = new LBFGS(objectSpace, limitedMemorySize, lineSearch);
                 lbfgs.setAbsoluteTolerance(gatol);
                 lbfgs.setRelativeTolerance(grtol);
                 setOptimizer(lbfgs);
@@ -481,8 +482,11 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
                             limitedMemorySize);
                 }
             } else {
-                final int method = NonLinearConjugateGradient.DEFAULT_METHOD;
-                final NonLinearConjugateGradient nlcg = new
+                lineSearch = new MoreThuenteLineSearch(NonLinearConjugateGradient.SFTOL,
+                        NonLinearConjugateGradient.SGTOL,
+                        NonLinearConjugateGradient.SXTOL);
+                int method = NonLinearConjugateGradient.DEFAULT_METHOD;
+                NonLinearConjugateGradient nlcg = new
                         NonLinearConjugateGradient(objectSpace, method, lineSearch);
                 nlcg.setAbsoluteTolerance(gatol);
                 nlcg.setRelativeTolerance(grtol);
@@ -532,14 +536,6 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
         if (updatePending) {
             update();
         }
-        System.err.format("x: %s", x.getClass().getName());
-        if (x instanceof ShapedVector) {
-            ShapedVector v = (ShapedVector)x;
-            for (int k = 0; k < v.getRank(); ++k) {
-                System.err.format(", %d", v.getDimension(k));
-            }
-        }
-        System.err.format("\n");
         return super.start(x, reset);
     }
 
