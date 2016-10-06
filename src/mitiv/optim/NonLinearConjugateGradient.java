@@ -94,7 +94,6 @@ extends ReverseCommunicationOptimizerWithLineSearch {
     private double fmin;    /* Minimal function value if provided. */
     private final double delta;   /* Relative size for a small step. */
     private final double epsilon; /* Threshold to accept descent direction. */
-    private double alpha;   /* Current step length. */
     private double beta;    /* Current parameter in conjugate gradient update rule (for
                                information). */
     private final double stpmin; /* Relative lower bound for the step length. */
@@ -444,7 +443,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                 /* A line search is in progress.  Compute directional
                    derivative and check whether line search has converged. */
                 dtg = -d.dot(g);
-                final LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, dtg);
+                final LineSearchTask lnsrchTask = lnsrch.iterate(f, dtg);
                 if (lnsrchTask != LineSearchTask.CONVERGENCE) {
                     if (lnsrchTask == LineSearchTask.SEARCH) {
                         /* Line search has not converged, break to compute a
@@ -486,6 +485,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
                     dtg = 0.0;
                 }
             }
+            double alpha = lnsrch.getStep();
             if (dtg < 0.0) {
                 /* The recursion yields a sufficient descent direction
                    (not all methods warrant that).  Compute an initial
@@ -540,7 +540,8 @@ extends ReverseCommunicationOptimizerWithLineSearch {
         }
 
         /* Compute a trial point along the line search. */
-        x.combine(1.0, x0, -alpha, d);
+
+        x.combine(1.0, x0, -lnsrch.getStep(), d);
         return success(OptimTask.COMPUTE_FG);
 
     }
