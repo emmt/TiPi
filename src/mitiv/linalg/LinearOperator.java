@@ -96,11 +96,19 @@ public abstract class LinearOperator extends DifferentiableMapping {
             throws IncorrectSpaceException, IllegalLinearOperationException,
             NotImplementedException {
         if (job == DIRECT || job == (INVERSE|ADJOINT)) {
-            inputSpace.check(src);
-            outputSpace.check(dst);
+            if (! outputSpace.owns(dst)) {
+                throw new IncorrectSpaceException("Destination does not belong to the output space");
+            }
+            if (! inputSpace.owns(src)) {
+                throw new IncorrectSpaceException("Source does not belong to the input space");
+            }
         } else if (job == ADJOINT || job == INVERSE) {
-            outputSpace.check(src);
-            inputSpace.check(dst);
+            if (! inputSpace.owns(dst)) {
+                throw new IncorrectSpaceException("Destination does not belong to the input space");
+            }
+            if (! outputSpace.owns(src)) {
+                throw new IncorrectSpaceException("Source does not belong to the output space");
+            }
         } else {
             throw new IllegalLinearOperationException();
         }
