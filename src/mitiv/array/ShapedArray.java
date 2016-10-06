@@ -156,16 +156,5 @@ public interface ShapedArray extends Shaped, Typed {
      * </p>
      */
     public abstract void checkSanity();
-}
 
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
+}
