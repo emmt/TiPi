@@ -160,11 +160,6 @@ public class EdgePreservingDeconvolutionCommand {
         String inputName = job.arguments.get(0);
         String psfName = job.arguments.get(1);
 
-        if (job.debug){
-            System.out.format("mu: %.2g, threshold: %.2g, output: %s\n",
-                    job.mu, job.epsilon, job.outName);
-        }
-
         EdgePreservingDeconvolution solver = new EdgePreservingDeconvolution();
 
         try {
@@ -207,10 +202,12 @@ public class EdgePreservingDeconvolutionCommand {
             solver.setRelativeTolerance(job.grtol);
             solver.setLowerBound(job.lowerBound);
             solver.setUpperBound(job.upperBound);
+            solver.setLimitedMemorySize(job.limitedMemorySize);
             solver.setRegularizationLevel(job.mu);
             solver.setEdgeThreshold(job.epsilon);
             solver.setMaximumIterations(job.maxiter);
             solver.setMaximumEvaluations(job.maxeval);
+            solver.setDebug(job.debug);
 
             OptimTask task = solver.start();
             while (true) {
