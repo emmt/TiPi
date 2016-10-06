@@ -26,11 +26,38 @@
 package mitiv.invpb;
 
 import mitiv.base.mapping.DifferentiableMapping;
+import mitiv.base.mapping.Mapping;
 import mitiv.cost.DifferentiableCostFunction;
 import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
 
+/**
+ * Implement simple Gaussian co-log-likelihood differentiable cost function.
+ *
+ * <p>
+ * This sub-class of {@link GaussianLikelihood} exploits a differentiable
+ * mapping for the direct model to implement a differentiable cost function
+ * whose gradient is given by:
+ * <p>
+ * </p>
+ * <p align="center">
+ * &nabla;f(<b><i>x</i></b>) = &nabla;<b>H</b>(<b><i>x</i></b>)<sup>*</sup>.<b>W</b>.
+ * (<b>H</b>(<b><i>x</i></b>) - <b><i>y</i></b>)
+ * </p>
+ * <p>
+ * with <b><i>x</i></b> the variables, <b>H</b>(<b><i>x</i></b>) the direct
+ * model, &nabla;<b>H</b>(<b><i>x</i></b>) it Jacobian, <b><i>y</i></b> the
+ * data and <b>W</b> the weighting operator.
+ * </p>
+ * <p>
+ * This class uses an instance of {@link WeightedData} to store the data
+ * <b><i>y</i></b> and the weights <b><i>w</i></b> and an instance of
+ * {@link Mapping} to implement the direct model <b>H</b>(<b><i>x</i></b>).
+ * </p>
+ *
+ * @author Éric
+ */
 public class DifferentiableGaussianLikelihood extends GaussianLikelihood implements DifferentiableCostFunction {
     protected Vector work2 = null; // work vector in variable space
 
