@@ -15,6 +15,3 @@
 
  * Deal with `NaN` and `Infinite` when converting arrays to images.
 
- * Add `isFlat` method for checking whether the array is already
-   in a *flat* form.
-
