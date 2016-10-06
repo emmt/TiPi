@@ -35,7 +35,7 @@ import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 
 public class GaussianLikelihood implements CostFunction {
-    protected final WeightedData weighteddata;
+    protected final WeightedData weightedData;
     protected final Mapping directModel;
     protected final VectorSpace variableSpace;
     protected final ShapedVectorSpace dataSpace;
@@ -49,7 +49,7 @@ public class GaussianLikelihood implements CostFunction {
         this.directModel = directModel;
         this.variableSpace = directModel.getInputSpace();
         this.dataSpace = weightedData.getDataSpace();
-        this.weighteddata = weightedData;
+        this.weightedData = weightedData;
     }
 
     @Override
@@ -66,15 +66,15 @@ public class GaussianLikelihood implements CostFunction {
     }
 
     public final ShapedVector getData() {
-        return weighteddata.getData();
+        return weightedData.getData();
     }
 
     public final ShapedVector getWeight() {
-        return weighteddata.getWeight();
+        return weightedData.getWeight();
     }
 
     public final boolean singlePrecision() {
-        return weighteddata.singlePrecision();
+        return weightedData.singlePrecision();
     }
 
     public final ShapedVector computeModel(ShapedVector x) {
@@ -88,7 +88,7 @@ public class GaussianLikelihood implements CostFunction {
     }
 
     /** Compute the (anti-)residuals in a protected work vector. */
-    protected final ShapedVector computeResiduals(Vector x) {
+    protected final void computeResiduals(Vector x) {
         /* Compute the direct model. */
         if (work1 == null) {
             work1 = dataSpace.create();
@@ -97,8 +97,6 @@ public class GaussianLikelihood implements CostFunction {
 
         /* Compute the residuals. */
         work1.combine(1.0, work1, -1.0, getData());
-
-        return work1;
     }
 
     @Override
@@ -109,20 +107,20 @@ public class GaussianLikelihood implements CostFunction {
         }
 
         /* Compute the residuals. */
-        final ShapedVector work = computeResiduals(x);
+        computeResiduals(x);
 
         /* Compute the cost. */
         double sum = 0.0;
         if (ignoreWeights) {
-            sum = work.norm2();
+            sum = work1.norm2();
         } else if (singlePrecision()){
-            final float[] r = ((FloatShapedVector)work).getData();
+            final float[] r = ((FloatShapedVector)work1).getData();
             final float[] w = ((FloatShapedVector)getWeight()).getData();
             for (int i = 0; i < r.length; ++i) {
                 sum += w[i]*r[i]*r[i];
             }
         } else {
-            final double[] r = ((DoubleShapedVector)work).getData();
+            final double[] r = ((DoubleShapedVector)work1).getData();
             final double[] w = ((DoubleShapedVector)getWeight()).getData();
             for (int i = 0; i < r.length; ++i) {
                 sum += w[i]*r[i]*r[i];
