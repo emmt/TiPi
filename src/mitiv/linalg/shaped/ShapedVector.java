@@ -93,4 +93,26 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
      */
     public abstract void assign(ShapedArray arr);
 
+    /**
+     * Get a string representation.
+     */
+    @Override
+    public String toString() {
+        int len = getNumber();
+        String str = "ShapedVector: " + descr.toString() + " = {";
+        if (len < 9) {
+            for (int i = 0; i < len; ++i) {
+                str += String.format((i > 0 ? ", %g" : " %g"), get(i));
+            }
+        } else {
+            for (int i = 0; i < 3; ++i) {
+                str += String.format((i > 0 ? ", %g" : " %g"), get(i));
+            }
+            str += ", ...";
+            for (int i = len - 3; i < len; ++i) {
+                str += String.format(", %g", get(i));
+            }
+        }
+        return str + "}";
+    }
 }
