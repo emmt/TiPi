@@ -85,44 +85,58 @@ public abstract class ConvolutionDouble extends Convolution {
      */
     public double[] getWorkspace() {
         if (tmp == null) {
-            tmp = new double[2*number];
+            tmp = new double[2*inpSize];
         }
         return tmp;
     }
 
     @Override
-    public void push(ShapedVector inp) {
-        if (! inp.belongsTo(inputSpace)) {
-            throw new IncorrectSpaceException("Vector does not belong to input space");
+    public void push(ShapedVector src, boolean adjoint) {
+        if (adjoint) {
+            if (! src.belongsTo(outputSpace)) {
+                throw new IncorrectSpaceException("Vector does not belong to output space");
+            }
+        } else {
+            if (! src.belongsTo(inputSpace)) {
+                throw new IncorrectSpaceException("Vector does not belong to input space");
+            }
         }
-        push(((DoubleShapedVector)inp).getData());
-    }
-
-    /** Copy input array in workspace and make it complex. */
-    public void push(double x[]) {
-        final double zero = 0;
-        double z[] = getWorkspace();
-        if (x == null || x.length != number) {
-            throw new IllegalArgumentException("Bad input size");
-        }
-        for (int k = 0; k < number; ++k) {
-            int real = k + k;
-            int imag = real + 1;
-            z[real] = x[k];
-            z[imag] = zero;
-        }
+        push(((DoubleShapedVector)src).getData(), adjoint);
     }
 
     @Override
-    public void pull(ShapedVector out) {
-        if (! out.belongsTo(outputSpace)) {
-            throw new IncorrectSpaceException("Vector does not belong to output space");
+    public void pull(ShapedVector dst, boolean adjoint) {
+        if (adjoint) {
+            if (! dst.belongsTo(inputSpace)) {
+                throw new IncorrectSpaceException("Vector does not belong to input space");
+            }
+        } else {
+            if (! dst.belongsTo(outputSpace)) {
+                throw new IncorrectSpaceException("Vector does not belong to output space");
+            }
         }
-        pull(((DoubleShapedVector)out).getData());
+        pull(((DoubleShapedVector)dst).getData(), adjoint);
     }
 
-    /** Copy real part of workspace into output array. */
-    public abstract void pull(double x[]);
+    /**
+     * Copy input array in workspace.
+     *
+     * This methods applies operator <b>S</b> if <b>adjoint</b> is false
+     * and operator <b>R</b><sup>*</sup> otherwise.
+     *
+     * @param x - The array corresponding to the output vector.
+     */
+    public abstract void push(double x[], boolean adjoint);
+
+    /**
+     * Copy real part of workspace into output array.
+     *
+     * This methods applies operator <b>R</b> if <b>adjoint</b> is false
+     * and operator <b>S</b><sup>*</sup> otherwise.
+     *
+     * @param x - The array corresponding to the output vector.
+     */
+    public abstract void pull(double x[], boolean adjoint);
 
     /** Apply in-place forward complex FFT. */
     public abstract void forwardFFT(double z[]);
@@ -141,9 +155,10 @@ public abstract class ConvolutionDouble extends Convolution {
     }
 
     /**
-     * Compute F^*.diag(mtf).F.x
-     * where x is internal workspace.
+     * Compute {@code F^*.diag(mtf).F.x} where {@code x} is internal
+     * workspace.
      */
+    @Override
     public void convolve(boolean conj) {
         if (mtf == null) {
             throw new IllegalArgumentException("You must set the PSF or the MTF first");
@@ -155,7 +170,7 @@ public abstract class ConvolutionDouble extends Convolution {
          * apply backward FFT. */
         forwardFFT();
         if (conj) {
-            for (int k = 0; k < number; ++k) {
+            for (int k = 0; k < inpSize; ++k) {
                 int real = k + k;
                 int imag = real + 1;
                 double h_re = h[real];
@@ -166,7 +181,7 @@ public abstract class ConvolutionDouble extends Convolution {
                 z[imag] = h_re*z_im - h_im*z_re;
             }
         } else {
-            for (int k = 0; k < number; ++k) {
+            for (int k = 0; k < inpSize; ++k) {
                 int real = k + k;
                 int imag = real + 1;
                 double h_re = h[real];
@@ -197,9 +212,9 @@ public abstract class ConvolutionDouble extends Convolution {
     private final void computeMTF(double[] psf) {
         final double zero = 0;
         if (mtf == null) {
-            mtf = new double[2*number];
+            mtf = new double[2*inpSize];
         }
-        for (int k = 0; k < number; ++k) {
+        for (int k = 0; k < inpSize; ++k) {
             int real = k + k;
             int imag = real + 1;
             mtf[real] = psf[k];
@@ -209,15 +224,3 @@ public abstract class ConvolutionDouble extends Convolution {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

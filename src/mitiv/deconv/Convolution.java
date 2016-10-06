@@ -51,12 +51,13 @@ import mitiv.utils.Timer;
  * </p>
  * <p align="center">
  * <b>H</b> =
- * <b>R</b>.<b>F</b><sup>*</sup>.diag(<b>F</b>.<b><i>h</i></b>).<b>F</b>
+ * <b>R</b>.<b>F</b><sup>*</sup>.diag(<b>F</b>.<b><i>h</i></b>).<b>F</b>.<b>S</b>
  * </p>
  * <p>
  * with <b>F</b> the FFT (Fast Fourier Transform) operator, <b><i>h</i></b> the
- * point spread function (PSF) and <b>R</b> a linear operator which selects a
- * sub-region of the output of the convolution. The * superscript denotes the
+ * point spread function (PSF), <b>R</b> a linear operator which selects a
+ * sub-region of the output of the convolution and <b>S</b> a linear operator
+ * which prepares the input for the FFT.  The * superscript denotes the
  * adjoint of the operator (complex transpose in this specific case) and
  * diag(<i><b>v</i></b>) is a diagonal operator whose diagonal elements are
  * those of the vector <i><b>v</i></b>.
@@ -76,7 +77,8 @@ import mitiv.utils.Timer;
  */
 public abstract class Convolution extends ShapedLinearOperator {
 
-    protected final int number; // number of values in the direct space
+    protected final int inpSize; // number of values in the input space
+    protected final int outSize; // number of values in the output space
 
     /**
      * The following constructor makes this class non instantiable, but still
@@ -94,7 +96,8 @@ public abstract class Convolution extends ShapedLinearOperator {
      */
     protected Convolution(ShapedVectorSpace inp, ShapedVectorSpace out) {
         super(inp, out);
-        this.number = inp.getNumber();
+        this.inpSize = inp.getNumber();
+        this.outSize = out.getNumber();
     }
 
     /** Retrieve the rank of the convolution. */
@@ -105,11 +108,6 @@ public abstract class Convolution extends ShapedLinearOperator {
     /** Retrieve the type of the elements of the argument of the convolution. */
     public final int getType() {
         return getInputSpace().getType();
-    }
-
-    /** Get the number of elements of the argument of the convolution. */
-    public final int getNumber() {
-        return number;
     }
 
     /**
@@ -146,9 +144,9 @@ public abstract class Convolution extends ShapedLinearOperator {
             }
             break;
         default:
-            throw new IllegalTypeException("Only float and double types are implemented.");
+            throw new IllegalTypeException("Only float and double types are implemented");
         }
-        throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented.");
+        throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented");
     }
 
     /**
@@ -207,11 +205,11 @@ public abstract class Convolution extends ShapedLinearOperator {
             ShapedVectorSpace out, int[] off) {
         final int type = inp.getType();
         if (out.getType() != type) {
-            throw new IllegalTypeException("Input and output spaces must have same element type.");
+            throw new IllegalTypeException("Input and output spaces must have same element type");
         }
         final int rank = inp.getRank();
         if (out.getShape().rank() != rank) {
-            throw new IllegalTypeException("Input and output spaces must have same rank.");
+            throw new IllegalTypeException("Input and output spaces must have same rank");
         }
         switch (type) {
         case Traits.FLOAT:
@@ -235,9 +233,9 @@ public abstract class Convolution extends ShapedLinearOperator {
             }
             break;
         default:
-            throw new IllegalTypeException("Only float and double types are implemented.");
+            throw new IllegalTypeException("Only float and double types are implemented");
         }
-        throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented.");
+        throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented");
     }
 
     /** Perform in-place forward FFT on the internal workspace. */
@@ -249,25 +247,33 @@ public abstract class Convolution extends ShapedLinearOperator {
     /**
      * Copy data to the internal workspace.
      *
-     * This operation should be done before calling the {@link #convolve}
+     * <p>
+     * This methods applies operator <b>R</b> if <b>adjoint</b> is false
+     * and operator <b>S</b><sup>*</sup> otherwise.
+     * This operation should be done before calling the {@link #convolve()}
      * method.
      *
-     * @param inp - The source vector to copy to the internal workspace.
+     * @param src     - The source vector to copy to the internal workspace.
+     * @param adjoint - Indicate whether to apply the adjoint or the direct
+     *                  operator.
      */
-    public abstract void push(ShapedVector inp);
+    public abstract void push(ShapedVector src, boolean adjoint);
 
     /**
      * Retrieve the result of the convolution.
      *
-     * After calling the {@link #convolve} method, this operation extracts the
-     * real part of the internal workspace for the output region and scales
-     * the values.
+     * <p>
+     * This methods applies operator <b>S</b> if <b>adjoint</b> is false
+     * and operator <b>R</b><sup>*</sup> otherwise.  After calling the
+     * {@link #convolve()} method, this operation extracts the real part of
+     * the internal workspace for the output region and scales the values.
      *
-     * @param out
-     *            - The destination vector to store the real part of the internal
-     *            workspace.
+     * @param dst     - The destination vector to store the real part of
+     *                  the internal workspace.
+     * @param adjoint - Indicate whether to apply the adjoint or the direct
+     *                  operator.
      */
-    public abstract void pull(ShapedVector out);
+    public abstract void pull(ShapedVector dst, boolean adjoint);
 
     /**
      * Apply the operator to the internal workspace.
@@ -277,9 +283,9 @@ public abstract class Convolution extends ShapedLinearOperator {
      * following operations:
      *
      * <pre>
-     * this.push(src);
+     * this.push(src, adjoint);
      * this.convolve(adjoint);
-     * this.pull(dst);
+     * this.pull(dst, adjoint);
      * </pre>
      *
      * where <b>src</b> is the source vector, <b>dst</b> is the destination
@@ -298,7 +304,7 @@ public abstract class Convolution extends ShapedLinearOperator {
     /**
      * Set the PSF of the operator.
      * @param vec - The PSF must belongs to the input space of the operator
-     *              and must be centered in the sense of of the FFT.
+     *              and must be centered in the sense of the FFT.
      */
     public abstract void setPSF(ShapedVector vec);
 
@@ -349,27 +355,27 @@ public abstract class Convolution extends ShapedLinearOperator {
      *              There must be as many elements as the rank of
      *              the PSF, each element is the 0-based offset of
      *              the center along the corresponding dimension.
-     * @return The PSF zero padded and appropriately rolled for the
-     *         FFT.
+     *
+     * @return The PSF zero padded and appropriately rolled for the FFT.
      */
     protected ShapedArray adjustPSF(ShapedArray psf, int[] off) {
         Shape psfShape = psf.getShape();
         Shape inpShape = getInputSpace().getShape();
         final int rank = inpShape.rank();
         if (psfShape.rank() != rank) {
-            throw new IllegalArgumentException("PSF rank not conformable.");
+            throw new IllegalArgumentException("PSF rank not conformable");
         }
         if (off.length != rank) {
-            throw new IllegalArgumentException("Number of coordinates not conformable.");
+            throw new IllegalArgumentException("Number of coordinates not conformable");
         }
         int [] shift = new int[rank];
         for (int k = 0; k < rank; ++k) {
-            int srcDim = psfShape.dimension(k);
-            int dstDim = inpShape.dimension(k);
-            if (srcDim > dstDim) {
-                throw new IllegalArgumentException("PSF dimension(s) too large.");
+            int psfDim = psfShape.dimension(k);
+            int inpDim = inpShape.dimension(k);
+            if (psfDim > inpDim) {
+                throw new IllegalArgumentException("PSF dimension(s) too large");
             }
-            int margin = (dstDim/2) - (srcDim/2); // margin for zero-padding
+            int margin = (inpDim/2) - (psfDim/2); // margin for zero-padding
             shift[k] = - (margin + off[k]);
         }
         return ArrayUtils.roll(ArrayUtils.pad(psf, inpShape), shift);
@@ -381,9 +387,10 @@ public abstract class Convolution extends ShapedLinearOperator {
             throw new NotImplementedException("For now we do not implement inverse convolution operations "+
                     "(talk to a specialist if you ignore the dangers of doing that!)");
         }
-        push((ShapedVector)src);
-        convolve(job == ADJOINT);
-        pull((ShapedVector)dst);
+        boolean adjoint = (job == ADJOINT);
+        push((ShapedVector)src, adjoint);
+        convolve(adjoint);
+        pull((ShapedVector)dst, adjoint);
 
     }
 

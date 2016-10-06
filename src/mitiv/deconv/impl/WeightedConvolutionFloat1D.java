@@ -106,7 +106,7 @@ public class WeightedConvolutionFloat1D
         checkData();
 
         /* Compute the convolution. */
-        cnvl.push(((FloatShapedVector)x).getData());
+        cnvl.push(((FloatShapedVector)x).getData(), false);
         cnvl.convolve(false);
 
         /* Integrate cost. */
@@ -146,7 +146,7 @@ public class WeightedConvolutionFloat1D
         checkData();
 
         /* Compute the convolution. */
-        cnvl.push(((FloatShapedVector)x).getData());
+        cnvl.push(((FloatShapedVector)x).getData(), false);
         cnvl.convolve(false);
 
         /* Integrate cost and gradient. */
@@ -224,15 +224,3 @@ public class WeightedConvolutionFloat1D
         cnvl.setPSF(psf);
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

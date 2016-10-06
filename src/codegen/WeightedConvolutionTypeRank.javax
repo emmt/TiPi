@@ -129,7 +129,7 @@ public class ${className}
         checkData();
 
         /* Compute the convolution. */
-        cnvl.push(((${Type}ShapedVector)x).getData());
+        cnvl.push(((${Type}ShapedVector)x).getData(), false);
         cnvl.convolve(false);
 
         /* Integrate cost. */
@@ -235,7 +235,7 @@ public class ${className}
         checkData();
 
         /* Compute the convolution. */
-        cnvl.push(((${Type}ShapedVector)x).getData());
+        cnvl.push(((${Type}ShapedVector)x).getData(), false);
         cnvl.convolve(false);
 
         /* Integrate cost and gradient. */
@@ -409,15 +409,3 @@ public class ${className}
         cnvl.setPSF(psf);
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
