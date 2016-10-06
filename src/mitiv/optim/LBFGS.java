@@ -25,6 +25,7 @@
 
 package mitiv.optim;
 
+import mitiv.base.Traits;
 import mitiv.linalg.LinearEndomorphism;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
@@ -59,6 +60,15 @@ import mitiv.linalg.VectorSpace;
  *
  */
 public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
+
+    /** Default value for {@code ftol} parameter in More & Thuente line search. */
+    static public final double SFTOL = 1.0e-4;
+
+    /** Default value for {@code gtol} parameter in More & Thuente line search. */
+    static public final double SGTOL = 0.9;
+
+    /** Default value for {@code xtol} parameter in More & Thuente line search. */
+    static public final double SXTOL = Traits.DBL_EPSILON;
 
     /** LBFGS approximation of the inverse Hessian */
     protected LBFGSOperator H = null;
@@ -126,6 +136,11 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
     /** Euclidean norm of the gradient at the last accepted step. */
     protected double gnorm = 0.0;
+
+    public LBFGS(VectorSpace space, int m) {
+        this(new LBFGSOperator(space, m),
+                new MoreThuenteLineSearch(SFTOL, SGTOL, SXTOL));
+    }
 
     public LBFGS(VectorSpace space, int m, LineSearch lnsrch) {
         this(new LBFGSOperator(space, m), lnsrch);
