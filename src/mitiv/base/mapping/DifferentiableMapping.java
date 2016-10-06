@@ -67,7 +67,7 @@ public abstract class DifferentiableMapping extends Mapping {
      * @param x - The point at which is evaluated the mapping.
      * @param v - The vector to which apply the Jacobian.
      */
-    public final void applyJacobian(Vector y, Vector x, Vector v) {
+    public void applyJacobian(Vector y, Vector x, Vector v) {
         if (! inputSpace.owns(y)) {
             throw new IncorrectSpaceException("Destination does not belong to the input space");
         }
