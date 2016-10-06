@@ -238,7 +238,7 @@ public class NonmonotoneLineSearch extends LineSearch {
             alpha = lineSearch.getStep();
             double f1 = f0 + alpha * (g0 + 0.5 * h0 * alpha);
             double g1 = g0 + h0 * alpha;
-            state = lineSearch.iterate(alpha, f1, g1);
+            state = lineSearch.iterate(f1, g1);
             System.out.println("alpha[" + k + "] = " + alpha + ";" + " f[" + k
                     + "] = " + f1 + ";" + " g[" + k + "] = " + g1 + ";"
                     + " state[" + k + "] = " + state + ";" + " finished[" + k
@@ -247,15 +247,3 @@ public class NonmonotoneLineSearch extends LineSearch {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

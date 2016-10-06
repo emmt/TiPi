@@ -192,7 +192,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             if (evaluations > 1) {
                 /* A line search is in progress.  Compute directional
                  * derivative and check whether line search has converged. */
-                final LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, -p.dot(g));
+                final LineSearchTask lnsrchTask = lnsrch.iterate(f, -p.dot(g));
                 if (lnsrchTask == LineSearchTask.SEARCH) {
                     return nextStep(x);
                 } else if (lnsrchTask != LineSearchTask.CONVERGENCE) {
@@ -230,7 +230,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             while (true) {
                 H.apply(p, g);
                 dg0 = -p.dot(g);
-                final double r = (delta > 0.0 ? delta*gnorm*p.norm2() : 0.0);
+                double r = (delta > 0.0 ? delta*gnorm*p.norm2() : 0.0);
                 if (r > 0.0 ? (dg0 <= -r) : (dg0 < 0.0)) {
                     /* Sufficient descent condition holds.  Estimate the
                      * length of the first step and break to proceed with
@@ -264,7 +264,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             f0 = f;
 
             /* Start the line search. */
-            final LineSearchTask lnsrchTask = lnsrch.start(f0, dg0, alpha, stpmin*alpha, stpmax*alpha);
+            LineSearchTask lnsrchTask = lnsrch.start(f0, dg0, alpha, stpmin*alpha, stpmax*alpha);
             if (lnsrchTask != LineSearchTask.SEARCH) {
                 return failure(lnsrch.getStatus());
             }

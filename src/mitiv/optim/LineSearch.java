@@ -321,56 +321,6 @@ public abstract class LineSearch {
     }
 
     /**
-     * Perform a line search iteration.
-     *
-     * This method is used to submit the function value (and its directional
-     * derivative) at the new position to try. Upon return, this method
-     * indicates whether the line search has converged. Otherwise, it computes a
-     * new step to try.
-     *
-     * @param alpha
-     *          - The value of the step (same as the value returned by
-     *            {@link #getStep}).
-     * @param f
-     *          - The value of the function at {@code x = x0 + alpha*p} where
-     *            {@code x0} are the variables at the start of the line search
-     *            and {@code p} is the search direction.
-     * @param df
-     *          - The directional derivative at {@code x}, that is
-     *            {@code p'.g(x)} the inner product between the search direction
-     *            and the function gradient at {@code x}.  The {@link #useDerivative}
-     *            method may be used to check whether this term is required or is
-     *            ignored and may thus be set to any value saving some computations.
-     *
-     * @return The new status of the line search instance.
-     */
-    public LineSearchTask iterate(double alpha, double f, double df) {
-        if (task == LineSearchTask.SEARCH) {
-            if (alpha != stp) {
-                failure(OptimStatus.STEP_CHANGED);
-            } else {
-                iterateHook(f, df);
-                if (status == OptimStatus.SUCCESS) {
-                    if (stp >= stpmax) {
-                        if (stp >= stpmax) {
-                            warning(OptimStatus.STEP_EQ_STPMAX);
-                        }
-                        stp = stpmax;
-                    } else if (stp <= stpmin) {
-                        if (stp <= stpmin) {
-                            warning(OptimStatus.STEP_EQ_STPMIN);
-                        }
-                        stp = stpmin;
-                    }
-                }
-            }
-        } else {
-            failure(OptimStatus.NOT_STARTED);
-        }
-        return task;
-    }
-
-    /**
      * Check whether directional derivatives are needed by the line search.
      *
      * @return A boolean value, true if the line search needs the

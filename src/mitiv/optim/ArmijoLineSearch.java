@@ -122,7 +122,7 @@ public class ArmijoLineSearch extends LineSearch {
             alpha = lineSearch.getStep();
             double f1 = f0 + alpha*(g0 + 0.5*h0*alpha);
             double g1 = g0 + h0*alpha;
-            task = lineSearch.iterate(alpha, f1, g1);
+            task = lineSearch.iterate(f1, g1);
             System.out.println("alpha[" + k + "] = " + alpha + ";" + " f[" + k
                     + "] = " + f1 + ";" + " g[" + k + "] = " + g1 + ";"
                     + " state[" + k + "] = " + task + ";" + " finished[" + k

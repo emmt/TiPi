@@ -183,7 +183,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             if (evaluations > 1) {
                 /* A line search is in progress.  Compute directional
                  * derivative and check whether line search has converged. */
-                final LineSearchTask lnsrchTask = lnsrch.iterate(alpha, f, -p.dot(g));
+                final LineSearchTask lnsrchTask = lnsrch.iterate(f, -p.dot(g));
                 if (lnsrchTask == LineSearchTask.SEARCH) {
                     return nextStep(x);
                 } else if (lnsrchTask != LineSearchTask.CONVERGENCE) {
