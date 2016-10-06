@@ -107,16 +107,11 @@ public class ArrayDescriptor implements Shaped, Typed {
         return shape;
     }
 
+    /**
+     * Get the string representation of an array descriptor.
+     */
+    @Override
+    public String toString() {
+        return Traits.nameOf(type) + shape.toString();
+    }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
