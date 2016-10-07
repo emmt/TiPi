@@ -116,16 +116,6 @@ public class EdgePreservingDeconvolutionCommand {
         }
     }
 
-    //private static double parseDouble(String option, String arg) {
-    //    try {
-    //        return Double.parseDouble(arg);
-    //    } catch (Exception e) {
-    //        System.err.format("Invalid real value for option %s (%s).\n", option, arg);
-    //        System.exit(1);
-    //        return 0.0; // dummy result to avoid warnings
-    //    }
-    //}
-
     public static void main(String[] args) {
 
         // Switch to "US" locale to avoid problems with number formats.
@@ -208,6 +198,7 @@ public class EdgePreservingDeconvolutionCommand {
             solver.setMaximumIterations(job.maxiter);
             solver.setMaximumEvaluations(job.maxeval);
             solver.setDebug(job.debug);
+            solver.setSaveBest(true);
 
             OptimTask task = solver.start();
             while (true) {
@@ -215,7 +206,6 @@ public class EdgePreservingDeconvolutionCommand {
                     fatal(solver.getReason());
                 }
                 if (task == OptimTask.WARNING) {
-                    // FIXME: should restore best solution so far...
                     warn(solver.getReason());
                     break;
                 }
@@ -251,7 +241,7 @@ public class EdgePreservingDeconvolutionCommand {
             fatal(e.getMessage());
         }
         try {
-            DataFormat.save(solver.getObject(), job.outName);
+            DataFormat.save(solver.getBestSolution(), job.outName);
         } catch (final IOException e) {
             if (job.debug) {
                 e.printStackTrace();

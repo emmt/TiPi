@@ -392,6 +392,14 @@ public class IterativeDifferentiableSolver {
         return space;
     }
 
+    public boolean getSaveBest() {
+        return saveBest;
+    }
+
+    public void setSaveBest(boolean value) {
+        saveBest = value;
+    }
+
     private void setComponents(DifferentiableCostFunction cost,
             ReverseCommunicationOptimizer optimizer) {
         if (optimizer != this.optimizer || cost != this.cost) {
