@@ -27,6 +27,9 @@ package mitiv.array;
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.Traits;
+import mitiv.linalg.shaped.ShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.exception.IllegalTypeException;
 
 
@@ -503,7 +506,7 @@ public class ArrayFactory {
             default:
                 throw new IllegalTypeException();
         }
-        throw new IllegalArgumentException("Invalid rank in shape.");
+        throw new IllegalArgumentException("Invalid rank in shape");
     }
 
     /**
@@ -664,7 +667,7 @@ public class ArrayFactory {
             default:
                 throw new IllegalTypeException();
         }
-        throw new IllegalArgumentException("Invalid rank in shape.");
+        throw new IllegalArgumentException("Invalid rank in shape");
     }
 
 
@@ -1274,7 +1277,7 @@ public class ArrayFactory {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static ByteArray wrap(byte[] arr, int[] dims) {
-        return wrap(arr, Shape.make(dims));
+        return wrap(arr, new Shape(dims));
     }
 
     /**
@@ -1315,7 +1318,7 @@ public class ArrayFactory {
         case 9:
             return Byte9D.wrap(data, shape);
         default:
-            throw new IllegalArgumentException("Invalid shape.");
+            throw new IllegalArgumentException("Invalid shape");
         }
     }
 
@@ -1536,7 +1539,7 @@ public class ArrayFactory {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static ShortArray wrap(short[] arr, int[] dims) {
-        return wrap(arr, Shape.make(dims));
+        return wrap(arr, new Shape(dims));
     }
 
     /**
@@ -1577,7 +1580,7 @@ public class ArrayFactory {
         case 9:
             return Short9D.wrap(data, shape);
         default:
-            throw new IllegalArgumentException("Invalid shape.");
+            throw new IllegalArgumentException("Invalid shape");
         }
     }
 
@@ -1798,7 +1801,7 @@ public class ArrayFactory {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static IntArray wrap(int[] arr, int[] dims) {
-        return wrap(arr, Shape.make(dims));
+        return wrap(arr, new Shape(dims));
     }
 
     /**
@@ -1839,7 +1842,7 @@ public class ArrayFactory {
         case 9:
             return Int9D.wrap(data, shape);
         default:
-            throw new IllegalArgumentException("Invalid shape.");
+            throw new IllegalArgumentException("Invalid shape");
         }
     }
 
@@ -2060,7 +2063,7 @@ public class ArrayFactory {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static LongArray wrap(long[] arr, int[] dims) {
-        return wrap(arr, Shape.make(dims));
+        return wrap(arr, new Shape(dims));
     }
 
     /**
@@ -2101,7 +2104,7 @@ public class ArrayFactory {
         case 9:
             return Long9D.wrap(data, shape);
         default:
-            throw new IllegalArgumentException("Invalid shape.");
+            throw new IllegalArgumentException("Invalid shape");
         }
     }
 
@@ -2322,7 +2325,7 @@ public class ArrayFactory {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static FloatArray wrap(float[] arr, int[] dims) {
-        return wrap(arr, Shape.make(dims));
+        return wrap(arr, new Shape(dims));
     }
 
     /**
@@ -2363,7 +2366,7 @@ public class ArrayFactory {
         case 9:
             return Float9D.wrap(data, shape);
         default:
-            throw new IllegalArgumentException("Invalid shape.");
+            throw new IllegalArgumentException("Invalid shape");
         }
     }
 
@@ -2584,7 +2587,7 @@ public class ArrayFactory {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static DoubleArray wrap(double[] arr, int[] dims) {
-        return wrap(arr, Shape.make(dims));
+        return wrap(arr, new Shape(dims));
     }
 
     /**
@@ -2625,20 +2628,48 @@ public class ArrayFactory {
         case 9:
             return Double9D.wrap(data, shape);
         default:
-            throw new IllegalArgumentException("Invalid shape.");
+            throw new IllegalArgumentException("Invalid shape");
         }
     }
 
-}
 
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
+    /**
+     * Wrap a shaped array around a shaped vector.
+     *
+     * @param vec - A shaped vector.
+     *
+     * @return A flat shaped array whose elements are shared with the input vector.
+     */
+    public static ShapedArray wrap(ShapedVector vec) {
+        switch (vec.getType()) {
+        case Traits.FLOAT:
+            return wrap(((FloatShapedVector)vec).getData(), vec.getShape());
+        case Traits.DOUBLE:
+            return wrap(((DoubleShapedVector)vec).getData(), vec.getShape());
+        default:
+            throw new IllegalArgumentException("Unsupported shaped vector type");
+        }
+    }
+
+    /**
+     * Wrap a shaped array around a float shaped vector.
+     *
+     * @param vec - A shaped vector.
+     *
+     * @return A flat shaped array whose elements are shared with the input vector.
+     */
+    public static FloatArray wrap(FloatShapedVector vec) {
+        return wrap(vec.getData(), vec.getShape());
+    }
+
+    /**
+     * Wrap a shaped array around a double shaped vector.
+     *
+     * @param vec - A shaped vector.
+     *
+     * @return A flat shaped array whose elements are shared with the input vector.
+     */
+    public static DoubleArray wrap(DoubleShapedVector vec) {
+        return wrap(vec.getData(), vec.getShape());
+    }
+}

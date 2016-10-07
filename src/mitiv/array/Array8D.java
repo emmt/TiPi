@@ -51,7 +51,7 @@ public abstract class Array8D implements ShapedArray {
      * let others inherit from this class.
      */
     protected Array8D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
-        shape = Shape.make(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+        shape = new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
         if (shape.number() > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Total number of elements is too large.");
         }
@@ -67,7 +67,7 @@ public abstract class Array8D implements ShapedArray {
     }
 
     protected Array8D(int[] dims) {
-        this(Shape.make(dims));
+        this(new Shape(dims));
     }
 
     protected Array8D(Shape shape) {

@@ -344,7 +344,7 @@ public class BufferedImageUtils {
         int halfSizePadH = sizePadH/2;
         int halfSizePadZ = sizePadZ/2;
 
-        Shape shape = Shape.make(width+sizePadW, height+sizePadH, sizeZ+sizePadZ);
+        Shape shape = new Shape(width+sizePadW, height+sizePadH, sizeZ+sizePadZ);
         //If we are in double else we will work in FLOAt
         if (input.getType() == Traits.DOUBLE) {
             double[] output = new double[(width+sizePadW)*(height+sizePadH)*(sizeZ+sizePadZ)];

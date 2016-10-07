@@ -36,7 +36,7 @@ public class ArrayDescriptor implements Shaped, Typed {
      * @param shape - The dimension list of the array.
      */
     public ArrayDescriptor(int type, int[] shape) {
-        this(type, Shape.make(shape));
+        this(type, new Shape(shape));
     }
 
     /**

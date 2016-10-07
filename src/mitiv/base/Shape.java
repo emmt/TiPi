@@ -45,7 +45,7 @@ public class Shape {
     private final int[] dims;
 
     /** The shape of any scalar object. */
-    private final static Shape scalarShape = new Shape(new int[]{}, true);
+    public final static Shape scalarShape = new Shape(new int[]{}, true);
 
     /**
      * Get the shape of scalar objects.

@@ -52,7 +52,7 @@ public abstract class Array9D implements ShapedArray {
      * let others inherit from this class.
      */
     protected Array9D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
-        shape = Shape.make(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+        shape = new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
         if (shape.number() > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Total number of elements is too large.");
         }
@@ -69,7 +69,7 @@ public abstract class Array9D implements ShapedArray {
     }
 
     protected Array9D(int[] dims) {
-        this(Shape.make(dims));
+        this(new Shape(dims));
     }
 
     protected Array9D(Shape shape) {

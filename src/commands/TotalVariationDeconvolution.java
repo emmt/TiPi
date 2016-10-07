@@ -370,7 +370,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             } else {
                 fatal("Unknown padding strategy.");
             }
-            deconvolve(Shape.make(dims));
+            deconvolve(new Shape(dims));
         }
     }
 

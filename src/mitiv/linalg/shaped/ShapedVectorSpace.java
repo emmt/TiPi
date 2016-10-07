@@ -51,39 +51,39 @@ public abstract class ShapedVectorSpace extends VectorSpace implements Shaped, T
     }
 
     ShapedVectorSpace(int type, int dim1) {
-        this(type, Shape.make(dim1));
+        this(type, new Shape(dim1));
     }
 
     ShapedVectorSpace(int type, int dim1, int dim2) {
-        this(type, Shape.make(dim1, dim2));
+        this(type, new Shape(dim1, dim2));
     }
 
     ShapedVectorSpace(int type, int dim1, int dim2, int dim3) {
-        this(type, Shape.make(dim1, dim2, dim3));
+        this(type, new Shape(dim1, dim2, dim3));
     }
 
     ShapedVectorSpace(int type, int dim1, int dim2, int dim3, int dim4) {
-        this(type, Shape.make(dim1, dim2, dim3, dim4));
+        this(type, new Shape(dim1, dim2, dim3, dim4));
     }
 
     ShapedVectorSpace(int type, int dim1, int dim2, int dim3, int dim4, int dim5) {
-        this(type, Shape.make(dim1, dim2, dim3, dim4, dim5));
+        this(type, new Shape(dim1, dim2, dim3, dim4, dim5));
     }
 
     ShapedVectorSpace(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
-        this(type, Shape.make(dim1, dim2, dim3, dim4, dim5, dim6));
+        this(type, new Shape(dim1, dim2, dim3, dim4, dim5, dim6));
     }
 
     ShapedVectorSpace(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        this(type, Shape.make(dim1, dim2, dim3, dim4, dim5, dim6, dim7));
+        this(type, new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7));
     }
 
     ShapedVectorSpace(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
-        this(type, Shape.make(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8));
+        this(type, new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8));
     }
 
     ShapedVectorSpace(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
-        this(type, Shape.make(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9));
+        this(type, new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9));
     }
 
     @Override

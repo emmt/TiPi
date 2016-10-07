@@ -80,7 +80,7 @@ public class RealComplexFFT extends ShapedLinearOperator {
         }
         int[] complexDims = realShape.copyDimensions();
         complexDims[0] *= 2;
-        Shape complexShape = Shape.make(complexDims);
+        Shape complexShape = new Shape(complexDims);
         int type = realSpace.getType();
         if (type == Traits.FLOAT) {
             complexSpace = new FloatShapedVectorSpace(complexShape);

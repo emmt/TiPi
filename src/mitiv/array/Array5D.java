@@ -48,7 +48,7 @@ public abstract class Array5D implements ShapedArray {
      * let others inherit from this class.
      */
     protected Array5D(int dim1, int dim2, int dim3, int dim4, int dim5) {
-        shape = Shape.make(dim1, dim2, dim3, dim4, dim5);
+        shape = new Shape(dim1, dim2, dim3, dim4, dim5);
         if (shape.number() > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Total number of elements is too large.");
         }
@@ -61,7 +61,7 @@ public abstract class Array5D implements ShapedArray {
     }
 
     protected Array5D(int[] dims) {
-        this(Shape.make(dims));
+        this(new Shape(dims));
     }
 
     protected Array5D(Shape shape) {

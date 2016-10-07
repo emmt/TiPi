@@ -46,7 +46,7 @@ public abstract class Array3D implements ShapedArray {
      * let others inherit from this class.
      */
     protected Array3D(int dim1, int dim2, int dim3) {
-        shape = Shape.make(dim1, dim2, dim3);
+        shape = new Shape(dim1, dim2, dim3);
         if (shape.number() > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Total number of elements is too large.");
         }
@@ -57,7 +57,7 @@ public abstract class Array3D implements ShapedArray {
     }
 
     protected Array3D(int[] dims) {
-        this(Shape.make(dims));
+        this(new Shape(dims));
     }
 
     protected Array3D(Shape shape) {

@@ -50,7 +50,7 @@ public abstract class Array7D implements ShapedArray {
      * let others inherit from this class.
      */
     protected Array7D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
-        shape = Shape.make(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+        shape = new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
         if (shape.number() > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Total number of elements is too large.");
         }
@@ -65,7 +65,7 @@ public abstract class Array7D implements ShapedArray {
     }
 
     protected Array7D(int[] dims) {
-        this(Shape.make(dims));
+        this(new Shape(dims));
     }
 
     protected Array7D(Shape shape) {

@@ -33,7 +33,7 @@ import mitiv.base.Shape;
  * @author Éric Thiébaut.
  */
 public abstract class Scalar implements ShapedArray {
-    static protected final Shape shape = Shape.make();
+    static protected final Shape shape = Shape.scalarShape;
     static protected final int number = 1;
 
     /*
@@ -44,7 +44,7 @@ public abstract class Scalar implements ShapedArray {
     }
 
     protected Scalar(int[] dims) {
-        this(Shape.make(dims));
+        this(new Shape(dims));
     }
 
     protected Scalar(Shape shape) {

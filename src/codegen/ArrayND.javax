@@ -55,7 +55,7 @@ import mitiv.base.indexing.Range;
 public abstract class ${className} implements ShapedArray {
     //# def scope = protected final
     //# if ${rank} == 0
-    static ${scope} Shape shape = Shape.make();
+    static ${scope} Shape shape = Shape.scalarShape;
     static ${scope} int number = 1;
     //# else
     ${scope} Shape shape;
@@ -90,7 +90,7 @@ public abstract class ${className} implements ShapedArray {
     //# end
     protected ${className}(${argList}) {
         //# if ${rank} >= 1
-        shape = Shape.make(${dimList});
+        shape = new Shape(${dimList});
         if (shape.number() > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Total number of elements is too large.");
         }
@@ -102,7 +102,7 @@ public abstract class ${className} implements ShapedArray {
     }
 
     protected ${className}(int[] dims) {
-        this(Shape.make(dims));
+        this(new Shape(dims));
     }
 
     protected ${className}(Shape shape) {

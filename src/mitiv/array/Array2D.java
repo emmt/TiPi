@@ -45,7 +45,7 @@ public abstract class Array2D implements ShapedArray {
      * let others inherit from this class.
      */
     protected Array2D(int dim1, int dim2) {
-        shape = Shape.make(dim1, dim2);
+        shape = new Shape(dim1, dim2);
         if (shape.number() > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Total number of elements is too large.");
         }
@@ -55,7 +55,7 @@ public abstract class Array2D implements ShapedArray {
     }
 
     protected Array2D(int[] dims) {
-        this(Shape.make(dims));
+        this(new Shape(dims));
     }
 
     protected Array2D(Shape shape) {

@@ -29,6 +29,9 @@ package ${package};
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.Traits;
+import mitiv.linalg.shaped.ShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.exception.IllegalTypeException;
 
 
@@ -137,7 +140,7 @@ public class ${className} {
             default:
                 throw new IllegalTypeException();
         }
-        throw new IllegalArgumentException("Invalid rank in shape.");
+        throw new IllegalArgumentException("Invalid rank in shape");
     }
 
     /**
@@ -169,7 +172,7 @@ public class ${className} {
             default:
                 throw new IllegalTypeException();
         }
-        throw new IllegalArgumentException("Invalid rank in shape.");
+        throw new IllegalArgumentException("Invalid rank in shape");
     }
 
 
@@ -299,7 +302,7 @@ public class ${className} {
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static ${TypeArray} wrap(${type}[] arr, int[] dims) {
-        return wrap(arr, Shape.make(dims));
+        return wrap(arr, new Shape(dims));
     }
 
     /**
@@ -326,21 +329,49 @@ public class ${className} {
             return ${Type}${rank}D.wrap(data, shape);
         //# end
         default:
-            throw new IllegalArgumentException("Invalid shape.");
+            throw new IllegalArgumentException("Invalid shape");
         }
     }
 
     //# end // loop over types
-}
 
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
+    /**
+     * Wrap a shaped array around a shaped vector.
+     *
+     * @param vec - A shaped vector.
+     *
+     * @return A flat shaped array whose elements are shared with the input vector.
+     */
+    public static ShapedArray wrap(ShapedVector vec) {
+        switch (vec.getType()) {
+        case Traits.FLOAT:
+            return wrap(((FloatShapedVector)vec).getData(), vec.getShape());
+        case Traits.DOUBLE:
+            return wrap(((DoubleShapedVector)vec).getData(), vec.getShape());
+        default:
+            throw new IllegalArgumentException("Unsupported shaped vector type");
+        }
+    }
+
+    /**
+     * Wrap a shaped array around a float shaped vector.
+     *
+     * @param vec - A shaped vector.
+     *
+     * @return A flat shaped array whose elements are shared with the input vector.
+     */
+    public static FloatArray wrap(FloatShapedVector vec) {
+        return wrap(vec.getData(), vec.getShape());
+    }
+
+    /**
+     * Wrap a shaped array around a double shaped vector.
+     *
+     * @param vec - A shaped vector.
+     *
+     * @return A flat shaped array whose elements are shared with the input vector.
+     */
+    public static DoubleArray wrap(DoubleShapedVector vec) {
+        return wrap(vec.getData(), vec.getShape());
+    }
+}
