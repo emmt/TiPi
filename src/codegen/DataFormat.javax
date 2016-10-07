@@ -55,6 +55,7 @@ import mitiv.array.Short3D;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
 import mitiv.exception.IllegalTypeException;
+import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -332,12 +333,12 @@ public enum DataFormat {
     }
 
     /**
-     * Save data to file.
+     * Save a shaped array to a file.
      * <p>
      * The file format is guessed from the extension of the file name and
      * default options are used to encode the file.
      * </p>
-     * @param arr  - The data to save.
+     * @param arr  - The shaped array to save.
      * @param name - The name of the destination file.
      * @throws IOException
      * @throws FileNotFoundException
@@ -348,12 +349,12 @@ public enum DataFormat {
     }
 
     /**
-     * Save data to file with given options.
+     * Save a shaped array to a file with given options.
      * <p>
      * The file format is guessed from the extension of the file name and
      * default options are used to encode the file.
      * </p>
-     * @param arr  - The data to save.
+     * @param arr  - The shaped array to save.
      * @param name - The name of the destination file.
      * @param opts - Options for encoding the data.
      * @throws IOException
@@ -387,6 +388,77 @@ public enum DataFormat {
         ImageIO.write(image, identifier, new File(name));
     }
 
+    /**
+     * Save a shaped vector to a file.
+     * <p>
+     * The file format is guessed from the extension of the file name and
+     * default options are used to encode the file.
+     * </p>
+     * @param vec  - The shaped vector to save.
+     * @param name - The name of the destination file.
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+    public static void save(ShapedVector vec, String name)
+            throws FileNotFoundException, IOException {
+        save(vec, name, new FormatOptions());
+    }
+
+    /**
+     * Save a shaped vector to a file with options.
+     * <p>
+     * The file format is guessed from the extension of the file name and
+     * default options are used to encode the file.
+     * </p>
+     * @param vec  - The shaped vector to save.
+     * @param name - The name of the destination file.
+     * @param opts - Options for encoding the data.
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+    public static void save(ShapedVector vec, String name,
+                            FormatOptions opts)
+            throws FileNotFoundException, IOException {
+        save(ArrayFactory.wrap(vec), name, opts);
+    }
+
+    /**
+     * Save a vector to a file.
+     * <p>
+     * The file format is guessed from the extension of the file name and
+     * default options are used to encode the file.
+     * </p>
+     * @param vec  - The vector to save (only shaped vectors are supported
+     *               for now).
+     * @param name - The name of the destination file.
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+    public static void save(Vector vec, String name)
+            throws FileNotFoundException, IOException {
+        save(vec, name, new FormatOptions());
+    }
+
+    /**
+     * Save a vector to a file with options.
+     * <p>
+     * The file format is guessed from the extension of the file name and
+     * default options are used to encode the file.
+     * </p>
+     * @param vec  - The vector to save (only shaped vectors are supported
+     *               for now).
+     * @param name - The name of the destination file.
+     * @param opts - Options for encoding the data.
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+    public static void save(Vector vec, String name, FormatOptions opts)
+            throws FileNotFoundException, IOException {
+        if (! (vec instanceof ShapedVector)) {
+            throw new IllegalArgumentException("Unsupported non-shaped vector");
+        }
+        save(ArrayFactory.wrap((ShapedVector)vec), name, opts);
+    }
 
     /*=======================================================================*/
     /* MAKE BUFFERED IMAGES */
