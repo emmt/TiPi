@@ -1,9 +1,9 @@
 # An Introduction to TiPi
 
-TiPi is a Java *Toolkit for Inverse Problems and Imaging* developed by the
+TiPi is a Java *Toolkit for Inverse Problems and Imaging* developed as part the
 [MiTiV](http://mitiv.univ-lyon1.fr/) project.  The objective of TiPi is to
 provide a framework for developping fast algorithms for solving inverse
-problems.
+problems in particular in the domain of imaging.
 
 
 ## Contents
@@ -15,8 +15,8 @@ For now TiPi provides:
 
 * Classes and methods to deal with so-called [*vectors*](vectors.md) which
   stores values in an efficient way.  These vectors are needed by iterative
-  optimization methods and typically used to store the data, theirs weights and
-  the variables of the inverse problem.
+  optimization methods and are typically used to store the data, theirs weights
+  and the variables of the inverse problem.
 
 * Limited memory optimization algorithms to deal with large scale non-linear
   problems.
@@ -24,7 +24,7 @@ For now TiPi provides:
 * Building-block classes to encode objective functions (likelihood,
   regularization, etc.).
 
-* Utilities.
+* Utilities for reading or writing data files, etc..
 
 
 ## Rationale and Performances Issues
