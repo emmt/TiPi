@@ -7,9 +7,9 @@ objects in a shaped array which share its elements with the object.
 
 ## Create a New Array
 
-The static method `ArrayFactory.create()` creates a shaped array with any
-element type and any shape.  There are many possibilities to specify the shape
-of the arra, for instance:
+The static method `ArrayFactory.create()` creates a shaped array with given
+element type and shape.  There are many possibilities to specify the shape of
+the array, for instance:
 
     ArrayFactory.create(type, shape)
     ArrayFactory.create(type, dims)
@@ -31,7 +31,7 @@ The array element type can be one of:
 * `Traits.INT` for an array of `int` elements;
 * `Traits.LONG` for an array of `long` elements;
 * `Traits.FLOAT` for an array of `float` elements;
-* `Traits.DOUBLE` for an array of `double` elements;
+* `Traits.DOUBLE` for an array of `double` elements.
 
 The storage of the elements of an array created by `ArrayFactory.create(...)`
 is provided by a simple monodimensional Java array with the same element type.
@@ -43,8 +43,8 @@ For multi-dimensional arrays, the storage order of arrays created by
 ## Wrap an Array Around Existing Data
 
 A shaped array may be created to share its elements with an existing
-monodimensional Java array of any generic numerical type.  This is done by the
-`ArrayFactory.wrap(...)` method as follows:
+monodimensional Java array of any generic numerical type.  This is done by one
+of the `ArrayFactory.wrap(...)` methods as follows:
 
     ArrayFactory.wrap(buf, shape)
     ArrayFactory.wrap(buf, dims)
@@ -84,8 +84,8 @@ The element type af an existing array can be converted by one of the
 
 both yield a version of `arr` whose elements are of generic type `float`.  For
 maximum efficiency, the conversion operation is *lazzy* in the sense that the
-same array is returned if it alread has the requested type.
+same array is returned if it already has the requested type.
 
-**Warning** In a near futur, static methods like `ArrayFactory.toFloat(arr)`
+**Warning:** In a near futur, static methods like `ArrayFactory.toFloat(arr)`
 will be deprecated in favor of instance methods like `arr.toFloat()` which
 are more readable.
