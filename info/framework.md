@@ -254,11 +254,11 @@ It is possible to assign the values of an array from another object:
 where `src` is another shaped array, a shaped vector, or a Java array of a
 primitive type.  If the type of the elements of `src` does not match that of
 the elements of `arr`, conversion is automatically and silently performed.  If
-`src` is a `Shaped` object, its shape however match that of `arr`.  If `src` is
-a Java array, it must have as many elements as `arr`.  The `assign` operation is
-optimized: if `arr` and `src` share their contents with the same storage,
-nothing is done as nothing has to be done.  If `arr` and `src` share their
-contents in a different form, the result is unpredictable.
+`src` is a `Shaped` object, its shape must however match that of `arr`.  If
+`src` is a Java array, it must have as many elements as `arr`.  The `assign`
+operation is optimized: if `arr` and `src` share their contents with the same
+storage, nothing is done as nothing has to be done.  If `arr` and `src` share
+their contents in a different form, the result is unpredictable.
 
 When the type and dimensions of a shaped array are unveiled by its class,
 individual elements become accessible via its `get(...)` and `set(...)`
@@ -267,13 +267,14 @@ methods.
 
 ### Create a Similar Shaped Array
 
-To create a new array with the same type and shape as `arr` is simply done by:
+Creating a new array with the same type and shape as `arr` is simply done by:
 
     arr.create()
 
-which return a *flat* array whose elements are contiguous and stored in
-column-major order.  The `ArrayFactory` provides static methods to create
-shaped arrays of any given type and shape.
+which yields a *flat* array whose elements are contiguous and stored in
+column-major order.  The [`ArrayFactory`](array-factory.md) provides static
+methods to create shaped arrays of any given type and shape (providing the type
+of its elements is known).
 
 
 ### 1D View of a Shaped Array
