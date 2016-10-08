@@ -15,3 +15,9 @@
 
  * Deal with `NaN` and `Infinite` when converting arrays to images.
 
+ * Implement broadcasting rules for `assign`.
+
+ * Deprecate type conversions via the `ArrayFactory`,
+   e.g. `ArrayFactory.toByte(arr)` in favor of `arr.toByte()`.
+
+
