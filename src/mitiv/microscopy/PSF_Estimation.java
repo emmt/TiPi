@@ -87,30 +87,30 @@ public class PSF_Estimation implements ReconstructionJob {
         setLowerBound(positivity ? 0.0 : Double.NEGATIVE_INFINITY);
     }
     // FIXME: names should be part of the synchronizer...
-   // public String getSynchronizedParameterName(int i) {
-   //     return synchronizedParameterNames[i];
-   // }
+    // public String getSynchronizedParameterName(int i) {
+    //     return synchronizedParameterNames[i];
+    // }
 
     private boolean run = true;
 
     public PSF_Estimation() {
-    	
+
     }
-	public PSF_Estimation(WideFieldModel pupil) {
-    	if (pupil!=null){
-    	this.pupil = pupil;
-    	}else{
-    		 fatal("pupil not specified");
-    	}
-	}
-	private static void fatal(String reason) {
+    public PSF_Estimation(WideFieldModel pupil) {
+        if (pupil!=null){
+            this.pupil = pupil;
+        }else{
+            fatal("pupil not specified");
+        }
+    }
+    private static void fatal(String reason) {
         throw new IllegalArgumentException(reason);
     }
 
 
     public void fitPSF(DoubleShapedVector x, int flag) {
-// FIXME set a best X
-    	double best_cost = Double.POSITIVE_INFINITY;
+        // FIXME set a best X
+        double best_cost = Double.POSITIVE_INFINITY;
         // Check input data and get dimensions.
         if (data == null) {
             fatal("Input data not specified.");
@@ -134,7 +134,7 @@ public class PSF_Estimation implements ReconstructionJob {
         }
 
         DoubleShapedVectorSpace objSpace = new DoubleShapedVectorSpace(dataShape);
-        
+
         if (result != null) {
             /* We try to keep the previous result, at least its dimensions
              * must match. */
@@ -161,12 +161,12 @@ public class PSF_Estimation implements ReconstructionJob {
         }
 
         // Build the cost functions
-     //   fcost = 0.0;
+        //   fcost = 0.0;
         gcost = objSpace.create();
         fcost = fdata.computeCostAndGradient(1.0, objSpace.wrap(pupil.getPSF()), gcost, true);
-    	best_cost = fcost;
-    	best_x = x.clone();
-    	
+        best_cost = fcost;
+        best_x = x.clone();
+
         if (debug) {
             System.out.println("Cost function initialization complete.");
         }
@@ -177,8 +177,8 @@ public class PSF_Estimation implements ReconstructionJob {
         BoundProjector projector = null;
         int bounded = 0;
         limitedMemorySize = 0;
-        
-       if (lowerBound != Double.NEGATIVE_INFINITY) {
+
+        if (lowerBound != Double.NEGATIVE_INFINITY) {
             bounded |= 1;
         }
         if (upperBound != Double.POSITIVE_INFINITY) {
@@ -190,21 +190,21 @@ public class PSF_Estimation implements ReconstructionJob {
             System.out.println("bounded");
             System.out.println(bounded);
         }
-        
-            /* No bounds have been specified. */
-            lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
-     
-       int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
+
+        /* No bounds have been specified. */
+        lineSearch = new MoreThuenteLineSearch(0.05, 0.1, 1E-17);
+
+        int m = (limitedMemorySize > 1 ? limitedMemorySize : 5);
         vmlmb = new VMLMB(variableSpace, projector, m, lineSearch);
         vmlmb.setAbsoluteTolerance(gatol);
         vmlmb.setRelativeTolerance(grtol);
         minimizer = vmlmb;
-//        
+        //
 
         if (debug) {
             System.out.println("Optimization method initialization complete.");
         }
-        
+
         DoubleShapedVector gX = variableSpace.create();
         // Launch the non linear conjugate gradient
         OptimTask task = minimizer.start();
@@ -240,18 +240,18 @@ public class PSF_Estimation implements ReconstructionJob {
                 pupil.computePSF();
 
                 fcost = fdata.computeCostAndGradient(1.0, objSpace.wrap(pupil.getPSF()), gcost, true);
-                
+
                 if(fcost<best_cost){
-                	best_cost = fcost;
-                	best_x = x.clone();
-                	System.out.println("Cost: " + best_cost);
+                    best_cost = fcost;
+                    best_x = x.clone();
+                    System.out.println("Cost: " + best_cost);
                 }
                 if(flag == DEFOCUS)
                 {
-                  gX = variableSpace.wrap(pupil.apply_J_defocus(gcost.getData()));
+                    gX = variableSpace.wrap(pupil.apply_J_defocus(gcost.getData()));
                     if (debug) {
-                    	System.out.println("grdx");
-                    	MathUtils.stat(gcost.getData());
+                        System.out.println("grdx");
+                        MathUtils.stat(gcost.getData());
                         System.out.println("grd");
                         MathUtils.printArray(gX.getData());
                     }
@@ -268,8 +268,8 @@ public class PSF_Estimation implements ReconstructionJob {
                 {
                     gX = variableSpace.wrap(pupil.apply_J_rho(gcost.getData()));
                     if (debug) {
-                    	System.out.println("grdx");
-                    	MathUtils.stat(gcost.getData());
+                        System.out.println("grdx");
+                        MathUtils.stat(gcost.getData());
                         System.out.println("grd");
                         MathUtils.printArray(gX.getData());
                     }
@@ -280,14 +280,18 @@ public class PSF_Estimation implements ReconstructionJob {
                 }
                 boolean stop = (task == OptimTask.FINAL_X);
                 if (! stop && maxiter >= 0 && minimizer.getIterations() >= maxiter) {
-                    System.err.format("Warning: too many iterations (%d).\n", maxiter);
+                    if (debug){
+                        System.out.format("Warning: too many iterations (%d).\n", maxiter);
+                    }
                     stop = true;
                 }
                 if (stop) {
                     break;
                 }
             } else {
-                System.err.println("TiPi: PSF_Estimation, "+task+" : "+minimizer.getReason());
+                if (debug){
+                    System.out.println("TiPi: PSF_Estimation, "+task+" : "+minimizer.getReason());
+                }
                 break;
             }
             if (synchronizer != null) {
@@ -357,7 +361,7 @@ public class PSF_Estimation implements ReconstructionJob {
     }
     public void setMaximumIterations(int value) {
         maxiter = value;
-        maxeval = 2* value; // 2 or 3 times more evaluations than iterations seems reasonable 
+        maxeval = 2* value; // 2 or 3 times more evaluations than iterations seems reasonable
     }
     public void setLimitedMemorySize(int value) {
         limitedMemorySize = value;
@@ -459,11 +463,11 @@ public class PSF_Estimation implements ReconstructionJob {
     public double getGradientNormInf() {
         return (gcost == null ? 0.0 : gcost.normInf());
     }
-	public void setObj(ShapedArray obj) {
-		// TODO Auto-generated method stub
+    public void setObj(ShapedArray obj) {
+        // TODO Auto-generated method stub
         this.obj = obj;
-		
-	}
+
+    }
 }
 
 /*
