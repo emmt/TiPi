@@ -327,7 +327,7 @@ public class WeightFactory {
     static public void computeWeightsFromData(double[] wgt, double[] dat,
             double alpha, double beta, double bad)
     {
-        System.out.println("# of data: " + dat.length + ", # of weights: "+wgt.length);
+        //  System.out.println("# of data: " + dat.length + ", # of weights: "+wgt.length);
         final double zero = 0;
         final double one = 1;
         if (isnan(alpha) || isinf(alpha) || alpha < zero) {
