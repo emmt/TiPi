@@ -31,7 +31,6 @@ import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.deconv.WeightedConvolutionCost;
 import mitiv.invpb.ReconstructionJob;
-import mitiv.invpb.ReconstructionSynchronizer;
 import mitiv.invpb.ReconstructionViewer;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
@@ -61,27 +60,14 @@ public class PSF_Estimation implements ReconstructionJob {
     private ShapedArray psf = null;
     private double fcost = 0.0;
     private DoubleShapedVector gcost = null;
-    private WideFieldModel pupil = null;
+    private MicroscopeModel pupil = null;
     private ReverseCommunicationOptimizer minimizer = null;
     private ReconstructionViewer viewer = null;
-    private ReconstructionSynchronizer synchronizer = null;
-    private double[] synchronizedParameters = {0.0, 0.0};
-    private boolean[] change = {false, false};
     private DoubleArray weights = null;
 
     public static final int DEFOCUS = 1;
     public static final int ALPHA = 2;
     public static final int BETA = 3;
-    public void createSynchronizer() {
-        if (synchronizer == null) {
-            synchronizedParameters[0] = mu;
-            synchronizedParameters[1] = epsilon;
-            synchronizer = new ReconstructionSynchronizer(synchronizedParameters);
-        }
-    }
-    public void deleteSynchronizer() {
-        synchronizer = null;
-    }
 
     public void enablePositivity(Boolean positivity) {
         setLowerBound(positivity ? 0.0 : Double.NEGATIVE_INFINITY);
@@ -96,7 +82,7 @@ public class PSF_Estimation implements ReconstructionJob {
     public PSF_Estimation() {
 
     }
-    public PSF_Estimation(WideFieldModel pupil) {
+    public PSF_Estimation(MicroscopeModel pupil) {
         if (pupil!=null){
             this.pupil = pupil;
         }else{
@@ -294,23 +280,6 @@ public class PSF_Estimation implements ReconstructionJob {
                 }
                 break;
             }
-            if (synchronizer != null) {
-                /* FIXME: check the values, suspend/resume, restart the algorithm, etc. */
-                if (synchronizer.getTask() == ReconstructionSynchronizer.STOP) {
-                    break;
-                }
-                synchronizedParameters[0] = mu;
-                synchronizedParameters[1] = epsilon;
-                if (synchronizer.updateParameters(synchronizedParameters, change)) {
-                    if (change[0]) {
-                        mu = synchronizedParameters[0];
-                    }
-                    if (change[1]) {
-                        epsilon = synchronizedParameters[1];
-                    }
-                    // FIXME: restart!!!
-                }
-            }
             if (debug) {
                 System.out.println("Evaluations");
                 System.out.println(minimizer.getEvaluations());
@@ -398,13 +367,10 @@ public class PSF_Estimation implements ReconstructionJob {
     public void setViewer(ReconstructionViewer rv) {
         viewer = rv;
     }
-    public ReconstructionSynchronizer getSynchronizer() {
-        return synchronizer;
-    }
-    public void setPupil(WideFieldModel pupil) {
+    public void setPupil(MicroscopeModel pupil) {
         this.pupil = pupil;
     }
-    public WideFieldModel getPupil() {
+    public MicroscopeModel getPupil() {
         return pupil;
     }
     public DoubleArray getData() {
@@ -469,15 +435,3 @@ public class PSF_Estimation implements ReconstructionJob {
 
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

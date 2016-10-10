@@ -48,7 +48,7 @@ import org.jtransforms.fft.DoubleFFT_2D;
  * @version
  * @author Ferréol Soulez	 <ferreol.soulez@epfl.ch>
  */
-public class WideFieldModel
+public class MicroscopeModel
 {
     protected final static boolean NORMALIZED = true;
     protected static final double DEUXPI = 2*Math.PI;
@@ -97,7 +97,7 @@ public class WideFieldModel
      *  @param Nz number of samples along axial Z-dimension
      *  @param radial when true use only radial zernike polynomial
      */
-    public WideFieldModel(double NA, double lambda, double ni, double dxy, double dz, int Nx, int Ny, int Nz,boolean radial)
+    public MicroscopeModel(double NA, double lambda, double ni, double dxy, double dz, int Nx, int Ny, int Nz,boolean radial)
     {
         this.NA = NA;
         this.lambda = lambda;
