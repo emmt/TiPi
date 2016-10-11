@@ -1,10 +1,10 @@
 # The TiPi PreProcessor
 
 
-`tpp` is *TiPi PreProcessor* which is used to produce Java code of many TiPi
+**tpp** is *TiPi PreProcessor* which is used to produce Java code of many TiPi
 classes from a single or a few source files.  In TiPi source tree, the files
 which need to be pre-processed by `tpp` to produce Java code are suffixed by
-`.javax` and are all in the `codegen` directory.
+`.javax` and are all in the [`src/codegen`](../src/codegen) directory.
 
 The principle of `tpp` is simple: it interprets special pre-processor
 directives in the source code and re-emit other lines of code, possibly several
@@ -52,14 +52,14 @@ Pre-processor directives are lines of the form:
 
     //# COMMAND ...
 
-or
+where, to improve readability, there can be any spaces before `//`, before and
+after `#`.  In the output, all lines matching this and with a recognized
+`COMMAND` are omitted.
+
+All commands can have and optional comment which is delimited by the first
+occurrence of `//` after the `//#`:
 
     //# COMMAND ... // COMMENT
-
-where `COMMENT` is an optional comment delimited by the first occurrence of
-`//` after the `//#` (there can be any spaces before `//`, before and after
-`#`).  In the output, all lines matching this and with a recognized `COMMAND`
-are omitted.
 
 Both `COMMAND` and `COMMENT` may be empty.  Comment lines are a special case
 with an empty `COMMAND` and empty lines like:
@@ -81,9 +81,10 @@ with a Latin letter or an underscore character (`a` to `z`, `A` to `Z` or `_`)
 which can be followed by any number of Latin letters, underscore characters or
 digits (`0` to `9`).
 
-A macro can be redefined (unless it is one of the read-only macros) and can be
-undefined at any time.  It is also possible to temporarily suspend and resume
-substitution of a specific macro.
+A macro can be redefined (unless it is one of the
+[read-only macros](#predefined-macros)) and can be undefined at any time.  It
+is also possible to temporarily suspend and resume substitution of a specific
+macro.
 
 
 ### Simple Macro Definition
@@ -110,7 +111,7 @@ The two possibilities for (re)defining a macro differ in the processing of the
   substitution loops but can be exploited to append or prepend stuff to an
   existing macro.  This is of interest when a macro is build piece by piece in
   a loop for instance.  As explained later, this *feature* can also be used to
-  mimic macros with arguments.
+  [mimic macros with arguments](#macros-as-pseudo-functions).
 
 Note that contrarily to C preprocessor, overwritting an existing definition is
 not forbidden.
@@ -128,7 +129,7 @@ operator.
 
 The expression in `EXPR` is evaluated after recursive macro substitution.  The
 syntax of the expression is similar to that of the C (in fact it is implemented
-by the `EXPR` command of Tcl) with a special function `defined(MACRO)` which
+by the `expr` command of Tcl) with a special function `defined(MACRO)` which
 yields `true` or `false` depending whether `MACRO` is a defined macro or not.
 
 The operator `OPER` can be a simple `=` to assign the result of evaluating
@@ -146,15 +147,14 @@ yields a macro named `a` whose value is `3`.
 
 Expressions involve integer arithmetic and tests:
 
-  defined(name)         check whether macro NAME is defined
-  ! defined(name)       check whether macro NAME is not defined
-  expr1 || expr2        logical OR (with lazzy evaluation)
-  expr1 && expr2        logical AND (with lazzy evaluation)
-  "text"                litteral text for string comparison
+* `defined(NAME)`       check whether macro `NAME` is defined;
+* `! defined(NAME)`     check whether macro `NAME` is not defined;
+* `EXPR1 || EXPR2`      logical *or* (with lazzy evaluation);
+* `EXPR1 && EXPR2`      logical *and* (with lazzy evaluation);
+* `"text"`              literal text for string comparison;
 
 Note that macros are recursively substituted if they appear in an expression
 including whithin the double quotes of a string.
-
 
 
 ### Predefined Macros
@@ -191,14 +191,15 @@ Undefining a macro which is not defined does nothing.
 
 The `#def` directive with the `:=` operator only partially expands the value of
 a macro.  While this is sufficient for most of the cases, it is sometimes
-necessary (or more readable) to temporally the expansion of some macros.
+necessary (or more readable) to temporally suspend the expansion of some
+macros.
 
 The command:
 
     //# suspend NAME1 NAME2 ...
 
 suspends the expansion of the macros `NAME1`, `NAME2`, etc.  Until these macros
-are redefined or their expansion resumed with the `#resulr` directive, they
+are redefined or their expansion resumed with the `#resume` directive, they
 will not be expanded.  For instance, the expansion of `${NAME1}` will produce
 `${NAME1}`.  Note that it is not required that a macro be defined prior to
 suspend its expansion.
@@ -233,7 +234,7 @@ evaluated using the same rules as in the `#eval` directive.
 
 ## Loops
 
-A distinctive feature of `tpp` is to provide loops.  Loops may be embedded in
+A distinctive feature of `tpp` is to provide loops which may be embedded in
 other loops to an arbitrarily level.  There are two kinds of loops: `for`-loops
 and `while`-loops.
 
@@ -246,7 +247,7 @@ The syntax of a `for`-loop is:
 where `EXPR` is everything after the `in` keyword and up to the end of line or
 to the `//` of the optional comment.  After macro substitution of the `EXPR`
 term, it is interpreted either as a list of values separated by spaces or as a
-range.  The macro `NAME` will successively takes these different values of the
+range.  The macro `NAME` will successively takes the different values of the
 list or of the range and the body of the loop (that is code up to the matching
 `end` keyword) will be processed.  If, after macro substitutions, the value of
 `EXPR` is an empty list or an empty range, the the body of the loop is just
@@ -340,7 +341,7 @@ Commands:
     //# warn MESG
 
 substitute macros in `MESG` and print it.  Command `#echo` uses the standard
-output stream while the `#warn` uses the standard error stream.
+output stream while `#warn` uses the standard error stream.
 
 It may be useful to examine the contents of some macros (without a fully
 recursive expansion).  To that end, the directive
@@ -354,8 +355,9 @@ The `#error` command:
 
     //# error MESG
 
-substitute macros in `MESG` and print is on the standard error stream with the
-line number and the name of the processed file and then abort the processing.
+substitutes macros in `MESG` and prints it on the standard error stream with
+the line number and the name of the processed file and then aborts the
+processing.
 
 
 ## Examples
@@ -468,30 +470,6 @@ necessary to have a `#resume prefix` command.
 
 
 
-
-
-
-PREDEFINED MACROS
-=================
-
-
-MESSAGES
-========
-
-Print TEXT (after recursive macro substitution) on standard output:
-
-//# echo TEXT
-
-Print TEXT (after recursive macro substitution) on standard error output:
-
-//# warn TEXT
-
-Print TEXT (after recursive macro substitution) on the standard error output and
-raise an error:
-
-//# error TEXT
-
-
 ## Future Evolution
 
 1. It may be useful to customize the syntax in order to accomodate to
@@ -508,3 +486,6 @@ raise an error:
     ${substr(str,i1,i2,subs)}
     ${strmatch(string,pattern)}
     ...
+
+4. Allow for numerical expressions in ranges (taking care of the ternary
+   operator).
