@@ -1,16 +1,16 @@
-# The TiPi PreProcessor
+# The TiPi Pre-processor
 
 
-**tpp** is *TiPi PreProcessor* which is used to produce Java code of many TiPi
+**tpp**, the *TiPi Pre-processor*, is used to produce Java code of many TiPi
 classes from a single or a few source files.  In TiPi source tree, the files
 which need to be pre-processed by `tpp` to produce Java code are suffixed by
 `.javax` and are all in the [`src/codegen`](../src/codegen) directory.
 
-The principle of `tpp` is simple: it interprets special pre-processor
+The principles of `tpp` are simple: it interprets special pre-processor
 directives in the source code and re-emit other lines of code, possibly several
-times if the lines appear in a pre-porcessor loop, after performing macro
+times if these lines appear in a pre-processor loop, after performing macro
 substitution.  Compared to other programming language pre-processors, `tpp`
-provides macros withe immediate and deferred substitution, loops, evaluation of
+provides macros with immediate and deferred substitution, loops, evaluation of
 expressions and can be used to generate almost arbitrary code.
 
 
