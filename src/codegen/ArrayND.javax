@@ -227,7 +227,7 @@ public abstract class ${className} implements ShapedArray {
      */
     public abstract ${className} view(${argList});
 
-    //#end // for ${rank} >= 1
+    //# end // for ${rank} >= 1
     //#
     //# if ${rank} == 0
     //#     def obj = scalar

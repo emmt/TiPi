@@ -739,7 +739,7 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
      */
     public abstract ${className} view(${argList});
 
-    //#end // for ${rank} >= 1
+    //# end // for ${rank} >= 1
     //#
     //# if ${rank} == 0
     //#     def obj = scalar
