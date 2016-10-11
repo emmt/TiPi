@@ -874,7 +874,7 @@ the standard input (resp.the standard output).
 Options are:
   -Dname=value     Define a macro (there may be many options of this kind).
   -a, --autopkg    Guess the Java package from the name of the output file and
-                   Define a macro \"package\" with it.
+                   define a macro \"package\" with it.
   -f, --docfilter  Filter JavaDoc comments for unused parameters.
   --debug          Turn debug mode on.
   -h, -?, --help   Print this help and exit.
