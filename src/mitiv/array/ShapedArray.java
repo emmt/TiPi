@@ -41,12 +41,51 @@ import mitiv.linalg.shaped.ShapedVector;
  */
 public interface ShapedArray extends Shaped, Typed {
     /**
-     * Check whether a `ShapedArray` is stored a flat Java array.
+     * Check whether a shaped array is stored as a flat Java array.
      *
-     * @return True if the result of `this.flatten(false)` is guaranteed to be a
-     *         direct reference (not a copy) to the contents of the array.
+     * @return True if the results of {@code this.flatten(false)} and
+     *         {@code this.flatten()} are guaranteed to yield a direct
+     *         reference (not a copy) to the contents of the array.
      */
     public abstract boolean isFlat();
+
+    /**
+     * Flatten the elements of a shaped array in a simple generic array.
+     * <p>
+     * The contents of a shaped array can be stored in many different forms.
+     * This storage details are hidden to the end-user in favor of a unified
+     * and comprehensive interface.  This method returns the contents of a
+     * shaped array as a simple <i>flat</i> array, <i>i.e.</i> successive
+     * elements are contiguous and the first element has {@code 0}-offset.
+     * If the shaped array is multi-dimensional, the storage of the returned
+     * result is column-major order.
+     * </p>
+     * @param forceCopy - Set true to force a copy of the internal data
+     *                    even though it can already be in a flat form.
+     *                    Otherwise and if the shaped array is in flat form,
+     *                    see {@link #isFlat()}, the data storage of the
+     *                    array is directly returned (not a copy).
+     *
+     * @return An object which can be recast into a {@code type[]} Java
+     *         array with {@code type} the generic Java type corresponding
+     *         to the type of the elements of the shaped array: {@code byte},
+     *         {@code short}, {@code int}, {@code long}, {@code float} or
+     *         {@code double}.
+     */
+    public abstract Object flatten(boolean forceCopy);
+
+    /**
+     * Flatten the elements of a shaped array in a simple generic array.
+     * <p>
+     * This method behaves as if argument {@code forceCopy} was set to false
+     * in {@link #flatten(boolean)}.  Depending on the storage layout, the
+     * returned array may or may not share the same storage as the
+     * ${className} array.  Call {@code flatten(true)} to make sure that the
+     * two storage areas are independent.
+     * </p>
+     * @return An object (see {@link #flatten(boolean)} for more explanations).
+     */
+    public abstract Object flatten();
 
     /**
      * Convert array elements to type {@code byte}.
