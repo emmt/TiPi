@@ -49,6 +49,7 @@ public class StriddenByte5D extends Byte5D {
     final int stride3;
     final int stride4;
     final int stride5;
+    final boolean flat;
 
     public StriddenByte5D(byte[] arr, int offset, int[] stride, int[] dims) {
         super(dims);
@@ -63,6 +64,7 @@ public class StriddenByte5D extends Byte5D {
         stride4 = stride[3];
         stride5 = stride[4];
         this.order = Byte5D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, stride5, dim1, dim2, dim3, dim4, dim5);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4);
     }
 
     public StriddenByte5D(byte[] arr, int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int dim1, int dim2, int dim3, int dim4, int dim5) {
@@ -75,6 +77,7 @@ public class StriddenByte5D extends Byte5D {
         this.stride4 = stride4;
         this.stride5 = stride5;
         this.order = Byte5D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, stride5, dim1, dim2, dim3, dim4, dim5);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4);
     }
 
     @Override
@@ -394,12 +397,12 @@ public class StriddenByte5D extends Byte5D {
 
     @Override
     public final boolean isFlat() {
-        return (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4);
+        return flat;
     }
 
     @Override
     public byte[] flatten(boolean forceCopy) {
-        if (! forceCopy && isFlat()) {
+        if (! forceCopy && flat) {
             return data;
         }
         byte[] out = new byte[number];
@@ -536,15 +539,3 @@ public class StriddenByte5D extends Byte5D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

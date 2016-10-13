@@ -51,6 +51,7 @@ public class StriddenFloat7D extends Float7D {
     final int stride5;
     final int stride6;
     final int stride7;
+    final boolean flat;
 
     public StriddenFloat7D(float[] arr, int offset, int[] stride, int[] dims) {
         super(dims);
@@ -67,6 +68,7 @@ public class StriddenFloat7D extends Float7D {
         stride6 = stride[5];
         stride7 = stride[6];
         this.order = Float7D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, stride5, stride6, stride7, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4 && stride6 == dim5*stride5 && stride7 == dim6*stride6);
     }
 
     public StriddenFloat7D(float[] arr, int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
@@ -81,6 +83,7 @@ public class StriddenFloat7D extends Float7D {
         this.stride6 = stride6;
         this.stride7 = stride7;
         this.order = Float7D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, stride5, stride6, stride7, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4 && stride6 == dim5*stride5 && stride7 == dim6*stride6);
     }
 
     @Override
@@ -484,12 +487,12 @@ public class StriddenFloat7D extends Float7D {
 
     @Override
     public final boolean isFlat() {
-        return (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4 && stride6 == dim5*stride5 && stride7 == dim6*stride6);
+        return flat;
     }
 
     @Override
     public float[] flatten(boolean forceCopy) {
-        if (! forceCopy && isFlat()) {
+        if (! forceCopy && flat) {
             return data;
         }
         float[] out = new float[number];
@@ -686,15 +689,3 @@ public class StriddenFloat7D extends Float7D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

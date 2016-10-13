@@ -52,6 +52,7 @@ public class StriddenLong8D extends Long8D {
     final int stride6;
     final int stride7;
     final int stride8;
+    final boolean flat;
 
     public StriddenLong8D(long[] arr, int offset, int[] stride, int[] dims) {
         super(dims);
@@ -69,6 +70,7 @@ public class StriddenLong8D extends Long8D {
         stride7 = stride[6];
         stride8 = stride[7];
         this.order = Long8D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, stride5, stride6, stride7, stride8, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4 && stride6 == dim5*stride5 && stride7 == dim6*stride6 && stride8 == dim7*stride7);
     }
 
     public StriddenLong8D(long[] arr, int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int stride8, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
@@ -84,6 +86,7 @@ public class StriddenLong8D extends Long8D {
         this.stride7 = stride7;
         this.stride8 = stride8;
         this.order = Long8D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, stride5, stride6, stride7, stride8, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4 && stride6 == dim5*stride5 && stride7 == dim6*stride6 && stride8 == dim7*stride7);
     }
 
     @Override
@@ -529,12 +532,12 @@ public class StriddenLong8D extends Long8D {
 
     @Override
     public final boolean isFlat() {
-        return (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4 && stride6 == dim5*stride5 && stride7 == dim6*stride6 && stride8 == dim7*stride7);
+        return flat;
     }
 
     @Override
     public long[] flatten(boolean forceCopy) {
-        if (! forceCopy && isFlat()) {
+        if (! forceCopy && flat) {
             return data;
         }
         long[] out = new long[number];
@@ -767,15 +770,3 @@ public class StriddenLong8D extends Long8D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

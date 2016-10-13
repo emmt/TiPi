@@ -50,6 +50,7 @@ public class StriddenShort6D extends Short6D {
     final int stride4;
     final int stride5;
     final int stride6;
+    final boolean flat;
 
     public StriddenShort6D(short[] arr, int offset, int[] stride, int[] dims) {
         super(dims);
@@ -65,6 +66,7 @@ public class StriddenShort6D extends Short6D {
         stride5 = stride[4];
         stride6 = stride[5];
         this.order = Short6D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, stride5, stride6, dim1, dim2, dim3, dim4, dim5, dim6);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4 && stride6 == dim5*stride5);
     }
 
     public StriddenShort6D(short[] arr, int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
@@ -78,6 +80,7 @@ public class StriddenShort6D extends Short6D {
         this.stride5 = stride5;
         this.stride6 = stride6;
         this.order = Short6D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, stride5, stride6, dim1, dim2, dim3, dim4, dim5, dim6);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4 && stride6 == dim5*stride5);
     }
 
     @Override
@@ -439,12 +442,12 @@ public class StriddenShort6D extends Short6D {
 
     @Override
     public final boolean isFlat() {
-        return (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3 && stride5 == dim4*stride4 && stride6 == dim5*stride5);
+        return flat;
     }
 
     @Override
     public short[] flatten(boolean forceCopy) {
-        if (! forceCopy && isFlat()) {
+        if (! forceCopy && flat) {
             return data;
         }
         short[] out = new short[number];
@@ -609,15 +612,3 @@ public class StriddenShort6D extends Short6D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

@@ -45,6 +45,7 @@ public class StriddenInt2D extends Int2D {
     final int offset;
     final int stride1;
     final int stride2;
+    final boolean flat;
 
     public StriddenInt2D(int[] arr, int offset, int[] stride, int[] dims) {
         super(dims);
@@ -56,6 +57,7 @@ public class StriddenInt2D extends Int2D {
         stride1 = stride[0];
         stride2 = stride[1];
         this.order = Int2D.checkViewStrides(data.length, offset, stride1, stride2, dim1, dim2);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1);
     }
 
     public StriddenInt2D(int[] arr, int offset, int stride1, int stride2, int dim1, int dim2) {
@@ -65,6 +67,7 @@ public class StriddenInt2D extends Int2D {
         this.stride1 = stride1;
         this.stride2 = stride2;
         this.order = Int2D.checkViewStrides(data.length, offset, stride1, stride2, dim1, dim2);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1);
     }
 
     @Override
@@ -258,12 +261,12 @@ public class StriddenInt2D extends Int2D {
 
     @Override
     public final boolean isFlat() {
-        return (offset == 0 && stride1 == 1 && stride2 == dim1);
+        return flat;
     }
 
     @Override
     public int[] flatten(boolean forceCopy) {
-        if (! forceCopy && isFlat()) {
+        if (! forceCopy && flat) {
             return data;
         }
         int[] out = new int[number];
@@ -340,15 +343,3 @@ public class StriddenInt2D extends Int2D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

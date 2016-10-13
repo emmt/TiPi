@@ -44,6 +44,7 @@ public class StriddenFloat1D extends Float1D {
     final float[] data;
     final int offset;
     final int stride1;
+    final boolean flat;
 
     public StriddenFloat1D(float[] arr, int offset, int[] stride, int[] dims) {
         super(dims);
@@ -54,6 +55,7 @@ public class StriddenFloat1D extends Float1D {
         this.offset = offset;
         stride1 = stride[0];
         this.order = Float1D.checkViewStrides(data.length, offset, stride1, dim1);
+        this.flat = (offset == 0 && stride1 == 1);
     }
 
     public StriddenFloat1D(float[] arr, int offset, int stride1, int dim1) {
@@ -62,6 +64,7 @@ public class StriddenFloat1D extends Float1D {
         this.offset = offset;
         this.stride1 = stride1;
         this.order = Float1D.checkViewStrides(data.length, offset, stride1, dim1);
+        this.flat = (offset == 0 && stride1 == 1);
     }
 
     @Override
@@ -152,12 +155,12 @@ public class StriddenFloat1D extends Float1D {
 
     @Override
     public final boolean isFlat() {
-        return (offset == 0 && stride1 == 1);
+        return flat;
     }
 
     @Override
     public float[] flatten(boolean forceCopy) {
-        if (! forceCopy && isFlat()) {
+        if (! forceCopy && flat) {
             return data;
         }
         float[] out = new float[number];
@@ -214,15 +217,3 @@ public class StriddenFloat1D extends Float1D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

@@ -58,6 +58,22 @@ public class ${className} extends ${superName} {
     //#     end
     //# end
     //# def checkStrides = ${superName}.checkViewStrides(data.length, offset, ${strideList}, ${dimList})
+    //#
+    //# // Build an expression to check whether the array is in flat form.
+    //#
+    //# def flat = offset == 0
+    //# for k in 1:${rank}
+    //#     eval j = ${k} - 1
+    //#     if ${k} == 1
+    //#         def value = 1
+    //#     elif ${k} == 2
+    //#         def value = dim${j}
+    //#     else
+    //#         def value = dim${j}*stride${j}
+    //#     end
+    //#     def flat = ${flat} && stride${k} == ${value}
+    //# end
+    final boolean flat;
 
     public ${className}(${type}[] arr, int offset, int[] stride, int[] dims) {
         super(dims);
@@ -71,6 +87,7 @@ public class ${className} extends ${superName} {
         stride${k} = stride[${j}];
         //# end
         this.order = ${checkStrides};
+        this.flat = (${flat});
     }
 
     public ${className}(${type}[] arr, int offset, ${strideDecl}, ${dimDecl}) {
@@ -81,6 +98,7 @@ public class ${className} extends ${superName} {
         this.stride${k} = stride${k};
         //# end
         this.order = ${checkStrides};
+        this.flat = (${flat});
     }
 
     @Override
@@ -267,24 +285,12 @@ public class ${className} extends ${superName} {
 
     @Override
     public final boolean isFlat() {
-        //# def expr = offset == 0
-        //# for k in 1:${rank}
-        //#     eval j = ${k} - 1
-        //#     if ${k} == 1
-        //#         def value = 1
-        //#     elif ${k} == 2
-        //#         def value = dim${j}
-        //#     else
-        //#         def value = dim${j}*stride${j}
-        //#     end
-        //#     def expr = ${expr} && stride${k} == ${value}
-        //# end
-        return (${expr});
+        return flat;
     }
 
     @Override
     public ${type}[] flatten(boolean forceCopy) {
-        if (! forceCopy && isFlat()) {
+        if (! forceCopy && flat) {
             return data;
         }
         ${type}[] out = new ${type}[number];
@@ -442,15 +448,3 @@ public class ${className} extends ${superName} {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

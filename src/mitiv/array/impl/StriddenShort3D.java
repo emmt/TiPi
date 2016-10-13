@@ -47,6 +47,7 @@ public class StriddenShort3D extends Short3D {
     final int stride1;
     final int stride2;
     final int stride3;
+    final boolean flat;
 
     public StriddenShort3D(short[] arr, int offset, int[] stride, int[] dims) {
         super(dims);
@@ -59,6 +60,7 @@ public class StriddenShort3D extends Short3D {
         stride2 = stride[1];
         stride3 = stride[2];
         this.order = Short3D.checkViewStrides(data.length, offset, stride1, stride2, stride3, dim1, dim2, dim3);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2);
     }
 
     public StriddenShort3D(short[] arr, int offset, int stride1, int stride2, int stride3, int dim1, int dim2, int dim3) {
@@ -69,6 +71,7 @@ public class StriddenShort3D extends Short3D {
         this.stride2 = stride2;
         this.stride3 = stride3;
         this.order = Short3D.checkViewStrides(data.length, offset, stride1, stride2, stride3, dim1, dim2, dim3);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2);
     }
 
     @Override
@@ -304,12 +307,12 @@ public class StriddenShort3D extends Short3D {
 
     @Override
     public final boolean isFlat() {
-        return (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2);
+        return flat;
     }
 
     @Override
     public short[] flatten(boolean forceCopy) {
-        if (! forceCopy && isFlat()) {
+        if (! forceCopy && flat) {
             return data;
         }
         short[] out = new short[number];
@@ -402,15 +405,3 @@ public class StriddenShort3D extends Short3D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

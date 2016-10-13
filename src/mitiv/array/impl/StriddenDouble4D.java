@@ -48,6 +48,7 @@ public class StriddenDouble4D extends Double4D {
     final int stride2;
     final int stride3;
     final int stride4;
+    final boolean flat;
 
     public StriddenDouble4D(double[] arr, int offset, int[] stride, int[] dims) {
         super(dims);
@@ -61,6 +62,7 @@ public class StriddenDouble4D extends Double4D {
         stride3 = stride[2];
         stride4 = stride[3];
         this.order = Double4D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, dim1, dim2, dim3, dim4);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3);
     }
 
     public StriddenDouble4D(double[] arr, int offset, int stride1, int stride2, int stride3, int stride4, int dim1, int dim2, int dim3, int dim4) {
@@ -72,6 +74,7 @@ public class StriddenDouble4D extends Double4D {
         this.stride3 = stride3;
         this.stride4 = stride4;
         this.order = Double4D.checkViewStrides(data.length, offset, stride1, stride2, stride3, stride4, dim1, dim2, dim3, dim4);
+        this.flat = (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3);
     }
 
     @Override
@@ -349,12 +352,12 @@ public class StriddenDouble4D extends Double4D {
 
     @Override
     public final boolean isFlat() {
-        return (offset == 0 && stride1 == 1 && stride2 == dim1 && stride3 == dim2*stride2 && stride4 == dim3*stride3);
+        return flat;
     }
 
     @Override
     public double[] flatten(boolean forceCopy) {
-        if (! forceCopy && isFlat()) {
+        if (! forceCopy && flat) {
             return data;
         }
         double[] out = new double[number];
@@ -467,15 +470,3 @@ public class StriddenDouble4D extends Double4D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
