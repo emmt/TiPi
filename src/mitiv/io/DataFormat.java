@@ -258,7 +258,7 @@ public enum DataFormat {
                  * "P6" space = raw PPM
                  */
                 format = PNM;
-            } else if (length >= 3
+            } else if (length >= 9
                     && matchMagic(magic, 'S', 'I', 'M', 'P', 'L', 'E', ' ', ' ', '=')) {
                 format = FITS;
             }
