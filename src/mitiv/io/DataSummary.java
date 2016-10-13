@@ -44,6 +44,7 @@ import mitiv.base.mapping.IntScanner;
 import mitiv.base.mapping.LongScanner;
 import mitiv.base.mapping.ShortScanner;
 import mitiv.exception.IllegalTypeException;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.utils.Timer;
 
 /**
@@ -91,32 +92,97 @@ public class DataSummary {
         return vmax;
     }
 
+    /**
+     * Get sum of finite values.
+     * @return The sum of finite values, may be NaN if there are no finite
+     *         values.
+     */
     public double getTotalValue() {
         return vsum;
     }
 
+    /**
+     * Get number of finite values.
+     * @return The number of finite values.
+     */
     public int getNumberOfFiniteValues() {
         return count;
     }
 
+    /**
+     * Get number of NaN values
+     * @return The number of NaN values.
+     */
     public int getNumberOfNaNs() {
         return nans;
     }
 
+    /**
+     * Get number of positive infinite values
+     * @return The number of positive infinite values.
+     */
     public int getNumberOfPositiveInfinites() {
         return posinfs;
     }
 
+    /**
+     * Get number of negative infinite values
+     * @return The number of negative infinite values.
+     */
     public int getNumberOfNegativeInfinites() {
         return neginfs;
     }
 
     /**
-     * Compute a summary of the values of a shaped array.
+     * Create a summary of values.
+     */
+    public DataSummary() {
+    }
+
+    /**
+     * Create a summary from the values of a shaped array.
      *
      * @param arr - A shaped array.
      */
     public DataSummary(ShapedArray arr) {
+        update(arr);
+    }
+
+    /**
+     * Create a summary from the values of a shaped vector.
+     *
+     * @param vec - A shaped vector.
+     *
+     * @return The object itself after the updating.
+     */
+    public DataSummary(ShapedVector vec) {
+        update(vec);
+    }
+
+    /**
+     * Reset a summary of values.
+     *
+     * @return The object itself after the reseting.
+     */
+    public DataSummary reset() {
+        vmin = Double.NaN;
+        vmax = Double.NaN;
+        vsum = Double.NaN;
+        nans = 0;
+        posinfs = 0;
+        neginfs = 0;
+        count = 0;
+        return this;
+    }
+
+    /**
+     * Update the summary with the values of a shaped array.
+     *
+     * @param arr - A shaped array.
+     *
+     * @return The object itself after the updating.
+     */
+    public DataSummary update(ShapedArray arr) {
         if (arr != null) {
             switch(arr.getType()) {
             case Traits.BYTE:
@@ -145,7 +211,40 @@ public class DataSummary {
                 throw new IllegalTypeException("Unsupported element type");
             }
         }
+        return this;
+    }
 
+    /**
+     * Update a summary with the values of a shaped vector.
+     *
+     * @param vec - A shaped array.
+     *
+     * @return The object itself after the updating.
+     */
+    public DataSummary update(ShapedVector vec) {
+        return update(ArrayFactory.wrap(vec));
+    }
+
+    /**
+     * (Re)compute a summary from the values of a shaped array.
+     *
+     * @param arr - A shaped array.
+     *
+     * @return The object itself after the updating.
+     */
+    public DataSummary compute(ShapedArray arr) {
+        return reset().update(arr);
+    }
+
+    /**
+     * (Re)compute a summary from the values of a shaped vector.
+     *
+     * @param vec - A shaped vector.
+     *
+     * @return The object itself after the updating.
+     */
+    public DataSummary compute(ShapedVector vec) {
+        return reset().update(vec);
     }
 
     /**
@@ -176,6 +275,7 @@ public class DataSummary {
         // Switch to "US" locale to avoid problems with number formats.
         Locale.setDefault(Locale.US);
         Timer timer = new Timer();
+        double elapsed;
         ShapedArray a = ArrayFactory.create(Traits.BYTE, 20, 45);
         ShapedArray b = ArrayFactory.create(Traits.SHORT, 12, 70);
         ShapedArray c = ArrayFactory.create(Traits.INT, 7, 8);
@@ -193,28 +293,63 @@ public class DataSummary {
         F.set(2, 5, Double.POSITIVE_INFINITY);
         F.set(1, 3, Double.POSITIVE_INFINITY);
         F.set(1, 6, Double.NEGATIVE_INFINITY);
-        timer.start();
-        DataSummary sa = new DataSummary(a);
-        DataSummary sb = new DataSummary(b);
-        DataSummary sc = new DataSummary(c);
-        DataSummary sd = new DataSummary(d);
-        DataSummary se = new DataSummary(e);
-        DataSummary sf = new DataSummary(f);
-        System.out.format("summary for A: %s\n", sa.toString());
-        System.out.format("summary for B: %s\n", sb.toString());
-        System.out.format("summary for C: %s\n", sc.toString());
-        System.out.format("summary for D: %s\n", sd.toString());
-        System.out.format("summary for E: %s\n", se.toString());
-        System.out.format("summary for F: %s\n", sf.toString());
-        System.out.format("total time: %.3f µs\n", timer.getElapsedTime()*1E6);
-        timer.start();
-        new DataSummary(a);
-        new DataSummary(b);
-        new DataSummary(c);
-        new DataSummary(d);
-        new DataSummary(e);
-        new DataSummary(f);
-        System.out.format("total time: %.3f µs\n", timer.getElapsedTime()*1E6);
+        DataSummary s = new DataSummary();
+        System.out.format("summary for A: %s\n", s.compute(a).toString());
+        System.out.format("summary for B: %s\n", s.compute(b).toString());
+        System.out.format("summary for C: %s\n", s.compute(b).toString());
+        System.out.format("summary for D: %s\n", s.compute(b).toString());
+        System.out.format("summary for E: %s\n", s.compute(b).toString());
+        for (int pass = 1; pass <= 5; ++pass) {
+            timer.start();
+            DataSummary sf = new DataSummary(f);
+            elapsed = timer.getElapsedTime()*1E6;
+            if (pass == 1) {
+                System.out.format("summary for F: %s\n", sf.toString());
+            }
+            System.out.format("total time: %.3f µs (scanner, pass %d)\n", elapsed, pass);
+        }
+        double[] arr = F.flatten();
+        for (int pass = 1; pass <= 5; ++pass) {
+            int nans = 0, neginfs = 0, posinfs = 0, count = 0;
+            double vmin = Double.NaN, vmax = Double.NaN, vsum = Double.NaN;
+            timer.start();
+            for (int i = 0; i < arr.length; ++i) {
+                double val = arr[i];
+                if (Double.isNaN(val)) {
+                    ++nans;
+                } else if (Double.isInfinite(val)) {
+                    if (val > 0) {
+                        ++posinfs;
+                    } else {
+                        ++neginfs;
+                    }
+                } else {
+                    if (++count == 1) {
+                        vsum = val;
+                        vmin = val;
+                        vmax = val;
+                    } else {
+                        vsum += val;
+                        if (val < vmin) {
+                            vmin = val;
+                        }
+                        if (val > vmax) {
+                            vmax = val;
+                        }
+                    }
+                }
+            }
+            elapsed = timer.getElapsedTime()*1E6;
+            s.nans = nans;
+            s.count = count;
+            s.posinfs = posinfs;
+            s.neginfs = neginfs;
+            s.vmin = vmin;
+            s.vmax = vmax;
+            s.vsum = vsum;
+            //System.out.format("summary for F: %s\n", s.toString());
+            System.out.format("total time: %.3f µs (pass %d)\n", elapsed, pass);
+        }
     }
 
     private class ByteSummary implements ByteScanner {
