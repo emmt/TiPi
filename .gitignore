@@ -1,11 +1,17 @@
+# Work and temporary directories #
+##################################
+/work/
+/deleted/
+/temp/
+
 # Specific files #
 ##################
 .classpath
 .settings
 bin
 lib
-src/devel
-src/edu
+/src/devel
+/src/edu
 
 # Automatic backups #
 #####################
@@ -20,6 +26,13 @@ src/edu
 *.o
 *.so
 lib*.a
+
+# LaTeX auxiliary files #
+#########################
+/notes/*.aux
+/notes/*.log
+/notes/*.pdf
+/notes/*.synctex.gz
 
 # Packages #
 ############
