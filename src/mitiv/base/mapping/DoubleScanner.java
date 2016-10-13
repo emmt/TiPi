@@ -26,16 +26,20 @@
 package mitiv.base.mapping;
 
 /**
- * A DoubleScanner is designed for scanning a collection of values (of type double).
- * 
+ * A DoubleScanner is designed for scanning a collection of values (of type
+ * double).
+ *
  * <p>
- * A scanner has two mandatory methods: the {@link #initialize} method is called with
- * the first value of the collection to (re)start the scan and the {@link #update} method
- * is called repeatedly for all other values of the collection.
- * 
+ * A scanner has two mandatory methods: the {@link #initialize} method is
+ * called with the first value of the collection to (re)start the scan and the
+ * {@link #update} method is called repeatedly for all other values of the
+ * collection.
+ * </p>
  * <p>
- * A typical use of a scanner is to compute the moments of the values of a collection
- * or to find the minimal and maximal values of a collection.
+ * A typical use of a scanner is to compute the moments of the values of a
+ * collection or to find the minimal and maximal values of a collection.
+ * </p>
+ *
  * @author Éric Thiébaut.
  */
 public interface DoubleScanner {
@@ -52,14 +56,3 @@ public interface DoubleScanner {
     public abstract void update(double arg);
 }
 
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

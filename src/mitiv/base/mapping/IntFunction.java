@@ -26,7 +26,9 @@
 package mitiv.base.mapping;
 
 /**
- * An IntFunction has an {@link #apply} method to map a int argument to a int result.
+ * A IntFunction has an {@link #apply} method to map a int argument to a
+ * int result.
+ *
  * @author Éric Thiébaut.
  */
 public interface IntFunction {
@@ -37,15 +39,3 @@ public interface IntFunction {
      */
     public abstract int apply(int arg);
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

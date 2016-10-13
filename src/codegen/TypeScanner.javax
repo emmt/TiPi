@@ -23,19 +23,42 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.base.mapping;
+//# // Get common definitions.
+//# include <common.javax>
+//#
+//# // Define class name.
+//# def className = ${Type}Scanner
+//#
+package ${package};
 
 /**
- * A ByteFunction has an {@link #apply} method to map a byte argument to a
- * byte result.
+ * A ${className} is designed for scanning a collection of values (of type
+ * ${type}).
+ *
+ * <p>
+ * A scanner has two mandatory methods: the {@link #initialize} method is
+ * called with the first value of the collection to (re)start the scan and the
+ * {@link #update} method is called repeatedly for all other values of the
+ * collection.
+ * </p>
+ * <p>
+ * A typical use of a scanner is to compute the moments of the values of a
+ * collection or to find the minimal and maximal values of a collection.
+ * </p>
  *
  * @author Éric Thiébaut.
  */
-public interface ByteFunction {
+public interface ${className} {
     /**
-     * Map a byte argument to a byte result.
-     * @param arg  - The argument of the function.
-     * @return The result of the function for argument {@code arg}.
+     * Initialize the scanner with the first value of the collection.
+     * @param arg - The first value of the collection.
      */
-    public abstract byte apply(byte arg);
+    public abstract void initialize(${type} arg);
+
+    /**
+     * Update the scanner with an additional value of the collection.
+     * @param arg  - An additional value of the collection.
+     */
+    public abstract void update(${type} arg);
 }
+

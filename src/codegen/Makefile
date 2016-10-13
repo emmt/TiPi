@@ -11,10 +11,11 @@
 CODGER =./tpp
 
 # Directories:
-TOP = ../mitiv
-ARRAY = $(TOP)/array/
-ARRAY_IMPL = $(TOP)/array/impl/
-BASE = $(TOP)/base/
+ROOT = ../mitiv/
+ARRAY = $(ROOT)array/
+ARRAY_IMPL = $(ROOT)array/impl/
+BASE = $(ROOT)base/
+MAPPING = $(BASE)mapping/
 
 RANKS = 1 2 3 4 5 6 7 8 9
 TYPES = Byte Short Int Long Float Double
@@ -31,9 +32,9 @@ TYPED_OUTPUTS = $(ARRAY)@TYPE@Array.java $(ARRAY)@TYPE@Scalar.java \
 MISC_OUTPUTS = $(ARRAY)ArrayFactory.java \
                $(ARRAY)ArrayUtils.java \
                $(BASE)Shape.java \
-               $(TOP)/cost/HyperbolicTotalVariation.java \
-               $(TOP)/io/ColorModel.java \
-               $(TOP)/io/DataFormat.java
+               $(ROOT)cost/HyperbolicTotalVariation.java \
+               $(ROOT)io/ColorModel.java \
+               $(ROOT)io/DataFormat.java
 
 BYTE_OUTPUTS = $(subst @TYPE@,Byte,$(TYPED_OUTPUTS))
 
@@ -63,7 +64,7 @@ STRIDDEN_ARRAY_INPUTS = StriddenArray.javax $(ARRAY_IMPL_INPUTS)
 
 SELECTED_ARRAY_INPUTS = SelectedArray.javax $(ARRAY_IMPL_INPUTS)
 
-CONVOLUTION_IMPL = $(TOP)/deconv/impl/
+CONVOLUTION_IMPL = $(ROOT)deconv/impl/
 CONVOLUTION_RANKS = 1 2 3
 CONVOLUTION_TYPES = Float Double
 CONVOLUTION_OUTPUTS = $(foreach TYPE, $(CONVOLUTION_TYPES), \
@@ -77,13 +78,18 @@ CONVOLUTION_OUTPUTS = $(foreach TYPE, $(CONVOLUTION_TYPES), \
                           $(foreach RANK, $(CONVOLUTION_RANKS), \
                               $(CONVOLUTION_IMPL)WeightedConvolution$(TYPE)$(RANK)D.java))
 
+MAPPING_OUTPUTS = $(foreach TYPE, $(TYPES), $(MAPPING)$(TYPE)Scanner.java) \
+                  $(foreach TYPE, $(TYPES), $(MAPPING)$(TYPE)Function.java)
+SCANNER_INPUTS = TypeScanner.javax common.javax
+FUNCTION_INPUTS = TypeFunction.javax common.javax
+
 
 default:
 	@echo "No default target, try:"
 	@echo "     make all"
 
 all: all-array all-byte all-short all-int all-long all-float all-double \
-     all-misc all-convolution
+     all-misc all-convolution all-mapping
 
 clean:
 	rm -f *~
@@ -109,13 +115,13 @@ $(BASE)Shape.java: Shape.javax
 $(ARRAY)ArrayUtils.java: ArrayUtils.javax common.javax
 	$(CODGER) -Dpackage=mitiv.array $< $@
 
-$(TOP)/cost/HyperbolicTotalVariation.java: HyperbolicTotalVariation.javax
+$(ROOT)cost/HyperbolicTotalVariation.java: HyperbolicTotalVariation.javax
 	$(CODGER) -Dpackage=mitiv.cost $< $@
 
-$(TOP)/io/ColorModel.java: ColorModel.javax common.javax
+$(ROOT)io/ColorModel.java: ColorModel.javax common.javax
 	$(CODGER) -Dpackage=mitiv.io $< $@
 
-$(TOP)/io/DataFormat.java: DataFormat.javax common.javax
+$(ROOT)io/DataFormat.java: DataFormat.javax common.javax
 	$(CODGER) -Dpackage=mitiv.io $< $@
 
 #-----------------------------------------------------------------------------
@@ -912,3 +918,43 @@ $(ARRAY_IMPL)StriddenDouble9D.java: $(STRIDDEN_ARRAY_INPUTS)
 
 
 #-----------------------------------------------------------------------------
+# Scanners, functions, etc.
+
+all-mapping: $(MAPPING_OUTPUTS)
+
+$(MAPPING)ByteScanner.java: $(SCANNER_INPUTS)
+	$(CODGER) --autopkg -Dtype=byte $< $@
+
+$(MAPPING)ShortScanner.java: $(SCANNER_INPUTS)
+	$(CODGER) --autopkg -Dtype=short $< $@
+
+$(MAPPING)IntScanner.java: $(SCANNER_INPUTS)
+	$(CODGER) --autopkg -Dtype=int $< $@
+
+$(MAPPING)LongScanner.java: $(SCANNER_INPUTS)
+	$(CODGER) --autopkg -Dtype=long $< $@
+
+$(MAPPING)FloatScanner.java: $(SCANNER_INPUTS)
+	$(CODGER) --autopkg -Dtype=float $< $@
+
+$(MAPPING)DoubleScanner.java: $(SCANNER_INPUTS)
+	$(CODGER) --autopkg -Dtype=double $< $@
+
+$(MAPPING)ByteFunction.java: $(FUNCTION_INPUTS)
+	$(CODGER) --autopkg -Dtype=byte $< $@
+
+$(MAPPING)ShortFunction.java: $(FUNCTION_INPUTS)
+	$(CODGER) --autopkg -Dtype=short $< $@
+
+$(MAPPING)IntFunction.java: $(FUNCTION_INPUTS)
+	$(CODGER) --autopkg -Dtype=int $< $@
+
+$(MAPPING)LongFunction.java: $(FUNCTION_INPUTS)
+	$(CODGER) --autopkg -Dtype=long $< $@
+
+$(MAPPING)FloatFunction.java: $(FUNCTION_INPUTS)
+	$(CODGER) --autopkg -Dtype=float $< $@
+
+$(MAPPING)DoubleFunction.java: $(FUNCTION_INPUTS)
+	$(CODGER) --autopkg -Dtype=double $< $@
+

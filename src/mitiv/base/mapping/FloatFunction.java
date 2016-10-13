@@ -26,7 +26,9 @@
 package mitiv.base.mapping;
 
 /**
- * A FloatFunction has an {@link #apply} method to map a float argument to a float result.
+ * A FloatFunction has an {@link #apply} method to map a float argument to a
+ * float result.
+ *
  * @author Éric Thiébaut.
  */
 public interface FloatFunction {
@@ -37,15 +39,3 @@ public interface FloatFunction {
      */
     public abstract float apply(float arg);
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

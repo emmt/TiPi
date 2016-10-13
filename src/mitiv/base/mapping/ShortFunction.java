@@ -26,7 +26,9 @@
 package mitiv.base.mapping;
 
 /**
- * A ShortFunction has an {@link #apply} method to map a short argument to a short result.
+ * A ShortFunction has an {@link #apply} method to map a short argument to a
+ * short result.
+ *
  * @author Éric Thiébaut.
  */
 public interface ShortFunction {
@@ -37,15 +39,3 @@ public interface ShortFunction {
      */
     public abstract short apply(short arg);
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

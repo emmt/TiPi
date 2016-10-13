@@ -23,19 +23,25 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.base.mapping;
+//# // Get common definitions.
+//# include <common.javax>
+//#
+//# // Define class name.
+//# def className = ${Type}Function
+//#
+package ${package};
 
 /**
- * A ByteFunction has an {@link #apply} method to map a byte argument to a
- * byte result.
+ * A ${className} has an {@link #apply} method to map a ${type} argument to a
+ * ${type} result.
  *
  * @author Éric Thiébaut.
  */
-public interface ByteFunction {
+public interface ${className} {
     /**
-     * Map a byte argument to a byte result.
+     * Map a ${type} argument to a ${type} result.
      * @param arg  - The argument of the function.
      * @return The result of the function for argument {@code arg}.
      */
-    public abstract byte apply(byte arg);
+    public abstract ${type} apply(${type} arg);
 }

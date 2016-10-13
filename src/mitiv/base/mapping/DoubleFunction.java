@@ -26,7 +26,9 @@
 package mitiv.base.mapping;
 
 /**
- * A DoubleFunction has an {@link #apply} method to map a double argument to a double result.
+ * A DoubleFunction has an {@link #apply} method to map a double argument to a
+ * double result.
+ *
  * @author Éric Thiébaut.
  */
 public interface DoubleFunction {
@@ -37,15 +39,3 @@ public interface DoubleFunction {
      */
     public abstract double apply(double arg);
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
