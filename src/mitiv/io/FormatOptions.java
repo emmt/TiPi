@@ -38,8 +38,8 @@ import mitiv.exception.IllegalTypeException;
 
 /**
  * This class is used to collect options for reading/writing data in different format.
- * 
- * @author emmt
+ *
+ * @author Éric.
  */
 public class FormatOptions {
     private double minValue = 0.0;
@@ -51,6 +51,8 @@ public class FormatOptions {
     private ColorModel colorModel = null;
 
     private DataFormat dataFormat = null;
+
+    private boolean interpolate = false;
 
     public FormatOptions() {
     }
@@ -81,6 +83,28 @@ public class FormatOptions {
     public void unsetMaxValue() {
         maxValue = Double.NaN;
         maxValueGiven = false;
+    }
+
+    /**
+     * Get whether extreme data values are exactly represented after
+     * digitization.
+     *
+     * @return A boolean.
+     */
+    public boolean getInterpolate() {
+        return interpolate;
+    }
+
+    /**
+     * Set whether extreme data values are exactly represented after
+     * digitization.
+     *
+     * @param value - If true, the digitization will exactly interpolate the
+     *                extreme data values; otherwise, digitization attempts
+     *                to preserve specific data values such as zero.
+     */
+    public void setInterpolate(boolean value) {
+        interpolate = value;
     }
 
     /**
@@ -132,8 +156,8 @@ public class FormatOptions {
 
     public double[] getScaling(ShapedArray arr, double fileMin, double fileMax) {
         if (arr == null) {
-            /* Invalid arguments or no elements to consider, silently return neutral
-               scaling parameters. */
+            /* Invalid arguments or no elements to consider, silently return
+               neutral scaling parameters. */
             return new double[]{1.0, 0.0};
         }
         double dataMin, dataMax;
@@ -230,7 +254,8 @@ public class FormatOptions {
                 throw new IllegalTypeException();
             }
         }
-        return computeScalingFactors(dataMin, dataMax, fileMin, fileMax);
+        return computeScalingFactors(dataMin, dataMax, fileMin, fileMax,
+                interpolate);
     }
 
     /*=======================================================================*/
@@ -241,153 +266,95 @@ public class FormatOptions {
      * <p>
      * Scaling factors {@code SCALE} and {@code BIAS} are used to convert
      * data values into scaled values suitable to be stored in integers.
-     * To convert integer value {@code fileValue} into a data value {@code dataValue},
+     * This conversion is similar to digitization.  To convert integer value
+     * {@code fileValue} into a data value {@code dataValue},
      * the formula is:
      * <pre>
      *     dataValue = SCALE*fileValue + BIAS
-     * </pre> the reciprocal formula is:
+     * </pre>
+     * Assuming SCALE is not equal to zero, the (approximate, but with least
+     * error) reciprocal formula is:
      * <pre>
      *     fileValue = round((dataValue - BIAS)/SCALE)
      * </pre>
-     * @param dataMin - The minimum data value.
-     * @param dataMax - The maximum data value.
-     * @param fileMin - The minimum file value.
-     * @param fileMax - The maximum file value (should be strictly greater than {@code dataMin}).
-     * @param result  - An array of 2 doubles to store SCALE and BIAS (in that order).
+     * where {@code round()} rounds its argument to the nearest integer.
+     *
+     * @param dmin   - The minimum data value.
+     * @param dmax   - The maximum data value.
+     * @param kmin   - The minimum digitization level.
+     * @param kmax   - The maximum digitization level (should be strictly
+     *                 greater than {@code kmin}).
+     * @param interp - Compute an exact transform for the bounds; otherwise
+     *                 make BIAS a multiple of SCALE to preserve specific data
+     *                 values such as zero.
+     * @return An array of 2 doubles {SCALE,BIAS} (in that order).
      */
-    public static double[] computeScalingFactors(double dataMin, double dataMax,
-            double fileMin, double fileMax) {
+    public static double[] computeScalingFactors(double dmin, double dmax,
+            double kmin, double kmax, boolean interp) {
         double[] result = new double[2];
-        computeScalingFactors(dataMin, dataMax, fileMin, fileMax, result);
+        computeScalingFactors(dmin, dmax, kmin, kmax, interp, result);
         return result;
     }
 
     /**
      * Compute scaling factors SCALE and BIAS.
      * <p>
-     * This function is the same as {@link #computeScalingFactors(double, double, double, double)}.
-     * 
-     * @param dataMin - The minimum data value.
-     * @param dataMax - The maximum data value.
-     * @param fileMin - The minimum file value.
-     * @param fileMax - The maximum file value (should be strictly greater than {@code dataMin}).
-     * @param param   - The array to store the scaling parameters: SCALE and BIAS (in that order).
+     * This function is the same as
+     * {@link #computeScalingFactors(double, double, double, double)}.
+     *
+     * @param dmin   - The minimum data value.
+     * @param dmax   - The maximum data value.
+     * @param kmin   - The minimum digitization level.
+     * @param kmax   - The maximum digitization level (should be strictly
+     *                 greater than {@code kmin}).
+     * @param interp - Compute an exact transform for the bounds; otherwise
+     *                 make BIAS a multiple of SCALE to preserve specific data
+     *                 values such as zero.
+     * @param param  - An array to store the scaling parameters: SCALE and
+     *                 BIAS (in that order).
      */
-    public static void computeScalingFactors(double dataMin, double dataMax,
-            double fileMin, double fileMax, double[] param) {
-        /*
-         * We compute the scaling parameters SCALE and BIAS to
-         * map the data values to the file values according to the
-         * chosen BITPIX.
-         *
-         * Notation:
-         *     y = data (physical) value
-         *     x = file value (integer type is assumed in what follows)
-         * When reading:
-         *     y = SCALE*x + BIAS
-         * When writing:
-         *     x = round((y - BIAS)/SCALE)
-         * where the round() function rounds to the nearest integer:
-         *          u - 1/2 <= round(u) < u + 1/2
-         *     <==> round(u) - 1/2 < u <= round(u) + 1/2
-         *
-         * a/ We want the smallest SCALE (in magnitude) such that
-         *    XMIN <= x <= XMAX whatever y in [YMIN,YMAX].
-         *    Assuming SCALE > 0, this yields:
-         *        XMIN <= round(UMIN)
-         *        XMAX >= round(UMAX)
-         *    with:
-         *        UMIN = (YMIN - BIAS)/SCALE
-         *        UMAX = (YMAX - BIAS)/SCALE
-         *    From the bounds of the round() function, we have:
-         *        UMAX - UMIN - 1 < DRU < UMAX - UMIN + 1
-         *          DY/SCALE - 1 < DRU < DY/SCALE + 1
-         *    with DRU = round(UMAX) - round(UMIN) and DY = YMAX - YMIN.
-         *
-         * b/ In order to maximize the precision, we want to
-         *    minimize SCALE (in magnitude).  This amounts to
-         *    maximize DRU = round(UMAX) - round(UMIN).  Since
-         *    DRU = round(UMAX) - round(UMIN) <= DX = XMAX - XMIN,
-         *    we want to have (if possible) DRU = DX.
-         *
-         *  Combining a/ and b/ yields:
-         *           DY/SCALE - 1 < DX < DY/SCALE + 1
-         *      <==> DX - 1 < DY/SCALE < DX + 1
-         *  Hence (assuming DX > 0 and SCALE > 0):
-         *      DY/(DX + 1) < SCALE < DY/(DX - 1)
-         *  Since we want the smallest SCALE, we should choose:
-         *      SCALE = (1 - EPSILON)*DY/(DX + 1)
-         *  with EPSILON the relative machine precision, but:
-         *      SCALE = DY/DX
-         *  may be good enough (see below).
-         *
-         * c/ To determine BIAS, we can center the errors on the
-         *    spanned intervals.  We can also compute BIAS such
-         *    that a physical value of zero is always preserved
-         *    across conversions.  This latter choice will limit
-         *    the risk of drifting.  So we take BIAS = k*SCALE
-         *    and search k integer such that:
-         *        XMIN <= round(UMIN) = round((YMIN - BIAS)/SCALE)
-         *                            = round(YMIN/SCALE) - k
-         *        XMAX >= round(UMAX) = round((YMAX - BIAS)/SCALE)
-         *                            = round(YMAX/SCALE) - k
-         *    Thus:
-         *        round(YMAX/SCALE) - XMAX <= k
-         *        round(YMIN/SCALE) - XMIN >= k
-         *    Using the bounds of the round() function yields:
-         *        YMAX/SCALE - XMAX - 1/2 <= k
-         *        YMIN/SCALE - XMIN + 1/2 > k
-         *    there is a unique integer solution if the two bounds
-         *    differ by 1, thus we want to have:
-         *        YMAX/SCALE - XMAX = YMIN/SCALE - XMIN
-         *        ==> SCALE = (YMAX - YMIN)/(XMAX - XMIN) = DY/DX
-         *
-         * Finally:
-         *     SCALE = (YMAX - YMIN)/(XMAX - XMIN) = DY/DX
-         *     BIAS = k*SCALE
-         *     k = round(YMAX/SCALE) - XMAX
-         *       = round(YMIN/SCALE) - XMIN
-         *       = round((XMAX*YMIN - XMIN*YMAX)/(YMAX - YMIN))
-         *
-         * The code below applies these formulae except for the
-         * normalization factor introduced to avoid overflows.
+    public static void computeScalingFactors(double dmin, double dmax,
+            double kmin, double kmax, boolean interp, double[] param) {
+        /* See `notes/digitization.tex` for explanations.  The code below
+         * applies the formulae in this document except for the normalization
+         * factor introduced to avoid overflows.
          */
-
-        double scale, bias;
-        if (dataMin == dataMax || fileMin == fileMax) {
-            scale = 1.0;
-            bias = (dataMin + dataMax)/2.0;
-        } else {
-            /* Normalize the input values to avoid overflows. */
-            double factor = Math.abs(dataMin);
-            factor = Math.max(factor, Math.abs(dataMax));
-            factor = Math.max(factor, Math.abs(fileMin));
-            factor = Math.max(factor, Math.abs(fileMax));
-            if (factor > 0.0 && factor != 1.0) {
-                dataMin /= factor;
-                dataMax /= factor;
-                fileMin /= factor;
-                fileMax /= factor;
-            } else {
-                factor = 1.0;
-            }
-            scale = (dataMax - dataMin)/(fileMax - fileMin);
-            bias = Math.rint((fileMax*dataMin - fileMin*dataMax)/(dataMax - dataMin)*factor)*scale;
+        if (nonfinite(dmin)) {
+            throw new IllegalArgumentException("Minimum data value must be finite");
         }
-        param[0] = scale;
-        param[1] = bias;
+        if (nonfinite(dmax)) {
+            throw new IllegalArgumentException("Maximum data value must be finite");
+        }
+        if (nonfinite(kmin)) {
+            throw new IllegalArgumentException("Minimum file value must be finite");
+        }
+        if (nonfinite(kmax)) {
+            throw new IllegalArgumentException("Maximum file value must be finite");
+        }
+        double alpha, beta, gamma, big;
+        if (dmin == dmax || kmin == kmax) {
+            alpha = 0.0;
+            beta = (dmin + dmax)/2.0;
+        } else {
+            alpha = (dmax - dmin)/(kmax - kmin);
+            big = Math.abs(dmin);
+            big = Math.max(big, Math.abs(dmax));
+            big = Math.max(big, Math.abs(kmin));
+            big = Math.max(big, Math.abs(kmax));
+            if (big != 1.0) {
+                /* Normalize the input values to avoid overflows in the
+                   computation of the ratio beta/alpha. */
+                dmin /= big;
+                dmax /= big;
+            }
+            gamma = (kmax*dmin - kmin*dmax)/(dmax - dmin);
+            beta = (interp ? gamma : Math.rint(gamma))*alpha;
+        }
+        param[0] = alpha;
+        param[1] = beta;
+    }
+
+    static private final boolean nonfinite(double val) {
+        return Double.isNaN(val) || Double.isInfinite(val);
     }
 }
-
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

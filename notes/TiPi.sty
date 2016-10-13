@@ -1,0 +1,375 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesClass{eric-tools}[2016/06/30 Common definitions from Éric]
+\RequirePackage{ifthen}
+%\RequirePackage[T1]{fontenc}
+%\RequirePackage[left=10mm, right=10mm, top=20mm, bottom=20mm, columnsep=10mm]{geometry}
+
+
+% ========== OPTIONS ==========
+
+\newboolean{UseNatBib}
+\setboolean{UseNatBib}{false}
+\newboolean{UseHyperRef}
+\setboolean{UseHyperRef}{false}
+
+\let\myfont=n
+\DeclareOption{lmodern}{\let\myfont=l}
+\DeclareOption{cm-super}{\let\myfont=s}
+\DeclareOption{natbib}{\setboolean{UseNatBib}{true}}
+\DeclareOption{href}{\setboolean{UseHyperRef}{true}}
+\DeclareOption{shortcuts}{
+  \newcommand*{\Va}{\V{a}}\newcommand*{\Vb}{\V{b}}\newcommand*{\Vc}{\V{c}}
+  \newcommand*{\Vd}{\V{d}}\newcommand*{\Ve}{\V{e}}\newcommand*{\Vf}{\V{f}}
+  \newcommand*{\Vg}{\V{g}}\newcommand*{\Vh}{\V{h}}\newcommand*{\Vi}{\V{j}}
+  \newcommand*{\Vj}{\V{i}}\newcommand*{\Vk}{\V{k}}\newcommand*{\Vl}{\V{l}}
+  \newcommand*{\Vm}{\V{m}}\newcommand*{\Vn}{\V{n}}\newcommand*{\Vo}{\V{o}}
+  \newcommand*{\Vp}{\V{p}}\newcommand*{\Vq}{\V{q}}\newcommand*{\Vr}{\V{r}}
+  \newcommand*{\Vs}{\V{s}}\newcommand*{\Vt}{\V{t}}\newcommand*{\Vu}{\V{u}}
+  \newcommand*{\Vv}{\V{v}}\newcommand*{\Vw}{\V{w}}\newcommand*{\Vx}{\V{x}}
+  \newcommand*{\Vy}{\V{y}}\newcommand*{\Vz}{\V{z}}
+}
+\ProcessOptions\relax
+
+\ifthenelse{\boolean{UseNatBib}}{%
+  \RequirePackage{natbib}%
+}{}
+\ifthenelse{\boolean{UseHyperRef}}{%
+  \RequirePackage[unicode=true,pdfborder={0 0 0},backref=false,
+    bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+    breaklinks=true,raiselinks=true,colorlinks=true,allcolors=DarkBlue,
+    pdftitle={\TheTitle},pdfauthor={\TheAuthor}]{hyperref}%
+}{}
+
+% ========== UTF8 ENCODING AND CHARACTERS ==========
+
+\RequirePackage[utf8]{inputenc}% better than utf8x
+%\RequirePackage{eurosym}
+\DeclareUnicodeCharacter{20AC}{\euro}% Euro sign
+\DeclareUnicodeCharacter{00A0}{~}% no-break space
+\DeclareUnicodeCharacter{2192}{\textrightarrow}% rightwards arrow
+\DeclareUnicodeCharacter{00B1}{\pm}
+\DeclareUnicodeCharacter{00B7}{\cdot}
+\DeclareUnicodeCharacter{2264}{\le}
+\DeclareUnicodeCharacter{2265}{\ge}
+\DeclareUnicodeCharacter{00F7}{\div}
+\DeclareUnicodeCharacter{221D}{\propto}
+\DeclareUnicodeCharacter{221E}{\infty}
+\DeclareUnicodeCharacter{2220}{\angle}
+\DeclareUnicodeCharacter{2218}{\circ}   % composite function
+\DeclareUnicodeCharacter{2202}{\partial}
+\DeclareUnicodeCharacter{2205}{\varnothing}
+\DeclareUnicodeCharacter{2207}{\nabla}
+\DeclareUnicodeCharacter{2715}{\times}
+\DeclareUnicodeCharacter{2A2F}{\times}
+\DeclareUnicodeCharacter{00D7}{\times}
+
+
+
+% ========== MATH PACKAGES ==========
+
+% To avoid errors like "Command \iint already defined.", use AMSMATH packages
+% *before* TXFONTS:
+%\RequirePackage{nath} % not with AMSMATH (see below)
+\RequirePackage{amsmath,amsfonts,amssymb}
+%\RequirePackage[centercolon=true]{mathtools} % also fix some problems with AMS packages
+\RequirePackage{mathtools}
+%\useosf % no longer required if osf specified, otherwise after all math
+\DeclareSymbolFont{bbold}{U}{bbold}{m}{n}
+\DeclareSymbolFontAlphabet{\mathbbold}{bbold}
+\RequirePackage{textcomp}  % required for special glyphs
+
+
+% ========== FONTS ==========
+% see https://en.wikibooks.org/wiki/LaTeX/Fonts
+% Default TeX/LaTeX font encoding is OT1 which does not directly support accents.
+% Font encoding T1 does support accents but requires appropriate fonts such as Computer
+% Modern Super (cm-super) or Latin Modern (lmodern), which are Computer Modern-like
+% fonts with T1 support.  If the cm-super fonts are correctly installed they will be used
+% automatically as soon as you try to use the computer modern fonts with T1-encoding. 
+\ifx\myfont l
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage{lmodern}
+\else
+  \ifx\myfont s
+    \RequirePackage[T1]{fontenc}
+  \fi
+\fi
+\let\myfont\@undefined
+% see mathdesign
+
+%\RequirePackage{pxfonts}  % Adobe Palatino and Helvetica
+%\RequirePackage{txfonts}  % Adobe Times and Helvetica
+%\RequirePackage{helvet}   % use helvetica for sans serif fonts
+%\RequirePackage{times}    % use Times for serif fonts
+
+\RequirePackage{mathrsfs}
+\RequirePackage{stmaryrd}
+%
+%\RequirePackage{newtxtext}
+%\RequirePackage{newtxmath}
+%
+%\RequirePackage{libertine}
+%\RequirePackage[libertine]{newtxmath}
+%\RequirePackage[varg,cmintegrals,bigdelims]{newtxmath}
+%\RequirePackage{textcomp} % required for special glyphs
+
+% see /usr/share/texmf-tetex/tex/latex/psnfss/*.sty
+%\RequirePackage{mathpazo} % Palatino w/ Pazo Math
+%\RequirePackage{mathpple} % Palatino w/ Pazo Math (obsolete)
+%\RequirePackage{mathptm}  % Times  w/ Math (obsolete)
+%\RequirePackage{mathptmx} % Times  w/ Math, improved
+%\RequirePackage{helvet}   % use helvetica for sans serif fonts
+%\RequirePackage{times}    % use Times for serif fonts
+%\RequirePackage{utopia}   % use Utopia for serif fonts
+% notes: Helvetica (for sans serif text) and Computer Modern for math stuff
+%        look not too bad but the sans serif font is slightly too high
+%        (e.g. 23 pixels compared to 19 pixels with 10pt option and at 300%
+%         magnification) this must be fixed...
+%        On the other hand, other fonts than Computer Modern look a little
+%        bit "cheap" and I prefer CM font.
+
+% ========== GRAPHICS AND COLORS ==========
+\RequirePackage{graphicx}
+%\RequirePackage[dvipsnames,hyperref]{xcolor}
+\RequirePackage{xcolor}
+
+%% 40 colors from KDE environement:
+\definecolor{Black}{rgb}{0.00000,0.00000,0.00000}
+\definecolor{AlmostBlack}{rgb}{0.18824,0.18824,0.18824}
+\definecolor{VeryDarkGray}{rgb}{0.34510,0.34510,0.34510}
+\definecolor{DarkGray}{rgb}{0.50196,0.50196,0.50196}
+\definecolor{MidGray}{rgb}{0.62745,0.62745,0.62745}
+\definecolor{LightGray}{rgb}{0.76471,0.76471,0.76471}
+\definecolor{VeryLightGray}{rgb}{0.86275,0.86275,0.86275}
+\definecolor{White}{rgb}{1.00000,1.00000,1.00000}
+\definecolor{VeryDarkRed}{rgb}{0.25098,0.00000,0.00000}
+\definecolor{DarkRed}{rgb}{0.50196,0.00000,0.00000}
+\definecolor{MidRed}{rgb}{0.75294,0.00000,0.00000}
+\definecolor{Red}{rgb}{1.00000,0.00000,0.00000}
+\definecolor{LightRed}{rgb}{1.00000,0.75294,0.75294}
+\definecolor{VeryDarkGreen}{rgb}{0.00000,0.25098,0.00000}
+\definecolor{DarkGreen}{rgb}{0.00000,0.50196,0.00000}
+\definecolor{MidGreen}{rgb}{0.00000,0.75294,0.00000}
+\definecolor{Green}{rgb}{0.00000,1.00000,0.00000}
+\definecolor{LightGreen}{rgb}{0.75294,1.00000,0.75294}
+\definecolor{DarkBlue}{rgb}{0.00000,0.00000,0.50196}
+\definecolor{MidBlue}{rgb}{0.00000,0.00000,0.75294}
+\definecolor{Blue}{rgb}{0.00000,0.00000,1.00000}
+\definecolor{LightBlue}{rgb}{0.75294,0.75294,1.00000}
+\definecolor{VeryDarkYellow}{rgb}{0.25098,0.25098,0.00000}
+\definecolor{DarkYellow}{rgb}{0.50196,0.50196,0.00000}
+\definecolor{MidYellow}{rgb}{0.75294,0.75294,0.00000}
+\definecolor{Yellow}{rgb}{1.00000,1.00000,0.00000}
+\definecolor{LightYellow}{rgb}{1.00000,1.00000,0.75294}
+\definecolor{VeryDarkCyan}{rgb}{0.00000,0.25098,0.25098}
+\definecolor{DarkCyan}{rgb}{0.00000,0.50196,0.50196}
+\definecolor{MidCyan}{rgb}{0.00000,0.75294,0.75294}
+\definecolor{Cyan}{rgb}{0.00000,1.00000,1.00000}
+\definecolor{LightCyan}{rgb}{0.75294,1.00000,1.00000}
+\definecolor{DarkMagenta}{rgb}{0.50196,0.00000,0.50196}
+\definecolor{MidMagenta}{rgb}{0.75294,0.00000,0.75294}
+\definecolor{Magenta}{rgb}{1.00000,0.00000,1.00000}
+\definecolor{LightMagenta}{rgb}{1.00000,0.75294,1.00000}
+\definecolor{DarkOrange}{rgb}{0.75294,0.34510,0.00000}
+\definecolor{Orange}{rgb}{1.00000,0.50196,0.00000}
+\definecolor{LightOrange}{rgb}{1.00000,0.65882,0.34510}
+\definecolor{VeryLightOrange}{rgb}{0.99216,0.86275,0.65882}
+
+%\definecolor{DarkBlue}{RGB}{0,69,134}      % Diagram  1 #004586
+%\definecolor{Orange}{RGB}{255,66,14}       % Diagram  2 #ff420e
+%\definecolor{Yellow}{RGB}{255,211,32}      % Diagram  3 #ffd320
+%\definecolor{Green}{RGB}{87,157,28}        % Diagram  4 #579d1c
+%\definecolor{DarkViolet}{RGB}{126,0,33}    % Diagram  5 #7e0021
+%\definecolor{LightBlue}{RGB}{131,202,255}  % Diagram  6 #83caff
+%\definecolor{DarkGreen}{RGB}{49,64,4}      % Diagram  7 #314004
+%\definecolor{LightGreen}{RGB}{174,207,0}   % Diagram  8 #aecf00
+%\definecolor{Violet}{RGB}{75,31,111}       % Diagram  9 #4b1f6f
+%\definecolor{Golden}{RGB}{255,149,14}      % Diagram 10 #ff950e
+%\definecolor{Red}{RGB}{197,0,11}           % Diagram 11 #c5000b
+%\definecolor{Blue}{RGB}{0,132,209}         % Diagram 12 #0084d1
+
+\newcommand{\oops}[1]{{\color{Orange}#1}}
+
+% ========== ENVIRONMENTS ==========
+
+\newenvironment{algolist}{\list{+}{%
+\parindent1em\leftmargin1.5em\labelsep0.5em\itemindent0.0em\labelwidth1.5em%
+\itemsep=4pt%
+}}{\endlist}
+\RequirePackage[framemethod=tikz]{mdframed}
+\mdfdefinestyle{grayborderleft}{defaultunit=pt,%
+  skipabove=4pt,skipbelow=4pt,%
+  leftmargin=0,rightmargin=0,%
+  innertopmargin=3pt,innerbottommargin=3pt,%
+  innerleftmargin=2pt,innerrightmargin=0,%
+  topline=false,bottomline=false,%
+  leftline=true,rightline=false,linewidth=0,%
+  middlelinecolor=lightgray,middlelinewidth=4pt}
+\surroundwithmdframed[style=grayborderleft]{algolist}
+
+% ========== MISCELLANEOUS ==========
+
+\RequirePackage{xspace}
+\newcommand*{\noun}[1]{\textsc{#1}\xspace}
+\newcommand*{\etc}{\emph{etc.}\xspace}
+\newcommand*{\eg}{\emph{e.g.}\xspace}
+\newcommand*{\ie}{\emph{i.e.}\xspace}
+\newcommand*{\etal}{\emph{et al.}\xspace}
+\newcommand*{\cf}{\emph{cf.}\xspace}
+
+
+% ========== UNITS ==========
+
+\RequirePackage[squaren,Gray]{SIunits}
+\newcommand{\micron}{\ensuremath{\micro\mathrm{m}}} % requires SIunits
+%\newcommand{\micron}{\text{\textmu{}m}} % requires textcomp
+%\newcommand{\micron}{\ensuremath{\muup\mathrm{m}}} % requires txfonts
+%\newcommand{\micron}{\ensuremath{\upmu\mathrm{m}}} % requires upgreek
+
+\RequirePackage{numprint}
+\newcommand*{\Unit}[2]{\unit{\numprint{#1}}{#2}}
+\newcommand*{\NumPrint}[1]{\numprint{#1}}
+
+
+% ========== MATHEMATICS ==========
+
+% Math gliph declarations:
+%    \mathord    (ordinary symbol)
+%    \mathop     (operator; handle with care)
+%    \mathbin    (binary operation)
+%    \mathrel    (binary relation)
+%    \mathpunct  (punctuation symbol)
+%    \mathopen   (opening symbol)
+%    \mathclose  (closing symbol)
+%    \mathinner  (don't use it, if you don't know what it is)
+%
+% Higher level macros to declare functions/operator (the starred version
+% is to have subscripts/superscripts below/above the operator):
+%
+%   * With AMS-LaTeX:
+%         \DeclareMathOperator{\sgn}{sgn}
+%         \DeclareMathOperator*{\argmin}{arg\,min}
+%
+%   * Otherwise:
+%         \newcommand*{\sgn}{\operatorname{sgn}}
+%         \newcommand*{\argmin}{\operatorname*{arg\,min}}
+%
+% To stack things, you have:
+%   - \stackrel
+%   - \overset and \underset
+%
+
+% Parenthesis:
+%\def\Paren{}\let\Paren\undefined
+\DeclarePairedDelimiterX{\Paren}[1]{(}{)}{#1}
+\DeclarePairedDelimiterX{\Brace}[1]{\{}{\}}{#1}
+\DeclarePairedDelimiterX{\Brack}[1]{[}{]}{#1}
+\DeclarePairedDelimiterX{\Abs}[1]{\rvert}{\lvert}{#1}
+\DeclarePairedDelimiterX{\Norm}[1]{\lVert}{\rVert}{#1}
+%\DeclarePairedDelimiterX{\FrobNorm}[1]{\lVert}{\rVert_{\Tag{F}}}{#1}
+\DeclarePairedDelimiterX{\Avg}[1]{\langle}{\rangle}{#1}
+\DeclarePairedDelimiterX{\Round}[1]{\lfloor}{\rceil}{#1}
+\DeclarePairedDelimiterX{\Floor}[1]{\lfloor}{\rfloor}{#1}
+\DeclarePairedDelimiterX{\Ceil}[1]{\lceil}{\rceil}{#1}
+\DeclarePairedDelimiterX{\Inner}[2]{\langle}{\rangle}{#1\,\delimsize\vert\,#2}
+\newcommand*{\delimsize}{}
+\newcommand*{\suchthat}{\,\vert\,} % compact version
+\newcommand*{\SuchThat}{\:\delimsize\vert\:} % autoscale to surrounding version
+\newcommand*{\given}{\,\vert\,} % compact version
+\newcommand*{\Given}{\:\delimsize\vert\:} % autoscale to surrounding version
+%\newcommand*{\given}{\mathbin{\vert}}
+%\newcommand*{\Given}{\mathrel{\delimsize\vert}} % autoscale to surrounding version
+
+% Upright letters:
+\newcommand*{\mathd}{\mathrm{d}}
+\newcommand*{\mathe}{\mathrm{e}}
+\newcommand*{\mathi}{\mathrm{i}}
+
+% Operators/functions
+\renewcommand*{\Re}{\operatorname{Re}}
+\renewcommand*{\Im}{\operatorname{Im}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\arc}{\MathFunc{arc}}
+\DeclareMathOperator{\rnd}{\MathFunc{rnd}}
+\DeclareMathOperator{\sign}{\MathFunc{sign}}
+\DeclareMathOperator{\sinc}{\MathFunc{sinc}}
+\DeclareMathOperator{\Card}{Card}
+\DeclareMathOperator{\Conv}{conv}
+\DeclareMathOperator{\Det}{Det}
+\DeclareMathOperator{\Diag}{diag}
+\DeclareMathOperator{\Dom}{dom}
+\DeclareMathOperator{\Prox}{prox}
+\DeclareMathOperator{\Rank}{rank}
+\DeclareMathOperator{\Sign}{sgn}
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\Trace}{Tr}
+
+% Statistics:
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\newcommand*{\Expect}{\mathbb{E}}
+\newcommand*{\Estim}[1]{\widehat{#1}}
+\newcommand*{\Mean}[1]{\widebar{#1}}
+\newcommand*{\estim}[1]{\widehat{#1}}
+
+% Sets:
+\newcommand*{\Set}[1]{\mathbb{#1}}
+\newcommand*{\Reals}{\Set{R}}
+\newcommand*{\Integers}{\Set{Z}}
+\newcommand*{\Rationals}{\Set{Q}}
+\newcommand*{\Complexes}{\Set{C}}
+
+% Miscellaneous:
+\newcommand*{\Tag}[1]{\mathsf{#1}}
+\newcommand*{\Der}[2]{\frac{\mathd #1}{\mathd #2}}
+\newcommand*{\PDer}[2]{\frac{\partial#1}{\partial#2}}
+\newcommand*{\bydef}{\stackrel{{\scriptscriptstyle \text{def}}}{=}}
+\newcommand*{\TwoIPi}{2\,\mathi\,\pi}
+%\newcommand*{\rand}[1]{\widetilde{#1}} % random value/variable
+%\newcommand*{\rand}[1]{\tilde{#1}} % random value/variable
+%\newcommand*{\SIM}{\text{\raisebox{-0.3ex}[0pt][0pt]{$\sim$}}}
+\newcommand*{\SIM}{\smash{\sim}}
+\newcommand*{\proxy}[1]{\overset{\SIM}{#1}} % random value/variable
+%\newcommand*{\proxy}[1]{\widetilde{#1}}
+\newcommand*{\FT}[1]{\widetilde{#1}}
+\newcommand*{\MathNote}[2]{\hspace*{#1}\text{\footnotesize(#2)}}
+\newcommand*{\better}[1]{#1^{+}}
+\newcommand*{\best}[1]{#1^{\star}}
+\newcommand*{\Combine}{{\circ}}
+\newcommand*{\EndProof}{\blacksquare}
+
+% Linear Algebra:
+\newcommand*{\V}[1]{\boldsymbol{#1}}   % a vector
+\newcommand*{\M}[1]{\mathbf{#1}}       % an operator (a matrix)
+%\newcommand*{\TransposeLetter}{\top}
+\newcommand*{\TransposeLetter}{\mathrm{t}}
+\newcommand*{\T}{^{\TransposeLetter}}
+\newcommand*{\mT}{^{-\TransposeLetter}}
+
+% The following definition is to remove surrounding spacing around \cdot
+% to denote dot product.
+\newcommand*{\MDot}{\mathord{\,\mathchar"2201\,}}
+\newcommand*{\Tcdot}{\T\!\cdot}
+
+\newcommand*{\QuadTerm}[2]{#2\T\MDot#1\MDot#2}
+\newcommand{\ArrayWithDelimiters}[4]{%
+  \left #1\begin{array}{#2}#4\end{array}\right #3}
+\newcommand{\Matrix}[2]{\ArrayWithDelimiters{(}{#1}{)}{#2}}
+\newcommand{\Vector}[1]{\ArrayWithDelimiters{(}{c}{)}{#1}}
+\newcommand{\TwoByTwoMatrix}[4]{\Matrix{cc}{#1 & #2 \\ #3 & #4 \\}}
+\newcommand{\TwoByTwoSymmetricMatrix}[3]{\TwoByTwoMatrix{#1}{#3}{#3}{#2}}
+
+%\newcommand*{\Zero}{\V 0}
+%\newcommand*{\One}{\V 1}
+\newcommand*{\Zero}{\mathbbold 0}
+\newcommand*{\One}{\mathbbold 1}
+
+% widebar without mathabx (from http://tex.stackexchange.com/questions/16337/can-i-get-a-widebar-without-using-the-mathabx-package?lq=1)
+\DeclareFontFamily{U}{mathx}{\hyphenchar\font45}
+\DeclareFontShape{U}{mathx}{m}{n}{<-> mathx10}{}
+\DeclareSymbolFont{mathx}{U}{mathx}{m}{n}
+\DeclareMathAccent{\widebar}{0}{mathx}{"73}
+
+
+

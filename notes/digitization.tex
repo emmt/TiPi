@@ -1,0 +1,394 @@
+% !TeX spellcheck = en_US
+\documentclass[]{article}
+
+\usepackage[natbib]{TiPi}
+
+\title{Scaling to integer}
+\author{Éric T.}
+
+
+\newcommand*{\Lag}{\mathscr{L}}
+\newcommand*{\IntRange}[1]{[\![#1]\!]}
+\newcommand*{\half}{\ensuremath{{}^1\!/\!{}_2}}
+\renewcommand*{\proxy}[1]{\widetilde{#1}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We discuss the best way to rescale floating-point data to integer values by an
+affine transform.
+\end{abstract}
+
+\section{Digitization}
+
+Assume that we have data values $\V d = \{d_1,d_2,\ldots,d_m\} \in \Reals^m$
+which we want to approximate as integers $\V k = \{k_1,k_2,\ldots,k_m\} \in
+\IntRange{k_\Tag{min},k_\Tag{max}}^m\subset\Integers^m$ through the affine transform:
+\begin{equation}
+  \label{eq:approx-data}
+  \V d \approx \proxy{\V d} = \alpha\,\V k + \beta\,\One \, .
+\end{equation}
+If $\alpha \not= 0$, a possible approximate reciprocal formula to compute $\V
+k$ is given by:
+\begin{equation}
+  \label{eq:digitization}
+  \V k = \Round{(\V d - \beta\,\One)/\alpha} \, ,
+\end{equation}
+where $\Round{\cdot}: \Reals\mapsto\Integers$ is applied elementwise and rounds
+its argument(s) to the nearest integer(s).  This function has the following
+properties:
+\begin{equation}
+  \label{eq:rounding}
+  u - 1/2 < \Round{u} \le u + 1/2
+  \quad\Longleftrightarrow \quad
+  \Round{u} - 1/2 \le u < \Round{u} + 1/2 \, ,
+\end{equation}
+for any $u\in\Reals$.
+
+
+\section{Criteria for the affine parameters}
+
+A first suggestion is to find the parameters $\alpha$ and $\beta$ such that the
+approximation in Eq.~(\ref{eq:approx-data}) yields the least worst error:
+\begin{equation}
+  \label{eq:criterion}
+  (\estim{\alpha},\estim{\beta})
+  = \argmin_{\alpha,\beta} \Norm[\big]{\V d - \proxy{\V d}}_{\infty} \, .
+\end{equation}
+Note that we could have also required to optimize the criterion with respect to
+the values of $\V k$ but the problem would have been far more complex.  The
+assumed digitization formula~(\ref{eq:digitization}) to compute $\V k$ given
+$\V d$, $\alpha$ and $\beta$ is only a possibility but it is simple and
+uniformly accurate.
+
+Another point to consider is the stability of the transform when
+Eq.~(\ref{eq:approx-data}) and Eq.~(\ref{eq:digitization}) are alternately
+applied several times with $\alpha$ and $\beta$ computed each time according to
+the actual data range.  To avoid any drift, it may be advisable that the choice
+of $\alpha$ and $\beta$ ensures that some determined data value remains exactly
+represented.  This suggests to choose $\beta$ to be a multiple of $\alpha$ as
+this implies that, for instance, a value of zero for the data will always be
+exactly represented.  \oops{Study the successive transforms and check that no
+shrink occurs.} 
+
+To simplify the reasoning we assume in the sequel that $\alpha \ge 0$ and that
+the data bounds:
+\begin{align}
+   d_\Tag{min} &\bydef \min_{i\in\IntRange{1,m}} d_i \, , \\ 
+   d_\Tag{max} &\bydef \max_{i\in\IntRange{1,m}} d_i \, , 
+\end{align}
+are both finite.  We also note that if $d_\Tag{max} = d_\Tag{min}$, we can
+choose $\estim{\alpha}$, $\estim{\beta}$ and $\V k = \Zero$ such that the worst
+error is exactly zero\footnote{ For instance, if $0 \in
+\IntRange{k_\Tag{min},k_\Tag{max}}$, taking $\estim{\alpha} = 1$,
+$\estim{\beta} = d_\Tag{max} = d_\Tag{min}$ and $\V k = \Zero$ yields
+$\Norm[\big]{\V d - \proxy{\V d}}_{\infty} = 0$; otherwise, if $0 \not\in
+\IntRange{k_\Tag{min},k_\Tag{max}}$, taking $\estim{\alpha} = 0$,
+$\estim{\beta} = d_\Tag{max} = d_\Tag{min}$ and any $\V k \in
+\IntRange{k_\Tag{min},k_\Tag{max}}^m$ also yields $\Norm[\big]{\V d - \proxy{\V
+d}}_{\infty} = 0$.}.  In what follows, we therefore consider that $d_\Tag{max}
+> d_\Tag{min}$.
+
+
+\section{Choosing the scale}
+
+If $\alpha=0$ then $\proxy{\V d}$ given by Eq.~(\ref{eq:approx-data}) does not
+depend on $\V k$ and the worst error is:
+\begin{displaymath}
+  \Norm[\big]{\V d - \proxy{\V d}}_{\infty} = \max\Brace{
+    \Abs{d_\Tag{min} - \beta}, \Abs{d_\Tag{max} - \beta}
+  } \qquad\text{(when $\alpha = 0$)} \, .
+\end{displaymath}
+This error is obviously minimized when $\beta$ is the central value of the data range:
+\begin{displaymath}
+  \estim{\beta} = (d_\Tag{min} + d_\Tag{max})/2
+  \qquad\text{(when $\estim{\alpha} = 0$)} \, .
+\end{displaymath}
+
+We now consider the other possibility and assume that $\alpha > 0$.  For $\V k$
+given by Eq.~(\ref{eq:digitization}), the pointwise error is then given by:
+\begin{displaymath}
+  \V d - \proxy{\V d} = \alpha\,\Paren[\big]{\V u - \Round{\V u}} \, ,
+\end{displaymath}
+with $\V u \bydef (\V d - \beta\,\One)/\alpha$.  Since, from
+Eq.~(\ref{eq:rounding}), $-1/2 \le u - \Round{u} < 1/2$, the worst error is
+then:
+\begin{equation}
+  \label{eq:worst-error}
+  \Norm[\big]{\V d - \proxy{\V d}}_{\infty} = \Abs{\alpha}/2 = \alpha/2 \, ,
+\end{equation}
+where the last equality follows from our assumption that $\alpha \ge 0$.  As a
+result of the chosen digitization formula~(\ref{eq:digitization}), the worst
+error does not depend on $\beta$ but solely on $\alpha$.  According to
+Eq.~(\ref{eq:worst-error}), to have the least worst error, we should choose the
+smallest $\alpha$ (in magnitude) such that all $\V k$ given by
+Eq.~(\ref{eq:digitization}) are in the range
+$\IntRange{k_\Tag{min},k_\Tag{max}}$.  This corresponds to the intuition that
+the smaller the discretization step $\alpha$, the more accurate the resulting
+digitization.
+
+Whatever $\beta$, the smaller the magnitude of $\alpha$ the larger is the
+interval spanned by the values of $\V k$ computed according to
+Eq.~(\ref{eq:digitization}), thus the smallest possible $\alpha$ is such that
+the bounds $k_\Tag{min}$ and $k_\Tag{max}$ are reached when the data span the
+range $[d_\Tag{min},d_\Tag{max}]$.  Since the mapping $\V d \mapsto \V k$
+implemented by the digitization formula~(\ref{eq:digitization}) is
+monotonically increasing (because $\alpha > 0$), the following constraints must
+hold:
+\begin{align}
+   &\left\{
+   \begin{array}{l}
+   \Round{(d_\Tag{min} - \beta)/\alpha} = k_\Tag{min} \\[1ex]
+   \Round{(d_\Tag{max} - \beta)/\alpha} = k_\Tag{max}
+   \end{array}\right. \notag  \\
+   \Longleftrightarrow \quad
+   &\left\{
+   \begin{array}{l}
+   k_\Tag{min} - 1/2 \le (d_\Tag{min} - \beta)/\alpha < k_\Tag{min} + 1/2 \\[1ex]
+   k_\Tag{max} - 1/2 \le (d_\Tag{max} - \beta)/\alpha < k_\Tag{max} + 1/2
+   \end{array}\right.
+   \label{eq:bounds}
+\end{align}
+taking the difference between the two last pairs of inequalities yields:
+\begin{displaymath}
+  k_\Tag{max} - k_\Tag{min} - 1 < (d_\Tag{max} - d_\Tag{min})/\alpha <
+  k_\Tag{max} - k_\Tag{min} + 1 \, .
+\end{displaymath}
+As we assumed that $d_\Tag{max} > d_\Tag{min}$, the above inequalities become:
+\begin{displaymath}
+  \frac{d_\Tag{max} - d_\Tag{min}}{k_\Tag{max} - k_\Tag{min} + 1}
+  < \alpha <
+  \frac{d_\Tag{max} - d_\Tag{min}}{k_\Tag{max} - k_\Tag{min} - 1} \, .
+\end{displaymath}
+Thus:
+\begin{equation}
+  \label{eq:best-alpha}
+  \boxed{
+    \alpha = \frac{d_\Tag{max} - d_\Tag{min}}
+    {k_\Tag{max} - k_\Tag{min} + \eta}
+  } \, ,
+\end{equation}
+with $\eta \in (-1,1)$.  The smallest possible $\alpha$ corresponds to $\eta =
+1$ but this is a strict lower bound.  For now, we keep the freedom to choose
+$\eta \in (-1,1)$ and consider how to determine the bias $\beta$.
+
+
+\section{Choosing the bias}
+
+The inequalities in Eq.~(\ref{eq:bounds}) can be combined to bound the value of
+$\beta/\alpha$:
+\begin{displaymath}
+  \max\Brace{\sigma_0, \sigma_1} - 1/2
+  < \beta/\alpha \le
+  \min\Brace{\sigma_0, \sigma_1} + 1/2 \, ,
+\end{displaymath}
+with $\sigma_0 = d_\Tag{min}/\alpha - k_\Tag{min}$ and $\sigma_1 =
+d_\Tag{max}/\alpha - k_\Tag{max}$.  The difference $\sigma_1 - \sigma_0$ has a
+simple expression for $\alpha$ given by Eq.~(\ref{eq:best-alpha}):
+\begin{displaymath}
+  \sigma_1 - \sigma_0 =
+  (d_\Tag{max} - d_\Tag{min})/\alpha - k_\Tag{max} + k_\Tag{min} = \eta \, ,
+\end{displaymath}
+and putting all together yields:
+\begin{equation}
+  \boxed{
+    \gamma_0 < \beta/\alpha \le \gamma_1
+  } \, ,
+  \label{eq:beta-bounds}
+\end{equation}
+with:
+\begin{align}
+  \gamma_0 &= \max\Brace{\sigma_0, \sigma_1} - 1/2 \notag \\
+  %&= \sigma_0 + \max\Brace{0, \eta} - 1/2 \notag \\
+  &= \sigma_0 + (\eta)_{+} - 1/2
+   = \sigma_1 - (\eta)_{-} - 1/2 \, , \\
+  \gamma_1 &= \min\Brace{\sigma_0, \sigma_1} + 1/2 \notag \\
+  %&= \sigma_0 + \min\Brace{0, \eta} + 1/2 \notag \\
+  &= \sigma_0 + (\eta)_{-} + 1/2
+   = \sigma_1 - (\eta)_{+} + 1/2 \, ,
+\end{align}
+and where $(\eta)_{+} = \max\Brace{0, \eta}$ and $(\eta)_{-} = \min\Brace{0,
+\eta}$.  The range of possible values for $\gamma = \beta/\alpha$ is the
+semi-open interval $(\gamma_0,\gamma_1]$.  The width of the interval is:
+\begin{displaymath}
+  \gamma_1 - \gamma_0 = 1 - (\eta)_{+} + (\eta)_{-} = 1 - \Abs{\eta} \, .
+\end{displaymath}
+Since $\eta \in (-1,1)$, $\gamma_1 - \gamma_0  \in (0,1]$ so the semi-open
+interval $(\gamma_0,\gamma_1]$ is always non-empty.  The center of the interval
+is:
+\begin{displaymath}
+  \gamma_\Tag{cen} = (\gamma_0 + \gamma_1)/2 = \sigma_0 + \eta/2 = \sigma_1 - \eta/2 \, .
+\end{displaymath}
+
+If $d_\Tag{max} > d_\Tag{min}$ and $k_\Tag{max} > k_\Tag{min}$, we have the
+flexibility to choose $\eta$ in the range $(-1,1)$.   We can either:
+\begin{itemize}
+\item Take $\eta = 0$, then $\gamma_1 - \gamma_0 = 1$ and there is thus exactly
+one integer value in the range  $(\gamma_0,\gamma_1]$ which is
+$\Floor{\gamma_1}$.  This let us choose $\gamma=\beta/\alpha$ to be integer so
+that a zero in the data is exactly represented in the digitized data.  To have
+$\gamma$ integer, we can take $\gamma = \Floor{\gamma_1}$ but noting that, when
+$\eta=0$, we have:
+\begin{equation}
+	\sigma_0 = \sigma_1 = \gamma_\Tag{cen}
+	= \frac{d_\Tag{min}\,k_\Tag{max} - d_\Tag{max}\,k_\Tag{min}}
+	       {d_\Tag{max} - d_\Tag{min}} \, ,
+	       \label{eq:gamma-center}
+\end{equation}
+which belongs to $(\gamma_0,\gamma_1]$ and thus $\Round{\gamma_\Tag{cen}} =
+\Floor{\gamma_1}$.  A possibility is thus to take $\eta=0$, and $\gamma =
+\Round{\gamma_\Tag{cen}}$ or $\gamma = \gamma_\Tag{cen}$ depending whether or
+not we want to exactly represent specific data values such as zero.
+
+\item Choose $\eta \rightarrow 1^-$ to minimize the worst error which is
+slightly better than the previous case but imposes $\gamma = \beta/\alpha
+\rightarrow \gamma_1^-$ (or equivalently $\gamma = \beta/\alpha \rightarrow
+\gamma_0^+$) which is not guaranteed to be integer.  In practice, the value of
+$\eta$ must be such that the denominator in Eq.~(\ref{eq:best-alpha}) is as
+close as possible but numerically strictly smaller than $k_\Tag{max} -
+k_\Tag{min} + 1$, this leads to take $\eta$ such that:
+\begin{align}
+  &k_\Tag{max} - k_\Tag{min} + \eta
+  = (k_\Tag{max} - k_\Tag{min} + 1)\,(1 - \varepsilon) \notag \\
+  \Longrightarrow\quad& \eta = 1 - (k_\Tag{max} - k_\Tag{min} + 1)\,\varepsilon \, ,
+  \label{eq:max-eta}
+\end{align}
+with $\varepsilon$ the smallest value such that $1\pm\varepsilon$ is
+numerically different from 1.  The value of $\eta$ in Eq.~(\ref{eq:max-eta}) is
+nonnegative if the number of digitization levels $k_\Tag{max} - k_\Tag{min} +
+1$ at most $1/\varepsilon$.  For larger number of digitization levels taking
+$\eta=0$ is better.  For 64-bit IEEE floating point values, $\varepsilon =
+2^{-52}$ and thus using Eq.~(\ref{eq:max-eta}) imposes to digitize to at most
+52-bit integers.
+
+\item Taking $\eta < 0$ is worst than the previous cases so must be
+disregarded.
+\end{itemize}
+
+To summarize, taking $\eta = 0$ is only slightly better than $\eta->1^-$ in
+terms of least worst error but is more general (it applies to any number of
+digitization levels) and offers more flexibility for choosing the bias $\beta$,
+for instance we can have $\beta$ a multiple of $\alpha$.
+
+
+\section{Stable transform}
+
+As the computations only depend on the four given parameters, $k_\Tag{min}$,
+$k_\Tag{max}$, $d_\Tag{min}$ and $d_\Tag{max}$, a simple constraint to preserve
+the stability of the resulting transforms can be guaranteed if the data bounds
+are exactly preserved, \emph{i.e.}:
+\begin{displaymath}
+  \left\{
+  \begin{array}{l}
+    d_\Tag{min} = \alpha\,k_0 + \beta \\[1ex]
+    d_\Tag{max} = \alpha\,k_1 + \beta
+  \end{array}\right.
+  \quad\Longleftrightarrow \quad
+  \left\{
+  \begin{array}{l}
+    \displaystyle
+    \alpha = \frac{d_\Tag{max} - d_\Tag{min}}{k_1 - k_0} \\[2ex]
+    \displaystyle
+    \beta = \frac{d_\Tag{min}\,k_1 - d_\Tag{max}\,k_0}{k_1 - k_0}
+  \end{array}
+  \right.
+\end{displaymath}
+for some $(k_0,k_1) \in \IntRange{k_\Tag{min},k_\Tag{max}}^2$ and assuming that
+$k_0\not=k_1$.  As discussed above the smaller $\alpha$ the more accurate the
+digitization, thus $k_0 = k_\Tag{min}$ and $k_1 = k_\Tag{max}$ is the best
+choice if we further impose that $k_0 < k_1$.   In that case the digitization
+parameters write:
+\begin{equation}
+  \left\{
+  \begin{array}{l}
+    \displaystyle
+    \alpha = \frac{d_\Tag{max} - d_\Tag{min}}
+                  {k_\Tag{max} - k_\Tag{min}} \\[2ex]
+    \displaystyle
+    \beta = \frac{d_\Tag{min}\,k_\Tag{max} - d_\Tag{max}\,k_\Tag{min}}
+                 {k_\Tag{max} - k_\Tag{min}} \\[2ex]
+    \displaystyle
+    \gamma = \beta/\alpha
+    = \frac{d_\Tag{min}\,k_\Tag{max} - d_\Tag{max}\,k_\Tag{min}}
+           {d_\Tag{max} - d_\Tag{min}}
+  \end{array}
+  \right.
+  \label{eq:exact-interpolation}
+\end{equation}
+This yields the same value for $\alpha$ as in Eq.~(\ref{eq:best-alpha}) with
+$\eta = 0$ and $\gamma = \beta/\alpha = \gamma_\Tag{cen}$ with
+$\gamma_\Tag{cen}$ given in Eq.~(\ref{eq:gamma-center}).  In other words, the
+parameters derived from exact interpolation of the bounds are compatible with
+Equations~(\ref{eq:best-alpha}) and (\ref{eq:beta-bounds}) for $\eta = 0$.
+
+
+\section{Proposed parameters}
+
+To summarize all previous considerations, taking $\eta = 0$ seems the best
+choice. Assuming $k_\Tag{max} > k_\Tag{min}$ and $d_\Tag{max} > d_\Tag{min}$, a
+good selection of digitization parameters is then:
+\begin{equation}
+  \boxed{
+  \begin{array}{l}
+    \displaystyle
+    \alpha = \frac{d_\Tag{max} - d_\Tag{min}}
+                  {k_\Tag{max} - k_\Tag{min}} \, , \\[2ex]
+    \displaystyle
+    \gamma_\Tag{cen} = \frac{d_\Tag{min}\,k_\Tag{max} - d_\Tag{max}\,k_\Tag{min}}
+                            {d_\Tag{max} - d_\Tag{min}} \, , \\[2ex]
+    \displaystyle
+    \beta = \alpha\times\begin{cases}
+    \Round{\gamma_\Tag{cen}} & \text{to preserve zeros,} \\
+    \gamma_\Tag{cen} & \text{to preserve data bounds.} \\
+    \end{cases}
+  \end{array}
+  }
+\end{equation}
+When $k_\Tag{max} > k_\Tag{min}$ and $d_\Tag{max} = d_\Tag{min}$, taking
+$\alpha = 0$ and $\beta = d_\Tag{max} = d_\Tag{min}$ yields an exact
+representation.  Finally, when $k_\Tag{max} = k_\Tag{min}$ (which means that
+the values are digitized on a single level!), $\alpha = 0$ and $\beta =
+(d_\Tag{max} + d_\Tag{min})/2$ yields the least worst error.
+
+
+\section{Digitization with non-finite values}
+
+In order to cope with non-finite data (NaN or $\pm\infty$), the following
+digitization rule can be applied:
+\begin{equation}
+  \label{eq:complex-digitization}
+  k_i = \begin{cases}
+     k_\Tag{nan}     & \text{if $d_i$ is not a number;}\\
+     k_\Tag{+\infty} & \text{if $d_i > d_\Tag{max}$;}\\
+     k_\Tag{-\infty} & \text{if $d_i < d_\Tag{min}$;}\\
+     \Round{(d_i - \beta)/\alpha} & \text{otherwise.}
+  \end{cases}
+\end{equation}
+where $k_\Tag{nan}$, $k_\Tag{+\infty}$ and $k_\Tag{-\infty}$ are chosen
+integers while $d_\Tag{min}$ and $d_\Tag{max}$ (with $d_\Tag{max} \ge
+d_\Tag{min}$) are both finite and specify the range of valid data values. 
+\oops{Perhaps add cases for $k_\Tag{min}$ and $k_\Tag{max}$ to avoid unwanted
+behavior due to rounding errors.}
+
+The integers $k_\Tag{nan}$, $k_\Tag{+\infty}$ and $k_\Tag{-\infty}$ can be
+chosen outside the range $\IntRange{k_\Tag{min},k_\Tag{max}}$ (thus reserving a
+few values of the integer range for representing theses special cases) but this
+is not mandatory.  For instance, if we take $k_\Tag{-\infty} = k_\Tag{min}$ and
+$k_\Tag{+\infty} = k_\Tag{max}$, then the above rule implements \emph{data
+clipping}:
+\begin{equation}
+  \label{eq:digitization-with-clipping}
+  k_i = \begin{cases}
+     k_\Tag{nan} & \text{if $d_i$ is not a number;}\\
+     k_\Tag{min} & \text{if $d_i \le d_\Tag{min}$;}\\
+     k_\Tag{max} & \text{if $d_i \ge d_\Tag{max}$;}\\
+     \Round{(d_i - \beta)/\alpha} & \text{otherwise.}
+  \end{cases}
+\end{equation}
+
+\bibliographystyle{plainnat}
+\bibliography{journals-short,biblio}
+
+\end{document}
