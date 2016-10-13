@@ -57,29 +57,61 @@ public class FormatOptions {
     public FormatOptions() {
     }
 
+    /**
+     * Get the specified minimum data value.
+     * @return The specified value or NaN if it has not been specified.
+     */
     public double getMinValue() {
         return (minValueGiven ? minValue : Double.NaN);
     }
 
+    /**
+     * Set the minimum data value.
+     * @param value - The new minimum data value.
+     */
     public void setMinValue(double value) {
+        if (nonfinite(value)) {
+            throw new IllegalArgumentException("Minimum data value must be finite");
+        }
         minValue = value;
         minValueGiven = true;
     }
 
+    /**
+     * Unset the minimum data value.
+     * <p>
+     * Unset the minimum data value if any has been specified.
+     */
     public void unsetMinValue() {
         minValue = Double.NaN;
         minValueGiven = false;
     }
 
+    /**
+     * Get the specified maximum data value.
+     * @return The specified value or NaN if it has not been specified.
+     */
     public double getMaxValue() {
         return (maxValueGiven ? maxValue : Double.NaN);
     }
 
+    /**
+     * Set the maximum data value.
+     * @param value - The new maximum data value.
+     */
     public void setMaxValue(double value) {
+        if (nonfinite(value)) {
+            throw new IllegalArgumentException("Maximum data value must be finite");
+        }
         maxValue = value;
         maxValueGiven = true;
     }
 
+    /**
+     * Unset the maximum data value.
+     * <p>
+     * Unset the maximum data value if any has been specified.
+     */
     public void unsetMaxValue() {
         maxValue = Double.NaN;
         maxValueGiven = false;
@@ -298,9 +330,6 @@ public class FormatOptions {
 
     /**
      * Compute scaling factors SCALE and BIAS.
-     * <p>
-     * This function is the same as
-     * {@link #computeScalingFactors(double, double, double, double)}.
      *
      * @param dmin   - The minimum data value.
      * @param dmax   - The maximum data value.
@@ -312,6 +341,8 @@ public class FormatOptions {
      *                 values such as zero.
      * @param param  - An array to store the scaling parameters: SCALE and
      *                 BIAS (in that order).
+     * @see {@link #computeScalingFactors(double, double, double, double)} for
+     * more explanations.
      */
     public static void computeScalingFactors(double dmin, double dmax,
             double kmin, double kmax, boolean interp, double[] param) {
@@ -326,10 +357,10 @@ public class FormatOptions {
             throw new IllegalArgumentException("Maximum data value must be finite");
         }
         if (nonfinite(kmin)) {
-            throw new IllegalArgumentException("Minimum file value must be finite");
+            throw new IllegalArgumentException("Minimum digitization level must be finite");
         }
         if (nonfinite(kmax)) {
-            throw new IllegalArgumentException("Maximum file value must be finite");
+            throw new IllegalArgumentException("Maximum digitization level must be finite");
         }
         double alpha, beta, gamma, big;
         if (dmin == dmax || kmin == kmax) {
@@ -343,7 +374,7 @@ public class FormatOptions {
             big = Math.max(big, Math.abs(kmax));
             if (big != 1.0) {
                 /* Normalize the input values to avoid overflows in the
-                   computation of the ratio beta/alpha. */
+                   computation of the ratio gamma = beta/alpha. */
                 dmin /= big;
                 dmax /= big;
             }
