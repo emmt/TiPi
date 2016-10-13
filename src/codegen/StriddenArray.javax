@@ -294,10 +294,18 @@ public class ${className} extends ${superName} {
             return data;
         }
         ${type}[] out = new ${type}[number];
-        int j = -1;
-        //# def loopFirstIndent = ${__INDENT2__}
-        //# def loopBody = out[++j] = data[j1];
-        //# emit ${loopColMaj}
+        if (flat) {
+            //# if ${rank} >= 1
+            System.arraycopy(data, 0, out, 0, number);
+            //# else
+            out[0] = data[0];
+            //# end
+        } else {
+            int j = -1;
+            //# def loopFirstIndent = ${__INDENT3__}
+            //# def loopBody = out[++j] = data[j1];
+            //# emit ${loopColMaj}
+        }
         return out;
     }
 

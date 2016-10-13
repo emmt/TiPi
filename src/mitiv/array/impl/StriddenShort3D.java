@@ -316,14 +316,18 @@ public class StriddenShort3D extends Short3D {
             return data;
         }
         short[] out = new short[number];
-        int j = -1;
-        for (int i3 = 0; i3 < dim3; ++i3) {
-            int j3 = stride3*i3 + offset;
-            for (int i2 = 0; i2 < dim2; ++i2) {
-                int j2 = stride2*i2 + j3;
-                for (int i1 = 0; i1 < dim1; ++i1) {
-                    int j1 = stride1*i1 + j2;
-                    out[++j] = data[j1];
+        if (flat) {
+            System.arraycopy(data, 0, out, 0, number);
+        } else {
+            int j = -1;
+            for (int i3 = 0; i3 < dim3; ++i3) {
+                int j3 = stride3*i3 + offset;
+                for (int i2 = 0; i2 < dim2; ++i2) {
+                    int j2 = stride2*i2 + j3;
+                    for (int i1 = 0; i1 < dim1; ++i1) {
+                        int j1 = stride1*i1 + j2;
+                        out[++j] = data[j1];
+                    }
                 }
             }
         }

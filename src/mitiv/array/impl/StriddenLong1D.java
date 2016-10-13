@@ -164,10 +164,14 @@ public class StriddenLong1D extends Long1D {
             return data;
         }
         long[] out = new long[number];
-        int j = -1;
-        for (int i1 = 0; i1 < dim1; ++i1) {
-            int j1 = stride1*i1 + offset;
-            out[++j] = data[j1];
+        if (flat) {
+            System.arraycopy(data, 0, out, 0, number);
+        } else {
+            int j = -1;
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                int j1 = stride1*i1 + offset;
+                out[++j] = data[j1];
+            }
         }
         return out;
     }

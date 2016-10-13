@@ -164,10 +164,14 @@ public class StriddenByte1D extends Byte1D {
             return data;
         }
         byte[] out = new byte[number];
-        int j = -1;
-        for (int i1 = 0; i1 < dim1; ++i1) {
-            int j1 = stride1*i1 + offset;
-            out[++j] = data[j1];
+        if (flat) {
+            System.arraycopy(data, 0, out, 0, number);
+        } else {
+            int j = -1;
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                int j1 = stride1*i1 + offset;
+                out[++j] = data[j1];
+            }
         }
         return out;
     }

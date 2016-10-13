@@ -586,26 +586,30 @@ public class StriddenByte9D extends Byte9D {
             return data;
         }
         byte[] out = new byte[number];
-        int j = -1;
-        for (int i9 = 0; i9 < dim9; ++i9) {
-            int j9 = stride9*i9 + offset;
-            for (int i8 = 0; i8 < dim8; ++i8) {
-                int j8 = stride8*i8 + j9;
-                for (int i7 = 0; i7 < dim7; ++i7) {
-                    int j7 = stride7*i7 + j8;
-                    for (int i6 = 0; i6 < dim6; ++i6) {
-                        int j6 = stride6*i6 + j7;
-                        for (int i5 = 0; i5 < dim5; ++i5) {
-                            int j5 = stride5*i5 + j6;
-                            for (int i4 = 0; i4 < dim4; ++i4) {
-                                int j4 = stride4*i4 + j5;
-                                for (int i3 = 0; i3 < dim3; ++i3) {
-                                    int j3 = stride3*i3 + j4;
-                                    for (int i2 = 0; i2 < dim2; ++i2) {
-                                        int j2 = stride2*i2 + j3;
-                                        for (int i1 = 0; i1 < dim1; ++i1) {
-                                            int j1 = stride1*i1 + j2;
-                                            out[++j] = data[j1];
+        if (flat) {
+            System.arraycopy(data, 0, out, 0, number);
+        } else {
+            int j = -1;
+            for (int i9 = 0; i9 < dim9; ++i9) {
+                int j9 = stride9*i9 + offset;
+                for (int i8 = 0; i8 < dim8; ++i8) {
+                    int j8 = stride8*i8 + j9;
+                    for (int i7 = 0; i7 < dim7; ++i7) {
+                        int j7 = stride7*i7 + j8;
+                        for (int i6 = 0; i6 < dim6; ++i6) {
+                            int j6 = stride6*i6 + j7;
+                            for (int i5 = 0; i5 < dim5; ++i5) {
+                                int j5 = stride5*i5 + j6;
+                                for (int i4 = 0; i4 < dim4; ++i4) {
+                                    int j4 = stride4*i4 + j5;
+                                    for (int i3 = 0; i3 < dim3; ++i3) {
+                                        int j3 = stride3*i3 + j4;
+                                        for (int i2 = 0; i2 < dim2; ++i2) {
+                                            int j2 = stride2*i2 + j3;
+                                            for (int i1 = 0; i1 < dim1; ++i1) {
+                                                int j1 = stride1*i1 + j2;
+                                                out[++j] = data[j1];
+                                            }
                                         }
                                     }
                                 }
