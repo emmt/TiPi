@@ -85,7 +85,7 @@ public interface DoubleArray extends ShapedArray {
     public abstract void scan(DoubleScanner scanner);
 
     /**
-     * Flatten the array of double's in a simple array.
+     * Flatten the shaped array in a simple generic array.
      * <p>
      * The contents of a (multi-dimensional) DoubleArray can be stored in
      * many different forms.  This storage details are hidden to the end-user
@@ -97,28 +97,32 @@ public interface DoubleArray extends ShapedArray {
      * </p>
      * @param forceCopy - Set true to force a copy of the internal data
      *                    even though it can already be in a flat form.
-     * @return A simple array of double's with the contents of
-     *         the DoubleArray.
+     *                    Otherwise and if the shaped array is in flat form,
+     *                    see {@link #isFlat()}, the data storage of the
+     *                    array is directly returned (not a copy).
+     *
+     * @return A simple generic {@code double[]} array with the contents of
+     *         the DoubleArray array.
+     *
+     * @see {@link mitiv.array.ShapedArray#flatten(boolean)} for a general
+     *      description, {@link mitiv.base.Shaped#COLUMN_MAJOR} for
+     *      explanations about storage order.
      */
     public abstract double[] flatten(boolean forceCopy);
 
     /**
-     * Flatten the contents of double's in a simple array.
+     * Flatten the shaped array in a simple generic array avoiding
+     * copies if possible.
      * <p>
-     * The contents of a (multi-dimensional) DoubleArray can be stored in
-     * many different forms.  This storage details are hidden to the end-user
-     * in favor of a unified and comprehensive interface.  This method returns
-     * the contents of the DoubleArray object as a simple <i>flat</i> array,
-     * <i>i.e.</i> successive elements are contiguous and the first element
-     * has {@code 0}-offset.  If the DoubleArray object is multi-dimensional,
-     * the storage of the returned result is column-major order.
-     * </p><p>
-     * Depending on the storage layout, the returned array may or may not
-     * share the same storage as the DoubleArray array.  Call {@code
-     * flatten(true)} to make sure that the two storage areas are independent.
+     * This method behaves as if argument {@code forceCopy} was set to false
+     * in {@link #flatten(boolean)}.  Depending on the storage layout, the
+     * returned array may or may not share the same storage as the
+     * DoubleArray array.  Call {@code flatten(true)} to make sure that the
+     * two storage areas are independent.
      * </p>
-     * @return A simple array of doubles with the contents of
+     * @return A simple generic {@code double[]} array with the contents of
      *         the DoubleArray array.
+     *
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public abstract double[] flatten();
@@ -156,15 +160,3 @@ public interface DoubleArray extends ShapedArray {
      */
     public abstract double average();
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
