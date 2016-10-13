@@ -46,6 +46,7 @@ import mitiv.random.ByteGenerator;
 public class ByteScalar extends Scalar implements ByteArray {
     final byte[] data;
     final int offset;
+    final boolean flat;
 
     /**
      * Create a new ByteScalar object.
@@ -54,6 +55,7 @@ public class ByteScalar extends Scalar implements ByteArray {
         super();
         this.data = new byte[1];
         this.offset = 0;
+        this.flat = true;
     }
 
     /**
@@ -74,6 +76,7 @@ public class ByteScalar extends Scalar implements ByteArray {
         super();
         this.data = arr;
         this.offset = idx;
+        this.flat = (idx == 0 && arr.length == 1);
         checkSanity();
     }
 
@@ -93,12 +96,13 @@ public class ByteScalar extends Scalar implements ByteArray {
         super();
         data = new byte[]{value};
         offset = 0;
+        flat = true;
     }
 
     @Override
     public final void checkSanity() {
         if (offset < 0 || offset >= data.length) {
-            throw new IndexOutOfBoundsException("Scalar offset is out of bounds.");
+            throw new IndexOutOfBoundsException("Scalar offset is out of bounds");
         }
     }
 
@@ -161,7 +165,7 @@ public class ByteScalar extends Scalar implements ByteArray {
 
     @Override
     public final boolean isFlat() {
-        return true;
+        return flat;
     }
 
     @Override
@@ -171,7 +175,7 @@ public class ByteScalar extends Scalar implements ByteArray {
 
     @Override
     public final byte[] flatten(boolean forceCopy) {
-        if (! forceCopy && offset == 0 && data.length == 1) {
+        if (! forceCopy && flat) {
             return data;
         }
         return new byte[]{data[offset]};
@@ -292,15 +296,3 @@ public class ByteScalar extends Scalar implements ByteArray {
         return new ByteScalar(data[offset]);
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

@@ -46,6 +46,7 @@ import mitiv.random.FloatGenerator;
 public class FloatScalar extends Scalar implements FloatArray {
     final float[] data;
     final int offset;
+    final boolean flat;
 
     /**
      * Create a new FloatScalar object.
@@ -54,6 +55,7 @@ public class FloatScalar extends Scalar implements FloatArray {
         super();
         this.data = new float[1];
         this.offset = 0;
+        this.flat = true;
     }
 
     /**
@@ -74,6 +76,7 @@ public class FloatScalar extends Scalar implements FloatArray {
         super();
         this.data = arr;
         this.offset = idx;
+        this.flat = (idx == 0 && arr.length == 1);
         checkSanity();
     }
 
@@ -93,12 +96,13 @@ public class FloatScalar extends Scalar implements FloatArray {
         super();
         data = new float[]{value};
         offset = 0;
+        flat = true;
     }
 
     @Override
     public final void checkSanity() {
         if (offset < 0 || offset >= data.length) {
-            throw new IndexOutOfBoundsException("Scalar offset is out of bounds.");
+            throw new IndexOutOfBoundsException("Scalar offset is out of bounds");
         }
     }
 
@@ -161,7 +165,7 @@ public class FloatScalar extends Scalar implements FloatArray {
 
     @Override
     public final boolean isFlat() {
-        return true;
+        return flat;
     }
 
     @Override
@@ -171,7 +175,7 @@ public class FloatScalar extends Scalar implements FloatArray {
 
     @Override
     public final float[] flatten(boolean forceCopy) {
-        if (! forceCopy && offset == 0 && data.length == 1) {
+        if (! forceCopy && flat) {
             return data;
         }
         return new float[]{data[offset]};
@@ -292,15 +296,3 @@ public class FloatScalar extends Scalar implements FloatArray {
         return new FloatScalar(data[offset]);
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
