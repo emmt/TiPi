@@ -223,26 +223,8 @@ public abstract class Short2D extends Array2D implements ShortArray {
         }
     }
 
-    /* Note that the following default implementation of the "flatten" method
-     * is always returning a copy of the contents whatever the value of the
-     * "forceCopy" argument.
-     * @see devel.eric.array.base.ShortArray#flatten(boolean)
-     */
     @Override
-    public short[] flatten(boolean forceCopy) {
-        /* Copy the elements in column-major order. */
-        short[] out = new short[number];
-        int i = -1;
-        for (int i2 = 0; i2 < dim2; ++i2) {
-            for (int i1 = 0; i1 < dim1; ++i1) {
-                out[++i] = get(i1,i2);
-            }
-        }
-        return out;
-    }
-
-    @Override
-    public short[] flatten() {
+    public final short[] flatten() {
         return flatten(false);
     }
 
@@ -761,15 +743,3 @@ public abstract class Short2D extends Array2D implements ShortArray {
     public abstract Short1D as1D();
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

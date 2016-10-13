@@ -283,30 +283,8 @@ public abstract class Double4D extends Array4D implements DoubleArray {
         }
     }
 
-    /* Note that the following default implementation of the "flatten" method
-     * is always returning a copy of the contents whatever the value of the
-     * "forceCopy" argument.
-     * @see devel.eric.array.base.DoubleArray#flatten(boolean)
-     */
     @Override
-    public double[] flatten(boolean forceCopy) {
-        /* Copy the elements in column-major order. */
-        double[] out = new double[number];
-        int i = -1;
-        for (int i4 = 0; i4 < dim4; ++i4) {
-            for (int i3 = 0; i3 < dim3; ++i3) {
-                for (int i2 = 0; i2 < dim2; ++i2) {
-                    for (int i1 = 0; i1 < dim1; ++i1) {
-                        out[++i] = get(i1,i2,i3,i4);
-                    }
-                }
-            }
-        }
-        return out;
-    }
-
-    @Override
-    public double[] flatten() {
+    public final double[] flatten() {
         return flatten(false);
     }
 
@@ -909,15 +887,3 @@ public abstract class Double4D extends Array4D implements DoubleArray {
     public abstract Double1D as1D();
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

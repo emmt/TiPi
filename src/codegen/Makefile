@@ -47,11 +47,11 @@ FLOAT_OUTPUTS = $(subst @TYPE@,Float,$(TYPED_OUTPUTS))
 
 DOUBLE_OUTPUTS = $(subst @TYPE@,Double,$(TYPED_OUTPUTS))
 
-ARRAY_INPUTS = ArrayND.javax common.javax
+ARRAY_INPUTS = ArrayRank.javax common.javax
 
 TYPED_ARRAY_INPUTS = TypeArray.javax common.javax
 
-TYPE_RANK_INPUTS = TypeND.javax common.javax
+TYPE_RANK_INPUTS = TypeRank.javax common.javax
 
 TYPE_SCALAR_INPUTS = TypeScalar.javax common.javax
 

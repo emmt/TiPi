@@ -134,23 +134,8 @@ public abstract class Byte1D extends Array1D implements ByteArray {
         }
     }
 
-    /* Note that the following default implementation of the "flatten" method
-     * is always returning a copy of the contents whatever the value of the
-     * "forceCopy" argument.
-     * @see devel.eric.array.base.ByteArray#flatten(boolean)
-     */
     @Override
-    public byte[] flatten(boolean forceCopy) {
-        /* Copy the elements in column-major order. */
-        byte[] out = new byte[number];
-        for (int i1 = 0; i1 < dim1; ++i1) {
-            out[i1] = get(i1);
-        }
-        return out;
-    }
-
-    @Override
-    public byte[] flatten() {
+    public final byte[] flatten() {
         return flatten(false);
     }
 
@@ -552,15 +537,3 @@ public abstract class Byte1D extends Array1D implements ByteArray {
     public abstract Byte1D as1D();
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
