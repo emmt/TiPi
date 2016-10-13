@@ -527,6 +527,11 @@ public class StriddenInt7D extends Int7D {
     }
 
     @Override
+    public int[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Int6D slice(int idx) {
         return new StriddenInt6D(data,
                offset + stride7*idx, // offset

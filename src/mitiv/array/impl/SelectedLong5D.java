@@ -311,6 +311,11 @@ public class SelectedLong5D extends Long5D {
     }
 
     @Override
+    public long[] getData() {
+        return null;
+    }
+
+    @Override
     public Long4D slice(int idx) {
         int[] sliceIndex1;
         int sliceOffset = idx5[Helper.fixIndex(idx, dim5)];
@@ -434,15 +439,3 @@ public class SelectedLong5D extends Long5D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

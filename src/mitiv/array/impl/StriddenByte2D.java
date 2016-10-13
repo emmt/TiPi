@@ -286,6 +286,11 @@ public class StriddenByte2D extends Byte2D {
     }
 
     @Override
+    public byte[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Byte1D slice(int idx) {
         return new StriddenByte1D(data,
                offset + stride2*idx, // offset

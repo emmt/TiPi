@@ -383,6 +383,11 @@ public class StriddenShort4D extends Short4D {
     }
 
     @Override
+    public short[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Short3D slice(int idx) {
         return new StriddenShort3D(data,
                offset + stride4*idx, // offset

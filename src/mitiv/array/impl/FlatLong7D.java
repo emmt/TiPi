@@ -216,6 +216,11 @@ public class FlatLong7D extends Long7D {
     }
 
     @Override
+    public long[] getData() {
+        return data;
+    }
+
+    @Override
     public Long6D slice(int idx) {
         idx = Helper.fixIndex(idx, dim7);
         if (idx == 0) {
@@ -381,15 +386,3 @@ public class FlatLong7D extends Long7D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

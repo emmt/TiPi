@@ -216,6 +216,11 @@ public class FlatByte7D extends Byte7D {
     }
 
     @Override
+    public byte[] getData() {
+        return data;
+    }
+
+    @Override
     public Byte6D slice(int idx) {
         idx = Helper.fixIndex(idx, dim7);
         if (idx == 0) {
@@ -381,15 +386,3 @@ public class FlatByte7D extends Byte7D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

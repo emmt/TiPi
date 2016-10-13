@@ -180,6 +180,11 @@ public class FlatShort1D extends Short1D {
     }
 
     @Override
+    public short[] getData() {
+        return data;
+    }
+
+    @Override
     public ShortScalar slice(int idx) {
         idx = Helper.fixIndex(idx, dim1);
         return new ShortScalar(data, idx);
@@ -215,15 +220,3 @@ public class FlatShort1D extends Short1D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

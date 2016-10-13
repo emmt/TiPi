@@ -187,6 +187,11 @@ public class ${className} extends Scalar implements ${Type}Array {
         return new ${type}[]{data[offset]};
     }
 
+    @Override
+    public final ${type}[] getData() {
+        return (flat ? data : null);
+    }
+
     //# // Define a macro to get the value.
     //# def getValue = data[offset]
     //# if ${type_id} == ${BYTE}

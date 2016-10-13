@@ -182,6 +182,11 @@ public class IntScalar extends Scalar implements IntArray {
     }
 
     @Override
+    public final int[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public int min() {
         return data[offset];
     }

@@ -286,6 +286,11 @@ public class StriddenFloat2D extends Float2D {
     }
 
     @Override
+    public float[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Float1D slice(int idx) {
         return new StriddenFloat1D(data,
                offset + stride2*idx, // offset

@@ -575,6 +575,11 @@ public class StriddenByte8D extends Byte8D {
     }
 
     @Override
+    public byte[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Byte7D slice(int idx) {
         return new StriddenByte7D(data,
                offset + stride8*idx, // offset

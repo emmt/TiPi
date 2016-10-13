@@ -195,6 +195,11 @@ public class FlatInt4D extends Int4D {
     }
 
     @Override
+    public int[] getData() {
+        return data;
+    }
+
+    @Override
     public Int3D slice(int idx) {
         idx = Helper.fixIndex(idx, dim4);
         if (idx == 0) {
@@ -285,15 +290,3 @@ public class FlatInt4D extends Int4D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

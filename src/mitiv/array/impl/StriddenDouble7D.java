@@ -527,6 +527,11 @@ public class StriddenDouble7D extends Double7D {
     }
 
     @Override
+    public double[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Double6D slice(int idx) {
         return new StriddenDouble6D(data,
                offset + stride7*idx, // offset

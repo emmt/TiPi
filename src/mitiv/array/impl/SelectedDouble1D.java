@@ -174,6 +174,11 @@ public class SelectedDouble1D extends Double1D {
     }
 
     @Override
+    public double[] getData() {
+        return null;
+    }
+
+    @Override
     public DoubleScalar slice(int idx) {
         return new DoubleScalar(data, idx1[Helper.fixIndex(idx, dim1)]);
     }
@@ -210,15 +215,3 @@ public class SelectedDouble1D extends Double1D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

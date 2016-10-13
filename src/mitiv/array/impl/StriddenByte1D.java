@@ -177,6 +177,11 @@ public class StriddenByte1D extends Byte1D {
     }
 
     @Override
+    public byte[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public ByteScalar slice(int idx) {
         return new ByteScalar(data, offset + stride1*idx);
     }

@@ -177,6 +177,11 @@ public class StriddenLong1D extends Long1D {
     }
 
     @Override
+    public long[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public LongScalar slice(int idx) {
         return new LongScalar(data, offset + stride1*idx);
     }

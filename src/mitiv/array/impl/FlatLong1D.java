@@ -180,6 +180,11 @@ public class FlatLong1D extends Long1D {
     }
 
     @Override
+    public long[] getData() {
+        return data;
+    }
+
+    @Override
     public LongScalar slice(int idx) {
         idx = Helper.fixIndex(idx, dim1);
         return new LongScalar(data, idx);
@@ -215,15 +220,3 @@ public class FlatLong1D extends Long1D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

@@ -379,6 +379,11 @@ public class SelectedDouble7D extends Double7D {
     }
 
     @Override
+    public double[] getData() {
+        return null;
+    }
+
+    @Override
     public Double6D slice(int idx) {
         int[] sliceIndex1;
         int sliceOffset = idx7[Helper.fixIndex(idx, dim7)];
@@ -542,15 +547,3 @@ public class SelectedDouble7D extends Double7D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

@@ -180,6 +180,11 @@ public class FlatLong2D extends Long2D {
     }
 
     @Override
+    public long[] getData() {
+        return data;
+    }
+
+    @Override
     public Long1D slice(int idx) {
         idx = Helper.fixIndex(idx, dim2);
         if (idx == 0) {
@@ -240,15 +245,3 @@ public class FlatLong2D extends Long2D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

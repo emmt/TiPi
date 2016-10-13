@@ -180,6 +180,11 @@ public class FlatInt2D extends Int2D {
     }
 
     @Override
+    public int[] getData() {
+        return data;
+    }
+
+    @Override
     public Int1D slice(int idx) {
         idx = Helper.fixIndex(idx, dim2);
         if (idx == 0) {
@@ -240,15 +245,3 @@ public class FlatInt2D extends Int2D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

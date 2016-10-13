@@ -177,6 +177,11 @@ public class StriddenFloat1D extends Float1D {
     }
 
     @Override
+    public float[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public FloatScalar slice(int idx) {
         return new FloatScalar(data, offset + stride1*idx);
     }

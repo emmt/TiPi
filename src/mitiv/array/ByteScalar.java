@@ -182,6 +182,11 @@ public class ByteScalar extends Scalar implements ByteArray {
     }
 
     @Override
+    public final byte[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public int min() {
         return (int)(data[offset] & 0xFF);
     }

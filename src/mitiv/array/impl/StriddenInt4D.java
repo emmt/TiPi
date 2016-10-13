@@ -383,6 +383,11 @@ public class StriddenInt4D extends Int4D {
     }
 
     @Override
+    public int[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Int3D slice(int idx) {
         return new StriddenInt3D(data,
                offset + stride4*idx, // offset

@@ -202,6 +202,11 @@ public class FlatByte5D extends Byte5D {
     }
 
     @Override
+    public byte[] getData() {
+        return data;
+    }
+
+    @Override
     public Byte4D slice(int idx) {
         idx = Helper.fixIndex(idx, dim5);
         if (idx == 0) {
@@ -313,15 +318,3 @@ public class FlatByte5D extends Byte5D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

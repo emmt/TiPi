@@ -177,6 +177,11 @@ public class StriddenShort1D extends Short1D {
     }
 
     @Override
+    public short[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public ShortScalar slice(int idx) {
         return new ShortScalar(data, offset + stride1*idx);
     }

@@ -180,6 +180,11 @@ public class FlatInt1D extends Int1D {
     }
 
     @Override
+    public int[] getData() {
+        return data;
+    }
+
+    @Override
     public IntScalar slice(int idx) {
         idx = Helper.fixIndex(idx, dim1);
         return new IntScalar(data, idx);
@@ -215,15 +220,3 @@ public class FlatInt1D extends Int1D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

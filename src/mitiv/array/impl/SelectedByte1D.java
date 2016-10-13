@@ -174,6 +174,11 @@ public class SelectedByte1D extends Byte1D {
     }
 
     @Override
+    public byte[] getData() {
+        return null;
+    }
+
+    @Override
     public ByteScalar slice(int idx) {
         return new ByteScalar(data, idx1[Helper.fixIndex(idx, dim1)]);
     }
@@ -210,15 +215,3 @@ public class SelectedByte1D extends Byte1D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

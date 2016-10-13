@@ -202,6 +202,11 @@ public class FlatShort5D extends Short5D {
     }
 
     @Override
+    public short[] getData() {
+        return data;
+    }
+
+    @Override
     public Short4D slice(int idx) {
         idx = Helper.fixIndex(idx, dim5);
         if (idx == 0) {
@@ -313,15 +318,3 @@ public class FlatShort5D extends Short5D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

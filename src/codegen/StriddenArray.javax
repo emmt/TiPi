@@ -310,6 +310,11 @@ public class ${className} extends ${superName} {
     }
 
     @Override
+    public ${type}[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public ${reducedSuperName} slice(int idx) {
         //# if ${reducedRank} == 0
         return new ${reducedSuperName}(data, offset + stride1*idx);

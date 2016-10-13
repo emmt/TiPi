@@ -180,6 +180,11 @@ public class FlatFloat1D extends Float1D {
     }
 
     @Override
+    public float[] getData() {
+        return data;
+    }
+
+    @Override
     public FloatScalar slice(int idx) {
         idx = Helper.fixIndex(idx, dim1);
         return new FloatScalar(data, idx);
@@ -215,15 +220,3 @@ public class FlatFloat1D extends Float1D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

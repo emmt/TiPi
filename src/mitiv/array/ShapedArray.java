@@ -60,13 +60,13 @@ public interface ShapedArray extends Shaped, Typed {
      * If the shaped array is multi-dimensional, the storage of the returned
      * result is column-major order.
      * </p>
-     * @param forceCopy - Set true to force a copy of the internal data
-     *                    even though it can already be in a flat form.
-     *                    Otherwise and if the shaped array is in flat form,
-     *                    see {@link #isFlat()}, the data storage of the
-     *                    array is directly returned (not a copy).
+     * @param forceCopy - Set true to force a copy of the internal data even
+     *                    though it can already be in a flat form.  Otherwise
+     *                    and if the shaped array is in flat form, see {@link
+     *                    #isFlat()}, the data storage of the array is directly
+     *                    returned (not a copy).
      *
-     * @return An object which can be recast into a {@code type[]} Java
+     * @return An object which can be recast into a {@code type[]}
      *         array with {@code type} the generic Java type corresponding
      *         to the type of the elements of the shaped array: {@code byte},
      *         {@code short}, {@code int}, {@code long}, {@code float} or
@@ -86,6 +86,26 @@ public interface ShapedArray extends Shaped, Typed {
      * @return An object (see {@link #flatten(boolean)} for more explanations).
      */
     public abstract Object flatten();
+
+    /**
+     * Get a direct access to the elements of a shaped array.
+     * <p>
+     * Calling this method should be equivalent to:
+     * <pre>
+     * (this.isFlat() ? this.flatten() : null)
+     * </pre>
+     * </p>
+     *
+     * @return An object which can be {@code null} if direct access is not
+     *         possible (or allowed).  If non-{@code null}, the returned value
+     *         can be recast into a {@code type[]} array with {@code type} the
+     *         generic Java type corresponding to the type of the elements of
+     *         the shaped array: {@code byte}, {@code short}, {@code int},
+     *         {@code long}, {@code float} or {@code double}.
+     *
+     * @see {@link #flatten()} and {@link #isFlat()}.
+     */
+    public abstract Object getData();
 
     /**
      * Convert array elements to type {@code byte}.

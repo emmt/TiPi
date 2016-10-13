@@ -197,6 +197,11 @@ public class ${className} extends ${superName} {
     }
 
     @Override
+    public ${type}[] getData() {
+        return null;
+    }
+
+    @Override
     public ${reducedSuperName} slice(int idx) {
         //# if ${rank} == 1
         //#     def argList = data, idx1[Helper.fixIndex(idx, dim${rank})]
@@ -324,15 +329,3 @@ public class ${className} extends ${superName} {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

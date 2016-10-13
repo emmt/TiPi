@@ -182,6 +182,11 @@ public class ShortScalar extends Scalar implements ShortArray {
     }
 
     @Override
+    public final short[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public short min() {
         return data[offset];
     }

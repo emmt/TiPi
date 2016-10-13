@@ -243,6 +243,11 @@ public class SelectedInt3D extends Int3D {
     }
 
     @Override
+    public int[] getData() {
+        return null;
+    }
+
+    @Override
     public Int2D slice(int idx) {
         int[] sliceIndex1;
         int sliceOffset = idx3[Helper.fixIndex(idx, dim3)];
@@ -334,15 +339,3 @@ public class SelectedInt3D extends Int3D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

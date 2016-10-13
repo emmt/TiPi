@@ -174,6 +174,11 @@ public class SelectedShort1D extends Short1D {
     }
 
     @Override
+    public short[] getData() {
+        return null;
+    }
+
+    @Override
     public ShortScalar slice(int idx) {
         return new ShortScalar(data, idx1[Helper.fixIndex(idx, dim1)]);
     }
@@ -210,15 +215,3 @@ public class SelectedShort1D extends Short1D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

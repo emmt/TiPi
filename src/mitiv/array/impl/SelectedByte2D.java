@@ -208,6 +208,11 @@ public class SelectedByte2D extends Byte2D {
     }
 
     @Override
+    public byte[] getData() {
+        return null;
+    }
+
+    @Override
     public Byte1D slice(int idx) {
         int[] sliceIndex1;
         int sliceOffset = idx2[Helper.fixIndex(idx, dim2)];
@@ -286,15 +291,3 @@ public class SelectedByte2D extends Byte2D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

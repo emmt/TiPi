@@ -216,6 +216,11 @@ public class FlatShort7D extends Short7D {
     }
 
     @Override
+    public short[] getData() {
+        return data;
+    }
+
+    @Override
     public Short6D slice(int idx) {
         idx = Helper.fixIndex(idx, dim7);
         if (idx == 0) {
@@ -381,15 +386,3 @@ public class FlatShort7D extends Short7D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

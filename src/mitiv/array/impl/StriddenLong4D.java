@@ -383,6 +383,11 @@ public class StriddenLong4D extends Long4D {
     }
 
     @Override
+    public long[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Long3D slice(int idx) {
         return new StriddenLong3D(data,
                offset + stride4*idx, // offset

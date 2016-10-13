@@ -379,6 +379,11 @@ public class SelectedFloat7D extends Float7D {
     }
 
     @Override
+    public float[] getData() {
+        return null;
+    }
+
+    @Override
     public Float6D slice(int idx) {
         int[] sliceIndex1;
         int sliceOffset = idx7[Helper.fixIndex(idx, dim7)];
@@ -542,15 +547,3 @@ public class SelectedFloat7D extends Float7D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

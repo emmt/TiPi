@@ -174,6 +174,11 @@ public class SelectedLong1D extends Long1D {
     }
 
     @Override
+    public long[] getData() {
+        return null;
+    }
+
+    @Override
     public LongScalar slice(int idx) {
         return new LongScalar(data, idx1[Helper.fixIndex(idx, dim1)]);
     }
@@ -210,15 +215,3 @@ public class SelectedLong1D extends Long1D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

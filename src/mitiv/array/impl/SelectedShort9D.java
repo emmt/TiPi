@@ -447,6 +447,11 @@ public class SelectedShort9D extends Short9D {
     }
 
     @Override
+    public short[] getData() {
+        return null;
+    }
+
+    @Override
     public Short8D slice(int idx) {
         int[] sliceIndex1;
         int sliceOffset = idx9[Helper.fixIndex(idx, dim9)];
@@ -658,15 +663,3 @@ public class SelectedShort9D extends Short9D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

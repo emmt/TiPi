@@ -383,6 +383,11 @@ public class StriddenFloat4D extends Float4D {
     }
 
     @Override
+    public float[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Float3D slice(int idx) {
         return new StriddenFloat3D(data,
                offset + stride4*idx, // offset

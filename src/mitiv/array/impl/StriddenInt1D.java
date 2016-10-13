@@ -177,6 +177,11 @@ public class StriddenInt1D extends Int1D {
     }
 
     @Override
+    public int[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public IntScalar slice(int idx) {
         return new IntScalar(data, offset + stride1*idx);
     }

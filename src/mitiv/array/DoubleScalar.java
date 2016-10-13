@@ -182,6 +182,11 @@ public class DoubleScalar extends Scalar implements DoubleArray {
     }
 
     @Override
+    public final double[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public double min() {
         return data[offset];
     }

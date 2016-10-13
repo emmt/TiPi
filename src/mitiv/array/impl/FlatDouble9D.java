@@ -230,6 +230,11 @@ public class FlatDouble9D extends Double9D {
     }
 
     @Override
+    public double[] getData() {
+        return data;
+    }
+
+    @Override
     public Double8D slice(int idx) {
         idx = Helper.fixIndex(idx, dim9);
         if (idx == 0) {
@@ -465,15 +470,3 @@ public class FlatDouble9D extends Double9D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

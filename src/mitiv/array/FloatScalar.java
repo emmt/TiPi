@@ -182,6 +182,11 @@ public class FloatScalar extends Scalar implements FloatArray {
     }
 
     @Override
+    public final float[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public float min() {
         return data[offset];
     }

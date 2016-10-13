@@ -479,6 +479,11 @@ public class StriddenFloat6D extends Float6D {
     }
 
     @Override
+    public float[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Float5D slice(int idx) {
         return new StriddenFloat5D(data,
                offset + stride6*idx, // offset

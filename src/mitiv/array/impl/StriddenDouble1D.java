@@ -177,6 +177,11 @@ public class StriddenDouble1D extends Double1D {
     }
 
     @Override
+    public double[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public DoubleScalar slice(int idx) {
         return new DoubleScalar(data, offset + stride1*idx);
     }

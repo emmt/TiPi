@@ -345,6 +345,11 @@ public class SelectedByte6D extends Byte6D {
     }
 
     @Override
+    public byte[] getData() {
+        return null;
+    }
+
+    @Override
     public Byte5D slice(int idx) {
         int[] sliceIndex1;
         int sliceOffset = idx6[Helper.fixIndex(idx, dim6)];
@@ -487,15 +492,3 @@ public class SelectedByte6D extends Byte6D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

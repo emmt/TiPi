@@ -230,6 +230,11 @@ public class FlatLong9D extends Long9D {
     }
 
     @Override
+    public long[] getData() {
+        return data;
+    }
+
+    @Override
     public Long8D slice(int idx) {
         idx = Helper.fixIndex(idx, dim9);
         if (idx == 0) {
@@ -465,15 +470,3 @@ public class FlatLong9D extends Long9D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

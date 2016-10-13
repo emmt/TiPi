@@ -431,6 +431,11 @@ public class StriddenDouble5D extends Double5D {
     }
 
     @Override
+    public double[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Double4D slice(int idx) {
         return new StriddenDouble4D(data,
                offset + stride5*idx, // offset

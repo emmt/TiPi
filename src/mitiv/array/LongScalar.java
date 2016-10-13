@@ -182,6 +182,11 @@ public class LongScalar extends Scalar implements LongArray {
     }
 
     @Override
+    public final long[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public long min() {
         return data[offset];
     }

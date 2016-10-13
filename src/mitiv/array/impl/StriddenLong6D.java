@@ -479,6 +479,11 @@ public class StriddenLong6D extends Long6D {
     }
 
     @Override
+    public long[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Long5D slice(int idx) {
         return new StriddenLong5D(data,
                offset + stride6*idx, // offset

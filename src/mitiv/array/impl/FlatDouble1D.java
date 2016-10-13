@@ -180,6 +180,11 @@ public class FlatDouble1D extends Double1D {
     }
 
     @Override
+    public double[] getData() {
+        return data;
+    }
+
+    @Override
     public DoubleScalar slice(int idx) {
         idx = Helper.fixIndex(idx, dim1);
         return new DoubleScalar(data, idx);
@@ -215,15 +220,3 @@ public class FlatDouble1D extends Double1D {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

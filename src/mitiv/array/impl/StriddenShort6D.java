@@ -479,6 +479,11 @@ public class StriddenShort6D extends Short6D {
     }
 
     @Override
+    public short[] getData() {
+        return (flat ? data : null);
+    }
+
+    @Override
     public Short5D slice(int idx) {
         return new StriddenShort5D(data,
                offset + stride6*idx, // offset
