@@ -26,24 +26,24 @@
 package mitiv.exception;
 
 /**
- * Exception thrown when the data type is invalid.
+ * Exception thrown when the byte order is invalid.
  *
  * @author Éric.
  */
-public class IllegalTypeException extends RuntimeException {
+public class IllegalByteOrderException extends RuntimeException {
     /*
      * Define a serial version number as this class implements Serializable
      * interface.
      */
     private static final long serialVersionUID = 1L;
 
-    private static final String defaultMessage = "Illegal data type";
+    private static final String defaultMessage = "Illegal byte order";
 
-    public IllegalTypeException(String message) {
+    public IllegalByteOrderException(String message) {
         super(message);
     }
 
-    public IllegalTypeException() {
+    public IllegalByteOrderException() {
         super(defaultMessage);
     }
 }
