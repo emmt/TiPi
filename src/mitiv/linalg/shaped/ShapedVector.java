@@ -94,6 +94,19 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
     public abstract void assign(ShapedArray arr);
 
     /**
+     * Make a shaped vector into a shaped array.
+     * <p>
+     * This methods wrap the shaped vector data into a shaped array of same type
+     * and dimensions.  The returned array is a <b><i>flat</i></b> array
+     * (<i>i.e.</i> its elements are contiguous and stored in
+     * {@link Shaped#COLUMN_MAJOR} order) which shares its elements with the vector.
+     * The operation is <b><i>fast</i></b> as it involves no copy.
+     *
+     * @return A shaped array sharing the contents of the shaped vector.
+     */
+    public abstract ShapedArray asShapedArray();
+
+    /**
      * Get a string representation.
      */
     @Override

@@ -25,6 +25,8 @@
 
 package mitiv.linalg.shaped;
 
+import mitiv.array.ArrayFactory;
+import mitiv.array.FloatArray;
 import mitiv.array.ShapedArray;
 import mitiv.linalg.ArrayOps;
 import mitiv.random.FloatGenerator;
@@ -148,4 +150,8 @@ public class FloatShapedVector extends ShapedVector {
         }
     }
 
+    @Override
+    public FloatArray asShapedArray() {
+        return ArrayFactory.wrap(data, getShape());
+    }
 }

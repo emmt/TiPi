@@ -27,10 +27,10 @@ package mitiv.array;
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.Traits;
-import mitiv.linalg.shaped.ShapedVector;
-import mitiv.linalg.shaped.FloatShapedVector;
-import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.exception.IllegalTypeException;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.ShapedVector;
 
 
 /**
@@ -61,20 +61,20 @@ public class ArrayFactory {
      */
     public static Scalar create(int type) {
         switch (type) {
-            case Traits.BYTE:
-                return new ByteScalar();
-            case Traits.SHORT:
-                return new ShortScalar();
-            case Traits.INT:
-                return new IntScalar();
-            case Traits.LONG:
-                return new LongScalar();
-            case Traits.FLOAT:
-                return new FloatScalar();
-            case Traits.DOUBLE:
-                return new DoubleScalar();
-            default:
-                throw new IllegalTypeException();
+        case Traits.BYTE:
+            return new ByteScalar();
+        case Traits.SHORT:
+            return new ShortScalar();
+        case Traits.INT:
+            return new IntScalar();
+        case Traits.LONG:
+            return new LongScalar();
+        case Traits.FLOAT:
+            return new FloatScalar();
+        case Traits.DOUBLE:
+            return new DoubleScalar();
+        default:
+            throw new IllegalTypeException();
         }
     }
 
@@ -87,20 +87,20 @@ public class ArrayFactory {
      */
     public static Array1D create(int type, int dim1) {
         switch (type) {
-            case Traits.BYTE:
-                return Byte1D.create(dim1);
-            case Traits.SHORT:
-                return Short1D.create(dim1);
-            case Traits.INT:
-                return Int1D.create(dim1);
-            case Traits.LONG:
-                return Long1D.create(dim1);
-            case Traits.FLOAT:
-                return Float1D.create(dim1);
-            case Traits.DOUBLE:
-                return Double1D.create(dim1);
-            default:
-                throw new IllegalTypeException();
+        case Traits.BYTE:
+            return Byte1D.create(dim1);
+        case Traits.SHORT:
+            return Short1D.create(dim1);
+        case Traits.INT:
+            return Int1D.create(dim1);
+        case Traits.LONG:
+            return Long1D.create(dim1);
+        case Traits.FLOAT:
+            return Float1D.create(dim1);
+        case Traits.DOUBLE:
+            return Double1D.create(dim1);
+        default:
+            throw new IllegalTypeException();
         }
     }
 
@@ -114,20 +114,20 @@ public class ArrayFactory {
      */
     public static Array2D create(int type, int dim1, int dim2) {
         switch (type) {
-            case Traits.BYTE:
-                return Byte2D.create(dim1, dim2);
-            case Traits.SHORT:
-                return Short2D.create(dim1, dim2);
-            case Traits.INT:
-                return Int2D.create(dim1, dim2);
-            case Traits.LONG:
-                return Long2D.create(dim1, dim2);
-            case Traits.FLOAT:
-                return Float2D.create(dim1, dim2);
-            case Traits.DOUBLE:
-                return Double2D.create(dim1, dim2);
-            default:
-                throw new IllegalTypeException();
+        case Traits.BYTE:
+            return Byte2D.create(dim1, dim2);
+        case Traits.SHORT:
+            return Short2D.create(dim1, dim2);
+        case Traits.INT:
+            return Int2D.create(dim1, dim2);
+        case Traits.LONG:
+            return Long2D.create(dim1, dim2);
+        case Traits.FLOAT:
+            return Float2D.create(dim1, dim2);
+        case Traits.DOUBLE:
+            return Double2D.create(dim1, dim2);
+        default:
+            throw new IllegalTypeException();
         }
     }
 
@@ -142,20 +142,20 @@ public class ArrayFactory {
      */
     public static Array3D create(int type, int dim1, int dim2, int dim3) {
         switch (type) {
-            case Traits.BYTE:
-                return Byte3D.create(dim1, dim2, dim3);
-            case Traits.SHORT:
-                return Short3D.create(dim1, dim2, dim3);
-            case Traits.INT:
-                return Int3D.create(dim1, dim2, dim3);
-            case Traits.LONG:
-                return Long3D.create(dim1, dim2, dim3);
-            case Traits.FLOAT:
-                return Float3D.create(dim1, dim2, dim3);
-            case Traits.DOUBLE:
-                return Double3D.create(dim1, dim2, dim3);
-            default:
-                throw new IllegalTypeException();
+        case Traits.BYTE:
+            return Byte3D.create(dim1, dim2, dim3);
+        case Traits.SHORT:
+            return Short3D.create(dim1, dim2, dim3);
+        case Traits.INT:
+            return Int3D.create(dim1, dim2, dim3);
+        case Traits.LONG:
+            return Long3D.create(dim1, dim2, dim3);
+        case Traits.FLOAT:
+            return Float3D.create(dim1, dim2, dim3);
+        case Traits.DOUBLE:
+            return Double3D.create(dim1, dim2, dim3);
+        default:
+            throw new IllegalTypeException();
         }
     }
 
@@ -171,20 +171,20 @@ public class ArrayFactory {
      */
     public static Array4D create(int type, int dim1, int dim2, int dim3, int dim4) {
         switch (type) {
-            case Traits.BYTE:
-                return Byte4D.create(dim1, dim2, dim3, dim4);
-            case Traits.SHORT:
-                return Short4D.create(dim1, dim2, dim3, dim4);
-            case Traits.INT:
-                return Int4D.create(dim1, dim2, dim3, dim4);
-            case Traits.LONG:
-                return Long4D.create(dim1, dim2, dim3, dim4);
-            case Traits.FLOAT:
-                return Float4D.create(dim1, dim2, dim3, dim4);
-            case Traits.DOUBLE:
-                return Double4D.create(dim1, dim2, dim3, dim4);
-            default:
-                throw new IllegalTypeException();
+        case Traits.BYTE:
+            return Byte4D.create(dim1, dim2, dim3, dim4);
+        case Traits.SHORT:
+            return Short4D.create(dim1, dim2, dim3, dim4);
+        case Traits.INT:
+            return Int4D.create(dim1, dim2, dim3, dim4);
+        case Traits.LONG:
+            return Long4D.create(dim1, dim2, dim3, dim4);
+        case Traits.FLOAT:
+            return Float4D.create(dim1, dim2, dim3, dim4);
+        case Traits.DOUBLE:
+            return Double4D.create(dim1, dim2, dim3, dim4);
+        default:
+            throw new IllegalTypeException();
         }
     }
 
@@ -201,20 +201,20 @@ public class ArrayFactory {
      */
     public static Array5D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5) {
         switch (type) {
-            case Traits.BYTE:
-                return Byte5D.create(dim1, dim2, dim3, dim4, dim5);
-            case Traits.SHORT:
-                return Short5D.create(dim1, dim2, dim3, dim4, dim5);
-            case Traits.INT:
-                return Int5D.create(dim1, dim2, dim3, dim4, dim5);
-            case Traits.LONG:
-                return Long5D.create(dim1, dim2, dim3, dim4, dim5);
-            case Traits.FLOAT:
-                return Float5D.create(dim1, dim2, dim3, dim4, dim5);
-            case Traits.DOUBLE:
-                return Double5D.create(dim1, dim2, dim3, dim4, dim5);
-            default:
-                throw new IllegalTypeException();
+        case Traits.BYTE:
+            return Byte5D.create(dim1, dim2, dim3, dim4, dim5);
+        case Traits.SHORT:
+            return Short5D.create(dim1, dim2, dim3, dim4, dim5);
+        case Traits.INT:
+            return Int5D.create(dim1, dim2, dim3, dim4, dim5);
+        case Traits.LONG:
+            return Long5D.create(dim1, dim2, dim3, dim4, dim5);
+        case Traits.FLOAT:
+            return Float5D.create(dim1, dim2, dim3, dim4, dim5);
+        case Traits.DOUBLE:
+            return Double5D.create(dim1, dim2, dim3, dim4, dim5);
+        default:
+            throw new IllegalTypeException();
         }
     }
 
@@ -232,20 +232,20 @@ public class ArrayFactory {
      */
     public static Array6D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         switch (type) {
-            case Traits.BYTE:
-                return Byte6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
-            case Traits.SHORT:
-                return Short6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
-            case Traits.INT:
-                return Int6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
-            case Traits.LONG:
-                return Long6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
-            case Traits.FLOAT:
-                return Float6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
-            case Traits.DOUBLE:
-                return Double6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
-            default:
-                throw new IllegalTypeException();
+        case Traits.BYTE:
+            return Byte6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
+        case Traits.SHORT:
+            return Short6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
+        case Traits.INT:
+            return Int6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
+        case Traits.LONG:
+            return Long6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
+        case Traits.FLOAT:
+            return Float6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
+        case Traits.DOUBLE:
+            return Double6D.create(dim1, dim2, dim3, dim4, dim5, dim6);
+        default:
+            throw new IllegalTypeException();
         }
     }
 
@@ -264,20 +264,20 @@ public class ArrayFactory {
      */
     public static Array7D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         switch (type) {
-            case Traits.BYTE:
-                return Byte7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
-            case Traits.SHORT:
-                return Short7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
-            case Traits.INT:
-                return Int7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
-            case Traits.LONG:
-                return Long7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
-            case Traits.FLOAT:
-                return Float7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
-            case Traits.DOUBLE:
-                return Double7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
-            default:
-                throw new IllegalTypeException();
+        case Traits.BYTE:
+            return Byte7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+        case Traits.SHORT:
+            return Short7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+        case Traits.INT:
+            return Int7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+        case Traits.LONG:
+            return Long7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+        case Traits.FLOAT:
+            return Float7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+        case Traits.DOUBLE:
+            return Double7D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7);
+        default:
+            throw new IllegalTypeException();
         }
     }
 
@@ -297,20 +297,20 @@ public class ArrayFactory {
      */
     public static Array8D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         switch (type) {
-            case Traits.BYTE:
-                return Byte8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
-            case Traits.SHORT:
-                return Short8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
-            case Traits.INT:
-                return Int8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
-            case Traits.LONG:
-                return Long8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
-            case Traits.FLOAT:
-                return Float8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
-            case Traits.DOUBLE:
-                return Double8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
-            default:
-                throw new IllegalTypeException();
+        case Traits.BYTE:
+            return Byte8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+        case Traits.SHORT:
+            return Short8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+        case Traits.INT:
+            return Int8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+        case Traits.LONG:
+            return Long8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+        case Traits.FLOAT:
+            return Float8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+        case Traits.DOUBLE:
+            return Double8D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
+        default:
+            throw new IllegalTypeException();
         }
     }
 
@@ -331,20 +331,20 @@ public class ArrayFactory {
      */
     public static Array9D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         switch (type) {
-            case Traits.BYTE:
-                return Byte9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
-            case Traits.SHORT:
-                return Short9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
-            case Traits.INT:
-                return Int9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
-            case Traits.LONG:
-                return Long9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
-            case Traits.FLOAT:
-                return Float9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
-            case Traits.DOUBLE:
-                return Double9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
-            default:
-                throw new IllegalTypeException();
+        case Traits.BYTE:
+            return Byte9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+        case Traits.SHORT:
+            return Short9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+        case Traits.INT:
+            return Int9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+        case Traits.LONG:
+            return Long9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+        case Traits.FLOAT:
+            return Float9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+        case Traits.DOUBLE:
+            return Double9D.create(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
+        default:
+            throw new IllegalTypeException();
         }
     }
 
@@ -359,152 +359,152 @@ public class ArrayFactory {
     public static ShapedArray create(int type, int[] dims) {
         int rank = dims.length;
         switch (type) {
-            case Traits.BYTE:
-                switch (rank) {
-                    case 0:
-                        return new ByteScalar();
-                    case 1:
-                        return Byte1D.create(dims);
-                    case 2:
-                        return Byte2D.create(dims);
-                    case 3:
-                        return Byte3D.create(dims);
-                    case 4:
-                        return Byte4D.create(dims);
-                    case 5:
-                        return Byte5D.create(dims);
-                    case 6:
-                        return Byte6D.create(dims);
-                    case 7:
-                        return Byte7D.create(dims);
-                    case 8:
-                        return Byte8D.create(dims);
-                    case 9:
-                        return Byte9D.create(dims);
-                }
-                break;
-            case Traits.SHORT:
-                switch (rank) {
-                    case 0:
-                        return new ShortScalar();
-                    case 1:
-                        return Short1D.create(dims);
-                    case 2:
-                        return Short2D.create(dims);
-                    case 3:
-                        return Short3D.create(dims);
-                    case 4:
-                        return Short4D.create(dims);
-                    case 5:
-                        return Short5D.create(dims);
-                    case 6:
-                        return Short6D.create(dims);
-                    case 7:
-                        return Short7D.create(dims);
-                    case 8:
-                        return Short8D.create(dims);
-                    case 9:
-                        return Short9D.create(dims);
-                }
-                break;
-            case Traits.INT:
-                switch (rank) {
-                    case 0:
-                        return new IntScalar();
-                    case 1:
-                        return Int1D.create(dims);
-                    case 2:
-                        return Int2D.create(dims);
-                    case 3:
-                        return Int3D.create(dims);
-                    case 4:
-                        return Int4D.create(dims);
-                    case 5:
-                        return Int5D.create(dims);
-                    case 6:
-                        return Int6D.create(dims);
-                    case 7:
-                        return Int7D.create(dims);
-                    case 8:
-                        return Int8D.create(dims);
-                    case 9:
-                        return Int9D.create(dims);
-                }
-                break;
-            case Traits.LONG:
-                switch (rank) {
-                    case 0:
-                        return new LongScalar();
-                    case 1:
-                        return Long1D.create(dims);
-                    case 2:
-                        return Long2D.create(dims);
-                    case 3:
-                        return Long3D.create(dims);
-                    case 4:
-                        return Long4D.create(dims);
-                    case 5:
-                        return Long5D.create(dims);
-                    case 6:
-                        return Long6D.create(dims);
-                    case 7:
-                        return Long7D.create(dims);
-                    case 8:
-                        return Long8D.create(dims);
-                    case 9:
-                        return Long9D.create(dims);
-                }
-                break;
-            case Traits.FLOAT:
-                switch (rank) {
-                    case 0:
-                        return new FloatScalar();
-                    case 1:
-                        return Float1D.create(dims);
-                    case 2:
-                        return Float2D.create(dims);
-                    case 3:
-                        return Float3D.create(dims);
-                    case 4:
-                        return Float4D.create(dims);
-                    case 5:
-                        return Float5D.create(dims);
-                    case 6:
-                        return Float6D.create(dims);
-                    case 7:
-                        return Float7D.create(dims);
-                    case 8:
-                        return Float8D.create(dims);
-                    case 9:
-                        return Float9D.create(dims);
-                }
-                break;
-            case Traits.DOUBLE:
-                switch (rank) {
-                    case 0:
-                        return new DoubleScalar();
-                    case 1:
-                        return Double1D.create(dims);
-                    case 2:
-                        return Double2D.create(dims);
-                    case 3:
-                        return Double3D.create(dims);
-                    case 4:
-                        return Double4D.create(dims);
-                    case 5:
-                        return Double5D.create(dims);
-                    case 6:
-                        return Double6D.create(dims);
-                    case 7:
-                        return Double7D.create(dims);
-                    case 8:
-                        return Double8D.create(dims);
-                    case 9:
-                        return Double9D.create(dims);
-                }
-                break;
-            default:
-                throw new IllegalTypeException();
+        case Traits.BYTE:
+            switch (rank) {
+            case 0:
+                return new ByteScalar();
+            case 1:
+                return Byte1D.create(dims);
+            case 2:
+                return Byte2D.create(dims);
+            case 3:
+                return Byte3D.create(dims);
+            case 4:
+                return Byte4D.create(dims);
+            case 5:
+                return Byte5D.create(dims);
+            case 6:
+                return Byte6D.create(dims);
+            case 7:
+                return Byte7D.create(dims);
+            case 8:
+                return Byte8D.create(dims);
+            case 9:
+                return Byte9D.create(dims);
+            }
+            break;
+        case Traits.SHORT:
+            switch (rank) {
+            case 0:
+                return new ShortScalar();
+            case 1:
+                return Short1D.create(dims);
+            case 2:
+                return Short2D.create(dims);
+            case 3:
+                return Short3D.create(dims);
+            case 4:
+                return Short4D.create(dims);
+            case 5:
+                return Short5D.create(dims);
+            case 6:
+                return Short6D.create(dims);
+            case 7:
+                return Short7D.create(dims);
+            case 8:
+                return Short8D.create(dims);
+            case 9:
+                return Short9D.create(dims);
+            }
+            break;
+        case Traits.INT:
+            switch (rank) {
+            case 0:
+                return new IntScalar();
+            case 1:
+                return Int1D.create(dims);
+            case 2:
+                return Int2D.create(dims);
+            case 3:
+                return Int3D.create(dims);
+            case 4:
+                return Int4D.create(dims);
+            case 5:
+                return Int5D.create(dims);
+            case 6:
+                return Int6D.create(dims);
+            case 7:
+                return Int7D.create(dims);
+            case 8:
+                return Int8D.create(dims);
+            case 9:
+                return Int9D.create(dims);
+            }
+            break;
+        case Traits.LONG:
+            switch (rank) {
+            case 0:
+                return new LongScalar();
+            case 1:
+                return Long1D.create(dims);
+            case 2:
+                return Long2D.create(dims);
+            case 3:
+                return Long3D.create(dims);
+            case 4:
+                return Long4D.create(dims);
+            case 5:
+                return Long5D.create(dims);
+            case 6:
+                return Long6D.create(dims);
+            case 7:
+                return Long7D.create(dims);
+            case 8:
+                return Long8D.create(dims);
+            case 9:
+                return Long9D.create(dims);
+            }
+            break;
+        case Traits.FLOAT:
+            switch (rank) {
+            case 0:
+                return new FloatScalar();
+            case 1:
+                return Float1D.create(dims);
+            case 2:
+                return Float2D.create(dims);
+            case 3:
+                return Float3D.create(dims);
+            case 4:
+                return Float4D.create(dims);
+            case 5:
+                return Float5D.create(dims);
+            case 6:
+                return Float6D.create(dims);
+            case 7:
+                return Float7D.create(dims);
+            case 8:
+                return Float8D.create(dims);
+            case 9:
+                return Float9D.create(dims);
+            }
+            break;
+        case Traits.DOUBLE:
+            switch (rank) {
+            case 0:
+                return new DoubleScalar();
+            case 1:
+                return Double1D.create(dims);
+            case 2:
+                return Double2D.create(dims);
+            case 3:
+                return Double3D.create(dims);
+            case 4:
+                return Double4D.create(dims);
+            case 5:
+                return Double5D.create(dims);
+            case 6:
+                return Double6D.create(dims);
+            case 7:
+                return Double7D.create(dims);
+            case 8:
+                return Double8D.create(dims);
+            case 9:
+                return Double9D.create(dims);
+            }
+            break;
+        default:
+            throw new IllegalTypeException();
         }
         throw new IllegalArgumentException("Invalid rank in shape");
     }
@@ -520,152 +520,152 @@ public class ArrayFactory {
     public static ShapedArray create(int type, Shape shape) {
         int rank = shape.rank();
         switch (type) {
-            case Traits.BYTE:
-                switch (rank) {
-                    case 0:
-                        return new ByteScalar();
-                    case 1:
-                        return Byte1D.create(shape);
-                    case 2:
-                        return Byte2D.create(shape);
-                    case 3:
-                        return Byte3D.create(shape);
-                    case 4:
-                        return Byte4D.create(shape);
-                    case 5:
-                        return Byte5D.create(shape);
-                    case 6:
-                        return Byte6D.create(shape);
-                    case 7:
-                        return Byte7D.create(shape);
-                    case 8:
-                        return Byte8D.create(shape);
-                    case 9:
-                        return Byte9D.create(shape);
-                }
-                break;
-            case Traits.SHORT:
-                switch (rank) {
-                    case 0:
-                        return new ShortScalar();
-                    case 1:
-                        return Short1D.create(shape);
-                    case 2:
-                        return Short2D.create(shape);
-                    case 3:
-                        return Short3D.create(shape);
-                    case 4:
-                        return Short4D.create(shape);
-                    case 5:
-                        return Short5D.create(shape);
-                    case 6:
-                        return Short6D.create(shape);
-                    case 7:
-                        return Short7D.create(shape);
-                    case 8:
-                        return Short8D.create(shape);
-                    case 9:
-                        return Short9D.create(shape);
-                }
-                break;
-            case Traits.INT:
-                switch (rank) {
-                    case 0:
-                        return new IntScalar();
-                    case 1:
-                        return Int1D.create(shape);
-                    case 2:
-                        return Int2D.create(shape);
-                    case 3:
-                        return Int3D.create(shape);
-                    case 4:
-                        return Int4D.create(shape);
-                    case 5:
-                        return Int5D.create(shape);
-                    case 6:
-                        return Int6D.create(shape);
-                    case 7:
-                        return Int7D.create(shape);
-                    case 8:
-                        return Int8D.create(shape);
-                    case 9:
-                        return Int9D.create(shape);
-                }
-                break;
-            case Traits.LONG:
-                switch (rank) {
-                    case 0:
-                        return new LongScalar();
-                    case 1:
-                        return Long1D.create(shape);
-                    case 2:
-                        return Long2D.create(shape);
-                    case 3:
-                        return Long3D.create(shape);
-                    case 4:
-                        return Long4D.create(shape);
-                    case 5:
-                        return Long5D.create(shape);
-                    case 6:
-                        return Long6D.create(shape);
-                    case 7:
-                        return Long7D.create(shape);
-                    case 8:
-                        return Long8D.create(shape);
-                    case 9:
-                        return Long9D.create(shape);
-                }
-                break;
-            case Traits.FLOAT:
-                switch (rank) {
-                    case 0:
-                        return new FloatScalar();
-                    case 1:
-                        return Float1D.create(shape);
-                    case 2:
-                        return Float2D.create(shape);
-                    case 3:
-                        return Float3D.create(shape);
-                    case 4:
-                        return Float4D.create(shape);
-                    case 5:
-                        return Float5D.create(shape);
-                    case 6:
-                        return Float6D.create(shape);
-                    case 7:
-                        return Float7D.create(shape);
-                    case 8:
-                        return Float8D.create(shape);
-                    case 9:
-                        return Float9D.create(shape);
-                }
-                break;
-            case Traits.DOUBLE:
-                switch (rank) {
-                    case 0:
-                        return new DoubleScalar();
-                    case 1:
-                        return Double1D.create(shape);
-                    case 2:
-                        return Double2D.create(shape);
-                    case 3:
-                        return Double3D.create(shape);
-                    case 4:
-                        return Double4D.create(shape);
-                    case 5:
-                        return Double5D.create(shape);
-                    case 6:
-                        return Double6D.create(shape);
-                    case 7:
-                        return Double7D.create(shape);
-                    case 8:
-                        return Double8D.create(shape);
-                    case 9:
-                        return Double9D.create(shape);
-                }
-                break;
-            default:
-                throw new IllegalTypeException();
+        case Traits.BYTE:
+            switch (rank) {
+            case 0:
+                return new ByteScalar();
+            case 1:
+                return Byte1D.create(shape);
+            case 2:
+                return Byte2D.create(shape);
+            case 3:
+                return Byte3D.create(shape);
+            case 4:
+                return Byte4D.create(shape);
+            case 5:
+                return Byte5D.create(shape);
+            case 6:
+                return Byte6D.create(shape);
+            case 7:
+                return Byte7D.create(shape);
+            case 8:
+                return Byte8D.create(shape);
+            case 9:
+                return Byte9D.create(shape);
+            }
+            break;
+        case Traits.SHORT:
+            switch (rank) {
+            case 0:
+                return new ShortScalar();
+            case 1:
+                return Short1D.create(shape);
+            case 2:
+                return Short2D.create(shape);
+            case 3:
+                return Short3D.create(shape);
+            case 4:
+                return Short4D.create(shape);
+            case 5:
+                return Short5D.create(shape);
+            case 6:
+                return Short6D.create(shape);
+            case 7:
+                return Short7D.create(shape);
+            case 8:
+                return Short8D.create(shape);
+            case 9:
+                return Short9D.create(shape);
+            }
+            break;
+        case Traits.INT:
+            switch (rank) {
+            case 0:
+                return new IntScalar();
+            case 1:
+                return Int1D.create(shape);
+            case 2:
+                return Int2D.create(shape);
+            case 3:
+                return Int3D.create(shape);
+            case 4:
+                return Int4D.create(shape);
+            case 5:
+                return Int5D.create(shape);
+            case 6:
+                return Int6D.create(shape);
+            case 7:
+                return Int7D.create(shape);
+            case 8:
+                return Int8D.create(shape);
+            case 9:
+                return Int9D.create(shape);
+            }
+            break;
+        case Traits.LONG:
+            switch (rank) {
+            case 0:
+                return new LongScalar();
+            case 1:
+                return Long1D.create(shape);
+            case 2:
+                return Long2D.create(shape);
+            case 3:
+                return Long3D.create(shape);
+            case 4:
+                return Long4D.create(shape);
+            case 5:
+                return Long5D.create(shape);
+            case 6:
+                return Long6D.create(shape);
+            case 7:
+                return Long7D.create(shape);
+            case 8:
+                return Long8D.create(shape);
+            case 9:
+                return Long9D.create(shape);
+            }
+            break;
+        case Traits.FLOAT:
+            switch (rank) {
+            case 0:
+                return new FloatScalar();
+            case 1:
+                return Float1D.create(shape);
+            case 2:
+                return Float2D.create(shape);
+            case 3:
+                return Float3D.create(shape);
+            case 4:
+                return Float4D.create(shape);
+            case 5:
+                return Float5D.create(shape);
+            case 6:
+                return Float6D.create(shape);
+            case 7:
+                return Float7D.create(shape);
+            case 8:
+                return Float8D.create(shape);
+            case 9:
+                return Float9D.create(shape);
+            }
+            break;
+        case Traits.DOUBLE:
+            switch (rank) {
+            case 0:
+                return new DoubleScalar();
+            case 1:
+                return Double1D.create(shape);
+            case 2:
+                return Double2D.create(shape);
+            case 3:
+                return Double3D.create(shape);
+            case 4:
+                return Double4D.create(shape);
+            case 5:
+                return Double5D.create(shape);
+            case 6:
+                return Double6D.create(shape);
+            case 7:
+                return Double7D.create(shape);
+            case 8:
+                return Double8D.create(shape);
+            case 9:
+                return Double9D.create(shape);
+            }
+            break;
+        default:
+            throw new IllegalTypeException();
         }
         throw new IllegalArgumentException("Invalid rank in shape");
     }
@@ -692,45 +692,45 @@ public class ArrayFactory {
         byte[] out = new byte[number];
         switch (srcType) {
         case Traits.SHORT:
-            {
-                short[] inp = ((ShortArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (byte)inp[j];
-                }
+        {
+            short[] inp = ((ShortArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (byte)inp[j];
             }
-            break;
+        }
+        break;
         case Traits.INT:
-            {
-                int[] inp = ((IntArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (byte)inp[j];
-                }
+        {
+            int[] inp = ((IntArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (byte)inp[j];
             }
-            break;
+        }
+        break;
         case Traits.LONG:
-            {
-                long[] inp = ((LongArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (byte)inp[j];
-                }
+        {
+            long[] inp = ((LongArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (byte)inp[j];
             }
-            break;
+        }
+        break;
         case Traits.FLOAT:
-            {
-                float[] inp = ((FloatArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (byte)inp[j];
-                }
+        {
+            float[] inp = ((FloatArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (byte)inp[j];
             }
-            break;
+        }
+        break;
         case Traits.DOUBLE:
-            {
-                double[] inp = ((DoubleArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (byte)inp[j];
-                }
+        {
+            double[] inp = ((DoubleArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (byte)inp[j];
             }
-            break;
+        }
+        break;
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
@@ -756,45 +756,45 @@ public class ArrayFactory {
         short[] out = new short[number];
         switch (srcType) {
         case Traits.BYTE:
-            {
-                byte[] inp = ((ByteArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (short)inp[j];
-                }
+        {
+            byte[] inp = ((ByteArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.INT:
-            {
-                int[] inp = ((IntArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (short)inp[j];
-                }
+        {
+            int[] inp = ((IntArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (short)inp[j];
             }
-            break;
+        }
+        break;
         case Traits.LONG:
-            {
-                long[] inp = ((LongArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (short)inp[j];
-                }
+        {
+            long[] inp = ((LongArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (short)inp[j];
             }
-            break;
+        }
+        break;
         case Traits.FLOAT:
-            {
-                float[] inp = ((FloatArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (short)inp[j];
-                }
+        {
+            float[] inp = ((FloatArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (short)inp[j];
             }
-            break;
+        }
+        break;
         case Traits.DOUBLE:
-            {
-                double[] inp = ((DoubleArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (short)inp[j];
-                }
+        {
+            double[] inp = ((DoubleArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (short)inp[j];
             }
-            break;
+        }
+        break;
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
@@ -820,45 +820,45 @@ public class ArrayFactory {
         int[] out = new int[number];
         switch (srcType) {
         case Traits.BYTE:
-            {
-                byte[] inp = ((ByteArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (int)inp[j];
-                }
+        {
+            byte[] inp = ((ByteArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.SHORT:
-            {
-                short[] inp = ((ShortArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (int)inp[j];
-                }
+        {
+            short[] inp = ((ShortArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.LONG:
-            {
-                long[] inp = ((LongArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (int)inp[j];
-                }
+        {
+            long[] inp = ((LongArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (int)inp[j];
             }
-            break;
+        }
+        break;
         case Traits.FLOAT:
-            {
-                float[] inp = ((FloatArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (int)inp[j];
-                }
+        {
+            float[] inp = ((FloatArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (int)inp[j];
             }
-            break;
+        }
+        break;
         case Traits.DOUBLE:
-            {
-                double[] inp = ((DoubleArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (int)inp[j];
-                }
+        {
+            double[] inp = ((DoubleArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (int)inp[j];
             }
-            break;
+        }
+        break;
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
@@ -884,45 +884,45 @@ public class ArrayFactory {
         long[] out = new long[number];
         switch (srcType) {
         case Traits.BYTE:
-            {
-                byte[] inp = ((ByteArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (long)inp[j];
-                }
+        {
+            byte[] inp = ((ByteArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.SHORT:
-            {
-                short[] inp = ((ShortArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (long)inp[j];
-                }
+        {
+            short[] inp = ((ShortArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.INT:
-            {
-                int[] inp = ((IntArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (long)inp[j];
-                }
+        {
+            int[] inp = ((IntArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.FLOAT:
-            {
-                float[] inp = ((FloatArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (long)inp[j];
-                }
+        {
+            float[] inp = ((FloatArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (long)inp[j];
             }
-            break;
+        }
+        break;
         case Traits.DOUBLE:
-            {
-                double[] inp = ((DoubleArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (long)inp[j];
-                }
+        {
+            double[] inp = ((DoubleArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (long)inp[j];
             }
-            break;
+        }
+        break;
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
@@ -948,45 +948,45 @@ public class ArrayFactory {
         float[] out = new float[number];
         switch (srcType) {
         case Traits.BYTE:
-            {
-                byte[] inp = ((ByteArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (float)inp[j];
-                }
+        {
+            byte[] inp = ((ByteArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.SHORT:
-            {
-                short[] inp = ((ShortArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (float)inp[j];
-                }
+        {
+            short[] inp = ((ShortArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.INT:
-            {
-                int[] inp = ((IntArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (float)inp[j];
-                }
+        {
+            int[] inp = ((IntArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.LONG:
-            {
-                long[] inp = ((LongArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (float)inp[j];
-                }
+        {
+            long[] inp = ((LongArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.DOUBLE:
-            {
-                double[] inp = ((DoubleArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (float)inp[j];
-                }
+        {
+            double[] inp = ((DoubleArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = (float)inp[j];
             }
-            break;
+        }
+        break;
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
@@ -1012,45 +1012,45 @@ public class ArrayFactory {
         double[] out = new double[number];
         switch (srcType) {
         case Traits.BYTE:
-            {
-                byte[] inp = ((ByteArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (double)inp[j];
-                }
+        {
+            byte[] inp = ((ByteArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.SHORT:
-            {
-                short[] inp = ((ShortArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (double)inp[j];
-                }
+        {
+            short[] inp = ((ShortArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.INT:
-            {
-                int[] inp = ((IntArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (double)inp[j];
-                }
+        {
+            int[] inp = ((IntArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.LONG:
-            {
-                long[] inp = ((LongArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (double)inp[j];
-                }
+        {
+            long[] inp = ((LongArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         case Traits.FLOAT:
-            {
-                float[] inp = ((FloatArray)src).flatten(false);
-                for (int j = 0; j < number; ++j) {
-                    out[j] = (double)inp[j];
-                }
+        {
+            float[] inp = ((FloatArray)src).flatten(false);
+            for (int j = 0; j < number; ++j) {
+                out[j] = inp[j];
             }
-            break;
+        }
+        break;
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
@@ -1084,7 +1084,7 @@ public class ArrayFactory {
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte1D wrap(byte[] arr, int dim1) {
         return Byte1D.wrap(arr, dim1);
     }
@@ -1102,7 +1102,7 @@ public class ArrayFactory {
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte2D wrap(byte[] arr, int dim1, int dim2) {
         return Byte2D.wrap(arr, dim1, dim2);
     }
@@ -1121,7 +1121,7 @@ public class ArrayFactory {
      * @param dim2 - The 2nd dimension of the 3D array.
      * @param dim3 - The 3rd dimension of the 3D array.
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte3D wrap(byte[] arr, int dim1, int dim2, int dim3) {
         return Byte3D.wrap(arr, dim1, dim2, dim3);
     }
@@ -1141,7 +1141,7 @@ public class ArrayFactory {
      * @param dim3 - The 3rd dimension of the 4D array.
      * @param dim4 - The 4th dimension of the 4D array.
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte4D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4) {
         return Byte4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
@@ -1162,7 +1162,7 @@ public class ArrayFactory {
      * @param dim4 - The 4th dimension of the 5D array.
      * @param dim5 - The 5th dimension of the 5D array.
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte5D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return Byte5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
@@ -1184,7 +1184,7 @@ public class ArrayFactory {
      * @param dim5 - The 5th dimension of the 6D array.
      * @param dim6 - The 6th dimension of the 6D array.
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte6D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return Byte6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
@@ -1207,7 +1207,7 @@ public class ArrayFactory {
      * @param dim6 - The 6th dimension of the 7D array.
      * @param dim7 - The 7th dimension of the 7D array.
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte7D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return Byte7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
@@ -1231,7 +1231,7 @@ public class ArrayFactory {
      * @param dim7 - The 7th dimension of the 8D array.
      * @param dim8 - The 8th dimension of the 8D array.
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte8D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return Byte8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
@@ -1256,7 +1256,7 @@ public class ArrayFactory {
      * @param dim8 - The 8th dimension of the 9D array.
      * @param dim9 - The 9th dimension of the 9D array.
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte9D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return Byte9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
@@ -1346,7 +1346,7 @@ public class ArrayFactory {
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short1D wrap(short[] arr, int dim1) {
         return Short1D.wrap(arr, dim1);
     }
@@ -1364,7 +1364,7 @@ public class ArrayFactory {
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short2D wrap(short[] arr, int dim1, int dim2) {
         return Short2D.wrap(arr, dim1, dim2);
     }
@@ -1383,7 +1383,7 @@ public class ArrayFactory {
      * @param dim2 - The 2nd dimension of the 3D array.
      * @param dim3 - The 3rd dimension of the 3D array.
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short3D wrap(short[] arr, int dim1, int dim2, int dim3) {
         return Short3D.wrap(arr, dim1, dim2, dim3);
     }
@@ -1403,7 +1403,7 @@ public class ArrayFactory {
      * @param dim3 - The 3rd dimension of the 4D array.
      * @param dim4 - The 4th dimension of the 4D array.
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short4D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4) {
         return Short4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
@@ -1424,7 +1424,7 @@ public class ArrayFactory {
      * @param dim4 - The 4th dimension of the 5D array.
      * @param dim5 - The 5th dimension of the 5D array.
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short5D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return Short5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
@@ -1446,7 +1446,7 @@ public class ArrayFactory {
      * @param dim5 - The 5th dimension of the 6D array.
      * @param dim6 - The 6th dimension of the 6D array.
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short6D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return Short6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
@@ -1469,7 +1469,7 @@ public class ArrayFactory {
      * @param dim6 - The 6th dimension of the 7D array.
      * @param dim7 - The 7th dimension of the 7D array.
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short7D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return Short7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
@@ -1493,7 +1493,7 @@ public class ArrayFactory {
      * @param dim7 - The 7th dimension of the 8D array.
      * @param dim8 - The 8th dimension of the 8D array.
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short8D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return Short8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
@@ -1518,7 +1518,7 @@ public class ArrayFactory {
      * @param dim8 - The 8th dimension of the 9D array.
      * @param dim9 - The 9th dimension of the 9D array.
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short9D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return Short9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
@@ -1608,7 +1608,7 @@ public class ArrayFactory {
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int1D wrap(int[] arr, int dim1) {
         return Int1D.wrap(arr, dim1);
     }
@@ -1626,7 +1626,7 @@ public class ArrayFactory {
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int2D wrap(int[] arr, int dim1, int dim2) {
         return Int2D.wrap(arr, dim1, dim2);
     }
@@ -1645,7 +1645,7 @@ public class ArrayFactory {
      * @param dim2 - The 2nd dimension of the 3D array.
      * @param dim3 - The 3rd dimension of the 3D array.
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int3D wrap(int[] arr, int dim1, int dim2, int dim3) {
         return Int3D.wrap(arr, dim1, dim2, dim3);
     }
@@ -1665,7 +1665,7 @@ public class ArrayFactory {
      * @param dim3 - The 3rd dimension of the 4D array.
      * @param dim4 - The 4th dimension of the 4D array.
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int4D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4) {
         return Int4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
@@ -1686,7 +1686,7 @@ public class ArrayFactory {
      * @param dim4 - The 4th dimension of the 5D array.
      * @param dim5 - The 5th dimension of the 5D array.
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int5D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return Int5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
@@ -1708,7 +1708,7 @@ public class ArrayFactory {
      * @param dim5 - The 5th dimension of the 6D array.
      * @param dim6 - The 6th dimension of the 6D array.
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int6D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return Int6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
@@ -1731,7 +1731,7 @@ public class ArrayFactory {
      * @param dim6 - The 6th dimension of the 7D array.
      * @param dim7 - The 7th dimension of the 7D array.
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int7D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return Int7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
@@ -1755,7 +1755,7 @@ public class ArrayFactory {
      * @param dim7 - The 7th dimension of the 8D array.
      * @param dim8 - The 8th dimension of the 8D array.
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int8D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return Int8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
@@ -1780,7 +1780,7 @@ public class ArrayFactory {
      * @param dim8 - The 8th dimension of the 9D array.
      * @param dim9 - The 9th dimension of the 9D array.
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int9D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return Int9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
@@ -1870,7 +1870,7 @@ public class ArrayFactory {
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long1D wrap(long[] arr, int dim1) {
         return Long1D.wrap(arr, dim1);
     }
@@ -1888,7 +1888,7 @@ public class ArrayFactory {
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long2D wrap(long[] arr, int dim1, int dim2) {
         return Long2D.wrap(arr, dim1, dim2);
     }
@@ -1907,7 +1907,7 @@ public class ArrayFactory {
      * @param dim2 - The 2nd dimension of the 3D array.
      * @param dim3 - The 3rd dimension of the 3D array.
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long3D wrap(long[] arr, int dim1, int dim2, int dim3) {
         return Long3D.wrap(arr, dim1, dim2, dim3);
     }
@@ -1927,7 +1927,7 @@ public class ArrayFactory {
      * @param dim3 - The 3rd dimension of the 4D array.
      * @param dim4 - The 4th dimension of the 4D array.
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long4D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4) {
         return Long4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
@@ -1948,7 +1948,7 @@ public class ArrayFactory {
      * @param dim4 - The 4th dimension of the 5D array.
      * @param dim5 - The 5th dimension of the 5D array.
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long5D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return Long5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
@@ -1970,7 +1970,7 @@ public class ArrayFactory {
      * @param dim5 - The 5th dimension of the 6D array.
      * @param dim6 - The 6th dimension of the 6D array.
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long6D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return Long6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
@@ -1993,7 +1993,7 @@ public class ArrayFactory {
      * @param dim6 - The 6th dimension of the 7D array.
      * @param dim7 - The 7th dimension of the 7D array.
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long7D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return Long7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
@@ -2017,7 +2017,7 @@ public class ArrayFactory {
      * @param dim7 - The 7th dimension of the 8D array.
      * @param dim8 - The 8th dimension of the 8D array.
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long8D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return Long8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
@@ -2042,7 +2042,7 @@ public class ArrayFactory {
      * @param dim8 - The 8th dimension of the 9D array.
      * @param dim9 - The 9th dimension of the 9D array.
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long9D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return Long9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
@@ -2132,7 +2132,7 @@ public class ArrayFactory {
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float1D wrap(float[] arr, int dim1) {
         return Float1D.wrap(arr, dim1);
     }
@@ -2150,7 +2150,7 @@ public class ArrayFactory {
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float2D wrap(float[] arr, int dim1, int dim2) {
         return Float2D.wrap(arr, dim1, dim2);
     }
@@ -2169,7 +2169,7 @@ public class ArrayFactory {
      * @param dim2 - The 2nd dimension of the 3D array.
      * @param dim3 - The 3rd dimension of the 3D array.
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float3D wrap(float[] arr, int dim1, int dim2, int dim3) {
         return Float3D.wrap(arr, dim1, dim2, dim3);
     }
@@ -2189,7 +2189,7 @@ public class ArrayFactory {
      * @param dim3 - The 3rd dimension of the 4D array.
      * @param dim4 - The 4th dimension of the 4D array.
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float4D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4) {
         return Float4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
@@ -2210,7 +2210,7 @@ public class ArrayFactory {
      * @param dim4 - The 4th dimension of the 5D array.
      * @param dim5 - The 5th dimension of the 5D array.
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float5D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return Float5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
@@ -2232,7 +2232,7 @@ public class ArrayFactory {
      * @param dim5 - The 5th dimension of the 6D array.
      * @param dim6 - The 6th dimension of the 6D array.
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float6D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return Float6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
@@ -2255,7 +2255,7 @@ public class ArrayFactory {
      * @param dim6 - The 6th dimension of the 7D array.
      * @param dim7 - The 7th dimension of the 7D array.
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float7D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return Float7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
@@ -2279,7 +2279,7 @@ public class ArrayFactory {
      * @param dim7 - The 7th dimension of the 8D array.
      * @param dim8 - The 8th dimension of the 8D array.
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float8D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return Float8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
@@ -2304,7 +2304,7 @@ public class ArrayFactory {
      * @param dim8 - The 8th dimension of the 9D array.
      * @param dim9 - The 9th dimension of the 9D array.
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float9D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return Float9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
@@ -2394,7 +2394,7 @@ public class ArrayFactory {
      * @param arr  - The source array.
      * @param dim1 - The 1st dimension of the 1D array.
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double1D wrap(double[] arr, int dim1) {
         return Double1D.wrap(arr, dim1);
     }
@@ -2412,7 +2412,7 @@ public class ArrayFactory {
      * @param dim1 - The 1st dimension of the 2D array.
      * @param dim2 - The 2nd dimension of the 2D array.
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double2D wrap(double[] arr, int dim1, int dim2) {
         return Double2D.wrap(arr, dim1, dim2);
     }
@@ -2431,7 +2431,7 @@ public class ArrayFactory {
      * @param dim2 - The 2nd dimension of the 3D array.
      * @param dim3 - The 3rd dimension of the 3D array.
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double3D wrap(double[] arr, int dim1, int dim2, int dim3) {
         return Double3D.wrap(arr, dim1, dim2, dim3);
     }
@@ -2451,7 +2451,7 @@ public class ArrayFactory {
      * @param dim3 - The 3rd dimension of the 4D array.
      * @param dim4 - The 4th dimension of the 4D array.
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double4D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4) {
         return Double4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
@@ -2472,7 +2472,7 @@ public class ArrayFactory {
      * @param dim4 - The 4th dimension of the 5D array.
      * @param dim5 - The 5th dimension of the 5D array.
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double5D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return Double5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
@@ -2494,7 +2494,7 @@ public class ArrayFactory {
      * @param dim5 - The 5th dimension of the 6D array.
      * @param dim6 - The 6th dimension of the 6D array.
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double6D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return Double6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
@@ -2517,7 +2517,7 @@ public class ArrayFactory {
      * @param dim6 - The 6th dimension of the 7D array.
      * @param dim7 - The 7th dimension of the 7D array.
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double7D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return Double7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
@@ -2541,7 +2541,7 @@ public class ArrayFactory {
      * @param dim7 - The 7th dimension of the 8D array.
      * @param dim8 - The 8th dimension of the 8D array.
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double8D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return Double8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
@@ -2566,7 +2566,7 @@ public class ArrayFactory {
      * @param dim8 - The 8th dimension of the 9D array.
      * @param dim9 - The 9th dimension of the 9D array.
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double9D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return Double9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
@@ -2641,14 +2641,7 @@ public class ArrayFactory {
      * @return A flat shaped array whose elements are shared with the input vector.
      */
     public static ShapedArray wrap(ShapedVector vec) {
-        switch (vec.getType()) {
-        case Traits.FLOAT:
-            return wrap(((FloatShapedVector)vec).getData(), vec.getShape());
-        case Traits.DOUBLE:
-            return wrap(((DoubleShapedVector)vec).getData(), vec.getShape());
-        default:
-            throw new IllegalArgumentException("Unsupported shaped vector type");
-        }
+        return vec.asShapedArray();
     }
 
     /**
@@ -2659,7 +2652,7 @@ public class ArrayFactory {
      * @return A flat shaped array whose elements are shared with the input vector.
      */
     public static FloatArray wrap(FloatShapedVector vec) {
-        return wrap(vec.getData(), vec.getShape());
+        return vec.asShapedArray();
     }
 
     /**
@@ -2670,6 +2663,6 @@ public class ArrayFactory {
      * @return A flat shaped array whose elements are shared with the input vector.
      */
     public static DoubleArray wrap(DoubleShapedVector vec) {
-        return wrap(vec.getData(), vec.getShape());
+        return vec.asShapedArray();
     }
 }
