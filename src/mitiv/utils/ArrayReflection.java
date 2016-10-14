@@ -151,10 +151,34 @@ public class ArrayReflection {
 
     /**
      * Get all the components of an object as a flat array.
-     * @param obj - The source object.
-     * @return A flat array which may be the object itself if it is already a flat array. FIXME:
+     *
+     * @param obj
+     *            - The source object.
+     * @return A flat array which is the object itself if it is already a
+     *         flat array.
      */
     public static Object flatten(Object obj) {
+        return flatten(obj, false);
+    }
+
+    /**
+     * Get all the components of an object as a flat array.
+     *
+     * @param obj
+     *            - The source object.
+     * @param forceCopy
+     *            - If true, return a copy of the argument even if it is already
+     *            a mono-dimensional array.
+     * @return A flat array which is the object itself if it is already a
+     *         flat array. and {@code forceCopy} is true.
+     */
+    public static Object flatten(Object obj, boolean forceCopy) {
+        if (! forceCopy) {
+            Class<?> c = obj.getClass();
+            if (c.isArray() && ! c.getComponentType().isArray()) {
+                return obj;
+            }
+        }
         Object arr = null;
         long count = countElements(obj);
         int length = (int)count;
@@ -257,8 +281,120 @@ public class ArrayReflection {
     }
 
     /**
-     * Check an array is rectangular (all components recursively have
-     * the same dimensions, throws an exception otherwise.
+     * Make a single element array with a {@code boolean} value.
+     *
+     * @param value
+     *            - The value of the element of the returned array.
+     * @param forceCopy
+     *            - Ignored, a new array is always returned for
+     *              this type of argument.
+     * @return A single element array of type {@code boolean[]}.
+     */
+    public static Object flatten(boolean value, boolean forceCopy) {
+        return new boolean[]{value};
+    }
+
+    /**
+     * Make a single element array with a {@code char} value.
+     *
+     * @param value
+     *            - The value of the element of the returned array.
+     * @param forceCopy
+     *            - Ignored, a new array is always returned for
+     *              this type of argument.
+     * @return A single element array of type {@code char[]}.
+     */
+    public static Object flatten(char value, boolean forceCopy) {
+        return new char[]{value};
+    }
+
+    /**
+     * Make a single element array with a {@code byte} value.
+     *
+     * @param value
+     *            - The value of the element of the returned array.
+     * @param forceCopy
+     *            - Ignored, a new array is always returned for
+     *              this type of argument.
+     * @return A single element array of type {@code byte[]}.
+     */
+    public static Object flatten(byte value, boolean forceCopy) {
+        return new byte[]{value};
+    }
+
+    /**
+     * Make a single element array with a {@code short} value.
+     *
+     * @param value
+     *            - The value of the element of the returned array.
+     * @param forceCopy
+     *            - Ignored, a new array is always returned for
+     *              this type of argument.
+     * @return A single element array of type {@code short[]}.
+     */
+    public static Object flatten(short value, boolean forceCopy) {
+        return new short[]{value};
+    }
+
+    /**
+     * Make a single element array with an {@code int} value.
+     *
+     * @param value
+     *            - The value of the element of the returned array.
+     * @param forceCopy
+     *            - Ignored, a new array is always returned for
+     *              this type of argument.
+     * @return A single element array of type {@code int[]}.
+     */
+    public static Object flatten(int value, boolean forceCopy) {
+        return new int[]{value};
+    }
+
+    /**
+     * Make a single element array with a {@code long} value.
+     *
+     * @param value
+     *            - The value of the element of the returned array.
+     * @param forceCopy
+     *            - Ignored, a new array is always returned for
+     *              this type of argument.
+     * @return A single element array of type {@code long[]}.
+     */
+    public static Object flatten(long value, boolean forceCopy) {
+        return new long[]{value};
+    }
+
+    /**
+     * Make a single element array with a {@code float} value.
+     *
+     * @param value
+     *            - The value of the element of the returned array.
+     * @param forceCopy
+     *            - Ignored, a new array is always returned for
+     *              this type of argument.
+     * @return A single element array of type {@code float[]}.
+     */
+    public static Object flatten(float value, boolean forceCopy) {
+        return new float[]{value};
+    }
+
+    /**
+     * Make a single element array with a {@code double} value.
+     *
+     * @param value
+     *            - The value of the element of the returned array.
+     * @param forceCopy
+     *            - Ignored, a new array is always returned for
+     *              this type of argument.
+     * @return A single element array of type {@code double[]}.
+     */
+    public static Object flatten(double value, boolean forceCopy) {
+        return new double[]{value};
+    }
+
+    /**
+     * Check whether an array is rectangular (all components recursively have
+     * the same dimensions), throws an exception otherwise.
      */
     static private void checkLengths(Object arr, int[] dims, int k) {
         if (k >= 1) {
@@ -283,7 +419,7 @@ public class ArrayReflection {
      * Attempt to make an array descriptor from any object.
      *
      * <p>
-     * This methods retrieves all information of the argument type and
+     * This method retrieves all information of the argument type and
      * dimensions and make sure it is suitable for being interpreted as a shaped
      * array or vector. The argument must be a scalar or an array (with any
      * number of dimensions) of a numerical primitive type. If it is a
@@ -352,6 +488,7 @@ public class ArrayReflection {
     //    return vec;
     //}
 
+
     public ShapedArray makeShapedArray(ShapedArray arr) {
         return arr;
     }
@@ -360,9 +497,28 @@ public class ArrayReflection {
         return vec.asShapedArray();
     }
 
+    /**
+     * Make an object into a shaped array.
+     * <p>
+     * This method yields a shaped array whose elements are the same as the
+     * argument. The argument must be a scalar or an array (with any number of
+     * dimensions) of a numerical primitive type. If it is a multi-dimensional
+     * array it must be rectangular.
+     * </p>
+     * @param obj
+     *            - The object.
+     * @return A shaped array which may share its contents with the argument.
+     * @see {@link #flatten(Object)} and {@link #makeArrayDescriptor(Object)}.
+     * @throws IllegalTypeException
+     *             The type of the components of the argument is not a numerical
+     *             primitive type.
+     * @throws IllegalArgumentException
+     *             The argument is not a rectangular array or a scalar of
+     *             primitive type.
+     */
     public ShapedArray makeShapedArray(Object obj) {
         ArrayDescriptor descr = makeArrayDescriptor(obj);
-        Object data = flatten(obj); // FIXME: it may not be needed to make a copy
+        Object data = flatten(obj);
         switch (descr.getType()) {
         case Traits.BYTE:
             return ArrayFactory.wrap((byte[])data, descr.getShape());
@@ -409,7 +565,7 @@ public class ArrayReflection {
                 }
             }
         }
-        //arr[n3-1][n2-1] = new int[n1+1]; // make it non-rectangular
+        //arr[n3-1][n2-1] = new int[n1+1]; // make it non-rectangular to check whether it fails later
         String name = arr.getClass().getName();
 
         //System.out.println(Void.TYPE);
@@ -454,6 +610,15 @@ public class ArrayReflection {
         b = (long[])flatten(value);
         System.out.format("# of components: %d\n", b.length);
         System.out.format("b[0]: %d\n", b[0]);
+
+        short[] c = new short[]{1,2,3,4};
+        short[] d = (short[])flatten(c);
+        short[] e = (short[])flatten(c, true);
+        d[2] = 100;
+        e[2] = 200;
+        System.out.format("c[...] = {%d,%d,%d,%d}\n", c[0], c[1], c[2], c[3]);
+        System.out.format("d[...] = {%d,%d,%d,%d}\n", d[0], d[1], d[2], d[3]);
+        System.out.format("e[...] = {%d,%d,%d,%d}\n", e[0], e[1], e[2], e[3]);
 
     }
 
