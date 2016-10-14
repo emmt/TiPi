@@ -27,7 +27,7 @@ package mitiv.base.indexing;
 
 /**
  * Manage different boundaries conditions.
- * 
+ *
  * @author Éric Thiébaut.
  */
 public enum BoundaryConditions {
@@ -131,7 +131,7 @@ public enum BoundaryConditions {
      *     buildIndex(7, -2, PERIODIC) ---> {5, 6, 0, 1, 2, 3, 4}
      *     buildIndex(7, -2, MIRROR) -----> {2, 1, 0, 1, 2, 3, 4}
      * </pre>
-     * 
+     *
      * @param length    - The length of the dimension.
      * @param offset    - The offset along the dimension.
      * @param condition - The boundary conditions ({@link #PERIODIC}, or {@link #MIRROR},
@@ -218,15 +218,3 @@ public enum BoundaryConditions {
         System.out.println("buildIndex(7, -2, MIRROR) -----> " + stringify(buildIndex(7, -2, MIRROR)));
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
