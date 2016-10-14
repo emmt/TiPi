@@ -29,25 +29,25 @@ import mitiv.exception.IllegalRangeException;
 
 /**
  * Manage ranges along array dimensions.
- * 
+ *
  * <p>
  * Symbolically, ranges are specified as [<i>start</i>:<i>stop</i>:<i>step</i>]
- * or just as [<i>start</i>:<i>stop</i>] (the step is optional).
- * As in Java, indexes of a range start at {@code 0} (also
- * {@link Range#FIRST}) but may be negative.
- * Starting/ending indexes of a range are interpreted as offsets relative
- * to the length of the dimension of interest if they are strictly
+ * or just as [<i>start</i>:<i>stop</i>] (the step is optional). As in Java,
+ * indexes of a range start at {@code 0} (also {@link Range#FIRST}) but may be
+ * negative. Starting/ending indexes of a range are interpreted as offsets
+ * relative to the length of the dimension of interest if they are strictly
  * negative.  That is {@code -1} (also {@link Range#LAST}) is the last element
- * along a dimension, {@code -2} is the penultimate element, etc.  This
- * rule is however only applied once: assuming <i>n</i> is the length of the
- * dimension of interest and <i>j</i> is the first or last index,
- * then <i>j</i> (if <i>j</i>&nbsp;&ge;&nbsp;{@code 0}) or
- * <i>j</i>&nbsp;+&nbsp;<i>n</i> (if <i>j</i>&nbsp;&lt;&nbsp;{@code 0})
- * must be greater or equal 0 and strictly less than <i>n</i>.
- * </p><p>
- * The convention is that the element corresponding to the first index of
- * a range is always considered (unless the range is empty as explianed below)
- * while the last one may not be reached.  In pseudo-code, the rules are:
+ * along a dimension, {@code -2} is the penultimate element, {@code -3} is the
+ * antepenultimate element, <i>etc.</i>  This rule is however only applied once:
+ * assuming <i>n</i> is the length of the dimension of interest and <i>j</i> is
+ * the first or last index, then <i>j</i> (if <i>j</i>&nbsp;&ge;&nbsp;{@code 0})
+ * or <i>j</i>&nbsp;+&nbsp;<i>n</i> (if <i>j</i>&nbsp;&lt;&nbsp;{@code 0}) must
+ * be greater or equal 0 and strictly less than <i>n</i>.
+ * </p>
+ * <p>
+ * The convention is that the element corresponding to the first index of a
+ * range is always considered (unless the range is empty as explained below)
+ * while the last one may not be reached. In pseudo-code, the rules are:
  * <pre>
  *     if (step > 0) {
  *         for (int index = first; index <= last; index += step) {
@@ -60,12 +60,14 @@ import mitiv.exception.IllegalRangeException;
  *     } else {
  *         // step = 0 is illegal
  *         throw new IllegalRangeException();
- *     }</pre>
- * Note that a range is <i>empty</i> if {@code first}&nbsp;&gt;&nbsp;{@code last}
- * and {@code step}&nbsp;&gt;&nbsp;{@code 0} or if
+ *     }
+ * </pre>
+ * Note that a range is <i>empty</i> if
+ * {@code first}&nbsp;&gt;&nbsp;{@code last} and
+ * {@code step}&nbsp;&gt;&nbsp;{@code 0} or if
  * {@code first}&nbsp;&lt;&nbsp;{@code last} and
- * {@code step}&nbsp;&lt;&nbsp;{@code 0} (after applying the rules for
- * negative indices).
+ * {@code step}&nbsp;&lt;&nbsp;{@code 0} (after applying the rules for negative
+ * indices).
  * </p>
  *
  * @author Éric Thiébaut.
@@ -127,7 +129,7 @@ public class Range {
 
     /**
      * Create a range.
-     * 
+     *
      * @param first - Starting index of the range.
      * @param last  - Ending index of the range.
      */
@@ -215,7 +217,7 @@ public class Range {
 
     /**
      * Check whether a range takes all elements in order.
-     * 
+     *
      * @param rng    - The range (can be {@code null} to mean <i>all</i>).
      * @param length - The length of the dimension of interest.
      * @return A boolean result.
@@ -288,15 +290,3 @@ public class Range {
         return idx;
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
