@@ -30,16 +30,63 @@ import mitiv.exception.IllegalRangeException;
 
 /**
  * Compiled ranges.
- * 
+ *
+ * <p>
+ * A CompiledRange instance is an immutable object which stores all the needed
+ * information to walk through the indices specified by a {@link Range} object.
+ * It is necessary to distinguish a {@link Range} object and the corresponding
+ * {@link CompliedRange} object because the former may have relative end-points
+ * while the latter give absolute information and thus requires to known all
+ * details about the length of the considered dimension but also the offset of
+ * the first element along this dimension and the spacing of successive
+ * elements. Walking through the elements selected by a range is typically done
+ * by:
+ *
+ * <pre>
+ * Range rng = ...;
+ * CompiledRange crng = new CompiledRange(rng, length, offset, stride);
+ * for (int i = 0; i < crng.getNumber(); ++i) {
+ *     int j = crng.getOffset() + i*crng.getStride();
+ *     a[j] = ...;
+ * }
+ * </pre>
+ * </p>
+ *
  * @author Éric Thiébaut.
  */
 public class CompiledRange {
-    /* The members of a range are publicly accessible. */
+    /* The members of a range are publicly accessible but immutable. */
+
+    /** The index of the first element. */
     public final int offset;
+
+    /** The spacing of successive elements. */
     public final int stride;
+
+    /** The number of elements (cannot be zero). */
     public final int number;
+
+    /** Is the range unspecified (which means that all positions along the
+     *  corresponding dimension have to be considered)? */
     public final boolean nothing;
 
+    /**
+     * Compile a range for simple indexing.
+     * <p>
+     * This method compiles a range along a dimension where elements have no
+     * offset and are contiguous.
+     * </p>
+     *
+     * @param rng
+     *            - The range to compile.
+     * @param length
+     *            - The length of the dimension.
+     *
+     * @throws IllegalRangeException
+     *             The range is empty or badly specified.
+     * @throws IndexOutOfBoundsException
+     *             The end-points of the range are out of bounds.
+     */
     public CompiledRange(Range rng, int length) {
         if (rng == null) {
             this.offset = 0;
@@ -57,6 +104,27 @@ public class CompiledRange {
         }
     }
 
+    /**
+     * Compile a range for general indexing.
+     * <p>
+     * This method compiles a range along a dimension where elements have
+     * specific offset and spacing.
+     * </p>
+     *
+     * @param rng
+     *            - The range to compile.
+     * @param length
+     *            - The length of the dimension.
+     * @param offset
+     *            - The offset of the first element along the dimension.
+     * @param stride
+     *            - The spacing of elements along the dimension.
+     *
+     * @throws IllegalRangeException
+     *             The range is empty or badly specified.
+     * @throws IndexOutOfBoundsException
+     *             The end-points of the range are out of bounds.
+     */
     public CompiledRange(Range rng, int length, int offset, int stride) {
         if (rng == null) {
             this.offset = offset;
@@ -96,28 +164,28 @@ public class CompiledRange {
                 }
             }
         }
-        throw new IndexOutOfBoundsException("Range is outside bounds.");
+        throw new IndexOutOfBoundsException("Range is outside bounds");
     }
 
     private final static void emptyRange() {
-        throw new IllegalRangeException("Empty range.");
+        throw new IllegalRangeException("Empty range");
     }
 
     private final static void illegalStep() {
-        throw new IllegalRangeException("Illegal 0 step.");
+        throw new IllegalRangeException("Illegal 0 step");
     }
 
-    /** Get the first position of the compiled range. */
+    /** Get the index of the first element in the compiled range. */
     final public int getOffset() {
         return offset;
     }
 
-    /** Get the stepping of the compiled range. */
+    /** Get the spacing of successive elements in the compiled range. */
     final public int getStride() {
         return stride;
     }
 
-    /** Get the number of positions in a compiled range. */
+    /** Get the number of elements in a compiled range. */
     final public int getNumber() {
         return number;
     }
@@ -128,15 +196,3 @@ public class CompiledRange {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
