@@ -863,7 +863,7 @@ public class ArrayUtils {
             roi = ((Array9D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]);
             break;
         default:
-            throw new IllegalArgumentException("Unsupported rank.");
+            throw new IllegalArgumentException("Unsupported rank");
         }
         roi.assign(array);
         return result;
@@ -944,7 +944,7 @@ public class ArrayUtils {
         case 9:
             return ((Array9D)array).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]);
         default:
-            throw new IllegalArgumentException("Unsupported rank.");
+            throw new IllegalArgumentException("Unsupported rank");
         }
     }
 
@@ -952,7 +952,7 @@ public class ArrayUtils {
     private static Range[] getROI(Shape large, Shape small, int[] offset) {
         int rank = large.rank();
         if (small.rank() != rank) {
-            throw new NonConformableArrayException("Not same rank.");
+            throw new NonConformableArrayException("Not same rank");
         }
         Boolean nothing = true;
         Boolean outOfBounds = false;
@@ -970,7 +970,7 @@ public class ArrayUtils {
             }
         } else {
             if (offset.length != rank) {
-                throw new NonConformableArrayException("Bad number of offsets.");
+                throw new NonConformableArrayException("Bad number of offsets");
             }
             for (int k = 0; k < rank; ++k) {
                 int largeDim = large.dimension(k);
@@ -985,7 +985,7 @@ public class ArrayUtils {
             }
         }
         if (outOfBounds) {
-            throw new ArrayIndexOutOfBoundsException("Out of bounds region of interest.");
+            throw new ArrayIndexOutOfBoundsException("Out of bounds region of interest");
         }
         if (nothing) {
             return null;
@@ -1069,7 +1069,7 @@ public class ArrayUtils {
         Shape shape = arr.getShape();
         int rank = shape.rank();
         if (off.length != rank) {
-            throw new IllegalArgumentException("Range mismatch.");
+            throw new IllegalArgumentException("Range mismatch");
         }
         boolean nothing = true;
         int[][] sel = new int[rank][];
@@ -1113,21 +1113,8 @@ public class ArrayUtils {
         case 9:
             return ((Array9D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6], sel[7], sel[8]);
         default:
-            throw new IllegalArgumentException("Unsupported rank.");
+            throw new IllegalArgumentException("Unsupported rank");
         }
     }
 
-
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

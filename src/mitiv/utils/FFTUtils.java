@@ -27,7 +27,7 @@ package mitiv.utils;
 
 public class FFTUtils {
     /**
-     * This class is not instantiable.
+     * This class is not instantiable, it only provides static methods.
      */
     protected FFTUtils() {}
 
@@ -102,15 +102,3 @@ public class FFTUtils {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
