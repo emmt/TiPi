@@ -252,25 +252,20 @@ public class DataSummary {
      */
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append("DataSummary{min = ");
-        buf.append(this.vmin);
-        buf.append("; max = ");
-        buf.append(this.vmax);
-        buf.append("; sum = ");
-        buf.append(this.vsum);
-        buf.append("; count = ");
-        buf.append(this.count);
-        buf.append("; NaN = ");
-        buf.append(this.nans);
-        buf.append("; posInf = ");
-        buf.append(this.posinfs);
-        buf.append("; negInf = ");
-        buf.append(this.neginfs);
-        buf.append(";}");
-        return buf.toString();
+        return String.format("DataSummary{min = %g; max = %g; sum = %g; count = %d; NaN = %d; -Inf = %d; +Inf = %d;}",
+                this.vmin, this.vmax, this.vsum, this.count,
+                this.nans, this.neginfs, this.posinfs);
     }
 
+    /**
+     * Test and demonstrator for this class.
+     *
+     * <p>
+     * After warm-up and compilation, using the scanner is only 10% slower than
+     * directly accessing the elements of the array.
+     * </p>
+     * @param args - Unused.
+     */
     public static void main(String[] args) {
         // Switch to "US" locale to avoid problems with number formats.
         Locale.setDefault(Locale.US);
@@ -299,7 +294,7 @@ public class DataSummary {
         System.out.format("summary for C: %s\n", s.compute(b).toString());
         System.out.format("summary for D: %s\n", s.compute(b).toString());
         System.out.format("summary for E: %s\n", s.compute(b).toString());
-        for (int pass = 1; pass <= 5; ++pass) {
+        for (int pass = 1; pass <= 10; ++pass) {
             timer.start();
             DataSummary sf = new DataSummary(f);
             elapsed = timer.getElapsedTime()*1E6;
@@ -309,7 +304,7 @@ public class DataSummary {
             System.out.format("total time: %.3f µs (scanner, pass %d)\n", elapsed, pass);
         }
         double[] arr = F.flatten();
-        for (int pass = 1; pass <= 5; ++pass) {
+        for (int pass = 1; pass <= 10; ++pass) {
             int nans = 0, neginfs = 0, posinfs = 0, count = 0;
             double vmin = Double.NaN, vmax = Double.NaN, vsum = Double.NaN;
             timer.start();
