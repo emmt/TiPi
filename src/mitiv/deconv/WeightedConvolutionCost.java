@@ -49,25 +49,35 @@ import mitiv.utils.Timer;
  * <h3>Definition</h3>
  * <p>
  * The ``<i>weighted convolution</i>'' cost writes:
- * </p><p align="center">
- * f(<b><i>x</i></b>) = (<b>H</b>.<b><i>x</i></b> - <b><i>y</i></b>)<sup>t</sup>.<b>W</b>.(<b>H</b>.<b><i>x</i></b> - <b><i>y</i></b>),
- * </p><p>
+ * </p>
+ * <p align="center">
+ * f(<b><i>x</i></b>) = (<b>H</b>.<b><i>x</i></b> -
+ * <b><i>y</i></b>)<sup>t</sup>.<b>W</b>.(<b>H</b>.<b><i>x</i></b> -
+ * <b><i>y</i></b>),
+ * </p>
+ * <p>
  * with <b>H</b> a convolution operator and <b>W</b> a diagonal positive
- * semi-definite weighting operator.  The convolution operator writes:
- * </p><p align="center">
- * <b>H</b> = <b>R</b>.<b>F</b><sup>*</sup>.diag(<b>F</b>.<b><i>h</i></b>).<b>F</b>
- * </p><p>
+ * semi-definite weighting operator. The convolution operator writes:
+ * </p>
+ * <p align="center">
+ * <b>H</b> =
+ * <b>R</b>.<b>F</b><sup>*</sup>.diag(<b>F</b>.<b><i>h</i></b>).<b>F</b>
+ * </p>
+ * <p>
  * with <b>F</b> the FFT (Fast Fourier Transform) operator, <b><i>h</i></b> the
  * point spread function (PSF) and <b>R</b> a linear operator which selects a
- * sub-region of the output of the convolution.  The * superscript
- * denotes the adjoint of the operator (complex transpose in this specific case) and
- * diag(<i><b>v</i></b>) is a diagonal operator whose diagonal elements are those of
- * the vector <i><b>v</i></b>.
- * </p><p>
+ * sub-region of the output of the convolution. The * superscript denotes the
+ * adjoint of the operator (complex transpose in this specific case) and
+ * diag(<i><b>v</i></b>) is a diagonal operator whose diagonal elements are
+ * those of the vector <i><b>v</i></b>.
+ * </p>
+ * <p>
  * Currently only diagonal weighting operators are implemented, thus:
- * </p><p align="center">
+ * </p>
+ * <p align="center">
  * <b>W</b>&nbsp;=&nbsp;diag(<b><i>w</i></b>) .
- * </p><p>
+ * </p>
+ * <p>
  * If this restriction is inappropriate for your purpose, you may build your own
  * {@link QuadraticCost} function.
  * </p>
@@ -77,16 +87,18 @@ import mitiv.utils.Timer;
  * Assuming uncorrelated Gaussian noise and that the cyclic convolution (with
  * sufficient zero padding) is suitable to approximate the effects of the
  * instrument, the cost function f(<b><i>x</i></b>) can be used to implements
- * the likelihood of the data <b><i>y</i></b> given the parameters <b><i>y</i></b>
- * and with <b>W</b>&nbsp;=&nbsp;diag(<b><i>w</i></b>) the precision matrix
- * of the noise (also known as the statistical weights of the data).
+ * the likelihood of the data <b><i>y</i></b> given the parameters
+ * <b><i>y</i></b> and with <b>W</b>&nbsp;=&nbsp;diag(<b><i>w</i></b>) the
+ * precision matrix of the noise (also known as the statistical weights of the
+ * data).
  * </p>
  *
  * <h3>Synopsis</h3>
  * <p>
  * Because of the many different possibilities (1D, 2D or 3D arrays with float
- * or double elements), creating a new instance of the cost function involves
- * a factory. A typical usage of the code is:
+ * or double elements), creating a new instance of the cost function involves a
+ * factory. A typical usage of the code is:
+ *
  * <pre>
  * // Create operator:
  * WeightedConvolutionCost cost = WeightedConvolutionCost.build(objectSpace, dataSpace);
@@ -95,45 +107,42 @@ import mitiv.utils.Timer;
  * cost.setPSF(h);
  *
  * // Specify the weights and the data (y mandatory, w can be null):
- * cost.setWeightsAndData(w, y);</pre>
+ * cost.setWeightsAndData(w, y);
+ * </pre>
+ *
  * where the arguments are:
  * <ul>
  *
- *     <li>The vector space <b>objectSpace</b> of the variables
- *         <b><i>x</i></b> (the <i>object</i>).</li>
+ * <li>The vector space <b>objectSpace</b> of the variables <b><i>x</i></b> (the
+ * <i>object</i>).</li>
  *
- *     <li>The vector space <b>dataSpace</b> of the variables <b><i>y</i></b>
- *         (the <i>data</i>).  The data space may be smaller than the object
- *         space which involves zero padding (symbolically implemented by the
- *         operator <b>R</b>).  In our implementation, <b>R</b> is defined by
- *         the dimensions of the data space and the position of the first
- *         element to select in the result of the cyclic convolution <b>H</b>
- *         (thus we only consider <i>rectangular</i> output spaces).  By
- *         default, the data space (if smaller than the result of the
- *         convolution) is taken to be approximately the central part of the
- *         output of <b>H</b>.  It is possible to specify a different position
- *         by calling the build method with a list of offsets as additional
- *         argument.</li>
+ * <li>The vector space <b>dataSpace</b> of the variables <b><i>y</i></b> (the
+ * <i>data</i>). The data space may be smaller than the object space which
+ * involves zero padding (symbolically implemented by the operator <b>R</b>). In
+ * our implementation, <b>R</b> is defined by the dimensions of the data space
+ * and the position of the first element to select in the result of the cyclic
+ * convolution <b>H</b> (thus we only consider <i>rectangular</i> output
+ * spaces). By default, the data space (if smaller than the result of the
+ * convolution) is taken to be approximately the central part of the output of
+ * <b>H</b>. It is possible to specify a different position by calling the build
+ * method with a list of offsets as additional argument.</li>
  *
- *     <li>The PSF <b><i>h</i></b> is a shaped vector of the object space or a
- *         shaped array (in the former case, the PSF must be appropriately
- *         centered, in the sense of the FFT; in the latter case, the shaped
- *         array is zero-padded and rolled for you; if the center of the PSF
- *         is not at the geometric center of the PSF array, you may specify
- *         its position).</li>
-
- *     <li>The data <b><i>y</i></b> is a shaped vector of the data space or a
- *         shaped array with the same dimensions as the those of the data
- *         space.</li>
+ * <li>The PSF <b><i>h</i></b> is a shaped vector of the object space or a
+ * shaped array (in the former case, the PSF must be appropriately centered, in
+ * the sense of the FFT; in the latter case, the shaped array is zero-padded and
+ * rolled for you; if the center of the PSF is not at the geometric center of
+ * the PSF array, you may specify its position).</li>
  *
- *     <li>The weights <b><i>w</i></b> can be unspecified (with
- *         <b><i>w</i></b>&nbsp;=&nbsp;<tt>null</tt>) which is the same as
- *         having all weights equal to 1; otherwise <b><i>w</i></b> must be
- *         the same kind of object as <b><i>y</i></b> (shaped array or shaped
- *         vector with the same dimensions) and all weights must be
- *         nonnegative.  If weights are specified, the data are never used
- *         where the weights are equal to zero which is a consistent way to
- *         indicate missing data.</li>
+ * <li>The data <b><i>y</i></b> is a shaped vector of the data space or a shaped
+ * array with the same dimensions as the those of the data space.</li>
+ *
+ * <li>The weights <b><i>w</i></b> can be unspecified (with
+ * <b><i>w</i></b>&nbsp;=&nbsp;<tt>null</tt>) which is the same as having all
+ * weights equal to 1; otherwise <b><i>w</i></b> must be the same kind of object
+ * as <b><i>y</i></b> (shaped array or shaped vector with the same dimensions)
+ * and all weights must be nonnegative. If weights are specified, the data are
+ * never used where the weights are equal to zero which is a consistent way to
+ * indicate missing data.</li>
  *
  * </ul>
  * </p>
@@ -278,11 +287,11 @@ implements DifferentiableCostFunction
             ShapedVectorSpace dataSpace, int[] dataOffset) {
         int type = objectSpace.getType();
         if (dataSpace.getType() != type) {
-            throw new IllegalTypeException("Input and output spaces must have same element type.");
+            throw new IllegalTypeException("Input and output spaces must have same element type");
         }
         int rank = objectSpace.getRank();
         if (dataSpace.getShape().rank() != rank) {
-            throw new IllegalTypeException("Input and output spaces must have same rank.");
+            throw new IllegalTypeException("Input and output spaces must have same rank");
         }
         switch (type) {
         case Traits.FLOAT:
@@ -306,20 +315,20 @@ implements DifferentiableCostFunction
             }
             break;
         default:
-            throw new IllegalTypeException("Only float and double types are implemented.");
+            throw new IllegalTypeException("Only float and double types are implemented");
         }
-        throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented.");
+        throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented");
     }
 
     private final void checkObject(Vector x) {
         if (! x.belongsTo(objectSpace)) {
-            throw new IllegalArgumentException("Variables X does not belong to the object space.");
+            throw new IllegalArgumentException("Variables X does not belong to the object space");
         }
     }
 
     private final void checkGradient(Vector gx) {
         if (! gx.belongsTo(objectSpace)) {
-            throw new IllegalArgumentException("Gradient GX does not belong to the object space.");
+            throw new IllegalArgumentException("Gradient GX does not belong to the object space");
         }
     }
 
@@ -386,7 +395,7 @@ implements DifferentiableCostFunction
      * @throws IllegalArgumentException weight has an invalid value.
      */
     protected static void badWeights() {
-        throw new IllegalArgumentException("Weights must be finite and non-negative.");
+        throw new IllegalArgumentException("Weights must be finite and non-negative");
     }
 
     /**
@@ -432,10 +441,10 @@ implements DifferentiableCostFunction
      */
     protected static int outputOffset(int rank, Shape inputShape, Shape outputShape, int[] offset) {
         if (inputShape.rank() != rank) {
-            throw new IllegalArgumentException("Bad rank for input space.");
+            throw new IllegalArgumentException("Bad rank for input space");
         }
         if (outputShape.rank() != rank) {
-            throw new IllegalArgumentException("Bad rank for output space.");
+            throw new IllegalArgumentException("Bad rank for output space");
         }
         if (offset != null && offset.length != rank) {
             throw new IllegalArgumentException("Bad number of coordinates for the first position");
@@ -483,15 +492,3 @@ implements DifferentiableCostFunction
         return timerForFFT.getElapsedTime();
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
