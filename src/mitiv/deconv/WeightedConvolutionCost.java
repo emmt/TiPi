@@ -391,14 +391,6 @@ implements DifferentiableCostFunction
 
 
     /**
-     * Throw invalid weight exception.
-     * @throws IllegalArgumentException weight has an invalid value.
-     */
-    protected static void badWeights() {
-        throw new IllegalArgumentException("Weights must be finite and non-negative");
-    }
-
-    /**
      * Set the PSF of the operator.
      * @param psf - The PSF must belongs to the input space of the operator
      *              and must be centered in the sense of of the FFT.

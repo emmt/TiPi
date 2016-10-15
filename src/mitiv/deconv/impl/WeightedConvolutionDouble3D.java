@@ -140,7 +140,7 @@ public class WeightedConvolutionDouble3D
     @Override
     protected double cost(double alpha, Vector x) {
         /* Check whether instance has been fully initialized. */
-        checkData();
+        checkSetup();
 
         /* Compute the convolution. */
         cnvl.push(((DoubleShapedVector)x).getData(), false);
@@ -183,7 +183,7 @@ public class WeightedConvolutionDouble3D
     @Override
     protected double cost(double alpha, Vector x, Vector gx, boolean clr) {
         /* Check whether instance has been fully initialized. */
-        checkData();
+        checkSetup();
 
         /* Compute the convolution. */
         cnvl.push(((DoubleShapedVector)x).getData(), false);
@@ -282,14 +282,12 @@ public class WeightedConvolutionDouble3D
     }
 
     @Override
-    public void setPSF(ShapedArray psf, int[] off)
-    {
+    public void setPSF(ShapedArray psf, int[] off) {
         cnvl.setPSF(psf, off);
     }
 
     @Override
-    public void setPSF(ShapedVector psf)
-    {
+    public void setPSF(ShapedVector psf) {
         cnvl.setPSF(psf);
     }
 }
