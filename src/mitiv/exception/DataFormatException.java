@@ -2,7 +2,7 @@
  * This file is part of TiPi (a Toolkit for Inverse Problems and Imaging)
  * developed by the MitiV project.
  *
- * Copyright (c) 2014 the MiTiV project, http://mitiv.univ-lyon1.fr/
+ * Copyright (c) 2014-2016 the MiTiV project, http://mitiv.univ-lyon1.fr/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -27,10 +27,10 @@ package mitiv.exception;
 
 /**
  * Exception thrown when input data does not conform to assumed format.
- * 
+ *
  * @author Éric Thiébaut
  */
-public class DataFormatException extends Exception {
+public class DataFormatException extends RuntimeException {
     /*
      * Define a serial version number as this class implements Serializable
      * interface.
@@ -41,15 +41,3 @@ public class DataFormatException extends Exception {
         super(message);
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
