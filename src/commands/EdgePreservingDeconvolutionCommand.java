@@ -185,7 +185,7 @@ public class EdgePreservingDeconvolutionCommand {
 
             // Result and initial solution.
             if (job.initName != null) {
-                solver.setObject(loadData(job.initName, job.single));
+                solver.setInitialSolution(loadData(job.initName, job.single));
             }
 
             solver.setAbsoluteTolerance(job.gatol);

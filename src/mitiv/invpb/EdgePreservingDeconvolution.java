@@ -38,6 +38,7 @@ import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
+import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 import mitiv.optim.BLMVM;
 import mitiv.optim.BoundProjector;
@@ -103,11 +104,16 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
     /** The result.  If non-null at the start, it is assumed to be the starting solution. */
     private ShapedArray object = null;
 
-    public ShapedArray getObject() {
+    public ShapedArray getSolution() {
         return object;
     }
 
-    public void setObject(ShapedArray arr) {
+    @Override
+    public ShapedVector getBestSolution() {
+        return (ShapedVector)super.getBestSolution();
+    }
+
+    public void setInitialSolution(ShapedArray arr) {
         if (object != arr) {
             object = arr;
             updatePending = true;
