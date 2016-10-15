@@ -25,7 +25,7 @@
 
 //# // Get common definitions.
 //# include <common.javax>
-//
+//#
 //# // Do we automatically broadcast dimensions?
 //# def broadcast = false
 //#
@@ -33,11 +33,10 @@ package mitiv.base;
 
 
 /**
- * Shape object to store dimesnions list.
+ * Shape object to store list of dimensions.
  * <p>
- * A Shape object is unmodifiable and is used to store the dimensions of a
- * shaped object in an efficient way.  To preserve its properties, Shape
- * objects can only be built by factories (static methods).
+ * A Shape object is immutable and is used to store the dimensions of a
+ * shaped object in an efficient way.
  * </p>
  * @author Éric Thiébaut
  */
@@ -53,19 +52,20 @@ public class Shape {
 
     /** The shape of any scalar object. */
     //# if ${broadcast}
-    private final static Shape scalarShape = new Shape(new int[]{}, true) {
+    public final static Shape scalarShape = new Shape(new int[]{}, true) {
         @Override
         public int dim(int k) {
             return 1;
         }
     };
     //# else
-    private final static Shape scalarShape = new Shape(new int[]{}, true);
+    public final static Shape scalarShape = new Shape(new int[]{}, true);
     //# end
 
     /**
      * Get the shape of scalar objects.
      * @return The shape of a scalar object.
+     * @deprecated Use {@link #scalarShape} instead.
      */
     @Deprecated
     public static Shape make() {
@@ -78,6 +78,7 @@ public class Shape {
      *               an array of length equals to {@code 0} and yields the
      *               shape of a scalar object).
      * @return A new shape built from the given dimensions.
+     * @deprecated Use constructor {@link #Shape(int[])} instead.
      */
     @Deprecated
     public static Shape make(int[] dims) {
@@ -94,6 +95,7 @@ public class Shape {
      *               an array of length equals to {@code 0} and yields the
      *               shape of a scalar object).
      * @return A new shape built from the given dimensions.
+     * @deprecated Use constructor {@link #Shape(long[])} instead.
      */
     @Deprecated
     public static Shape make(long[] dims) {
@@ -114,14 +116,17 @@ public class Shape {
     //#         if ${k} == 1
     //#             def argList = int ${arg}
     //#             def dimList = ${arg}
+    //#             def intList = int
     //#         else
     //#             def argList = ${argList}, int ${arg}
     //#             def dimList = ${dimList}, ${arg}
+    //#             def intList = ${intList},int
     //#         end
     //#         def k_th = ${}{nth_${k}}
      * @param ${arg} - The ${k_th} dimension.
     //#     end
      * @return A new ${rank}-dimensional shape built from the given dimensions.
+     * @deprecated Use constructor {@link #Shape(${intList})} instead.
      */
     @Deprecated
     public static Shape make(${argList}) {
@@ -201,7 +206,7 @@ public class Shape {
     }
 
     /**
-     * Build a Shape object given a list of dimensions.
+     * Create a shape given the dimensions.
      * <p>
      * This constructor of the class is private to prevent any
      * uncontrolled construction with shared dimensions and to
@@ -244,7 +249,7 @@ public class Shape {
     }
 
     /**
-     * Build a Shape object given a list of dimensions.
+     * Create a Shape object given a list of dimensions.
      *
      * <p>
      * The input dimensions are copied into a private array and are
@@ -257,7 +262,7 @@ public class Shape {
     }
 
     /**
-     * Build a Shape object given a list of dimensions.
+     * Create a Shape object given a list of dimensions.
      *
      * <p>
      * The input dimensions are copied into a private array and are
@@ -288,7 +293,7 @@ public class Shape {
 
     //# for rank in 1:9
     /**
-     * Create a ${rank}-D shape
+     * Create a ${rank}-D Shape object.
     //#     def k = 0
     //#     while ${k} < ${rank}
     //#         eval k += 1
