@@ -8,7 +8,7 @@
 # *IMPORTANT*   this Makefile).
 #
 #CODGER =./tpp --autopkg --docfilter
-CODGER =./tpp
+CODGER =./tpp --warning
 
 # Directories:
 ROOT = ../mitiv/
@@ -110,7 +110,7 @@ $(ARRAY)ArrayFactory.java: ArrayFactory.javax
 	$(CODGER) -Dpackage=mitiv.array $< $@
 
 $(BASE)Shape.java: Shape.javax
-	$(CODGER) -Dpackage=mitiv.array $< $@
+	$(CODGER) --autopkg $< $@
 
 $(ARRAY)ArrayUtils.java: ArrayUtils.javax common.javax
 	$(CODGER) -Dpackage=mitiv.array $< $@
