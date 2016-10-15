@@ -69,7 +69,7 @@ public class IterativeDifferentiableSolver {
      * <pre>
      * solver = new IterativeDifferentiableSolver(cost, optimizer);
      * x = ...; // initial solution
-     * task = solver.start();
+     * OptimTask task = solver.start();
      * while (true) {
      *     if (task == OptimTask.NEW_X || task == OptimTask.FINAL_X) {
      *         // Display new solution.
@@ -87,6 +87,7 @@ public class IterativeDifferentiableSolver {
      *                 solver.getReason());
      *         break;
      *     }
+     *     task = solver.iterate();
      * }
      * </pre>
      * @param cost       - The cost function.
@@ -308,8 +309,7 @@ public class IterativeDifferentiableSolver {
      *
      * @see {@link #getStepping()} for a description of the stepping behavior.
      */
-    public void setStepping(boolean value)
-    {
+    public void setStepping(boolean value) {
         stepping = value;
     }
 
@@ -350,10 +350,26 @@ public class IterativeDifferentiableSolver {
         return timer.getElapsedTime();
     }
 
+    /**
+     * Get the maximum number of evaluations.
+     *
+     * <p>
+     * The {@link #iterate()} and {@link #start()} methods of the solver return
+     * a warning ({@link OptimTask#WARNING}) if the cost function is about to
+     * be called more than this parameter.  A negative value allows an infinite
+     * number of evaluations.
+     *
+     * @return The maximum number of evaluations.
+     * @see {@link #setMaximumEvaluations()}, {@link #getEvaluations()}.
+     */
     public int getMaximumEvaluations() {
         return maxeval;
     }
 
+    /**
+     * Set the maximum number of evaluations.
+     * @see {@link #getMaximumEvaluations()}, {@link #getEvaluations()}.
+     */
     public void setMaximumEvaluations(int value) {
         if (value < 0) {
             value = -1;
@@ -361,10 +377,25 @@ public class IterativeDifferentiableSolver {
         maxeval = value;
     }
 
+    /**
+     * Get the maximum number of iterations.
+     *
+     * <p>
+     * The {@link #iterate()} and {@link #start()} methods of the solver return
+     * a warning ({@link OptimTask#WARNING}) if the number of iteration exceeds
+     * this parameter.  A negative value allows an infinite number of iterations.
+     *
+     * @return The maximum number of iterations.
+     * @see {@link #setMaximumIterations()}, {@link #getIterations()}.
+     */
     public int getMaximumIterations() {
         return maxiter;
     }
 
+    /**
+     * Set the maximum number of iterations.
+     * @see {@link #getMaximumIterations()}, {@link #getIterations()}.
+     */
     public void setMaximumIterations(int value) {
         if (value < 0) {
             value = -1;
@@ -372,30 +403,67 @@ public class IterativeDifferentiableSolver {
         maxiter = value;
     }
 
+    /**
+     * Get the optimizer used to solve the problem.
+     *
+     * @return The current reverse communication optimizer (may be
+     * {@code null} if none has been chosen yet).
+     */
     public ReverseCommunicationOptimizer getOptimizer() {
         return optimizer;
     }
 
+    /**
+     * Set the optimizer used to solve the problem.
+     */
     public void setOptimizer(ReverseCommunicationOptimizer optimizer) {
         setComponents(this.cost, optimizer);
     }
 
+    /**
+     * Get the cost function of the problem.
+     *
+     * @return The current cost function (may be {@code null} if none
+     * has been chosen yet).
+     */
     public DifferentiableCostFunction getCostFunction() {
         return cost;
     }
 
+    /**
+     * Set the cost function of the problem.
+     * @param cost - The new differentiable cost function.
+     */
     public void setCostFunction(DifferentiableCostFunction cost) {
         setComponents(cost, this.optimizer);
     }
 
+    /**
+     * Get the vector space of the variables of the problem.
+     */
     public VectorSpace getSpace() {
         return space;
     }
 
+    /**
+     * Get whether the best solution is saved.
+     * @return A boolean value.
+     * @see {@link #getBestSolution()}, {@link #setSaveBest()}.
+     */
     public boolean getSaveBest() {
         return saveBest;
     }
 
+    /**
+     * Set whether the best solution is saved.
+     * <p>
+     * The last tried solution may not be the best one.  The solver may keep
+     * a track of the best (according to the value of the cost function) of the
+     * best solution so that it is possible to retrieve it at any time.  The
+     * drawback is that this require some memory.
+     * @param value - True, to save the best solution; false, to save memory.
+     * @see {@link #getBestSolution()}, {@link #getSaveBest()}.
+     */
     public void setSaveBest(boolean value) {
         saveBest = value;
     }
