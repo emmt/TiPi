@@ -116,6 +116,11 @@ public class ${className}
         cnvl = new Convolution${Type}${rank}D(objectSpace);
     }
 
+    //# // Define some macros for indexing in the different regions delimited
+    //# // by the crop operator ('all' if to cover all the dimension, 'beg' is
+    //# // before the cropped region, 'mid' is inside the cropped region and
+    //# // 'end' is after the cropped region).
+    //#
     //# suspend k
     //# def all = int i${k} = 0; i${k} < dim${k}; ++i${k}
     //# def beg = int i${k} = 0; i${k} < off${k}; ++i${k}
@@ -136,6 +141,8 @@ public class ${className}
     //# def i3_in_beg = ${beg}
     //# def i3_in_mid = ${mid}
     //# def i3_in_end = ${end}
+    //#
+    //# undef k all beg mid end
 
     @Override
     protected double cost(double alpha, Vector x) {

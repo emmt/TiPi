@@ -164,6 +164,37 @@ public class ${className} extends Convolution${Type} {
         timerForFFT.stop();
     }
 
+    //# // Define some macros for indexing in the different regions delimited
+    //# // by the crop operator ('all' if to cover all the dimension, 'beg' is
+    //# // before the cropped region, 'mid' is inside the cropped region and
+    //# // 'end' is after the cropped region).
+    //#
+    //# suspend k
+    //# def all = int i${k} = 0; i${k} < dim${k}; ++i${k}
+    //# def beg = int i${k} = 0; i${k} < off${k}; ++i${k}
+    //# def mid = int i${k} = off${k}; i${k} < end${k}; ++i${k}
+    //# def end = int i${k} = end${k}; i${k} < dim${k}; ++i${k}
+    //#
+    //# def k = 1
+    //# def i1_in_all = ${all}
+    //# def i1_in_beg = ${beg}
+    //# def i1_in_mid = ${mid}
+    //# def i1_in_end = ${end}
+    //#
+    //# def k = 2
+    //# def i2_in_all = ${all}
+    //# def i2_in_beg = ${beg}
+    //# def i2_in_mid = ${mid}
+    //# def i2_in_end = ${end}
+    //#
+    //# def k = 3
+    //# def i3_in_all = ${all}
+    //# def i3_in_beg = ${beg}
+    //# def i3_in_mid = ${mid}
+    //# def i3_in_end = ${end}
+    //#
+    //# undef k all beg mid end
+
     @Override
     public void push(${type} x[], boolean adjoint) {
         if (x == null || x.length != (adjoint ? outSize : inpSize)) {
@@ -176,96 +207,96 @@ public class ${className} extends Convolution${Type} {
                input, set the imaginary part to zero. */
             if (outSize == inpSize) {
                 /* Output and input have the same size. */
-                for (int j = 0, k = 0; k < inpSize; j += 2, ++k) {
-                    z[j] = scale*x[k];
-                    z[j+1] = zero;
+                for (int k = 0, j = 0; j < inpSize; ++j, k += 2) {
+                    z[k] = scale*x[j];
+                    z[k+1] = zero;
                 }
             } else {
                 /* Output size is smaller than input size. */
-                int j = 0; // index of real part in z array
-                int k = 0; // index in x array
+                int j = 0; // index in x array
+                int k = 0; // index of real part in z array
                 //# if ${rank} == 1
-                for (int i1 = 0; i1 < off1; ++i1, j += 2) {
-                    z[j] = zero;
-                    z[j+1] = zero;
+                for (${i1_in_beg}, k += 2) {
+                    z[k] = zero;
+                    z[k+1] = zero;
                 }
-                for (int i1 = off1; i1 < end1; ++i1, j += 2, ++k) {
-                    z[j] = x[k];
-                    z[j+1] = zero;
+                for (${i1_in_mid}, ++j, k += 2) {
+                    z[k] = scale*x[j];
+                    z[k+1] = zero;
                 }
-                for (int i1 = end1; i1 < dim1; ++i1, j += 2) {
-                    z[j] = zero;
-                    z[j+1] = zero;
+                for (${i1_in_end}, k += 2) {
+                    z[k] = zero;
+                    z[k+1] = zero;
                 }
                 //# elif ${rank} == 2
-                for (int i2 = 0; i2 < off2; ++i2) {
-                    for (int i1 = 0; i1 < dim1; ++i1, j += 2) {
-                        z[j] = zero;
-                        z[j+1] = zero;
+                for (${i2_in_beg}) {
+                    for (${i1_in_all}, k += 2) {
+                        z[k] = zero;
+                        z[k+1] = zero;
                     }
                 }
-                for (int i2 = off2; i2 < end2; ++i2) {
-                    for (int i1 = 0; i1 < off1; ++i1, j += 2) {
-                        z[j] = zero;
-                        z[j+1] = zero;
+                for (${i2_in_mid}) {
+                    for (${i1_in_beg}, k += 2) {
+                        z[k] = zero;
+                        z[k+1] = zero;
                     }
-                    for (int i1 = off1; i1 < end1; ++i1, j += 2, ++k) {
-                        z[j] = scale*x[k];
-                        z[j+1] = zero;
+                    for (${i1_in_mid}, ++j, k += 2) {
+                        z[k] = scale*x[j];
+                        z[k+1] = zero;
                     }
-                    for (int i1 = end1; i1 < dim1; ++i1, j += 2) {
-                        z[j] = zero;
-                        z[j+1] = zero;
+                    for (${i1_in_end}, k += 2) {
+                        z[k] = zero;
+                        z[k+1] = zero;
                     }
                 }
-                for (int i2 = end2; i2 < dim2; ++i2) {
-                    for (int i1 = 0; i1 < dim1; ++i1, j += 2) {
-                        z[j] = zero;
-                        z[j+1] = zero;
+                for (${i2_in_end}) {
+                    for (${i1_in_all}, k += 2) {
+                        z[k] = zero;
+                        z[k+1] = zero;
                     }
                 }
                 //# elif ${rank} == 3
-                for (int i3 = 0; i3 < off3; ++i3) {
-                    for (int i2 = 0; i2 < dim2; ++i2) {
-                        for (int i1 = 0; i1 < dim1; ++i1, j += 2) {
-                            z[j] = zero;
-                            z[j+1] = zero;
+                for (${i3_in_beg}) {
+                    for (${i2_in_all}) {
+                        for (${i1_in_all}, k += 2) {
+                            z[k] = zero;
+                            z[k+1] = zero;
                         }
                     }
                 }
-                for (int i3 = off3; i3 < end3; ++i3) {
-                    for (int i2 = 0; i2 < off2; ++i2) {
-                        for (int i1 = 0; i1 < dim1; ++i1, j += 2) {
-                            z[j] = zero;
-                            z[j+1] = zero;
+                for (${i3_in_mid}) {
+                    for (${i2_in_beg}) {
+                        for (${i1_in_all}, k += 2) {
+                            z[k] = zero;
+                            z[k+1] = zero;
                         }
                     }
-                    for (int i2 = off2; i2 < end2; ++i2) {
-                        for (int i1 = 0; i1 < off1; ++i1, j += 2) {
-                            z[j] = zero;
-                            z[j+1] = zero;
+                    for (${i2_in_mid}) {
+                        for (${i1_in_beg}, k += 2) {
+                            z[k] = zero;
+                            z[k+1] = zero;
                         }
-                        for (int i1 = off1; i1 < end1; ++i1, j += 2, ++k) {
-                            z[j] = scale*x[k];
-                            z[j+1] = zero;
+                        for (${i1_in_mid}, ++j, k += 2) {
+                            z[k] = scale*x[j];
+                            z[k+1] = zero;
                         }
-                        for (int i1 = end1; i1 < dim1; ++i1, j += 2) {
-                            z[j] = zero;
-                            z[j+1] = zero;
+                        for (${i1_in_end}, k += 2) {
+                            z[k] = zero;
+                            z[k+1] = zero;
                         }
                     }
-                    for (int i2 = end2; i2 < dim2; ++i2) {
-                        for (int i1 = 0; i1 < dim1; ++i1, j += 2) {
-                            z[j] = zero;
-                            z[j+1] = zero;
+                    for (${i2_in_end}) {
+                        for (${i1_in_all}, k += 2) {
+                            z[k] = zero;
+                            z[k+1] = zero;
                         }
                     }
                 }
-                for (int i3 = end3; i3 < dim3; ++i3) {
-                    for (int i2 = 0; i2 < dim2; ++i2) {
-                        for (int i1 = 0; i1 < dim1; ++i1, j += 2) {
-                            z[j] = zero;
-                            z[j+1] = zero;
+                for (${i3_in_end}) {
+                    for (${i2_in_all}) {
+                        for (${i1_in_all}, k += 2) {
+                            z[k] = zero;
+                            z[k+1] = zero;
                         }
                     }
                 }
@@ -275,9 +306,9 @@ public class ${className} extends Convolution${Type} {
             }
         } else {
             /* Apply S */
-            for (int j = 0, k = 0; k < inpSize; j += 2, ++k) {
-                z[j] = x[k];
-                z[j+1] = zero;
+            for (int j = 0, k = 0; j < inpSize; ++j, k += 2) {
+                z[k] = x[j];
+                z[k+1] = zero;
             }
         }
     }
@@ -290,36 +321,37 @@ public class ${className} extends Convolution${Type} {
         ${type} z[] = getWorkspace();
         if (adjoint) {
             /* Apply operator S' */
-            for (int j = 0, k = 0; k < inpSize; j += 2, ++k) {
-                x[k] = z[j];
+            for (int j = 0, k = 0; j < inpSize; ++j, k += 2) {
+                x[j] = z[k];
             }
         } else {
             /* Apply operator R */
             if (outSize == inpSize) {
                 /* Output and input have the same size. */
-                for (int j = 0, k = 0; k < inpSize; j += 2, ++k) {
-                    x[k] = scale*z[j];
+                for (int j = 0, k = 0; j < inpSize; k += 2, ++j) {
+                    x[j] = scale*z[k];
                 }
             } else {
                 /* Output size is smaller than input size. */
-                int k = 0; // index in x array
+                int j = 0; // index in x array
                 //# if ${rank} == 1
-                for (int i1 = off1; i1 < end1; ++i1) {
-                    x[k++] = scale*z[2*i1];
+                int k = off1*2;
+                for (${i1_in_mid}, ++j, k += 2) {
+                    x[j] = scale*z[k];
                 }
                 //# elif ${rank} == 2
-                for (int i2 = off2; i2 < end2; ++i2) {
-                    for (int i1 = off1, j = (i1 + dim1*i2)*2;
-                         i1 < end1; ++i1, j += 2) {
-                        x[k++] = scale*z[j];
+                for (${i2_in_mid}) {
+                    int k = (off1 + dim1*i2)*2;
+                    for (${i1_in_mid}, ++j, k += 2) {
+                        x[j] = scale*z[k];
                     }
                 }
                 //# elif ${rank} == 3
-                for (int i3 = off3; i3 < end3; ++i3) {
-                    for (int i2 = off2; i2 < end2; ++i2) {
-                        for (int i1 = off1, j = (i1 + dim1*(i2 + dim2*i3))*2;
-                             i1 < end1; ++i1, j += 2) {
-                            x[k++] = scale*z[j];
+                for (${i3_in_mid}) {
+                    for (${i2_in_mid}) {
+                        int k = (off1 + dim1*(i2 + dim3*i3))*2;
+                        for (${i1_in_mid}, ++j, k += 2) {
+                            x[j] = scale*z[k];
                         }
                     }
                 }
