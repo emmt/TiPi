@@ -30,6 +30,12 @@ import mitiv.linalg.LinearOperator;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 
+/**
+ * This class assembles operators and vectors to build the left-hand-side
+ * (LHS) matrix of a quadratic inverse problem.
+ *
+ * @author Éric
+ */
 public class LeftHandSideMatrix extends LinearOperator {
     private LinearOperator H;
     private LinearOperator W;
@@ -39,33 +45,49 @@ public class LeftHandSideMatrix extends LinearOperator {
     private Vector tmp2;
 
     /**
-     * Create a linear operator suitable to iteratively solve a linear inverse problem.
-     * 
+     * Create a linear operator suitable to iteratively solve a linear inverse
+     * problem.
+     * <p>
      * The general form of a linear inverse problem is:
-     * 
-     *     x = arg min (H.x - y)'.W.(H.x - y) + mu*x'.Q.x
-     * 
+     * </p><p margin-left="2em">
+     * <tt>
+     *     x = arg min { (H.x - y)<sup>*</sup>.W.(H.x - y) + µ x<sup>*</sup>.Q.x }
+     * </tt>
+     * </p><p>
      * which amounts to solve the linear system:
-     * 
-     *     A.x = b
-     *     
-     * The left hand side matrix of the linear inverse problem is:
-     * 
-     *     A = H'.W.H + mu*Q
-     *     
-     * and the right hand side vector of the linear inverse problem is:
-     * 
-     *     b = H'.W.y
-     *     
-     * As a consequence, the linear operator A is an endomorphism operating on the
-     * input space of H (Q should also be an endomorphism on the same space and W
-     * should be an endomorphism on the output space of H). 
-     * 
-     * @param H    A linear operator which implements the direct model of the data.
-     * @param W    A linear operator which implements multiplication by the
-     *             statistical weights (a.k.a. precision matrix).
-     * @param Q    A linear operator which implements the regularization.
-     * @param mu   The regularization relative weight (must be non-negative).
+     * </tt>
+     * </p><p margin-left="2em">
+     * A.x = b
+     * </tt>
+     * </p><p>
+     * The left hand side (LHS) matrix of the linear inverse problem is:
+     * </tt>
+     * </p><p margin-left="2em">
+     *     A = H<sup>*</sup>.W.H + µ Q
+     * </tt>
+     * </p><p>
+     * and the right hand side (RHS) vector of the linear inverse problem is:
+     * </tt>
+     * </p><p margin-left="2em">
+     *     b = H<sup>*</sup>.W.y
+     * </tt>
+     * </p><p>
+     * As a consequence, the linear operator <tt>A</tt> is an endomorphism
+     * operating on the input space of <tt>H</tt> (<tt>Q</tt> should also be
+     * an endomorphism on the same space and <tt>W</tt> should be an
+     * endomorphism on the output space of <tt>H</tt>).
+     * </p>
+     *
+     * @param H
+     *            A linear operator which implements the direct model of the
+     *            data.
+     * @param W
+     *            A linear operator which implements multiplication by the
+     *            statistical weights (a.k.a. precision matrix).
+     * @param Q
+     *            A linear operator which implements the regularization.
+     * @param mu
+     *            The regularization relative weight (must be non-negative).
      */
     public LeftHandSideMatrix(LinearOperator H, LinearOperator W, LinearOperator Q, double mu) {
         super(H.getInputSpace());
@@ -89,8 +111,17 @@ public class LeftHandSideMatrix extends LinearOperator {
 
 
     /**
-     * Apply the LHS operator A = Ht.W.H + mu*Q
+     * Apply the LHS operator.
+     *
+     * <p>
+     * This method applies the LHS operator, <tt>A = H<sup>*</sup>.W.H + µ Q</tt>, to the
+     * source vector {@code src} and stores the result in the destination
+     * vector {@code dst}.
+     * </p>
+     * @param src The source vector.
+     * @param dst The destination vector.
      */
+    @Override
     protected void _apply(Vector dst, Vector src, int job) {
         if (job != DIRECT) {
             throw new IllegalLinearOperationException();
@@ -98,7 +129,7 @@ public class LeftHandSideMatrix extends LinearOperator {
 
 
         /*
-         * First do: dst = Ht.W.H.src
+         * First do: dst = H'.W.H.src
          * using tmp1 as a scratch vector (from output space of H).
          */
         if (tmp1 == null) {
@@ -110,7 +141,7 @@ public class LeftHandSideMatrix extends LinearOperator {
 
         if (mu > 0.0) {
             /*
-             * Second, compute tmp2 = Q.src, then add mu*tmp2 to dst.
+             * Second, compute tmp2 = Q.src, then add µ*tmp2 to dst.
              */
             if (tmp2 == null) {
                 VectorSpace space = Q.getOutputSpace();
@@ -121,24 +152,25 @@ public class LeftHandSideMatrix extends LinearOperator {
                 }
             }
             Q.apply(tmp2, src);
-            outputSpace.combine(mu, tmp2, 1.0, dst);    
+            outputSpace.combine(mu, tmp2, 1.0, dst);
         }
     }
 
     /**
-     * @return double value mu
+     * Get regularization level.
+     * @return The value of µ, the regularization level.
      */
     public double getMu() {
         return this.mu;
     }
 
     /**
-     * @param mu Set the mu value
-     * 
+     * Set regularization level.
+     * @param mu  The value of µ, the regularization level.
      */
     public void setMu(double mu) {
         if (mu < 0.0) {
-            throw new IllegalArgumentException("Regularization weight MU must be non-negative.");            
+            throw new IllegalArgumentException("Regularization weight MU must be non-negative.");
         }
         this.mu = mu;
     }
@@ -158,15 +190,3 @@ public class LeftHandSideMatrix extends LinearOperator {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
