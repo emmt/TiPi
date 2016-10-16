@@ -127,7 +127,6 @@ public class LeftHandSideMatrix extends LinearOperator {
             throw new IllegalLinearOperationException();
         }
 
-
         /*
          * First do: dst = H'.W.H.src
          * using tmp1 as a scratch vector (from output space of H).
@@ -136,7 +135,7 @@ public class LeftHandSideMatrix extends LinearOperator {
             tmp1 = H.getOutputSpace().create();
         }
         H.apply(tmp1, src);
-        W.apply(tmp1, tmp1); // W can be done in place
+        W.apply(tmp1, tmp1); // assume W can be done in place
         H.apply(dst, tmp1, ADJOINT);
 
         if (mu > 0.0) {
@@ -152,7 +151,7 @@ public class LeftHandSideMatrix extends LinearOperator {
                 }
             }
             Q.apply(tmp2, src);
-            outputSpace.combine(mu, tmp2, 1.0, dst);
+            dst.add(mu, tmp2);
         }
     }
 

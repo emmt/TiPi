@@ -238,14 +238,6 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
     }
 
     @Override
-    protected void _combine(double alpha, final Vector x,
-            double beta, Vector y) {
-        ArrayOps.combine(number,
-                alpha, getData(x),
-                beta,  getData(y));
-    }
-
-    @Override
     protected void _combine(Vector dst, double alpha,
             final Vector x, double beta, final Vector y) {
         ArrayOps.combine(getData(dst),
