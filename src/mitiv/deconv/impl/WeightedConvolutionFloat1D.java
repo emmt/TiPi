@@ -131,7 +131,7 @@ public class WeightedConvolutionFloat1D
                 k += 2;
             }
         }
-        return alpha*sum;
+        return alpha*sum/2;
     }
 
     @Override
@@ -145,7 +145,7 @@ public class WeightedConvolutionFloat1D
 
         /* Integrate cost and gradient. */
         final boolean weighted = (wgt != null);
-        final float q = 2*scale*(float)alpha;
+        final float q = scale*(float)alpha;
         double sum = 0.0;
         float z[] = cnvl.getWorkspace();
         int j = 0; // index in data and weight arrays
@@ -196,7 +196,7 @@ public class WeightedConvolutionFloat1D
         }
 
         /* Returns cost. */
-        return alpha*sum;
+        return alpha*sum/2;
     }
 
     @Override

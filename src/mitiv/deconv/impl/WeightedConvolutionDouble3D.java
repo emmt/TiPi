@@ -154,7 +154,7 @@ public class WeightedConvolutionDouble3D
         if (wgt == null) {
             for (int i3 = off3; i3 < end3; ++i3) {
                 for (int i2 = off2; i2 < end2; ++i2) {
-                    k = 2*(off1 + dim1*((off2 + i2) + dim2*(off3 + i3)));
+                    k = 2*(off1 + dim1*(i2 + dim2*i3));
                     for (int i1 = off1; i1 < end1; ++i1) {
                         double r = scale*z[k] - dat[j];
                         sum += r*r;
@@ -166,7 +166,7 @@ public class WeightedConvolutionDouble3D
         } else {
             for (int i3 = off3; i3 < end3; ++i3) {
                 for (int i2 = off2; i2 < end2; ++i2) {
-                    k = 2*(off1 + dim1*((off2 + i2) + dim2*(off3 + i3)));
+                    k = 2*(off1 + dim1*(i2 + dim2*i3));
                     for (int i1 = off1; i1 < end1; ++i1) {
                         double w = wgt[j];
                         double r = scale*z[k] - dat[j];
@@ -177,7 +177,7 @@ public class WeightedConvolutionDouble3D
                 }
             }
         }
-        return alpha*sum;
+        return alpha*sum/2;
     }
 
     @Override
@@ -191,7 +191,7 @@ public class WeightedConvolutionDouble3D
 
         /* Integrate cost and gradient. */
         final boolean weighted = (wgt != null);
-        final double q = 2*scale*alpha;
+        final double q = scale*alpha;
         double sum = 0.0;
         double z[] = cnvl.getWorkspace();
         int j = 0; // index in data and weight arrays
@@ -278,7 +278,7 @@ public class WeightedConvolutionDouble3D
         }
 
         /* Returns cost. */
-        return alpha*sum;
+        return alpha*sum/2;
     }
 
     @Override

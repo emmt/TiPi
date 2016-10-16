@@ -179,7 +179,7 @@ public class ${className}
         int k; // index in work array z
         if (wgt == null) {
             for (${i2_in_mid}) {
-                k = 2*(off1 + dim1*(off2 + i2));
+                k = 2*(off1 + dim1*i2);
                 for (${i1_in_mid}) {
                     ${type} r = scale*z[k] - dat[j];
                     sum += r*r;
@@ -189,7 +189,7 @@ public class ${className}
             }
         } else {
             for (${i2_in_mid}) {
-                k = 2*(off1 + dim1*(off2 + i2));
+                k = 2*(off1 + dim1*i2);
                 for (${i1_in_mid}) {
                     ${type} w = wgt[j];
                     ${type} r = scale*z[k] - dat[j];
@@ -204,7 +204,7 @@ public class ${className}
         if (wgt == null) {
             for (${i3_in_mid}) {
                 for (${i2_in_mid}) {
-                    k = 2*(off1 + dim1*((off2 + i2) + dim2*(off3 + i3)));
+                    k = 2*(off1 + dim1*(i2 + dim2*i3));
                     for (${i1_in_mid}) {
                         ${type} r = scale*z[k] - dat[j];
                         sum += r*r;
@@ -216,7 +216,7 @@ public class ${className}
         } else {
             for (${i3_in_mid}) {
                 for (${i2_in_mid}) {
-                    k = 2*(off1 + dim1*((off2 + i2) + dim2*(off3 + i3)));
+                    k = 2*(off1 + dim1*(i2 + dim2*i3));
                     for (${i1_in_mid}) {
                         ${type} w = wgt[j];
                         ${type} r = scale*z[k] - dat[j];
@@ -230,7 +230,7 @@ public class ${className}
         //# else
         //#     error only 1D, 2D and 3D implemented
         //# end
-        return alpha*sum;
+        return alpha*sum/2;
     }
 
     @Override
@@ -244,7 +244,7 @@ public class ${className}
 
         /* Integrate cost and gradient. */
         final boolean weighted = (wgt != null);
-        final ${type} q = 2*scale*${cast}alpha;
+        final ${type} q = scale*${cast}alpha;
         double sum = 0.0;
         ${type} z[] = cnvl.getWorkspace();
         int j = 0; // index in data and weight arrays
@@ -415,7 +415,7 @@ public class ${className}
         }
 
         /* Returns cost. */
-        return alpha*sum;
+        return alpha*sum/2;
     }
 
     @Override

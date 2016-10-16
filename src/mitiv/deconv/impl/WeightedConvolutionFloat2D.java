@@ -135,7 +135,7 @@ public class WeightedConvolutionFloat2D
         int k; // index in work array z
         if (wgt == null) {
             for (int i2 = off2; i2 < end2; ++i2) {
-                k = 2*(off1 + dim1*(off2 + i2));
+                k = 2*(off1 + dim1*i2);
                 for (int i1 = off1; i1 < end1; ++i1) {
                     float r = scale*z[k] - dat[j];
                     sum += r*r;
@@ -145,7 +145,7 @@ public class WeightedConvolutionFloat2D
             }
         } else {
             for (int i2 = off2; i2 < end2; ++i2) {
-                k = 2*(off1 + dim1*(off2 + i2));
+                k = 2*(off1 + dim1*i2);
                 for (int i1 = off1; i1 < end1; ++i1) {
                     float w = wgt[j];
                     float r = scale*z[k] - dat[j];
@@ -155,7 +155,7 @@ public class WeightedConvolutionFloat2D
                 }
             }
         }
-        return alpha*sum;
+        return alpha*sum/2;
     }
 
     @Override
@@ -169,7 +169,7 @@ public class WeightedConvolutionFloat2D
 
         /* Integrate cost and gradient. */
         final boolean weighted = (wgt != null);
-        final float q = 2*scale*(float)alpha;
+        final float q = scale*(float)alpha;
         double sum = 0.0;
         float z[] = cnvl.getWorkspace();
         int j = 0; // index in data and weight arrays
@@ -236,7 +236,7 @@ public class WeightedConvolutionFloat2D
         }
 
         /* Returns cost. */
-        return alpha*sum;
+        return alpha*sum/2;
     }
 
     @Override

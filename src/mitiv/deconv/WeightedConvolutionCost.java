@@ -51,7 +51,7 @@ import mitiv.utils.Timer;
  * The ``<i>weighted convolution</i>'' cost writes:
  * </p>
  * <p align="center">
- * f(<b><i>x</i></b>) = (<b>H</b>.<b><i>x</i></b> -
+ * f(<b><i>x</i></b>) = (1/2) (<b>H</b>.<b><i>x</i></b> -
  * <b><i>y</i></b>)<sup>t</sup>.<b>W</b>.(<b>H</b>.<b><i>x</i></b> -
  * <b><i>y</i></b>),
  * </p>
