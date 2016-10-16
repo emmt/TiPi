@@ -113,7 +113,7 @@ public class DifferentiableGaussianLikelihood extends GaussianLikelihood impleme
                 work2 = variableSpace.create();
             }
             ((DifferentiableMapping)directModel).applyJacobian(work2, x, work1);
-            gx.combine(1.0, gx, alpha, work2);
+            gx.add(alpha, work2);
         }
         return alpha*sum/2;
     }

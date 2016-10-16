@@ -193,7 +193,7 @@ public abstract class Vector {
      * Exchange the contents of the vector with that of another one.
      *
      * @param vec   The other vector.
-     * @throws IncorrectSpaceException {@code dst} does not belong to the same vector space.
+     * @throws IncorrectSpaceException {@code vec} does not belong to the same vector space.
      */
     public final void swap(Vector vec)
             throws IncorrectSpaceException {
@@ -210,6 +210,18 @@ public abstract class Vector {
      */
     public final void scale(double alpha) {
         space._scale(this, alpha);
+    }
+
+    /**
+     * Set the vector to a vector times a constant factor.
+     *
+     * @param alpha   The scale factor.
+     * @param vec     The source vector to scale.
+     * @throws IncorrectSpaceException {@code vec} does not belong to the same vector space.
+     */
+    public final void scale(double alpha, Vector vec) {
+        space.check(vec);
+        space._scale(this, alpha, vec);
     }
 
     /**

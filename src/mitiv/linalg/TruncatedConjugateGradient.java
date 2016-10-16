@@ -230,7 +230,7 @@ public class TruncatedConjugateGradient {
         if (alpha == 0.0) {
             return FAILURE;
         }
-        x.combine(1.0, x, alpha, p);
+        x.add(alpha, p);
         return SUCCESS;
     }
 
@@ -325,14 +325,14 @@ public class TruncatedConjugateGradient {
                 return A_IS_NOT_POSITIVE_DEFINITE;
             }
             double alpha = rho/gamma;
-            x.combine(1.0, x, +alpha, p);
-            xnrm = Math.sqrt(x.dot(x));
+            x.add(alpha, p);
+            xnrm = x.norm2();
             if (xnrm >= delta) {
                 /* Apply a truncated backward step. */
                 adjustStep(x, p, delta, xnrm);
                 return TRUNCATED;
             }
-            r.combine(1.0, r, -alpha, q);
+            r.add(-alpha, q);
             if (P != null) {
                 P.apply(z, r);
             }

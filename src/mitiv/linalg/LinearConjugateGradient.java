@@ -182,8 +182,8 @@ public class LinearConjugateGradient {
                 return A_IS_NOT_POSITIVE_DEFINITE;
             }
             double alpha = rho/gamma;
-            x.combine(1.0, x, +alpha, p);
-            r.combine(1.0, r, -alpha, q);
+            x.add(+alpha, p);
+            r.add(-alpha, q);
             if (P != null) {
                 P.apply(z, r);
             }

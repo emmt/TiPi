@@ -260,7 +260,7 @@ public class LBFGSOperator extends LinearEndomorphism {
             final int k = slot(j);
             if (rho[k] > 0.0) {
                 alpha[k] = rho[k]*vec.dot(s[k]);
-                vec.combine(1.0, vec, -alpha[k], y[k]);
+                vec.add(-alpha[k], y[k]);
             }
         }
 
@@ -276,7 +276,7 @@ public class LBFGSOperator extends LinearEndomorphism {
             final int k = slot(j);
             if (rho[k] > 0.0) {
                 final double beta = rho[k]*vec.dot(y[k]);
-                vec.combine(1.0, vec, alpha[k] - beta, s[k]);
+                vec.add(alpha[k] - beta, s[k]);
             }
         }
         return true;
@@ -308,7 +308,7 @@ public class LBFGSOperator extends LinearEndomorphism {
             } else {
                 rho[k] = 1.0/sty;
                 alpha[k] = rho[k]*wgt.dot(vec, s[k]);
-                vec.combine(1.0, vec, -alpha[k], y[k]);
+                vec.add(-alpha[k], y[k]);
                 if (flag) {
                     /* No initial inverse Hessian approximation has been
                      * provided, we compute a simple scaling GAMMA. */
@@ -337,7 +337,7 @@ public class LBFGSOperator extends LinearEndomorphism {
             final int k = slot(j);
             if (rho[k] > 0) {
                 final double beta = rho[k]*wgt.dot(vec, y[k]);
-                vec.combine(1.0, vec, alpha[k] - beta, s[k]);
+                vec.add(alpha[k] - beta, s[k]);
             }
         }
         return true;

@@ -255,7 +255,7 @@ public abstract class VectorSpace {
     /** Low level method for scaling a vector. */
     protected abstract void _scale(Vector dst, double alpha, Vector src);
 
-    /** Default implementation. */
+    /** Default implementation for in-place scaling of a vector. */
     protected void _scale(Vector v, double alpha) {
         _scale(v, alpha, v);
 

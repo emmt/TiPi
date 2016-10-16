@@ -164,7 +164,7 @@ public class GaussianLikelihood implements CostFunction {
         computeModel(work1, x);
 
         /* Compute the residuals. */
-        work1.combine(1.0, work1, -1.0, getData());
+        work1.add(-1.0, getData());
     }
 
     @Override
