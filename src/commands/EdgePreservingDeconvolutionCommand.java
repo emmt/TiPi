@@ -81,7 +81,10 @@ public class EdgePreservingDeconvolutionCommand {
     private double upperBound = Double.POSITIVE_INFINITY;
 
     @Option(name = "--single", aliases = {"-s"}, usage = "Force single precision.")
-    private boolean single;
+    private boolean single = false;
+
+    @Option(name = "--newcode", usage = "Try to use new code.")
+    private boolean newCode = false;
 
     @Option(name = "--help", aliases = {"-h", "-?"}, usage = "Display help.")
     private boolean help;
@@ -199,6 +202,7 @@ public class EdgePreservingDeconvolutionCommand {
             solver.setMaximumEvaluations(job.maxeval);
             solver.setDebug(job.debug);
             solver.setSaveBest(true);
+            solver.setUseNewCode(job.newCode);
 
             OptimTask task = solver.start();
             while (true) {

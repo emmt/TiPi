@@ -31,8 +31,10 @@ import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
 import mitiv.cost.CompositeDifferentiableCostFunction;
+import mitiv.cost.DifferentiableCostFunction;
 import mitiv.cost.HyperbolicTotalVariation;
 import mitiv.deconv.Convolution;
+import mitiv.deconv.WeightedConvolutionCost;
 import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
@@ -55,6 +57,20 @@ import mitiv.utils.FFTUtils;
 
 
 public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
+
+    /** Use new code? */
+    private boolean useNewCode = false;
+
+    public boolean getUseNewCode() {
+        return useNewCode;
+    }
+
+    public void setUseNewCode(boolean value) {
+        if (useNewCode != value) {
+            useNewCode = value;
+            updatePending = true;
+        }
+    }
 
     /** Indicate whether internal parameters should be recomputed. */
     private boolean updatePending = true;
@@ -315,9 +331,7 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
 
     private ShapedVectorSpace dataSpace = null;
     private ShapedVectorSpace objectSpace = null;
-    private WeightedData weightedData = null;
-    private Convolution directModel = null;
-    private DifferentiableGaussianLikelihood fdata = null;
+    private DifferentiableCostFunction fdata = null;
     private HyperbolicTotalVariation fprior = null;
     private BoundProjector projector = null;
     private int bounded = 0;
@@ -428,18 +442,25 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
             objectSpace = new DoubleShapedVectorSpace(objectShape);
         }
 
-        /* Build weighted data instance. */
-        weightedData = new WeightedData(dataSpace.create(data), true);
-        if (weight != null) {
-            weightedData.setWeight(dataSpace.create(weight), true);
-        }
-
-        /* Build the direct model. */
-        directModel = Convolution.build(objectSpace, dataSpace);
-        directModel.setPSF(psf);
 
         /* Build the likelihood cost function. */
-        fdata = new DifferentiableGaussianLikelihood(weightedData, directModel);
+        if (useNewCode) {
+            /* Build weighted data instance. */
+            WeightedData  weightedData = new WeightedData(dataSpace.create(data), true);
+            if (weight != null) {
+                weightedData.setWeight(dataSpace.create(weight), true);
+            }
+
+            /* Build the direct model. */
+            Convolution directModel = Convolution.build(objectSpace, dataSpace);
+            directModel.setPSF(psf);
+            fdata = new DifferentiableGaussianLikelihood(weightedData, directModel);
+        } else {
+            WeightedConvolutionCost cost = WeightedConvolutionCost.build(objectSpace, dataSpace);
+            cost.setPSF(psf);
+            cost.setWeightsAndData(weight, data);
+            fdata = cost;
+        }
 
         /* Build the regularization cost function. */
         fprior = new HyperbolicTotalVariation(objectSpace, epsilon);
