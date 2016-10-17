@@ -95,10 +95,35 @@ public abstract class VectorSpace {
 
     /**
      * Create a new vector from this vector space filled with given value.
+     * <p>
+     * This method may be overridden to provide a more efficient version.
+     * </p>
      * @param alpha   A scalar value.
      * @return A new vector of this space.
      */
-    public abstract Vector create(double alpha);
+    public Vector create(double alpha) {
+        Vector vec = create();
+        _fill(vec, alpha);
+        return vec;
+    }
+
+    /**
+     * Create a new vector of one's.
+     *
+     * @return A new vector of this space filled with ones.
+     */
+    public Vector one() {
+        return create(1.0);
+    }
+
+    /**
+     * Create a new vector of zero's.
+     *
+     * @return A new vector of this space filled with zeros.
+     */
+    public Vector zero() {
+        return create(0.0);
+    }
 
     /**
      * Compute the inner product of two vectors.
@@ -477,24 +502,6 @@ public abstract class VectorSpace {
         Vector cpy = create();
         _copy(cpy, vec);
         return cpy;
-    }
-
-    /**
-     * Create a new vector of one's.
-     *
-     * @return A new vector of this space filled with ones.
-     */
-    public Vector one() {
-        return create(1.0);
-    }
-
-    /**
-     * Create a new vector of zero's.
-     *
-     * @return A new vector of this space filled with zeros.
-     */
-    public Vector zero() {
-        return create(0.0);
     }
 
     /**

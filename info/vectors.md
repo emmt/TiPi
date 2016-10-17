@@ -22,6 +22,11 @@ presented general ideas are however correct.
   should be limited, for instance to set the inputs of an algorithm and to
   recover its result.
 
+Example of methods provided by a vector space:
+
+* Method `create(alpha)` creates a new vector of the vector space with all
+  components set to the given value `alpha`.
+
 
 ## Basic Operations on Vectors
 
@@ -97,23 +102,29 @@ array and the vector share their contents or if the vector contents can be
 wrapped into an array), however this cannot be guaranteed.
 
 
+
+
+
+
 ## Methods for a vector space
 
-Implementing a concrete `VectorSpace` involves two things:
+Implementing a new type of vectors involves two things:
 
-1. A concrete implementation of the vectors of this vector space.  This can be
-   as simple as implementing the two methods `get()` and `set()` for getting
-   and setting a specific component of a vector.  These methods are not meant
-   to be efficient, they are mainly provided for testing or debugging purposes.
+1. A concrete sub-class of `Vector` for the vectors of this vector space.  This
+   can be as simple as implementing the two methods `get()` and `set()` for
+   getting and setting a specific component of a vector.  These methods are not
+   meant to be efficient, they are mainly provided for testing or debugging
+   purposes.
 
-2. A number of methods which operate on the specifc vectors of this vector
-   space have to be implemented.  These methods are assumed to be efficient and
-   are used by TiPi to perform all necessary operations on vectors.
+2. A concrete sub-class of `VectorSpace` for the vector space.  A dozen of
+   methods which operate on the specifc vectors of this vector space have to be
+   implemented.  These methods are assumed to be efficient and are used by TiPi
+   to perform all necessary operations on vectors.
 
 All methods whose name begins with an underscore character, *e.g.* `_dot`, are
 low-level `protected` methods which must not be directly called by the
 end-user.  They are used by higher level methods which take care of checking
-that the arguments are coorect, in particular that the vectors belong to the
+the validity of the arguments, in particular that the vectors belong to the
 correct vector space.  Thus in the implementation of these low level methods no
 argument checking is necessary.
 
@@ -143,9 +154,6 @@ following mandatory methods:
 
 * Method `public Vector create()` creates a new vector of the vector space with
   undefined contents.
-
-* Method `public Vector create(double alpha)` creates a new vector of the
-  vector space with all components set to the given value `alpha`.
 
 * Method `protected void _copy(Vector dst, Vector src)` copies the contents of
   a vector into another one: `dst[i] = src[i]` (for all `i`).
