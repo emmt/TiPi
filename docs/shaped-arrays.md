@@ -1,4 +1,4 @@
-# Shaped Arrays in TiPi
+# Shaped arrays in TiPi
 
 A `ShapedArray` stores rectangular multi-dimensional arrays of elements of the
 same data type.  Compared to a `ShapedVector`, the elements of a `ShapedArray`
@@ -6,7 +6,7 @@ reside in conventional memory and may be stored in arbitrary order and in a
 non-contiguous way.
 
 
-## Class Hierarchy
+## Class hierarchy
 
 Various interfaces or abstract classes extend the `ShapedArray` interface
 depending on whether the *type*<sup name="type1">[[1]](#type)</sup> and/or the
@@ -39,13 +39,13 @@ storage of the elements of the array.  Most of the time, an array can be
 manipulated regardless of its concrete class.
 
 
-## Operations on Shaped Arrays
+## Operations on shaped arrays
 
 This section describes the operations available for the most basic type, that
 is `ShapedArray`.
 
 
-### Basic Operations on Shaped Arrays
+### Basic operations on shaped arrays
 
 The basic operations available for a `ShapedArray`, say `arr`, are the same as
 those of `Shaped` and `Typed` objects:
@@ -107,7 +107,7 @@ elements of the array for maximum efficiency.  It can be one of:
 * `ShapedArray.NONSPECIFIC_ORDER` for any other storage order.
 
 
-### Assign Elements of a Shaped Array
+### Assign elements of a shaped array
 
 It is possible to assign the values of an array from another object:
 
@@ -129,7 +129,7 @@ individual elements become accessible via its `get(...)` and `set(...)`
 methods.
 
 
-### Create a Similar Shaped Array
+### Create a similar shaped array
 
 Creating a new array with the same type and shape as `arr` is simply done by:
 
@@ -143,7 +143,7 @@ methods to create shaped arrays of any given type and shape (providing the type
 of its elements is known).
 
 
-### 1D View of a Shaped Array
+### 1D view of a shaped array
 
 Finally it is possible to view a shaped array as if it was a mono-dimensional
 (1-D) array.  This is done by:
@@ -158,7 +158,7 @@ that a *view* such as the one returned by the `as1D()` method let you fetch and
 assign values of the original array with `get(...)` and `set(...)` methods.
 
 
-## Operations Available for Arrays with Unveiled Type
+## Operations available for arrays with unveiled type
 
 Add/subtract/multiply all elements by a scalar:
 
@@ -194,7 +194,7 @@ arr.flatten([forceCopy])
 ```
 
 
-## Other Operations
+## Other operations
 
 Fetch a value:
 
@@ -212,7 +212,7 @@ arr.set(i1,...,iR, value)
 ```
 
 
-## Operations Available for Arrays with Unveiled Rank
+## Operations available for arrays with unveiled rank
 
 
 ### Slicing
@@ -230,7 +230,7 @@ with its parent.  The same rules as for ranges (see this section) apply to
 to the end.
 
 
-### Ranged Sub-array
+### Ranged sub-array
 
 You can make a sub-array for given ranges of indices:
 
@@ -312,7 +312,7 @@ arr.view(new Range(0,-1,2), new Range(4,8))
 ```
 
 
-### Selected Sub-array
+### Selected sub-array
 
 Likewise:
 

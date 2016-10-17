@@ -6,6 +6,7 @@ pages:
 - 'User Guide':
    - 'Framework': framework.md
    - 'Shaped Arrays': shaped-arrays.md
+   - 'Making Arrays': array-factory.md
    - 'Vectors': vectors.md
 - 'Developpers':
    - 'New Vector Types': new-vector-types.md

@@ -1,4 +1,4 @@
-# Vectors in TiPi
+# Using vectors in TiPi
 
 **Warning:** This page needs to be edited to update its contents.  The
 presented general ideas are however correct.
@@ -28,7 +28,7 @@ Example of methods provided by a vector space:
   components set to the given value `alpha`.
 
 
-## Basic Operations on Vectors
+## Basic operations on vectors
 
 To create a shaped-vector from the contents of the array
 
