@@ -1,6 +1,6 @@
 site_name: TiPi framework
 docs_dir: docs
-sizt_dir: site
+site_dir: site
 pages:
 - 'Home': index.md
 - 'User Guide':
