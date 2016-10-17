@@ -155,9 +155,6 @@ following mandatory methods:
 * Method `public Vector create()` creates a new vector of the vector space with
   undefined contents.
 
-* Method `protected void _copy(Vector dst, Vector src)` copies the contents of
-  a vector into another one: `dst[i] = src[i]` (for all `i`).
-
 * Method `protected void _swap(Vector x, Vector y)` exchange the contents of
   the two vectors `x` and `y`.
 
@@ -212,30 +209,58 @@ class:
   of the vector `x`, that is the square root of the sum of squared components
   of `x`.  The following default implementation is provided:
 
-    protected double _norm2(Vector x) {
-        return Math.sqrt(_dot(x, x));
-    }
+```
+protected double _norm2(Vector x) {
+    return Math.sqrt(_dot(x, x));
+}
+```
 
 * Method `protected void _scale(Vector vec, double alpha)` for in-place scaling
   of vector `vec` by the scalar `alpha` has the following default
   implementation:
 
-    protected void _scale(Vector vec, double alpha) {
-        _scale(vec, alpha, vec);
-    }
+```
+protected void _scale(Vector vec, double alpha) {
+    _scale(vec, alpha, vec);
+}
+```
+
+* Method `protected void _copy(Vector dst, Vector src)` copies the contents of
+  a vector into another one: `dst[i] = src[i]` (for all `i`) with the following
+  default implementation:
+
+```
+protected void _copy(Vector dst, Vector src) {
+    _combine(dst, 1, src, 0, src);
+}
+```
 
 * Method `protected Vector _clone(Vector vec)` creates a new vector as a clone
   of another vector has the following default implementation:
 
-    protected Vector _clone(Vector vec) {
-        Vector cpy = create();
-        _copy(cpy, vec);
-        return cpy;
-    }
+```
+protected Vector _clone(Vector vec) {
+    Vector cpy = create();
+    _copy(cpy, vec);
+    return cpy;
+}
+```
 
-* Method `void _zero(Vector vec)` to set to zero all components of vector `vec`
-  has the following default implementation:
+* Method `protected void _zero(Vector vec)` to set to zero all components of
+  vector `vec` has the following default implementation:
 
-    protected void _zero(Vector vec) {
-        _fill(vec, 0.0);
-    }
+```
+protected void _zero(Vector vec) {
+    _fill(vec, 0);
+}
+```
+
+* Method `protected void _add(Vector dst, double alpha, Vector x)` adds `alpha`
+  times `x` to `dst`: `dst[i] += alpha*x[i]` and has the following default
+  implementation:
+
+```
+protected void _add(Vector dst, double alpha, Vector x) {
+    _combine(dst, 1, dst, alpha, x);
+}
+```

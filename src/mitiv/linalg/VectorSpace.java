@@ -387,6 +387,23 @@ public abstract class VectorSpace {
             Vector x, double beta, Vector y, double gamma, Vector z);
 
     /**
+     * Add a scaled vector to a vector.
+     *
+     * <p>
+     * This method performs the following in-place operation:
+     * <pre>
+     * dst[i] += alpha*x[i]
+     * </pre>
+     * </p>
+     * @param dst     The destination vector.
+     * @param alpha   The scalar factor for vector {@code x}.
+     * @param x       The vector to scale.
+     */
+    protected void _add(Vector dst, double alpha, Vector x) {
+        _combine(dst, 1, dst, alpha, x);
+    }
+
+    /**
      * Perform a component-wise multiplication of two vectors.
      * <p>
      * In pseudo-code, this method performs the following operation:
@@ -441,7 +458,7 @@ public abstract class VectorSpace {
      * @param src   The source vector.
      */
     protected void _copy(Vector dst, Vector src) {
-        _combine(dst, 1.0, src, 0.0, dst);
+        _combine(dst, 1, src, 0, src);
     }
 
     /**
@@ -519,7 +536,7 @@ public abstract class VectorSpace {
 
     /** Default low-level implementation (arguments are guaranteed to be correct). */
     protected void _zero(Vector vec) {
-        _fill(vec, 0.0);
+        _fill(vec, 0);
     }
 
     /**

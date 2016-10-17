@@ -333,7 +333,7 @@ public abstract class Vector {
      */
     public final void add(double alpha, Vector x) throws IncorrectSpaceException {
         space.check(x);
-        space._combine(this, 1.0, this, alpha, x);
+        space._add(this, alpha, x);
     }
 
     /**
