@@ -1,0 +1,16 @@
+site_name: TiPi framework
+docs_dir: docs
+sizt_dir: site
+pages:
+- 'Home': index.md
+- 'User Guide':
+   - 'Framework': framework.md
+   - 'Shaped Arrays': shaped-arrays.md
+   - 'Vectors': vectors.md
+- 'Developpers':
+   - 'New Vector Types': new-vector-types.md
+   - 'The TiPi Preprocessor': tpp.md
+- 'About':
+   - 'License': license.md
+   - 'News': news.md
+

@@ -18,7 +18,9 @@ expressions and can be used to generate almost arbitrary code.
 
 The syntax for calling `tpp` is:
 
-    tpp [OPTIONS] [INPUT [OUTPUT]]
+```sh
+tpp [OPTIONS] [INPUT [OUTPUT]]
+```
 
 to preprocess the source file `INPUT` and produce the destination file
 `OUTPUT`.  If omitted or set to `-`, the source (resp. the destination) file is
@@ -40,6 +42,9 @@ Options in `OPTIONS` are:
 
 * `-v` or `--version`: Print version number and exit.
 
+* `-w` or `--warning`: Add a warning on top of the file to prevent editing the
+  result.
+
 * `--`: Indicate the end of the options.
 
 Some options are clearly targeted at Java code, but `tpp` can be applied to
@@ -50,7 +55,9 @@ other programming languages.
 
 Pre-processor directives are lines of the form:
 
-    //# COMMAND ...
+```java
+//# COMMAND ...
+```
 
 where, to improve readability, there can be any spaces before `//`, before and
 after `#`.  In the output, all lines matching this and with a recognized
@@ -59,12 +66,16 @@ after `#`.  In the output, all lines matching this and with a recognized
 All commands can have and optional comment which is delimited by the first
 occurrence of `//` after the `//#`:
 
-    //# COMMAND ... // COMMENT
+```java
+//# COMMAND ... // COMMENT
+```
 
 Both `COMMAND` and `COMMENT` may be empty.  Comment lines are a special case
 with an empty `COMMAND` and empty lines like:
 
-    //#
+```java
+//#
+```
 
 have only spaces (including none) after the `#` and are ignored.
 
@@ -91,8 +102,10 @@ macro.
 
 The `def` command defines a macro and takes one of the two following forms:
 
-    //# def NAME  = VALUE // COMMENT
-    //# def NAME := VALUE // COMMENT
+```java
+//# def NAME  = VALUE // COMMENT
+//# def NAME := VALUE // COMMENT
+```
 
 where `NAME` is the name of the macro, `VALUE` specifies the macro value and
 `COMMENT` is an optional comment.  The `VALUE` term may be empty to define the
@@ -121,7 +134,9 @@ not forbidden.
 
 A macro can be defined by evaluating a numerical expression with the directive:
 
-    //# eval NAME OPER EXPR
+```java
+//# eval NAME OPER EXPR
+```
 
 where `NAME` is the macro name, `OPER` is an assignment operator and `EXPR` a
 numerical expression whose value is computed before (re)defining `NAME` via the
@@ -139,9 +154,11 @@ can be `+`, `-`, `*`, `/`, `%`, `<<` or `<<`.
 
 Example:
 
-    //# def a = 1
-    //# def b = 4
-    //# eval a += ${b}/2
+```java
+//# def a = 1
+//# def b = 4
+//# eval a += ${b}/2
+```
 
 yields a macro named `a` whose value is `3`.
 
@@ -180,7 +197,9 @@ be as many such definitions in the command line as needed.
 
 The command:
 
-    //# undef NAME1 NAME2 ...
+```java
+//# undef NAME1 NAME2 ...
+```
 
 undefines the macros `NAME1`, `NAME2`, etc.  Until they are redefined, it is an
 error to expand these macros.  Read-only macros cannot be undefined.
@@ -196,7 +215,9 @@ macros.
 
 The command:
 
-    //# suspend NAME1 NAME2 ...
+```java
+//# suspend NAME1 NAME2 ...
+```
 
 suspends the expansion of the macros `NAME1`, `NAME2`, etc.  Until these macros
 are redefined or their expansion resumed with the `#resume` directive, they
@@ -208,7 +229,9 @@ As said before, defining a macro (by the `#def` or `#eval` or `#for`
 directives) resume the expansion of the macro.  This can also be achieved with
 the following directive:
 
-    //# resume NAME1 NAME2 ...
+```java
+//# resume NAME1 NAME2 ...
+```
 
 
 ## Conditional Branching
@@ -218,13 +241,15 @@ A block of code can be processed or not depending on a logical test using the
 follows (with an arbitrary number, including none, of `#elif` directives and at
 most one `#else` directive):
 
-    //# if EXPR1
-    BLOCK1
-    //# elif EXPR2
-    BLOCK2
-    //# else
-    BLOCK3
-    //# end
+```java
+//# if EXPR1
+BLOCK1
+//# elif EXPR2
+BLOCK2
+//# else
+BLOCK3
+//# end
+```
 
 where `BLOCK1` is processed if `EXPR1` evaluates to `true`, otherwise `BLOCK2`
 is processed if `EXPR2` evaluates to `true`, eventually `BLOCK3` is processed
@@ -240,9 +265,11 @@ and `while`-loops.
 
 The syntax of a `for`-loop is:
 
-    //# for NAME in EXPR
-    ...
-    //# end
+```java
+//# for NAME in EXPR
+...
+//# end
+```
 
 where `EXPR` is everything after the `in` keyword and up to the end of line or
 to the `//` of the optional comment.  After macro substitution of the `EXPR`
@@ -255,59 +282,73 @@ skipped.
 
 A range of values has the form:
 
-    FIRST : LAST
+```java
+FIRST : LAST
+```
 
 or
 
-    FIRST : LAST : STEP
+```java
+FIRST : LAST : STEP
+```
 
 where (after macro expansion) `FIRST`, `LAST` and `STEP` are integers, if
 omitted, `STEP` is assumed to be `1`.  A zero-`STEP` is forbidden.  Numerical
 expressions are not yet supported for these fields but you can use the `#eval`
 directive to compute the range parameters.  For instance:
 
-    //# eval last = ${x} + 3*${y}
-    //# for i in 0 : ${last} // main loop
-    ...
-    //# end // end of main loop
+```java
+//# eval last = ${x} + 3*${y}
+//# for i in 0 : ${last} // main loop
+...
+//# end // end of main loop
+```
 
 Here is another example with a list of values:
 
-    //# def list = blue red yellow orange
-    //# for var in ${list}
-    //#     emit ${var}
-    //# end
+```java
+//# def list = blue red yellow orange
+//# for var in ${list}
+//#     emit ${var}
+//# end
+```
 
 where the directive `#emit` directive emits its argument(s) in the output code.
 
 The syntax of `while`-loops is:
 
-    //# while EXPR
-    ...
-    //# end
+```java
+//# while EXPR
+...
+//# end
+```
 
 which results in processing the boby of the loop until `EXPR` expands to a
 false value.
 
 The two following loops are similar (the second being more concise):
 
-    //# def body := dim${k} = ${k}; // the code to expand
-    //# def k = 4
-    //# while ${k} < 12
-    ${boby}
-    //#     eval k += 3
-    //# end
+```java
+//# def body := dim${k} = ${k}; // the code to expand
+//# def k = 4
+//# while ${k} < 12
+${boby}
+//#     eval k += 3
+//# end
 
-    //# def body := dim${k} = ${k};
-    //# for k in 4:12:3
-    ${body}
-    //# end
+//# def body := dim${k} = ${k};
+//# for k in 4:12:3
+${body}
+//# end
+```
 
 they both produce:
 
-    dim4 = 4
-    dim7 = 7
-    dim10 = 10
+```java
+dim4 = 4
+dim7 = 7
+dim10 = 10
+```
 
 Note how the expansion of `${k}` is deferred by using operator `:=` to define
 macro `body`.
@@ -318,7 +359,9 @@ macro `body`.
 The contents of another source file can be processed at any place by using the
 `#include` directive:
 
-    //# include WHAT
+```java
+//# include WHAT
+```
 
 where `WHAT` (after recursive macro expansion) takes one of the two forms:
 `<FILENAME>` or `"FILENAME"`.  The result is as if the contents of the file
@@ -331,14 +374,18 @@ be open and closed in a single included file.
 
 The command:
 
-    //# emit CODE
+```java
+//# emit CODE
+```
 
 substitutes macros in `CODE` and prints it to the output file.
 
 Commands:
 
-    //# echo MESG
-    //# warn MESG
+```java
+//# echo MESG
+//# warn MESG
+```
 
 substitute macros in `MESG` and print it.  Command `#echo` uses the standard
 output stream while `#warn` uses the standard error stream.
@@ -346,14 +393,18 @@ output stream while `#warn` uses the standard error stream.
 It may be useful to examine the contents of some macros (without a fully
 recursive expansion).  To that end, the directive
 
-    //# debug MESG
+```java
+//# debug MESG
+```
 
 prints `MESG` after a *single round* of macro substitution on the standard error
 stream.
 
 The `#error` command:
 
-    //# error MESG
+```java
+//# error MESG
+```
 
 substitutes macros in `MESG` and prints it on the standard error stream with
 the line number and the name of the processed file and then aborts the
@@ -366,45 +417,52 @@ processing.
 
 The following example builds a list of dimensions:
 
-    //# def dims =  // start with an empty list
-    //# def sep  =  // and an empty separator
-    //# for k in 1 : ${rank}
-    //#     def dims = ${dims}${sep}dim${k}
-    //#     def sep = ,${__SPACE__}
-    //# end
+```java
+//# def dims =  // start with an empty list
+//# def sep  =  // and an empty separator
+//# for k in 1 : ${rank}
+//#     def dims = ${dims}${sep}dim${k}
+//#     def sep = ,${__SPACE__}
+//# end
+```
 
 and yields a macro named `dims` with contents `dim1, dim2, ...`.  Note the use
 of an auxiliary macro `sep` and of the predefined macro `__SPACE__` to nicely
 separate the elements of the list.  Another possibility is to write:
 
-    //# if ${rank} < 1
-    //#     def dims =  // result is an empty list
-    //# else
-    //#     def dims = dim1 // initial list
-    //#     for k in 2 : ${rank}
-    //#         def dims = ${dims}, dim${k}
-    //#     end
-    //# end
+```java
+//# if ${rank} < 1
+//#     def dims =  // result is an empty list
+//# else
+//#     def dims = dim1 // initial list
+//#     for k in 2 : ${rank}
+//#         def dims = ${dims}, dim${k}
+//#     end
+//# end
+```
 
 
 ### Macros as Pseudo-Functions
 
 Deferred substitution can be used as follows:
 
-    //# def list := ${prefix}1
-    //# for k in 2 : 3
-    //#     def list := ${list},${prefix}${k}
-    //# end
+```java
+//# def list := ${prefix}1
+//# for k in 2 : 3
+//#     def list := ${list},${prefix}${k}
+//# end
+```
 
 which yields a macro `list` whose contents is
 `${prefix}1,${prefix}2,${prefix}3`.  Note that, at this stage, `prefix` does
 not need to be defined.  The macro `list` can then be used as a template to
 make lists after substitution of the `prefix` macro:
 
-    //# def prefix  = foo
-    //# def FooList = ${list}
-    //# def prefix  = bar
-    //# def BarList = ${list}
+//# def prefix  = foo
+//# def FooList = ${list}
+//# def prefix  = bar
+//# def BarList = ${list}
+```
 
 which yields `foo1,foo2,foo3` and `bar1,bar2,bar3` for the respective contents
 of macros `FooList` and `BarList`.
@@ -415,11 +473,13 @@ macros with arguments (even though it is less readable).
 To build the macro `list` above, we may also suspend the expansion of the macro
 `prefix`:
 
-    //# suspend prefix
-    //# def list = ${prefix}1
-    //# for k in 2 : 3
-    //#     def list = ${list},${prefix}${k}
-    //# end
+```java
+//# suspend prefix
+//# def list = ${prefix}1
+//# for k in 2 : 3
+//#     def list = ${list},${prefix}${k}
+//# end
+```
 
 As (re)defining `prefix` will automatically resume macro expansion, it is not
 necessary to have a `#resume prefix` command.
@@ -483,9 +543,11 @@ necessary to have a `#resume prefix` command.
 
 3. String functions (like predefined macros).
 
-    ${substr(str,i1,i2,subs)}
-    ${strmatch(string,pattern)}
-    ...
+```java
+${substr(str,i1,i2,subs)}
+${strmatch(string,pattern)}
+...
+```
 
 4. Allow for numerical expressions in ranges (taking care of the ternary
    operator).
