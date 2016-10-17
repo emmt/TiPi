@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+
+	<title>Shaped Arrays - TiPi framework</title>
+
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.5.0.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">TiPi framework</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown active">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../framework/">Framework</a>
+</li>
+
+                        
+                            
+<li class="active">
+    <a href="./">Shaped Arrays</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../array-factory/">Making Arrays</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../vectors/">Vectors</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Developpers <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../new-vector-types/">New Vector Types</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../tpp/">The TiPi Preprocessor</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../license/">License</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../news/">News</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                </ul>
+            
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                
+                    <li >
+                        <a rel="next" href="../framework/">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../array-factory/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#shaped-arrays-in-tipi">Shaped arrays in TiPi</a></li>
+        
+            <li><a href="#class-hierarchy">Class hierarchy</a></li>
+        
+            <li><a href="#operations-on-shaped-arrays">Operations on shaped arrays</a></li>
+        
+            <li><a href="#operations-available-for-arrays-with-unveiled-type">Operations available for arrays with unveiled type</a></li>
+        
+            <li><a href="#other-operations">Other operations</a></li>
+        
+            <li><a href="#operations-available-for-arrays-with-unveiled-rank">Operations available for arrays with unveiled rank</a></li>
+        
+    
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="shaped-arrays-in-tipi">Shaped arrays in TiPi</h1>
+<p>A <code>ShapedArray</code> stores rectangular multi-dimensional arrays of elements of the
+same data type.  Compared to a <code>ShapedVector</code>, the elements of a <code>ShapedArray</code>
+reside in conventional memory and may be stored in arbitrary order and in a
+non-contiguous way.</p>
+<h2 id="class-hierarchy">Class hierarchy</h2>
+<p>Various interfaces or abstract classes extend the <code>ShapedArray</code> interface
+depending on whether the <em>type</em><sup name="type1"><a href="#type">[1]</a></sup> and/or the
+<em>rank</em><sup name="rank1"><a href="#rank">[2]</a></sup> of the array are unveiled.  The
+naming conventions are:</p>
+<pre><code class="java">ShapedArray   // neither rank nor type is known
+&lt;Type&gt;Array   // a shaped array of known type, but any rank
+Array&lt;Rank&gt;D  // a shaped array of known rank, but any type
+&lt;Type&gt;&lt;Rank&gt;D // a shaped array with known type and rank
+</code></pre>
+
+<p>where the <code>&lt;Type&gt;</code> field is the capitalized name of the primitive type (<em>e.g.</em>
+<code>Double</code> for <code>double</code>, <code>Int</code> for <code>int</code>, <em>etc.</em>) and <code>&lt;Rank&gt;</code> is a decimal
+number in the range 1-9.  Arrays representating scalars are also needed, as
+<code>0D</code> is a bit odd for 0-rank (that is scalar) object it is replaced by the
+substantive <code>Scalar</code> in the rules above for 0-rank arrays and a <code>Scalar</code>
+denotes a scalar of any type.  For instance:</p>
+<ul>
+<li><code>FloatArray</code> is an array of float's;</li>
+<li><code>Array3D</code> is a three-dimensional array;</li>
+<li><code>Scalar</code> is a scalar of any type;</li>
+<li><code>DoubleScalar</code> is a 0-rank array to access a single double precision
+  value;</li>
+<li><code>Long4D</code> is a four-dimensional array of long integer values.</li>
+</ul>
+<p>All these are abstract classes or interfaces, the actual class depends on the
+storage of the elements of the array.  Most of the time, an array can be
+manipulated regardless of its concrete class.</p>
+<h2 id="operations-on-shaped-arrays">Operations on shaped arrays</h2>
+<p>This section describes the operations available for the most basic type, that
+is <code>ShapedArray</code>.</p>
+<h3 id="basic-operations-on-shaped-arrays">Basic operations on shaped arrays</h3>
+<p>The basic operations available for a <code>ShapedArray</code>, say <code>arr</code>, are the same as
+those of <code>Shaped</code> and <code>Typed</code> objects:</p>
+<pre><code class="java">arr.getType()        // query the type of the array
+arr.getRank()        // query the rank of the array
+arr.getNumber()      // query the number of elements in the array
+arr.getDimension(k)  // query the length of the (k+1)-th dimension
+arr.getOrder()       // query the storage order of the elements in the array
+arr.getShape()       // query the shape of the array
+</code></pre>
+
+<p>and type conversion:</p>
+<pre><code class="java">arr.toByte()         // convert to ByteArray
+arr.toShort()        // convert to ShortArray
+arr.toInt()          // convert to IntArray
+arr.toLong()         // convert to LongArray
+arr.toFloat()        // convert to FloatArray
+arr.toDouble()       // convert to DoubleArray
+</code></pre>
+
+<p>For efficiency reasons, conversion operations are <em>lazzy</em>: they return the same
+object if it is already of the correct type.  Use the <code>copy</code> method to
+duplicate an array:</p>
+<pre><code class="java">arr.copy()           // duplicate the contents of the array
+</code></pre>
+
+<p>This method yields a new shaped array which has the same shape, type and values
+as <code>arr</code> but whose contents is independent from that of <code>arr</code>.  If <code>arr</code> is a
+<em>view</em>, then the <code>copy</code> method yields a compact array in a <em>flat</em><sup
+name="flat1"><a href="#flat">[3]</a></sup> form.</p>
+<p>The elements of a shaped array are generic Java data, their type, as given
+by <code>arr.getType()</code>, can be one of:</p>
+<ul>
+<li><code>Traits.BYTE</code> for an array of <code>byte</code> elements.</li>
+<li><code>Traits.SHORT</code> for an array of <code>short</code> elements.</li>
+<li><code>Traits.INT</code> for an array of <code>int</code> elements.</li>
+<li><code>Traits.LONG</code> for an array of <code>long</code> elements.</li>
+<li><code>Traits.FLOAT</code> for an array of <code>float</code> elements.</li>
+<li><code>Traits.DOUBLE</code> for an array of <code>double</code> elements.</li>
+</ul>
+<p>The storage order, as given by <code>arr.getOrder()</code>, indicates how to travel the
+elements of the array for maximum efficiency.  It can be one of:</p>
+<ul>
+<li>
+<p><code>ShapedArray.COLUMN_MAJOR</code> for column-major storage order, that is the
+  leftmost (first) indices vary faster when stepping through consecutive memory
+  locations.</p>
+</li>
+<li>
+<p><code>ShapedArray.ROW_MAJOR</code> for row-major storage order, that is the rightmost
+  (last) indices vary faster when stepping through consecutive memory
+  locations.</p>
+</li>
+<li>
+<p><code>ShapedArray.NONSPECIFIC_ORDER</code> for any other storage order.</p>
+</li>
+</ul>
+<h3 id="assign-elements-of-a-shaped-array">Assign elements of a shaped array</h3>
+<p>It is possible to assign the values of an array from another object:</p>
+<pre><code class="java">arr.assign(src)
+</code></pre>
+
+<p>where <code>src</code> is another shaped array, a shaped vector, or a Java array of a
+primitive type.  If the type of the elements of <code>src</code> does not match that of
+the elements of <code>arr</code>, conversion is automatically and silently performed.  If
+<code>src</code> is a <code>Shaped</code> object, its shape must however match that of <code>arr</code>.  If
+<code>src</code> is a Java array, it must have as many elements as <code>arr</code>.  The <code>assign</code>
+operation is optimized: if <code>arr</code> and <code>src</code> share their contents with the same
+storage, nothing is done as nothing has to be done.  If <code>arr</code> and <code>src</code> share
+their contents in a different form, the result is unpredictable.</p>
+<p>When the type and dimensions of a shaped array are unveiled by its class,
+individual elements become accessible via its <code>get(...)</code> and <code>set(...)</code>
+methods.</p>
+<h3 id="create-a-similar-shaped-array">Create a similar shaped array</h3>
+<p>Creating a new array with the same type and shape as <code>arr</code> is simply done by:</p>
+<pre><code class="java">arr.create()
+</code></pre>
+
+<p>which yields a <em>flat</em> array whose elements are contiguous and stored in
+column-major order.  The <a href="../array-factory/"><code>ArrayFactory</code></a> provides static
+methods to create shaped arrays of any given type and shape (providing the type
+of its elements is known).</p>
+<h3 id="1d-view-of-a-shaped-array">1D view of a shaped array</h3>
+<p>Finally it is possible to view a shaped array as if it was a mono-dimensional
+(1-D) array.  This is done by:</p>
+<pre><code class="java">arr.as1D()
+</code></pre>
+
+<p>Since the rank is unveiled by this operation, it is available for any
+<code>ShapedArray</code> and yields an instance of the abstract class <code>Array1D</code>.  Note
+that a <em>view</em> such as the one returned by the <code>as1D()</code> method let you fetch and
+assign values of the original array with <code>get(...)</code> and <code>set(...)</code> methods.</p>
+<h2 id="operations-available-for-arrays-with-unveiled-type">Operations available for arrays with unveiled type</h2>
+<p>Add/subtract/multiply all elements by a scalar:</p>
+<pre><code class="java">arr.increment(value)
+arr.decrement(value)
+arr.scale(value)
+</code></pre>
+
+<p>Fill with given or generated value:</p>
+<pre><code class="java">arr.fill(value)
+arr.fill(generator)
+</code></pre>
+
+<p>Map a function to every elements:</p>
+<pre><code class="java">arr.map(func)
+</code></pre>
+
+<p>Scan all the elements of the array:</p>
+<pre><code class="java">arr.scan(scanner)
+</code></pre>
+
+<p>Extract the contents as a flat Java vector:</p>
+<pre><code class="java">arr.flatten([forceCopy])
+</code></pre>
+
+<h2 id="other-operations">Other operations</h2>
+<p>Fetch a value:</p>
+<pre><code class="java">arr.get(i1,...,iR)
+</code></pre>
+
+<p>element type and rank must be known so <code>arr</code> is an instance of some
+<code>&lt;Type&gt;&lt;Rank&gt;D</code> abstract class.</p>
+<p>Assign a value to an element:</p>
+<pre><code class="java">arr.set(i1,...,iR, value)
+</code></pre>
+
+<h2 id="operations-available-for-arrays-with-unveiled-rank">Operations available for arrays with unveiled rank</h2>
+<h3 id="slicing">Slicing</h3>
+<pre><code class="java">arr.slice(index[, dim])
+</code></pre>
+
+<p>By default <code>dim</code> = <code>LAST</code> (-1) to slice through the last dimension, result is
+an array of same data type with one less dimension (slicing a <code>Float3D</code> yields
+a <code>Float2D</code>, slicing a <code>Double1D</code> yields a <code>DoubleScalar</code>, <em>etc.</em>).  The
+operation is fast as it returns a view on <code>arr</code>.  A slice shares its contents
+with its parent.  The same rules as for ranges (see this section) apply to
+<code>index</code> and <code>dim</code> which can have a negative value understood as being relative
+to the end.</p>
+<h3 id="ranged-sub-array">Ranged sub-array</h3>
+<p>You can make a sub-array for given ranges of indices:</p>
+<pre><code class="java">arr.view(rng1, rng2, ..., rngR)
+</code></pre>
+
+<p>which returns a view to <code>arr</code> limited to the elements indexed by the
+ranges <code>rng*</code> are either <code>Range</code> objects or <code>null</code> which means
+"<em>all</em>".</p>
+<p>A range is a construction like:</p>
+<pre><code class="java">Range rng = new Range(start, stop);
+</code></pre>
+
+<p>or:</p>
+<pre><code class="java">Range rng = new Range(start, stop, step);
+</code></pre>
+
+<p>where <code>start</code> is the initial index of the range, <code>stop</code> is the last index and
+<code>step</code> is optional and defaults to <code>+1</code> if omitted.</p>
+<p>As in Java, indexes of a range start at <code>0</code> (also <code>Range.FIRST</code>) but may be
+negative.  Starting/ending indexes of a range are interpreted as offsets
+relative to the length of the dimension of interest if they are strictly
+negative.  That is <code>-1</code> (also <code>Range.LAST</code>) is the last element along a
+dimension, <code>-2</code> is the penultimate element, <em>etc.</em> This rule is however only
+applied once: if <code>j</code> is a start/stop index, then <em>j</em> (if <em>j</em> &gt;= 0) or <em>j</em>+<em>n</em>
+(if <em>j</em> &lt; 0) must be greater or equal 0 and strictly less than <em>n</em>, the length
+of the dimension of interest.</p>
+<p>The convention is that the element corresponding to the first index of a range
+is always considered while the last one may not be reached.  In pseudo-code,
+the rules are:</p>
+<pre><code class="java">if (step &gt; 0) {
+    for (int index = first; index &lt;= last; index += step) {
+        ...
+    }
+} else if (step &lt; 0) {
+    for (int index = first; index &gt;= last; index += step) {
+        ...
+    }
+}
+</code></pre>
+
+<p>The sign of the step must be in agreement with the ordering of the first and
+last element of the range, otherwise the range may be <em>empty</em>.  This occurs
+when (after applying the rules for negative indices) <code>first</code> &gt; <code>last</code> and
+<code>step</code> &gt; 0 and when <code>first</code> &lt; <code>last</code> and <code>step</code> &lt; 0.</p>
+<p>To ease the construction of ranges and make the code more readable, we
+recommend to introduce a range factory in your class, <em>e.g.</em>:</p>
+<pre><code class="java">static public Range range(int first, int last) {
+    return new Range(first, last);
+}
+static public Range range(int first, int last, int step) {
+    return new Range(first, last, step);
+}
+</code></pre>
+
+<p>Then a ranged view of an array can be written as:</p>
+<pre><code class="java">arr.view(range(0,-1,2), range(4,8))
+</code></pre>
+
+<p>which is lighter and more readable than:</p>
+<pre><code class="java">arr.view(new Range(0,-1,2), new Range(4,8))
+</code></pre>
+
+<h3 id="selected-sub-array">Selected sub-array</h3>
+<p>Likewise:</p>
+<pre><code class="java">arr.view(sel1, sel2, ..., selR)
+</code></pre>
+
+<p>returns a view to <code>arr</code> from a selection of indices, all <code>sel*</code> arguments are
+either <code>int[]</code> index list or <code>null</code> which means <strong><em>all</em></strong>.  Beware that in
+selections of indices, all indices must be reachable (<code>-1</code> is considered as
+out-of-bounds).</p>
+<p>To ease the construction of such views and make the code more readable, you can
+also use selection factories like:</p>
+<pre><code class="java">static public int[] select(int i1) {
+    return new int[]{i1};
+}
+static public int[] select(int i1, int i2) {
+    return new int[]{i1, i2};
+}
+static public int[] select(int i1, int i2, int i3) {
+    return new int[]{i1, i2, i3};
+}
+...
+</code></pre>
+
+<p>and write something like:</p>
+<pre><code class="java">arr.view(select(3,2,9), select(5,1))
+</code></pre>
+
+<p>Note that sub-arrays and slices are views to the original array (which can
+itself be a view) with fast access to the elements of this array.  If you do
+not want that the view and its parent share the same elements, use the <code>copy()</code>
+method after making the view.</p>
+<p>It is currently not possible to mix ranges, slicing and index selection in a
+single sub-array construction, as it would result in too many possibilities
+(and potentially inefficient code).  It is however possible to chain
+sub-array-constructions to obtain the same effect.  For instance:</p>
+<pre><code class="java">arr.view(null, range(2,11,3)).view(select(6,4,8,2), null)
+</code></pre>
+
+<p>to mimic:</p>
+<pre><code class="java">arr.view(select(6,4,8,2), range(2,11,3))
+</code></pre>
+
+<p>which is not allowed for now.</p>
+<p><b id="type">[1] Type:</b> The primitive type of the elements of a <code>Typed</code> object.
+<a href="#type1">↩</a></p>
+<p><b id="rank">[2] Rank:</b> The number of dimensions of a multi-dimensional
+(a.k.a. <em>shaped</em>) object. <a href="#rank1">↩</a></p>
+<p><b id="flat">[3] Flat:</b> Zero-offset, contiguous storage in column-major order.
+<a href="#flat1">↩</a></p></div>
+            
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script>var base_url = '..';</script>
+        <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
+        <script src="../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

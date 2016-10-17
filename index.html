@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="./img/favicon.ico">
+
+	<title>TiPi framework</title>
+
+        <link href="./css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="./css/font-awesome-4.5.0.css" rel="stylesheet">
+        <link href="./css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="./css/highlight.css">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body class="homepage">
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+            <a class="navbar-brand" href=".">TiPi framework</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li class="active">
+                        <a href=".">Home</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="framework/">Framework</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="shaped-arrays/">Shaped Arrays</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="array-factory/">Making Arrays</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="vectors/">Vectors</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Developpers <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="new-vector-types/">New Vector Types</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="tpp/">The TiPi Preprocessor</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="license/">License</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="news/">News</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                </ul>
+            
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                
+                    <li class="disabled">
+                        <a rel="next" >
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="framework/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#tipi-framework-for-solving-inverse-problems">TiPi framework for solving inverse problems</a></li>
+        
+            <li><a href="#contents">Contents</a></li>
+        
+            <li><a href="#rationale-and-performances-issues">Rationale and performances issues</a></li>
+        
+            <li><a href="#a-caveat-for-developpers">A caveat for developpers</a></li>
+        
+    
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="tipi-framework-for-solving-inverse-problems">TiPi framework for solving inverse problems</h1>
+<p>TiPi is a Java <em>Toolkit for Inverse Problems and Imaging</em> developed as part the
+<a href="http://mitiv.univ-lyon1.fr/">MiTiV</a> project.  The objective of TiPi is to
+provide a framework for developping fast algorithms for solving inverse
+problems in particular in the domain of imaging.</p>
+<h2 id="contents">Contents</h2>
+<p>TiPi provides:</p>
+<ul>
+<li>
+<p>Classes and methods to manage multi-dimensional arrays, so-called <a href="shaped-arrays/"><em>shaped
+  arrays</em></a>, in a flexible way.</p>
+</li>
+<li>
+<p>Classes and methods to deal with so-called <a href="vectors/"><em>vectors</em></a> which
+  stores values in an efficient way.  These vectors are needed by iterative
+  optimization methods and are typically used to store the data, theirs weights
+  and the variables of the inverse problem.</p>
+</li>
+<li>
+<p>Limited memory optimization algorithms to deal with large scale non-linear
+  problems possibly with constraints.</p>
+</li>
+<li>
+<p>Building-block classes to encode objective functions (likelihood,
+  regularization, <em>etc.</em>).</p>
+</li>
+<li>
+<p>Utilities for reading or writing data files, <em>etc.</em></p>
+</li>
+</ul>
+<h2 id="rationale-and-performances-issues">Rationale and performances issues</h2>
+<p>In TiPi, data and variable are stored in objects called <a href="vectors/">vectors</a>
+which intentionally have a limited set of methods.  These methods are just
+those which are needed by optimization algorithms and merely correspond to the
+properties of vectors in the conventional
+<a href="http://en.wikipedia.org/wiki/Vector_space"><em>linear algebra sense</em></a>.  Hence the
+name of these objects in TiPi.</p>
+<p>Thanks to these restrictions, <em>vectors</em> can be implemented in forms suitable
+for performances (non-conventional or distributed memory, <em>etc.</em>) and a
+particular implementation is simplified by the fact that only few methods have
+to be exposed (see <a href="new-vector-types/"><em>Creating new vector types</em></a>).</p>
+<p>However, <em>vectors</em> are not really adapted for the many manipulations required
+to prepare the inputs of the algorithms (<em>e.g.</em>, reading images, converting
+types, perform zero-padding, recentering, etc.) and to save the result (e.g.,
+extracting parts, rescaling, writing to a file, <em>etc.</em>).  This is why TiPi
+provides another type of objects: the <a href="shaped-arrays/"><em>shaped arrays</em></a>.
+These objects are much more versatile and use conventional memory.  We were
+careful so that their manipulation should be very flexible but, as far as
+possible, not to the sacrifice of performances.</p>
+<p>Typically, an algorithm written in the TiPi framework starts with shaped
+arrays, does some pre-processing, then creates vectors from the input arrays,
+runs the iterative method, copies the result into a shaped array, displays
+and/or saves the shaped array, perhaps after some post-processing.</p>
+<h2 id="a-caveat-for-developpers">A caveat for developpers</h2>
+<p>Many classes in TiPi only differ by the type or rank of the shaped objects
+which they implement.  To avoid tedious edition and management of many similar
+source files, TiPi has its own pre-processor named <code>tpp</code>
+(<a href="tpp/"><em>the TiPi Pre-processor</em></a>).  The Java code is generated from source
+files which have (by convention) the extension <code>.javax</code> and which are stored in
+the directory <code>src/codegen</code>.  If you want to modify an autogenerated class,
+first edit the corresponding <code>.javax</code> source and then run the command:</p>
+<pre><code class="sh">make all
+</code></pre>
+
+<p>in the directory <code>src/codegen</code>.</p></div>
+            
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+
+        <script src="./js/jquery-1.10.2.min.js"></script>
+        <script src="./js/bootstrap-3.0.3.min.js"></script>
+        <script src="./js/highlight.pack.js"></script>
+        <script>var base_url = '.';</script>
+        <script data-main="./mkdocs/js/search.js" src="./mkdocs/js/require.js"></script>
+        <script src="./js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
+
+<!--
+MkDocs version : 0.15.3
+Build Date UTC : 2016-10-17 17:29:52.961599
+-->

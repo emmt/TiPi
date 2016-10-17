@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    
+    <url>
+     <loc>None/</loc>
+     <lastmod>2016-10-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+        
+    <url>
+     <loc>None/framework/</loc>
+     <lastmod>2016-10-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/shaped-arrays/</loc>
+     <lastmod>2016-10-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/array-factory/</loc>
+     <lastmod>2016-10-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/vectors/</loc>
+     <lastmod>2016-10-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+        
+    <url>
+     <loc>None/new-vector-types/</loc>
+     <lastmod>2016-10-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/tpp/</loc>
+     <lastmod>2016-10-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+        
+    <url>
+     <loc>None/license/</loc>
+     <lastmod>2016-10-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/news/</loc>
+     <lastmod>2016-10-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+</urlset>

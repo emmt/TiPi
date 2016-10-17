@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+
+	<title>Making Arrays - TiPi framework</title>
+
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.5.0.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">TiPi framework</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown active">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../framework/">Framework</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../shaped-arrays/">Shaped Arrays</a>
+</li>
+
+                        
+                            
+<li class="active">
+    <a href="./">Making Arrays</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../vectors/">Vectors</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Developpers <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../new-vector-types/">New Vector Types</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../tpp/">The TiPi Preprocessor</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../license/">License</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../news/">News</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                </ul>
+            
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                
+                    <li >
+                        <a rel="next" href="../shaped-arrays/">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../vectors/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#the-array-factory-in-tipi">The array factory in TiPi</a></li>
+        
+            <li><a href="#create-a-new-shaped-array">Create a new shaped array</a></li>
+        
+            <li><a href="#wrap-an-array-around-existing-data">Wrap an array around existing data</a></li>
+        
+            <li><a href="#type-conversion">Type conversion</a></li>
+        
+    
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="the-array-factory-in-tipi">The array factory in TiPi</h1>
+<p>The class <code>ArrayFactory</code> provides static methods for creating new shaped
+arrays, converting arrays to have a specific element type or wrap existing
+objects in a shaped array which share its elements with the object.</p>
+<h2 id="create-a-new-shaped-array">Create a new shaped array</h2>
+<p>The static method <code>ArrayFactory.create()</code> creates a shaped array with given
+element type and shape.  There are many possibilities to specify the shape of
+the array, for instance:</p>
+<pre><code class="java">ArrayFactory.create(type, shape)
+ArrayFactory.create(type, dims)
+ArrayFactory.create(type, dim1, dim2, ...)
+</code></pre>
+
+<p>where <code>type</code> is the element type, <code>shape</code> is the array shape (an instance of
+<code>Shape</code>), <code>dims</code> is an <code>int[]</code> array with the list of dimensions, <code>dim1</code>,
+<code>dim2</code> ... are the successive dimensions.  Shaped arrays may have up to 9
+dimensions (which is probably too large for any reasonnable application).</p>
+<p>No dimensions may be specified in order to create a scalar of a given type:</p>
+<pre><code class="java">ArrayFactory.create(type)
+</code></pre>
+
+<p>The array element type can be one of:</p>
+<ul>
+<li><code>Traits.BYTE</code> for an array of <code>byte</code> elements;</li>
+<li><code>Traits.SHORT</code> for an array of <code>short</code> elements;</li>
+<li><code>Traits.INT</code> for an array of <code>int</code> elements;</li>
+<li><code>Traits.LONG</code> for an array of <code>long</code> elements;</li>
+<li><code>Traits.FLOAT</code> for an array of <code>float</code> elements;</li>
+<li><code>Traits.DOUBLE</code> for an array of <code>double</code> elements.</li>
+</ul>
+<p>The storage of the elements of an array created by <code>ArrayFactory.create(...)</code>
+is provided by a simple monodimensional Java array with the same element type.
+For multi-dimensional arrays, the storage order of arrays created by
+<code>ArrayFactory.create(...)</code> is <em>colum-major</em> which means that the leftmost
+(first) indices vary faster when stepping through consecutive memory locations.</p>
+<h2 id="wrap-an-array-around-existing-data">Wrap an array around existing data</h2>
+<p>A shaped array may be created to share its elements with an existing
+monodimensional Java array of any generic numerical type.  This is done by one
+of the <code>ArrayFactory.wrap(...)</code> methods as follows:</p>
+<pre><code class="java">ArrayFactory.wrap(buf, shape)
+ArrayFactory.wrap(buf, dims)
+ArrayFactory.wrap(buf, dim1, dim2, ...)
+</code></pre>
+
+<p>where <code>buf</code> is the Java array and the same notation as above is used for
+specifying the list of dimensions.  The length of the buffer <code>buf</code> must be the
+same as the number of elements of the resulting shaped array (the product of
+its dimensions).  The constructors of the <code>Stridden&lt;Type&gt;&lt;Rank&gt;D</code> classes can
+be used to wrap shaped arrays with arbitrary strides and offsets around
+monodimensional Java arrays.</p>
+<p>A single element buffer can be wrapped into a scalar by:</p>
+<pre><code class="java">ArrayFactory.wrap(buf)
+</code></pre>
+
+<p>Any shaped vector, say <code>vec</code>, can also be wrapped into a shaped array as
+follows:</p>
+<pre><code class="java">ArrayFactory.wrap(vec)
+</code></pre>
+
+<p>which yieds a <code>ShapedArray</code> if <code>vec</code> is a <code>ShapedVector</code> and a
+<code>FloatShapedArray</code> or a <code>DoubleShapedArray</code> if <code>vec</code> is a <code>FloatShapedVector</code>
+or a <code>DoubleShapedVector</code> respectively.  The type and shape of the resulting
+array are the same as those of <code>vec</code> and it is guaranteed that they share their
+contents (with contiguous elements in colum-major order).  So the resulting
+shaped array can be seen as a <em>view</em> of the shaped vector.</p>
+<h2 id="type-conversion">Type conversion</h2>
+<p>The element type af an existing array can be converted by one of the
+<code>to&lt;Type&gt;()</code> methods.  For instance:</p>
+<pre><code class="java">ArrayFactory.toFloat(arr)
+arr.toFloat()
+</code></pre>
+
+<p>both yield a version of <code>arr</code> whose elements are of generic type <code>float</code>.  For
+maximum efficiency, the conversion operation is <em>lazzy</em> in the sense that the
+same array is returned if it already has the requested type.</p>
+<p><strong>Warning:</strong> In a near futur, static methods like <code>ArrayFactory.toFloat(arr)</code>
+will be deprecated in favor of instance methods like <code>arr.toFloat()</code> which
+are more readable.</p></div>
+            
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script>var base_url = '..';</script>
+        <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
+        <script src="../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

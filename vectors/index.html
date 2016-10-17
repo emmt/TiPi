@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+
+	<title>Vectors - TiPi framework</title>
+
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.5.0.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">TiPi framework</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown active">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../framework/">Framework</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../shaped-arrays/">Shaped Arrays</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../array-factory/">Making Arrays</a>
+</li>
+
+                        
+                            
+<li class="active">
+    <a href="./">Vectors</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Developpers <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../new-vector-types/">New Vector Types</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../tpp/">The TiPi Preprocessor</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../license/">License</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../news/">News</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                </ul>
+            
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                
+                    <li >
+                        <a rel="next" href="../array-factory/">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../new-vector-types/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#using-vectors-in-tipi">Using vectors in TiPi</a></li>
+        
+            <li><a href="#required-operations-in-a-vector-space">Required Operations in a Vector Space</a></li>
+        
+            <li><a href="#basic-operations-on-vectors">Basic operations on vectors</a></li>
+        
+    
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="using-vectors-in-tipi">Using vectors in TiPi</h1>
+<p><strong>Warning:</strong> This page needs to be edited to update its contents.  The
+presented general ideas are however correct.</p>
+<h2 id="required-operations-in-a-vector-space">Required Operations in a Vector Space</h2>
+<ul>
+<li>create a new vector</li>
+<li>copy vector contents from/to conventional memory<sup>(a)</sup></li>
+<li>fetch/set the value of a specific element<sup>(a)</sup></li>
+<li>fill a vector with a value</li>
+<li>copy (duplicate) a vector</li>
+<li>compute the dot product of two vectors</li>
+<li>copy vector contents to another vector</li>
+<li>swap the contents of two vectors</li>
+<li>scale a vector by a scalar</li>
+<li>compute linear combinations of 2 or 3 vectors</li>
+<li>compute the norm(s) of a vector</li>
+</ul>
+<p><sup>(a)</sup> These operations are not guaranteed to be efficient, their usage
+  should be limited, for instance to set the inputs of an algorithm and to
+  recover its result.</p>
+<p>Example of methods provided by a vector space:</p>
+<ul>
+<li>Method <code>create(alpha)</code> creates a new vector of the vector space with all
+  components set to the given value <code>alpha</code>.</li>
+</ul>
+<h2 id="basic-operations-on-vectors">Basic operations on vectors</h2>
+<p>To create a shaped-vector from the contents of the array</p>
+<pre><code>space.create(arr)
+</code></pre>
+<p>where <code>arr</code> can be: a <code>ShapedArray</code> (with same shape, automatically converted
+to the correct type), a flat Java vector (with the same number of elements,
+type is automatically converted).  To spare memory, the result may be a
+wrapping of the source and thus may share its contents with it, but there is no
+guarantee of that.  To make sure that the two object have independent contents,
+use:</p>
+<pre><code>space.create(arr, forceCopy)
+</code></pre>
+<p>with <em>forceCopy</em> set to <code>true</code>.</p>
+<p>To convert to a flat Java vector (of known element type) do one of:</p>
+<pre><code>vec.flatten()
+vec.flatten(forceCopy)
+</code></pre>
+<p>Thus a shaped array may be reformed by one of:</p>
+<pre><code>ShapedArray arr = ShapedArray.create(vec);
+ShapedArray arr = ShapedArray.wrap(vec.flatten(), vec.cloneShape(), false);
+</code></pre>
+<p>with variants:</p>
+<pre><code>FloatArray fltArr = FloatArray.createFrom(fltvec);
+DoubleArray dblArr = DoubleArray.createFrom(dblVec);
+</code></pre>
+<p>assuming:</p>
+<pre><code>FloatShapedVector fltVec;
+DoubleShapedVector dblVec;
+</code></pre>
+<p>{==So there must be some copyFrom/copyTo for ShapedArray and ShapedVector
+which are optimized if the contents are the same...==}</p>
+<p>Assuming that <code>arr</code> is a <code>ShapedArray</code>, the reason to distinguish:</p>
+<pre><code>vec = space.create(arr);
+</code></pre>
+<p>and</p>
+<pre><code>vec = space.create();
+vec.assign(arr);
+</code></pre>
+<p>is that, although the two fragments of code result in a vector with the same
+contents as the array, the first fragment of code may have a chance to avoid
+duplicating memory, while the second yields independent contents.  In fact, the
+second fragment of code is equivalent to:</p>
+<pre><code>vec = space.create(arr, true); // force copy
+</code></pre>
+<p>Since we want to be able to store vectors in non-conventional memory
+(e.g. GPU), there are no guaranteed means to share contents between an array
+and a vector.  Thus, to recover the contents of a vector after some
+computations, you must call, either:</p>
+<pre><code>arr.assign(vec);
+</code></pre>
+<p>to make sure the contents of the existing array match that of the
+vector, or:</p>
+<pre><code>arr = ShapedArray.create(vec);
+</code></pre>
+<p>which creates a new array from a shaped vector.  These operations are
+optimized, so there is a chance that they costs almost nothing (if the existing
+array and the vector share their contents or if the vector contents can be
+wrapped into an array), however this cannot be guaranteed.</p></div>
+            
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script>var base_url = '..';</script>
+        <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
+        <script src="../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
