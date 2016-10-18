@@ -70,7 +70,7 @@ import mitiv.exception.IncorrectSpaceException;
  * @author Éric Thiébaut.
  */
 public abstract class VectorSpace {
-    protected final int number; /* All vector spaces have a number of elements. */
+    protected final int number; /* All vector spaces have a number of components. */
 
     protected VectorSpace(int number) {
         if (number < 1) {
@@ -95,10 +95,13 @@ public abstract class VectorSpace {
 
     /**
      * Create a new vector from this vector space filled with given value.
-     * <p>
-     * This method may be overridden to provide a more efficient version.
+     *
+     * <p> This method may be overridden to provide a more efficient version.
      * </p>
-     * @param alpha   A scalar value.
+     *
+     * @param alpha
+     *        A scalar value.
+     *
      * @return A new vector of this space.
      */
     public Vector create(double alpha) {
@@ -126,48 +129,32 @@ public abstract class VectorSpace {
     }
 
     /**
-     * Compute the inner product of two vectors.
+     * Check whether a given vector belongs to the vector space.
+     *
+     * @param vec   A vector.
+     * @return True if {@code vec} is not {@code null} and belongs to this vector space.
+     */
+    public final boolean owns(Vector vec) {
+        return (vec != null && vec.belongsTo(this));
+    }
+
+    /**
+     * Make sure a given vector belongs to the vector space.
      * <p>
-     * The inner product, also called dot or scalar product of two vectors, is
-     * the sum of the products of the corresponding elements of the two
-     * vectors.  The inner product is defined on a vector space, the two
-     * vectors must belong to this vector space.
+     * This method throws an {@code IncorrectSpaceException} exception
+     * if its argument does not belong to the vector space.
      * </p>
-     * @param x   A vector of this vector space.
-     * @param y   Another vector of this vector space.
-     * @return The inner product of {@code x} and {@code y}.
-     * @throws IncorrectSpaceException Not all vectors belong to this vector space.
+     * @param vec   A vector to check.
+     * @throws IncorrectSpaceException Vector {@code vec} does not belong to this vector space.
      */
-    public final double dot(Vector x, Vector y) {
-        check(x);
-        check(y);
-        return _dot(x, y);
+    public final void check(Vector vec) throws IncorrectSpaceException {
+        if (! owns(vec)) {
+            throw new IncorrectSpaceException();
+        }
     }
 
     /**
-     * Compute the inner product of three vectors or a weighted inner product
-     * of two vectors.
-     * <p>
-     * The inner product of three vectors is the sum of the products of the
-     * corresponding elements of the three vectors.  The inner product is
-     * defined on a vector space, the three vectors must belong to this vector
-     * space.
-     * <p>
-     * @param w   A vector of this vector space.
-     * @param x   Another vector of this vector space.
-     * @param y   Yet another vector of this vector space.
-     * @return The inner product of {@code w}, {@code x} and {@code y}.
-     * @throws IncorrectSpaceException Not all vectors belong to this vector space.
-     */
-    public final double dot(Vector w, Vector x, Vector y) {
-        check(w);
-        check(x);
-        check(y);
-        return _dot(w, x, y);
-    }
-
-    /**
-     * Compute the inner product of two vectors.
+     * Compute the inner product of two vectors (low level).
      * <p>
      * This abstract method must be overwritten by its descendants to
      * implement the inner product.  The passed arguments are guaranteed to
@@ -195,42 +182,27 @@ public abstract class VectorSpace {
     protected abstract double _dot(Vector w, Vector x, Vector y);
 
     /**
-     * Compute the Euclidean (L2) norm of a vector.
-     * <p>
-     * This basic implementation calls dot() method and is expected to be
-     * overwritten with a more efficient version by the descendants of this
-     * class.
-     * </p>
+     * Default low level implementation of the Euclidean (L2) norm of a vector.
+     *
+     * <p> This basic implementation calls the {@link Vector#dot} method and is
+     * expected to be overwritten with a more efficient version by the
+     * descendants of this class. </p>
+     *
      * @param x   A vector.
      *
-     * @return The square root of the sum of squared elements of {@code x}.
-     *
-     * @throws IncorrectSpaceException {@code x} does not belong to this vector space.
+     * @return The square root of the sum of squared components of {@code x}.
      */
-    public final double norm2(Vector x) throws IncorrectSpaceException {
-        check(x);
-        return _norm2(x);
-    }
-
-    /** Default low level implementation. */
     protected double _norm2(Vector x) {
         return Math.sqrt(_dot(x, x));
     }
 
     /**
-     * Compute the L1 norm of a vector.
+     * Compute the L1 norm of a vector (low level).
      *
      * @param x   A vector.
      *
      * @return The sum of absolute values of {@code x}.
-     *
-     * @throws IncorrectSpaceException {@code x} does not belong to this vector space.
      */
-    public final double norm1(Vector x) throws IncorrectSpaceException {
-        check(x);
-        return _norm1(x);
-    }
-
     protected abstract double _norm1(Vector x);
 
     /**
@@ -239,221 +211,141 @@ public abstract class VectorSpace {
      * @param x   A vector.
      *
      * @return The maximum absolute value of {@code x}.
-     *
-     * @throws IncorrectSpaceException {@code x} does not belong to this vector space.
      */
-    public final double normInf(Vector x) throws IncorrectSpaceException {
-        check(x);
-        return _normInf(x);
-    }
-
     protected abstract double _normInf(Vector x);
 
     /**
-     * Multiply the components of a vector by a constant factor.
-     *
-     * @param vec       The target vector.
-     * @param alpha   The scale factor.
-     *
-     * @throws IncorrectSpaceException Vector {@code vec} does not belong to this vector space.
-     */
-    public void scale(Vector vec, double alpha) {
-        check(vec);
-        _scale(vec, alpha);
-    }
-
-    /**
-     * Multiply the components of a vector by a constant factor.
+     * Multiply the components of a vector by a constant factor (low level).
      *
      * @param dst     The destination vector.
      * @param alpha   The scale factor.
      * @param src     The source vector.
-     *
-     * @throws IncorrectSpaceException Not all vectors belong to this vector space.
      */
-    public void scale(Vector dst, double alpha, Vector src) {
-        check(dst);
-        check(src);
-        _scale(dst, alpha, src);
-    }
-
-    /** Low level method for scaling a vector. */
     protected abstract void _scale(Vector dst, double alpha, Vector src);
 
-    /** Default implementation for in-place scaling of a vector. */
-    protected void _scale(Vector v, double alpha) {
-        _scale(v, alpha, v);
-
-    }
-
     /**
-     * Compute a linear combination of two vectors.
-     * <p>
-     * In pseudo-code, this method performs the following operation:
-     * <pre>
-     * dst[i] = alpha*x[i] + beta*y[i];
-     * </pre>
-     * for all indices {@code i}.
-     * </p><p>
-     * This abstract method must be overwritten by its descendants. As this
-     * method can be used to emulate other operations (as copy, zero, etc.),
-     * actual code should be optimized for specific factors alpha and/or beta
-     * equal to +/-1 or 0.  In particular when ALPHA (or BETA) is zero, then X
-     * (or Y) must not be referenced.
-     * </p>
-     * @param dst     The destination vector.
-     * @param alpha   The scalar factor for vector {@code x}.
-     * @param x       A vector.
-     * @param beta    The scalar factor for vector {@code y}.
-     * @param y       Another vector.
+     * Default low-level implementation for in-place scaling of a vector.
      *
-     * @throws IncorrectSpaceException Not all vectors belong to this vector space.
+     * <p> Multiply the components of a vector by a constant factor. </p>
+     *
+     * @param vec     The target vector.
+     * @param alpha   The scale factor.
      */
-    public final void combine(Vector dst, double alpha,
-            Vector x, double beta, Vector y) throws IncorrectSpaceException {
-        check(x);
-        check(y);
-        check(dst);
-        _combine(dst, alpha, x, beta, y);
+    protected void _scale(Vector vec, double alpha) {
+        _scale(vec, alpha, vec);
     }
 
     /**
      * Compute a linear combination of two vectors (low level).
-     * <p>
-     * This abstract method must be overwritten by the descendants of this
-     * class.  It is guaranteed that all passed vectors belong to the same
-     * vector space.
-     * </p><p>
-     * As this method can be used to emulate other operations (as copy, zero,
-     * etc.), actual code should be optimized for specific factors alpha
-     * and/or {@code beta} equal to +/-1 or 0.  In particular when {@code
-     * alpha} (or {@code beta}) is zero, then {@code x} (or {@code y}) must
-     * not be referenced.
-     * </p>
-     * @param dst     The destination vector.
-     * @param alpha   The scalar factor for vector {@code x}.
-     * @param x       A vector.
-     * @param beta    The scalar factor for vector {@code y}.
-     * @param y       Another vector.
+     *
+     * <p> In pseudo-code, this method must perform the following operations
+     * (for all indices {@code i}): </p>
+     *
+     * <pre>
+     * this[i] = alpha*x[i] + beta*y[i];
+     * </pre>
+     *
+     * <p> As this method can be used to emulate other operations (as copy,
+     * zero, etc.), actual code should be optimized for specific scaling factors
+     * equal to +/-1 or 0. In particular vectors with zero scale factors should
+     * not be accessed. </p>
+     *
+     * <p> This abstract method must be overridden by the descendants of this
+     * class. It is called by {@link Vector#combine(double, Vector, double, Vector)}
+     * which insures that all vectors do belong to this vector space. </p>
+     *
+     * @param dst      The destination vector.
+     * @param alpha    The scalar factor for vector {@code x}.
+     * @param x        A vector.
+     * @param beta     The scalar factor for vector {@code y}.
+     * @param y        Another vector.
      */
     protected abstract void _combine(Vector dst, double alpha,
             Vector x, double beta, Vector y);
 
     /**
-     * Compute a linear combination of three vectors.
-     * <p>
-     * In pseudo-code, this method performs the following operation:
-     * <pre>
-     * dst[i] = alpha*x[i] + beta*y[i] + gamma*z[i];
-     * </pre>
-     * for all indices {@code i}.
-     * </p>
-     * @param dst     The destination vector.
-     * @param alpha   The scalar factor for vector {@code x}.
-     * @param x       A vector.
-     * @param beta    The scalar factor for vector {@code y}.
-     * @param y       Another vector.
-     * @param gamma   The scalar factor for vector {@code z}.
-     * @param z       Yet another vector.
+     * Compute a linear combination of three vectors (low level).
      *
-     * @throws IncorrectSpaceException Not all vectors belong to this vector space.
-     */
-    public final void combine(Vector dst, double alpha, Vector x,
-            double beta, Vector y, double gamma, Vector z)
-                    throws IncorrectSpaceException {
-        check(x);
-        check(y);
-        check(z);
-        check(dst);
-        _combine(dst, alpha, x, beta, y, gamma, z);
-    }
-
-    /**
-     * Compute a linear combination of two vectors (low level).
-     * <p>
-     * This abstract method must be overwritten by the descendants of this
-     * class.  It is guaranteed that all passed vectors belong to the same
-     * vector space.
-     * </p>
-     * @param dst     The destination vector.
-     * @param alpha   The scalar factor for vector {@code x}.
-     * @param x       A vector.
-     * @param beta    The scalar factor for vector {@code y}.
-     * @param y       Another vector.
-     * @param gamma   The scalar factor for vector {@code z}.
-     * @param z       Yet another vector.
+     * <p> In pseudo-code, this method must perform the following operations
+     * (for all indices {@code i}): </p>
+     *
+     * <pre>
+     * this[i] = alpha*x[i] + beta*y[i] + gamma*z[i];
+     * </pre>
+     *
+     * <p> As this method can be used to emulate other operations (as copy,
+     * zero, etc.), actual code should be optimized for specific scaling factors
+     * equal to +/-1 or 0. In particular vectors with zero scale factors should
+     * not be accessed. </p>
+     *
+     * <p> This abstract method must be overridden by the descendants of this
+     * class. It is called by {@link Vector#combine(double, Vector, double,
+     * Vector, double, Vector)} which insures that all vectors do belong to this
+     * vector space. </p>
+     *
+     * @param dst      The destination vector.
+     * @param alpha    The scalar factor for vector {@code x}.
+     * @param x        A vector.
+     * @param beta     The scalar factor for vector {@code y}.
+     * @param y        Another vector.
+     * @param gamma    The scalar factor for vector {@code z}.
+     * @param z        Yet another vector.
      */
     protected abstract void _combine(Vector dst, double alpha,
             Vector x, double beta, Vector y, double gamma, Vector z);
 
     /**
-     * Add a scaled vector to a vector.
+     * Add a scaled vector to a vector (low level).
      *
-     * <p>
-     * This method performs the following in-place operation:
+     * <p> This method must perform the following in-place operation (for all
+     * indices {@code i}): </p>
+     *
      * <pre>
      * dst[i] += alpha*x[i]
      * </pre>
-     * </p>
-     * @param dst     The destination vector.
-     * @param alpha   The scalar factor for vector {@code x}.
-     * @param x       The vector to scale.
+     *
+     * <p> Descendants of this class may override this default implementation to
+     * provide a faster version. This method is called by {@link Vector#add}
+     * which insures that all vectors do belong to this vector space. </p>
+     *
+     * @param dst      The destination vector.
+     * @param alpha    The scalar factor for vector {@code x}.
+     * @param x        The vector to scale.
      */
     protected void _add(Vector dst, double alpha, Vector x) {
         _combine(dst, 1, dst, alpha, x);
     }
 
     /**
-     * Perform a component-wise multiplication of two vectors.
-     * <p>
-     * In pseudo-code, this method performs the following operation:
+     * Perform a component-wise multiplication of two vectors (low level).
+     *
+     * <p> This low-level method is called by {@link vector#multiply} which
+     * insures that all vectors do belong to this vector space. </p>
+     *
+     * <p> In pseudo-code, this method must perform the following operation (for
+     * all indices {@code i}): </p>
+     *
      * <pre>
      * dst[i] = x[i]*y[i];
      * </pre>
-     * for all indices {@code i}.
-     * </p>
-     * @param dst  The destination vector.
-     * @param x    A vector.
-     * @param y -  Another vector.
      *
-     * @throws IncorrectSpaceException Not all vectors belong to this vector space.
+     * @param dst   The destination vector.
+     * @param x     A vector.
+     * @param y     Another vector.
      */
-    public final void multiply(Vector dst, Vector x, Vector y)
-            throws IncorrectSpaceException {
-        check(x);
-        check(y);
-        check(dst);
-        _multiply(dst, x, y);
-    }
     protected abstract void _multiply(Vector dst, Vector x, Vector y);
 
     /**
-     * Copy the contents of a vector into another one.
-     *
-     * @param dst   The destination vector.
-     * @param src   The source vector.
-     *
-     * @throws IncorrectSpaceException Not all vectors belong to this vector space.
-     */
-    public final void copy(Vector dst, Vector src)
-            throws IncorrectSpaceException {
-        check(src);
-        if (dst != src) {
-            check(dst);
-            _copy(dst, src);
-        }
-    }
-
-    /**
      * Copy the contents of a vector into another one (low level).
-     * <p>
-     * Low level method which is guaranteed to be called with checked
-     * arguments by {@link #copy}.
-     * </p><p>
-     * This basic implementation calls {@link #_combine(double, Vector, double, Vector)}
-     * method and is expected to be overwritten with a more efficient version by the
-     * descendants of this class.
-     * </p>
+     *
+     * <p> Low level method which is called by {@link Vector#copy} which inusres
+     * that the arguments are vectors of this space. </p>
+     *
+     * <p> This basic implementation calls
+     * {@link #_combine(double, Vector, double, Vector)} method and is expected
+     * to be overridden with a more efficient version by the descendants of this
+     * class. </p>
+     *
      * @param dst   The destination vector.
      * @param src   The source vector.
      */
@@ -462,57 +354,26 @@ public abstract class VectorSpace {
     }
 
     /**
-     * Exchange the contents of two vectors.
-     *
-     * @param x   A Vector.
-     * @param y   Another vector
-     *
-     * @throws IncorrectSpaceException Not all vectors belong to this vector space.
-     */
-    public final void swap(Vector x, Vector y)
-            throws IncorrectSpaceException {
-        check(x);
-        if (y != x) {
-            check(y);
-            _swap(x, y);
-        }
-    }
-
-    /**
      * Exchange the contents of two vectors (low level).
-     * <p>
-     * Any concrete derived class must implement this low level method
-     * which is guaranteed to be called with checked arguments by {@link #swap}.
-     * </p>
-     * @param x   A Vector.
-     * @param y   Another vector
+     *
+     * <p> Any concrete derived class must implement this low level method which
+     * is guaranteed to be called with arguments by {@link Vector#swap}. </p>
+     *
+     * @param dst   The destination vector.
+     * @param src   The source vector.
      */
     protected abstract void _swap(Vector x, Vector y);
 
     /**
-     * Create a new vector as a clone of another vector.
-     * <p>
-     * As implemented in the base class, this method is not optimized but
-     * provides the reference behavior.
-     * </p>
-     * @param vec   The vector to clone (must belongs to this vector space).
-     * @return A clone of the input vector.
-     * @throws IncorrectSpaceException Vector {@code vec} does not belong to this vector space.
-     */
-    public Vector clone(Vector vec) throws IncorrectSpaceException {
-        check(vec);
-        return _clone(vec);
-    }
-
-    /**
      * Create a new vector from this vector space as a copy of another vector.
-     * <p>
-     * This protected method is called by {@link #clone} to do the real work
-     * after checking the argument.  Derived classes can implement a more
-     * efficient version than this one which is based on the {@link #create}
-     * method and the {@link #_copy} protected method.
-     * </p>
-     * @param vec   A vector from this space (this has been checked).
+     *
+     * <p> This protected method is called by {@link Vector#clone} to do the
+     * real work after checking the argument. Derived classes can implement a
+     * more efficient version than this one which is based on the
+     * {@link #create} method and the {@link #_copy} protected method. </p>
+     *
+     * @param vec   A vector from this space.
+     *
      * @return A new duplicate copy of the vector {@code vec}.
      */
     protected Vector _clone(Vector vec) {
@@ -522,64 +383,28 @@ public abstract class VectorSpace {
     }
 
     /**
-     * Fill a vector with zeros.
-     * <p>
-     * This method set to zero all elements of a vector.
-     * </p>
+     * Default low-level implementation for zero-filling a vector.
+     *
+     * <p> This method set all components of a vector to zero. It is called
+     * by {@link Vector#zero} which insures that the argument do belong to
+     * this space. </p>
+     *
      * @param vec   A vector of this space.
-     * @throws IncorrectSpaceException Vector {@code vec} does not belong to this vector space.
      */
-    public final void zero(Vector vec) {
-        check(vec);
-        _zero(vec);
-    }
-
-    /** Default low-level implementation (arguments are guaranteed to be correct). */
     protected void _zero(Vector vec) {
         _fill(vec, 0);
     }
 
     /**
-     * Fill a vector with a value.
-     * <p>
-     * This method set all elements of a vector with a value.
-     * </p>
+     * Fill a vector with a value (low level).
+     *
+     * <p> This method set all components of a vector with a value. It is called
+     * by {@link Vector#fill} which insures that the argument do belong to
+     * this space. </p>
+     *
      * @param x       A vector of this space.
      * @param alpha   A scalar value.
-     *
-     * @throws IncorrectSpaceException V must belong to this vector space.
      */
-    public final void fill(Vector x, double alpha) {
-        check(x);
-        _fill(x, alpha);
-    }
-
-    /** Low-level implementation (arguments are guaranteed to be correct). */
     protected abstract void _fill(Vector x, double alpha);
-
-    /**
-     * Check whether a given vector belongs to the vector space.
-     *
-     * @param vec   A vector.
-     * @return True if {@code vec} is not {@code null} and belongs to this vector space.
-     */
-    public final boolean owns(Vector vec) {
-        return (vec != null && vec.belongsTo(this));
-    }
-
-    /**
-     * Make sure a given vector belongs to the vector space.
-     * <p>
-     * This method throws an {@code IncorrectSpaceException} exception
-     * if its argument does not belong to the vector space.
-     * </p>
-     * @param vec   A vector to check.
-     * @throws IncorrectSpaceException Vector {@code vec} does not belong to this vector space.
-     */
-    public final void check(Vector vec) throws IncorrectSpaceException {
-        if (! owns(vec)) {
-            throw new IncorrectSpaceException();
-        }
-    }
 
 }

@@ -98,11 +98,11 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
     /**
      * Create a new vector initialized with the contents of an array.
      *
-     * <p>
-     * This is a variant of {@link #create(ShapedArray)} for an array of
-     * known data type.
-     * </p>
-     * @param arr - A shaped array with elements of type {@code float}.
+     * <p> This is a variant of {@link #create(ShapedArray)} for an array of
+     * known data type. </p>
+     *
+     * @param arr   A shaped array with elements of type {@code float}.
+     *
      * @return A new FloatShapedVector.
      */
     public FloatShapedVector create(FloatArray arr) {
@@ -112,12 +112,12 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
     /**
      * Create a new vector initialized with the contents of an array.
      *
-     * <p>
-     * This is a variant of {@link #create(ShapedArray, boolean)} for an array of
-     * known data type.
-     * </p>
-     * @param arr       - A shaped array with elements of type {@code float}.
-     * @param forceCopy - A flag to force a copy of the contents if true.
+     * <p> This is a variant of {@link #create(ShapedArray, boolean)} for
+     * an array of known data type. </p>
+     *
+     * @param arr         A shaped array with elements of type {@code float}.
+     * @param forceCopy   A flag to force a copy of the contents if true.
+     *
      * @return A new FloatShapedVector.
      */
     public FloatShapedVector create(FloatArray arr, boolean forceCopy) {
@@ -134,12 +134,6 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
         FloatShapedVector cpy = new FloatShapedVector(this);
         _copy(cpy, vec);
         return cpy;
-    }
-
-    @Override
-    public FloatShapedVector clone(Vector vec) {
-        check(vec);
-        return _clone(vec);
     }
 
     @Override

@@ -53,7 +53,7 @@ public class IdentityOperator extends DiagonalOperator {
     protected void _apply(Vector dst, final Vector src, int job)
             throws IncorrectSpaceException {
         if (dst != src) {
-            space.copy(dst, src);
+            dst.copy(src);
         }
     }
 

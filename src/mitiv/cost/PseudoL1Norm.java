@@ -56,7 +56,7 @@ public abstract class PseudoL1Norm implements ProximalOperator {
      */
     @Override
     public double evaluate(double alpha, Vector x) {
-        return alpha*getInputSpace().norm1(x);
+        return alpha*x.norm1();
     }
 
 }

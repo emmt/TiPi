@@ -28,18 +28,18 @@ package mitiv.linalg;
 import mitiv.exception.IncorrectSpaceException;
 
 /**
- * A Vector is an element of a VectorSpace.
- * <p>
- * An instance of this class is a collection of real values which can be addressed
- * individually and for which it makes sense to apply the operations supported by
- * the elements of a vector space (inner product, linear combination, etc.).
- * </p><p>
- * At this level of abstraction nothing more has to be known.  For instance, the
- * restriction that indexed elements of a vector are reals is not an issue for
- * complex valued vectors (a complex is just two reals).
- * </p>
- * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
+ * A Vector is an element of a {@link VectorSpace}.
  *
+ * <p> An instance of this class is a collection of real values which can be
+ * addressed individually and for which it makes sense to apply the operations
+ * supported by the elements of a vector space (inner product, linear
+ * combination, <i>etc.</i>). </p>
+ *
+ * <p> At this level of abstraction nothing more has to be known.  For
+ * instance, the restriction that indexed components of a vector are reals is
+ * not an issue for complex valued vectors (a complex is just two reals). </p>
+ *
+ * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 public abstract class Vector {
 
@@ -49,7 +49,7 @@ public abstract class Vector {
     protected final VectorSpace space;
 
     /**
-     * Number of elements.
+     * Number of components.
      */
     protected final int number;
 
@@ -109,7 +109,8 @@ public abstract class Vector {
     /**
      * Throw an exception if a vector does not belong to a given vector space.
      * @param space  The vector space.
-     * @throws IncorrectSpaceException The instance does not belong to the given vector space.
+     * @throws IncorrectSpaceException The instance does not belong to the
+     *         given vector space.
      */
     public final void assertBelongsTo(VectorSpace space)
             throws IncorrectSpaceException {
@@ -119,48 +120,48 @@ public abstract class Vector {
     }
 
     /**
-     * Get one of the values gathered in the vector.
-     * <p>
-     * This method is not meant to be efficient, it is mainly provided for
-     * testing or debugging purposes. To remain efficient, vector contents must
-     * be managed in a more specific way.
-     * </p>
+     * Get the value of a component of the vector.
      *
-     * @param i
-     *            The index of the value (runs from 0 to {@code n}-1, with
-     *            {@code n} the number of elements of the vector).
+     * <p> This method is not meant to be efficient, it is mainly provided for
+     * testing or debugging purposes. To remain efficient, vector contents must
+     * be managed in a more specific way. </p>
+     *
+     * @param i   The index of the value (runs from 0 to {@code n}-1, with
+     *            {@code n} the number of components of the vector).
+     *
      * @return The value of the vector at the given index.
-     * @throws IndexOutOfBoundsException
-     *             The index {@code i} is out of bounds.
+     *
+     * @throws IndexOutOfBoundsException The index {@code i} is out of bounds.
+     *
      * @see {@link #set(int, double)}.
      */
     public abstract double get(int i) throws IndexOutOfBoundsException;
 
     /**
-     * Set one of the values gathered in the vector.
-     * <p>
-     * This method is not meant to be efficient, it is mainly provided for
-     * testing or debugging purposes. To remain efficient, vector contents must
-     * be managed in a more specific way.
-     * </p>
+     * Set the value of a component of the vector.
      *
-     * @param i
-     *            The index of the value (runs from 0 to {@code n}-1, with
-     *            {@code n} the number of elements of the vector).
-     * @param value
-     *            The value to store at the index position.
-     * @throws IndexOutOfBoundsException
-     *             The index {@code i} is out of bounds.
+     * <p> This method is not meant to be efficient, it is mainly provided for
+     * testing or debugging purposes. To remain efficient, vector contents must
+     * be managed in a more specific way. </p>
+     *
+     * @param i        The index of the value (runs from 0 to {@code n}-1,
+     *                 with {@code n} the number of components of the vector).
+     *
+     * @param value   The value to store at the index position.
+     *
+     * @throws IndexOutOfBoundsException The index {@code i} is out of bounds.
+     *
      * @see {@link #get(int)}.
      */
-    public abstract void set(int i, double value) throws IndexOutOfBoundsException;
+    public abstract void set(int i, double value)
+        throws IndexOutOfBoundsException;
 
     /**
      * Create a clone of the vector.
-     * <p>
-     * The clone is a new vector with (initially) the same contents of the
-     * vector but using independent storage.
-     * </p>
+     *
+     * <p> The clone is a new vector with (initially) the same contents of the
+     * vector but using independent storage. </p>
+     *
      * @return A clone of the vector.
      */
     @Override
@@ -171,16 +172,17 @@ public abstract class Vector {
     /**
      * Copy the contents of the vector from another one.
      *
-     * <p>
-     * This method copies the components of the source vector <i>src</i> into <i>this</i>.
-     * In pseudo-code (for all indices <i>i</i>):
+     * <p> This method copies the components of the source vector <i>src</i>
+     * into <i>this</i>.  In pseudo-code (for all indices <i>i</i>): </p>
+     *
      * <pre>
      * this[i] = src[i];
      * </pre>
-     * </p>
+     *
      * @param src   The source vector.
      *
-     * @throws IncorrectSpaceException {@code src} does not belong to the same vector space.
+     * @throws IncorrectSpaceException {@code src} does not belong to the
+     *         same vector space.
      */
     public final void copy(Vector src) throws IncorrectSpaceException {
         if (src != this) {
@@ -193,7 +195,9 @@ public abstract class Vector {
      * Exchange the contents of the vector with that of another one.
      *
      * @param vec   The other vector.
-     * @throws IncorrectSpaceException {@code vec} does not belong to the same vector space.
+     *
+     * @throws IncorrectSpaceException {@code vec} does not belong to the
+     *         same vector space.
      */
     public final void swap(Vector vec)
             throws IncorrectSpaceException {
@@ -204,7 +208,120 @@ public abstract class Vector {
     }
 
     /**
-     * Multiply the values of the vector by a constant factor.
+     * Compute the inner product of this vector with another vector.
+     *
+     * <p> The inner product, also called dot or scalar product of two vectors,
+     * is the sum of the products of the corresponding components of the two
+     * vectors. The inner product is defined on a vector space, the two vectors
+     * must belong to this vector space. </p>
+     *
+     * <p> In pseudo-code, this method returns the following result ({@code n}
+     * is the number of components of the vectors): </p>
+     *
+     * <pre>
+     * this[0]*vec[0] + this[1]*vec[1] + ... + this[n-1]*vec[n-1]
+     * </pre>
+     *
+     * @param vec  Another vector of the vector space of {@code this}.
+     *
+     * @return The inner product of {@code this} and {@code vec}.
+     *
+     * @throws IncorrectSpaceException {@code vec} does not belong to the
+     *         vector space of {@code this} .
+     */
+    public final double dot(Vector vec) {
+        space.check(vec);
+        return space._dot(this, vec);
+    }
+
+    /**
+     * Weight the inner product of two other vectors by this vector.
+     *
+     * <p> The weighted inner product is the sum of the products of the
+     * corresponding components of the three vectors. This inner product is
+     * defined on a vector space, the three vectors must belong to this vector
+     * space.  </p>
+     *
+     * <p> In pseudo-code, this method returns the following result ({@code n}
+     * is the number of components of the vectors): </p>
+     *
+     * <pre>
+     * this[0]*x[0]*y[0] + this[1]*x[1]*y[0] + ... + this[n-1]*x[n-1]*y[n-1]
+     * </pre>
+     *
+     * @param x   Another vector of the vector space of {@code this}.
+     *
+     * @param y   Yet another vector of the vector space of {@code this}.
+     *
+     * @return The sum of the products of the corresponding components of
+     *         {@code this}, {@code v1} and {@code v2}.
+     *
+     * @throws IncorrectSpaceException Vectors {@code x} or {@code y} do not
+     *         belong to the vector space of {@code this}.
+     */
+    public final double dot(Vector x, Vector y) {
+        space.check(x);
+        space.check(y);
+        return space._dot(this, x, y);
+    }
+
+    /**
+     * Compute the L1 norm of the vector.
+     *
+     * @return The sum of absolute values of the components of the vector.
+     */
+    public final double norm1() {
+        return space._norm1(this);
+    }
+
+    /**
+     * Compute the Euclidean (L2) norm of the vector.
+     *
+     * @return The square root of the sum of the squared values of the
+     *         components of the vector.
+     */
+    public final double norm2() {
+        return space._norm2(this);
+    }
+
+    /**
+     * Compute the infinite norm of the vector.
+     *
+     * @return The maximum absolute value of the components of the vector.
+     */
+    public final double normInf() {
+        return space._normInf(this);
+    }
+
+    /**
+     * Fill the vector with a value.
+     *
+     * <p> Set all components of the vector with a value.  </p>
+     *
+     * @param alpha   A scalar value.
+     */
+    public final void fill(double value) {
+        space._fill(this, value);
+    }
+
+    /**
+     * Fill the vector with zeros.
+     *
+     * <p> Set all components of the vector to zero.  </p>
+     */
+    public final void zero() {
+        space._zero(this);
+    }
+
+    /**
+     * Multiply the components of the vector by a constant factor.
+     *
+     * <p> In pseudo-code, this method performs the following operation (for
+     * all indices {@code i}): </p>
+     *
+     * <pre>
+     * this[i] *= alpha;
+     * </pre>
      *
      * @param alpha   The scale factor.
      */
@@ -215,9 +332,19 @@ public abstract class Vector {
     /**
      * Set the vector to a vector times a constant factor.
      *
+     * <p> In pseudo-code, this method performs the following operation (for
+     * all indices {@code i}): </p>
+     *
+     * <pre>
+     * this[i] = alpha*vec[i];
+     * </pre>
+     *
      * @param alpha   The scale factor.
-     * @param vec     The source vector to scale.
-     * @throws IncorrectSpaceException {@code vec} does not belong to the same vector space.
+     *
+     * @param vec     A vector of the vector space of {@code this}.
+     *
+     * @throws IncorrectSpaceException {@code vec} does not belong to the
+     *         vector space of {@code this}.
      */
     public final void scale(double alpha, Vector vec) {
         space.check(vec);
@@ -225,113 +352,24 @@ public abstract class Vector {
     }
 
     /**
-     * Compute the inner product of this vector with another vector.
-     * <p>
-     * The inner product, also called dot or scalar product of two vectors, is
-     * the sum of the products of the corresponding elements of the two vectors.
-     * The inner product is defined on a vector space, the two vectors must
-     * belong to this vector space.
-     * </p>
-     *
-     * @param vec
-     *            Another vector of this vector space.
-     * @return The inner product of {@code this} and {@code vec}.
-     * @throws IncorrectSpaceException
-     *             {@code vec} must belong to the vector space of {@code this} .
-     */
-    public final double dot(Vector vec) {
-        space.check(vec);
-        return space._dot(this, vec);
-    }
-
-    /**
-     * Compute the inner product of this vector with two other vectors.
-     * <p>
-     * The inner product of three vectors is the sum of the products of the
-     * corresponding elements of the three vectors. The inner product is defined
-     * on a vector space, the three vectors must belong to this vector space.
-     * </p>
-     *
-     * @param v1
-     *            Another vector of this vector space.
-     * @param v2
-     *            Yet another vector of this vector space.
-     * @return The inner product of {@code this}, {@code v1} and {@code v2}.
-     * @throws IncorrectSpaceException
-     *             Vectors {@code v1} or {@code v2} do not belong to the vector
-     *             space of {@code this}.
-     */
-    public final double dot(Vector v1, Vector v2) {
-        space.check(v1);
-        space.check(v2);
-        return space._dot(this, v1, v2);
-    }
-
-    /**
-     * Compute the L1 norm of the vector.
-     *
-     * @return The sum of absolute values of the vector.
-     */
-    public final double norm1() {
-        return space._norm1(this);
-    }
-
-    /**
-     * Compute the Euclidean (L2) norm of the vector.
-     *
-     * @return The square root of the sum of squared elements of the vector.
-     */
-    public final double norm2() {
-        return space._norm2(this);
-    }
-
-    /**
-     * Compute the infinite norm of the vector.
-     *
-     * @return The maximum absolute value of the vector.
-     */
-    public final double normInf() {
-        return space._normInf(this);
-    }
-
-    /**
-     * Fill the vector with a value.
-     * <p>
-     * Set all elements of the vector with a value.
-     * </p>
-     * @param alpha   A scalar value.
-     */
-    public final void fill(double value) {
-        space._fill(this, value);
-    }
-
-    /**
-     * Fill the vector with zeros.
-     * <p>
-     * Set to zero all elements of the vector.
-     * </p>
-     */
-    public final void zero() {
-        space._zero(this);
-    }
-
-    /**
      * Add a scaled vector.
      *
-     * <p>
-     * In pseudo-code, this method performs the following operation:
+     * <p> In pseudo-code, this method performs the following operation (for
+     * all indices {@code i}): </p>
+     *
      * <pre>
      * this[i] += alpha*x[i];
      * </pre>
-     * for all indices {@code i}.
-     * </p>
-     * @param alpha  The scalar factor for vector {@code x}.
-     * @param x      A vector.
      *
-     * @throws IncorrectSpaceException Vector {@code x} does not belong to the same
-     * vector space.
+     * @param alpha  The scalar factor.
+     *
+     * @param x      A vector of the vector space of {@code this}.
+     *
+     * @throws IncorrectSpaceException Vector {@code x} does not belong to the
+     *         vector space of {@code this}.
      */
-    public final void add(double alpha, Vector x) throws IncorrectSpaceException {
+    public final void add(double alpha, Vector x)
+        throws IncorrectSpaceException {
         space.check(x);
         space._add(this, alpha, x);
     }
@@ -339,27 +377,24 @@ public abstract class Vector {
     /**
      * Compute the linear combination of two vectors.
      *
-     * <p>
-     * In pseudo-code, this method performs the following operation:
+     * <p> In pseudo-code, this method performs the following operation (for
+     * all indices {@code i}): </p>
      *
      * <pre>
      * this[i] = alpha*x[i] + beta*y[i];
      * </pre>
      *
-     * for all indices {@code i}.
-     * </p>
-     *
      * @param alpha
      *            The scalar factor for vector {@code x}.
      * @param x
-     *            A vector.
+     *            A vector of the vector space of {@code this}.
      * @param beta
      *            The scalar factor for vector {@code y}.
      * @param y
-     *            Another vector.
+     *            Another vector of the vector space of {@code this}.
      *
-     * @throws IncorrectSpaceException
-     *             Not all vectors belong to the same vector space.
+     * @throws IncorrectSpaceException Not all vectors belong to the vector
+     *         space of {@code this}.
      */
     public final void combine(double alpha, Vector x,
             double beta, Vector y) throws IncorrectSpaceException {
@@ -370,31 +405,29 @@ public abstract class Vector {
 
     /**
      * Compute the linear combination of three vectors.
-     * <p>
-     * In pseudo-code, this method performs the following operation:
+     *
+     * <p> In pseudo-code, this method performs the following operation (for
+     * all indices {@code i}): </p>
      *
      * <pre>
      * this[i] = alpha*x[i] + beta*y[i] + gamma*z[i];
      * </pre>
      *
-     * for all indices {@code i}.
-     * </p>
-     *
      * @param alpha
      *            The scalar factor for vector {@code x}.
      * @param x
-     *            A vector.
+     *            A vector of the vector space of {@code this}.
      * @param beta
      *            The scalar factor for vector {@code y}.
      * @param y
-     *            Another vector.
+     *            Another vector of the vector space of {@code this}.
      * @param gamma
      *            The scalar factor for vector {@code z}.
      * @param z
-     *            Yet another vector.
+     *            Yet another vector of the vector space of {@code this}.
      *
-     * @throws IncorrectSpaceException
-     *             Not all vectors belong to the same vector space.
+     * @throws IncorrectSpaceException Not all vectors belong to the vector
+     *         space of {@code this}.
      */
     public final void combine(double alpha, Vector x,
             double beta, Vector y,
@@ -408,25 +441,48 @@ public abstract class Vector {
     /**
      * Perform a component-wise multiplication by another vector.
      *
-     * <p>
-     * In pseudo-code, this method performs the following operation:
+     * <p> In pseudo-code, this method performs the following operation (for
+     * all indices {@code i}): </p>
      *
      * <pre>
-     * this[i] *= other[i];
+     * this[i] *= x[i];
+     * </pre>
+     *
+     * @param x   A vector of the vector space of {@code this}.
+     *
+     * @throws IncorrectSpaceException The argument does not belong to the
+     *         vector space of {@code this}.
+     */
+    public final void multiply(Vector x) throws IncorrectSpaceException {
+        space.check(x);
+        space._multiply(this, this, x);
+    }
+
+    /**
+     * Compute the component-wise multiplication of two vectors.
+     *
+     * <p> In pseudo-code, this method performs the following operation (for
+     * all indices {@code i}): </p>
+     *
+     * <pre>
+     * this[i] = x[i]*y[i];
      * </pre>
      *
      * for all indices {@code i}.
      * </p>
      *
-     * @param other
-     *            Another vector.
+     * @param x   A vector of the vector space of {@code this}.
      *
-     * @throws IncorrectSpaceException
-     *             The argument does not belong to this vector space.
+     * @param y   Another vector of the vector space of {@code this}.
+     *
+     * @throws IncorrectSpaceException Not all arguments belong to the vector
+     *         space of {@code this}.
      */
-    public final void multiply(Vector other) throws IncorrectSpaceException {
-        space.check(other);
-        space._multiply(this, this, other);
+    public final void multiply(Vector x, Vector y)
+        throws IncorrectSpaceException {
+        space.check(x);
+        space.check(y);
+        space._multiply(this, x, y);
     }
 
     /**
@@ -434,12 +490,38 @@ public abstract class Vector {
      */
     @Override
     public String toString() {
+        return toString(number);
+    }
+
+
+    /**
+     * Make a, possibly truncated, string representation of the vector
+     * contents.
+     *
+     * @param n   The maximum number of components to show.
+     *
+     * @return A string like "{1.1, 0.0, ..., 9.7}", if {@code n = 3}.
+     */
+    public String toString(int n) {
         StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < number; ++i) {
-            buf.append(i == 0 ? "{" : ", ");
-            buf.append(get(i));
+        buf.append("{");
+        if (number > n) {
+            if (n <= 0 ) {
+                buf.append("...");
+            } else {
+                for (int i = 0; i < Math.min(number, (n + 1)/2); ++i) {
+                    buf.append(String.format((i > 0 ? ", %g" : "%g"), get(i)));
+                }
+                buf.append(", ...");
+                for (int i = number - (n - ((n + 1)/2)); i < number; ++i) {
+                    buf.append(String.format(", %g", get(i)));
+                }
+            }
+        } else {
+            for (int i = 0; i < number; ++i) {
+                buf.append(String.format((i > 0 ? ", %g" : "%g"), get(i)));
+            }
         }
-        buf.append("}");
-        return buf.toString();
+        return buf.append("}").toString();
     }
 }

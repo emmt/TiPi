@@ -47,10 +47,11 @@ public abstract class LinearOperator extends DifferentiableMapping {
     public static int ADJOINT_INVERSE = (ADJOINT|INVERSE);
 
     /**
-     * Create a new linear operator which operates in the same vector space (endomorphism).
+     * Create a new linear operator which operates in the same vector space
+     * (endomorphism).
      *
      * @param vsp
-     *            - The vector space.
+     *        The vector space.
      */
     public LinearOperator(VectorSpace vsp) {
         super(vsp);
@@ -59,13 +60,13 @@ public abstract class LinearOperator extends DifferentiableMapping {
     /**
      * Create a new linear operator.
      *
-     * This method is protected as it may not be suitable for all linear
-     * operators.
+     * <p> This method is protected as it may not be suitable for all linear
+     * operators. </p>
      *
      * @param inp
-     *            - The input vector space.
+     *        The input vector space.
      * @param out
-     *            - The output vector space.
+     *        The output vector space.
      */
     protected LinearOperator(VectorSpace inp, VectorSpace out) {
         super(inp, out);
@@ -73,18 +74,21 @@ public abstract class LinearOperator extends DifferentiableMapping {
 
     /**
      * Apply a given operation implemented by a linear operator.
-     * @param dst - The destination vector.
-     * @param src - The source vector.
-     * @param job - The type of operation to perform ({@link #DIRECT},
-     *              {@link #ADJOINT}, {@link INVERSE} or
-     *              {@link INVERSE_ADJOINT}).
+     *
+     * @param dst
+     *        The destination vector.
+     * @param src
+     *        The source vector.
+     * @param job
+     *        The type of operation to perform ({@link #DIRECT},
+     *        {@link #ADJOINT}, {@link INVERSE} or {@link INVERSE_ADJOINT}).
      *
      * @throws IncorrectSpaceException
      *         If {@code job} is {@link #DIRECT}, or {@link INVERSE_ADJOINT}
-     *         (resp. {@link #ADJOINT} or {@link INVERSE}), {@code src}
-     *         (resp. {@code dst}) must belongs to the input vector space of the
-     *         operator and {@code dst} (resp. {@code src}) must belongs to the output
-     *         vector space of the operator.
+     *         (resp. {@link #ADJOINT} or {@link INVERSE}), {@code src} (resp.
+     *         {@code dst}) must belongs to the input vector space of the
+     *         operator and {@code dst} (resp. {@code src}) must belongs to the
+     *         output vector space of the operator.
      *
      * @throws IllegalLinearOperationException
      *         The value of {@code job} is incorrect.
@@ -118,15 +122,20 @@ public abstract class LinearOperator extends DifferentiableMapping {
     /**
      * Implement the operations performed by a linear operator out-of-place.
      *
-     * This protected method is called by the `apply` method after checking of
-     * the arguments.  The operation is performed out-of-place which means that
-     * source and destination vectors are guaranteed to be different.
-     * @param dst - The destination vector.
-     * @param src - The source vector.
-     * @param job - The type of operation to perform.
+     * <p> This protected method is called by the {@link #apply} method after
+     * checking of the arguments. The operation is performed out-of-place which
+     * means that source and destination vectors are guaranteed to be
+     * different. </p>
+     *
+     * @param dst
+     *        The destination vector.
+     * @param src
+     *        The source vector.
+     * @param job
+     *        The type of operation to perform.
      *
      * @throws NotImplementedException
-     *              Operation is not supported.
+     *         Operation is not supported.
      */
     protected abstract void _apply(Vector dst, Vector src, int job)
             throws NotImplementedException;
@@ -144,21 +153,23 @@ public abstract class LinearOperator extends DifferentiableMapping {
     /**
      * Check consistency of the arguments of a linear problem.
      *
-     * Check that <b>A</b>.<b><i>x</i></b>&nbsp;=&nbsp;<b><i>b</i></b>
-     * makes sense and, optionally, also check that <b>A</b> is an
-     * endomorphism (<i>i.e.</i> its input and output spaces are the same).
+     * <p>Check that <b>A</b>.<b><i>x</i></b>&nbsp;=&nbsp;<b><i>b</i></b> makes
+     * sense and, optionally, also check that <b>A</b> is an endomorphism
+     * (<i>i.e.</i> its input and output spaces are the same).</p>
      *
      * @param A
-     *            - The <i>left-hand-side</i> (LHS) matrix of the problem.
+     *        The <i>left-hand-side</i> (LHS) matrix of the problem.
      * @param b
-     *            - The <i>right-hand-side</i> (RHS) vector of the problem
-     *              (must belongs to output space of <b>A</b>).
+     *        The <i>right-hand-side</i> (RHS) vector of the problem (must
+     *        belongs to output space of <b>A</b>).
      * @param x
-     *            - A vector to store the solution (must belongs to the input
-     *              space of <b>A</b>).
+     *        A vector to store the solution (must belongs to the input space of
+     *        <b>A</b>).
      * @param endomorphism
-     *            - Assert that output and input spaces are the same?
+     *        Assert that output and input spaces are the same?
+     *
      * @throws IncorrectSpaceException
+     *         Not all vectors belong to the correct vector spaces.
      */
     public static void checkLinearProblem(LinearOperator A, Vector b, Vector x,
             boolean endomorphism) throws IncorrectSpaceException {
@@ -174,19 +185,20 @@ public abstract class LinearOperator extends DifferentiableMapping {
      * Check the adjoint of the operator.
      *
      * @param x
-     *            - A vector of the input space.
+     *        A vector of the input space.
      * @param y
-     *            - A vector of the output space.
+     *        A vector of the output space.
+     *
      * @return The relative difference between {@code <A.x|y>} and
      *         {@code <x|A'.y>}.
      */
     public double checkAdjoint(Vector x, Vector y) {
         final Vector Ax = outputSpace.create();
-        apply(Ax, x);
+        this.apply(Ax, x);
         final Vector Aty = inputSpace.create();
-        apply(Aty, y, ADJOINT);
-        final double a = outputSpace.dot(y,  Ax);
-        final double b = inputSpace.dot(Aty,  x);
+        this.apply(Aty, y, ADJOINT);
+        final double a = y.dot(Ax);
+        final double b = x.dot(Aty);
         if (a == b) {
             return 0.0;
         } else {

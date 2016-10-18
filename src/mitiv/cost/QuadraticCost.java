@@ -55,11 +55,15 @@ public class QuadraticCost implements DifferentiableCostFunction {
     /** The "data" or "prior" vector {@code y}. */
     protected Vector y = null;
 
-    /** Cached vector to store the (anti-)residuals.
-     * The (anti-)residuals are: {@code r = H.x - y}.  If {@code H} and {@code y} are
-     * {@code null} then {@code r = x} and the same storage can be used for {@code r}
-     * and {@code x} however {@code r} is not writable in this case and thus not usable
-     * for {@code Wr} unless {@code W} is also {@code null} and thus {@Wr = r}. */
+    /**
+     * Cached vector to store the (anti-)residuals.
+     *
+     * <p> The (anti-)residuals are: {@code r = H.x - y}. If {@code H} and
+     * {@code y} are {@code null} then {@code r = x} and the same storage can be
+     * used for {@code r} and {@code x} however {@code r} is not writable in
+     * this case and thus not usable for {@code Wr} unless {@code W} is also
+     * {@code null} and thus {@Wr = r}. </p>
+     */
     protected Vector r = null;
 
     /** Cached vector to store the weighted (anti-)residuals: {@code Wr = W.r = W.(H.x - y)} */
@@ -73,48 +77,56 @@ public class QuadraticCost implements DifferentiableCostFunction {
     protected boolean quickQuasiGradient;     // H is null, thus H'.W.r = W.r
     protected boolean shareMemory;            // share storage between residuals r and quasi-gradients HtWr
 
-    /** Constructor for a general quadratic cost function.
+    /**
+     * Constructor for a general quadratic cost function.
      *
-     * Create an instance of the differentiable cost function:
+     * <p> Create an instance of the differentiable cost function: </p>
+     *
      * <pre>
      *     f(x) = (H.x - y)'.W.(H.x - y)
      * </pre>
-     * where {@code H} and {@code W} are linear operators and {@code y} is a vector
-     * of the the output space of {@code H}.  Operator {@code W} must map the output
-     * space of {@code H} to the output space of {@code H}.  Operator {@code W} should
-     * be symmetric and positive definite (respectively semi-definite) for {@code f(x)}
-     * to be strictly convex (respectively convex).
      *
-     * <p>
-     * Having any of these arguments equal to {@code null} amounts to ignore them in the
-     * formula.  Thats is, {@code y = null} is the same (but faster) as having {@code y}
-     * a vector of zeros; {@code H = null} (or {@code W = null}) is the same (but faster)
-     * as assuming that {@code H} (or of {@code W}) is the identity.  Though not all the
-     * arguments can be {@code null} as at least one of these is needed to determine the
-     * input space of {@code f(x)}.
+     * <p> where {@code H} and {@code W} are linear operators and {@code y} is a
+     * vector of the the output space of {@code H}. Operator {@code W} must map
+     * the output space of {@code H} to the output space of {@code H}. Operator
+     * {@code W} should be symmetric and positive definite (respectively
+     * semi-definite) for {@code f(x)} to be strictly convex (respectively
+     * convex). </p>
      *
-     * <p>
-     * Note that none of the components {@code H}, {@code y}, nor {@code W} are copied.
-     * If the caller does change one of these while using the cost function, the cost
-     * function will use the actual contents of the components.  If this is inappropriate,
-     * the cost must be instantiated with copies of the components which are subject to
-     * changes.
+     * <p> Having any of these arguments equal to {@code null} amounts to ignore
+     * them in the formula. Thats is, {@code y = null} is the same (but faster)
+     * as having {@code y} a vector of zeros; {@code H = null} (or
+     * {@code W = null}) is the same (but faster) as assuming that {@code H} (or
+     * of {@code W}) is the identity. Though not all the arguments can be
+     * {@code null} as at least one of these is needed to determine the input
+     * space of {@code f(x)}. </p>
      *
-     * @param H  - A linear operator.
-     * @param y  - A vector of the output space of {@code H}.
-     * @param W  - An endomorphism of the output space of {@code H}..
+     * <p> Note that none of the components {@code H}, {@code y}, nor {@code W}
+     * are copied. If the caller does change one of these while using the cost
+     * function, the cost function will use the actual contents of the
+     * components. If this is inappropriate, the cost must be instantiated with
+     * copies of the components which are subject to changes. </p>
+     *
+     * @param H    A linear operator.
+     * @param y    A vector of the output space of {@code H}.
+     * @param W    An endomorphism of the output space of {@code H}.
      */
     public QuadraticCost(LinearOperator H, Vector y, LinearOperator W) {
         setComponents(H, y, W);
     }
 
-    /** Constructor for most simple quadratic cost.
-     * This constructor build an instance if the most simple quadratic cost function:
+    /**
+     * Constructor for most simple quadratic cost.
+     *
+     * <p> This constructor build an instance if the most simple quadratic cost
+     * function: </p>
+     *
      * <pre>
      *     f(x) = ||x||^2
      * </pre>
      *
-     * @param space - The vector space of the variables.
+     * @param space
+     *        The vector space of the variables.
      */
     public QuadraticCost(VectorSpace space) {
         inputSpace = space;
@@ -128,12 +140,16 @@ public class QuadraticCost implements DifferentiableCostFunction {
         this(H, null, null);
     }
 
-    /** Set the components of the quadratic cost.
-     * See the constructor {@link #QuadraticCost(LinearOperator, Vector, LinearOperator)}
-     * for a comprehensive description of the arguments.
-     * @param H  - A linear operator.
-     * @param y  - A vector of the output space of {@code H}.
-     * @param W  - An endomorphism of the output space of {@code H}..
+    /**
+     * Set the components of the quadratic cost.
+     *
+     * <p> See the constructor
+     * {@link #QuadraticCost(LinearOperator, Vector, LinearOperator)} for a
+     * comprehensive description of the arguments. </p>
+     *
+     * @param H     A linear operator.
+     * @param y     A vector of the output space of {@code H}.
+     * @param W     An endomorphism of the output space of {@code H}.
      */
     public void setComponents(LinearOperator H, Vector y, LinearOperator W) {
         /* Check consistency of the arguments. */
@@ -248,7 +264,7 @@ public class QuadraticCost implements DifferentiableCostFunction {
             }
             H.apply(HtWr, Wr, LinearOperator.ADJOINT);
         }
-        inputSpace.combine(gx, (clr ? 0.0 : 1.0), gx, 2.0*alpha, HtWr);
+        gx.combine((clr ? 0 : 1), gx, 2*alpha, HtWr);
 
         /* Cleanup any alias made so far. */
         if (quickResiduals) {
@@ -265,24 +281,32 @@ public class QuadraticCost implements DifferentiableCostFunction {
         return alpha*q;
     }
 
-    /** Form the (anti-)residuals and their weighted counterpart.
+    /**
+     * Form the (anti-)residuals and their weighted counterpart.
      *
-     * This method updates the (anti-)residuals {@code r = H.x - y} and their weighted
-     * counterpart {@code Wr = W.r} which are internally stored by the instance.
-     * <p>
-     * There are 4 different cases for the (anti-)residuals {@code r = H.x - y}
-     * depending whether {@code H} and/or {@code y} are specified:
+     * <p> This method updates the (anti-)residuals {@code r = H.x - y} and
+     * their weighted counterpart {@code Wr = W.r} which are internally stored
+     * by the instance. </p>
+     *
+     * <p> There are 4 different cases for the (anti-)residuals
+     * {@code r = H.x - y} depending whether {@code H} and/or {@code y} are
+     * specified: </p>
+     *
      * <pre>
-     *     r = H.x - y    (H != null && y != null)
-     *     r = H.x        (H != null && y == null)
-     *     r = x - y      (H == null && y != null)
-     *     r = x          (H == null && y == null)
+     * r = H.x - y    (H != null && y != null)
+     * r = H.x        (H != null && y == null)
+     * r = x - y      (H == null && y != null)
+     * r = x          (H == null && y == null)
      * </pre>
-     * The weighted residuals are:
+     *
+     * <p> The weighted residuals are: </p>
+     *
      * <pre>
-     *     Wr = W.r       (W != null)
-     *     Wr = r         (W == null)
+     * Wr = W.r       (W != null)
+     * Wr = r         (W == null)
      * </pre>
+     *
+     * @param x  The argument.
      */
     private void formResiduals(Vector x) {
         // Figure out the vector space for the residuals:
@@ -299,12 +323,12 @@ public class QuadraticCost implements DifferentiableCostFunction {
             }
             if (H == null) {
                 /* The (anti-)residuals are: r = x - y. */
-                innerSpace.combine(r, 1.0, x, -1.0, y);
+                r.combine(1, x, -1, y);
             } else {
                 /* The (anti-)residuals are: r = H.x or r = H.x - y. */
                 H.apply(r, x);
                 if (y != null) {
-                    innerSpace.combine(r, 1.0, r, -1.0, y);
+                    r.add(-1, y);
                 }
             }
         }

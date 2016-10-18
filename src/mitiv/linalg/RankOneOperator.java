@@ -36,15 +36,13 @@ public class RankOneOperator extends LinearOperator {
     /**
      * Create a new rank-one linear operator.
      *
-     * A rank-one operator is {@code A = u.v'} thus:
+     * <p> A rank-one operator is {@code A = u.v'} thus: </p>
      * <pre>
      * A.x = (v'.x) u
      * </pre>
      *
-     * @param u
-     *            the left vector
-     * @param v
-     *            the right vector
+     * @param u   The left vector.
+     * @param v   The right vector.
      */
     public RankOneOperator(Vector u, Vector v) {
         super(v.getSpace(), u.getSpace());
@@ -56,8 +54,8 @@ public class RankOneOperator extends LinearOperator {
             throws IncorrectSpaceException {
         super(v.getSpace(), u.getSpace());
         if (clone) {
-            this.u = outputSpace.clone(u);
-            this.v = inputSpace.clone(v);
+            this.u = u.clone();
+            this.v = v.clone();
         } else {
             this.u = u;
             this.v = v;
@@ -67,9 +65,9 @@ public class RankOneOperator extends LinearOperator {
     @Override
     protected void _apply(Vector dst, Vector src, int job) {
         if (job == DIRECT) {
-            outputSpace.scale(dst, this.v.dot(src), this.u);
+            dst.scale(this.v.dot(src), this.u);
         } else if (job == ADJOINT) {
-            inputSpace.scale(dst, this.u.dot(src), this.v);
+            dst.scale(this.u.dot(src), this.v);
         } else {
             throw new NotImplementedException();
         }

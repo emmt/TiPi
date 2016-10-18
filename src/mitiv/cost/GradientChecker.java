@@ -68,7 +68,7 @@ public class GradientChecker {
     public void setVariables(Vector x, boolean clone) {
         if (clone) {
             if (this.x == null) {
-                this.x = space.clone(x);
+                this.x = x.clone();
             } else {
                 this.x.copy(x);
             }
@@ -154,7 +154,7 @@ public class GradientChecker {
             return;
         }
         if (y == null) {
-            y = space.clone(x);
+            y = x.clone();
         } else {
             y.copy(x);
         }

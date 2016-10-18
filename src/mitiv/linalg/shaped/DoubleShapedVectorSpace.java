@@ -98,11 +98,11 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
     /**
      * Create a new vector initialized with the contents of an array.
      *
-     * <p>
-     * This is a variant of {@link #create(ShapedArray)} for an array of
-     * known data type.
-     * </p>
-     * @param arr - A shaped array with elements of type {@code double}.
+     * <p> This is a variant of {@link #create(ShapedArray)} for an array of
+     * known data type. </p>
+     *
+     * @param arr   A shaped array with elements of type {@code double}.
+     *
      * @return A new DoubleShapedVector.
      */
     public DoubleShapedVector create(DoubleArray arr) {
@@ -112,12 +112,12 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
     /**
      * Create a new vector initialized with the contents of an array.
      *
-     * <p>
-     * This is a variant of {@link #create(ShapedArray, boolean)} for an array of
-     * known data type.
-     * </p>
-     * @param arr       - A shaped array with elements of type {@code double}.
-     * @param forceCopy - A flag to force a copy of the contents if true.
+     * <p> This is a variant of {@link #create(ShapedArray, boolean)} for
+     * an array of known data type. </p>
+     *
+     * @param arr         A shaped array with elements of type {@code double}.
+     * @param forceCopy   A flag to force a copy of the contents if true.
+     *
      * @return A new DoubleShapedVector.
      */
     public DoubleShapedVector create(DoubleArray arr, boolean forceCopy) {
@@ -134,12 +134,6 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
         DoubleShapedVector cpy = new DoubleShapedVector(this);
         _copy(cpy, vec);
         return cpy;
-    }
-
-    @Override
-    public DoubleShapedVector clone(Vector vec) {
-        check(vec);
-        return _clone(vec);
     }
 
     @Override
