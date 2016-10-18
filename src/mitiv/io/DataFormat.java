@@ -329,6 +329,8 @@ public enum DataFormat {
         try {
             if (format == MDA) {
                 arr = MdaFormat.load(name);
+            } else if (format == FITS) {
+                arr = FitsFormat.load(name);
             } else {
                 BufferedImage img = ImageIO.read(new File(name));
                 arr = imageToShapedArray(img);
