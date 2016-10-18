@@ -50,7 +50,7 @@ import mitiv.exception.RecoverableFormatException;
  * <p>
  * The MDA (for Multi-Dimensional Array) data format provides a minimal encapsulation
  * to store or to transfer multi-dimensional arrays, optionally with byte swapping.
- * 
+ *
  * <h2>Java Usage</h2>
  * In Java, all integers are signed.  This is not really appropriate for image data
  * with 8-bit pixel values since these values are in general unsigned 8-bit integers
@@ -61,7 +61,7 @@ import mitiv.exception.RecoverableFormatException;
  *    int intValue = (byteValue & 0xFF);
  * </pre>
  * where {@code byteValue} is the value written in the MDA stream.
- * 
+ *
  * <h2>Format</h2>
  * The binary format consists in a header followed by the bytes of the binary
  * array.  All binary values are encoded in little endian (least significant
@@ -173,7 +173,7 @@ public class MdaFormat {
     /**
      * Read a multi-dimensional array in MDA format.
      * @param dataStream - The input data stream.
-     * @return A {@link #ShapedArray} which can be safely casted according to its
+     * @return A {@link ShapedArray} which can be safely casted according to its
      *         type and/or rank. For instance, if its type is
      *         {@link Traits#FLOAT} and its rank is equal to 3, it can
      *         be casted into a {@link FloatArray}, a {@link Array3D},
@@ -285,7 +285,7 @@ public class MdaFormat {
     /**
      * Read a multi-dimensional array in MDA format.
      * @param fileName - The name of the input file.
-     * @return A {@link #ShapedArray} which can be safely casted according to its
+     * @return A {@link ShapedArray} which can be safely casted according to its
      *         type and/or rank.  See {@link #load(BufferedInputDataStream)} for
      *         more details.
      * @throws FileNotFoundException, IOException, DataFormatException
