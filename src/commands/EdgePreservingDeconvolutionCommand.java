@@ -131,7 +131,7 @@ public class EdgePreservingDeconvolutionCommand {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
             System.err.format("Error: %s\n", e.getMessage());
-            parser.setUsageWidth(80);
+            parser.getProperties().withUsageWidth(80);
             parser.printUsage(System.err);
             System.exit(1);
         }
@@ -139,7 +139,7 @@ public class EdgePreservingDeconvolutionCommand {
             PrintStream stream = System.out;
             stream.println("Usage: deconv [OPTIONS] INPUT_IMAGE PSF");
             stream.println("Options:");
-            parser.setUsageWidth(80);
+            parser.getProperties().withUsageWidth(80);
             parser.printUsage(stream);
             System.exit(0);
         }

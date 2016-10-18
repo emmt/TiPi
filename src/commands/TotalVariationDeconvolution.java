@@ -289,14 +289,14 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                 PrintStream stream = System.out;
                 stream.println("Usage: tvdec [OPTIONS] INPUT_IMAGE PSF");
                 stream.println("Options:");
-                parser.setUsageWidth(80);
+                parser.getProperties().withUsageWidth(80);
                 parser.printUsage(stream);
                 System.exit(0);
             }
 
         } catch (CmdLineException e) {
             System.err.format("Error: %s\n", e.getMessage());
-            parser.setUsageWidth(80);
+            parser.getProperties().withUsageWidth(80);
             parser.printUsage(System.err);
         }
 
