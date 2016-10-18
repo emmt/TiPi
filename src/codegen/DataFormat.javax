@@ -92,8 +92,9 @@ public enum DataFormat {
     /**
      * Get the name of the data file format.
      *
-     * For image format supported by Java, the format name is suitable for
-     * {@link ImageIO#write}.
+     * <p> For image format supported by Java, the format name is suitable for
+     * {@link ImageIO#write}. </p>
+     *
      * @return The name of the format.
      */
     public String identifier() {
@@ -119,7 +120,8 @@ public enum DataFormat {
     /**
      * Check whether a suffix matches recognized file name extensions.
      *
-     * @param suffix - The suffix to check.
+     * @param suffix   The suffix to check.
+     *
      * @return A boolean value.
      */
     public boolean match(String suffix) {
@@ -136,11 +138,12 @@ public enum DataFormat {
 
     /**
      * Guess data format from the extension of the file name.
-     * <p>
-     * This function examines the extension of the file name
-     * to determine the data format.
-     * </p>
-     * @param name - The name of the destination file.
+     *
+     * <p> This function examines the extension of the file name to determine
+     * the data format.  </p>
+     *
+     * @param name   The name of the destination file.
+     *
      * @return A file format identifier: {@code null} if the
      *         format is not recognized; otherwise {@link #PNM},
      *         {@link #JPEG}, {@link #PNG}, {@link #TIFF},
@@ -189,12 +192,13 @@ public enum DataFormat {
     /**
      * Guess data format from the given options or from the extension of
      * the file name.
-     * <p>
-     * It a preferred data format is specified in the options, this format
-     * is returned; otherwise, the extension of the file name is examined
-     * to determine the data format.
-     * </p>
-     * @param name - The name of the destination file.
+     *
+     * <p> It a preferred data format is specified in the options, this format
+     * is returned; otherwise, the extension of the file name is examined to
+     * determine the data format.  </p>
+     *
+     * @param name   The name of the destination file.
+     *
      * @return A file format identifier: {@code null} if the
      *         format is not recognized; otherwise {@link #PNM},
      *         {@link #JPEG}, {@link #PNG}, {@link #TIFF},
@@ -212,16 +216,17 @@ public enum DataFormat {
 
     /**
      * Guess data format from a few magic bytes.
-     * <p>
-     * This function examines the few next bytes available from the data
-     * stream to determine the data format.  In any case, the stream position
-     * is left where it was prior to calling the function (i.e. there is no data
-     * consumption).
      *
-     * @param stream - The input data stream.
+     * <p> This function examines the few next bytes available from the data
+     * stream to determine the data format.  In any case, the stream position
+     * is left where it was prior to calling the function (i.e. there is no
+     * data consumption). </p>
+     *
+     * @param stream   The input data stream.
      *
      * @return A file format identifier (see {@link #guessFormat(String)}),
      *         or {@code null} if the format is not recognized,.
+     *
      * @throws IOException
      */
     public static final DataFormat guessFormat(BufferedInputDataStream stream)
@@ -293,7 +298,8 @@ public enum DataFormat {
     }
 
     private static final boolean isSpace(byte s) {
-        return (s == (byte)' ' || s == (byte)'\n' || s == (byte)'\r' || s == (byte)'\t');
+        return (s == (byte)' ' || s == (byte)'\n' || s == (byte)'\r' ||
+                s == (byte)'\t');
     }
 
     private static void fatal(String reason) {
@@ -302,18 +308,19 @@ public enum DataFormat {
 
    /**
      * Load formatted data from a file.
-     * <p>
-     * This method attempts to give the most apprpriate representation of the
-     * data stored in the file as a shaped array.  For instance, it relies on
-     * {@link #imageToShapedArray} to convert an image in a shaped array.  See
-     * {@link ColorModel} for the assumed conventions about the representation
-     * of an image as a shaped array.  You may use
-     * {@link ColorModel#guessColorModel} to determine the color model of an
-     * image loaded by this method and {@link ColorModel#filterImageAsFloat} or
+     *
+     * <p> This method attempts to give the most apprpriate representation of
+     * the data stored in the file as a shaped array.  For instance, it relies
+     * on {@link #imageToShapedArray} to convert an image in a shaped array.
+     * See {@link ColorModel} for the assumed conventions about the
+     * representation of an image as a shaped array.  You may use {@link
+     * ColorModel#guessColorModel} to determine the color model of an image
+     * loaded by this method and {@link ColorModel#filterImageAsFloat} or
      * {@link ColorModel#filterImageAsDouble} to convert such an image
-     * according to your needs.
-     * </p>
-     * @param name - The name of the source file.
+     * according to your needs.  </p>
+     *
+     * @param name   The name of the source file.
+     *
      * @return A shaped array.
      */
     public static ShapedArray load(String name) {
@@ -327,19 +334,21 @@ public enum DataFormat {
                 arr = imageToShapedArray(img);
             }
         } catch (Exception e) {
-            fatal("Error while reading " + name + "(" + e.getMessage() +").");
+            fatal("Error while reading " + name + "(" + e.getMessage() +")");
         }
         return arr;
     }
 
     /**
      * Save a shaped array to a file.
-     * <p>
-     * The file format is guessed from the extension of the file name and
-     * default options are used to encode the file.
-     * </p>
-     * @param arr  - The shaped array to save.
-     * @param name - The name of the destination file.
+     *
+     * <p> The file format is guessed from the extension of the file name and
+     * default options are used to encode the file.  </p>
+     *
+     * @param arr    The shaped array to save.
+     *
+     * @param name   The name of the destination file.
+     *
      * @throws IOException
      * @throws FileNotFoundException
      */
@@ -350,13 +359,16 @@ public enum DataFormat {
 
     /**
      * Save a shaped array to a file with given options.
-     * <p>
-     * The file format is guessed from the extension of the file name and
-     * default options are used to encode the file.
-     * </p>
-     * @param arr  - The shaped array to save.
-     * @param name - The name of the destination file.
-     * @param opts - Options for encoding the data.
+     *
+     * <p> The file format is guessed from the extension of the file name and
+     * default options are used to encode the file.  </p>
+     *
+     * @param arr    The shaped array to save.
+     *
+     * @param name   The name of the destination file.
+     *
+     * @param opts   Options for encoding the data.
+     *
      * @throws IOException
      * @throws FileNotFoundException
      */
@@ -382,7 +394,7 @@ public enum DataFormat {
             identifier = null;
         }
         if (identifier == null) {
-            fatal("Unknown/unsupported format name.");
+            fatal("Unknown/unsupported format name");
         }
         BufferedImage image = makeBufferedImage(arr, opts);
         ImageIO.write(image, identifier, new File(name));
@@ -390,12 +402,14 @@ public enum DataFormat {
 
     /**
      * Save a shaped vector to a file.
-     * <p>
-     * The file format is guessed from the extension of the file name and
-     * default options are used to encode the file.
-     * </p>
-     * @param vec  - The shaped vector to save.
-     * @param name - The name of the destination file.
+     *
+     * <p> The file format is guessed from the extension of the file name and
+     * default options are used to encode the file.  </p>
+     *
+     * @param vec    The shaped vector to save.
+     *
+     * @param name   The name of the destination file.
+     *
      * @throws IOException
      * @throws FileNotFoundException
      */
@@ -406,13 +420,16 @@ public enum DataFormat {
 
     /**
      * Save a shaped vector to a file with options.
-     * <p>
-     * The file format is guessed from the extension of the file name and
-     * default options are used to encode the file.
-     * </p>
-     * @param vec  - The shaped vector to save.
-     * @param name - The name of the destination file.
-     * @param opts - Options for encoding the data.
+     *
+     * <p> The file format is guessed from the extension of the file name and
+     * default options are used to encode the file.  </p>
+     *
+     * @param vec    The shaped vector to save.
+     *
+     * @param name   The name of the destination file.
+     *
+     * @param opts   Options for encoding the data.
+     *
      * @throws IOException
      * @throws FileNotFoundException
      */
@@ -424,13 +441,15 @@ public enum DataFormat {
 
     /**
      * Save a vector to a file.
-     * <p>
-     * The file format is guessed from the extension of the file name and
-     * default options are used to encode the file.
-     * </p>
-     * @param vec  - The vector to save (only shaped vectors are supported
+     *
+     * <p> The file format is guessed from the extension of the file name and
+     * default options are used to encode the file.  </p>
+     *
+     * @param vec    The vector to save (only shaped vectors are supported
      *               for now).
-     * @param name - The name of the destination file.
+     *
+     * @param name   The name of the destination file.
+     *
      * @throws IOException
      * @throws FileNotFoundException
      */
@@ -441,14 +460,17 @@ public enum DataFormat {
 
     /**
      * Save a vector to a file with options.
-     * <p>
-     * The file format is guessed from the extension of the file name and
-     * default options are used to encode the file.
-     * </p>
-     * @param vec  - The vector to save (only shaped vectors are supported
+     *
+     * <p> The file format is guessed from the extension of the file name and
+     * default options are used to encode the file.  </p>
+     *
+     * @param vec    The vector to save (only shaped vectors are supported
      *               for now).
-     * @param name - The name of the destination file.
-     * @param opts - Options for encoding the data.
+     *
+     * @param name   The name of the destination file.
+     *
+     * @param opts   Options for encoding the data.
+     *
      * @throws IOException
      * @throws FileNotFoundException
      */
@@ -470,10 +492,9 @@ public enum DataFormat {
 
     /**
      * Make a buffered image from a shaped array with default options.
-     * <p>
      *
-     * </p>
-     * @param arr  - The array to convert into an image.
+     * @param arr    The array to convert into an image.
+     *
      * @see {@link #makeBufferedImage(ShapedArray, FormatOptions)} for more
      *      details about how is interpreted the array.
      */
@@ -483,31 +504,33 @@ public enum DataFormat {
 
     /**
      * Make a buffered image from a shaped array with given options.
-     * <p>
-     * Different kind of shaped array can be interpreted as an image: 2D
+     *
+     * <p> Different kind of shaped array can be interpreted as an image: 2D
      * shaped array are interpreted as grey scale images, 3D shaped arrays are
-     * interpreted as RGB array if their first dimension is 3 and as RGBA
-     * array if their first dimension is 4.  All other shapes result in
-     * throwing an {@link IllegalArgumentException}.  The penultimate
-     * dimension of the shaped array is the width of the image and the last
-     * dimension of the shaped array is the height of the image.  Currently
-     * alpha channel (RGBA images) are only implemented for byte shaped
-     * arrays.
-     * </p><p>
-     * If a color model of the format options is specified, then the source
-     * image (that is the input shaped array interpreted as explained above)
-     * is automatically converted according to this setting.  Otherwise, the
+     * interpreted as RGB array if their first dimension is 3 and as RGBA array
+     * if their first dimension is 4.  All other shapes result in throwing an
+     * {@link IllegalArgumentException}.  The penultimate dimension of the
+     * shaped array is the width of the image and the last dimension of the
+     * shaped array is the height of the image.  Currently alpha channel (RGBA
+     * images) are only implemented for byte shaped arrays.  </p>
+     *
+     * <p> If a color model of the format options is specified, then the source
+     * image (that is the input shaped array interpreted as explained above) is
+     * automatically converted according to this setting.  Otherwise, the
      * returned buffer image will have the same color model as the input one.
      * </p>
-     * @param arr  - The array to convert into an image.
-     * @param opts - Options for conversion.
+     *
+     * @param arr    The array to convert into an image.
+     *
+     * @param opts   Options for conversion.
      */
-    public static BufferedImage makeBufferedImage(ShapedArray arr, FormatOptions opts) {
-        Shape shape = arr.getShape();
-        int rank = shape.rank();
-        int arrayType = arr.getType();
-        int depth = -1;
-        int imageType = -1;
+    public static BufferedImage makeBufferedImage(ShapedArray arr,
+                                                  FormatOptions opts) {
+        final Shape shape = arr.getShape();
+        final int rank = shape.rank();
+        final int arrayType = arr.getType();
+        final int depth = -1;
+        final int imageType = -1;
         if (rank == 2) {
             depth = 1;
             if (arrayType == Traits.BYTE) {
@@ -526,20 +549,21 @@ public enum DataFormat {
             }
         }
         if (depth < 0) {
-            throw new IllegalArgumentException("Conversion to image is only allowed for WIDTH x HEIGHT arrays, 3 x WIDTH x HEIGHT arrays or 4 x WIDTH x HEIGHT byte arrays.");
+            throw new IllegalArgumentException("Conversion to image is only allowed for WIDTH x HEIGHT arrays, 3 x WIDTH x HEIGHT arrays or 4 x WIDTH x HEIGHT byte arrays");
         }
         final int width = shape.dimension(rank - 2);
         final int height = shape.dimension(rank - 1);
-        BufferedImage image = new BufferedImage(width, height, imageType);
-        WritableRaster raster = image.getRaster();
+        final BufferedImage image = new BufferedImage(width, height, imageType);
+        final WritableRaster raster = image.getRaster();
         final int minX = raster.getMinX();
         final int minY = raster.getMinY();
         if (imageType == BufferedImage.TYPE_BYTE_GRAY) {
-            /* Input is a 2-D byte array. */
+            /* Input is a 2-D byte array.  No digitization is needed, the
+             * array values are just copied as pixel values. */
             Byte2D src = (Byte2D)arr;
             if (raster.getNumBands() != 1 || raster.getNumDataElements() != 1 ||
                 raster.getTransferType() != DataBuffer.TYPE_BYTE) {
-                throw new IllegalArgumentException("assertion failed for TYPE_BYTE_GRAY");
+                throw new IllegalArgumentException("Assertion failed for TYPE_BYTE_GRAY");
             }
             if (src.isFlat()) {
                 raster.setDataElements(minX, minY, width, height, src.flatten());
@@ -558,50 +582,59 @@ public enum DataFormat {
             //# def MAX_LEVEL = 0xFFFF
             if (raster.getNumBands() != 1 || raster.getNumDataElements() != 1 ||
                 raster.getTransferType() != DataBuffer.TYPE_USHORT) {
-                throw new IllegalArgumentException("assertion failed for TYPE_USHORT_GRAY");
+                throw new IllegalArgumentException("Assertion failed for TYPE_USHORT_GRAY");
             }
             short[] data = new short[1];
             switch (arrayType) {
-                //# for id in ${SHORT} : ${DOUBLE}  // not BYTE
-                //#
-                //#     // Define type names.
-                //#     def type = ${}{type_${id}}
-                //#     def Type = ${}{Type_${id}}
-                //#     def TYPE = ${}{TYPE_${id}}
-                //#
-                //#     // Define macros to get the value from the input array.
-                //#     def getValue = src.get(x,y)
-                //#     if ${id} == ${DOUBLE} || ${id} == ${FLOAT}
-                //#         def real = ${type}
-                //#     else
-                //#         // Recast to floating-point type.
-                //#         if ${id} == ${LONG}
-                //#             def real = double
-                //#         else
-                //#             def real = float
-                //#         end
-                //#         def getValue = (${real})${getValue}
-                //#     end
-                //#
-                //#     // The gray level is the rescaled value, which is
-                //#     // clipped and, finally, masked to fit into a short.
-                //#     def getGray = (${getValue} - bias)*factor
-                //#     def getGray = Math.max(minLevel, Math.min(${getGray}, maxLevel))
-                //#     def getGray = (short)((int)${getGray} & ${MAX_LEVEL})
-                //#
-                //#     // OK now let's generate the code...
+            //# for id in ${SHORT} : ${DOUBLE}  // not BYTE
+            //#
+            //#     // Define type names.
+            //#     def type = ${}{type_${id}}
+            //#     def Type = ${}{Type_${id}}
+            //#     def TYPE = ${}{TYPE_${id}}
+            //#
+            //#     // Define macros to get the value from the input array.
+            //#     def getValue = src.get(x,y)
+            //#     if ${id} == ${DOUBLE} || ${id} == ${FLOAT}
+            //#         def real = ${type}
+            //#     else
+            //#         // Recast to floating-point type.
+            //#         if ${id} == ${LONG}
+            //#             def real = double
+            //#         else
+            //#             def real = float
+            //#         end
+            //#         def getValue = (${real})${getValue}
+            //#     end
+            //#
+            //#     // The gray level is the rescaled value, which is
+            //#     // clipped and, finally, masked to fit into a short.
+            //#     def getGray = (${getValue} - bias)*factor
+            //#     def getGray = Math.max(minLevel, Math.min(${getGray}, maxLevel))
+            //#     def getGray = (short)((int)${getGray} & ${MAX_LEVEL})
+            //#
+            //#     // OK now let's generate the code...
             case Traits.${TYPE}: {
                 ${Type}2D src = (${Type}2D)arr;
                 double[] sf = opts.getScaling(arr, ${MIN_LEVEL}, ${MAX_LEVEL});
                 final ${real} scale = (${real})sf[0];
                 final ${real} bias = (${real})sf[1];
-                final ${real} factor = 1/scale;
-                final ${real} minLevel = ${MIN_LEVEL};
-                final ${real} maxLevel = ${MAX_LEVEL};
-                for (int y = 0; y < height; ++y) {
-                    for (int x = 0; x < width; ++x) {
-                        data[0] = ${getGray};
-                        raster.setDataElements(minX + x, minY + y, data);
+                if (scale == 0) {
+                    data[0] = 0;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            raster.setDataElements(minX + x, minY + y, data);
+                        }
+                    }
+                } else {
+                    final ${real} factor = 1/scale;
+                    final ${real} minLevel = ${MIN_LEVEL};
+                    final ${real} maxLevel = ${MAX_LEVEL};
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            data[0] = ${getGray};
+                            raster.setDataElements(minX + x, minY + y, data);
+                        }
                     }
                 }
             }
@@ -615,7 +648,7 @@ public enum DataFormat {
             //# def MAX_LEVEL = 0xFF
             if (raster.getNumBands() != 3 || raster.getNumDataElements() != 3 ||
                 raster.getTransferType() != DataBuffer.TYPE_BYTE) {
-                throw new IllegalArgumentException("assertion failed for TYPE_3BYTE_BGR");
+                throw new IllegalArgumentException("Assertion failed for TYPE_3BYTE_BGR");
             }
             byte[] data = new byte[3];
             switch (arrayType) {
@@ -634,47 +667,47 @@ public enum DataFormat {
                     }
                 }
             }
-                //# for id in ${SHORT} : ${DOUBLE}  // not BYTE
-                //#
-                //#     // Define type names.
-                //#     def type = ${}{type_${id}}
-                //#     def Type = ${}{Type_${id}}
-                //#     def TYPE = ${}{TYPE_${id}}
-                //#
-                //#     // Define a template to get the values from the input array.
-                //#     suspend coordinates
-                //#     def getValue = src.get(${coordinates})
-                //#     if ${id} == ${DOUBLE} || ${id} == ${FLOAT}
-                //#         def real = ${type}
-                //#     else
-                //#         // Recast to floating-point type.
-                //#         if ${id} == ${LONG}
-                //#             def real = double
-                //#         else
-                //#             def real = float
-                //#         end
-                //#         def getValue = (${real})${getValue}
-                //#     end
-                //#
-                //#     // The color levels are first rescaled, second clipped
-                //#     // and, finally, masked to fit into a byte.
-                //#     def getValue = (${getValue} - bias)*factor
-                //#     def getValue = Math.max(minLevel, Math.min(${getValue}, maxLevel))
-                //#     def getValue = (byte)((int)${getValue} & ${MAX_LEVEL})
-                //#
-                //#     // Expand the the template to get the different channels.
-                //#     //def coordinates = x,y
-                //#     //def getGray = ${getValue}
-                //#     def coordinates = 0,x,y
-                //#     def getRed = ${getValue}
-                //#     def coordinates = 1,x,y
-                //#     def getGreen = ${getValue}
-                //#     def coordinates = 2,x,y
-                //#     def getBlue = ${getValue}
-                //#     //def coordinates = 3,x,y
-                //#     //def getAlpha = ${getValue}
-                //#
-                //#     // OK now let's generate the code...
+            //# for id in ${SHORT} : ${DOUBLE}  // not BYTE (see above)
+            //#
+            //#     // Define type names.
+            //#     def type = ${}{type_${id}}
+            //#     def Type = ${}{Type_${id}}
+            //#     def TYPE = ${}{TYPE_${id}}
+            //#
+            //#     // Define a template to get the values from the input array.
+            //#     suspend coordinates
+            //#     def getValue = src.get(${coordinates})
+            //#     if ${id} == ${DOUBLE} || ${id} == ${FLOAT}
+            //#         def real = ${type}
+            //#     else
+            //#         // Recast to floating-point type.
+            //#         if ${id} == ${LONG}
+            //#             def real = double
+            //#         else
+            //#             def real = float
+            //#         end
+            //#         def getValue = (${real})${getValue}
+            //#     end
+            //#
+            //#     // The color levels are first rescaled, second clipped
+            //#     // and, finally, masked to fit into a byte.
+            //#     def getValue = (${getValue} - bias)*factor
+            //#     def getValue = Math.max(minLevel, Math.min(${getValue}, maxLevel))
+            //#     def getValue = (byte)((int)${getValue} & ${MAX_LEVEL})
+            //#
+            //#     // Expand the the template to get the different channels.
+            //#     //def coordinates = x,y
+            //#     //def getGray = ${getValue}
+            //#     def coordinates = 0,x,y
+            //#     def getRed = ${getValue}
+            //#     def coordinates = 1,x,y
+            //#     def getGreen = ${getValue}
+            //#     def coordinates = 2,x,y
+            //#     def getBlue = ${getValue}
+            //#     //def coordinates = 3,x,y
+            //#     //def getAlpha = ${getValue}
+            //#
+            //#     // OK now let's generate the code...
             case Traits.${TYPE}: {
                 ${Type}3D src = (${Type}3D)arr;
                 double[] sf = opts.getScaling(arr, ${MIN_LEVEL}, ${MAX_LEVEL});
@@ -701,7 +734,7 @@ public enum DataFormat {
             Byte3D src = (Byte3D)arr;
             if (raster.getNumBands() != 4 || raster.getNumDataElements() != 4 ||
                 raster.getTransferType() != DataBuffer.TYPE_BYTE) {
-                throw new IllegalArgumentException("assertion failed for TYPE_4BYTE_ABGR");
+                throw new IllegalArgumentException("Assertion failed for TYPE_4BYTE_ABGR");
             }
             if (src.isFlat()) {
                 raster.setDataElements(minX, minY, width, height, src.flatten());
@@ -728,7 +761,7 @@ public enum DataFormat {
         if (vec instanceof FloatShapedVector) {
             return makeBufferedImage(ArrayFactory.wrap(((FloatShapedVector)vec).getData(), vec.getShape()));
         }
-        throw new IllegalArgumentException("Unable to convert shaped vector to image.");
+        throw new IllegalArgumentException("Unable to convert shaped vector to image");
     }
 
     public static BufferedImage makeBufferedImage(ShapedVector vec,
@@ -739,7 +772,7 @@ public enum DataFormat {
         if (vec instanceof FloatShapedVector) {
             return makeBufferedImage(ArrayFactory.wrap(((FloatShapedVector)vec).getData(), vec.getShape()), opts);
         }
-        throw new IllegalArgumentException("Unable to convert shaped vector to image.");
+        throw new IllegalArgumentException("Unable to convert shaped vector to image");
     }
 
 
@@ -834,14 +867,17 @@ public enum DataFormat {
 
     /**
      * Convert a BufferedImage to a given image type.
-     * <p>
-     * This method converts an image of any type to the given type.  The
+     *
+     * <p> This method converts an image of any type to the given type.  The
      * operation is lazy: if the image type of the original image is already
-     * the correct one, it is returned as the result.
-     * </p>>
-     * @param img - The input image.
-     * @param type - The image type of the result.
+     * the correct one, it is returned as the result.  </p>>
+     *
+     * @param img   The input image.
+     *
+     * @param type  The image type of the result.
+     *
      * @return A {@link BufferedImage} of the requested type.
+     *
      * @see {@link BufferedImage#TYPE_3BYTE_BGR}
      *      {@link BufferedImage#TYPE_4BYTE_ABGR},
      *      {@link BufferedImage#TYPE_4BYTE_ABGR_PRE},
@@ -869,16 +905,18 @@ public enum DataFormat {
 
     /**
      * Convert an image into a shaped array.
-     * <p>
-     * This method attempts to convert the image data with no loss of
+     *
+     * <p> This method attempts to convert the image data with no loss of
      * information.  The data type and rank of the result depend on the image
-     * type.
-     * </p><p>
-     * Gray scaled images yield 2D array while colored (RGB) and translucent
-     * (RGBA) images yields 3D images.  The penultimate dimension is the width
-     * of the image and the last dimension is the height of the image.  For
-     * RGB and RGBA images, the first dimension is respectively 3 and 4 with
-     * the red red, green, blue, and alpha channels (if any) given by:
+     * type. </p>
+     *
+     * <p> Gray scaled images yield 2D array while colored (RGB) and
+     * translucent (RGBA) images yields 3D images.  The penultimate dimension
+     * is the width of the image and the last dimension is the height of the
+     * image.  For RGB and RGBA images, the first dimension is respectively 3
+     * and 4 with the red red, green, blue, and alpha channels (if any) given
+     * by: </p>
+     *
      * <pre>
      *    Array3D arr   = imageToShapedArray(image);
      *    Array2D red   = arr.slice(0, 0);
@@ -886,17 +924,18 @@ public enum DataFormat {
      *    Array2D blue  = arr.slice(2, 0);
      *    Array2D alpha = arr.slice(3, 0);
      * </pre>
-     * If the result is a {@link ByteArray}, the bytes are to be interpreted
-     * as being unsigned.  For {@link BufferedImage#TYPE_USHORT_GRAY} images,
-     * the result is a {@link Int2D} array as TiPi does not implement
-     * {@code unsigned short} data.
-     * <p>
-     * For translucent images, the color levels in the result are not
-     * pre-multiplied by the alpha value (for
-     * {@link BufferedImage#TYPE_INT_ARGB_PRE} and
-     * {@link BufferedImage#TYPE_4BYTE_ABGR_PRE}, the pre-multiplication is
-     * reversed).
+     *
+     * <p> If the result is a {@link ByteArray}, the bytes are to be
+     * interpreted as being unsigned.  For {@link
+     * BufferedImage#TYPE_USHORT_GRAY} images, the result is a {@link Int2D}
+     * array as TiPi does not implement {@code unsigned short} data. </p>
+     *
+     * <p> For translucent images, the color levels in the result are not
+     * pre-multiplied by the alpha value (for {@link
+     * BufferedImage#TYPE_INT_ARGB_PRE} and {@link
+     * BufferedImage#TYPE_4BYTE_ABGR_PRE}, the pre-multiplication is reversed).
      * </p>
+     *
      * @return A shaped array.
      */
     public static ShapedArray imageToShapedArray(BufferedImage image) {
@@ -912,7 +951,7 @@ public enum DataFormat {
         switch (type) {
         case BufferedImage.TYPE_INT_RGB: {
             if (numBands != 3 || numDataElements != 1 || transferType != DataBuffer.TYPE_INT) {
-                throw new IllegalArgumentException("assertion failed for TYPE_INT_RGB");
+                throw new IllegalArgumentException("Assertion failed for TYPE_INT_RGB");
             }
             Byte3D arr = Byte3D.wrap(new byte[3*width*height], 3, width, height);
             int[] data = new int[1];
@@ -932,7 +971,7 @@ public enum DataFormat {
         }
         case BufferedImage.TYPE_INT_ARGB: {
             if (numBands != 4 || numDataElements != 1 || transferType != DataBuffer.TYPE_INT) {
-                throw new IllegalArgumentException("assertion failed for TYPE_INT_ARGB");
+                throw new IllegalArgumentException("Assertion failed for TYPE_INT_ARGB");
             }
             Byte3D arr = Byte3D.wrap(new byte[4*width*height], 4, width, height);
             int[] data = new int[1];
@@ -957,7 +996,7 @@ public enum DataFormat {
             final int b = 255;
             final int a = 2*b;
             if (numBands != 4 || numDataElements != 1 || transferType != DataBuffer.TYPE_INT) {
-                throw new IllegalArgumentException("assertion failed for TYPE_INT_ARGB_PRE");
+                throw new IllegalArgumentException("Assertion failed for TYPE_INT_ARGB_PRE");
             }
             Byte3D arr = Byte3D.wrap(new byte[4*width*height], 4, width, height);
             int[] data = new int[1];
@@ -980,7 +1019,7 @@ public enum DataFormat {
         }
         case BufferedImage.TYPE_INT_BGR: {
             if (numBands != 3 || numDataElements != 1 || transferType != DataBuffer.TYPE_INT) {
-                throw new IllegalArgumentException("assertion failed for TYPE_INT_BGR");
+                throw new IllegalArgumentException("Assertion failed for TYPE_INT_BGR");
             }
             Byte3D arr = Byte3D.wrap(new byte[3*width*height], 3, width, height);
             int[] data = new int[1];
@@ -1000,7 +1039,7 @@ public enum DataFormat {
         }
         case BufferedImage.TYPE_USHORT_565_RGB: {
             if (numBands != 3 || numDataElements != 1 || transferType != DataBuffer.TYPE_USHORT) {
-                throw new IllegalArgumentException("assertion failed for TYPE_USHORT_565_RGB");
+                throw new IllegalArgumentException("Assertion failed for TYPE_USHORT_565_RGB");
             }
             Byte3D arr = Byte3D.wrap(new byte[3*width*height], 3, width, height);
             short[] data = new short[1];
@@ -1020,7 +1059,7 @@ public enum DataFormat {
         }
         case BufferedImage.TYPE_USHORT_555_RGB: {
             if (numBands != 3 || numDataElements != 1 || transferType != DataBuffer.TYPE_USHORT) {
-                throw new IllegalArgumentException("assertion failed for TYPE_USHORT_555_RGB");
+                throw new IllegalArgumentException("Assertion failed for TYPE_USHORT_555_RGB");
             }
             Byte3D arr = Byte3D.wrap(new byte[3*width*height], 3, width, height);
             short[] data = new short[1];
@@ -1040,7 +1079,7 @@ public enum DataFormat {
         }
         case BufferedImage.TYPE_3BYTE_BGR: {
             if (numBands != 3 || numDataElements != 3 || transferType != DataBuffer.TYPE_BYTE) {
-                throw new IllegalArgumentException("assertion failed for TYPE_3BYTE_BGR");
+                throw new IllegalArgumentException("Assertion failed for TYPE_3BYTE_BGR");
             }
             Byte3D arr = Byte3D.wrap(new byte[3*width*height], 3, width, height);
             byte[] data = new byte[3];
@@ -1056,7 +1095,7 @@ public enum DataFormat {
         }
         case BufferedImage.TYPE_4BYTE_ABGR: {
             if (numBands != 4 || numDataElements != 4 || transferType != DataBuffer.TYPE_BYTE) {
-                throw new IllegalArgumentException("assertion failed for TYPE_4BYTE_ABGR");
+                throw new IllegalArgumentException("Assertion failed for TYPE_4BYTE_ABGR");
             }
             Byte3D arr = Byte3D.wrap(new byte[4*width*height], 4, width, height);
             byte[] data = new byte[4];
@@ -1076,7 +1115,7 @@ public enum DataFormat {
             final int b = 255;
             final int a = 2*b;
             if (numBands != 4 || numDataElements != 4 || transferType != DataBuffer.TYPE_BYTE) {
-                throw new IllegalArgumentException("assertion failed for TYPE_4BYTE_ABGR_PRE");
+                throw new IllegalArgumentException("Assertion failed for TYPE_4BYTE_ABGR_PRE");
             }
             Byte3D arr = Byte3D.wrap(new byte[4*width*height], 4, width, height);
             byte[] data = new byte[4];
@@ -1098,7 +1137,7 @@ public enum DataFormat {
         }
         case BufferedImage.TYPE_BYTE_GRAY: {
             if (numBands != 1 || numDataElements != 1 || transferType != DataBuffer.TYPE_BYTE) {
-                throw new IllegalArgumentException("assertion failed for TYPE_BYTE_GRAY");
+                throw new IllegalArgumentException("Assertion failed for TYPE_BYTE_GRAY");
             }
             Byte2D arr = Byte2D.wrap(new byte[width*height], width, height);
             byte[] data = new byte[1];
@@ -1112,7 +1151,7 @@ public enum DataFormat {
         }
         case BufferedImage.TYPE_USHORT_GRAY: {
             if (numBands != 1 || numDataElements != 1 || transferType != DataBuffer.TYPE_USHORT) {
-                throw new IllegalArgumentException("assertion failed for TYPE_USHORT_GRAY");
+                throw new IllegalArgumentException("Assertion failed for TYPE_USHORT_GRAY");
             }
             Int2D arr = Int2D.wrap(new int[width*height], width, height);
             short[] data = new short[1];
@@ -1126,7 +1165,7 @@ public enum DataFormat {
         }
         case BufferedImage.TYPE_BYTE_BINARY: {
             if (numBands != 1 || numDataElements != 1 || transferType != DataBuffer.TYPE_BYTE) {
-                throw new IllegalArgumentException("assertion failed for TYPE_BYTE_BINARY");
+                throw new IllegalArgumentException("Assertion failed for TYPE_BYTE_BINARY");
             }
             Byte2D arr = Byte2D.wrap(new byte[width*height], width, height);
             // FIXME:
@@ -1265,15 +1304,3 @@ public enum DataFormat {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
