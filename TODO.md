@@ -48,10 +48,7 @@
 
 * Make `Flat{Double,Float}*` and `ShapedVector` more intricate?
 
-* Avoid duplicate methods between `VectorSpace` and `Vector`.  Keep low level
-  methods in the `VectorSpace` class and most high level methods which involve
-  at least a vector in the `Vector` class (for more readable code).  Also,
-  `space.create()` or `vec.similar()` to create a new vector.
+* `space.create()` or `vec.similar()` to create a new vector.
 
 * Automatically build JavaDoc.
 
