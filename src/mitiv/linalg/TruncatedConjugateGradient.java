@@ -26,6 +26,7 @@
 package mitiv.linalg;
 
 import mitiv.exception.IncorrectSpaceException;
+import mitiv.utils.Poly;
 
 /**
  * Implement trust region conjugate gradient algorithm of Steihaug.
@@ -125,62 +126,6 @@ public class TruncatedConjugateGradient {
     }
 
     /**
-     * Compute the roots of a 2nd degree polynomial.
-     *
-     * <p> Solve the quadratic equation: </p>
-     *
-     * <pre>
-     * a*x^2 + b*x + c = 0
-     * </pre>
-     *
-     * <p> for real {@code x}. The number {@code n} of distinct real roots is
-     * returned and the roots, if any, are stored into {@code x}. If there is
-     * no roots, the contents of {@code x} is left unchanged; otherwise
-     * ({@code n} = 1 or 2) the two values of {@code x} are set with the
-     * roots in ascending order, <i>i.e.</i> such that {@code x[0] <= x[1]}. </p>
-     *
-     * @param x   A 2-element output array to store the result.
-     * @param a   The 2nd degree coefficient.
-     * @param b   The 1st degree coefficient.
-     * @param c   The 0th degree coefficient.
-     *
-     * @return The number {@code n} of distinct real roots. If {@code n} = 1
-     * or 2, then {@code x[0] <= x[1]}; otherwise ({@code n} = 0) and
-     * {@code x} contents is left unchanged.
-     */
-    public static int solveQuadratic(double x[], double a, double b, double c) {
-        if (a != 0.0) {
-            double p = a + a;
-            double q = c + c;
-            double r = b*b - p*q;
-            if (r > 0.0) {
-                if (b >= 0.0) {
-                    r = -Math.sqrt(r) - b;
-                } else {
-                    r = +Math.sqrt(r) - b;
-                }
-                double x0 = q/r;
-                double x1 = r/p;
-                if (x0 < x1) {
-                    x[0] = x0;
-                    x[1] = x1;
-                } else {
-                    x[0] = x1;
-                    x[1] = x0;
-                }
-                return 2;
-            } else if (r == 0.0) {
-                x[0] = x[1] = -b/p;
-                return 1;
-            }
-        } else if (b != 0.0) {
-            x[0] = x[1] = -c/b;
-            return 1;
-        }
-        return 0;
-    }
-
-    /**
      * Adjust vector length along a given direction.
      *
      * <p> Replace {@code x} by {@code x + alpha*p} so that
@@ -218,7 +163,7 @@ public class TruncatedConjugateGradient {
         double c = (xnrm + delta)*(xnrm - delta);
         double[] t = new double[2];
         double alpha = 0.0;
-        if (solveQuadratic(t, a, b, c) >= 1) {
+        if (Poly.solveQuadratic(t, a, b, c) >= 1) {
             if (xnrm > delta) {
                 /* Compute a backward step. */
                 alpha = Math.min(0.0, t[0]);
