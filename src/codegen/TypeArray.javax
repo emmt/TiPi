@@ -110,6 +110,7 @@ public interface ${className} extends ShapedArray {
      *      description, {@link mitiv.base.Shaped#COLUMN_MAJOR} for
      *      explanations about storage order.
      */
+    @Override
     public abstract ${type}[] flatten(boolean forceCopy);
 
     /**
@@ -127,7 +128,11 @@ public interface ${className} extends ShapedArray {
      *
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
+    @Override
     public abstract ${type}[] flatten();
+
+    @Override
+    public abstract ${type}[] getData();
 
     @Override
     public abstract ${className} copy();
