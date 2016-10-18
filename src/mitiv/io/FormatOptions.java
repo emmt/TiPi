@@ -33,6 +33,7 @@ import mitiv.array.LongArray;
 import mitiv.array.ShapedArray;
 import mitiv.array.ShortArray;
 import mitiv.base.Traits;
+import mitiv.exception.IllegalByteOrderException;
 import mitiv.exception.IllegalTypeException;
 
 
@@ -48,11 +49,82 @@ public class FormatOptions {
     private double maxValue = 0.0;
     private boolean maxValueGiven = false;
 
+    private int type = Traits.VOID;
+
+    private int order = Traits.NATIVE_BYTE_ORDER;
+
     private ColorModel colorModel = null;
 
     private DataFormat dataFormat = null;
 
     private boolean interpolate = false;
+
+    /**
+     * Get preferred data type for saving.
+     *
+     * @return A type identifier like {@link Traits#SHORT}.
+     *         The value {@link Traits#VOID} indicates that no
+     *         preferred type has been specified.
+     */
+    public int getType() {
+        return type;
+    }
+
+    /**
+     * Set preferred data type for saving.
+     *
+     * @param type - A type identifier like {@link Traits#SHORT}.
+     *               The value {@link Traits#VOID} indicates that no
+     *               preferred type has been specified.
+     *
+     * @throws IllegalTypeException if {@code type} is invalid.
+     */
+    public void setType(int type) {
+        switch (type) {
+        case Traits.VOID:
+        case Traits.BYTE:
+        case Traits.SHORT:
+        case Traits.INT:
+        case Traits.LONG:
+        case Traits.FLOAT:
+        case Traits.DOUBLE:
+            this.type = type;
+            break;
+        default:
+            throw new IllegalTypeException();
+        }
+    }
+
+    /**
+     * Get preferred byte order for saving.
+     *
+     * @return A byte order identifier like {@link Traits#BIG_ENDIAN} or
+     *         {@link Traits#LITTLE_ENDIAN}.
+     */
+    public int getOrder() {
+        return order;
+    }
+
+    /**
+     * Set preferred byte order for saving.
+     *
+     * @param A byte order identifier like {@link Traits#BIG_ENDIAN},
+     *         {@link Traits#LITTLE_ENDIAN}, or
+     *         {@link Traits#NATIVE_BYTE_ORDER}.
+     *
+     * @throws IllegalByteOrderException if {@code order} is invalid.
+     */
+    public void setOrder(int order) {
+        switch (order) {
+        case Traits.BIG_ENDIAN:
+        case Traits.LITTLE_ENDIAN:
+            this.order = order;
+            break;
+        default:
+            throw new IllegalByteOrderException();
+        }
+    }
+
 
     public FormatOptions() {
     }
@@ -186,16 +258,94 @@ public class FormatOptions {
         dataFormat = null;
     }
 
-    public double[] getScaling(ShapedArray arr, double fileMin, double fileMax) {
+    public static double[] neutralScaling() {
+        return new double[]{1.0, 0.0};
+    }
+
+    /**
+     * Get scaling parameters under user constraints solely.
+     * @param arr - The array to save.
+     * @return An array of 2 doubles <b>{scale,bias}</b> (in that order).
+     */
+    public double[] getScaling(ShapedArray arr) {
+        if (arr == null || type == Traits.VOID) {
+            return neutralScaling();
+        }
+        switch (type) {
+        case Traits.BYTE:
+            return getScaling(arr, 0, 255);
+        case Traits.SHORT:
+            return getScaling(arr, Short.MIN_VALUE, Short.MAX_VALUE);
+        case Traits.INT:
+            return getScaling(arr, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        case Traits.LONG:
+            return getScaling(arr, Long.MIN_VALUE, Long.MAX_VALUE);
+        case Traits.FLOAT:
+        case Traits.DOUBLE:
+            return neutralScaling();
+        default:
+            throw new IllegalTypeException();
+        }
+    }
+
+    /**
+     * Get scaling parameters under user and file constraints.
+     * <p>
+     * This method determines the best scaling parameters.  No scaling
+     * (SCALE = 1, BIAS = 0) is preferred if possible.
+     * </p>
+     *
+     * @param arr - The array to save.
+     * @param kmin - The minimum digitization level.
+     * @param kmax - The maximum digitization level.
+     * @return An array of 2 doubles <b>{scale,bias}</b> (in that order).
+     */
+    public double[] getScaling(ShapedArray arr, long kmin, long kmax) {
         if (arr == null) {
             /* Invalid arguments or no elements to consider, silently return
                neutral scaling parameters. */
-            return new double[]{1.0, 0.0};
+            return neutralScaling();
         }
+
+        /*
+         * No scaling is chosen if the number of digitization levels are sufficient.
+         */
+        switch (arr.getType()) {
+        case Traits.BYTE:
+            if (kmin <= 0 && kmax >= 255) {
+                return neutralScaling();
+            }
+            break;
+        case Traits.SHORT:
+            if (kmin <= Short.MIN_VALUE && kmax >= Short.MAX_VALUE) {
+                return neutralScaling();
+            }
+            break;
+        case Traits.INT:
+            if (kmin <= Integer.MIN_VALUE && kmax >= Integer.MAX_VALUE) {
+                return neutralScaling();
+            }
+            break;
+        case Traits.LONG:
+            if (kmin <= Long.MIN_VALUE && kmax >= Long.MAX_VALUE) {
+                return neutralScaling();
+            }
+            break;
+        case Traits.FLOAT:
+        case Traits.DOUBLE:
+            break;
+        default:
+            throw new IllegalTypeException("Unsupported array data type");
+        }
+
+        /* Figure out the minimum and maximum data value. */
         double dataMin, dataMax;
         if (minValueGiven && maxValueGiven) {
             dataMin = minValue;
             dataMax = maxValue;
+            //} else {
+            //    DataSummary ds = new DataSummary(arr);
+
         } else if (minValueGiven) {
             dataMin = minValue;
             switch (arr.getType()) {
@@ -286,7 +436,7 @@ public class FormatOptions {
                 throw new IllegalTypeException();
             }
         }
-        return computeScalingFactors(dataMin, dataMax, fileMin, fileMax,
+        return computeScalingFactors(dataMin, dataMax, kmin, kmax,
                 interpolate);
     }
 
