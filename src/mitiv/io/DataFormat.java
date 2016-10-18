@@ -529,8 +529,8 @@ public enum DataFormat {
         final Shape shape = arr.getShape();
         final int rank = shape.rank();
         final int arrayType = arr.getType();
-        final int depth = -1;
-        final int imageType = -1;
+        int depth = -1;
+        int imageType = -1;
         if (rank == 2) {
             depth = 1;
             if (arrayType == Traits.BYTE) {
