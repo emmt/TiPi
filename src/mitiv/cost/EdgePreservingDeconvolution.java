@@ -461,7 +461,7 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
 
         /* Build the regularization cost function. */
         fprior = new HyperbolicTotalVariation(objectSpace, epsilon);
-
+        fprior.setScale(scale);
         /* Build the total cost function. */
         setCostFunction(new CompositeDifferentiableCostFunction(1.0, fdata, mu, fprior));
 
@@ -577,6 +577,13 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
 
     private boolean nonfinite(double value) {
         return Double.isInfinite(value) || Double.isNaN(value);
+    }
+    private double[] scale = {1.0};
+    public void setScale(double delta) {
+        scale = new double[] {delta};
+    }
+    public void setScale(double[] delta) {
+        scale = delta;
     }
 
 }
