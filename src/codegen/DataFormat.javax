@@ -392,6 +392,9 @@ public enum DataFormat {
         case MDA:
             MdaFormat.save(arr, name);
             return;
+        case FITS:
+            FitsFormat.save(arr, name);
+            return;
         default:
             identifier = null;
         }

@@ -35,12 +35,16 @@ import static nom.tam.fits.header.Standard.BITPIX;
 import static nom.tam.fits.header.Standard.BLANK;
 import static nom.tam.fits.header.Standard.BSCALE;
 import static nom.tam.fits.header.Standard.BZERO;
+import static nom.tam.fits.header.Standard.COMMENT;
+import static nom.tam.fits.header.Standard.HISTORY;
 import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.Locale;
 
 import mitiv.array.ArrayFactory;
@@ -55,12 +59,18 @@ import mitiv.base.Traits;
 import mitiv.exception.DataFormatException;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.RecoverableFormatException;
+import mitiv.linalg.shaped.ShapedVector;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
+import nom.tam.fits.ImageData;
+import nom.tam.fits.ImageHDU;
+import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.ArrayDataInput;
+import nom.tam.util.BufferedFile;
 
 /**
  * Implement reading/writing of FITS files.
@@ -75,6 +85,27 @@ public class FitsFormat {
     private final static int BUFFER_SIZE = 1024*1024;
     private final static int SUCCESS = 0;
     private final static int FAILURE = -1;
+
+    /* FITS value types. */
+    private final static int NONE = 0;
+    private final static int LOGICAL = 1;
+    private final static int INTEGER = 2;
+    private final static int REAL = 3;
+    private final static int STRING = 4;
+
+    private final static Hashtable<String, IFitsHeader> keywords = createKeywords();
+
+    private static Hashtable<String, IFitsHeader> createKeywords() {
+        Hashtable<String, IFitsHeader> keywords = new Hashtable<String, IFitsHeader>();
+        keywords.put("SIMPLE", SIMPLE);
+        keywords.put("BITPIX", BITPIX);
+        keywords.put("NAXIS", NAXIS);
+        keywords.put("NAXISn", NAXISn);
+        keywords.put("BLANK", BLANK);
+        keywords.put("COMMENT", COMMENT);
+        keywords.put("HISTORY", HISTORY);
+        return keywords;
+    }
 
     /**
      * Read the primary FITS "image" as a shaped array.
@@ -245,6 +276,193 @@ public class FitsFormat {
             }
         }
         return arr;
+    }
+
+    public static void save(ShapedVector vec, String filename, Object... meta)
+            throws IOException {
+        save(vec.asShapedArray(), filename, meta);
+    }
+
+    public static void save(ShapedArray arr, String filename, Object... meta)
+            throws IOException {
+        BufferedFile out = null;
+        ImageHDU hdu = null;
+        Header header = new Header();
+        int bitpix = bitpixFromType(arr.getType());
+        int rank = arr.getRank();
+        try {
+            /* Build the initial header. */
+            header.setSimple(true);
+            header.setBitpix(bitpix);
+            header.setNaxes(rank);
+            for (int k = 0; k < rank; ++k) {
+                header.setNaxis(k + 1, arr.getDimension(k));
+            }
+
+            /* Add supplementary cards (FIXME: use an iterator). */
+            int i = 0;
+            while (i < meta.length) {
+                IFitsHeader key = null;
+                Object val = null;
+                String comment = null;
+                String keyword = null;
+                int ival = -1, icom = -1;
+                if (meta[i] instanceof IFitsHeader) {
+                    key = (IFitsHeader)meta[i];
+                    keyword = key.key();
+                    if (i + 1 >= meta.length) {
+                        throw new DataFormatException(String.format("Missing value for FITS keyword '%s'", keyword));
+                    }
+                    ival = i + 1;
+                } else if (meta[i] instanceof String) {
+                    keyword = (String)meta[i];
+                    if (keyword == null) {
+                        keyword = "";
+                    } else {
+                        keyword = keyword.trim().toUpperCase(Locale.US);
+                    }
+                    key = keywords.get(keyword);
+                    if (key != null && key.valueType() == IFitsHeader.VALUE.NONE) {
+                        icom = i + 1;
+                    } else {
+                        ival = i + 1;
+                        icom = i + 2;
+                    }
+                }
+                if (ival >= 0) {
+                    if (ival >= meta.length) {
+                        throw new DataFormatException(String.format("Missing value for FITS keyword '%s'", keyword));
+                    }
+                    val = meta[ival];
+                } else {
+                    val = null;
+                }
+                if (icom >= 0) {
+                    if (icom >= meta.length) {
+                        comment = "";
+                    } else {
+                        if (meta[icom] == null) {
+                            comment = "";
+                        } else if (meta[icom] instanceof String) {
+                            comment = (String)meta[icom];
+                        } else {
+                            throw new DataFormatException(String.format("Comment for FITS keyword '%s' must be a string", keyword));
+                        }
+                    }
+                }
+                i = Math.max(ival,  icom) + 1;
+
+                /* Fix type of value. */
+                int valueType;
+                if (val == null) {
+                    valueType = NONE;
+                } else if (val instanceof String) {
+                    valueType = STRING;
+                } else if (val instanceof Boolean) {
+                    valueType = LOGICAL;
+                } else if (val instanceof Integer) {
+                    valueType = INTEGER;
+                    val = new Long(((Integer)val).intValue());
+                } else if (val instanceof Long) {
+                    valueType = INTEGER;
+                } else if (val instanceof Double) {
+                    valueType = REAL;
+                } else if (val instanceof Byte) {
+                    valueType = INTEGER;
+                    val = new Long(((Byte)val).byteValue() & 0xFF);
+                } else if (val instanceof Short) {
+                    valueType = INTEGER;
+                    val = new Long(((Short)val).shortValue());
+                } else if (val instanceof Float) {
+                    valueType = REAL;
+                    val = new Double(((Float)val).floatValue());
+                } else {
+                    throw new IllegalTypeException(String.format("Unsupported value type for FITS keyword '%s'", keyword));
+                }
+
+                if (valueType == LOGICAL) {
+                    boolean value = (Boolean)val;
+                    if (key != null) {
+                        header.addValue(key, value);
+                    } else {
+                        header.addValue(keyword, value, comment);
+                    }
+                } else if (valueType == INTEGER) {
+                    long value = (Long)val;
+                    if (key != null) {
+                        header.addValue(key, value);
+                    } else {
+                        header.addValue(keyword, value, comment);
+                    }
+                } else if (valueType == REAL) {
+                    long value = (Long)val;
+                    if (key != null) {
+                        header.addValue(key, value);
+                    } else {
+                        header.addValue(keyword, value, comment);
+                    }
+                } else if (valueType == STRING) {
+                    String value = (String)val;
+                    if (key != null) {
+                        header.addValue(key, value);
+                    } else {
+                        header.addValue(keyword, value, comment);
+                    }
+                } else {
+                    if (key == COMMENT) {
+                        header.insertComment(comment);
+                    } else if (key == HISTORY) {
+                        header.insertHistory(comment);
+                    } else {
+                        throw new DataFormatException(String.format("Unsupported commentary FITS keyword '%s'", keyword));
+                    }
+                }
+            }
+
+            /*
+             * Create the HDU from the header, open the file, write the header,
+             * write the data and zero pad the file.
+             */
+            hdu = (ImageHDU)FitsFactory.hduFactory(header, new ImageData(header));
+            out = new BufferedFile(filename, "rw");
+            hdu.getHeader().write(out);
+            int elsize = 0;
+            switch (arr.getType()) {
+            case Traits.BYTE:
+                out.write(((ByteArray)arr).flatten());
+                elsize = 1;
+                break;
+            case Traits.SHORT:
+                out.write(((ShortArray)arr).flatten());
+                elsize = 2;
+                break;
+            case Traits.INT:
+                out.write(((IntArray)arr).flatten());
+                elsize = 4;
+                break;
+            case Traits.LONG:
+                out.write(((LongArray)arr).flatten());
+                elsize = 8;
+                break;
+            case Traits.FLOAT:
+                out.write(((FloatArray)arr).flatten());
+                elsize = 4;
+                break;
+            case Traits.DOUBLE:
+                out.write(((DoubleArray)arr).flatten());
+                elsize = 8;
+                break;
+            }
+            FitsUtil.pad(out,  elsize*(long)arr.getNumber());
+        } catch (IOException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new DataFormatException(ex.getMessage());
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+        }
     }
 
     private static int readArray(float[] dst, ArrayDataInput inp, int bitpix,
@@ -521,6 +739,44 @@ public class FitsFormat {
         }
 
         return dims;
+    }
+
+    public static int bitpixFromType(int type) {
+        switch (type) {
+        case Traits.BYTE:
+            return BITPIX_BYTE;
+        case Traits.SHORT:
+            return BITPIX_SHORT;
+        case Traits.INT:
+            return BITPIX_INT;
+        case Traits.LONG:
+            return BITPIX_LONG;
+        case Traits.FLOAT:
+            return BITPIX_FLOAT;
+        case Traits.DOUBLE:
+            return BITPIX_DOUBLE;
+        default:
+            throw new IllegalTypeException("No BITPIX for that data type");
+        }
+    }
+
+    public static int typeFromBitpix(int bitpix) {
+        switch (bitpix) {
+        case BITPIX_BYTE:
+            return Traits.BYTE;
+        case BITPIX_SHORT:
+            return Traits.SHORT;
+        case BITPIX_INT:
+            return Traits.INT;
+        case BITPIX_LONG:
+            return Traits.LONG;
+        case BITPIX_FLOAT:
+            return Traits.FLOAT;
+        case BITPIX_DOUBLE:
+            return Traits.DOUBLE;
+        default:
+            throw new IllegalTypeException("Unsupported BITPIX value");
+        }
     }
 
     public static void main(String[] args) {
