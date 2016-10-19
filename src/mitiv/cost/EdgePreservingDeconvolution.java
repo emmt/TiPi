@@ -39,21 +39,11 @@ import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
-import mitiv.optim.BLMVM;
-import mitiv.optim.BoundProjector;
-import mitiv.optim.IterativeDifferentiableSolver;
-import mitiv.optim.LBFGS;
-import mitiv.optim.LineSearch;
-import mitiv.optim.MoreThuenteLineSearch;
-import mitiv.optim.NonLinearConjugateGradient;
 import mitiv.optim.OptimTask;
-import mitiv.optim.SimpleBounds;
-import mitiv.optim.SimpleLowerBound;
-import mitiv.optim.SimpleUpperBound;
 import mitiv.utils.FFTUtils;
 
 
-public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
+public class EdgePreservingDeconvolution extends SmoothInverseProblem {
 
     /** Use new code? */
     private boolean useNewCode = false;
@@ -152,23 +142,6 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
         setObjectShape(new Shape(dims));
     }
 
-    /** Regularization level. */
-    private double mu = 10.0;
-
-    public double getRegularizationLevel() {
-        return mu;
-    }
-
-    public void setRegularizationLevel(double value) {
-        if (nonfinite(value) || value < 0.0) {
-            error("Regularization level must be nonnegative");
-        }
-        if (mu != value) {
-            mu = value;
-            updatePending = true;
-        }
-    }
-
     /** Edge-preserving threshold. */
     private double epsilon = 1.0;
 
@@ -186,88 +159,6 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
         }
     }
 
-    /** Absolute gradient tolerance for the convergence. */
-    private double gatol = 0.0;
-
-    public double getAbsoluteTolerance() {
-        return gatol;
-    }
-
-    public void setAbsoluteTolerance(double value) {
-        if (nonfinite(value) || value < 0.0) {
-            error("Absolute tolerance for convergence must be nonnegative");
-        }
-        gatol = value;
-    }
-
-    /** Relative gradient tolerance for the convergence. */
-    private double grtol = 1e-3;
-
-    public double getRelativeTolerance() {
-        return grtol;
-    }
-
-    public void setRelativeTolerance(double value) {
-        if (nonfinite(value) || value < 0.0) {
-            error("Relative tolerance for convergence must be nonnegative");
-        }
-        grtol = value;
-    }
-
-    /**
-     * Number of memorized steps for the LBFGS method, nonlinear
-     * conjugate gradient is used if this value is less than one.
-     */
-    private int limitedMemorySize = 0;
-
-    public int getLimitedMemorySize() {
-        return limitedMemorySize;
-    }
-
-    public void setLimitedMemorySize(int value) {
-        if (value < 0) {
-            error("Limited memory size be nonnegative");
-        }
-        if (limitedMemorySize != value) {
-            limitedMemorySize = value;
-            updatePending = true;
-        }
-    }
-
-    /** Lower bound for the variables. */
-    private double lowerBound = Double.NEGATIVE_INFINITY;
-
-    public double getLowerBound() {
-        return lowerBound;
-    }
-
-    public void setLowerBound(double value) {
-        if (Double.isNaN(value) || value == Double.POSITIVE_INFINITY) {
-            error("Invalid value for the lower bound");
-        }
-        if (lowerBound != value) {
-            lowerBound = value;
-            updatePending = true;
-        }
-    }
-
-    /** Upper bound for the variables. */
-    private double upperBound = Double.POSITIVE_INFINITY;
-
-    public double getUpperBound() {
-        return upperBound;
-    }
-
-    public void setUpperBound(double value) {
-        if (Double.isNaN(value) || value == Double.NEGATIVE_INFINITY) {
-            error("Invalid value for the upper bound");
-        }
-        if (upperBound != value) {
-            upperBound = value;
-            updatePending = true;
-        }
-    }
-
     /** Force single precision. */
     private boolean single;
 
@@ -280,17 +171,6 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
             single = value;
             updatePending = true;
         }
-    }
-
-    /** Debug mode. */
-    public boolean debug = false;
-
-    public boolean getDebug() {
-        return debug;
-    }
-
-    public void setDebug(boolean value) {
-        debug = value;
     }
 
     /**
@@ -328,19 +208,10 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
 
     private ShapedVectorSpace dataSpace = null;
     private ShapedVectorSpace objectSpace = null;
-    private DifferentiableCostFunction fdata = null;
-    private HyperbolicTotalVariation fprior = null;
-    private BoundProjector projector = null;
-    private int bounded = 0;
-    private LineSearch lineSearch = null;
     private Vector x = null; // current solution
 
     private void update() {
 
-        /* Interdependent attributes have not been checked.  Perform these checks now. */
-        if (lowerBound > upperBound) {
-            error("Incompatible bounds");
-        }
         if (data == null) {
             error("No data specified");
         }
@@ -363,7 +234,8 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
             error("Given object shape must the same number of dimensions as the data");
         }
         if (debug) {
-            System.out.format("mu: %.2g, epsilon: %.2g\n", mu, epsilon);
+            System.out.format("mu: %.2g, epsilon: %.2g\n",
+                    getRegularizationLevel(), getEdgeThreshold());
         }
 
         /* Determine the floating-point type for all vectors. */
@@ -439,7 +311,6 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
             objectSpace = new DoubleShapedVectorSpace(objectShape);
         }
 
-
         /* Build the likelihood cost function. */
         if (useNewCode) {
             /* Build weighted data instance. */
@@ -451,19 +322,18 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
             /* Build the direct model. */
             Convolution directModel = Convolution.build(objectSpace, dataSpace);
             directModel.setPSF(psf);
-            fdata = new DifferentiableGaussianLikelihood(weightedData, directModel);
+            setLikelihood(new DifferentiableGaussianLikelihood(weightedData, directModel));
         } else {
             WeightedConvolutionCost cost = WeightedConvolutionCost.build(objectSpace, dataSpace);
             cost.setPSF(psf);
             cost.setWeightsAndData(weight, data);
-            fdata = cost;
+            setLikelihood(cost);
         }
 
         /* Build the regularization cost function. */
-        fprior = new HyperbolicTotalVariation(objectSpace, epsilon);
-        fprior.setScale(scale);
-        /* Build the total cost function. */
-        setCostFunction(new CompositeDifferentiableCostFunction(1.0, fdata, mu, fprior));
+        HyperbolicTotalVariation fprior = new HyperbolicTotalVariation(objectSpace, epsilon);
+        //fprior.setScale(scale);
+        setRegularization(fprior);
 
         /* Make sure the vector of variables share its contents with the
            object shaped array. */
@@ -480,71 +350,6 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
                 object = ArrayFactory.wrap(((FloatShapedVector)x).getData(), objectShape);
             } else {
                 object = ArrayFactory.wrap(((DoubleShapedVector)x).getData(), objectShape);
-            }
-        }
-
-        /* Choose an optimizer to solve the problem. */
-        lineSearch = null;
-        projector = null;
-        bounded = 0;
-        if (lowerBound != Double.NEGATIVE_INFINITY) {
-            bounded |= 1;
-        }
-        if (upperBound != Double.POSITIVE_INFINITY) {
-            bounded |= 2;
-        }
-        if (bounded == 0) {
-            /* No bounds have been specified. */
-            lineSearch = new MoreThuenteLineSearch(LBFGS.SFTOL, LBFGS.SGTOL, LBFGS.SXTOL);
-            if (limitedMemorySize > 0) {
-                LBFGS lbfgs = new LBFGS(objectSpace, limitedMemorySize, lineSearch);
-                lbfgs.setAbsoluteTolerance(gatol);
-                lbfgs.setRelativeTolerance(grtol);
-                setOptimizer(lbfgs);
-                if (debug) {
-                    System.out.format("Using L-BFGS with %d memorized steps.\n",
-                            limitedMemorySize);
-                }
-            } else {
-                lineSearch = new MoreThuenteLineSearch(NonLinearConjugateGradient.SFTOL,
-                        NonLinearConjugateGradient.SGTOL,
-                        NonLinearConjugateGradient.SXTOL);
-                int method = NonLinearConjugateGradient.DEFAULT_METHOD;
-                NonLinearConjugateGradient nlcg = new
-                        NonLinearConjugateGradient(objectSpace, method, lineSearch);
-                nlcg.setAbsoluteTolerance(gatol);
-                nlcg.setRelativeTolerance(grtol);
-                setOptimizer(nlcg);
-                if (debug) {
-                    System.out.format("Using non-linear conjugate gradients.\n");
-                }
-            }
-        } else {
-            /* Some bounds have been specified. */
-            if (bounded == 1) {
-                /* Only a lower bound has been specified. */
-                projector = new SimpleLowerBound(objectSpace, lowerBound);
-            } else if (bounded == 2) {
-                /* Only an upper bound has been specified. */
-                projector = new SimpleUpperBound(objectSpace, upperBound);
-            } else {
-                /* Both a lower and an upper bounds have been specified. */
-                projector = new SimpleBounds(objectSpace, lowerBound, upperBound);
-            }
-            final int m = (limitedMemorySize > 1 ? limitedMemorySize : 5); // FIXME:
-            //lineSearch = new ArmijoLineSearch(0.5, 1e-4);
-            //VMLMB vmlmb = new VMLMB(objectSpace, projector, m, lineSearch);
-            //vmlmb.setAbsoluteTolerance(gatol);
-            //vmlmb.setRelativeTolerance(grtol);
-            //optimizer = vmlmb;
-            final BLMVM blmvm = new BLMVM(objectSpace, projector, m);
-            blmvm.setAbsoluteTolerance(gatol);
-            blmvm.setRelativeTolerance(grtol);
-            setOptimizer(blmvm);
-            projector.projectVariables(x, x);
-            if (debug) {
-                System.out.format("Using BLMVM with %d memorized steps.\n",
-                        limitedMemorySize);
             }
         }
 
@@ -584,6 +389,9 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
     }
     public void setScale(double[] delta) {
         scale = delta;
+    }
+    public double[] getScale() {
+        return scale;
     }
 
 }
