@@ -1,19 +1,21 @@
-# Array Factory in TiPi
+# The array factory in TiPi
 
 The class `ArrayFactory` provides static methods for creating new shaped
 arrays, converting arrays to have a specific element type or wrap existing
 objects in a shaped array which share its elements with the object.
 
 
-## Create a New Array
+## Create a new shaped array
 
 The static method `ArrayFactory.create()` creates a shaped array with given
 element type and shape.  There are many possibilities to specify the shape of
 the array, for instance:
 
-    ArrayFactory.create(type, shape)
-    ArrayFactory.create(type, dims)
-    ArrayFactory.create(type, dim1, dim2, ...)
+```java
+ArrayFactory.create(type, shape)
+ArrayFactory.create(type, dims)
+ArrayFactory.create(type, dim1, dim2, ...)
+```
 
 where `type` is the element type, `shape` is the array shape (an instance of
 `Shape`), `dims` is an `int[]` array with the list of dimensions, `dim1`,
@@ -22,7 +24,9 @@ dimensions (which is probably too large for any reasonnable application).
 
 No dimensions may be specified in order to create a scalar of a given type:
 
-    ArrayFactory.create(type)
+```java
+ArrayFactory.create(type)
+```
 
 The array element type can be one of:
 
@@ -40,15 +44,17 @@ For multi-dimensional arrays, the storage order of arrays created by
 (first) indices vary faster when stepping through consecutive memory locations.
 
 
-## Wrap an Array Around Existing Data
+## Wrap an array around existing data
 
 A shaped array may be created to share its elements with an existing
 monodimensional Java array of any generic numerical type.  This is done by one
 of the `ArrayFactory.wrap(...)` methods as follows:
 
-    ArrayFactory.wrap(buf, shape)
-    ArrayFactory.wrap(buf, dims)
-    ArrayFactory.wrap(buf, dim1, dim2, ...)
+```java
+ArrayFactory.wrap(buf, shape)
+ArrayFactory.wrap(buf, dims)
+ArrayFactory.wrap(buf, dim1, dim2, ...)
+```
 
 where `buf` is the Java array and the same notation as above is used for
 specifying the list of dimensions.  The length of the buffer `buf` must be the
@@ -59,11 +65,16 @@ monodimensional Java arrays.
 
 A single element buffer can be wrapped into a scalar by:
 
-    ArrayFactory.wrap(buf)
+```java
+ArrayFactory.wrap(buf)
+```
 
-Any shaped vector, say `vec`, can also be wrapped into a shaped array as follows:
+Any shaped vector, say `vec`, can also be wrapped into a shaped array as
+follows:
 
-    ArrayFactory.wrap(vec)
+```java
+ArrayFactory.wrap(vec)
+```
 
 which yieds a `ShapedArray` if `vec` is a `ShapedVector` and a
 `FloatShapedArray` or a `DoubleShapedArray` if `vec` is a `FloatShapedVector`
@@ -73,14 +84,15 @@ contents (with contiguous elements in colum-major order).  So the resulting
 shaped array can be seen as a *view* of the shaped vector.
 
 
-## Type Conversion
+## Type conversion
 
 The element type af an existing array can be converted by one of the
 `to<Type>()` methods.  For instance:
 
-
-    ArrayFactory.toFloat(arr)
-    arr.toFloat()
+```java
+ArrayFactory.toFloat(arr)
+arr.toFloat()
+```
 
 both yield a version of `arr` whose elements are of generic type `float`.  For
 maximum efficiency, the conversion operation is *lazzy* in the sense that the

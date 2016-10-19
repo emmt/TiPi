@@ -1,4 +1,4 @@
-# Shaped Arrays in TiPi
+# Shaped arrays in TiPi
 
 A `ShapedArray` stores rectangular multi-dimensional arrays of elements of the
 same data type.  Compared to a `ShapedVector`, the elements of a `ShapedArray`
@@ -6,17 +6,19 @@ reside in conventional memory and may be stored in arbitrary order and in a
 non-contiguous way.
 
 
-## Class Hierarchy
+## Class hierarchy
 
 Various interfaces or abstract classes extend the `ShapedArray` interface
 depending on whether the *type*<sup name="type1">[[1]](#type)</sup> and/or the
 *rank*<sup name="rank1">[[2]](#rank)</sup> of the array are unveiled.  The
 naming conventions are:
 
-    ShapedArray   // neither rank nor type is known
-    <Type>Array   // a shaped array of known type, but any rank
-    Array<Rank>D  // a shaped array of known rank, but any type
-    <Type><Rank>D // a shaped array with known type and rank
+```java
+ShapedArray   // neither rank nor type is known
+<Type>Array   // a shaped array of known type, but any rank
+Array<Rank>D  // a shaped array of known rank, but any type
+<Type><Rank>D // a shaped array with known type and rank
+```
 
 where the `<Type>` field is the capitalized name of the primitive type (*e.g.*
 `Double` for `double`, `Int` for `int`, *etc.*) and `<Rank>` is a decimal
@@ -33,42 +35,48 @@ denotes a scalar of any type.  For instance:
 * `Long4D` is a four-dimensional array of long integer values.
 
 All these are abstract classes or interfaces, the actual class depends on the
-storage of the elements of the array.  Most of the time, the array can be
+storage of the elements of the array.  Most of the time, an array can be
 manipulated regardless of its concrete class.
 
 
-## Operations on Shaped Arrays
+## Operations on shaped arrays
 
 This section describes the operations available for the most basic type, that
 is `ShapedArray`.
 
 
-### Basic Operations on Shaped Arrays
+### Basic operations on shaped arrays
 
 The basic operations available for a `ShapedArray`, say `arr`, are the same as
 those of `Shaped` and `Typed` objects:
 
-    arr.getType()        // query the type of the array
-    arr.getRank()        // query the rank of the array
-    arr.getNumber()      // query the number of elements in the array
-    arr.getDimension(k)  // query the length of the (k+1)-th dimension
-    arr.getOrder()       // query the storage order of the elements in the array
-    arr.getShape()       // query the shape of the array
+```java
+arr.getType()        // query the type of the array
+arr.getRank()        // query the rank of the array
+arr.getNumber()      // query the number of elements in the array
+arr.getDimension(k)  // query the length of the (k+1)-th dimension
+arr.getOrder()       // query the storage order of the elements in the array
+arr.getShape()       // query the shape of the array
+```
 
 and type conversion:
 
-    arr.toByte()         // convert to ByteArray
-    arr.toShort()        // convert to ShortArray
-    arr.toInt()          // convert to IntArray
-    arr.toLong()         // convert to LongArray
-    arr.toFloat()        // convert to FloatArray
-    arr.toDouble()       // convert to DoubleArray
+```java
+arr.toByte()         // convert to ByteArray
+arr.toShort()        // convert to ShortArray
+arr.toInt()          // convert to IntArray
+arr.toLong()         // convert to LongArray
+arr.toFloat()        // convert to FloatArray
+arr.toDouble()       // convert to DoubleArray
+```
 
 For efficiency reasons, conversion operations are *lazzy*: they return the same
 object if it is already of the correct type.  Use the `copy` method to
 duplicate an array:
 
-    arr.copy()           // duplicate the contents of the array
+```java
+arr.copy()           // duplicate the contents of the array
+```
 
 This method yields a new shaped array which has the same shape, type and values
 as `arr` but whose contents is independent from that of `arr`.  If `arr` is a
@@ -99,11 +107,13 @@ elements of the array for maximum efficiency.  It can be one of:
 * `ShapedArray.NONSPECIFIC_ORDER` for any other storage order.
 
 
-### Assign Elements of a Shaped Array
+### Assign elements of a shaped array
 
 It is possible to assign the values of an array from another object:
 
-    arr.assign(src)
+```java
+arr.assign(src)
+```
 
 where `src` is another shaped array, a shaped vector, or a Java array of a
 primitive type.  If the type of the elements of `src` does not match that of
@@ -119,11 +129,13 @@ individual elements become accessible via its `get(...)` and `set(...)`
 methods.
 
 
-### Create a Similar Shaped Array
+### Create a similar shaped array
 
 Creating a new array with the same type and shape as `arr` is simply done by:
 
-    arr.create()
+```java
+arr.create()
+```
 
 which yields a *flat* array whose elements are contiguous and stored in
 column-major order.  The [`ArrayFactory`](array-factory.md) provides static
@@ -131,12 +143,14 @@ methods to create shaped arrays of any given type and shape (providing the type
 of its elements is known).
 
 
-### 1D View of a Shaped Array
+### 1D view of a shaped array
 
 Finally it is possible to view a shaped array as if it was a mono-dimensional
 (1-D) array.  This is done by:
 
-    arr.as1D()
+```java
+arr.as1D()
+```
 
 Since the rank is unveiled by this operation, it is available for any
 `ShapedArray` and yields an instance of the abstract class `Array1D`.  Note
@@ -144,52 +158,68 @@ that a *view* such as the one returned by the `as1D()` method let you fetch and
 assign values of the original array with `get(...)` and `set(...)` methods.
 
 
-## Operations Available for Arrays with Unveiled Type
+## Operations available for arrays with unveiled type
 
 Add/subtract/multiply all elements by a scalar:
 
-    arr.increment(value)
-    arr.decrement(value)
-    arr.scale(value)
+```java
+arr.increment(value)
+arr.decrement(value)
+arr.scale(value)
+```
 
 Fill with given or generated value:
 
-    arr.fill(value)
-    arr.fill(generator)
+```java
+arr.fill(value)
+arr.fill(generator)
+```
 
 Map a function to every elements:
 
-    arr.map(func)
+```java
+arr.map(func)
+```
 
 Scan all the elements of the array:
 
-    arr.scan(scanner)
+```java
+arr.scan(scanner)
+```
 
 Extract the contents as a flat Java vector:
 
-    arr.flatten([forceCopy])
+```java
+arr.flatten([forceCopy])
+```
 
 
-## Other Operations
+## Other operations
 
 Fetch a value:
 
-    arr.get(i1,...,iR)
+```java
+arr.get(i1,...,iR)
+```
 
 element type and rank must be known so `arr` is an instance of some
 `<Type><Rank>D` abstract class.
 
 Assign a value to an element:
 
-    arr.set(i1,...,ir, value)
+```java
+arr.set(i1,...,iR, value)
+```
 
 
-## Operations Available for Arrays with Unveiled Rank
+## Operations available for arrays with unveiled rank
 
 
 ### Slicing
 
-    arr.slice(index[, dim])
+```java
+arr.slice(index[, dim])
+```
 
 By default `dim` = `LAST` (-1) to slice through the last dimension, result is
 an array of same data type with one less dimension (slicing a `Float3D` yields
@@ -200,11 +230,13 @@ with its parent.  The same rules as for ranges (see this section) apply to
 to the end.
 
 
-### Ranged Sub-array
+### Ranged sub-array
 
 You can make a sub-array for given ranges of indices:
 
-    arr.view(rng1, rng2, ..., rngR)
+```java
+arr.view(rng1, rng2, ..., rngR)
+```
 
 which returns a view to `arr` limited to the elements indexed by the
 ranges `rng*` are either `Range` objects or `null` which means
@@ -212,11 +244,15 @@ ranges `rng*` are either `Range` objects or `null` which means
 
 A range is a construction like:
 
-    Range rng = new Range(start, stop);
+```java
+Range rng = new Range(start, stop);
+```
 
 or:
 
-    Range rng = new Range(start, stop, step);
+```java
+Range rng = new Range(start, stop, step);
+```
 
 where `start` is the initial index of the range, `stop` is the last index and
 `step` is optional and defaults to `+1` if omitted.
@@ -234,15 +270,17 @@ The convention is that the element corresponding to the first index of a range
 is always considered while the last one may not be reached.  In pseudo-code,
 the rules are:
 
-    if (step > 0) {
-        for (int index = first; index <= last; index += step) {
-            ...
-        }
-    } else if (step < 0) {
-        for (int index = first; index >= last; index += step) {
-            ...
-        }
+```java
+if (step > 0) {
+    for (int index = first; index <= last; index += step) {
+        ...
     }
+} else if (step < 0) {
+    for (int index = first; index >= last; index += step) {
+        ...
+    }
+}
+```
 
 The sign of the step must be in agreement with the ordering of the first and
 last element of the range, otherwise the range may be *empty*.  This occurs
@@ -252,49 +290,62 @@ when (after applying the rules for negative indices) `first` > `last` and
 To ease the construction of ranges and make the code more readable, we
 recommend to introduce a range factory in your class, *e.g.*:
 
-    static public Range range(int first, int last) {
-        return new Range(first, last);
-    }
-    static public Range range(int first, int last, int step) {
-        return new Range(first, last, step);
-    }
+```java
+static public Range range(int first, int last) {
+    return new Range(first, last);
+}
+static public Range range(int first, int last, int step) {
+    return new Range(first, last, step);
+}
+```
 
 Then a ranged view of an array can be written as:
 
-    arr.view(range(0,-1,2), range(4,8))
+```java
+arr.view(range(0,-1,2), range(4,8))
+```
 
 which is lighter and more readable than:
 
-    arr.view(new Range(0,-1,2), new Range(4,8))
+```java
+arr.view(new Range(0,-1,2), new Range(4,8))
+```
 
 
-### Selected Sub-array
+### Selected sub-array
 
 Likewise:
 
-    arr.view(sel1, sel2, ..., selR)
+```java
+arr.view(sel1, sel2, ..., selR)
+```
 
-returns a view to arr from a selection of indices, all `sel*` are either
-`int[]` index list or `null` which means "*all*".  Beware that in selections of
-indices, all indices must be reachable (`-1` is considered as out-of-bounds).
+returns a view to `arr` from a selection of indices, all `sel*` arguments are
+either `int[]` index list or `null` which means ***all***.  Beware that in
+selections of indices, all indices must be reachable (`-1` is considered as
+out-of-bounds).
 
-To ease the construction of such views and make the code more
-readable, you can also use selection factories like:
+To ease the construction of such views and make the code more readable, you can
+also use selection factories like:
 
-    static public int[] select(int i1) {
-        return new int[]{i1};
-    }
-    static public int[] select(int i1, int i2) {
-        return new int[]{i1, i2};
-    }
-    static public int[] select(int i1, int i2, int i3) {
-        return new int[]{i1, i2, i3};
-    }
-    ...
+```java
+static public int[] select(int i1) {
+    return new int[]{i1};
+}
+static public int[] select(int i1, int i2) {
+    return new int[]{i1, i2};
+}
+static public int[] select(int i1, int i2, int i3) {
+    return new int[]{i1, i2, i3};
+}
+...
+```
 
 and write something like:
 
-     arr.view(select(3,2,9), select(5,1))
+```java
+arr.view(select(3,2,9), select(5,1))
+```
 
 Note that sub-arrays and slices are views to the original array (which can
 itself be a view) with fast access to the elements of this array.  If you do
@@ -302,18 +353,21 @@ not want that the view and its parent share the same elements, use the `copy()`
 method after making the view.
 
 It is currently not possible to mix ranges, slicing and index selection in a
-single su-array construction, as it would result in too many possibilities (and
-potentially inefficient code).  It is however possible to chain
+single sub-array construction, as it would result in too many possibilities
+(and potentially inefficient code).  It is however possible to chain
 sub-array-constructions to obtain the same effect.  For instance:
 
-    arr.view(null, range(2,11,3)).view(select(6,4,8,2), null)
+```java
+arr.view(null, range(2,11,3)).view(select(6,4,8,2), null)
+```
 
 to mimic:
 
-    arr.view(select(6,4,8,2), range(2,11,3))
+```java
+arr.view(select(6,4,8,2), range(2,11,3))
+```
 
 which is not allowed for now.
-
 
 
 <b id="type">[1] Type:</b> The primitive type of the elements of a `Typed` object.

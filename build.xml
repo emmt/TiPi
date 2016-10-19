@@ -12,14 +12,12 @@
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
     <property name="source.dir" location="src"/>
-    <property name="doc.dir" location="doc"/>
+    <property name="doc.dir" location="javadoc"/>
     <path id="TiPi.classpath">
         <pathelement location="bin"/>
-        <pathelement location="lib/bioformats.jar"/>
         <pathelement location="lib/args4j-2.0.21.jar"/>
-        <pathelement location="lib/JTransforms-2.0.jar"/>
-        <pathelement location="lib/JTransforms-3.0.jar"/>
-        <pathelement location="lib/JLargeArrays-1.2.jar"/>
+        <pathelement location="lib/JTransforms-3.1-with-dependencies.jar"/>
+        <pathelement location="lib/nom.tam.fits-v1.11.0.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>

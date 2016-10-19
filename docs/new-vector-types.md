@@ -1,114 +1,19 @@
-# Vectors in TiPi
+# Creating new vector types in TiPi
 
-**Warning:** This page needs to be edited to update its contents.  The
-presented general ideas are however correct.
+For now TiPi only provides two concrete types of vectors, `DoubleShapedVector`
+and `FlaotShapedVector`, with their respective vector spaces classes,
+`DoubleShapedVectorSpace` and `FloatShapedVectorSpace`.  Such vectors store
+their components in a single Java array of type `double[]` or `float[]` and are
+closely connected to `ShapedArray` (*i.e.*, they also have a *shape*).  For
+very large problems, it may be more convenient to store the components of the
+vectors differently, perhaps on different machines and/or in GPU memory.  It is
+possible (and hopefully easy) to make TiPi aware of this specific storage by
+implementing the corresponding vector and vector space classes.  Another reason
+to create a new vector and vector space type may be to provide more efficient
+(*e.g.*, multi-threaded) versions of the methods designed to operate on
+vectors.
 
-
-## Required Operations in a Vector Space
-
-* create a new vector
-* copy vector contents from/to conventional memory<sup>(a)</sup>
-* fetch/set the value of a specific element<sup>(a)</sup>
-* fill a vector with a value
-* copy (duplicate) a vector
-* compute the dot product of two vectors
-* copy vector contents to another vector
-* swap the contents of two vectors
-* scale a vector by a scalar
-* compute linear combinations of 2 or 3 vectors
-* compute the norm(s) of a vector
-
-<sup>(a)</sup> These operations are not guaranteed to be efficient, their usage
-  should be limited, for instance to set the inputs of an algorithm and to
-  recover its result.
-
-Example of methods provided by a vector space:
-
-* Method `create(alpha)` creates a new vector of the vector space with all
-  components set to the given value `alpha`.
-
-
-## Basic Operations on Vectors
-
-To create a shaped-vector from the contents of the array
-
-    space.create(arr)
-
-where `arr` can be: a `ShapedArray` (with same shape, automatically converted
-to the correct type), a flat Java vector (with the same number of elements,
-type is automatically converted).  To spare memory, the result may be a
-wrapping of the source and thus may share its contents with it, but there is no
-guarantee of that.  To make sure that the two object have independent contents,
-use:
-
-    space.create(arr, forceCopy)
-
-with *forceCopy* set to `true`.
-
-To convert to a flat Java vector (of known element type) do one of:
-
-    vec.flatten()
-    vec.flatten(forceCopy)
-
-Thus a shaped array may be reformed by one of:
-
-    ShapedArray arr = ShapedArray.create(vec);
-    ShapedArray arr = ShapedArray.wrap(vec.flatten(), vec.cloneShape(), false);
-
-with variants:
-
-    FloatArray fltArr = FloatArray.createFrom(fltvec);
-    DoubleArray dblArr = DoubleArray.createFrom(dblVec);
-
-assuming:
-
-    FloatShapedVector fltVec;
-    DoubleShapedVector dblVec;
-
-{==So there must be some copyFrom/copyTo for ShapedArray and ShapedVector
-which are optimized if the contents are the same...==}
-
-Assuming that `arr` is a `ShapedArray`, the reason to distinguish:
-
-    vec = space.create(arr);
-
-and
-
-    vec = space.create();
-    vec.assign(arr);
-
-is that, although the two fragments of code result in a vector with the same
-contents as the array, the first fragment of code may have a chance to avoid
-duplicating memory, while the second yields independent contents.  In fact, the
-second fragment of code is equivalent to:
-
-    vec = space.create(arr, true); // force copy
-
-Since we want to be able to store vectors in non-conventional memory
-(e.g. GPU), there are no guaranteed means to share contents between an array
-and a vector.  Thus, to recover the contents of a vector after some
-computations, you must call, either:
-
-    arr.assign(vec);
-
-to make sure the contents of the existing array match that of the
-vector, or:
-
-    arr = ShapedArray.create(vec);
-
-which creates a new array from a shaped vector.  These operations are
-optimized, so there is a chance that they costs almost nothing (if the existing
-array and the vector share their contents or if the vector contents can be
-wrapped into an array), however this cannot be guaranteed.
-
-
-
-
-
-
-## Methods for a vector space
-
-Implementing a new type of vectors involves two things:
+Implementing a new type of vectors in TiPi involves two things:
 
 1. A concrete sub-class of `Vector` for the vectors of this vector space.  This
    can be as simple as implementing the two methods `get()` and `set()` for
@@ -116,7 +21,7 @@ Implementing a new type of vectors involves two things:
    meant to be efficient, they are mainly provided for testing or debugging
    purposes.
 
-2. A concrete sub-class of `VectorSpace` for the vector space.  A dozen of
+2. A concrete sub-class of `VectorSpace` for the vector space.  Only a dozen of
    methods which operate on the specifc vectors of this vector space have to be
    implemented.  These methods are assumed to be efficient and are used by TiPi
    to perform all necessary operations on vectors.
@@ -201,7 +106,7 @@ following mandatory methods:
 
 ### Methods with default implementation
 
-The following methods have a default implementation which can be overwritten
+The following methods have a default implementation which can be overridden
 with more efficient versions by the descendants of the `VectorSpace` abstract
 class:
 
@@ -209,7 +114,7 @@ class:
   of the vector `x`, that is the square root of the sum of squared components
   of `x`.  The following default implementation is provided:
 
-```
+```java
 protected double _norm2(Vector x) {
     return Math.sqrt(_dot(x, x));
 }
@@ -219,7 +124,7 @@ protected double _norm2(Vector x) {
   of vector `vec` by the scalar `alpha` has the following default
   implementation:
 
-```
+```java
 protected void _scale(Vector vec, double alpha) {
     _scale(vec, alpha, vec);
 }
@@ -229,16 +134,16 @@ protected void _scale(Vector vec, double alpha) {
   a vector into another one: `dst[i] = src[i]` (for all `i`) with the following
   default implementation:
 
-```
+```java
 protected void _copy(Vector dst, Vector src) {
     _combine(dst, 1, src, 0, src);
 }
 ```
 
 * Method `protected Vector _clone(Vector vec)` creates a new vector as a clone
-  of another vector has the following default implementation:
+  of another vector, it has the following default implementation:
 
-```
+```java
 protected Vector _clone(Vector vec) {
     Vector cpy = create();
     _copy(cpy, vec);
@@ -249,7 +154,7 @@ protected Vector _clone(Vector vec) {
 * Method `protected void _zero(Vector vec)` to set to zero all components of
   vector `vec` has the following default implementation:
 
-```
+```java
 protected void _zero(Vector vec) {
     _fill(vec, 0);
 }
@@ -259,7 +164,7 @@ protected void _zero(Vector vec) {
   times `x` to `dst`: `dst[i] += alpha*x[i]` and has the following default
   implementation:
 
-```
+```java
 protected void _add(Vector dst, double alpha, Vector x) {
     _combine(dst, 1, dst, alpha, x);
 }
