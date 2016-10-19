@@ -42,7 +42,7 @@ Many methods are available to directly manipulate vectors.  These methods are
 sufficient to implement the iterative optimization algorithms provided by TiPi.
 
 
-The following methods are assuemd to be efficient:
+The following methods are assumed to be efficient:
 
 * `vec.create()` yields a new vector of the same vector space as `vec`
   with undefined contents.
