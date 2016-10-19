@@ -37,7 +37,7 @@ import org.kohsuke.args4j.Option;
 
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
-import mitiv.invpb.EdgePreservingDeconvolution;
+import mitiv.cost.EdgePreservingDeconvolution;
 import mitiv.io.ColorModel;
 import mitiv.io.DataFormat;
 import mitiv.optim.OptimTask;
@@ -47,17 +47,23 @@ import mitiv.utils.FFTUtils;
 public class EdgePreservingDeconvolutionCommand {
     private PrintStream stream = System.out;
 
-    @Option(name = "--output", aliases = {"-o"}, usage = "Name of output image.", metaVar = "OUTPUT")
-    private String outName = "output.mda";
-
-    @Option(name = "--init", aliases = {"-i"}, usage = "Name of initial image.", metaVar = "INIT")
+    @Option(name = "--init", aliases = {"-i"}, usage = "Name of initial image file.", metaVar = "INIT")
     private String initName = null;
 
-    @Option(name = "--weight", aliases = {"-w"}, usage = "Name of file with weights.", metaVar = "WEIGHT")
+    @Option(name = "--psf", usage = "Name of point spread function file.", metaVar = "FILENAME")
+    private String psfName = null;
+
+    @Option(name = "--weights", aliases = {"-w"}, usage = "Name statistical weights file.", metaVar = "FILENAME")
     private String weightName = null;
 
-    //@Option(name = "--eta", aliases = {"-e"}, usage = "Mean data error.", metaVar = "ETA")
-    //private double eta = 1.0;
+    @Option(name = "--noise", usage = "Standard deviation of the noise.", metaVar = "SIGMA")
+    private double sigma = Double.NaN;
+
+    @Option(name = "--gain", usage = "Detector gain.", metaVar = "GAMMA")
+    private double gamma = Double.NaN;
+
+    @Option(name = "--bad", usage = "Name of bad data file.", metaVar = "FILENAME")
+    private String badName = null;
 
     @Option(name = "--mu", aliases = {"-m"}, usage = "Regularization level.", metaVar = "MU")
     private double mu = 10.0;
@@ -74,10 +80,10 @@ public class EdgePreservingDeconvolutionCommand {
     @Option(name = "--lbfgs", usage = "Use LBFGS method with M saved steps.", metaVar = "M")
     private int limitedMemorySize = 0;
 
-    @Option(name = "--xmin", usage = "Lower bound for the variables.", metaVar = "VALUE")
+    @Option(name = "--min", usage = "Lower bound for the variables.", metaVar = "LOWER")
     private double lowerBound = Double.NEGATIVE_INFINITY;
 
-    @Option(name = "--xmax", usage = "Upper bound for the variables.", metaVar = "VALUE")
+    @Option(name = "--max", usage = "Upper bound for the variables.", metaVar = "UPPER")
     private double upperBound = Double.POSITIVE_INFINITY;
 
     @Option(name = "--single", aliases = {"-s"}, usage = "Force single precision.")
@@ -101,8 +107,11 @@ public class EdgePreservingDeconvolutionCommand {
     @Option(name = "--maxeval", aliases = {"-L"}, usage = "Maximum number of evaluations, -1 for no limits.")
     private int maxeval = -1;
 
-    @Option(name = "--pad", usage = "Padding method (auto|none).", metaVar = "VALUE")
+    @Option(name = "--pad", usage = "Padding method.", metaVar = "\"auto\"|\"none\"|NUMBER")
     private String paddingMethod = "auto";
+
+    @Option(name = "--crop", aliases = {"-c"}, usage = "Crop result to same size as input.")
+    private boolean crop = false;
 
     @Argument
     private List<String> arguments;
@@ -137,7 +146,7 @@ public class EdgePreservingDeconvolutionCommand {
         }
         if (job.help) {
             PrintStream stream = System.out;
-            stream.println("Usage: deconv [OPTIONS] INPUT_IMAGE PSF");
+            stream.println("Usage: deconv [OPTIONS] INPUT OUTPUT");
             stream.println("Options:");
             parser.getProperties().withUsageWidth(80);
             parser.printUsage(stream);
@@ -151,7 +160,7 @@ public class EdgePreservingDeconvolutionCommand {
             System.exit(1);
         }
         String inputName = job.arguments.get(0);
-        String psfName = job.arguments.get(1);
+        String outputName = job.arguments.get(1);
 
         EdgePreservingDeconvolution solver = new EdgePreservingDeconvolution();
 
@@ -159,9 +168,9 @@ public class EdgePreservingDeconvolutionCommand {
             // Read the blurred data and the PSF.
             solver.setForceSinglePrecision(job.single);
             solver.setData(loadData(inputName, job.single));
-            solver.setPSF(loadData(psfName, job.single));
+            solver.setPSF(loadData(job.psfName, job.single));
             if (job.weightName != null) {
-                solver.setWeight(loadData(job.weightName, job.single));
+                solver.setWeights(loadData(job.weightName, job.single));
             }
 
             // Compute dimensions of result.
@@ -245,7 +254,7 @@ public class EdgePreservingDeconvolutionCommand {
             fatal(e.getMessage());
         }
         try {
-            DataFormat.save(solver.getBestSolution(), job.outName);
+            DataFormat.save(solver.getBestSolution(), outputName);
         } catch (final IOException e) {
             if (job.debug) {
                 e.printStackTrace();

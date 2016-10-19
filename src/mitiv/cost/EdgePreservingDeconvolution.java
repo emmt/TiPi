@@ -23,16 +23,13 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.invpb;
+package mitiv.cost;
 
 import mitiv.array.ArrayFactory;
 import mitiv.array.ArrayUtils;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
-import mitiv.cost.CompositeDifferentiableCostFunction;
-import mitiv.cost.DifferentiableCostFunction;
-import mitiv.cost.HyperbolicTotalVariation;
 import mitiv.deconv.Convolution;
 import mitiv.deconv.WeightedConvolutionCost;
 import mitiv.linalg.Vector;
@@ -96,7 +93,7 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
         return weight;
     }
 
-    public void setWeight(ShapedArray arr) {
+    public void setWeights(ShapedArray arr) {
         if (weight != arr) {
             weight = arr;
             updatePending = true;
@@ -448,7 +445,7 @@ public class EdgePreservingDeconvolution extends IterativeDifferentiableSolver {
             /* Build weighted data instance. */
             WeightedData  weightedData = new WeightedData(dataSpace.create(data), true);
             if (weight != null) {
-                weightedData.setWeight(dataSpace.create(weight), true);
+                weightedData.setWeights(dataSpace.create(weight), true);
             }
 
             /* Build the direct model. */

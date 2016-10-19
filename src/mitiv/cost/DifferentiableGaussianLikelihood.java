@@ -23,11 +23,10 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.invpb;
+package mitiv.cost;
 
 import mitiv.base.mapping.DifferentiableMapping;
 import mitiv.base.mapping.Mapping;
-import mitiv.cost.DifferentiableCostFunction;
 import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
@@ -67,8 +66,11 @@ public class DifferentiableGaussianLikelihood extends GaussianLikelihood impleme
     }
 
     @Override
-    public double computeCostAndGradient(double alpha, Vector x, Vector gx, boolean clr)
-    {
+    public double computeCostAndGradient(double alpha, Vector x, Vector gx, boolean clr) {
+        /* Check arguments. */
+        dataSpace.check(x);
+        dataSpace.check(gx);
+
         /* Shortcut? */
         if (alpha == 0.0) {
             if (clr) {
@@ -84,9 +86,9 @@ public class DifferentiableGaussianLikelihood extends GaussianLikelihood impleme
         double sum = 0.0;
         if (ignoreWeights) {
             sum = work1.norm2();
-        } else if (singlePrecision()) {
+        } else if (isSinglePrecision()) {
             final float[] r = ((FloatShapedVector)work1).getData();
-            final float[] w = ((FloatShapedVector)getWeight()).getData();
+            final float[] w = ((FloatShapedVector)getWeights()).getData();
             for (int i = 0; i < r.length; ++i) {
                 final float ri = r[i];
                 final float wr = w[i]*ri;
@@ -95,7 +97,7 @@ public class DifferentiableGaussianLikelihood extends GaussianLikelihood impleme
             }
         } else {
             final double[] r = ((DoubleShapedVector)work1).getData();
-            final double[] w = ((DoubleShapedVector)getWeight()).getData();
+            final double[] w = ((DoubleShapedVector)getWeights()).getData();
             for (int i = 0; i < r.length; ++i) {
                 final double ri = r[i];
                 final double wr = w[i]*ri;
@@ -115,7 +117,7 @@ public class DifferentiableGaussianLikelihood extends GaussianLikelihood impleme
             ((DifferentiableMapping)directModel).applyJacobian(work2, x, work1);
             gx.add(alpha, work2);
         }
-        return alpha*sum/2;
+        return (alpha/2)*sum;
     }
 
 }

@@ -23,10 +23,9 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.invpb;
+package mitiv.cost;
 
 import mitiv.base.mapping.Mapping;
-import mitiv.cost.CostFunction;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 import mitiv.linalg.shaped.DoubleShapedVector;
@@ -114,8 +113,8 @@ public class GaussianLikelihood implements CostFunction {
      * Get the weights.
      * @return The weights.
      */
-    public final ShapedVector getWeight() {
-        return weightedData.getWeight();
+    public final ShapedVector getWeights() {
+        return weightedData.getWeights();
     }
 
     /**
@@ -123,8 +122,8 @@ public class GaussianLikelihood implements CostFunction {
      * floating-point values.
      * @return A boolean.
      */
-    public final boolean singlePrecision() {
-        return weightedData.singlePrecision();
+    public final boolean isSinglePrecision() {
+        return weightedData.isSinglePrecision();
     }
 
     /**
@@ -169,6 +168,9 @@ public class GaussianLikelihood implements CostFunction {
 
     @Override
     public final double evaluate(double alpha, Vector x) {
+        /* Check argument. */
+        dataSpace.check(x);
+
         /* Shortcut? */
         if (alpha == 0.0) {
             return 0.0;
@@ -181,20 +183,20 @@ public class GaussianLikelihood implements CostFunction {
         double sum = 0.0;
         if (ignoreWeights) {
             sum = work1.norm2();
-        } else if (singlePrecision()){
+        } else if (isSinglePrecision()){
             final float[] r = ((FloatShapedVector)work1).getData();
-            final float[] w = ((FloatShapedVector)getWeight()).getData();
+            final float[] w = ((FloatShapedVector)getWeights()).getData();
             for (int i = 0; i < r.length; ++i) {
                 sum += w[i]*r[i]*r[i];
             }
         } else {
             final double[] r = ((DoubleShapedVector)work1).getData();
-            final double[] w = ((DoubleShapedVector)getWeight()).getData();
+            final double[] w = ((DoubleShapedVector)getWeights()).getData();
             for (int i = 0; i < r.length; ++i) {
                 sum += w[i]*r[i]*r[i];
             }
         }
-        return alpha*sum/2;
+        return (alpha/2)*sum;
     }
 
 }
