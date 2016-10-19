@@ -53,3 +53,6 @@
 * Automatically build JavaDoc.
 
 * Rename toplevel package as `tipi`.
+
+* In the cost functions, `evaluate` and `computeCostAndGradient` should check
+  arguments?  Otherwise, make them low level (with an underscore).
