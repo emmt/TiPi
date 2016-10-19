@@ -72,31 +72,28 @@ public class WeightFactory {
      * @return The weights.
      */
 
-    static public ShapedArray defaultWeights(ShapedArray dat)
-    {
+    static public ShapedArray defaultWeights(ShapedArray dat) {
         switch (dat.getType()) {
-            case Traits.FLOAT: {
-                float[] wgt = new float[dat.getNumber()];
-                defaultWeights(wgt, ((FloatArray)dat).flatten(false));
-                return ArrayFactory.wrap(wgt, dat.getShape());
-            }
-            case Traits.DOUBLE: {
-                double[] wgt = new double[dat.getNumber()];
-                defaultWeights(wgt, ((DoubleArray)dat).flatten(false));
-                return ArrayFactory.wrap(wgt, dat.getShape());
-            }
-            default:
-                throw new IllegalArgumentException("Unsupported data type");
+        case Traits.FLOAT: {
+            float[] wgt = new float[dat.getNumber()];
+            defaultWeights(wgt, ((FloatArray)dat).flatten(false));
+            return ArrayFactory.wrap(wgt, dat.getShape());
+        }
+        case Traits.DOUBLE: {
+            double[] wgt = new double[dat.getNumber()];
+            defaultWeights(wgt, ((DoubleArray)dat).flatten(false));
+            return ArrayFactory.wrap(wgt, dat.getShape());
+        }
+        default:
+            throw new IllegalArgumentException("Unsupported data type");
         }
     }
 
-    static public void defaultWeights(float[] wgt, float[] dat)
-    {
+    static public void defaultWeights(float[] wgt, float[] dat) {
         computeWeightsFromData(wgt, dat, 0, 1);
     }
 
-    static public void defaultWeights(double[] wgt, double[] dat)
-    {
+    static public void defaultWeights(double[] wgt, double[] dat) {
         computeWeightsFromData(wgt, dat, 0, 1);
     }
 
@@ -107,26 +104,24 @@ public class WeightFactory {
      *
      * @return An array of weights.
      */
-    static public ShapedArray computeWeightsFromVariance(ShapedArray var)
-    {
+    static public ShapedArray computeWeightsFromVariance(ShapedArray var) {
         switch (var.getType()) {
-            case Traits.FLOAT: {
-                float[] wgt = new float[var.getNumber()];
-                computeWeightsFromVariance(wgt, ((FloatArray)var).flatten(false));
-                return ArrayFactory.wrap(wgt, var.getShape());
-            }
-            case Traits.DOUBLE: {
-                double[] wgt = new double[var.getNumber()];
-                computeWeightsFromVariance(wgt, ((DoubleArray)var).flatten(false));
-                return ArrayFactory.wrap(wgt, var.getShape());
-            }
-            default:
-                throw new IllegalArgumentException("Unsupported data type");
+        case Traits.FLOAT: {
+            float[] wgt = new float[var.getNumber()];
+            computeWeightsFromVariance(wgt, ((FloatArray)var).flatten(false));
+            return ArrayFactory.wrap(wgt, var.getShape());
+        }
+        case Traits.DOUBLE: {
+            double[] wgt = new double[var.getNumber()];
+            computeWeightsFromVariance(wgt, ((DoubleArray)var).flatten(false));
+            return ArrayFactory.wrap(wgt, var.getShape());
+        }
+        default:
+            throw new IllegalArgumentException("Unsupported data type");
         }
     }
 
-    static public void computeWeightsFromVariance(float[] wgt, float[] var)
-    {
+    static public void computeWeightsFromVariance(float[] wgt, float[] var) {
         if (wgt.length != var.length) {
             throw new IllegalArgumentException("Weighting and variance arrays must have the same length");
         }
@@ -140,8 +135,7 @@ public class WeightFactory {
         }
     }
 
-    static public void computeWeightsFromVariance(double[] wgt, double[] var)
-    {
+    static public void computeWeightsFromVariance(double[] wgt, double[] var) {
         if (wgt.length != var.length) {
             throw new IllegalArgumentException("Weighting and variance arrays must have the same length");
         }
@@ -233,42 +227,71 @@ public class WeightFactory {
      */
 
     static public ShapedArray computeWeightsFromData(ShapedArray dat,
-            double alpha, double beta, double bad)
-    {
+            double alpha, double beta, double bad) {
         switch (dat.getType()) {
-            case Traits.FLOAT: {
-                float[] wgt = new float[dat.getNumber()];
-                computeWeightsFromData(wgt, ((FloatArray)dat).flatten(false),
-                        (float)alpha, (float)beta, (float)bad);
-                return ArrayFactory.wrap(wgt, dat.getShape());
-            }
-            case Traits.DOUBLE: {
-                double[] wgt = new double[dat.getNumber()];
-                //	System.out.println("# of data: " + dat.getNumber() + ", # of weights: "+wgt.length);
-                computeWeightsFromData(wgt, ((DoubleArray)dat).flatten(false), alpha, beta, bad);
-                return ArrayFactory.wrap(wgt, dat.getShape());
-            }
-            default:
-                throw new IllegalArgumentException("Unsupported data type");
+        case Traits.FLOAT: {
+            float[] wgt = new float[dat.getNumber()];
+            computeWeightsFromData(wgt, ((FloatArray)dat).flatten(false),
+                    (float)alpha, (float)beta, (float)bad);
+            return ArrayFactory.wrap(wgt, dat.getShape());
+        }
+        case Traits.DOUBLE: {
+            double[] wgt = new double[dat.getNumber()];
+            //	System.out.println("# of data: " + dat.getNumber() + ", # of weights: "+wgt.length);
+            computeWeightsFromData(wgt, ((DoubleArray)dat).flatten(false), alpha, beta, bad);
+            return ArrayFactory.wrap(wgt, dat.getShape());
+        }
+        default:
+            throw new IllegalArgumentException("Unsupported data type");
         }
     }
 
     static public ShapedArray computeWeightsFromData(ShapedArray dat,
-            double alpha, double beta)
-    {
+            double alpha, double beta) {
         return computeWeightsFromData(dat, alpha, beta, Double.NaN);
     }
 
-    static public void computeWeightsFromData(float[] wgt, float[] dat,
-            float alpha, float beta, float bad)
-    {
+    /**
+     * Compute statistical weights for counting data.
+     *
+     * <p>This method computes weights assuming the following simple variance
+     * model:</p>
+     *
+     * <pre>
+     * var[i] = alpha*max(data[i], 0) + beta
+     * </pre>
+     *
+     * @param wgt
+     *        The destination array of weights.
+     *
+     * @param dat
+     *        The data array (its contents is left unchanged).
+     *
+     * @param alpha
+     *        The linear parameter of the variance model.
+     *
+     * @param beta
+     *        The offset parameter of the variance model.
+     *
+     * @param bad
+     *        Any data with this specific value is also considered as being
+     *        invalid.
+     *
+     * @return The number of valid data which have nonzero weights.
+     *
+     * @see {@link #computeWeightsFromData(ShapedArray, double, double)} for
+     *      explanation about the arguments.
+     */
+    static public int computeWeightsFromData(float[] wgt, float[] dat,
+            float alpha, float beta, float bad) {
         final float zero = 0;
         final float one = 1;
+        int count = 0;
         if (isnan(alpha) || isinf(alpha) || alpha < zero) {
-            throw new IllegalArgumentException("Invalid value of ALPHA");
+            throw new IllegalArgumentException("Parameter ALPHA must be finite and nonnegative");
         }
         if (isnan(beta) || isinf(beta) || beta <= zero) {
-            throw new IllegalArgumentException("Invalid value of BETA");
+            throw new IllegalArgumentException("Parameter BETA must be finite and strictly positive");
         }
         if (wgt.length != dat.length) {
             throw new IllegalArgumentException("Weighting and data arrays must have the same length");
@@ -282,8 +305,10 @@ public class WeightFactory {
                         wgt[i] = zero;
                     } else if (dat[i] > zero) {
                         wgt[i] = one/(alpha*dat[i] + beta);
+                        ++count;
                     } else {
                         wgt[i] = wmax;
+                        ++count;
                     }
                 }
             } else {
@@ -292,6 +317,7 @@ public class WeightFactory {
                         wgt[i] = zero;
                     } else {
                         wgt[i] = wmax;
+                        ++count;
                     }
                 }
             }
@@ -302,8 +328,10 @@ public class WeightFactory {
                         wgt[i] = zero;
                     } else if (dat[i] > zero) {
                         wgt[i] = one/(alpha*dat[i] + beta);
+                        ++count;
                     } else {
                         wgt[i] = wmax;
+                        ++count;
                     }
                 }
             } else {
@@ -312,29 +340,30 @@ public class WeightFactory {
                         wgt[i] = zero;
                     } else if (wgt[i] > zero) {
                         wgt[i] = wmax;
+                        ++count;
                     }
                 }
             }
         }
+        return count;
     }
 
-    static public void computeWeightsFromData(float[] wgt, float[] dat,
-            float alpha, float beta)
-    {
-        computeWeightsFromData(wgt, dat, alpha, beta, Float.NaN);
+    static public int computeWeightsFromData(float[] wgt, float[] dat,
+            float alpha, float beta) {
+        return computeWeightsFromData(wgt, dat, alpha, beta, Float.NaN);
     }
 
-    static public void computeWeightsFromData(double[] wgt, double[] dat,
-            double alpha, double beta, double bad)
-    {
+    static public int computeWeightsFromData(double[] wgt, double[] dat,
+            double alpha, double beta, double bad) {
         //  System.out.println("# of data: " + dat.length + ", # of weights: "+wgt.length);
         final double zero = 0;
         final double one = 1;
+        int count = 0;
         if (isnan(alpha) || isinf(alpha) || alpha < zero) {
-            throw new IllegalArgumentException("Invalid value of ALPHA");
+            throw new IllegalArgumentException("Parameter ALPHA must be finite and nonnegative");
         }
         if (isnan(beta) || isinf(beta) || beta <= zero) {
-            throw new IllegalArgumentException("Invalid value of BETA");
+            throw new IllegalArgumentException("Parameter BETA must be finite and strictly positive");
         }
         if (wgt.length != dat.length) {
             throw new IllegalArgumentException("Weighting and data arrays must have the same length");
@@ -348,8 +377,10 @@ public class WeightFactory {
                         wgt[i] = zero;
                     } else if (dat[i] > zero) {
                         wgt[i] = one/(alpha*dat[i] + beta);
+                        ++count;
                     } else {
                         wgt[i] = wmax;
+                        ++count;
                     }
                 }
             } else {
@@ -358,6 +389,7 @@ public class WeightFactory {
                         wgt[i] = zero;
                     } else {
                         wgt[i] = wmax;
+                        ++count;
                     }
                 }
             }
@@ -368,8 +400,10 @@ public class WeightFactory {
                         wgt[i] = zero;
                     } else if (dat[i] > zero) {
                         wgt[i] = one/(alpha*dat[i] + beta);
+                        ++count;
                     } else {
                         wgt[i] = wmax;
+                        ++count;
                     }
                 }
             } else {
@@ -378,16 +412,17 @@ public class WeightFactory {
                         wgt[i] = zero;
                     } else if (wgt[i] > zero) {
                         wgt[i] = wmax;
+                        ++count;
                     }
                 }
             }
         }
+        return count;
     }
 
-    static public void computeWeightsFromData(double[] wgt, double[] dat,
-            double alpha, double beta)
-    {
-        computeWeightsFromData(wgt, dat, alpha, beta, Double.NaN);
+    static public int computeWeightsFromData(double[] wgt, double[] dat,
+            double alpha, double beta) {
+        return computeWeightsFromData(wgt, dat, alpha, beta, Double.NaN);
     }
 
     /**
@@ -399,8 +434,7 @@ public class WeightFactory {
      * @throws IllegalArgumentException if <tt>wgt</tt> is not flat or has unsupported type or if <tt>wgt</tt>
      *         and <tt>bad</tt> do not have the same shape.
      */
-    static public void removeBads(ShapedArray wgt, ShapedArray bad)
-    {
+    static public void removeBads(ShapedArray wgt, ShapedArray bad) {
         if (! wgt.getShape().equals(bad.getShape())) {
             throw new IllegalArgumentException("Array of weights and bad data must have the same shape");
         }
@@ -409,42 +443,41 @@ public class WeightFactory {
         }
         boolean b[];
         switch (bad.getType()) {
-            case Traits.BYTE:
-                b = toBoolean(((ByteArray)bad).flatten(false));
-                break;
-            case Traits.SHORT:
-                b = toBoolean(((ShortArray)bad).flatten(false));
-                break;
-            case Traits.INT:
-                b = toBoolean(((IntArray)bad).flatten(false));
-                break;
-            case Traits.LONG:
-                b = toBoolean(((LongArray)bad).flatten(false));
-                break;
-            case Traits.FLOAT:
-                b = toBoolean(((FloatArray)bad).flatten(false));
-                break;
-            case Traits.DOUBLE:
-                b = toBoolean(((DoubleArray)bad).flatten(false));
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported data type");
+        case Traits.BYTE:
+            b = toBoolean(((ByteArray)bad).flatten(false));
+            break;
+        case Traits.SHORT:
+            b = toBoolean(((ShortArray)bad).flatten(false));
+            break;
+        case Traits.INT:
+            b = toBoolean(((IntArray)bad).flatten(false));
+            break;
+        case Traits.LONG:
+            b = toBoolean(((LongArray)bad).flatten(false));
+            break;
+        case Traits.FLOAT:
+            b = toBoolean(((FloatArray)bad).flatten(false));
+            break;
+        case Traits.DOUBLE:
+            b = toBoolean(((DoubleArray)bad).flatten(false));
+            break;
+        default:
+            throw new IllegalArgumentException("Unsupported data type");
         }
 
         switch (wgt.getType()) {
-            case Traits.FLOAT:
-                removeBads(((FloatArray)wgt).flatten(false), b);
-                break;
-            case Traits.DOUBLE:
-                removeBads(((DoubleArray)wgt).flatten(false), b);
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported data type");
+        case Traits.FLOAT:
+            removeBads(((FloatArray)wgt).flatten(false), b);
+            break;
+        case Traits.DOUBLE:
+            removeBads(((DoubleArray)wgt).flatten(false), b);
+            break;
+        default:
+            throw new IllegalArgumentException("Unsupported data type");
         }
     }
 
-    static public final void removeBads(float[] wgt, boolean[] bad)
-    {
+    static public final void removeBads(float[] wgt, boolean[] bad) {
         if (wgt.length != bad.length) {
             throw new IllegalArgumentException("Array of weights and bad data must have the same length");
         }
@@ -457,8 +490,7 @@ public class WeightFactory {
         }
     }
 
-    static public final void removeBads(double[] wgt, boolean[] bad)
-    {
+    static public final void removeBads(double[] wgt, boolean[] bad) {
         if (wgt.length != bad.length) {
             throw new IllegalArgumentException("Array of weights and bad data must have the same length");
         }
@@ -479,22 +511,20 @@ public class WeightFactory {
      *
      * @param wgt - The array of weights.
      */
-    static public void checkWeights(ShapedArray wgt)
-    {
+    static public void checkWeights(ShapedArray wgt) {
         switch (wgt.getType()) {
-            case Traits.FLOAT:
-                checkWeights(((FloatArray)wgt).flatten(false));
-                break;
-            case Traits.DOUBLE:
-                checkWeights(((DoubleArray)wgt).flatten(false));
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported data type");
+        case Traits.FLOAT:
+            checkWeights(((FloatArray)wgt).flatten(false));
+            break;
+        case Traits.DOUBLE:
+            checkWeights(((DoubleArray)wgt).flatten(false));
+            break;
+        default:
+            throw new IllegalArgumentException("Unsupported data type");
         }
     }
 
-    static public void checkWeights(float[] wgt)
-    {
+    static public void checkWeights(float[] wgt) {
         final float zero = 0;
         final int len = wgt.length;
         int cnt = 0;
@@ -510,8 +540,7 @@ public class WeightFactory {
         }
     }
 
-    static public void checkWeights(double[] wgt)
-    {
+    static public void checkWeights(double[] wgt) {
         final double zero = 0;
         final int len = wgt.length;
         int cnt = 0;
@@ -551,8 +580,7 @@ public class WeightFactory {
      * @param dat - The data.
      */
 
-    static public void fixWeightsAndData(ShapedArray wgt, ShapedArray dat)
-    {
+    static public void fixWeightsAndData(ShapedArray wgt, ShapedArray dat) {
         if (! wgt.getShape().equals(dat.getShape())) {
             throw new IllegalArgumentException("Array of weights and data must have the same shape");
         }
@@ -566,19 +594,18 @@ public class WeightFactory {
             throw new IllegalArgumentException("Data and weights have the same element type");
         }
         switch (dat.getType()) {
-            case Traits.FLOAT:
-                fixWeightsAndData(((FloatArray)wgt).flatten(false), ((FloatArray)dat).flatten(false));
-                break;
-            case Traits.DOUBLE:
-                fixWeightsAndData(((DoubleArray)wgt).flatten(false), ((DoubleArray)dat).flatten(false));
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported data type");
+        case Traits.FLOAT:
+            fixWeightsAndData(((FloatArray)wgt).flatten(false), ((FloatArray)dat).flatten(false));
+            break;
+        case Traits.DOUBLE:
+            fixWeightsAndData(((DoubleArray)wgt).flatten(false), ((DoubleArray)dat).flatten(false));
+            break;
+        default:
+            throw new IllegalArgumentException("Unsupported data type");
         }
     }
 
-    static public void fixWeightsAndData(float[] wgt, float[] dat)
-    {
+    static public void fixWeightsAndData(float[] wgt, float[] dat) {
         if (wgt.length != dat.length) {
             throw new IllegalArgumentException("Weighting and data arrays must have the same length");
         }
@@ -605,8 +632,7 @@ public class WeightFactory {
         }
     }
 
-    static public void fixWeightsAndData(double[] wgt, double[] dat)
-    {
+    static public void fixWeightsAndData(double[] wgt, double[] dat) {
         if (wgt.length != dat.length) {
             throw new IllegalArgumentException("Weighting and data arrays must have the same length");
         }
@@ -635,28 +661,23 @@ public class WeightFactory {
 
     /* Utilities */
 
-    private static final boolean isinf(float val)
-    {
+    private static final boolean isinf(float val) {
         return Float.isInfinite(val);
     }
 
-    private static final boolean isnan(float val)
-    {
+    private static final boolean isnan(float val) {
         return Float.isNaN(val);
     }
 
-    private static final boolean isinf(double val)
-    {
+    private static final boolean isinf(double val) {
         return Double.isInfinite(val);
     }
 
-    private static final boolean isnan(double val)
-    {
+    private static final boolean isnan(double val) {
         return Double.isNaN(val);
     }
 
-    private static final boolean[] toBoolean(byte[] arr)
-    {
+    private static final boolean[] toBoolean(byte[] arr) {
         final byte zero = 0;
         boolean[] res = new boolean[arr.length];
         for (int i = 0; i < arr.length; ++i) {
@@ -665,8 +686,7 @@ public class WeightFactory {
         return res;
     }
 
-    private static final boolean[] toBoolean(short[] arr)
-    {
+    private static final boolean[] toBoolean(short[] arr) {
         final short zero = 0;
         boolean[] res = new boolean[arr.length];
         for (int i = 0; i < arr.length; ++i) {
@@ -675,8 +695,7 @@ public class WeightFactory {
         return res;
     }
 
-    private static final boolean[] toBoolean(int[] arr)
-    {
+    private static final boolean[] toBoolean(int[] arr) {
         final int zero = 0;
         boolean[] res = new boolean[arr.length];
         for (int i = 0; i < arr.length; ++i) {
@@ -685,8 +704,7 @@ public class WeightFactory {
         return res;
     }
 
-    private static final boolean[] toBoolean(long[] arr)
-    {
+    private static final boolean[] toBoolean(long[] arr) {
         final long zero = 0;
         boolean[] res = new boolean[arr.length];
         for (int i = 0; i < arr.length; ++i) {
@@ -695,8 +713,7 @@ public class WeightFactory {
         return res;
     }
 
-    private static final boolean[] toBoolean(float[] arr)
-    {
+    private static final boolean[] toBoolean(float[] arr) {
         final float zero = 0;
         boolean[] res = new boolean[arr.length];
         for (int i = 0; i < arr.length; ++i) {
@@ -705,8 +722,7 @@ public class WeightFactory {
         return res;
     }
 
-    private static final boolean[] toBoolean(double[] arr)
-    {
+    private static final boolean[] toBoolean(double[] arr) {
         final double zero = 0;
         boolean[] res = new boolean[arr.length];
         for (int i = 0; i < arr.length; ++i) {
