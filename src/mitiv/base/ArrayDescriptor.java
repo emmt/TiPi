@@ -25,6 +25,14 @@
 
 package mitiv.base;
 
+/**
+ * Implement shaped array or vector descriptor.
+ *
+ * <p>An instance of this class stores information about the component type and
+ * the dimensions of a shaped object. </p>
+ *
+ * @author Éric.
+ */
 public class ArrayDescriptor implements Shaped, Typed {
     final int type;
     final int number;
@@ -32,23 +40,31 @@ public class ArrayDescriptor implements Shaped, Typed {
 
     /**
      * Create array descriptor.
-     * @param type - The element type of the array.
-     * @param shape - The dimension list of the array.
+     *
+     * @param type
+     *        The element type of the array.
+     *
+     * @param dims
+     *        The dimension list of the array.
      */
-    public ArrayDescriptor(int type, int[] shape) {
-        this(type, new Shape(shape));
+    public ArrayDescriptor(int type, int... dims) {
+        this(type, new Shape(dims));
     }
 
     /**
      * Create array descriptor.
-     * @param type - The element type of the array.
-     * @param shape - The shape of the array.
+     *
+     * @param type
+     *        The element type of the array.
+     *
+     * @param shape
+     *        The shape of the array.
      */
     public ArrayDescriptor(int type, Shape shape) {
         this.type = type;
         this.shape = shape;
         if (this.shape.number() > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Total number of elements is too large.");
+            throw new IllegalArgumentException("Total number of elements is too large");
         }
         this.number = (int)this.shape.number();
     }
@@ -56,21 +72,26 @@ public class ArrayDescriptor implements Shaped, Typed {
     /**
      * Compute the number of elements from the list of dimensions.
      *
-     * This utility function computes the number of elements given a list of
-     * dimensions and throws an exception if the list of dimensions is invalid.
+     * <p>This utility function computes the number of elements given a list of
+     * dimensions and throws an exception if the list of dimensions is
+     * invalid.</p>
      *
-     * @param shape  The list of dimensions.
+     * @param shape
+     *        The list of dimensions.
+     *
      * @return The product of the dimensions.
-     * @throws IllegalArgumentException All dimensions must be greater or equal 1.
+     *
+     * @throws IllegalArgumentException
+     *         All dimensions must be greater or equal 1.
      */
     public static int computeNumber(int[] shape) {
         if (shape == null) {
-            throw new IllegalArgumentException("Illegal NULL shape.");
+            throw new IllegalArgumentException("Illegal NULL shape");
         }
         int number = 1;
         for (int r = 0; r < shape.length; ++r) {
             if (shape[r] <= 0) {
-                throw new IllegalArgumentException("Bad dimension length.");
+                throw new IllegalArgumentException("Bad dimension length");
             }
             number *= shape[r];
         }
@@ -105,6 +126,16 @@ public class ArrayDescriptor implements Shaped, Typed {
     @Override
     public final Shape getShape() {
         return shape;
+    }
+
+    /**
+     * Check whether another descriptor is the same as this one.
+     * @param other   Another descriptor.
+     * @return A boolean result.
+     */
+    public final boolean equals(ArrayDescriptor other) {
+        return ((other == this) ||
+                (other.type == this.type && other.shape.equals(this.shape)));
     }
 
     /**

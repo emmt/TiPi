@@ -137,8 +137,13 @@ public class FloatShapedVector extends ShapedVector {
     }
 
     @Override
+    public FloatShapedVector create() {
+        return getOwner().create();
+    }
+
+    @Override
     public FloatShapedVector clone() {
-        return ((FloatShapedVectorSpace)space)._clone(this);
+        return getOwner()._clone(this);
     }
 
     @Override

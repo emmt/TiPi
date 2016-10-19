@@ -154,7 +154,16 @@ public abstract class Vector {
      * @see {@link #get(int)}.
      */
     public abstract void set(int i, double value)
-        throws IndexOutOfBoundsException;
+            throws IndexOutOfBoundsException;
+
+    /**
+     * Create another vector of the same vector space.
+     *
+     * @return A new vector of the same vector space.
+     */
+    public Vector create() {
+        return this.space.create();
+    }
 
     /**
      * Create a clone of the vector.
@@ -369,7 +378,7 @@ public abstract class Vector {
      *         vector space of {@code this}.
      */
     public final void add(double alpha, Vector x)
-        throws IncorrectSpaceException {
+            throws IncorrectSpaceException {
         space.check(x);
         space._add(this, alpha, x);
     }
@@ -479,7 +488,7 @@ public abstract class Vector {
      *         space of {@code this}.
      */
     public final void multiply(Vector x, Vector y)
-        throws IncorrectSpaceException {
+            throws IncorrectSpaceException {
         space.check(x);
         space.check(y);
         space._multiply(this, x, y);

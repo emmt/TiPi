@@ -44,24 +44,8 @@ public class FloatShapedVectorSpace extends ShapedVectorSpace {
         super(Traits.FLOAT, shape);
     }
 
-    public FloatShapedVectorSpace(int[] dims) {
+    public FloatShapedVectorSpace(int... dims) {
         super(Traits.FLOAT, dims);
-    }
-
-    public FloatShapedVectorSpace(int dim1) {
-        super(Traits.FLOAT, dim1);
-    }
-
-    public FloatShapedVectorSpace(int dim1, int dim2) {
-        super(Traits.FLOAT, dim1, dim2);
-    }
-
-    public FloatShapedVectorSpace(int dim1, int dim2, int dim3) {
-        super(Traits.FLOAT, dim1, dim2, dim3);
-    }
-
-    public FloatShapedVectorSpace(int dim1, int dim2, int dim3, int dim4) {
-        super(Traits.FLOAT, dim1, dim2, dim3, dim4);
     }
 
     private float[] getData(Vector v)

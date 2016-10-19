@@ -44,24 +44,8 @@ public class DoubleShapedVectorSpace extends ShapedVectorSpace {
         super(Traits.DOUBLE, shape);
     }
 
-    public DoubleShapedVectorSpace(int[] dims) {
+    public DoubleShapedVectorSpace(int... dims) {
         super(Traits.DOUBLE, dims);
-    }
-
-    public DoubleShapedVectorSpace(int dim1) {
-        super(Traits.DOUBLE, dim1);
-    }
-
-    public DoubleShapedVectorSpace(int dim1, int dim2) {
-        super(Traits.DOUBLE, dim1, dim2);
-    }
-
-    public DoubleShapedVectorSpace(int dim1, int dim2, int dim3) {
-        super(Traits.DOUBLE, dim1, dim2, dim3);
-    }
-
-    public DoubleShapedVectorSpace(int dim1, int dim2, int dim3, int dim4) {
-        super(Traits.DOUBLE, dim1, dim2, dim3, dim4);
     }
 
     private double[] getData(Vector v)

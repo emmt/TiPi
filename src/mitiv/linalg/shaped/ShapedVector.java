@@ -77,6 +77,11 @@ public abstract class ShapedVector extends Vector implements Shaped, Typed {
     }
 
     @Override
+    public ShapedVector create() {
+        return getSpace().create();
+    }
+
+    @Override
     public ShapedVector clone() {
         return getSpace()._clone(this);
     }
