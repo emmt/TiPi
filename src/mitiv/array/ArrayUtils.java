@@ -929,39 +929,37 @@ public class ArrayUtils {
         }
 
         /* Copy input into output. */
-        ShapedArray roi;
         switch (rank) {
         case 1:
-            roi = ((Array1D)result).view(range[0]);
+            ((Array1D)result).view(range[0]).assign(array);
             break;
         case 2:
-            roi = ((Array2D)result).view(range[0], range[1]);
+            ((Array2D)result).view(range[0], range[1]).assign(array);
             break;
         case 3:
-            roi = ((Array3D)result).view(range[0], range[1], range[2]);
+            ((Array3D)result).view(range[0], range[1], range[2]).assign(array);
             break;
         case 4:
-            roi = ((Array4D)result).view(range[0], range[1], range[2], range[3]);
+            ((Array4D)result).view(range[0], range[1], range[2], range[3]).assign(array);
             break;
         case 5:
-            roi = ((Array5D)result).view(range[0], range[1], range[2], range[3], range[4]);
+            ((Array5D)result).view(range[0], range[1], range[2], range[3], range[4]).assign(array);
             break;
         case 6:
-            roi = ((Array6D)result).view(range[0], range[1], range[2], range[3], range[4], range[5]);
+            ((Array6D)result).view(range[0], range[1], range[2], range[3], range[4], range[5]).assign(array);
             break;
         case 7:
-            roi = ((Array7D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]);
+            ((Array7D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]).assign(array);
             break;
         case 8:
-            roi = ((Array8D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]);
+            ((Array8D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]).assign(array);
             break;
         case 9:
-            roi = ((Array9D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]);
+            ((Array9D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]).assign(array);
             break;
         default:
             throw new IllegalArgumentException("Unsupported rank");
         }
-        roi.assign(array);
         return result;
     }
 
@@ -1113,6 +1111,168 @@ public class ArrayUtils {
             }
         }
         return range;
+    }
+
+    /*=======================================================================*/
+    /* CUT A RECTANGULAR REGION */
+
+    /**
+     * Extract a rectangular region of an array by cropping and/or padding along
+     * its dimensions.
+     *
+     * <p>This methods extracts a rectangular region out of a shaped array.
+     * The region is specified by its offsets relative to the input array and
+     * by its dimensions.  The parts of the region not in the input array are
+     * filled by a given value.  The operation is lazy: if the extracted region
+     * exactly matches the input array, the input array is returned.</p>
+     *
+     * <p>Note that this method combines the effects of the {@link #crop()} and
+     * {@link #pad()} operations.</p>
+     *
+     * <p>In pseudo-code and assuming 1-D arrays, the destination array {@code
+     * dst} is filled as follows:</p>
+     *
+     * <pre>
+     * for (int i = 0; i < dst.length; ++i) {
+     *     int j = i + offset;
+     *     dst[i] = (0 <= i && i < src.length) ? src[i] : value;
+     * }
+     * </pre>
+     *
+     * @param array
+     *        The input array.
+     *
+     * @param shape
+     *        The dimensions of the result.
+     *
+     * @param offset
+     *        The offsets in the source.
+     *
+     * @param value
+     *        The value to set in the result for elements outside the
+     *        source.
+     *
+     * @return A shaped array of the required shape.
+     *
+     * @see {@link #crop()} and {@link #pad()}.
+     */
+    public static ShapedArray extract(ShapedArray array, Shape shape,
+                                      int[] offset, double value) {
+        /* Compute regions end-points. */
+        final int rank = shape.rank();
+        if (array.getRank() != rank) {
+            throw new NonConformableArrayException("Bad number of dimensions for the resized array");
+        }
+        Range[] srcRange = new Range[rank];
+        Range[] dstRange = new Range[rank];
+        int ops = 0;
+        for (int k = 0; k < rank; ++k) {
+            int dstDim = shape.dimension(k);
+            int srcDim = array.getDimension(k);
+            int off = (offset == null ? (srcDim/2) - (dstDim/2) : offset[k]);
+            int dstOff = Math.max(0, -off);
+            int srcOff = Math.max(0, +off);
+            int len = Math.min(dstDim - dstOff, srcDim - srcOff);
+            if (len <= 0) {
+                /* No overlapping. */
+                ops = 5;
+                break;
+            }
+            if (dstDim != srcDim) {
+                /* Result is different from input. */
+                ops |= 2;
+            }
+            if (dstOff > 0 || dstOff + len < dstDim) {
+                /* Padding is needed. */
+                ops |= 1;
+            }
+            srcRange[k] = new Range(srcOff, srcOff + len - 1);
+            dstRange[k] = new Range(dstOff, dstOff + len - 1);
+        }
+        if (ops == 0) {
+            /* Nothing to do. */
+            return array;
+        }
+
+        /* Create the output array. */
+        final int type = array.getType();
+        ShapedArray result = ArrayFactory.create(type, shape);
+        if ((ops&1) != 0) {
+            /* Some padding is needed, fill result with the given value. */
+            switch (type) {
+            case Traits.BYTE:
+            ((ByteArray)result).fill((byte)value);
+            break;
+            case Traits.SHORT:
+            ((ShortArray)result).fill((short)value);
+            break;
+            case Traits.INT:
+            ((IntArray)result).fill((int)value);
+            break;
+            case Traits.LONG:
+            ((LongArray)result).fill((long)value);
+            break;
+            case Traits.FLOAT:
+            ((FloatArray)result).fill((float)value);
+            break;
+            case Traits.DOUBLE:
+            ((DoubleArray)result).fill((double)value);
+            break;
+            default:
+                throw new IllegalTypeException();
+            }
+        }
+        if ((ops&4) == 0) {
+            /* The overlapping region is not empty.  Create 2 views
+             * corresponding to the overlapping region in the soruce and in the
+             * destination. */
+            switch (rank) {
+            case 1:
+                ((Array1D)result).view(dstRange[0]).assign(((Array1D)array).view(srcRange[0]));
+                break;
+            case 2:
+                ((Array2D)result).view(dstRange[0], dstRange[1]).assign(((Array2D)array).view(srcRange[0], srcRange[1]));
+                break;
+            case 3:
+                ((Array3D)result).view(dstRange[0], dstRange[1], dstRange[2]).assign(((Array3D)array).view(srcRange[0], srcRange[1], srcRange[2]));
+                break;
+            case 4:
+                ((Array4D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3]).assign(((Array4D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3]));
+                break;
+            case 5:
+                ((Array5D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4]).assign(((Array5D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4]));
+                break;
+            case 6:
+                ((Array6D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4], dstRange[5]).assign(((Array6D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4], srcRange[5]));
+                break;
+            case 7:
+                ((Array7D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4], dstRange[5], dstRange[6]).assign(((Array7D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4], srcRange[5], srcRange[6]));
+                break;
+            case 8:
+                ((Array8D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4], dstRange[5], dstRange[6], dstRange[7]).assign(((Array8D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4], srcRange[5], srcRange[6], srcRange[7]));
+                break;
+            case 9:
+                ((Array9D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4], dstRange[5], dstRange[6], dstRange[7], dstRange[8]).assign(((Array9D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4], srcRange[5], srcRange[6], srcRange[7], srcRange[8]));
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported rank");
+            }
+        }
+        return result;
+    }
+
+    public static ShapedArray extract(ShapedArray array, Shape shape,
+                                      int[] offset) {
+        return extract(array, shape, offset, 0.0);
+    }
+
+    public static ShapedArray extract(ShapedArray array, Shape shape,
+                                      double value) {
+        return extract(array, shape, null, value);
+    }
+
+    public static ShapedArray extract(ShapedArray array, Shape shape) {
+        return extract(array, shape, null, 0.0);
     }
 
     /*=======================================================================*/
