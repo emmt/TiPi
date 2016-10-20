@@ -83,7 +83,7 @@ public class ${className} extends ${superName} {
         offsetMax += indexMax;
         //# end
         if (offsetMin < 0 || offsetMax >= data.length) {
-            throw new IndexOutOfBoundsException("Selected indices are out of bounds.");
+            throw new IndexOutOfBoundsException("Selected indices are out of bounds");
         }
     }
 

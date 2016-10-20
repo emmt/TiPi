@@ -29,10 +29,10 @@ package mitiv.base;
 
 /**
  * Shape object to store list of dimensions.
- * <p>
- * A Shape object is immutable and is used to store the dimensions of a
- * shaped object in an efficient way.
- * </p>
+ *
+ * <p>A Shape object is immutable and is used to store the dimensions of a
+ * shaped object in an efficient way.</p>
+ *
  * @author Éric Thiébaut
  */
 public class Shape {
@@ -50,7 +50,9 @@ public class Shape {
 
     /**
      * Get the shape of scalar objects.
+     *
      * @return The shape of a scalar object.
+     *
      * @deprecated Use {@link #scalarShape} instead.
      */
     @Deprecated
@@ -60,10 +62,14 @@ public class Shape {
 
     /**
      * Make a shape given the dimensions.
-     * @param dims - The list of dimensions ({@code null} is the same as
-     *               an array of length equals to {@code 0} and yields the
-     *               shape of a scalar object).
+     *
+     * @param dims
+     *        The list of dimensions ({@code null} is the same as an array of
+     *        length equals to {@code 0} and yields the shape of a scalar
+     *        object).
+     *
      * @return A new shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(int[])} instead.
      */
     @Deprecated
@@ -77,10 +83,14 @@ public class Shape {
 
     /**
      * Make a shape given the dimensions.
-     * @param dims - The list of dimensions ({@code null} is the same as
-     *               an array of length equals to {@code 0} and yields the
-     *               shape of a scalar object).
+     *
+     * @param dims
+     *        The list of dimensions ({@code null} is the same as an array of
+     *        length equals to {@code 0} and yields the shape of a scalar
+     *        object).
+     *
      * @return A new shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(long[])} instead.
      */
     @Deprecated
@@ -94,8 +104,10 @@ public class Shape {
 
     /**
      * Make a 1-D shape
-     * @param dim1 - The 1st dimension.
+     * @param dim1   The 1st dimension.
+     *
      * @return A new 1-dimensional shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(int)} instead.
      */
     @Deprecated
@@ -105,9 +117,11 @@ public class Shape {
 
     /**
      * Make a 2-D shape
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     *
      * @return A new 2-dimensional shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(int,int)} instead.
      */
     @Deprecated
@@ -117,10 +131,12 @@ public class Shape {
 
     /**
      * Make a 3-D shape
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     *
      * @return A new 3-dimensional shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(int,int,int)} instead.
      */
     @Deprecated
@@ -130,11 +146,13 @@ public class Shape {
 
     /**
      * Make a 4-D shape
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
-     * @param dim4 - The 4th dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     * @param dim4   The 4th dimension.
+     *
      * @return A new 4-dimensional shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(int,int,int,int)} instead.
      */
     @Deprecated
@@ -144,12 +162,14 @@ public class Shape {
 
     /**
      * Make a 5-D shape
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
-     * @param dim4 - The 4th dimension.
-     * @param dim5 - The 5th dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     * @param dim4   The 4th dimension.
+     * @param dim5   The 5th dimension.
+     *
      * @return A new 5-dimensional shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(int,int,int,int,int)} instead.
      */
     @Deprecated
@@ -159,13 +179,15 @@ public class Shape {
 
     /**
      * Make a 6-D shape
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
-     * @param dim4 - The 4th dimension.
-     * @param dim5 - The 5th dimension.
-     * @param dim6 - The 6th dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     * @param dim4   The 4th dimension.
+     * @param dim5   The 5th dimension.
+     * @param dim6   The 6th dimension.
+     *
      * @return A new 6-dimensional shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(int,int,int,int,int,int)} instead.
      */
     @Deprecated
@@ -175,14 +197,16 @@ public class Shape {
 
     /**
      * Make a 7-D shape
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
-     * @param dim4 - The 4th dimension.
-     * @param dim5 - The 5th dimension.
-     * @param dim6 - The 6th dimension.
-     * @param dim7 - The 7th dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     * @param dim4   The 4th dimension.
+     * @param dim5   The 5th dimension.
+     * @param dim6   The 6th dimension.
+     * @param dim7   The 7th dimension.
+     *
      * @return A new 7-dimensional shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(int,int,int,int,int,int,int)} instead.
      */
     @Deprecated
@@ -192,15 +216,17 @@ public class Shape {
 
     /**
      * Make a 8-D shape
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
-     * @param dim4 - The 4th dimension.
-     * @param dim5 - The 5th dimension.
-     * @param dim6 - The 6th dimension.
-     * @param dim7 - The 7th dimension.
-     * @param dim8 - The 8th dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     * @param dim4   The 4th dimension.
+     * @param dim5   The 5th dimension.
+     * @param dim6   The 6th dimension.
+     * @param dim7   The 7th dimension.
+     * @param dim8   The 8th dimension.
+     *
      * @return A new 8-dimensional shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(int,int,int,int,int,int,int,int)} instead.
      */
     @Deprecated
@@ -210,16 +236,18 @@ public class Shape {
 
     /**
      * Make a 9-D shape
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
-     * @param dim4 - The 4th dimension.
-     * @param dim5 - The 5th dimension.
-     * @param dim6 - The 6th dimension.
-     * @param dim7 - The 7th dimension.
-     * @param dim8 - The 8th dimension.
-     * @param dim9 - The 9th dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     * @param dim4   The 4th dimension.
+     * @param dim5   The 5th dimension.
+     * @param dim6   The 6th dimension.
+     * @param dim7   The 7th dimension.
+     * @param dim8   The 8th dimension.
+     * @param dim9   The 9th dimension.
+     *
      * @return A new 9-dimensional shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(int,int,int,int,int,int,int,int,int)} instead.
      */
     @Deprecated
@@ -245,7 +273,7 @@ public class Shape {
 
     /**
      * Get the length of a given dimension.
-     * @param k - The index of the dimension.
+     * @param k   The index of the dimension.
      * @return The length of the {@code (k+1)}-th dimension.
      */
     public final int dimension(int k) {
@@ -270,7 +298,7 @@ public class Shape {
 
     /**
      * Check whether another shape is the same as this one.
-     * @param other - Another shape.
+     * @param other   Another shape.
      * @return A boolean result.
      */
     public final boolean equals(Shape other) {
@@ -294,8 +322,8 @@ public class Shape {
      * uncontrolled construction with shared dimensions and to
      * force all scalars the share the same shape.
      * <p>
-     * @param dims  - The list of dimensions.
-     * @param share - The caller guarantees that the contents of the list of
+     * @param dims    The list of dimensions.
+     * @param share   The caller guarantees that the contents of the list of
      *                dimensions will never change.
      */
     private Shape(int[] dims, boolean share) {
@@ -337,7 +365,7 @@ public class Shape {
      * The input dimensions are copied into a private array and are
      * never shared with the returned shape instance.
      *
-     * @param dims - The list of dimensions.
+     * @param dims   The list of dimensions.
      */
     public Shape(int[] dims) {
         this(dims, false);
@@ -350,7 +378,7 @@ public class Shape {
      * The input dimensions are copied into a private array and are
      * never shared with the returned shape instance.
      *
-     * @param dims - The list of dimensions.
+     * @param dims   The list of dimensions.
      */
     public Shape(long[] dims) {
         long number = 1L;
@@ -375,7 +403,7 @@ public class Shape {
 
     /**
      * Create a 1-D Shape object.
-     * @param dim1 - The 1st dimension.
+     * @param dim1   The 1st dimension.
      * @return A new 1-dimensional shape built from the given dimensions.
      */
     public Shape(int dim1) {
@@ -384,8 +412,8 @@ public class Shape {
 
     /**
      * Create a 2-D Shape object.
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
      * @return A new 2-dimensional shape built from the given dimensions.
      */
     public Shape(int dim1, int dim2) {
@@ -394,9 +422,9 @@ public class Shape {
 
     /**
      * Create a 3-D Shape object.
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
      * @return A new 3-dimensional shape built from the given dimensions.
      */
     public Shape(int dim1, int dim2, int dim3) {
@@ -405,10 +433,10 @@ public class Shape {
 
     /**
      * Create a 4-D Shape object.
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
-     * @param dim4 - The 4th dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     * @param dim4   The 4th dimension.
      * @return A new 4-dimensional shape built from the given dimensions.
      */
     public Shape(int dim1, int dim2, int dim3, int dim4) {
@@ -417,11 +445,11 @@ public class Shape {
 
     /**
      * Create a 5-D Shape object.
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
-     * @param dim4 - The 4th dimension.
-     * @param dim5 - The 5th dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     * @param dim4   The 4th dimension.
+     * @param dim5   The 5th dimension.
      * @return A new 5-dimensional shape built from the given dimensions.
      */
     public Shape(int dim1, int dim2, int dim3, int dim4, int dim5) {
@@ -430,12 +458,12 @@ public class Shape {
 
     /**
      * Create a 6-D Shape object.
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
-     * @param dim4 - The 4th dimension.
-     * @param dim5 - The 5th dimension.
-     * @param dim6 - The 6th dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     * @param dim4   The 4th dimension.
+     * @param dim5   The 5th dimension.
+     * @param dim6   The 6th dimension.
      * @return A new 6-dimensional shape built from the given dimensions.
      */
     public Shape(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
@@ -444,13 +472,13 @@ public class Shape {
 
     /**
      * Create a 7-D Shape object.
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
-     * @param dim4 - The 4th dimension.
-     * @param dim5 - The 5th dimension.
-     * @param dim6 - The 6th dimension.
-     * @param dim7 - The 7th dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     * @param dim4   The 4th dimension.
+     * @param dim5   The 5th dimension.
+     * @param dim6   The 6th dimension.
+     * @param dim7   The 7th dimension.
      * @return A new 7-dimensional shape built from the given dimensions.
      */
     public Shape(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
@@ -459,14 +487,14 @@ public class Shape {
 
     /**
      * Create a 8-D Shape object.
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
-     * @param dim4 - The 4th dimension.
-     * @param dim5 - The 5th dimension.
-     * @param dim6 - The 6th dimension.
-     * @param dim7 - The 7th dimension.
-     * @param dim8 - The 8th dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     * @param dim4   The 4th dimension.
+     * @param dim5   The 5th dimension.
+     * @param dim6   The 6th dimension.
+     * @param dim7   The 7th dimension.
+     * @param dim8   The 8th dimension.
      * @return A new 8-dimensional shape built from the given dimensions.
      */
     public Shape(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
@@ -475,15 +503,15 @@ public class Shape {
 
     /**
      * Create a 9-D Shape object.
-     * @param dim1 - The 1st dimension.
-     * @param dim2 - The 2nd dimension.
-     * @param dim3 - The 3rd dimension.
-     * @param dim4 - The 4th dimension.
-     * @param dim5 - The 5th dimension.
-     * @param dim6 - The 6th dimension.
-     * @param dim7 - The 7th dimension.
-     * @param dim8 - The 8th dimension.
-     * @param dim9 - The 9th dimension.
+     * @param dim1   The 1st dimension.
+     * @param dim2   The 2nd dimension.
+     * @param dim3   The 3rd dimension.
+     * @param dim4   The 4th dimension.
+     * @param dim5   The 5th dimension.
+     * @param dim6   The 6th dimension.
+     * @param dim7   The 7th dimension.
+     * @param dim8   The 8th dimension.
+     * @param dim9   The 9th dimension.
      * @return A new 9-dimensional shape built from the given dimensions.
      */
     public Shape(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
@@ -503,15 +531,15 @@ public class Shape {
     }
 
     private static void dimensionTooSmall() {
-        throw new IllegalArgumentException("Dimensions must be at least 1.");
+        throw new IllegalArgumentException("Dimensions must be at least 1");
     }
 
     private static void dimensionTooLarge() {
-        throw new IllegalArgumentException("Dimensions must be at most Integer.MAX_VALUE.");
+        throw new IllegalArgumentException("Dimensions must be at most Integer.MAX_VALUE");
     }
 
     private static void numberOverflow() {
-        throw new IllegalArgumentException("Total number of elements is too large.");
+        throw new IllegalArgumentException("Total number of elements is too large");
     }
 
 }

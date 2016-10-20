@@ -50,7 +50,7 @@ public abstract class Scalar implements ShapedArray {
 
     protected Scalar(Shape shape) {
         if (shape.rank() != 0) {
-            throw new IllegalArgumentException("Bad number of dimensions for 0-D array.");
+            throw new IllegalArgumentException("Bad number of dimensions for 0-D array");
         }
     }
 

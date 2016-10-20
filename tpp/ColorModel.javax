@@ -343,7 +343,7 @@ public enum ColorModel {
             }
         }
         if (depth < 0) {
-            throw new IllegalArgumentException("Images must be WIDTH x HEIGHT arrays, 3 x WIDTH x HEIGHT arrays or 4 x WIDTH x HEIGHT byte arrays.");
+            throw new IllegalArgumentException("Images must be WIDTH x HEIGHT arrays, 3 x WIDTH x HEIGHT arrays or 4 x WIDTH x HEIGHT byte arrays");
 
         }
         final int width = shape.dimension(rank - 2);

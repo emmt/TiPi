@@ -92,7 +92,7 @@ public abstract class ${className} implements ShapedArray {
         //# if ${rank} >= 1
         shape = new Shape(${dimList});
         if (shape.number() > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Total number of elements is too large.");
+            throw new IllegalArgumentException("Total number of elements is too large");
         }
         number = (int)shape.number();
         //#     for k in 1 : ${rank}
@@ -107,11 +107,11 @@ public abstract class ${className} implements ShapedArray {
 
     protected ${className}(Shape shape) {
         if (shape.rank() != ${rank}) {
-            throw new IllegalArgumentException("Bad number of dimensions for ${rank}-D array.");
+            throw new IllegalArgumentException("Bad number of dimensions for ${rank}-D array");
         }
         //# if ${rank} >= 1
         if (shape.number() > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Total number of elements is too large.");
+            throw new IllegalArgumentException("Total number of elements is too large");
         }
         this.number = (int)shape.number();
         this.shape = shape;
@@ -155,11 +155,12 @@ public abstract class ${className} implements ShapedArray {
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.  The same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *        The same indexing rules as for {@link mitiv.base.indexing.Range}
+     *        apply for negative index: 0 for the first, 1 for the second, -1
+     *        for the last, -2 for penultimate, <i>etc.</i>
+     *
      * @return A ${reducedClassName} view on the given slice of the array.
      */
     public abstract ${reducedClassName} slice(int idx);
@@ -167,13 +168,14 @@ public abstract class ${className} implements ShapedArray {
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.
-     * @param dim - The dimension to slice.  For these two arguments,
-     *              the same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *
+     * @param dim
+     *        The dimension to slice.  For these two arguments, the same
+     *        indexing rules as for {@link mitiv.base.indexing.Range} apply for
+     *        negative index: 0 for the first, 1 for the second, -1 for the
+     *        last, -2 for penultimate, <i>etc.</i>
      *
      * @return A ${reducedClassName} view on the given slice of the array.
      */
@@ -197,10 +199,11 @@ public abstract class ${className} implements ShapedArray {
      //#         def argList = ${argList}, ${argType} ${argName}${k}
      //#     end
      //#     def kth = ${}{nth_${k}}
-     * @param ${argName}${k} - The range of indices to select along ${kth} dimension
-     *               (or {@code null} to select all.
-     //# end
+     * @param ${argName}${k}
+     *        The range of indices to select along ${kth} dimension (or {@code
+     *        null} to select all).
      *
+     //# end
      * @return A ${className} view for the given range${s} of the array.
      */
     public abstract ${className} view(${argList});
@@ -218,10 +221,11 @@ public abstract class ${className} implements ShapedArray {
      //#         def argList = ${argList}, ${argType} ${argName}${k}
      //#     end
      //#     def kth = ${}{nth_${k}}
-     * @param ${argName}${k} - The list of indices to select along ${kth} dimension
-     *               (or {@code null} to select all.
-     //# end
+     * @param ${argName}${k}
+     *        The list of indices to select along ${kth} dimension (or {@code
+     *        null} to select all).
      *
+     //# end
      * @return A ${className} view for the given index selection${s} of the
      *         array.
      */
@@ -244,21 +248,26 @@ public abstract class ${className} implements ShapedArray {
     //# if ${rank} >= 1
     /**
      * Check the parameters of a ${rank}D view with strides and get ordering.
-     * @param number  - The number of elements in the wrapped array.
+     *
+     * @param number    The number of elements in the wrapped array.
      //# for k in 1:${rank}
      //#   def k_th = ${}{nth_${k}}
-     * @param dim${k}    - The ${k_th} dimension of the ${rank}D view.
+     * @param dim${k}      The ${k_th} dimension of the ${rank}D view.
      //# end
-     * @param offset  - The offset of element (${zeroList}) of the ${rank}D view.
+     * @param offset    The offset of element (${zeroList}) of the ${rank}D view.
      //# for k in 1:${rank}
      //#   def k_th = ${}{nth_${k}}
-     * @param stride${k} - The stride along the ${k_th} dimension.
+     * @param stride${k}   The stride along the ${k_th} dimension.
      //# end
+     *
      * @return The ordering: {@link Shaped#COLUMN_MAJOR},
      *         {@link Shaped#ROW_MAJOR}, or {@link Shaped#NONSPECIFIC_ORDER}.
+     *
      * @throws IndexOutOfBoundsException
      */
-    public static int checkViewStrides(int number, int offset, ${declStrideList}, ${declDimList}) {
+    public static int checkViewStrides(int number, int offset,
+                                       ${declStrideList},
+                                       ${declDimList}) {
         int imin, imax, itmp;
         //# for k in 1 : ${rank}
         itmp = (dim${k} - 1)*stride${k};

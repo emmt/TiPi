@@ -47,7 +47,7 @@ public abstract class Array1D implements ShapedArray {
     protected Array1D(int dim1) {
         shape = new Shape(dim1);
         if (shape.number() > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Total number of elements is too large.");
+            throw new IllegalArgumentException("Total number of elements is too large");
         }
         number = (int)shape.number();
         this.dim1 = dim1;
@@ -59,10 +59,10 @@ public abstract class Array1D implements ShapedArray {
 
     protected Array1D(Shape shape) {
         if (shape.rank() != 1) {
-            throw new IllegalArgumentException("Bad number of dimensions for 1-D array.");
+            throw new IllegalArgumentException("Bad number of dimensions for 1-D array");
         }
         if (shape.number() > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Total number of elements is too large.");
+            throw new IllegalArgumentException("Total number of elements is too large");
         }
         this.number = (int)shape.number();
         this.shape = shape;
@@ -95,11 +95,12 @@ public abstract class Array1D implements ShapedArray {
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.  The same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *        The same indexing rules as for {@link mitiv.base.indexing.Range}
+     *        apply for negative index: 0 for the first, 1 for the second, -1
+     *        for the last, -2 for penultimate, <i>etc.</i>
+     *
      * @return A Scalar view on the given slice of the array.
      */
     public abstract Scalar slice(int idx);
@@ -107,13 +108,14 @@ public abstract class Array1D implements ShapedArray {
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.
-     * @param dim - The dimension to slice.  For these two arguments,
-     *              the same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *
+     * @param dim
+     *        The dimension to slice.  For these two arguments, the same
+     *        indexing rules as for {@link mitiv.base.indexing.Range} apply for
+     *        negative index: 0 for the first, 1 for the second, -1 for the
+     *        last, -2 for penultimate, <i>etc.</i>
      *
      * @return A Scalar view on the given slice of the array.
      */
@@ -122,8 +124,9 @@ public abstract class Array1D implements ShapedArray {
     /**
      * Get a view of the array for given range of indices.
      *
-     * @param rng1 - The range of indices to select along 1st dimension
-     *               (or {@code null} to select all.
+     * @param rng1
+     *        The range of indices to select along 1st dimension (or {@code
+     *        null} to select all).
      *
      * @return A Array1D view for the given range of the array.
      */
@@ -132,8 +135,9 @@ public abstract class Array1D implements ShapedArray {
     /**
      * Get a view of the array for given range of indices.
      *
-     * @param idx1 - The list of indices to select along 1st dimension
-     *               (or {@code null} to select all.
+     * @param idx1
+     *        The list of indices to select along 1st dimension (or {@code
+     *        null} to select all).
      *
      * @return A Array1D view for the given index selection of the
      *         array.
@@ -149,15 +153,20 @@ public abstract class Array1D implements ShapedArray {
 
     /**
      * Check the parameters of a 1D view with strides and get ordering.
-     * @param number  - The number of elements in the wrapped array.
-     * @param dim1    - The 1st dimension of the 1D view.
-     * @param offset  - The offset of element (0) of the 1D view.
-     * @param stride1 - The stride along the 1st dimension.
+     *
+     * @param number    The number of elements in the wrapped array.
+     * @param dim1      The 1st dimension of the 1D view.
+     * @param offset    The offset of element (0) of the 1D view.
+     * @param stride1   The stride along the 1st dimension.
+     *
      * @return The ordering: {@link Shaped#COLUMN_MAJOR},
      *         {@link Shaped#ROW_MAJOR}, or {@link Shaped#NONSPECIFIC_ORDER}.
+     *
      * @throws IndexOutOfBoundsException
      */
-    public static int checkViewStrides(int number, int offset, int stride1, int dim1) {
+    public static int checkViewStrides(int number, int offset,
+                                       int stride1,
+                                       int dim1) {
         int imin, imax, itmp;
         itmp = (dim1 - 1)*stride1;
         if (itmp >= 0) {

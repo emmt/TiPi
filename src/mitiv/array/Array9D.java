@@ -55,7 +55,7 @@ public abstract class Array9D implements ShapedArray {
     protected Array9D(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         shape = new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
         if (shape.number() > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Total number of elements is too large.");
+            throw new IllegalArgumentException("Total number of elements is too large");
         }
         number = (int)shape.number();
         this.dim1 = dim1;
@@ -75,10 +75,10 @@ public abstract class Array9D implements ShapedArray {
 
     protected Array9D(Shape shape) {
         if (shape.rank() != 9) {
-            throw new IllegalArgumentException("Bad number of dimensions for 9-D array.");
+            throw new IllegalArgumentException("Bad number of dimensions for 9-D array");
         }
         if (shape.number() > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Total number of elements is too large.");
+            throw new IllegalArgumentException("Total number of elements is too large");
         }
         this.number = (int)shape.number();
         this.shape = shape;
@@ -119,11 +119,12 @@ public abstract class Array9D implements ShapedArray {
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.  The same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *        The same indexing rules as for {@link mitiv.base.indexing.Range}
+     *        apply for negative index: 0 for the first, 1 for the second, -1
+     *        for the last, -2 for penultimate, <i>etc.</i>
+     *
      * @return A Array8D view on the given slice of the array.
      */
     public abstract Array8D slice(int idx);
@@ -131,13 +132,14 @@ public abstract class Array9D implements ShapedArray {
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.
-     * @param dim - The dimension to slice.  For these two arguments,
-     *              the same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *
+     * @param dim
+     *        The dimension to slice.  For these two arguments, the same
+     *        indexing rules as for {@link mitiv.base.indexing.Range} apply for
+     *        negative index: 0 for the first, 1 for the second, -1 for the
+     *        last, -2 for penultimate, <i>etc.</i>
      *
      * @return A Array8D view on the given slice of the array.
      */
@@ -146,24 +148,41 @@ public abstract class Array9D implements ShapedArray {
     /**
      * Get a view of the array for given ranges of indices.
      *
-     * @param rng1 - The range of indices to select along 1st dimension
-     *               (or {@code null} to select all.
-     * @param rng2 - The range of indices to select along 2nd dimension
-     *               (or {@code null} to select all.
-     * @param rng3 - The range of indices to select along 3rd dimension
-     *               (or {@code null} to select all.
-     * @param rng4 - The range of indices to select along 4th dimension
-     *               (or {@code null} to select all.
-     * @param rng5 - The range of indices to select along 5th dimension
-     *               (or {@code null} to select all.
-     * @param rng6 - The range of indices to select along 6th dimension
-     *               (or {@code null} to select all.
-     * @param rng7 - The range of indices to select along 7th dimension
-     *               (or {@code null} to select all.
-     * @param rng8 - The range of indices to select along 8th dimension
-     *               (or {@code null} to select all.
-     * @param rng9 - The range of indices to select along 9th dimension
-     *               (or {@code null} to select all.
+     * @param rng1
+     *        The range of indices to select along 1st dimension (or {@code
+     *        null} to select all).
+     *
+     * @param rng2
+     *        The range of indices to select along 2nd dimension (or {@code
+     *        null} to select all).
+     *
+     * @param rng3
+     *        The range of indices to select along 3rd dimension (or {@code
+     *        null} to select all).
+     *
+     * @param rng4
+     *        The range of indices to select along 4th dimension (or {@code
+     *        null} to select all).
+     *
+     * @param rng5
+     *        The range of indices to select along 5th dimension (or {@code
+     *        null} to select all).
+     *
+     * @param rng6
+     *        The range of indices to select along 6th dimension (or {@code
+     *        null} to select all).
+     *
+     * @param rng7
+     *        The range of indices to select along 7th dimension (or {@code
+     *        null} to select all).
+     *
+     * @param rng8
+     *        The range of indices to select along 8th dimension (or {@code
+     *        null} to select all).
+     *
+     * @param rng9
+     *        The range of indices to select along 9th dimension (or {@code
+     *        null} to select all).
      *
      * @return A Array9D view for the given ranges of the array.
      */
@@ -172,24 +191,41 @@ public abstract class Array9D implements ShapedArray {
     /**
      * Get a view of the array for given ranges of indices.
      *
-     * @param idx1 - The list of indices to select along 1st dimension
-     *               (or {@code null} to select all.
-     * @param idx2 - The list of indices to select along 2nd dimension
-     *               (or {@code null} to select all.
-     * @param idx3 - The list of indices to select along 3rd dimension
-     *               (or {@code null} to select all.
-     * @param idx4 - The list of indices to select along 4th dimension
-     *               (or {@code null} to select all.
-     * @param idx5 - The list of indices to select along 5th dimension
-     *               (or {@code null} to select all.
-     * @param idx6 - The list of indices to select along 6th dimension
-     *               (or {@code null} to select all.
-     * @param idx7 - The list of indices to select along 7th dimension
-     *               (or {@code null} to select all.
-     * @param idx8 - The list of indices to select along 8th dimension
-     *               (or {@code null} to select all.
-     * @param idx9 - The list of indices to select along 9th dimension
-     *               (or {@code null} to select all.
+     * @param idx1
+     *        The list of indices to select along 1st dimension (or {@code
+     *        null} to select all).
+     *
+     * @param idx2
+     *        The list of indices to select along 2nd dimension (or {@code
+     *        null} to select all).
+     *
+     * @param idx3
+     *        The list of indices to select along 3rd dimension (or {@code
+     *        null} to select all).
+     *
+     * @param idx4
+     *        The list of indices to select along 4th dimension (or {@code
+     *        null} to select all).
+     *
+     * @param idx5
+     *        The list of indices to select along 5th dimension (or {@code
+     *        null} to select all).
+     *
+     * @param idx6
+     *        The list of indices to select along 6th dimension (or {@code
+     *        null} to select all).
+     *
+     * @param idx7
+     *        The list of indices to select along 7th dimension (or {@code
+     *        null} to select all).
+     *
+     * @param idx8
+     *        The list of indices to select along 8th dimension (or {@code
+     *        null} to select all).
+     *
+     * @param idx9
+     *        The list of indices to select along 9th dimension (or {@code
+     *        null} to select all).
      *
      * @return A Array9D view for the given index selections of the
      *         array.
@@ -205,31 +241,36 @@ public abstract class Array9D implements ShapedArray {
 
     /**
      * Check the parameters of a 9D view with strides and get ordering.
-     * @param number  - The number of elements in the wrapped array.
-     * @param dim1    - The 1st dimension of the 9D view.
-     * @param dim2    - The 2nd dimension of the 9D view.
-     * @param dim3    - The 3rd dimension of the 9D view.
-     * @param dim4    - The 4th dimension of the 9D view.
-     * @param dim5    - The 5th dimension of the 9D view.
-     * @param dim6    - The 6th dimension of the 9D view.
-     * @param dim7    - The 7th dimension of the 9D view.
-     * @param dim8    - The 8th dimension of the 9D view.
-     * @param dim9    - The 9th dimension of the 9D view.
-     * @param offset  - The offset of element (0,0,0,0,0,0,0,0,0) of the 9D view.
-     * @param stride1 - The stride along the 1st dimension.
-     * @param stride2 - The stride along the 2nd dimension.
-     * @param stride3 - The stride along the 3rd dimension.
-     * @param stride4 - The stride along the 4th dimension.
-     * @param stride5 - The stride along the 5th dimension.
-     * @param stride6 - The stride along the 6th dimension.
-     * @param stride7 - The stride along the 7th dimension.
-     * @param stride8 - The stride along the 8th dimension.
-     * @param stride9 - The stride along the 9th dimension.
+     *
+     * @param number    The number of elements in the wrapped array.
+     * @param dim1      The 1st dimension of the 9D view.
+     * @param dim2      The 2nd dimension of the 9D view.
+     * @param dim3      The 3rd dimension of the 9D view.
+     * @param dim4      The 4th dimension of the 9D view.
+     * @param dim5      The 5th dimension of the 9D view.
+     * @param dim6      The 6th dimension of the 9D view.
+     * @param dim7      The 7th dimension of the 9D view.
+     * @param dim8      The 8th dimension of the 9D view.
+     * @param dim9      The 9th dimension of the 9D view.
+     * @param offset    The offset of element (0,0,0,0,0,0,0,0,0) of the 9D view.
+     * @param stride1   The stride along the 1st dimension.
+     * @param stride2   The stride along the 2nd dimension.
+     * @param stride3   The stride along the 3rd dimension.
+     * @param stride4   The stride along the 4th dimension.
+     * @param stride5   The stride along the 5th dimension.
+     * @param stride6   The stride along the 6th dimension.
+     * @param stride7   The stride along the 7th dimension.
+     * @param stride8   The stride along the 8th dimension.
+     * @param stride9   The stride along the 9th dimension.
+     *
      * @return The ordering: {@link Shaped#COLUMN_MAJOR},
      *         {@link Shaped#ROW_MAJOR}, or {@link Shaped#NONSPECIFIC_ORDER}.
+     *
      * @throws IndexOutOfBoundsException
      */
-    public static int checkViewStrides(int number, int offset, int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int stride8, int stride9, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
+    public static int checkViewStrides(int number, int offset,
+                                       int stride1, int stride2, int stride3, int stride4, int stride5, int stride6, int stride7, int stride8, int stride9,
+                                       int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         int imin, imax, itmp;
         itmp = (dim1 - 1)*stride1;
         if (itmp >= 0) {

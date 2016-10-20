@@ -34,10 +34,10 @@ package mitiv.base;
 
 /**
  * Shape object to store list of dimensions.
- * <p>
- * A Shape object is immutable and is used to store the dimensions of a
- * shaped object in an efficient way.
- * </p>
+ *
+ * <p>A Shape object is immutable and is used to store the dimensions of a
+ * shaped object in an efficient way.</p>
+ *
  * @author Éric Thiébaut
  */
 public class Shape {
@@ -64,7 +64,9 @@ public class Shape {
 
     /**
      * Get the shape of scalar objects.
+     *
      * @return The shape of a scalar object.
+     *
      * @deprecated Use {@link #scalarShape} instead.
      */
     @Deprecated
@@ -74,10 +76,14 @@ public class Shape {
 
     /**
      * Make a shape given the dimensions.
-     * @param dims - The list of dimensions ({@code null} is the same as
-     *               an array of length equals to {@code 0} and yields the
-     *               shape of a scalar object).
+     *
+     * @param dims
+     *        The list of dimensions ({@code null} is the same as an array of
+     *        length equals to {@code 0} and yields the shape of a scalar
+     *        object).
+     *
      * @return A new shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(int[])} instead.
      */
     @Deprecated
@@ -91,10 +97,14 @@ public class Shape {
 
     /**
      * Make a shape given the dimensions.
-     * @param dims - The list of dimensions ({@code null} is the same as
-     *               an array of length equals to {@code 0} and yields the
-     *               shape of a scalar object).
+     *
+     * @param dims
+     *        The list of dimensions ({@code null} is the same as an array of
+     *        length equals to {@code 0} and yields the shape of a scalar
+     *        object).
+     *
      * @return A new shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(long[])} instead.
      */
     @Deprecated
@@ -123,9 +133,11 @@ public class Shape {
     //#             def intList = ${intList},int
     //#         end
     //#         def k_th = ${}{nth_${k}}
-     * @param ${arg} - The ${k_th} dimension.
+     * @param ${arg}   The ${k_th} dimension.
     //#     end
+     *
      * @return A new ${rank}-dimensional shape built from the given dimensions.
+     *
      * @deprecated Use constructor {@link #Shape(${intList})} instead.
      */
     @Deprecated
@@ -152,7 +164,7 @@ public class Shape {
 
     /**
      * Get the length of a given dimension.
-     * @param k - The index of the dimension.
+     * @param k   The index of the dimension.
      //# if ${broadcast}
      * @return The length of the {@code (k+1)}-th dimension; or
      *         {@code 1}, if {@code k}&nbsp;&ge;&nbsp;{@link #rank()}.
@@ -188,7 +200,7 @@ public class Shape {
 
     /**
      * Check whether another shape is the same as this one.
-     * @param other - Another shape.
+     * @param other   Another shape.
      * @return A boolean result.
      */
     public final boolean equals(Shape other) {
@@ -212,8 +224,8 @@ public class Shape {
      * uncontrolled construction with shared dimensions and to
      * force all scalars the share the same shape.
      * <p>
-     * @param dims  - The list of dimensions.
-     * @param share - The caller guarantees that the contents of the list of
+     * @param dims    The list of dimensions.
+     * @param share   The caller guarantees that the contents of the list of
      *                dimensions will never change.
      */
     private Shape(int[] dims, boolean share) {
@@ -255,7 +267,7 @@ public class Shape {
      * The input dimensions are copied into a private array and are
      * never shared with the returned shape instance.
      *
-     * @param dims - The list of dimensions.
+     * @param dims   The list of dimensions.
      */
     public Shape(int[] dims) {
         this(dims, false);
@@ -268,7 +280,7 @@ public class Shape {
      * The input dimensions are copied into a private array and are
      * never shared with the returned shape instance.
      *
-     * @param dims - The list of dimensions.
+     * @param dims   The list of dimensions.
      */
     public Shape(long[] dims) {
         long number = 1L;
@@ -306,7 +318,7 @@ public class Shape {
     //#             def dimList = ${dimList}, ${arg}
     //#         end
     //#         def k_th = ${}{nth_${k}}
-     * @param ${arg} - The ${k_th} dimension.
+     * @param ${arg}   The ${k_th} dimension.
     //#     end
      * @return A new ${rank}-dimensional shape built from the given dimensions.
      */
@@ -328,15 +340,15 @@ public class Shape {
     }
 
     private static void dimensionTooSmall() {
-        throw new IllegalArgumentException("Dimensions must be at least 1.");
+        throw new IllegalArgumentException("Dimensions must be at least 1");
     }
 
     private static void dimensionTooLarge() {
-        throw new IllegalArgumentException("Dimensions must be at most Integer.MAX_VALUE.");
+        throw new IllegalArgumentException("Dimensions must be at most Integer.MAX_VALUE");
     }
 
     private static void numberOverflow() {
-        throw new IllegalArgumentException("Total number of elements is too large.");
+        throw new IllegalArgumentException("Total number of elements is too large");
     }
 
 }

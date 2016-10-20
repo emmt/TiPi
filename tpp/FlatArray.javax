@@ -168,16 +168,16 @@ public class ${className} extends ${superName} {
     @Override
     public void checkSanity() {
         if (data == null) {
-           throw new NonConformableArrayException("Wrapped array is null.");
+           throw new NonConformableArrayException("Wrapped array is null");
         }
         if (data.length < number) {
-            throw new NonConformableArrayException("Wrapped array is too small.");
+            throw new NonConformableArrayException("Wrapped array is too small");
         }
     }
 
     private void checkSize(${type}[] arr) {
         if (arr == null || arr.length < number) {
-            throw new NonConformableArrayException("Wrapped array is too small.");
+            throw new NonConformableArrayException("Wrapped array is too small");
         }
     }
 

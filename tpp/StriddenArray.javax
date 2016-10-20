@@ -78,7 +78,7 @@ public class ${className} extends ${superName} {
     public ${className}(${type}[] arr, int offset, int[] stride, int[] dims) {
         super(dims);
         if (stride.length != ${rank}) {
-            throw new IllegalArgumentException("There must be as many strides as the rank.");
+            throw new IllegalArgumentException("There must be as many strides as the rank");
         }
         this.data = arr;
         this.offset = offset;
@@ -382,7 +382,7 @@ public class ${className} extends ${superName} {
             //#     end
             //# end
         } else {
-            throw new IndexOutOfBoundsException("Dimension index out of bounds.");
+            throw new IndexOutOfBoundsException("Dimension index out of bounds");
         }
         //# if ${reducedRank} == 0
         return new ${reducedSuperName}(data, sliceOffset);
