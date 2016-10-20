@@ -11,7 +11,7 @@
 CODGER =./tpp --warning
 
 # Directories:
-ROOT = ../mitiv/
+ROOT = ../src/mitiv/
 ARRAY = $(ROOT)array/
 ARRAY_IMPL = $(ROOT)array/impl/
 BASE = $(ROOT)base/
@@ -958,3 +958,4 @@ $(MAPPING)FloatFunction.java: $(FUNCTION_INPUTS)
 $(MAPPING)DoubleFunction.java: $(FUNCTION_INPUTS)
 	$(CODGER) --autopkg -Dtype=double $< $@
 
+#-----------------------------------------------------------------------------

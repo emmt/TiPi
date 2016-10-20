@@ -1,22 +1,22 @@
 # The TiPi Pre-processor
 
 
-**tpp**, the *TiPi Pre-processor*, is used to produce Java code of many TiPi
+**TPP**, the *TiPi Pre-processor*, is used to produce Java code of many TiPi
 classes from a single or a few source files.  In TiPi source tree, the files
-which need to be pre-processed by `tpp` to produce Java code are suffixed by
-`.javax` and are all in the [`src/codegen`](../src/codegen) directory.
+which need to be pre-processed by TPP to produce Java code are suffixed by
+`.javax` and are all in the `tpp` directory.
 
-The principles of `tpp` are simple: it interprets special pre-processor
+The principles of TPP are simple: it interprets special pre-processor
 directives in the source code and re-emit other lines of code, possibly several
 times if these lines appear in a pre-processor loop, after performing macro
-substitution.  Compared to other programming language pre-processors, `tpp`
+substitution.  Compared to other programming language pre-processors, TPP
 provides macros with immediate and deferred substitution, loops, evaluation of
 expressions and can be used to generate almost arbitrary code.
 
 
 ## Calling the Preprocessor
 
-The syntax for calling `tpp` is:
+The syntax for calling TPP is:
 
 ```sh
 tpp [OPTIONS] [INPUT [OUTPUT]]
@@ -47,7 +47,7 @@ Options in `OPTIONS` are:
 
 * `--`: Indicate the end of the options.
 
-Some options are clearly targeted at Java code, but `tpp` can be applied to
+Some options are clearly targeted at Java code, but TPP can be applied to
 other programming languages.
 
 
@@ -176,7 +176,7 @@ including whithin the double quotes of a string.
 
 ### Predefined Macros
 
-When processing a file, `tpp` automatically define (and update) the following
+When processing a file, TPP automatically define (and update) the following
 macros:
 
 * `${__FILE__}` yields the name of the current processed file.
@@ -259,9 +259,9 @@ evaluated using the same rules as in the `#eval` directive.
 
 ## Loops
 
-A distinctive feature of `tpp` is to provide loops which may be embedded in
-other loops to an arbitrarily level.  There are two kinds of loops: `for`-loops
-and `while`-loops.
+A distinctive feature of TPP is to provide loops which may be embedded in other
+loops to an arbitrarily level.  There are two kinds of loops: `for`-loops and
+`while`-loops.
 
 The syntax of a `for`-loop is:
 
