@@ -35,6 +35,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
+import mitiv.array.ArrayUtils;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.cost.EdgePreservingDeconvolution;
@@ -42,6 +43,7 @@ import mitiv.io.ColorModel;
 import mitiv.io.DataFormat;
 import mitiv.optim.OptimTask;
 import mitiv.utils.FFTUtils;
+import mitiv.utils.WeightFactory;
 
 
 public class EdgePreservingDeconvolutionCommand {
@@ -54,7 +56,7 @@ public class EdgePreservingDeconvolutionCommand {
     private String psfName = null;
 
     @Option(name = "--weights", aliases = {"-w"}, usage = "Name statistical weights file.", metaVar = "FILENAME")
-    private String weightName = null;
+    private String weightsName = null;
 
     @Option(name = "--noise", usage = "Standard deviation of the noise.", metaVar = "SIGMA")
     private double sigma = Double.NaN;
@@ -62,8 +64,8 @@ public class EdgePreservingDeconvolutionCommand {
     @Option(name = "--gain", usage = "Detector gain.", metaVar = "GAMMA")
     private double gamma = Double.NaN;
 
-    @Option(name = "--bad", usage = "Name of bad data file.", metaVar = "FILENAME")
-    private String badName = null;
+    @Option(name = "--invalid", usage = "Name of invalid data file.", metaVar = "FILENAME")
+    private String invalidName = null;
 
     @Option(name = "--mu", aliases = {"-m"}, usage = "Regularization level.", metaVar = "MU")
     private double mu = 10.0;
@@ -107,7 +109,7 @@ public class EdgePreservingDeconvolutionCommand {
     @Option(name = "--maxeval", aliases = {"-L"}, usage = "Maximum number of evaluations, -1 for no limits.")
     private int maxeval = -1;
 
-    @Option(name = "--pad", usage = "Padding method.", metaVar = "\"auto\"|\"none\"|NUMBER")
+    @Option(name = "--pad", usage = "Padding method.", metaVar = "\"auto\"|\"min\"|NUMBER")
     private String paddingMethod = "auto";
 
     @Option(name = "--crop", aliases = {"-c"}, usage = "Crop result to same size as input.")
@@ -169,8 +171,38 @@ public class EdgePreservingDeconvolutionCommand {
             solver.setForceSinglePrecision(job.single);
             solver.setData(loadData(inputName, job.single));
             solver.setPSF(loadData(job.psfName, job.single));
-            if (job.weightName != null) {
-                solver.setWeights(loadData(job.weightName, job.single));
+
+            // Deal with the weights.
+            System.err.format("sigma = %g, gamma = %g\n", job.sigma, job.gamma);
+            if (job.weightsName != null) {
+                if (! isnan(job.sigma) || ! isnan(job.gamma)) {
+                    System.err.println("Warning: options `--gain` and `--noise` are ignored when `--weights` is specified.");
+                }
+                solver.setWeights(loadData(job.weightsName, job.single));
+            } else {
+                double alpha;
+                double beta;
+                if (isnan(job.sigma)) {
+                    if (! isnan(job.gamma)) {
+                        System.err.println("Warning: option `--gain` alone is ignored, use it with `--noise`.");
+                    }
+                    alpha = 0;
+                    beta = 1;
+                } else if (isnan(job.gamma)) {
+                    alpha = 0;
+                    beta = abs2(job.sigma);
+                } else {
+                    alpha = 1/job.gamma;
+                    beta = abs2(job.sigma/job.gamma);
+                }
+                System.err.format("alpha = %g, beta = %g\n", alpha, beta);
+                solver.setWeights(WeightFactory.computeWeightsFromData(solver.getData(), alpha, beta));
+            }
+
+            // Deal with bad pixels.
+            if (job.invalidName != null) {
+                // FIXME: there should be a way to load a mask (i.e. as a boolean array)
+                WeightFactory.removeBads(solver.getWeights(), loadData(job.invalidName, job.single));
             }
 
             // Compute dimensions of result.
@@ -184,14 +216,27 @@ public class EdgePreservingDeconvolutionCommand {
                     int psfDim = psfShape.dimension(k);
                     objDims[k] = FFTUtils.bestDimension(dataDim + psfDim - 1);
                 }
-            } else if (job.paddingMethod.equals("none")) {
+            } else if (job.paddingMethod.equals("min")) {
                 for (int k = 0; k < rank; ++k) {
                     int dataDim = dataShape.dimension(k);
                     int psfDim = psfShape.dimension(k);
                     objDims[k] = FFTUtils.bestDimension(Math.max(dataDim, psfDim));
                 }
             } else {
-                throw new IllegalArgumentException("Unknown padding strategy");
+                int pad;
+                try {
+                    pad = Integer.parseInt(job.paddingMethod);
+                } catch (NumberFormatException ex) {
+                    throw new IllegalArgumentException("Invalid value for option `--pad`, must be \"auto\", \"min\" or an integer");
+                }
+                if (pad < 0) {
+                    throw new IllegalArgumentException("Padding value must be nonnegative");
+                }
+                for (int k = 0; k < rank; ++k) {
+                    int dataDim = dataShape.dimension(k);
+                    int psfDim = psfShape.dimension(k);
+                    objDims[k] = FFTUtils.bestDimension(Math.max(dataDim, psfDim) + pad);
+                }
             }
             solver.setObjectShape(objDims);
 
@@ -254,17 +299,30 @@ public class EdgePreservingDeconvolutionCommand {
             fatal(e.getMessage());
         }
         try {
-            DataFormat.save(solver.getBestSolution(), outputName);
+            ShapedArray arr = solver.getBestSolution().asShapedArray();
+            if (job.crop) {
+                arr = ArrayUtils.crop(arr, solver.getData().getShape());
+            }
+            DataFormat.save(arr, outputName);
         } catch (final IOException e) {
             if (job.debug) {
                 e.printStackTrace();
             }
-            fatal("Failed to write output image");
-        }
-        if (job.verbose){
-            System.out.println("Done!");
+            fatal("Failed to write output image (" + e.getMessage() + ")");
         }
         System.exit(0);
+    }
+
+    private final static double abs2(double x) {
+        return x*x;
+    }
+
+    private final static boolean isnan(double x) {
+        return Double.isNaN(x);
+    }
+
+    private final static boolean isinf(double x) {
+        return Double.isInfinite(x);
     }
 
     private static void fatal(String mesg) {
