@@ -191,22 +191,26 @@ public class ${className} {
     //#     end
     /**
      * Convert a ShapedArray into ${a} ${dst_Type}Array.
-     * <p>
-     * The operation is lazy, in the sense that {@code src} is returned if it
-     * is already of the requested type.
-     * </p>
-     * @param src - The source array.
-     * @return ${A} ${dst_Type}Array whose values has been converted into ${dst_type}'s
-     *         from those of {@code src}.
+     *
+     * <p> The operation is lazy, in the sense that {@code arr} is returned if
+     * it is already of the requested type.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @return ${A} ${dst_Type}Array whose values has been converted into
+     *         ${dst_type}'s from those of {@code arr}.
+     *
+     * @deprecated Use <code>arr.to${dst_Type}()</code> instead.
      */
-    public ${dst_Type}Array to${dst_Type}(ShapedArray src) {
-        int srcType = src.getType();
-        if (src.getType() == Traits.${dst_TYPE}) {
-            return (${dst_Type}Array)src;
+    @Deprecated
+    public ${dst_Type}Array to${dst_Type}(ShapedArray arr) {
+        if (arr.getType() == Traits.${dst_TYPE}) {
+            return (${dst_Type}Array)arr;
         }
-        int number = src.getNumber();
+        final int number = arr.getNumber();
         ${dst_type}[] out = new ${dst_type}[number];
-        switch (srcType) {
+        switch (arr.getType()) {
             //# for src in ${BYTE} : ${DOUBLE}
             //#     if ${src} != ${dst}
             //#         def src_type = ${}{type_${src}}
@@ -214,9 +218,13 @@ public class ${className} {
             //#         def src_TYPE = ${}{TYPE_${src}}
         case Traits.${src_TYPE}:
             {
-                ${src_type}[] inp = ((${src_Type}Array)src).flatten(false);
+                ${src_type}[] inp = ((${src_Type}Array)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
+                    //# if ${src} == ${BYTE}
+                    out[j] = (${dst_type})(inp[j] & 0xFF);
+                    //# else
                     out[j] = (${dst_type})inp[j];
+                    //# end
                 }
             }
             break;
@@ -225,7 +233,7 @@ public class ${className} {
         default:
             throw new IllegalArgumentException("unexpected type (BUG)");
         }
-        return wrap(out, src.getShape());
+        return wrap(out, arr.getShape());
     }
 
     //# end // loop over DST type
