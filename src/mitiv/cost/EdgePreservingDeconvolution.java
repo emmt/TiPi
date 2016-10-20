@@ -77,15 +77,15 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
     }
 
     /** Optional statistical weights. */
-    private ShapedArray weight = null;
+    private ShapedArray weights = null;
 
-    public ShapedArray getWeight() {
-        return weight;
+    public ShapedArray getWeights() {
+        return weights;
     }
 
     public void setWeights(ShapedArray arr) {
-        if (weight != arr) {
-            weight = arr;
+        if (weights != arr) {
+            weights = arr;
             updatePending = true;
         }
     }
@@ -217,7 +217,7 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         }
         final int rank =  data.getRank();
         final Shape dataShape = data.getShape();
-        if (weight != null &&! weight.getShape().equals(dataShape)) {
+        if (weights != null &&! weights.getShape().equals(dataShape)) {
             error("Weights and data must have the same dimensions");
         }
         if (psf == null) {
@@ -243,7 +243,7 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         if (single) {
             type = Traits.FLOAT;
         } else if (data.getType() == Traits.DOUBLE || psf.getType() == Traits.DOUBLE ||
-                (weight != null && weight.getType() == Traits.DOUBLE) ||
+                (weights != null && weights.getType() == Traits.DOUBLE) ||
                 (object != null && object.getType() == Traits.DOUBLE)) {
             type = Traits.DOUBLE;
         } else {
@@ -315,8 +315,8 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         if (useNewCode) {
             /* Build weighted data instance. */
             WeightedData  weightedData = new WeightedData(dataSpace.create(data), true);
-            if (weight != null) {
-                weightedData.setWeights(dataSpace.create(weight), true);
+            if (weights != null) {
+                weightedData.setWeights(dataSpace.create(weights), true);
             }
 
             /* Build the direct model. */
@@ -326,13 +326,18 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         } else {
             WeightedConvolutionCost cost = WeightedConvolutionCost.build(objectSpace, dataSpace);
             cost.setPSF(psf);
-            cost.setWeightsAndData(weight, data);
+            cost.setWeightsAndData(weights, data);
             setLikelihood(cost);
         }
 
         /* Build the regularization cost function. */
         HyperbolicTotalVariation fprior = new HyperbolicTotalVariation(objectSpace, epsilon);
-        //fprior.setScale(scale);
+        if (scale.length == 1) {
+            fprior.setScale(scale[0]);
+        } else {
+            fprior.setScale(scale);
+        }
+        System.err.println("WARNING scale disabled");
         setRegularization(fprior);
 
         /* Make sure the vector of variables share its contents with the
@@ -383,13 +388,28 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
     private boolean nonfinite(double value) {
         return Double.isInfinite(value) || Double.isNaN(value);
     }
+
     private double[] scale = {1.0};
-    public void setScale(double delta) {
-        scale = new double[] {delta};
-    }
-    public void setScale(double[] delta) {
+
+    /**
+     * Set regularization scale along the dimensions.
+     *
+     * @param delta
+     *        The regularization scale along the dimensions of the solution. If a single value is
+     *        given, the same scale for all dimensions will be used. Otherwise
+     *        there should be as many values as the number of dimensions.
+     *
+     * @see {@link HyperbolicTotalVariation}.
+     */
+    public void setScale(double... delta) {
         scale = delta;
     }
+
+    /**
+     * Get the regularization scale along the dimensions.
+     *
+     * @return The regularization scale for all dimensions of the solution.
+     */
     public double[] getScale() {
         return scale;
     }
