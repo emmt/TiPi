@@ -47,11 +47,13 @@ public class ArrayUtils {
     //#         def src_TYPE = ${}{TYPE_${src}}
     /**
      * Convert an array of {@code ${src_type}}'s into an array of {@code ${dst_type}}'.
-     * <p>
-     * The operation is lazy, in the sense that {@code src} is returned if it
-     * is already of the requested type.
-     * </p>
-     * @param src - The source array.
+     *
+     * <p>The operation is lazy, in the sense that {@code src} is returned if
+     * it is already of the requested type.</p>
+     *
+     * @param src
+     *        The source array.
+     *
      * @return An array whose values has been converted to ${dst_type}'s
      *         from those of {@code src}.
      */
@@ -62,7 +64,11 @@ public class ArrayUtils {
         int number = src.length;
         ${dst_type}[] dst = new ${dst_type}[number];
         for (int j = 0; j < number; ++j) {
+            //#     if ${src} == ${BYTE}
+            dst[j] = (${dst_type})(src[j] & 0xFF);
+            //#     else
             dst[j] = (${dst_type})src[j];
+            //#     end
         }
         return dst;
         //#     end
@@ -76,27 +82,33 @@ public class ArrayUtils {
 
     /**
      * Zero-pad a shaped array.
-     * <p>
-     * Zero-padding consists in adding zeros around an array to build a larger
-     * array.
-     * </p><p>
-     * There must be as many dimensions in the result as in the input array
+     *
+     * <p>Zero-padding consists in adding zeros around an array to build a
+     * larger array.</p>
+     *
+     * <p>There must be as many dimensions in the result as in the input array
      * and all dimensions must be greater or equal the corresponding dimension
      * in the input array.  The operation is lazy: if no padding is needed
      * (that is, if the shapes are the same), the input array is returned.
      * Otherwise, the contents of the input array is pasted into a larger
-     * output array approximately at the geometric center of this former
-     * array.  More specifically, the number of zeros at the beginning of a
-     * given dimension is equal to:
+     * output array approximately at the geometric center of this former array.
+     * More specifically, the number of zeros at the beginning of a given
+     * dimension is equal to:</p>
+     *
      * <pre>
      * (outDim/2) - (inpDim/2)
      * </pre>
-     * assuming integer arithmetic and where {@code outDim} and {@code inpDim}
-     * are the respective lengths of the given dimension in the output and
-     * input arrays.
-     * </p>
-     * @param array - The input array.
-     * @param shape - The shape of the result.
+     *
+     * <p>assuming integer arithmetic and where {@code outDim} and {@code
+     * inpDim} are the respective lengths of the given dimension in the output
+     * and input arrays.</p>
+     *
+     * @param array
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
+     *
      * @return A shaped array of the given shape.
      */
     public static ShapedArray pad(ShapedArray array, Shape shape) {
@@ -105,15 +117,20 @@ public class ArrayUtils {
 
     /**
      * Pad a shaped array with a specific value.
-     * <p>
-     * This function behaves as {@link #pad(ShapedArray,Shape)} except that
-     * the padding elements are set to the given value.
-     * </p>
-     * @param array - The input array.
-     * @param shape - The shape of the result.
-     * @param value - The value of the padding elements (it is silently
-     *                converted to the element type of the output array which
-     *                is the same as that of the input array).
+     *
+     * <p>This function behaves as {@link #pad(ShapedArray,Shape)} except that
+     * the padding elements are set to the given value.</p>
+     *
+     * @param array
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
+     *
+     * @param value
+     *        The value of the padding elements (it is silently converted to
+     *        the element type of the output array which is the same as that of
+     *        the input array).
      *
      * @return A shaped array of the given shape.
      */
@@ -124,16 +141,20 @@ public class ArrayUtils {
 
     /**
      * Zero-pad a shaped array with given offsets.
-     * <p>
-     * This function behaves as {@link #pad(ShapedArray,Shape)} except that
-     * specific offsets are given.
-     * </p>
-     * @param array  - The input array.
-     * @param shape  - The shape of the result.
-     * @param offset - The offsets along each dimenions of the input array
-     *                 relative to the result.  If {@code null}, the contents
-     *                 of the array is approximately at the geometric center
-     *                 of the result.
+     *
+     * <p>This function behaves as {@link #pad(ShapedArray,Shape)} except that
+     * specific offsets are given.</p>
+     *
+     * @param array
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
+     *
+     * @param offset
+     *        The offsets along each dimension of the input array relative to
+     *        the result.  If {@code null}, the contents of the array is
+     *        approximately at the geometric center of the result.
      *
      * @return A shaped array of the given shape.
      */
@@ -144,34 +165,42 @@ public class ArrayUtils {
 
     /**
      * Pad a shaped array with a given value and given offsets.
-     * <p>
-     * Padding consists in adding elements with a given value around an array
-     * to build a larger array.
-     * </p><p>
-     * There must be as many dimensions in the result as in the input array
+     *
+     * <p>Padding consists in adding elements with a given value around an
+     * array to build a larger array.</p>
+     *
+     * <p>There must be as many dimensions in the result as in the input array
      * and all dimensions must be greater or equal the corresponding dimension
      * in the input array.  The operation is lazy: if no padding is needed
      * (that is, if the shapes are the same), the input array is returned.
      * Otherwise, the contents of the input array is pasted into a larger
-     * output array approximately at the geometric center of this former
-     * array.  More specifically, the number of elements added at the
-     * beginning of a given dimension is equal to:
+     * output array approximately at the geometric center of this former array.
+     * More specifically, the number of elements added at the beginning of a
+     * given dimension is equal to:</p>
+     *
      * <pre>
      * (outDim/2) - (inpDim/2)
      * </pre>
-     * assuming integer arithmetic and where {@code outDim} and {@code inpDim}
-     * are the respective lengths of the given dimension in the output and
-     * input arrays.
-     * </p>
-     * @param array  - The input array.
-     * @param shape  - The shape of the result.
-     * @param offset - The offsets along each dimension of the input array
-     *                 relative to the result.  If {@code null}, the contents
-     *                 of the array is approximately at the geometric center
-     *                 of the result.
-     * @param value  - The value of the padding elements (it is silently
-     *                 converted to the element type of the output array which
-     *                 is the same as that of the input array).
+     *
+     * <p>assuming integer arithmetic and where {@code outDim} and {@code
+     * inpDim} are the respective lengths of the given dimension in the output
+     * and input arrays.</p>
+     *
+     * @param array
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
+     *
+     * @param offset
+     *        The offsets along each dimension of the input array relative to
+     *        the result.  If {@code null}, the contents of the array is at the
+     *        geometric center of the result.
+     *
+     * @param value
+     *        The value of the padding elements (it is silently converted to
+     *        the element type of the output array which is the same as that of
+     *        the input array).
      *
      * @return A shaped array of the given shape.
      */
@@ -224,23 +253,28 @@ public class ArrayUtils {
 
     /**
      * Crop the central part of a shaped array.
-     * <p>
-     * This function returns the central region of the input array.  More
+     *
+     * <p>This function returns the central region of the input array.  More
      * specifically, the first element taken along a given dimension is at
-     * offset:
+     * offset:</p>
+     *
      * <pre>
      * (inpDim/2) - (outDim/2)
      * </pre>
-     * assuming integer arithmetic and where {@code outDim} and {@code inpDim}
-     * are the respective lengths of the considerd dimension in the output and
-     * input arrays.
-     * </p><p>
-     * The operation is lazzy in the sense that it returns either the input
+     *
+     * <p>assuming integer arithmetic and where {@code outDim} and {@code
+     * inpDim} are the respective lengths of the considered dimension in the
+     * output and input arrays.</p>
+     *
+     * <p>The operation is lazy in the sense that it returns either the input
      * array (if the cropped region is the same as the input array) or a view
-     * inside the input array.
-     * </p>
-     * @param array  - The input array.
-     * @param shape  - The shape of the result.
+     * inside the input array.</p>
+     *
+     * @param array
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
      *
      * @return A shaped array of the given shape.
      */
@@ -250,20 +284,24 @@ public class ArrayUtils {
 
     /**
      * Crop a specific part of a shaped array.
-     * <p>
-     * Padding consists in adding elements with a given value around an array
-     * to build a larger array.
-     * </p><p>
-     * The operation is lazzy in the sense that it returns either the input
+     *
+     * <p>Padding consists in adding elements with a given value around an
+     * array to build a larger array.</p>
+     *
+     * <p>The operation is lazy in the sense that it returns either the input
      * array (if the cropped region is the same as the input array) or a view
-     * inside the input array.
-     * </p>
-     * @param array  - The input array.
-     * @param shape  - The shape of the result.
-     * @param offset - The offsets along each dimensions of the cropped region
-     *                 relative to the input array.  If {@code null}, the
-     *                 cropped region corresponds to approximately the central
-     *                 part of the input array.
+     * inside the input array.</p>
+     *
+     * @param array
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
+     *
+     * @param offset
+     *        The offsets along each dimensions of the cropped region relative
+     *        to the input array.  If {@code null}, the cropped region
+     *        corresponds to approximately the central part of the input array.
      *
      * @return A shaped array of the given shape.
      */
@@ -292,7 +330,7 @@ public class ArrayUtils {
         }
     }
 
-
+    /** Get ROI for crop/pad operations. */
     private static Range[] getROI(Shape large, Shape small, int[] offset) {
         int rank = large.rank();
         if (small.rank() != rank) {
@@ -354,17 +392,18 @@ public class ArrayUtils {
         return range;
     }
 
-
     /*=======================================================================*/
     /* ROLLING OF DIMENSIONS */
 
     /**
      * Roll the dimensions of a shaped array.
-     * <p>
-     * This is the same as {@link #roll(ShapedArray, int[])} with offsets
-     * equal to half the lenght of each dimensions.
-     * </p>
-     * @param arr - The input array.
+     *
+     * <p>This is the same as {@link #roll(ShapedArray, int[])} with offsets
+     * equal to half the lenght of each dimensions.</p>
+     *
+     * @param arr
+     *        The input array.
+     *
      * @return A view with the contents of the input array but rolled along
      *         the dimensions of the input array by the given offsets.  Note
      *         that the result shares its contents with the input array.
@@ -389,22 +428,28 @@ public class ArrayUtils {
 
     /**
      * Roll the dimensions of a shaped array with given offsets.
-     * <p>
-     * This static method rolls the contents of the input array along its
-     * dimensions.  For a mono-dimensional array of length {@code dim}, this
-     * is equivalent to something like:
+     *
+     * <p>This static method rolls the contents of the input array along its
+     * dimensions.  For a mono-dimensional array of length {@code dim}, this is
+     * equivalent to something like:</p>
+     *
      * <pre>
      * dst[j] = src[(j - off)%dim]
      * </pre>
-     * where {@code src} is the input array, {@code dst} is the result,
-     * {@code off} is the offset and assuming that the modulo operator
-     * returns a result wrapped in the range [0:{@code dim}-1].
-     * </p><p>
-     * The operation is lazy: if no rolling is needed (that is, if the shapes
-     * are the same), the input array is returned.
-     * </p>
-     * @param arr - The input array.
-     * @param off - The offsets to apply along each dimensions.
+     *
+     * <p>where {@code src} is the input array, {@code dst} is the result,
+     * {@code off} is the offset and assuming that the modulo operator returns
+     * a result wrapped in the range [0:{@code dim}-1].</p>
+     *
+     * <p>The operation is lazy: if no rolling is needed (that is, if the
+     * shapes are the same), the input array is returned.</p>
+     *
+     * @param arr
+     *        The input array.
+     *
+     * @param off
+     *        The offsets to apply along each dimensions.
+     *
      * @return A shaped array with the contents of the input array but rolled
      *         along the dimensions of the input array by the given offsets.
      *         Note that the result shares its contents with the input array.
