@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.utils;
+package mitiv.old;
 
 /*
  * Copyright 1999-2004 Carnegie Mellon University.  

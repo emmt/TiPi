@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package commands;
+package mitiv.old.commands;
 
 import java.io.IOException;
 import java.io.PrintStream;

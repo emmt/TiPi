@@ -23,27 +23,48 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.utils.reconstruction;
+package mitiv.old.reconstruction;
 
-import mitiv.array.ShapedArray;
+public class ReconstructionThread extends Thread {
 
-public abstract class ReconstructionJob implements Runnable {
+    private ReconstructionThreadToken token;
+    private Runnable job;
 
-    protected ShapedArray data;
-    protected ShapedArray result;
-    protected ReconstructionThreadToken token;
-
-    public ReconstructionJob(ShapedArray sequence, ReconstructionThreadToken token) {
-        this.data = sequence;
+    public ReconstructionThread(ReconstructionThreadToken token) {
         this.token = token;
     }
 
-    public ReconstructionJob(ReconstructionThreadToken token) {
-        this(null, token);
+    public void setToken(ReconstructionThreadToken token){
+        this.token = token;
     }
 
-    public abstract void run();
+    public void setJob(Runnable job){
+        this.job = job;
+    }
+
+    public void run(){
+        while (!token.isExiting()) {        //While we should not quit
+            while (!token.isRunning()) {    //We wait for a job and for the order to run
+                token.waitForStart();
+            }
+            try {
+                if (job != null && !token.isExiting()) { //We run if we don't have to quit
+                    job.run();
+                } else {
+                    if (!token.isExiting()) {
+                        System.err.println("Running command received but no job to run");
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("EXCEPTION occured: "+e.getLocalizedMessage());
+            } finally {
+                token.jobFinished();
+            }
+        }
+    }
+
 }
+
 /*
  * Local Variables:
  * mode: Java

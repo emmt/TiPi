@@ -22,7 +22,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv;
+package mitiv.old;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -38,7 +38,6 @@ import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
-import mitiv.utils.CommonUtils;
 
 import org.jtransforms.fft.DoubleFFT_1D;
 import org.jtransforms.fft.DoubleFFT_3D;

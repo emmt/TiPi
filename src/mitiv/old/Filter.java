@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv;
+package mitiv.old;
 
 import mitiv.base.Shape;
 import mitiv.linalg.shaped.DoubleShapedVector;

@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.utils.reconstruction;
+package mitiv.old.reconstruction;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;

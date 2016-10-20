@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.io;
+package mitiv.old;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -43,7 +43,6 @@ import mitiv.array.Float3D;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
-import mitiv.utils.CommonUtils;
 
 public class BufferedImageUtils {
 

@@ -34,13 +34,13 @@ import mitiv.invpb.ReconstructionJob;
 import mitiv.invpb.ReconstructionViewer;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
+import mitiv.old.MathUtils;
 import mitiv.optim.BoundProjector;
 import mitiv.optim.LineSearch;
 import mitiv.optim.MoreThuenteLineSearch;
 import mitiv.optim.OptimTask;
 import mitiv.optim.ReverseCommunicationOptimizer;
 import mitiv.optim.VMLMB;
-import mitiv.utils.MathUtils;
 
 public class PSF_Estimation implements ReconstructionJob {
 

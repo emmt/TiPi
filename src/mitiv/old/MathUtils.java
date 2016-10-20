@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.utils;
+package mitiv.old;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;

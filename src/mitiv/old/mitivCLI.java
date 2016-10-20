@@ -29,7 +29,7 @@
  *
  */
 
-package mitiv.utils;
+package mitiv.old;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -39,8 +39,6 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 
 import mitiv.array.ShapedArray;
-import mitiv.deconv.Deconvolution;
-import mitiv.io.BufferedImageUtils;
 
 /**
  * mitivCLI is a command line interface that let the user call the functions contains 

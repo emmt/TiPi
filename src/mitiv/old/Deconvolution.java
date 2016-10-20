@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv;
+package mitiv.old;
 
 import java.awt.image.BufferedImage;
 
@@ -33,13 +33,11 @@ import mitiv.array.DoubleArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.indexing.Range;
 import mitiv.invpb.LinearDeconvolver;
-import mitiv.io.BufferedImageUtils;
 import mitiv.linalg.LinearConjugateGradient;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
 import mitiv.linalg.shaped.ShapedVector;
-import mitiv.utils.CommonUtils;
 
 /**
  * @author Leger Jonathan

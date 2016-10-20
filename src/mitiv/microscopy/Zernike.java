@@ -25,6 +25,7 @@
 
 package mitiv.microscopy;
 
+import mitiv.old.MathUtils;
 import mitiv.utils.*;
 /** Compute Zernike polynomials 
  *
