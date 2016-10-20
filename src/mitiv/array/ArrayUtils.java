@@ -1282,7 +1282,7 @@ public class ArrayUtils {
      * Roll the dimensions of a shaped array.
      *
      * <p>This is the same as {@link #roll(ShapedArray, int[])} with offsets
-     * equal to half the lenght of each dimensions.</p>
+     * equal to half the length of each dimensions.</p>
      *
      * @param arr
      *        The input array.
