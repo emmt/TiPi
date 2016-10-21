@@ -1,0 +1,8 @@
+#! /bin/sh
+
+# Resolve symbolic links if any.
+path=`readlink -fn "$0"`
+exe=`basename "$path"`
+dir=`dirname "$path"`
+
+exec java -Xms4G -Xmx4G -XX:+UseG1GC -jar "$dir/TiPi.jar" "$@"
