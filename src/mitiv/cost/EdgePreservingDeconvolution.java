@@ -27,7 +27,13 @@ package mitiv.cost;
 
 import mitiv.array.ArrayFactory;
 import mitiv.array.ArrayUtils;
+import mitiv.array.ByteArray;
+import mitiv.array.DoubleArray;
+import mitiv.array.FloatArray;
+import mitiv.array.IntArray;
+import mitiv.array.LongArray;
 import mitiv.array.ShapedArray;
+import mitiv.array.ShortArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
 import mitiv.deconv.Convolution;
@@ -93,10 +99,21 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
     /** Point spread function. */
     private ShapedArray psf = null;
 
+    /**
+     * Get the PSF.
+     *
+     * @return The point spread function.
+     */
     public ShapedArray getPSF() {
         return psf;
     }
 
+    /**
+     * Set the PSF.
+     *
+     * @param psf
+     *        The point spread function.
+     */
     public void setPSF(ShapedArray arr) {
         if (psf != arr) {
             psf = arr;
@@ -262,26 +279,6 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
                     error("Given object dimensions must be at least those of the PSF");
                 }
             }
-            if (object != null) {
-                boolean crop = false;
-                boolean pad = false;
-                final int[] cropDims = new int[rank];
-                for (int k = 0; k < rank; ++k) {
-                    if (objectShape.dimension(k) < object.getDimension(k)) {
-                        crop = true;
-                    }
-                    if (objectShape.dimension(k) > object.getDimension(k)) {
-                        pad = true;
-                    }
-                    cropDims[k] = Math.max(objectShape.dimension(k), object.getDimension(k));
-                }
-                if (crop) {
-                    object = ArrayUtils.crop(object, new Shape(cropDims));
-                }
-                if (pad) {
-                    object = ArrayUtils.pad(object, objectShape);
-                }
-            }
         } else {
             /* Guess object dimensions from input arrays. */
             final int[] objectDims = new int[rank];
@@ -312,9 +309,10 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         }
 
         /* Build the likelihood cost function. */
+        WeightedData weightedData;
         if (useNewCode) {
             /* Build weighted data instance. */
-            WeightedData  weightedData = new WeightedData(dataSpace.create(data), true);
+            weightedData = new WeightedData(dataSpace.create(data), true);
             if (weights != null) {
                 weightedData.setWeights(dataSpace.create(weights), true);
             }
@@ -329,6 +327,31 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
             cost.setData(data);
             cost.setWeights(weights);
             setLikelihood(cost);
+            weightedData = cost;
+        }
+
+        /* Initial solution. */
+        if (object == null) {
+            /* Create a flat object with the same value everywhere. */
+            double val = weightedData.getWeightedMean()/sum(psf);
+            object = ArrayFactory.create(type, objectShape);
+            if (single) {
+                ((FloatArray)object).fill((float)val);
+            } else {
+                ((DoubleArray)object).fill(val);
+            }
+            System.err.format("Create initial array with value %g\n", val);
+        } else {
+            /* Crop/pad the given object to the proper dimensions. */
+            double val = 0;
+            for (int k = 0; k < rank; ++k) {
+                if (objectShape.dimension(k) > object.getDimension(k)) {
+                    val = weightedData.getWeightedMean()/sum(psf);
+                    break;
+                }
+            }
+            System.err.format("Pad initial array with value %g\n", val);
+            object = ArrayUtils.extract(object, objectShape, val);
         }
 
         /* Build the regularization cost function. */
@@ -413,6 +436,39 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
      */
     public double[] getScale() {
         return scale;
+    }
+
+    private static double sum(ShapedArray arr) {
+        double sum = 0.0;
+        if (arr != null) {
+            switch(arr.getType()) {
+
+            case Traits.BYTE:
+                sum = ((ByteArray)arr).sum();
+                break;
+
+            case Traits.SHORT:
+                sum = ((ShortArray)arr).sum();
+                break;
+
+            case Traits.INT:
+                sum = ((IntArray)arr).sum();
+                break;
+
+            case Traits.LONG:
+                sum = ((LongArray)arr).sum();
+                break;
+
+            case Traits.FLOAT:
+                sum = ((FloatArray)arr).sum();
+                break;
+
+            case Traits.DOUBLE:
+                sum = ((DoubleArray)arr).sum();
+                break;
+            }
+        }
+        return sum;
     }
 
 }
