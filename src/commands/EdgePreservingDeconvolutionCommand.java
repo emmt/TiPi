@@ -130,6 +130,19 @@ public class EdgePreservingDeconvolutionCommand {
         }
     }
 
+    static private void usage(CmdLineParser parser, int code) {
+        PrintStream stream = (code == 0 ? System.out : System.err);
+        stream.println("Usage: deconv [OPTIONS] INPUT OUTPUT");
+        if (code == 0) {
+            stream.println("Options:");
+            parser.getProperties().withUsageWidth(80);
+            parser.printUsage(stream);
+        } else {
+            stream.println("Try option --help for a more complete description of options.");
+        }
+        System.exit(code);
+    }
+
     public static void main(String[] args) {
 
         // Switch to "US" locale to avoid problems with number formats.
@@ -142,24 +155,17 @@ public class EdgePreservingDeconvolutionCommand {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
             System.err.format("Error: %s\n", e.getMessage());
-            parser.getProperties().withUsageWidth(80);
-            parser.printUsage(System.err);
-            System.exit(1);
+            usage(parser, 1);
         }
         if (job.help) {
-            PrintStream stream = System.out;
-            stream.println("Usage: deconv [OPTIONS] INPUT OUTPUT");
-            stream.println("Options:");
-            parser.getProperties().withUsageWidth(80);
-            parser.printUsage(stream);
-            System.exit(0);
+            usage(parser, 0);
         }
 
         // Deal with remaining arguments.
         int size = (job.arguments == null ? 0 : job.arguments.size());
         if (size != 2) {
             System.err.format("Too %s arguments.\n", (size < 2 ? "few" : "many"));
-            System.exit(1);
+            usage(parser, 1);
         }
         String inputName = job.arguments.get(0);
         String outputName = job.arguments.get(1);
