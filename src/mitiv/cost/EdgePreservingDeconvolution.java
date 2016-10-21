@@ -326,7 +326,8 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         } else {
             WeightedConvolutionCost cost = WeightedConvolutionCost.build(objectSpace, dataSpace);
             cost.setPSF(psf);
-            cost.setWeightsAndData(weights, data);
+            cost.setData(data);
+            cost.setWeights(weights);
             setLikelihood(cost);
         }
 

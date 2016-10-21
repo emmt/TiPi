@@ -191,7 +191,7 @@ public class WeightedData implements DifferentiableCostFunction {
             single = false;
             break;
         default:
-            throw new IllegalArgumentException("Unsupported data type");
+            throw unsupportedDataType();
         }
         this.dataSpace = space;
     }
@@ -370,10 +370,10 @@ public class WeightedData implements DifferentiableCostFunction {
     /**
      * Get the number of valid data.
      *
-     * <p> This method takes care of updating the weighted data contents (if
+     * <p>This method takes care of updating the weighted data contents (if
      * necessary) before returning the result. At least the data must have been
      * specified. If no weights have been specified yet, uniform weights will be
-     * created (and cannot be changed later). </p>
+     * created (and cannot be changed later).</p>
      *
      * @return The number of valid data (the ones which have non-zero weights).
      */
@@ -385,6 +385,42 @@ public class WeightedData implements DifferentiableCostFunction {
     }
 
     /**
+     * Get the weighted mean of the valid data.
+     *
+     * <p>This method takes care of updating the weighted data contents (if
+     * necessary) before returning the result. At least the data must have been
+     * specified. If no weights have been specified yet, uniform weights will be
+     * created (and cannot be changed later).</p>
+     *
+     * @return The number of valid data (the ones which have non-zero weights).
+     */
+    public double getWeightedMean() {
+        if (this.updatePending) {
+            update();
+        }
+        if (this.validDataNumber < 1) {
+            return Double.NaN;
+        }
+        double swy = 0, sw = 0;
+        if (single) {
+            float[] w = ((FloatShapedVector)weights).getData();
+            float[] y = ((FloatShapedVector)data).getData();
+            for (int i = 0; i < y.length; ++i) {
+                sw += w[i];
+                swy += w[i]*y[i];
+            }
+        } else {
+            double[] w = ((DoubleShapedVector)weights).getData();
+            double[] y = ((DoubleShapedVector)data).getData();
+            for (int i = 0; i < y.length; ++i) {
+                sw += w[i];
+                swy += w[i]*y[i];
+            }
+        }
+        return swy/sw;
+    }
+
+    /**
      * Set the data.
      *
      * @param arr
@@ -392,7 +428,7 @@ public class WeightedData implements DifferentiableCostFunction {
      */
     public void setData(ShapedArray arr) {
         if (! arr.getShape().equals(dataSpace.getShape())) {
-            throw new NonConformableArrayException("Data array has non conformable dimensions");
+            throw nonconformableData();
         }
         boolean writable;
         if (arr.getType() != dataSpace.getType()) {
@@ -436,7 +472,7 @@ public class WeightedData implements DifferentiableCostFunction {
     public void setData(ShapedVector data, boolean writable) {
         data.assertBelongsTo(dataSpace);
         if (this.data != null) {
-            throw new IllegalArgumentException("Data can only be set once");
+            throw dataCanOnlyBeSpecifiedOnce();
         }
         this.data = data;
         this.writableData = writable;
@@ -451,7 +487,7 @@ public class WeightedData implements DifferentiableCostFunction {
      */
     public void setWeights(ShapedArray arr) {
         if (! arr.getShape().equals(dataSpace.getShape())) {
-            throw new NonConformableArrayException("Data array has non conformable dimensions");
+            throw nonconformableData();
         }
         boolean writable;
         if (arr.getType() != dataSpace.getType()) {
@@ -497,7 +533,7 @@ public class WeightedData implements DifferentiableCostFunction {
     public void setWeights(ShapedVector weights, boolean writable) {
         weights.assertBelongsTo(dataSpace);
         if (this.weights != null) {
-            throw new IllegalArgumentException("Weights can only be set once");
+            throw weightsCanOnlyBeSpecifiedOnce();
         }
         this.weights = weights;
         this.writableWeights = writable;
@@ -506,11 +542,11 @@ public class WeightedData implements DifferentiableCostFunction {
 
     public void computeWeightsFromData(double alpha, double beta) {
         if (data == null) {
-            throw new IllegalArgumentException("No data has been set");
+            noDataHasBeenSpecified();
         }
         if (weights != null) {
             // Weights cannot be recomputed because data are modified by this operation.
-            throw new IllegalArgumentException("Weights can only be set or computed once");
+            throw weightsCanOnlyBeSpecifiedOnce();
         }
         weights = data.create();
         writableWeights = true;
@@ -544,7 +580,7 @@ public class WeightedData implements DifferentiableCostFunction {
      */
     public void markBadData(ShapedVector bad) {
         if (! bad.getShape().equals(dataSpace.getShape())) {
-            throw new IllegalArgumentException("Mask of bad data must have the same shape as the data");
+            throw badMaskShape();
         }
         markBadData(toBoolean(bad));
     }
@@ -561,7 +597,7 @@ public class WeightedData implements DifferentiableCostFunction {
      */
     public void markBadData(ShapedArray bad) {
         if (! bad.getShape().equals(dataSpace.getShape())) {
-            throw new IllegalArgumentException("Mask of bad data must have same the shape as the data");
+            throw badMaskShape();
         }
         markBadData(toBoolean(bad));
     }
@@ -578,11 +614,11 @@ public class WeightedData implements DifferentiableCostFunction {
      */
     public final void markBadData(boolean[] bad) {
         if (data == null) {
-            throw new IllegalArgumentException("No data has been set");
+            throw noDataHasBeenSpecified();
         }
         final int len = data.getNumber();
         if (bad.length != len) {
-            throw new IllegalArgumentException("Mask of bad data must have the same length as the data");
+            throw badMaskLength();
         }
         if (weights == null) {
             weights = data.create();
@@ -650,7 +686,7 @@ public class WeightedData implements DifferentiableCostFunction {
 
     private void update() {
         if (data == null) {
-            throw new IllegalArgumentException("No data has been set");
+            throw noDataHasBeenSpecified();
         }
         int count = 0;
         if (weights == null) {
@@ -700,11 +736,11 @@ public class WeightedData implements DifferentiableCostFunction {
                 final float[] wgt = ((FloatShapedVector)weights).getData();
                 for (int i = 0; i < dat.length; ++i) {
                     if (nonfinite(wgt[i]) || wgt[i] < zero) {
-                        throw new IllegalArgumentException("Weights must be finite and nonnegative");
+                        throw weightsMustBeFiniteAndNonnegative();
                     }
                     if (nonfinite(dat[i])) {
                         if (wgt[i]> zero) {
-                            throw new IllegalArgumentException("Non-finite data must have zero weight");
+                            throw nonfiniteDataMustHaveZeroWeight();
                         }
                         if (! writableData) {
                             cloneData();
@@ -722,11 +758,11 @@ public class WeightedData implements DifferentiableCostFunction {
                 final double[] wgt = ((DoubleShapedVector)weights).getData();
                 for (int i = 0; i < dat.length; ++i) {
                     if (nonfinite(wgt[i]) || wgt[i] < zero) {
-                        throw new IllegalArgumentException("Weights must be finite and nonnegative");
+                        throw weightsMustBeFiniteAndNonnegative();
                     }
                     if (nonfinite(dat[i])) {
                         if (wgt[i]> zero) {
-                            throw new IllegalArgumentException("Non-finite data must have zero weight");
+                            throw nonfiniteDataMustHaveZeroWeight();
                         }
                         if (! writableData) {
                             cloneData();
@@ -769,7 +805,7 @@ public class WeightedData implements DifferentiableCostFunction {
         case Traits.DOUBLE:
             return toBoolean(((DoubleArray)arr).flatten());
         default:
-            throw new IllegalArgumentException("Unsupported data type");
+            throw unsupportedDataType();
         }
     }
 
@@ -780,7 +816,7 @@ public class WeightedData implements DifferentiableCostFunction {
         case Traits.DOUBLE:
             return toBoolean(((DoubleShapedVector)vec).getData());
         default:
-            throw new IllegalArgumentException("Unsupported data type");
+            throw unsupportedDataType();
         }
     }
 
@@ -943,6 +979,42 @@ public class WeightedData implements DifferentiableCostFunction {
             }
         }
         return (alpha/2)*sum;
+    }
+
+    private static final NonConformableArrayException nonconformableData() {
+        return new NonConformableArrayException("Data array has non conformable dimensions");
+    }
+
+    private static final IllegalArgumentException badMaskShape() {
+        return new IllegalArgumentException("Mask of bad data must have the same shape as the data");
+    }
+
+    private static final IllegalArgumentException badMaskLength() {
+        return new IllegalArgumentException("Mask of bad data must have the same length as the data");
+    }
+
+    private static final IllegalArgumentException noDataHasBeenSpecified() {
+        return new IllegalArgumentException("Data has not yet been specified");
+    }
+
+    private static final IllegalArgumentException dataCanOnlyBeSpecifiedOnce() {
+        return new IllegalArgumentException("Data can only be specified once");
+    }
+
+    private static final IllegalArgumentException weightsCanOnlyBeSpecifiedOnce() {
+        return new IllegalArgumentException("Weights can only be specified or computed once");
+    }
+
+    private static final IllegalArgumentException nonfiniteDataMustHaveZeroWeight() {
+        return new IllegalArgumentException("Non-finite data must have zero weight");
+    }
+
+    private static final IllegalArgumentException weightsMustBeFiniteAndNonnegative() {
+        return new IllegalArgumentException("Weights must be finite and nonnegative");
+    }
+
+    private static final IllegalArgumentException unsupportedDataType() {
+        return new IllegalArgumentException("Unsupported data type");
     }
 
 }

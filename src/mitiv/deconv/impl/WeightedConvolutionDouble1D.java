@@ -70,13 +70,13 @@ public class WeightedConvolutionDouble1D
     /**
      * Create a new FFT-based weighted convolution cost function.
      *
-     * @param objectSpace - The object space.
-     * @param dataSpace   - The data space.
-     * @param dataOffset  - The position of the data space relative
+     * @param objectSpace   The object space.
+     * @param dataSpace     The data space.
+     * @param dataOffset    The position of the data space relative
      *                      to the object space.
      */
     public WeightedConvolutionDouble1D(ShapedVectorSpace objectSpace,
-            ShapedVectorSpace dataSpace, int[] dataOffset) {
+                        ShapedVectorSpace dataSpace, int[] dataOffset) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
         super(objectSpace, dataSpace);

@@ -140,7 +140,8 @@ public class PSF_Estimation implements ReconstructionJob {
         // Build convolution operator.
         WeightedConvolutionCost fdata = WeightedConvolutionCost.build(objSpace, dataSpace);
         fdata.setPSF(obj,off);
-        fdata.setWeightsAndData(weights, data);
+        fdata.setData(data);
+        fdata.setWeights(weights);
 
         if (debug) {
             System.out.println("Vector space initialization complete.");

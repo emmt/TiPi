@@ -52,8 +52,8 @@ public abstract class WeightedConvolutionFloat
      * The following constructors make this class non instantiable, but still
      * let others inherit from this class.
      */
-    public WeightedConvolutionFloat(ShapedVectorSpace objectSpace,
-                        ShapedVectorSpace dataSpace) {
+    protected WeightedConvolutionFloat(ShapedVectorSpace objectSpace,
+                           ShapedVectorSpace dataSpace) {
         /* Initialize super class and check types. */
         super(objectSpace, dataSpace);
         if (objectSpace.getType() != Traits.FLOAT) {
@@ -64,84 +64,9 @@ public abstract class WeightedConvolutionFloat
         }
     }
 
-    @Override
-    public void setWeightsAndData(ShapedVector weight, ShapedVector data) {
-        if (data == null || ! data.belongsTo(dataSpace)) {
-            throw new IllegalArgumentException("Data must belong to the data space");
-        }
-        if (weight == null) {
-            setWeightsAndData(((FloatShapedVector)data).getData());
-        } else if (weight.belongsTo(dataSpace)) {
-            setWeightsAndData(((FloatShapedVector)weight).getData(),
-                              ((FloatShapedVector)data).getData());
-        } else {
-            throw new IllegalArgumentException("Weights must belong to the data space");
-        }
-    }
-
-    @Override
-    public void setWeightsAndData(ShapedArray weight, ShapedArray data) {
-        if (data == null || ! dataSpace.getShape().equals(data.getShape())) {
-            throw new IllegalArgumentException("Data must have the same shape as the vectors of the data space");
-        }
-        if (weight == null) {
-            setWeightsAndData(data.toFloat().flatten(false));
-        } else if (dataSpace.getShape().equals(data.getShape())) {
-            setWeightsAndData(weight.toFloat().flatten(false),
-                              data.toFloat().flatten(false));
-        } else {
-            throw new IllegalArgumentException("Weights must have the same shape as the vectors of the data space");
-        }
-    }
-
-    private void setWeightsAndData(float dat[]) {
-        checkData(dat);
-        this.wgt = null;
-        this.dat = dat;
-    }
-
-    private void setWeightsAndData(float wgt[], float dat[]) {
-        checkData(dat);
-        checkWeights(wgt);
-        this.wgt = wgt;
-        this.dat = dat;
-    }
-
-    /**
-     * Check data values.
-     * @param dat - An array of data.
-     * @throws IllegalArgumentException Some data values are non-finite.
-     */
-    private void checkData(float dat[]) {
-        final int n = dat.length;
-        for (int k = 0; k < n; ++k) {
-            float d = dat[k];
-            if (Float.isNaN(d) || Float.isInfinite(d)) {
-                throw new IllegalArgumentException("Data values must be finite");
-            }
-        }
-    }
-
-    /**
-     * Check weight values.
-     * @param wgt - An array of weights.
-     * @throws IllegalArgumentException Some weights are non-finite or negative.
-     */
-    private void checkWeights(float wgt[]) {
-        final int n = wgt.length;
-        for (int k = 0; k < n; ++k) {
-            float w = wgt[k];
-            if (Float.isNaN(w) || Float.isInfinite(w) || w < 0.0F) {
-                throw new IllegalArgumentException("Weights must be finite and non-negative");
-            }
-        }
-    }
-
-
     protected void checkSetup() {
-        if (dat == null) {
-            throw new IllegalArgumentException("You must set the data (and the weights) first");
-        }
+        dat = ((FloatShapedVector)getData()).getData();
+        wgt = ((FloatShapedVector)getWeights()).getData();
     }
 
 }

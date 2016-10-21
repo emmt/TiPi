@@ -81,8 +81,8 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     @Option(name = "--init", aliases = {"-i"}, usage = "Name of initial image.", metaVar = "INIT")
     private String initName = null;
 
-    @Option(name = "--weight", aliases = {"-w"}, usage = "Name of file with weights.", metaVar = "WEIGHT")
-    private String weightName = null;
+    @Option(name = "--weights", aliases = {"-w"}, usage = "Name of file with weights.", metaVar = "WEIGHT")
+    private String weightsName = null;
 
     @Option(name = "--eta", aliases = {"-e"}, usage = "Mean data error.", metaVar = "ETA")
     private double eta = 1.0;
@@ -135,7 +135,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     private DoubleArray data = null;
     private DoubleArray psf = null;
     private DoubleArray result = null;
-    private DoubleArray weight = null;
+    private DoubleArray weights = null;
     private double fcost = 0.0;
     private DoubleShapedVector gcost = null;
     private Timer timer = new Timer();
@@ -244,7 +244,7 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         run = false;
     }
     public void setWeight(DoubleArray W){
-        this.weight = W;
+        this.weights = W;
     }
 
     public static DoubleArray loadData(String name) {
@@ -457,9 +457,9 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
         ShapedLinearOperator H = null;
         if (old) {
             RealComplexFFT FFT = new RealComplexFFT(resultSpace);
-            if (weight != null) {
+            if (weights != null) {
                 // FIXME: for now the weights are stored as a simple Java vector.
-                if (weight.getNumber() != data.getNumber()) {
+                if (weights.getNumber() != data.getNumber()) {
                     throw new IllegalArgumentException("Error weights and input data size don't match");
                 }
                 W = new LinearOperator(resultSpace) {
@@ -468,10 +468,10 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
                             throws IncorrectSpaceException {
                         double[] inp = ((DoubleShapedVector)src).getData();
                         double[] out = ((DoubleShapedVector)dst).getData();
-                        double[] weights = weight.flatten();
+                        double[] wgt = weights.flatten();
                         int number = src.getNumber();
                         for (int i = 0; i < number; ++i) {
-                            out[i] = inp[i]*weights[i];
+                            out[i] = inp[i]*wgt[i];
                         }
                     }
                 };
@@ -483,7 +483,8 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
             // FIXME: add a method for that
             WeightedConvolutionCost cost = WeightedConvolutionCost.build(resultSpace, dataSpace);
             cost.setPSF(psf);
-            cost.setWeightsAndData(weight, data);
+            cost.setData(data);
+            cost.setWeights(weights);
             fdata = cost;
         }
         if (debug) {
@@ -662,16 +663,3 @@ public class TotalVariationDeconvolution implements ReconstructionJob {
     }
 
 }
-
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

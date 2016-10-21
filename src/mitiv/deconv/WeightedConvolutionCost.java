@@ -30,6 +30,7 @@ import mitiv.base.Shape;
 import mitiv.base.Traits;
 import mitiv.cost.DifferentiableCostFunction;
 import mitiv.cost.QuadraticCost;
+import mitiv.cost.WeightedData;
 import mitiv.deconv.impl.WeightedConvolutionDouble1D;
 import mitiv.deconv.impl.WeightedConvolutionDouble2D;
 import mitiv.deconv.impl.WeightedConvolutionDouble3D;
@@ -38,7 +39,6 @@ import mitiv.deconv.impl.WeightedConvolutionFloat2D;
 import mitiv.deconv.impl.WeightedConvolutionFloat3D;
 import mitiv.exception.IllegalTypeException;
 import mitiv.linalg.Vector;
-import mitiv.linalg.VectorSpace;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 import mitiv.utils.Timer;
@@ -149,11 +149,10 @@ import mitiv.utils.Timer;
  *
  * @author Éric Thiébaut
  */
-public abstract class WeightedConvolutionCost
-implements DifferentiableCostFunction
-{
+public abstract class WeightedConvolutionCost extends WeightedData implements
+DifferentiableCostFunction {
+
     protected final ShapedVectorSpace objectSpace;
-    protected final ShapedVectorSpace dataSpace;
 
     /**
      * The following constructors makes this class non instantiable, but still
@@ -162,8 +161,8 @@ implements DifferentiableCostFunction
      */
     protected WeightedConvolutionCost(ShapedVectorSpace objectSpace,
             ShapedVectorSpace dataSpace) {
+        super(dataSpace);
         this.objectSpace = objectSpace;
-        this.dataSpace = dataSpace;
     }
 
     /**
@@ -171,7 +170,7 @@ implements DifferentiableCostFunction
      *
      * @return The object space of the cost function.
      */
-    public VectorSpace getObjectSpace() {
+    public ShapedVectorSpace getObjectSpace() {
         return objectSpace;
     }
 
@@ -183,17 +182,8 @@ implements DifferentiableCostFunction
      * @return The input space of the cost function.
      */
     @Override
-    public VectorSpace getInputSpace() {
+    public ShapedVectorSpace getInputSpace() {
         return objectSpace;
-    }
-
-    /**
-     * Get the data space of the cost function.
-     *
-     * @return The data space of the cost function.
-     */
-    public VectorSpace getDataSpace() {
-        return dataSpace;
     }
 
     public static WeightedConvolutionCost build(ShapedVectorSpace space) {
@@ -202,39 +192,38 @@ implements DifferentiableCostFunction
 
     /**
      * Build a weighted convolution cost function with centered data.
-     * <p>
-     * The object space of the operator corresponds to the variables denoted
+     *
+     * <p> The object space of the operator corresponds to the variables denoted
      * as <b><i>x</i></b> in {@link WeightedConvolutionCost}; while the data
      * space corresponds to the variables denoted as <b><i>y</i></b> in
-     * {@link WeightedConvolutionCost}.
-     * </p>
-     * <p>
-     * The size of the data space must be smaller or equal that of the object
-     * space which is also the input and output spaces of the cyclic
-     * convolution. The rank of the object and data spaces must be the same
-     * and comparing their "<i>sizes</i>" involves a comparison for all
-     * dimensions. If the shape of the data space is smaller than that of the
-     * object space, then the central part of the result of the cyclic
-     * convolution is considered as the region corresponding to the data. The
-     * factory {@link #build(ShapedVectorSpace, ShapedVectorSpace, int[])} can
-     * be used to select a different region.
-     * </p>
-     * <p>
-     * The returned object is not a valid cost function until you set the point
-     * spread function (PSF) with one of the {@link #setPSF()} methods and the
-     * data and, optionally, the weights with one of the
-     * {@link #setWeightsAndData()} methods.
-     * </p>
-     * <p>
-     * See {@link WeightedConvolutionCost} for a detailed description of what is
-     * computed by this cost function.
-     * </p>
+     * {@link WeightedConvolutionCost}. </p>
+     *
+     * <p> The size of the data space must be smaller or equal that of the
+     * object space which is also the input and output spaces of the cyclic
+     * convolution. The rank of the object and data spaces must be the same and
+     * comparing their "<i>sizes</i>" involves a comparison for all dimensions.
+     * If the shape of the data space is smaller than that of the object space,
+     * then the central part of the result of the cyclic convolution is
+     * considered as the region corresponding to the data. The factory
+     * {@link #build(ShapedVectorSpace, ShapedVectorSpace, int[])} can be used
+     * to select a different region. </p>
+     *
+     * <p> The returned object is not a valid cost function until you set the
+     * point spread function (PSF) with one of the {@link #setPSF()} methods and
+     * the data and, optionally, the weights with one of the
+     * {@link #setWeightsAndData()} methods. </p>
+     *
+     * <p> See {@link WeightedConvolutionCost} for a detailed description of
+     * what is computed by this cost function. </p>
      *
      * @param objectSpace
-     *            - The object space.
+     *        The object space.
+     *
      * @param dataSpace
-     *            - The data space.
+     *        The data space.
+     *
      * @return An instance of the weighted convolution cost function.
+     *
      * @see {@link #build(ShapedVectorSpace, ShapedVectorSpace, int[])}
      */
     public static WeightedConvolutionCost build(ShapedVectorSpace objectSpace,
@@ -252,35 +241,37 @@ implements DifferentiableCostFunction
 
     /**
      * Build a weighted convolution cost function.
-     * <p>
-     * This version of the factory for building a weighted convolution cost function
-     * let the caller specify precisely the position of the region corresponding to the
-     * data in the result of the convolution.  The offsets of this region must be
-     * such that:
+     *
+     * <p> This version of the factory for building a weighted convolution cost
+     * function let the caller specify precisely the position of the region
+     * corresponding to the data in the result of the convolution. The offsets
+     * of this region must be such that: </p>
      *
      * <pre>
      * 0 &lt;= dataOffset[k] &lt;= objectDim[k] - dataDim[k]
      * </pre>
      *
-     * where {@code objectDim} and {@code dataDim} are the respective
-     * dimensions of the object and data spaces. If this does not hold (for
-     * all <i>k</i>), an {@link ArrayIndexOutOfBoundsException} is thrown.
-     * </p>
-     * <p>
-     * See {@link #build(ShapedVectorSpace, ShapedVectorSpace)} for more details
-     * on the meaning of the object and data spaces and
-     * {@link WeightedConvolutionCost} for a more general overview.
-     * </p>
+     * <p>where {@code objectDim} and {@code dataDim} are the respective
+     * dimensions of the object and data spaces. If this does not hold (for all
+     * <i>k</i>), an {@link ArrayIndexOutOfBoundsException} is thrown. </p>
+     *
+     * <p> See {@link #build(ShapedVectorSpace, ShapedVectorSpace)} for more
+     * details on the meaning of the object and data spaces and
+     * {@link WeightedConvolutionCost} for a more general overview. </p>
      *
      * @param objectSpace
-     *            - The object space.
+     *        The object space.
+     *
      * @param dataSpace
-     *            - The data space.
+     *        The data space.
+     *
      * @param dataOffset
-     *            - The relative position of the data within the output of the
-     *            convolution. It must have as many values as the rank of the
-     *            object and data spaces of the operator.
+     *        The relative position of the data within the output of the
+     *        convolution. It must have as many values as the rank of the object
+     *        and data spaces of the operator.
+     *
      * @return A weighted convolution cost function.
+     *
      * @see {@link #build(ShapedVectorSpace, ShapedVectorSpace)}
      */
     public static WeightedConvolutionCost build(ShapedVectorSpace objectSpace,
@@ -368,42 +359,22 @@ implements DifferentiableCostFunction
     protected abstract double cost(double alpha, Vector x, Vector gx, boolean clr);
 
     /**
-     * Set the weights and the data for the cost function.
-     * @param weight - The weights in the form of a shaped vector.  It can be
-     *                 {@code null}, in which case any weighting is discarded.
-     *                 If non-{@code null}, its values are checked for validity
-     *                 and it must belong to the output space of the operator.
-     * @param data   - The data.
-     */
-    public abstract void setWeightsAndData(ShapedVector weight, ShapedVector data);
-
-    /**
-     * Set the weights and the data for the cost function.
-     * @param weight - The weights in the form of a shaped array.  It can be
-     *                 {@code null}, in which case any weighting is discarded.
-     *                 If non-{@code null}, it is automatically converted to the
-     *                 correct data type and its values are checked for validity.
-     *                 If non-{@code null}, its shape must be that of the vectors
-     *                 of the output space of the operator.
-     * @param data   - The data.
-     */
-    public abstract void setWeightsAndData(ShapedArray weight, ShapedArray data);
-
-
-    /**
      * Set the PSF of the operator.
-     * @param psf - The PSF must belongs to the input space of the operator
-     *              and must be centered in the sense of of the FFT.
+     *
+     * @param psf
+     *        The PSF must belongs to the input space of the operator and must
+     *        be centered in the sense of of the FFT.
      */
     public abstract void setPSF(ShapedVector psf);
 
     /**
      * Set the PSF of the operator.
-     * @param psf - The PSF in the form of a shaped array.  It is
-     *              automatically converted to the correct data type,
-     *              zero-padded and rolled.  It is assumed to be
-     *              geometrically centered (i.e. the center of the PSF
-     *              is at offset dim/2 along each dimension).
+     *
+     * @param psf
+     *        The PSF in the form of a shaped array. It is automatically
+     *        converted to the correct data type, zero-padded and rolled. It is
+     *        assumed to be geometrically centered (i.e. the center of the PSF
+     *        is at offset dim/2 along each dimension).
      */
     public void setPSF(ShapedArray psf) {
         setPSF(psf, Convolution.center(psf.getShape()));
@@ -411,9 +382,11 @@ implements DifferentiableCostFunction
 
     /**
      * Set the PSF of the operator with given center coordinates.
+     *
      * @param psf - The PSF in the form of a shaped array.  It is
      *              automatically converted to the correct data type,
      *              zero-padded and rolled.
+     *
      * @param off - The offsets of the central element of the PSF.
      *              There must be as many elements as the rank of
      *              the PSF, each element is the 0-based offset of
@@ -423,12 +396,21 @@ implements DifferentiableCostFunction
 
     /**
      * Check rank and input/output dimensions.
-     * @param rank         - The number of dimensions.
-     * @param inputShape   - The shape of input arrays.
-     * @param output Shape - The shape of output arrays (must be smaller or
-     *                       equal input shape for all dimensions).
-     * @param offset       - For each dimension, the offset in input array
-     *                       of the first element to copy in output array.
+     *
+     * @param rank
+     *        The number of dimensions.
+     *
+     * @param inputShape
+     *        The shape of input arrays.
+     *
+     * @param output
+     *        Shape The shape of output arrays (must be smaller or equal input
+     *        shape for all dimensions).
+     *
+     * @param offset
+     *        For each dimension, the offset in input array of the first element
+     *        to copy in output array.
+     *
      * @return The (univariate) offset of the output in the input space.
      */
     protected static int outputOffset(int rank, Shape inputShape, Shape outputShape, int[] offset) {
