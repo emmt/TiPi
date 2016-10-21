@@ -11,7 +11,7 @@ pages:
 - 'Developpers':
    - 'New Vector Types': new-vector-types.md
    - 'The TiPi Preprocessor': tpp.md
+- 'Tools': deconv-tool.md
 - 'About':
    - 'License': license.md
    - 'News': news.md
-
