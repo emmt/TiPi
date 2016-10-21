@@ -545,6 +545,7 @@ public abstract class Double5D extends Array5D implements DoubleArray {
         }
         return Byte5D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Short5D.
      *
@@ -578,6 +579,7 @@ public abstract class Double5D extends Array5D implements DoubleArray {
         }
         return Short5D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int5D.
      *
@@ -611,6 +613,7 @@ public abstract class Double5D extends Array5D implements DoubleArray {
         }
         return Int5D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long5D.
      *
@@ -644,6 +647,7 @@ public abstract class Double5D extends Array5D implements DoubleArray {
         }
         return Long5D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Float5D.
      *
@@ -677,6 +681,7 @@ public abstract class Double5D extends Array5D implements DoubleArray {
         }
         return Float5D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Double5D.
      *

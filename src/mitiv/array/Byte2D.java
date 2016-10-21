@@ -387,6 +387,7 @@ public abstract class Byte2D extends Array2D implements ByteArray {
     public Byte2D toByte() {
         return this;
     }
+
     /**
      * Convert instance into a Short2D.
      *
@@ -414,6 +415,7 @@ public abstract class Byte2D extends Array2D implements ByteArray {
         }
         return Short2D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int2D.
      *
@@ -441,6 +443,7 @@ public abstract class Byte2D extends Array2D implements ByteArray {
         }
         return Int2D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long2D.
      *
@@ -468,6 +471,7 @@ public abstract class Byte2D extends Array2D implements ByteArray {
         }
         return Long2D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Float2D.
      *
@@ -495,6 +499,7 @@ public abstract class Byte2D extends Array2D implements ByteArray {
         }
         return Float2D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Double2D.
      *

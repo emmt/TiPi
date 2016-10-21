@@ -227,6 +227,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
         }
         return Byte1D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Short1D.
      *
@@ -252,6 +253,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
         }
         return Short1D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int1D.
      *
@@ -277,6 +279,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
         }
         return Int1D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long1D.
      *
@@ -302,6 +305,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
         }
         return Long1D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Float1D.
      *
@@ -315,6 +319,7 @@ public abstract class Float1D extends Array1D implements FloatArray {
     public Float1D toFloat() {
         return this;
     }
+
     /**
      * Convert instance into a Double1D.
      *

@@ -641,6 +641,7 @@ public abstract class Long7D extends Array7D implements LongArray {
         }
         return Byte7D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Short7D.
      *
@@ -678,6 +679,7 @@ public abstract class Long7D extends Array7D implements LongArray {
         }
         return Short7D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int7D.
      *
@@ -715,6 +717,7 @@ public abstract class Long7D extends Array7D implements LongArray {
         }
         return Int7D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long7D.
      *
@@ -728,6 +731,7 @@ public abstract class Long7D extends Array7D implements LongArray {
     public Long7D toLong() {
         return this;
     }
+
     /**
      * Convert instance into a Float7D.
      *
@@ -765,6 +769,7 @@ public abstract class Long7D extends Array7D implements LongArray {
         }
         return Float7D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Double7D.
      *

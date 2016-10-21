@@ -449,6 +449,7 @@ public abstract class Float3D extends Array3D implements FloatArray {
         }
         return Byte3D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Short3D.
      *
@@ -478,6 +479,7 @@ public abstract class Float3D extends Array3D implements FloatArray {
         }
         return Short3D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int3D.
      *
@@ -507,6 +509,7 @@ public abstract class Float3D extends Array3D implements FloatArray {
         }
         return Int3D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long3D.
      *
@@ -536,6 +539,7 @@ public abstract class Float3D extends Array3D implements FloatArray {
         }
         return Long3D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Float3D.
      *
@@ -549,6 +553,7 @@ public abstract class Float3D extends Array3D implements FloatArray {
     public Float3D toFloat() {
         return this;
     }
+
     /**
      * Convert instance into a Double3D.
      *

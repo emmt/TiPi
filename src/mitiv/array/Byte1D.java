@@ -215,6 +215,7 @@ public abstract class Byte1D extends Array1D implements ByteArray {
     public Byte1D toByte() {
         return this;
     }
+
     /**
      * Convert instance into a Short1D.
      *
@@ -240,6 +241,7 @@ public abstract class Byte1D extends Array1D implements ByteArray {
         }
         return Short1D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int1D.
      *
@@ -265,6 +267,7 @@ public abstract class Byte1D extends Array1D implements ByteArray {
         }
         return Int1D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long1D.
      *
@@ -290,6 +293,7 @@ public abstract class Byte1D extends Array1D implements ByteArray {
         }
         return Long1D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Float1D.
      *
@@ -315,6 +319,7 @@ public abstract class Byte1D extends Array1D implements ByteArray {
         }
         return Float1D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Double1D.
      *

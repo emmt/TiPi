@@ -121,7 +121,8 @@ public abstract class Array5D implements ShapedArray {
      * Get a slice of the array.
      *
      * @param idx
-     *        The index of the slice along the last dimension of the array.
+     *        The index of the slice along the dimension {@code dim} of the
+     *        array.
      *
      * @param dim
      *        The dimension to slice.  For these two arguments, the same

@@ -737,6 +737,7 @@ public abstract class Short9D extends Array9D implements ShortArray {
         }
         return Byte9D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Short9D.
      *
@@ -750,6 +751,7 @@ public abstract class Short9D extends Array9D implements ShortArray {
     public Short9D toShort() {
         return this;
     }
+
     /**
      * Convert instance into an Int9D.
      *
@@ -791,6 +793,7 @@ public abstract class Short9D extends Array9D implements ShortArray {
         }
         return Int9D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long9D.
      *
@@ -832,6 +835,7 @@ public abstract class Short9D extends Array9D implements ShortArray {
         }
         return Long9D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Float9D.
      *
@@ -873,6 +877,7 @@ public abstract class Short9D extends Array9D implements ShortArray {
         }
         return Float9D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Double9D.
      *

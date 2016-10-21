@@ -44,63 +44,63 @@ public interface FloatArray extends ShapedArray {
 
     /**
      * Set all the values of the array of float's.
-     * @param value - The value to set.
+     * @param value   The value to set.
      */
     public abstract void fill(float value);
 
     /**
      * Set the values of the array of float's with a generator.
-     * @param generator - The generator to use.
+     * @param generator   The generator to use.
      */
     public abstract void fill(FloatGenerator generator);
 
     /**
      * Increment all the values of the array of float's.
-     * @param value - The increment.
+     * @param value   The increment.
      */
     public abstract void increment(float value);
 
 
     /**
      * Decrement all the values of the array of float's.
-     * @param value - The decrement.
+     * @param value   The decrement.
      */
     public abstract void decrement(float value);
 
     /**
      * Multiply all the values of the array of float's.
-     * @param value - The multiplier.
+     * @param value   The multiplier.
      */
     public abstract void scale(float value);
 
     /**
      * Map all the values of the array of float's by a function.
-     * @param func - The function to apply.
+     * @param func   The function to apply.
      */
     public abstract void map(FloatFunction func);
 
     /**
      * Scan the values of the array of float's.
-     * @param scanner - The scanner to use.
+     * @param scanner   The scanner to use.
      */
     public abstract void scan(FloatScanner scanner);
 
     /**
      * Flatten the shaped array in a simple generic array.
-     * <p>
-     * The contents of a (multi-dimensional) FloatArray can be stored in
+     *
+     * <p>The contents of a (multi-dimensional) FloatArray can be stored in
      * many different forms.  This storage details are hidden to the end-user
      * in favor of a unified and comprehensive interface.  This method returns
      * the contents of the FloatArray object as a simple <i>flat</i> array,
-     * <i>i.e.</i> successive elements are contiguous and the first element
-     * has {@code 0}-offset.  If the FloatArray object is multi-dimensional,
-     * the storage of the returned result is column-major order.
-     * </p>
-     * @param forceCopy - Set true to force a copy of the internal data
-     *                    even though it can already be in a flat form.
-     *                    Otherwise and if the shaped array is in flat form,
-     *                    see {@link #isFlat()}, the data storage of the
-     *                    array is directly returned (not a copy).
+     * <i>i.e.</i> successive elements are contiguous and the first element has
+     * {@code 0}-offset.  If the FloatArray object is multi-dimensional, the
+     * storage of the returned result is column-major order.  </p>
+     *
+     * @param forceCopy
+     *        Set true to force a copy of the internal data even though it can
+     *        already be in a flat form.  Otherwise and if the shaped array is
+     *        in flat form, see {@link #isFlat()}, the data storage of the
+     *        array is directly returned (not a copy).
      *
      * @return A simple generic {@code float[]} array with the contents of
      *         the FloatArray array.
@@ -115,13 +115,13 @@ public interface FloatArray extends ShapedArray {
     /**
      * Flatten the shaped array in a simple generic array avoiding
      * copies if possible.
-     * <p>
-     * This method behaves as if argument {@code forceCopy} was set to false
-     * in {@link #flatten(boolean)}.  Depending on the storage layout, the
-     * returned array may or may not share the same storage as the
+     *
+     * <p>This method behaves as if argument {@code forceCopy} was set to
+     * false in {@link #flatten(boolean)}.  Depending on the storage layout,
+     * the returned array may or may not share the same storage as the
      * FloatArray array.  Call {@code flatten(true)} to make sure that the
-     * two storage areas are independent.
-     * </p>
+     * two storage areas are independent.</p>
+     *
      * @return A simple generic {@code float[]} array with the contents of
      *         the FloatArray array.
      *
@@ -138,31 +138,45 @@ public interface FloatArray extends ShapedArray {
 
     /**
      * Get the minimal value of all the elements.
+     *
+     * @return The minimum value of {@code this}.
      */
     public abstract float min();
 
     /**
      * Get the maximal value of all the elements.
+     *
+     * @return The maximum value of {@code this}.
      */
     public abstract float max();
 
     /**
      * Get the minimal and maximal values of all the elements.
+     *
+     * @return A 2-element array with the minimum and maximum values of {@code
+     * this}.
      */
     public abstract float[] getMinAndMax();
 
     /**
      * Get the minimal and maximal values of all the elements.
+     *
+     * @param mm    A 2-element array to store the minimum and maximum values
+     *              of{@code this}.
      */
     public abstract void getMinAndMax(float[] mm);
 
     /**
      * Get the sum of values of all elements.
+     *
+     * @return The sum of the values of {@code this}.
      */
     public abstract float sum();
 
     /**
      * Get the average value of all elements.
+     *
+     * @return The average of the values of {@code this}.
      */
     public abstract double average();
 }

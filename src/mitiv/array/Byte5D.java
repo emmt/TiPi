@@ -525,6 +525,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
     public Byte5D toByte() {
         return this;
     }
+
     /**
      * Convert instance into a Short5D.
      *
@@ -558,6 +559,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
         }
         return Short5D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int5D.
      *
@@ -591,6 +593,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
         }
         return Int5D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long5D.
      *
@@ -624,6 +627,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
         }
         return Long5D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Float5D.
      *
@@ -657,6 +661,7 @@ public abstract class Byte5D extends Array5D implements ByteArray {
         }
         return Float5D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Double5D.
      *

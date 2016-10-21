@@ -441,9 +441,9 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
         return ${dst_Type}${rank}D.wrap(out, getShape());
         //# end
     }
+
     //#     eval dst += 1
     //# end
-
     @Override
     public ${className} copy() {
         return new Flat${className}(flatten(true), shape);

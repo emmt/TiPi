@@ -44,63 +44,63 @@ public interface ByteArray extends ShapedArray {
 
     /**
      * Set all the values of the array of byte's.
-     * @param value - The value to set.
+     * @param value   The value to set.
      */
     public abstract void fill(byte value);
 
     /**
      * Set the values of the array of byte's with a generator.
-     * @param generator - The generator to use.
+     * @param generator   The generator to use.
      */
     public abstract void fill(ByteGenerator generator);
 
     /**
      * Increment all the values of the array of byte's.
-     * @param value - The increment.
+     * @param value   The increment.
      */
     public abstract void increment(byte value);
 
 
     /**
      * Decrement all the values of the array of byte's.
-     * @param value - The decrement.
+     * @param value   The decrement.
      */
     public abstract void decrement(byte value);
 
     /**
      * Multiply all the values of the array of byte's.
-     * @param value - The multiplier.
+     * @param value   The multiplier.
      */
     public abstract void scale(byte value);
 
     /**
      * Map all the values of the array of byte's by a function.
-     * @param func - The function to apply.
+     * @param func   The function to apply.
      */
     public abstract void map(ByteFunction func);
 
     /**
      * Scan the values of the array of byte's.
-     * @param scanner - The scanner to use.
+     * @param scanner   The scanner to use.
      */
     public abstract void scan(ByteScanner scanner);
 
     /**
      * Flatten the shaped array in a simple generic array.
-     * <p>
-     * The contents of a (multi-dimensional) ByteArray can be stored in
+     *
+     * <p>The contents of a (multi-dimensional) ByteArray can be stored in
      * many different forms.  This storage details are hidden to the end-user
      * in favor of a unified and comprehensive interface.  This method returns
      * the contents of the ByteArray object as a simple <i>flat</i> array,
-     * <i>i.e.</i> successive elements are contiguous and the first element
-     * has {@code 0}-offset.  If the ByteArray object is multi-dimensional,
-     * the storage of the returned result is column-major order.
-     * </p>
-     * @param forceCopy - Set true to force a copy of the internal data
-     *                    even though it can already be in a flat form.
-     *                    Otherwise and if the shaped array is in flat form,
-     *                    see {@link #isFlat()}, the data storage of the
-     *                    array is directly returned (not a copy).
+     * <i>i.e.</i> successive elements are contiguous and the first element has
+     * {@code 0}-offset.  If the ByteArray object is multi-dimensional, the
+     * storage of the returned result is column-major order.  </p>
+     *
+     * @param forceCopy
+     *        Set true to force a copy of the internal data even though it can
+     *        already be in a flat form.  Otherwise and if the shaped array is
+     *        in flat form, see {@link #isFlat()}, the data storage of the
+     *        array is directly returned (not a copy).
      *
      * @return A simple generic {@code byte[]} array with the contents of
      *         the ByteArray array.
@@ -115,13 +115,13 @@ public interface ByteArray extends ShapedArray {
     /**
      * Flatten the shaped array in a simple generic array avoiding
      * copies if possible.
-     * <p>
-     * This method behaves as if argument {@code forceCopy} was set to false
-     * in {@link #flatten(boolean)}.  Depending on the storage layout, the
-     * returned array may or may not share the same storage as the
+     *
+     * <p>This method behaves as if argument {@code forceCopy} was set to
+     * false in {@link #flatten(boolean)}.  Depending on the storage layout,
+     * the returned array may or may not share the same storage as the
      * ByteArray array.  Call {@code flatten(true)} to make sure that the
-     * two storage areas are independent.
-     * </p>
+     * two storage areas are independent.</p>
+     *
      * @return A simple generic {@code byte[]} array with the contents of
      *         the ByteArray array.
      *
@@ -138,49 +138,57 @@ public interface ByteArray extends ShapedArray {
 
     /**
      * Get the minimal value of all the elements.
-     * <p>
-     * Bytes are assumed to be unsigned.
-     * </p>
+     *
+     * <p>Bytes are assumed to be unsigned.</p>
+     *
+     * @return The minimum value of {@code this}.
      */
     public abstract int min();
 
     /**
      * Get the maximal value of all the elements.
-     * <p>
-     * Bytes are assumed to be unsigned.
-     * </p>
+     *
+     * <p>Bytes are assumed to be unsigned.</p>
+     *
+     * @return The maximum value of {@code this}.
      */
     public abstract int max();
 
     /**
      * Get the minimal and maximal values of all the elements.
-     * <p>
-     * Bytes are assumed to be unsigned.
-     * </p>
+     *
+     * <p>Bytes are assumed to be unsigned.</p>
+     *
+     * @return A 2-element array with the minimum and maximum values of {@code
+     * this}.
      */
     public abstract int[] getMinAndMax();
 
     /**
      * Get the minimal and maximal values of all the elements.
-     * <p>
-     * Bytes are assumed to be unsigned.
-     * </p>
+     *
+     * <p>Bytes are assumed to be unsigned.</p>
+     *
+     * @param mm    A 2-element array to store the minimum and maximum values
+     *              of{@code this}.
      */
     public abstract void getMinAndMax(int[] mm);
 
     /**
      * Get the sum of values of all elements.
-     * <p>
-     * Bytes are assumed to be unsigned.
-     * </p>
+     *
+     * <p>Bytes are assumed to be unsigned.</p>
+     *
+     * @return The sum of the values of {@code this}.
      */
     public abstract int sum();
 
     /**
      * Get the average value of all elements.
-     * <p>
-     * Bytes are assumed to be unsigned.
-     * </p>
+     *
+     * <p>Bytes are assumed to be unsigned.</p>
+     *
+     * @return The average of the values of {@code this}.
      */
     public abstract double average();
 }

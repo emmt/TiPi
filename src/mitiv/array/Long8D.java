@@ -689,6 +689,7 @@ public abstract class Long8D extends Array8D implements LongArray {
         }
         return Byte8D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Short8D.
      *
@@ -728,6 +729,7 @@ public abstract class Long8D extends Array8D implements LongArray {
         }
         return Short8D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int8D.
      *
@@ -767,6 +769,7 @@ public abstract class Long8D extends Array8D implements LongArray {
         }
         return Int8D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long8D.
      *
@@ -780,6 +783,7 @@ public abstract class Long8D extends Array8D implements LongArray {
     public Long8D toLong() {
         return this;
     }
+
     /**
      * Convert instance into a Float8D.
      *
@@ -819,6 +823,7 @@ public abstract class Long8D extends Array8D implements LongArray {
         }
         return Float8D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Double8D.
      *

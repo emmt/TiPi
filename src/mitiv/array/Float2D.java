@@ -401,6 +401,7 @@ public abstract class Float2D extends Array2D implements FloatArray {
         }
         return Byte2D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Short2D.
      *
@@ -428,6 +429,7 @@ public abstract class Float2D extends Array2D implements FloatArray {
         }
         return Short2D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int2D.
      *
@@ -455,6 +457,7 @@ public abstract class Float2D extends Array2D implements FloatArray {
         }
         return Int2D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long2D.
      *
@@ -482,6 +485,7 @@ public abstract class Float2D extends Array2D implements FloatArray {
         }
         return Long2D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Float2D.
      *
@@ -495,6 +499,7 @@ public abstract class Float2D extends Array2D implements FloatArray {
     public Float2D toFloat() {
         return this;
     }
+
     /**
      * Convert instance into a Double2D.
      *

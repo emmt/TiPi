@@ -433,6 +433,7 @@ public abstract class Byte3D extends Array3D implements ByteArray {
     public Byte3D toByte() {
         return this;
     }
+
     /**
      * Convert instance into a Short3D.
      *
@@ -462,6 +463,7 @@ public abstract class Byte3D extends Array3D implements ByteArray {
         }
         return Short3D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int3D.
      *
@@ -491,6 +493,7 @@ public abstract class Byte3D extends Array3D implements ByteArray {
         }
         return Int3D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long3D.
      *
@@ -520,6 +523,7 @@ public abstract class Byte3D extends Array3D implements ByteArray {
         }
         return Long3D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Float3D.
      *
@@ -549,6 +553,7 @@ public abstract class Byte3D extends Array3D implements ByteArray {
         }
         return Float3D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Double3D.
      *

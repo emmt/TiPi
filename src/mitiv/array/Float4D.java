@@ -497,6 +497,7 @@ public abstract class Float4D extends Array4D implements FloatArray {
         }
         return Byte4D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Short4D.
      *
@@ -528,6 +529,7 @@ public abstract class Float4D extends Array4D implements FloatArray {
         }
         return Short4D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int4D.
      *
@@ -559,6 +561,7 @@ public abstract class Float4D extends Array4D implements FloatArray {
         }
         return Int4D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long4D.
      *
@@ -590,6 +593,7 @@ public abstract class Float4D extends Array4D implements FloatArray {
         }
         return Long4D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Float4D.
      *
@@ -603,6 +607,7 @@ public abstract class Float4D extends Array4D implements FloatArray {
     public Float4D toFloat() {
         return this;
     }
+
     /**
      * Convert instance into a Double4D.
      *

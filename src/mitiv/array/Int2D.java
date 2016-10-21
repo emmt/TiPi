@@ -401,6 +401,7 @@ public abstract class Int2D extends Array2D implements IntArray {
         }
         return Byte2D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Short2D.
      *
@@ -428,6 +429,7 @@ public abstract class Int2D extends Array2D implements IntArray {
         }
         return Short2D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int2D.
      *
@@ -441,6 +443,7 @@ public abstract class Int2D extends Array2D implements IntArray {
     public Int2D toInt() {
         return this;
     }
+
     /**
      * Convert instance into a Long2D.
      *
@@ -468,6 +471,7 @@ public abstract class Int2D extends Array2D implements IntArray {
         }
         return Long2D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Float2D.
      *
@@ -495,6 +499,7 @@ public abstract class Int2D extends Array2D implements IntArray {
         }
         return Float2D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Double2D.
      *

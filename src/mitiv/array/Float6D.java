@@ -593,6 +593,7 @@ public abstract class Float6D extends Array6D implements FloatArray {
         }
         return Byte6D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Short6D.
      *
@@ -628,6 +629,7 @@ public abstract class Float6D extends Array6D implements FloatArray {
         }
         return Short6D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into an Int6D.
      *
@@ -663,6 +665,7 @@ public abstract class Float6D extends Array6D implements FloatArray {
         }
         return Int6D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Long6D.
      *
@@ -698,6 +701,7 @@ public abstract class Float6D extends Array6D implements FloatArray {
         }
         return Long6D.wrap(out, getShape());
     }
+
     /**
      * Convert instance into a Float6D.
      *
@@ -711,6 +715,7 @@ public abstract class Float6D extends Array6D implements FloatArray {
     public Float6D toFloat() {
         return this;
     }
+
     /**
      * Convert instance into a Double6D.
      *
