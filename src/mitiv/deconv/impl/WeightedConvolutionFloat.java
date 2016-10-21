@@ -26,12 +26,10 @@
 
 package mitiv.deconv.impl;
 
-import mitiv.array.ShapedArray;
 import mitiv.base.Traits;
 import mitiv.deconv.WeightedConvolutionCost;
 import mitiv.linalg.shaped.FloatShapedVector;
-import mitiv.linalg.shaped.ShapedVector;
-import mitiv.linalg.shaped.ShapedVectorSpace;
+import mitiv.linalg.shaped.FloatShapedVectorSpace;
 
 /**
  * Abstract class for FFT-based weighted convolution of arrays of float's.
@@ -52,8 +50,8 @@ public abstract class WeightedConvolutionFloat
      * The following constructors make this class non instantiable, but still
      * let others inherit from this class.
      */
-    protected WeightedConvolutionFloat(ShapedVectorSpace objectSpace,
-                           ShapedVectorSpace dataSpace) {
+    protected WeightedConvolutionFloat(FloatShapedVectorSpace objectSpace,
+                           FloatShapedVectorSpace dataSpace) {
         /* Initialize super class and check types. */
         super(objectSpace, dataSpace);
         if (objectSpace.getType() != Traits.FLOAT) {

@@ -26,12 +26,10 @@
 
 package mitiv.deconv.impl;
 
-import mitiv.array.ShapedArray;
 import mitiv.base.Traits;
 import mitiv.deconv.WeightedConvolutionCost;
 import mitiv.linalg.shaped.DoubleShapedVector;
-import mitiv.linalg.shaped.ShapedVector;
-import mitiv.linalg.shaped.ShapedVectorSpace;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 
 /**
  * Abstract class for FFT-based weighted convolution of arrays of double's.
@@ -52,8 +50,8 @@ public abstract class WeightedConvolutionDouble
      * The following constructors make this class non instantiable, but still
      * let others inherit from this class.
      */
-    protected WeightedConvolutionDouble(ShapedVectorSpace objectSpace,
-                           ShapedVectorSpace dataSpace) {
+    protected WeightedConvolutionDouble(DoubleShapedVectorSpace objectSpace,
+                           DoubleShapedVectorSpace dataSpace) {
         /* Initialize super class and check types. */
         super(objectSpace, dataSpace);
         if (objectSpace.getType() != Traits.DOUBLE) {

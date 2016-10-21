@@ -39,6 +39,8 @@ import mitiv.deconv.impl.WeightedConvolutionFloat2D;
 import mitiv.deconv.impl.WeightedConvolutionFloat3D;
 import mitiv.exception.IllegalTypeException;
 import mitiv.linalg.Vector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
+import mitiv.linalg.shaped.FloatShapedVectorSpace;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 import mitiv.utils.Timer;
@@ -288,21 +290,21 @@ DifferentiableCostFunction {
         case Traits.FLOAT:
             switch (rank) {
             case 1:
-                return new WeightedConvolutionFloat1D(objectSpace, dataSpace, dataOffset);
+                return new WeightedConvolutionFloat1D((FloatShapedVectorSpace)objectSpace, (FloatShapedVectorSpace)dataSpace, dataOffset);
             case 2:
-                return new WeightedConvolutionFloat2D(objectSpace, dataSpace, dataOffset);
+                return new WeightedConvolutionFloat2D((FloatShapedVectorSpace)objectSpace, (FloatShapedVectorSpace)dataSpace, dataOffset);
             case 3:
-                return new WeightedConvolutionFloat3D(objectSpace, dataSpace, dataOffset);
+                return new WeightedConvolutionFloat3D((FloatShapedVectorSpace)objectSpace, (FloatShapedVectorSpace)dataSpace, dataOffset);
             }
             break;
         case Traits.DOUBLE:
             switch (rank) {
             case 1:
-                return new WeightedConvolutionDouble1D(objectSpace, dataSpace, dataOffset);
+                return new WeightedConvolutionDouble1D((DoubleShapedVectorSpace)objectSpace, (DoubleShapedVectorSpace)dataSpace, dataOffset);
             case 2:
-                return new WeightedConvolutionDouble2D(objectSpace, dataSpace, dataOffset);
+                return new WeightedConvolutionDouble2D((DoubleShapedVectorSpace)objectSpace, (DoubleShapedVectorSpace)dataSpace, dataOffset);
             case 3:
-                return new WeightedConvolutionDouble3D(objectSpace, dataSpace, dataOffset);
+                return new WeightedConvolutionDouble3D((DoubleShapedVectorSpace)objectSpace, (DoubleShapedVectorSpace)dataSpace, dataOffset);
             }
             break;
         default:

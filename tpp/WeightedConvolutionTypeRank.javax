@@ -37,9 +37,9 @@ package mitiv.deconv.impl;
 
 import mitiv.array.ShapedArray;
 import mitiv.linalg.Vector;
-import mitiv.linalg.shaped.${Type}ShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
-import mitiv.linalg.shaped.ShapedVectorSpace;
+import mitiv.linalg.shaped.${Type}ShapedVector;
+import mitiv.linalg.shaped.${Type}ShapedVectorSpace;
 
 /**
  * Implements a FFT-based weighted convolution for ${rank}D arrays of ${type}'s.
@@ -87,8 +87,8 @@ public class ${className}
      * @param dataOffset    The position of the data space relative
      *                      to the object space.
      */
-    public ${className}(ShapedVectorSpace objectSpace,
-                        ShapedVectorSpace dataSpace, int[] dataOffset) {
+    public ${className}(${Type}ShapedVectorSpace objectSpace,
+                        ${Type}ShapedVectorSpace dataSpace, int[] dataOffset) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
         super(objectSpace, dataSpace);

@@ -28,9 +28,9 @@ package mitiv.deconv.impl;
 
 import mitiv.array.ShapedArray;
 import mitiv.linalg.Vector;
-import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
-import mitiv.linalg.shaped.ShapedVectorSpace;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.FloatShapedVectorSpace;
 
 /**
  * Implements a FFT-based weighted convolution for 2D arrays of float's.
@@ -84,8 +84,8 @@ public class WeightedConvolutionFloat2D
      * @param dataOffset    The position of the data space relative
      *                      to the object space.
      */
-    public WeightedConvolutionFloat2D(ShapedVectorSpace objectSpace,
-                        ShapedVectorSpace dataSpace, int[] dataOffset) {
+    public WeightedConvolutionFloat2D(FloatShapedVectorSpace objectSpace,
+                        FloatShapedVectorSpace dataSpace, int[] dataOffset) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
         super(objectSpace, dataSpace);

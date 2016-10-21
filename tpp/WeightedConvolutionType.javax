@@ -35,12 +35,10 @@
 //# end
 package mitiv.deconv.impl;
 
-import mitiv.array.ShapedArray;
 import mitiv.base.Traits;
 import mitiv.deconv.WeightedConvolutionCost;
 import mitiv.linalg.shaped.${Type}ShapedVector;
-import mitiv.linalg.shaped.ShapedVector;
-import mitiv.linalg.shaped.ShapedVectorSpace;
+import mitiv.linalg.shaped.${Type}ShapedVectorSpace;
 
 /**
  * Abstract class for FFT-based weighted convolution of arrays of ${type}'s.
@@ -61,8 +59,8 @@ public abstract class ${className}
      * The following constructors make this class non instantiable, but still
      * let others inherit from this class.
      */
-    protected ${className}(ShapedVectorSpace objectSpace,
-                           ShapedVectorSpace dataSpace) {
+    protected ${className}(${Type}ShapedVectorSpace objectSpace,
+                           ${Type}ShapedVectorSpace dataSpace) {
         /* Initialize super class and check types. */
         super(objectSpace, dataSpace);
         if (objectSpace.getType() != Traits.${TYPE}) {
