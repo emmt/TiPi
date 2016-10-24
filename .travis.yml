@@ -1,10 +1,11 @@
 language: java
 jdk:
 - openjdk6
-before_install: wget --no-check-certificate http://mitiv.univ-lyon1.fr/${PROJECT}.zip && unzip ${PROJECT}.zip && rm ${PROJECT}.zip
 script:
 - ant build
+- ant jar
 - ant doc > /dev/null
+- ant deconv
 after_success:
 - git config --global user.email "eric.thiebaut@univ-lyon1.fr"
 - git config --global user.name "emmt"
