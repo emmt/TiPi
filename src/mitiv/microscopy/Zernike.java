@@ -27,7 +27,7 @@ package mitiv.microscopy;
 
 import mitiv.old.MathUtils;
 import mitiv.utils.*;
-/** Compute Zernike polynomials 
+/** Compute Zernike polynomials
  *
  * [1] Robert J. Noll. Zernike polynomials and atmospheric turbulence. Optical
  * Society of America, 1976.
@@ -66,9 +66,9 @@ public class Zernike
      *  Utilisation du logarithme de la somme cumulé
      *  <p>
      *  k = mod number of the Zernike polynomials (Noll indexing)
-     *  @param n 
+     *  @param n
      *  @param m
-     * @return 
+     * @return
      */
     public static   double[] coeffRadialZCumSumLog(int n, int m)
     {
@@ -110,185 +110,185 @@ public class Zernike
      * Pre-compute the power distance r, r^2 = r*r, r^3=r^2*r, ect.
      * Z_even(r,theta) = R_mn*zr*cos(m*theta)
      * Z_odd(r,theta) = R_mn*zr*sin(m*theta)
-     * Zr(r) = 
+     * Zr(r) =
      * @param nbZernike - number of zernike modes
      * @param width - width of the array
      * @param height - width of the array
      * @param radius - radius of the pupil
      * @param normalize - when true all polynomial a L2 normalized
      * @param radial  - when true only radial polynomial are considered (m =0)
-     * @return array of Zernike polynomials 
+     * @return array of Zernike polynomials
      */
     public static double[] zernikeArray(int nbZernike, int width, int height, double radius, boolean normalize,boolean radial)
     {
-    	
-    	double Z[] =  new double[nbZernike*width*height];
-    	int WH = width*height;
 
-    	double r[] = MathUtils.fftDist1D(width, height);
-    	double theta[] = MathUtils.fftAngle1D(width, height);
+        double Z[] =  new double[nbZernike*width*height];
+        int WH = width*height;
 
-    
-    	int nm[],n,m;
-    	double rPowers[] ;
+        double r[] = MathUtils.fftDist1D(width, height);
+        double theta[] = MathUtils.fftAngle1D(width, height);
 
-    	if(radial){
-    		n = nbZernike + 1;
-    	}else{
-    		nm = zernumeroNoll(nbZernike + 1);
-    		n = nm[0];
+
+        int nm[],n,m;
+        double rPowers[] ;
+
+        if(radial){
+                n = nbZernike + 1;
+        }else{
+                nm = zernumeroNoll(nbZernike + 1);
+                n = nm[0];
             m = nm[1];
-    	}
+        }
 
-    	rPowers = new double[(n + 1)*width*height];
-    		
-
-    	/* Initialize rPowers */
-    	for (int l = 0; l < WH; l++)
-    	{
-    		if(r[l] < radius)
-    		{
-    			rPowers[l] = 1; // rPowers_0 = r^0 = 1
-    			Z[l] = 1; // the piston : Z_0 = 1;
-    			rPowers[l + WH] = r[l]/radius; // rPowers_1 = r/radius
-    		}
-    	}
-
-    	if( normalize)
-    	{
-    		double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, 0, width + WH - 1, 0)));
-    		for (int l = 0; l < WH; l++) // PUPIL
-    		{
-    			Z[l] = Z[l]*NormZ;
-    		}
-    	}
+        rPowers = new double[(n + 1)*width*height];
 
 
+        /* Initialize rPowers */
+        for (int l = 0; l < WH; l++)
+        {
+                if(r[l] < radius)
+                {
+                        rPowers[l] = 1; // rPowers_0 = r^0 = 1
+                        Z[l] = 1; // the piston : Z_0 = 1;
+                        rPowers[l + WH] = r[l]/radius; // rPowers_1 = r/radius
+                }
+        }
 
-    	if(radial)  { // Compute only radial polynomial (m=0)
+        if( normalize)
+        {
+                double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, 0, width + WH - 1, 0)));
+                for (int l = 0; l < WH; l++) // PUPIL
+                {
+                        Z[l] = Z[l]*NormZ;
+                }
+        }
 
-        	for (int k = 2; k < nbZernike + 1; k++)
-        	{
-        		for (int l = 0; l < WH; l++)
-        		{
-        			rPowers[l + k*WH] = rPowers[l + (k - 1)*WH]*rPowers[l + WH]; // rPowers(X) = rPowers(X-1)*rPowers(1)
-        		}
-        	}
-    		for (int nz = 1; nz < nbZernike; nz++)
-    		{
-    			double[] R_mn = coeffRadialZCumSumLog(nz, 0);
-    			double N;
-    			double zr = 0;
-    			/* J != 1 & m = 0 */
-    				for (int l = 0; l < WH; l++)
-    				{
-    					zr = 0;
-    					N = Math.sqrt(nz + 1);
-    					for( int s = (nz )/2; s >= 0; s-- )
-    					{
-    						zr = zr +  R_mn[s]*rPowers[l + (nz - 2*s)*WH];
-    					}
-    					Z[l + nz*WH] = N*zr;
-    				}
-    				if( normalize)
-    				{
-    					double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, nz*WH, nz*WH + WH - 1, 0)));
-    					for (int l = 0; l < WH; l++) // PUPIL
-    					{
-    						Z[l + nz*WH] *= NormZ;
-    					}
-    				}
-    			}
-    	}else{
 
-        	for (int k = 2; k < n + 1; k++)
-        	{
-        		for (int l = 0; l < WH; l++)
-        		{
-        			rPowers[l + k*WH] = rPowers[l + (k - 1)*WH]*rPowers[l + WH]; // rPowers(X) = rPowers(X-1)*rPowers(1)
-        		}
-        	}
-    		for (int nz = 1; nz < nbZernike; nz++)
-    		{
-    			nm = zernumeroNoll(nz + 1);
-    			n = nm[0];
-    			m = nm[1];
-    			double[] R_mn = coeffRadialZCumSumLog(n, m);
-    			double N;
-    			double zr = 0;
-    			/* J != 1 & m = 0 */
-    			if(m == 0)
-    			{
-    				for (int l = 0; l < WH; l++)
-    				{
-    					zr = 0;
-    					N = Math.sqrt(n + 1);
-    					for( int s = (n - m)/2; s >= 0; s-- )
-    					{
-    						zr = zr +  R_mn[s]*rPowers[l + (n - 2*s)*WH];
-    					}
-    					Z[l + nz*WH] = N*zr;
-    				}
-    				if( normalize)
-    				{
-    					double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, nz*WH, nz*WH + WH - 1, 0)));
-    					for (int l = 0; l < WH; l++) // PUPIL
-    					{
-    						Z[l + nz*WH] *= NormZ;
-    					}
-    				}
-    			}
-    			else
-    			{
-    				/* J > 0 & J even & m != 0 --> azimuthal part is a cosine */
-    				if(MathUtils.even(nz + 1))
-    				{
-    					for (int l = 0; l < WH; l++)
-    					{
-    						N = Math.sqrt( 2*(n + 1) );
-    						zr = 0;
-    						for( int s = (n - m)/2; s >= 0; s--)
-    						{
-    							zr = zr +  R_mn[s]*rPowers[l + (n - 2*s)*WH];
-    						}
-    						Z[l + nz*WH] = N*zr*Math.cos(m*theta[l]);
-    					}
-    					if( normalize)
-    					{
-    						double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, nz*WH, nz*WH + WH - 1, 0)));
-    						for (int l = 0; l < WH; l++)
-    						{  
-    							Z[l + nz*WH] = Z[l + nz*WH]*NormZ;
-    						}
-    					}
-    				}
-    				else
-    				{
-    					/* J > 0 & J odd & m != 0 --> azimuthal part is a sine */
-    					for (int l = 0; l < WH; l++)
-    					{
-    						N = Math.sqrt( 2*(n + 1) );
-    						zr = 0;
-    						for( int s = (n - m)/2; s >= 0; s-- )
-    						{
-    							zr = zr + R_mn[s]*rPowers[l + (n - 2*s)*WH];
-    						}
-    						Z[l + nz*WH] = N*zr*Math.sin(m*theta[l]);
-    					}
-    					if( normalize)
-    					{
-    						double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, nz*WH, nz*WH + WH - 1, 0)));
-    						for (int l = 0; l < WH; l++)
-    						{ 
-    							Z[l + nz*WH] = Z[l + nz*WH]*NormZ;
-    						}
-    					}
-    				}
-    			}
-    		}	
-    	}
-    	return Z;
+
+        if(radial)  { // Compute only radial polynomial (m=0)
+
+                for (int k = 2; k < nbZernike + 1; k++)
+                {
+                        for (int l = 0; l < WH; l++)
+                        {
+                                rPowers[l + k*WH] = rPowers[l + (k - 1)*WH]*rPowers[l + WH]; // rPowers(X) = rPowers(X-1)*rPowers(1)
+                        }
+                }
+                for (int nz = 1; nz < nbZernike; nz++)
+                {
+                        double[] R_mn = coeffRadialZCumSumLog(nz, 0);
+                        double N;
+                        double zr = 0;
+                        /* J != 1 & m = 0 */
+                                for (int l = 0; l < WH; l++)
+                                {
+                                        zr = 0;
+                                        N = Math.sqrt(nz + 1);
+                                        for( int s = (nz )/2; s >= 0; s-- )
+                                        {
+                                                zr = zr +  R_mn[s]*rPowers[l + (nz - 2*s)*WH];
+                                        }
+                                        Z[l + nz*WH] = N*zr;
+                                }
+                                if( normalize)
+                                {
+                                        double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, nz*WH, nz*WH + WH - 1, 0)));
+                                        for (int l = 0; l < WH; l++) // PUPIL
+                                        {
+                                                Z[l + nz*WH] *= NormZ;
+                                        }
+                                }
+                        }
+        }else{
+
+                for (int k = 2; k < n + 1; k++)
+                {
+                        for (int l = 0; l < WH; l++)
+                        {
+                                rPowers[l + k*WH] = rPowers[l + (k - 1)*WH]*rPowers[l + WH]; // rPowers(X) = rPowers(X-1)*rPowers(1)
+                        }
+                }
+                for (int nz = 1; nz < nbZernike; nz++)
+                {
+                        nm = zernumeroNoll(nz + 1);
+                        n = nm[0];
+                        m = nm[1];
+                        double[] R_mn = coeffRadialZCumSumLog(n, m);
+                        double N;
+                        double zr = 0;
+                        /* J != 1 & m = 0 */
+                        if(m == 0)
+                        {
+                                for (int l = 0; l < WH; l++)
+                                {
+                                        zr = 0;
+                                        N = Math.sqrt(n + 1);
+                                        for( int s = (n - m)/2; s >= 0; s-- )
+                                        {
+                                                zr = zr +  R_mn[s]*rPowers[l + (n - 2*s)*WH];
+                                        }
+                                        Z[l + nz*WH] = N*zr;
+                                }
+                                if( normalize)
+                                {
+                                        double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, nz*WH, nz*WH + WH - 1, 0)));
+                                        for (int l = 0; l < WH; l++) // PUPIL
+                                        {
+                                                Z[l + nz*WH] *= NormZ;
+                                        }
+                                }
+                        }
+                        else
+                        {
+                                /* J > 0 & J even & m != 0 --> azimuthal part is a cosine */
+                                if(MathUtils.even(nz + 1))
+                                {
+                                        for (int l = 0; l < WH; l++)
+                                        {
+                                                N = Math.sqrt( 2*(n + 1) );
+                                                zr = 0;
+                                                for( int s = (n - m)/2; s >= 0; s--)
+                                                {
+                                                        zr = zr +  R_mn[s]*rPowers[l + (n - 2*s)*WH];
+                                                }
+                                                Z[l + nz*WH] = N*zr*Math.cos(m*theta[l]);
+                                        }
+                                        if( normalize)
+                                        {
+                                                double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, nz*WH, nz*WH + WH - 1, 0)));
+                                                for (int l = 0; l < WH; l++)
+                                                {
+                                                        Z[l + nz*WH] = Z[l + nz*WH]*NormZ;
+                                                }
+                                        }
+                                }
+                                else
+                                {
+                                        /* J > 0 & J odd & m != 0 --> azimuthal part is a sine */
+                                        for (int l = 0; l < WH; l++)
+                                        {
+                                                N = Math.sqrt( 2*(n + 1) );
+                                                zr = 0;
+                                                for( int s = (n - m)/2; s >= 0; s-- )
+                                                {
+                                                        zr = zr + R_mn[s]*rPowers[l + (n - 2*s)*WH];
+                                                }
+                                                Z[l + nz*WH] = N*zr*Math.sin(m*theta[l]);
+                                        }
+                                        if( normalize)
+                                        {
+                                                double NormZ = 1/Math.sqrt(MathUtils.sum(MathUtils.abs2(Z, nz*WH, nz*WH + WH - 1, 0)));
+                                                for (int l = 0; l < WH; l++)
+                                                {
+                                                        Z[l + nz*WH] = Z[l + nz*WH]*NormZ;
+                                                }
+                                        }
+                                }
+                        }
+                }
+        }
+        return Z;
     }
 
- 
+
 }

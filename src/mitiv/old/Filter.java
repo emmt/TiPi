@@ -32,7 +32,7 @@ import mitiv.linalg.shaped.ShapedVector;
 
 /**
  * This class contain all the methods to compute the solutions
- * 
+ *
  * @author Leger Jonathan
  *
  */
@@ -53,7 +53,7 @@ public class Filter{
 
     /**
      * Apply the Wiener filter on 1D input
-     * 
+     *
      * @param alpha
      * @param psfFFT
      * @param imageFFT
@@ -73,7 +73,7 @@ public class Filter{
     /**
      * Apply the Wiener filter on 1D input
      * Quick version (need to call Wiener1D with full arguments at least once)
-     * 
+     *
      * @param alpha
      * @return An array
      */
@@ -121,7 +121,7 @@ public class Filter{
     /**
      * Apply the Wiener filter on 1D input
      * Quick version (need to call Wiener1D with full arguments at least once)
-     * 
+     *
      * @param alpha
      * @return An array
      */
@@ -204,7 +204,7 @@ public class Filter{
 
     /**
      * Apply the Wiener filter on Vector
-     * 
+     *
      * @param alpha
      * @param PSF
      * @param image
@@ -220,7 +220,7 @@ public class Filter{
     /**
      * Apply the Wiener filter on Vector
      * Quick version (need to call Wiener1D with full arguments at least once)
-     * 
+     *
      * @param alpha
      * @return A vector
      */
@@ -231,12 +231,12 @@ public class Filter{
 
     /**
      * Apply the Wiener filter with quadratic approximation on 1D input
-     * 
+     *
      * @param alpha
      * @param psfFFT
      * @param imageFFT
-     * @param width 
-     * @param height 
+     * @param width
+     * @param height
      * @return An array
      */
     public double[] wienerQuad1D(double alpha, double[] psfFFT,double[] imageFFT, int width, int height) {
@@ -267,7 +267,7 @@ public class Filter{
     /**
      * Apply the Wiener filter with quadratic approximation on 1D
      * Quick version (need to call WienerQuad with full arguments at least once)
-     * 
+     *
      * @param alpha
      * @return An array
      */
@@ -318,7 +318,7 @@ public class Filter{
     /**
      * Apply the Wiener filter with quadratic approximation on 1D
      * Quick version (need to call WienerQuad with full arguments at least once)
-     * 
+     *
      * @param alpha
      * @return An array
      */
@@ -341,7 +341,7 @@ public class Filter{
 
     /**
      * Apply the Wiener filter with quadratic approximation on Vector
-     * 
+     *
      * @param alpha
      * @param PSF
      * @param image
@@ -357,7 +357,7 @@ public class Filter{
     /**
      * Apply the Wiener filter with quadratic approximation on Vector
      * Quick version (need to call WienerQuad with full arguments at least once)
-     * 
+     *
      * @param alpha
      * @return A vector
      */

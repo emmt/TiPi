@@ -47,7 +47,7 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
 
 /**
  * Contains all usual methods to work on color, image, arrays and conversion from one to another.
- * 
+ *
  * @author Leger Jonathan
  *
  */
@@ -59,7 +59,7 @@ public class CommonUtils {
      * |      |
      * |      |
      * |#_____|
-     * 
+     *
      * */
     public static final int LOWER_LEFT = 0;
 
@@ -69,7 +69,7 @@ public class CommonUtils {
      * |      |
      * |  #   |
      * |______|
-     * 
+     *
      * */
     public static final int CENTERED = 1;
 
@@ -79,7 +79,7 @@ public class CommonUtils {
      * |#    #|
      * |      |
      * |#____#|
-     * 
+     *
      * */
     public static final int FFT_INDEXING = -1;
 
@@ -1071,7 +1071,7 @@ public class CommonUtils {
      * PSF has a size that begin with pixels that are non zeros pixels.
      * To find this size we assume the PSF to be centered and so we search for the two first non zero
      * on width/2 and height/2.
-     * 
+     *
      * @param PSF the psf
      * @return the int
      */
@@ -1422,7 +1422,7 @@ public class CommonUtils {
 
     /**
      * Here we are padding a cube, no scale only padding
-     * 
+     *
      * Cube :
      *     H
      *    /
@@ -1431,23 +1431,23 @@ public class CommonUtils {
      *  |
      *  |
      *  Z
-     * 
+     *
      * Front:
      *  1 2
      *  3 4
-     * 
+     *
      *  back:
      *  5 6
      *  7 8
-     * 
+     *
      *  1<=>8
      *  3<=>6
      *  2<=>7
      *  4<=>5
      * Bloc X to Y
-     * 
+     *
      * dest( pos(Y) ) = in( pos(X) )
-     * 
+     *
      * @param psfOut
      * @param psfIn
      * @param psfWidth

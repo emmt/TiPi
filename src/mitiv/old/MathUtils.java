@@ -206,7 +206,7 @@ public class MathUtils {
      * Standard deviation of the matrix σ.
      *
      * @param a the a
-     * @param b 
+     * @param b
      * @return the double
      */
     public static double[] catArray(double a[], double[] b)
@@ -791,7 +791,7 @@ public class MathUtils {
             }
             return A;
         }
-    
+
     /**
      * Scale array values into a 8bit (between 0 and 255).
      *
@@ -879,7 +879,7 @@ public class MathUtils {
     /**
      * Returns the squared absolute value of 1d array.
      * @param x array
-     * @param isComplex 
+     * @param isComplex
      * @return square absolute value.
      */
     public static double[] abs2(double[] x, int isComplex)
@@ -908,10 +908,10 @@ public class MathUtils {
 
     /**
      * Returns the squared absolute value of 1d array.
-     * @param x 
-     * @param begin 
-     * @param end 
-     * @param isComplex 
+     * @param x
+     * @param begin
+     * @param end
+     * @param isComplex
      * @return square absolute value.
      */
     public static double[] abs2(double[] x, int begin, int end, int isComplex)
@@ -1059,7 +1059,7 @@ public class MathUtils {
      * @param height
      * @param deepth
      * @param decimal
-     * 
+     *
      */
     public static void printArray(double A[], int width, int height, int deepth, int decimal)
     {
@@ -1161,7 +1161,7 @@ public class MathUtils {
 
     /**
      * Display image of an 2d array
-     * 
+     *
      * Different from the "pli" function, uses "naviguablePanel" for a better displaying.
      *
      * @param A the a
@@ -1205,12 +1205,12 @@ public class MathUtils {
 
     /**
      * Display image of an 2d array
-     * 
+     *
      * Different from the "pli" function, uses "naviguablePanel" for a better displaying.
      *
      * @param A the a
-     * @param W 
-     * @param H 
+     * @param W
+     * @param H
      * @param colorMap the color map
      */
     public static void pli2(double A[], int W, int H, int colorMap)
@@ -1334,9 +1334,9 @@ public class MathUtils {
      * Shift zero-frequency component to center of spectrum.
      *
      * @param A the a
-     * @param w 
-     * @param h 
-     * @param d 
+     * @param w
+     * @param h
+     * @param d
      * @return the double[][]
      */
     public static double[] fftShift1D(double A[], int w, int h, int d)
@@ -1363,8 +1363,8 @@ public class MathUtils {
      * Shift zero-frequency component to center of spectrum.
      *
      * @param A the a
-     * @param w 
-     * @param h 
+     * @param w
+     * @param h
      * @return the double[][]
      */
     public static double[] fftShift1D(double A[], int w, int h)
@@ -1483,8 +1483,8 @@ public class MathUtils {
 
     /**
      * Average or mean value of array
-     * @param a 
-     * @return 
+     * @param a
+     * @return
      */
     public static double avg(double[] a)
     {
@@ -1493,19 +1493,19 @@ public class MathUtils {
 
     /**
      * Average or mean value of array
-     * @param a 
-     * @return 
+     * @param a
+     * @return
      */
     public static double avg(long[] a)
-    
+
     {
         return sum(a)/(a.length);
     }
 
     /**
      * Average or mean value of array
-     * @param a 
-     * @return 
+     * @param a
+     * @return
      */
     public static double avg(double[][] a)
     {
@@ -1516,8 +1516,8 @@ public class MathUtils {
 
     /**
      * Average or mean value of array
-     * @param a 
-     * @return 
+     * @param a
+     * @return
      */
     public static double avg(double[][][] a)
     {
@@ -1529,8 +1529,8 @@ public class MathUtils {
 
     /**
      * Sum of the values in the array
-     * @param a 
-     * @return 
+     * @param a
+     * @return
      */
     public static double sum(double a[])
     {
@@ -1545,10 +1545,10 @@ public class MathUtils {
 
     /**
      * Sum of the values in the array
-     * @param a 
-     * @param begin 
-     * @param end 
-     * @return 
+     * @param a
+     * @param begin
+     * @param end
+     * @return
      */
     public static double sum(double a[], int begin, int end)
     {
@@ -1562,8 +1562,8 @@ public class MathUtils {
 
     /**
      * Sum of the values in the array
-     * @param array 
-     * @return 
+     * @param array
+     * @return
      */
     public static long sum(long array[])
     {
@@ -1578,8 +1578,8 @@ public class MathUtils {
 
     /**
      * Sum of the values in the array
-     * @param array 
-     * @return 
+     * @param array
+     * @return
      */
     public static double sum(double array[][])
     {
@@ -1594,8 +1594,8 @@ public class MathUtils {
 
     /**
      * Sum of the values in the array
-     * @param array 
-     * @return 
+     * @param array
+     * @return
      */
     public static double sum(double array[][][])
     {
@@ -1966,8 +1966,8 @@ public class MathUtils {
 
     /**
      * Standard deviation of an 1d array σ
-     * @param a 
-     * @return 
+     * @param a
+     * @return
      */
     public static double std(double a[])
     {
@@ -1977,8 +1977,8 @@ public class MathUtils {
 
     /**
      * Standard deviation of the matrix σ
-     * @param a 
-     * @return 
+     * @param a
+     * @return
      */
     public static double std(double a[][])
     {
@@ -1988,8 +1988,8 @@ public class MathUtils {
 
     /**
      * Standard deviation of the matrix σ
-     * @param a 
-     * @return 
+     * @param a
+     * @return
      */
     public static double std(double a[][][])
     {
@@ -2000,8 +2000,8 @@ public class MathUtils {
     /**
      * Variance σ² of a 1d array
      * var = 1/N \sum_i (x_i - E[x])^2 = E[x'x]-E[x]^2
-     * @param a 
-     * @return 
+     * @param a
+     * @return
      */
     public static double var(double a[])
     {
@@ -2016,8 +2016,8 @@ public class MathUtils {
 
     /**
      * Variance of the matrix
-     * @param a 
-     * @return 
+     * @param a
+     * @return
      */
     public static double var(double a[][])
     {
@@ -2030,8 +2030,8 @@ public class MathUtils {
     /**
      * Variance σ² of the 3d matrix
      * var = 1/N \sum_i (x_i - E[x])^2
-     * @param a 
-     * @return 
+     * @param a
+     * @return
      */
     public static double var(double a[][][])
     {
@@ -2416,9 +2416,9 @@ public class MathUtils {
      * Returns 2d array (column major) of a 1d array.
      *
      * @param In 1d array of double
-     * @param width 
-     * @param height 
-     * @param depth 
+     * @param width
+     * @param height
+     * @param depth
      * @return 2d array
      */
     public static double[] getArray(double[] In, int width, int height, int depth)
@@ -2521,8 +2521,8 @@ public class MathUtils {
 
     /**
      * Cum sum.
-     * @param yEstimate 
-     * @param yTrue 
+     * @param yEstimate
+     * @param yTrue
      * @return the double[]
      */
     public static double mse(double yEstimate[], double[] yTrue)
