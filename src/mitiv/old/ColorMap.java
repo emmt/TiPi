@@ -26,13 +26,13 @@
 package mitiv.old;
 
 /*
- * Copyright 1999-2004 Carnegie Mellon University.  
- * Portions Copyright 2002-2004 Sun Microsystems, Inc.  
+ * Copyright 1999-2004 Carnegie Mellon University.
+ * Portions Copyright 2002-2004 Sun Microsystems, Inc.
  * Portions Copyright 2002-2004 Mitsubishi Electric Research Laboratories.
  * All Rights Reserved.  Use is subject to license terms.
- * 
+ *
  * See the file "README" for information on usage and
- * redistribution of this file, and for a DISCLAIMER OF ALL 
+ * redistribution of this file, and for a DISCLAIMER OF ALL
  * WARRANTIES.
  *
  */
@@ -76,15 +76,15 @@ public class ColorMap
     /**
      * Create a color map witn n entries that looks like Matlab's jet
      * color map
-     * @param n 
-     * @return 
+     * @param n
+     * @return
      */
     public static ColorMap getJet(int n)
     {
         byte r[] = new byte[n];
         byte g[] = new byte[n];
         byte b[] = new byte[n];
-        
+
         int maxval = 255;
         Arrays.fill(g, 0, n/8, (byte)0);
         for(int x = 0; x < n/4; x++)
@@ -100,7 +100,7 @@ public class ColorMap
         Arrays.fill(g, 0, n/8, (byte)0);;
         for(int x = n/8; x < g.length; x++)
             r[x] = g[(x+n*6/8) % g.length];
-        
+
         ColorMap cm = new ColorMap();
         cm.size = n;
         cm.r = r;
@@ -115,8 +115,8 @@ public class ColorMap
 
     /**
      * Get the RGB value associated with an entry in this ColorMap
-     * @param idx 
-     * @return 
+     * @param idx
+     * @return
      */
     public int getColor(int idx)
     {
@@ -141,7 +141,7 @@ public class ColorMap
     }
 
     /**
-     * 
+     *
      * test purposes
      * @param args
      */
@@ -152,7 +152,7 @@ public class ColorMap
         int c = jet128.r[0];
         System.out.println(c);
 
-        
+
         System.out.println("Jet:\n"+jet+"\n\nJet128:\n"+jet128);
     }
 }

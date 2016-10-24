@@ -24,7 +24,7 @@
  */
 
 /**
- * 
+ *
  * @author Leger Jonathan
  *
  */
@@ -41,14 +41,14 @@ import javax.imageio.ImageIO;
 import mitiv.array.ShapedArray;
 
 /**
- * mitivCLI is a command line interface that let the user call the functions contains 
+ * mitivCLI is a command line interface that let the user call the functions contains
  * in the library easily and with precise control of the parameters.
- * 
+ *
  * usage: mitivCLI PSF IMAGE
  * options  -h help menu
  *          -r regularization choice: wiener(default), quadratic, cg
  *          -p post treatment: none(default), corrected, colormap, correted_colormap
- *          -a alpha value 
+ *          -a alpha value
  */
 public class mitivCLI {
 
@@ -131,11 +131,11 @@ public class mitivCLI {
     }
 
     /**
-     * One way to use the algorithms is to use this interface that is mean to act 
+     * One way to use the algorithms is to use this interface that is mean to act
      * as a standard application launch from a terminal.
-     * 
+     *
      * Just launch application with no arguments or with -h to see parameters and input.
-     * 
+     *
      * @param args
      */
     public static void main(String[] args) {
@@ -169,7 +169,7 @@ public class mitivCLI {
                     PSF = tmp;
                     psfFound = true;
                 }else{
-                    image = tmp; 
+                    image = tmp;
                 }
             }
         }

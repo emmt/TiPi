@@ -121,7 +121,7 @@ public class DeconvUtils {
 
     /**
      * Open the images and store them
-     * 
+     *
      * @param image A buffered image that is the image
      * @param PSF A BufferedImage that is the PSF
      */
@@ -132,7 +132,7 @@ public class DeconvUtils {
 
     /**
      * Open the images and store them
-     * 
+     *
      * @param image A buffered image that is the image
      * @param PSF A buffered image that is the PSF
      * @param padding Do we zero pad the image ?
@@ -180,7 +180,7 @@ public class DeconvUtils {
 
     /**
      * Open the images and store them as vectors
-     * 
+     *
      * @param image
      * @param PSF
      * @param singlePrecision Double or Float
@@ -225,7 +225,7 @@ public class DeconvUtils {
     /********************************** Pad image **********************************/
 
     /**
-     * 
+     *
      * @param coef
      */
     public void PadImageAndPSF(double coef){
@@ -240,7 +240,7 @@ public class DeconvUtils {
 
     /**
      * Clone the image
-     * 
+     *
      * @return A vector
      */
     public ShapedVector cloneImageVect(){
@@ -253,7 +253,7 @@ public class DeconvUtils {
 
     /**
      * Clone the PSF
-     * 
+     *
      * @return A vector
      */
     public ShapedVector clonePsfVect(){
@@ -265,7 +265,7 @@ public class DeconvUtils {
     }
     /**
      * Pad the PSF and return a vector
-     * 
+     *
      * @return A vector
      */
     public ShapedVector getPsfPadVect(){
@@ -274,7 +274,7 @@ public class DeconvUtils {
 
     /**
      * Convert an array to an image with possibility of scaling, adding colors
-     * 
+     *
      * @param vector
      * @param correction see CommonUtils static
      * @param isComplex is the input of size 2*size image ?
@@ -288,7 +288,7 @@ public class DeconvUtils {
 
     /**
      * Convert an image to a 1D array
-     * 
+     *
      * @param isComplex is the input of size 2*size image ?
      * @return A 1D array
      */
@@ -298,7 +298,7 @@ public class DeconvUtils {
 
     /**
      * Convert the PSF to a 1D array
-     * 
+     *
      * @param isComplex is the input of size 2*size image ?
      * @return A 1D array
      */
@@ -314,7 +314,7 @@ public class DeconvUtils {
     /**
      * Convert a stack of image to a 1D array
      * @param isComplex
-     * 
+     *
      * @return A 1D array
      */
     public double[] image3DToArray1D(boolean isComplex) {
@@ -344,7 +344,7 @@ public class DeconvUtils {
 
     /**
      * Convert image to float 1D array
-     * 
+     *
      * @param isComplex is the input of size 2*size image ?
      * @return A 1D array
      */
@@ -419,7 +419,7 @@ public class DeconvUtils {
 
     /**
      * Make in place computation of FFT
-     * 
+     *
      * @param array
      */
     public void FFT1D(double[] array) {
@@ -468,7 +468,7 @@ public class DeconvUtils {
 
     /**
      * inverse FFT using 1D double array
-     * 
+     *
      * @param array
      */
     public void IFFT1D(double[] array) {
@@ -490,7 +490,7 @@ public class DeconvUtils {
 
     /**
      * Compute FFTD with vector in input
-     * 
+     *
      * @param vector
      */
     public void FFT1D(ShapedVector vector) {
@@ -515,7 +515,7 @@ public class DeconvUtils {
 
     /**
      * Compute inverse FFTD with vector in input
-     * 
+     *
      * @param vector
      */
     public void IFFT1D(ShapedVector vector) {
@@ -534,7 +534,7 @@ public class DeconvUtils {
 
     /**
      * Pad the PSF to the size of the image and split it.
-     * 
+     *
      * @param isComplex
      * @return An array
      */
@@ -556,7 +556,7 @@ public class DeconvUtils {
 
     /**
      * Get the evaluated size of the F
-     * 
+     *
      * @return Evaluated size
      */
     public int getImagePadding(){

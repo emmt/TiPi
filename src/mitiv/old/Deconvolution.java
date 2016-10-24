@@ -89,7 +89,7 @@ public class Deconvolution{
      * Initial constructor that take the image and the PSF as parameters
      * <br>
      * More options: another correction and use vectors
-     * 
+     *
      * @param image can be path, bufferedImage or IcyBufferedImage
      * @param PSF can be path, bufferedImage or IcyBufferedImage
      */
@@ -102,7 +102,7 @@ public class Deconvolution{
      * Initial constructor that take the image and the PSF as parameters
      * <br>
      * More options: another correction and use vectors
-     * 
+     *
      * @param image can be path, bufferedImage or IcyBufferedImage
      * @param PSF can be path, bufferedImage or IcyBufferedImage
      * @param correction see static {@link CommonUtils}
@@ -115,7 +115,7 @@ public class Deconvolution{
      * Initial constructor that take the image and the PSF as parameters
      * <br>
      * More options: another correction and use vectors
-     * 
+     *
      * @param image can be path, bufferedImage or IcyBufferedImage
      * @param PSF can be path, bufferedImage or IcyBufferedImage
      * @param correction see static {@link CommonUtils}
@@ -146,7 +146,7 @@ public class Deconvolution{
         this.correction = correction;
         wiener = new Filter();
     }
-    
+
     public void setPaddingCoefficient(double coef){
         this.coef = coef;
     }
@@ -156,7 +156,7 @@ public class Deconvolution{
      * This should be used for the first time
      * <br>
      * Options: job
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -167,14 +167,14 @@ public class Deconvolution{
             return firstDeconvolution(alpha, standardProcessing, false);
         }
     }
-    
+
 
     /**
      * Simple filter based on the wiener filter.
      * This should be used for the first time
      * <br>
      * Options: job
-     * 
+     *
      * @param alpha
      * @param isPsfSplitted IF the psf is centered or not
      * @return The bufferedImage for the input value given
@@ -190,7 +190,7 @@ public class Deconvolution{
     /**
      * Simple filter based on the wiener filter.
      * This should be used for the first time
-     * 
+     *
      * @param alpha
      * @param job see static PROCESSING_?
      * @param isPsfSplitted isPsfSplitted If the psf is centered or not
@@ -215,7 +215,7 @@ public class Deconvolution{
      * This should be used for the first time.
      * <br>
      * option: job
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -230,7 +230,7 @@ public class Deconvolution{
     /**
      * Simple filter based on the wiener filter.
      * This should be used for the first time.
-     * 
+     *
      * @param alpha
      * @param job see static PROCESSING_?
      * @return The bufferedImage for the input value given
@@ -250,7 +250,7 @@ public class Deconvolution{
 
     /**
      * First deconvolution for the wiener filter
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -268,7 +268,7 @@ public class Deconvolution{
 
         Double2D outArray =  Double2D.wrap(out, utils.width*2, utils.height);
         return outArray.view(new Range(0,-1,2), null);
-        
+
         /*for (int i = 0; i < utils.width*utils.height; i++) {
             out[i] = out[2*i];
         }
@@ -279,7 +279,7 @@ public class Deconvolution{
     /**
      * Will compute less than firstDeconvolution: 1FTT inverse instead
      * of 2FFT + 1 inverse FFT
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -297,7 +297,7 @@ public class Deconvolution{
 
     /**
      * First deconvolution for the wiener filter
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -305,16 +305,16 @@ public class Deconvolution{
         ShapedArray imgArray = utils.getImgShaped();
         ShapedArray psfArray = utils.getPsfShaped();
         ShapedArray weightArray = ((DoubleArray) psfArray).create();
-        
+
         ((DoubleArray)weightArray).fill(1.0);
-        
+
         imgArray = BufferedImageUtils.imagePad(imgArray, coef);
         psfArray = BufferedImageUtils.imagePad(psfArray, coef);
         weightArray = BufferedImageUtils.imagePad(weightArray, coef);
         psfArray = BufferedImageUtils.shiftPsf(psfArray);
-        
+
         utils.PadImageAndPSF(coef);//Multiply utils.{width,height,sizeZ} by coef
-        
+
         space = new DoubleShapedVectorSpace(utils.width, utils.height, utils.sizeZ);
         fft = new RealComplexFFT(space);
         complexSpace = (DoubleShapedVectorSpace) fft.getOutputSpace();
@@ -333,29 +333,29 @@ public class Deconvolution{
         //DoubleShapedVector out = complexSpace.clone(imgComplex);
         DoubleShapedVector outReal = space.create();
         fft.apply(outReal, out, RealComplexFFT.ADJOINT);
-        
+
         return Double3D.wrap(outReal.getData(), space.getShape());
         //return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
         /*
          * GOOD OLD WAY
          */
-        
+
         /*
         double[] image = utils.image3DToArray1D(false);
         double[] psf = utils.psf3DToArray1Dexp(false);
         image = CommonUtils.imagePad(image, utils.width, utils.height, utils.sizeZ, coef);
         psf = CommonUtils.imagePad(psf, utils.width, utils.height, utils.sizeZ, coef);
-        
+
         utils.PadImageAndPSF(2.0);
-        
+
         double[] psfShift = new double[utils.width*utils.height*utils.sizeZ];
         //CommonUtils.fftShift3D(psf,psfShift, utils.width, utils.height, utils.sizeZ);
         CommonUtils.psf3DPadding1D(psfShift, psf , utils.width, utils.height, utils.sizeZ);
-        
+
         space = new DoubleShapedVectorSpace(utils.width, utils.height, utils.sizeZ);
         fft = new RealComplexFFT(space);
         complexSpace = (DoubleShapedVectorSpace) fft.getOutputSpace();
-        
+
         //vector_psf = space.wrap(utils.shiftPsf3DToArray1D(false));
         //vector_image = space.wrap(utils.image3DToArray1D(false));
         vector_psf = space.wrap(psfShift);
@@ -377,7 +377,7 @@ public class Deconvolution{
     /**
      * Will compute less than firstDeconvolution: 1FTT inverse instead
      * of 2FFT + 1 inverse FFT
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -414,7 +414,7 @@ public class Deconvolution{
      * This should be used for the first time
      * <br>
      * option: job
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -442,7 +442,7 @@ public class Deconvolution{
     /**
      * Use the quadratic approximation with circulant approximation
      * This should be used for the first time
-     * 
+     *
      * @param alpha
      * @param job see static PROCESSING_?
      * @param isPsfSplitted isPsfSplitted If the psf is centered or not
@@ -465,7 +465,7 @@ public class Deconvolution{
     /**
      * Use the quadratic approximation with circulant approximation
      * After the initialization use this function
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -480,7 +480,7 @@ public class Deconvolution{
     /**
      * Use the quadratic approximation with circulant approximation
      * After the initialization use this function
-     * 
+     *
      * @param alpha
      * @param job see static PROCESSING_?
      * @return The bufferedImage for the input value given
@@ -500,7 +500,7 @@ public class Deconvolution{
 
     /**
      * First deconvolution with quadratic option and use in internal only 1D arrays
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -524,7 +524,7 @@ public class Deconvolution{
     /**
      * Will compute less than firstDeconvolutionQuad: 1FTT inverse instead
      * of 2FFT + 1 inverse FFT, with 1D arrays optimization
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -539,7 +539,7 @@ public class Deconvolution{
 
     /**
      * First deconvolution with quadratic option and use in internal only 1D arrays
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -550,7 +550,7 @@ public class Deconvolution{
 
         vectorPsf = space.wrap(utils.shiftPsf3DToArray1D(false));
         vectorImage = space.wrap(utils.image3DToArray1D(false));
-        
+
         DoubleShapedVector imgComplex = complexSpace.create(0);
         DoubleShapedVector psfComplex = complexSpace.create(0);
 
@@ -562,7 +562,7 @@ public class Deconvolution{
         DoubleShapedVector out = complexSpace.wrap(wiener.wienerQuad3D(alpha, psfComplex.getData(), imgComplex.getData(),utils.width,utils.height, utils.sizeZ,utils.sizePadding));
         DoubleShapedVector outReal = space.create();
         fft.apply(outReal, out,RealComplexFFT.ADJOINT);
-        
+
         return Double3D.wrap(outReal.getData(), space.getShape());
         //return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
     }
@@ -570,7 +570,7 @@ public class Deconvolution{
     /**
      * Will compute less than firstDeconvolutionQuad: 1FTT inverse instead
      * of 2FFT + 1 inverse FFT, with 1D arrays optimization
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -615,7 +615,7 @@ public class Deconvolution{
 
     /**
      * Use the conjugate gradients to deconvolve the image
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -625,7 +625,7 @@ public class Deconvolution{
 
     /**
      * Use the conjugate gradients to deconvolve the image
-     * 
+     *
      * @param alpha
      * @param isPsfSplitted If the psf is centered or not
      * @return The bufferedImage for the input value given
@@ -636,7 +636,7 @@ public class Deconvolution{
 
     /**
      * Use the conjugate gradients to deconvolve the image
-     * 
+     *
      * @param alpha
      * @param job see static PROCESSING_?
      * @param isPsfSplitted If the psf is centered or not
@@ -657,7 +657,7 @@ public class Deconvolution{
     /**
      * Use the conjugate gradients to deconvolve the image.<br>
      * Do less computations and allocations.
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -668,7 +668,7 @@ public class Deconvolution{
     /**
      * Use the conjugate gradients to deconvolve the image.<br>
      * Do less computations and allocations.
-     * 
+     *
      * @param alpha
      * @param job see static PROCESSING_?
      * @return The bufferedImage for the input value given
@@ -686,7 +686,7 @@ public class Deconvolution{
 
     /**
      * Use the conjugate gradients to deconvolve the image
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -722,7 +722,7 @@ public class Deconvolution{
     /**
      * Use the conjugate gradients to deconvolve the image.<br>
      * Do less computations and allocations.
-     * 
+     *
      * @param alpha
      * @return The bufferedImage for the input value given
      */
@@ -749,14 +749,14 @@ public class Deconvolution{
         imgArray = BufferedImageUtils.imagePad(imgArray, coef);
         psfArray = BufferedImageUtils.imagePad(psfArray, coef);
         psfArray = BufferedImageUtils.shiftPsf(psfArray);
-        
+
         utils.PadImageAndPSF(coef);
-        
+
         space = new DoubleShapedVectorSpace(utils.width, utils.height, utils.sizeZ);
 
         vectorPsf = space.wrap(psfArray.toDouble().flatten());
         vectorImage = space.wrap(imgArray.toDouble().flatten());
-        
+
         x = space.create(0);
 
         w = space.wrap(weight);
