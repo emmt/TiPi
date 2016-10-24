@@ -1,0 +1,43 @@
+/* http://cyberzoide.developpez.com/graphviz/
+reverse communication optimization algorithm
+
+generate the TikZ figure with:
+
+dot -Txdot $NAME.dot | dot2tex --autosize -ftikz --codeonly > $NAME.tkz
+*/
+
+digraph INVPB {
+	/* Global settings. */
+	edge [penwidth=2];
+
+	/* Inputs. */
+	node [shape=ellipse, color="/brbg11/3", style=filled];
+	inp_y [label = "data: $y$"];
+	inp_w [label = "weights: $w$"];
+	inp_h [label = "model: $h(x)$"];
+	hyper [label = "hyperparameters: $\theta$"];
+	bounds [label = "bounds:\n$x_{\mathrm{min}}$, $x_{\mathrm{max}}$"];
+	opt_params [label = "optimization parameters"];
+
+	/* Cost functions. */
+	node [shape=box, color="/brbg11/4", style=filled];
+	cost_fdata [label = "likelihood: $f_{\mathrm{data}}(x)$"];
+	cost_fprior [label = "regularization: $f_{\mathrm{prior}}(x)$"];
+	cost_f [label = "objective function:\n$f(x) = f_{\mathrm{data}}(x) + \mu\,f_{\mathrm{prior}}(x)$"];
+
+	/* Cost functions. */
+	node [shape=box, color="/brbg11/5", style=filled];
+	optimizer [label = "optimizer: NLCG/L-LBFGS/BMLMB/VMLMB"];
+
+	edge [color = "/brbg11/2", fontcolor="/brbg11/2"];
+	inp_y -> cost_fdata;
+	inp_w -> cost_fdata;
+	inp_h -> cost_fdata;
+	hyper -> cost_fprior;
+	hyper -> cost_f;
+	cost_fdata -> cost_f;
+	cost_fprior -> cost_f;
+	cost_f -> optimizer;
+	bounds -> optimizer;
+	opt_params -> optimizer;
+}

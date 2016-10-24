@@ -4,7 +4,7 @@
     
     <url>
      <loc>None/</loc>
-     <lastmod>2016-10-17</lastmod>
+     <lastmod>2016-10-24</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -13,25 +13,25 @@
         
     <url>
      <loc>None/framework/</loc>
-     <lastmod>2016-10-17</lastmod>
+     <lastmod>2016-10-24</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/shaped-arrays/</loc>
-     <lastmod>2016-10-17</lastmod>
+     <lastmod>2016-10-24</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/array-factory/</loc>
-     <lastmod>2016-10-17</lastmod>
+     <lastmod>2016-10-24</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/vectors/</loc>
-     <lastmod>2016-10-17</lastmod>
+     <lastmod>2016-10-24</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -40,30 +40,44 @@
     
         
     <url>
+     <loc>None/devel/</loc>
+     <lastmod>2016-10-24</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
      <loc>None/new-vector-types/</loc>
-     <lastmod>2016-10-17</lastmod>
+     <lastmod>2016-10-24</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/tpp/</loc>
-     <lastmod>2016-10-17</lastmod>
+     <lastmod>2016-10-24</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
+    
+
+    
+    <url>
+     <loc>None/deconv-tool/</loc>
+     <lastmod>2016-10-24</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
     
 
     
         
     <url>
      <loc>None/license/</loc>
-     <lastmod>2016-10-17</lastmod>
+     <lastmod>2016-10-24</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/news/</loc>
-     <lastmod>2016-10-17</lastmod>
+     <lastmod>2016-10-24</lastmod>
      <changefreq>daily</changefreq>
     </url>
         

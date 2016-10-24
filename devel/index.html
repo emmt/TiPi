@@ -9,7 +9,7 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
 
-	<title>Vectors - TiPi framework</title>
+	<title>Code Maintenance - TiPi framework</title>
 
         <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../css/font-awesome-4.5.0.css" rel="stylesheet">
@@ -59,7 +59,7 @@
                 
                 
                 
-                    <li class="dropdown active">
+                    <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                         
@@ -82,8 +82,8 @@
 
                         
                             
-<li class="active">
-    <a href="./">Vectors</a>
+<li >
+    <a href="../vectors/">Vectors</a>
 </li>
 
                         
@@ -92,13 +92,13 @@
                 
                 
                 
-                    <li class="dropdown">
+                    <li class="dropdown active">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Developpers <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                         
                             
-<li >
-    <a href="../devel/">Code Maintenance</a>
+<li class="active">
+    <a href="./">Code Maintenance</a>
 </li>
 
                         
@@ -156,12 +156,12 @@
                 </li>
                 
                     <li >
-                        <a rel="next" href="../array-factory/">
+                        <a rel="next" href="../vectors/">
                             <i class="fa fa-arrow-left"></i> Previous
                         </a>
                     </li>
                     <li >
-                        <a rel="prev" href="../devel/">
+                        <a rel="prev" href="../new-vector-types/">
                             Next <i class="fa fa-arrow-right"></i>
                         </a>
                     </li>
@@ -177,147 +177,60 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#using-vectors-in-tipi">Using vectors in TiPi</a></li>
+        <li class="main active"><a href="#notes-for-developers">Notes for developers</a></li>
         
-    
-        <li class="main "><a href="#operations-involving-vector-spaces">Operations involving vector spaces</a></li>
+            <li><a href="#eclipse">Eclipse</a></li>
         
-            <li><a href="#methods-implemented-by-vectors">Methods implemented by vectors</a></li>
+            <li><a href="#documentation">Documentation</a></li>
         
     
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="using-vectors-in-tipi">Using vectors in TiPi</h1>
-<p>This section describes the objects used in TiPi to store the variables (but
-also the data and their weights) of an optimization problem.</p>
-<h1 id="operations-involving-vector-spaces">Operations involving vector spaces</h1>
-<p>Vectors can be created by their vector space with either undefined contents of
-with their components set to given values.  For instance, to create a new
-vector of the vector space <code>vsp</code>:</p>
-<pre><code class="java">vsp.create()    // yields a new vector with undefined contents
-vsp.create(val) // yields a new vector with all components set to `val`
-vsp.one()       // is equivalent to space.create(1)
-vsp.zero()      // is equivalent to space.create(0)
+<h1 id="notes-for-developers">Notes for developers</h1>
+<h2 id="eclipse">Eclipse</h2>
+<h3 id="external-libraries">External libraries</h3>
+<p>Copy the JAR file(s) of the external libraries in <code>lib</code> directory, then
+<code>Refresh</code> the Project and in <code>Project Properties</code>, choose <code>Java Build Path</code>,
+tab <code>Libraries</code> and hit <code>Add JARs...</code>.  Then browse in the <code>lib</code> directory of
+the project and select the JAR file.</p>
+<p>It is then possible to attach source and documentation for the JAR library file
+by expanding its entry in the list (the small black arrow at the left of its
+name).</p>
+<h3 id="ant-scripts">Ant scripts</h3>
+<p>Java, Ant and JavadDoc must be installed:</p>
+<pre><code>sudo apt install ant
+sudo apt install default-jdk
 </code></pre>
-
-<p>To check whether a vector <code>vec</code> belongs to the vector space <code>vsp</code>, the
-following expressions can be used:</p>
-<pre><code class="java">vsp.owns(vec)
-vec.belongsTo(vsp)
-vec.getOwner() == vsp
+<p>In <code>Export</code> choose <code>General &gt; Ant Buildfiles</code> select <code>TiPi</code>.</p>
+<h2 id="documentation">Documentation</h2>
+<p>Documentation consists in JavaDoc automatically generated from the Java source
+and manual pages written in MarkDown format (in the <code>docs</code> directory) and
+published using <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+<h3 id="installation-of-mkdocs">Installation of MkDocs</h3>
+<p><a href="http://www.mkdocs.org/">MkDocs</a> can be installed by PIP:</p>
+<pre><code>sudo apt install python-pip python-setuptools
+sudo pip install --upgrade mkdoc
 </code></pre>
-
-<p>The call:</p>
-<pre><code class="java">vsp.check(vec)
+<h3 id="editing-the-documentation">Editing the documentation</h3>
+<p>While editing the files in the <code>docs</code> directory, you can have a look at the
+result by using the built-in server of MkDocs and opening URL
+http://127.0.0.1:8000 with your browser.  To launch the server:</p>
+<pre><code>mkdocs serve
 </code></pre>
-
-<p>checks whether vector <code>vec</code> belongs to the vector space <code>vsp</code> and throws an
-<code>IncorrectSpaceException</code> exception otherwise.</p>
-<h2 id="methods-implemented-by-vectors">Methods implemented by vectors</h2>
-<p>Many methods are available to directly manipulate vectors.  These methods are
-sufficient to implement the iterative optimization algorithms provided by TiPi.</p>
-<p>The following methods are assumed to be efficient:</p>
-<ul>
-<li>
-<p><code>vec.create()</code> yields a new vector of the same vector space as <code>vec</code>
-  with undefined contents.</p>
-</li>
-<li>
-<p><code>vec.clone()</code> yields a new vector of the same vector space as <code>vec</code> and with
-  all its components set to the corresponding values of the components of
-  <code>vec</code>.</p>
-</li>
-<li>
-<p><code>dst.copy(src)</code> copies the values of the components of vector <code>src</code> into
-  vector <code>dst</code>.</p>
-</li>
-<li>
-<p><code>vec.norm2()</code> yields the Euclidean norm of <code>vec</code> which is the square root of
-  the sum of the squared value of its components.</p>
-</li>
-<li>
-<p><code>vec.norm1()</code> yields the L1 norm of <code>vec</code> which is the sum of the absolute
-  value of its components.</p>
-</li>
-<li>
-<p><code>vec.norm2()</code> yields the infinite norm of <code>vec</code> which is the maximum absolute
-  value of its components.</p>
-</li>
-<li>
-<p><code>x.dot(y)</code> yields the dot product of vectors <code>x</code> and <code>y</code>.</p>
-</li>
-<li>
-<p><code>w.dot(x,y)</code> yields the dot product of vectors <code>x</code> and <code>y</code> weighted by <code>w</code>.
-  This dot product can be expressed as <code>x'.W.y</code> where <code>W = diag(w)</code> is a
-  diagonal weighting operator.</p>
-</li>
-<li>
-<p><code>x.swap(y)</code> exchanges the values of the corresponding components of vectors
-  <code>x</code> and <code>y</code>.</p>
-</li>
-<li>
-<p><code>vec.fill(val)</code> set all components of vector <code>vec</code> to the value <code>val</code>.</p>
-</li>
-<li>
-<p><code>vec.zero()</code> is the same as <code>x.fill(0)</code></p>
-</li>
-</ul>
-<p>Various linear combination of vectors can be formed:</p>
-<ul>
-<li>
-<p><code>dst.add(alpha, x)</code> add to the components of <code>dst</code> the components of the
-  vector <code>x</code> multiplied by the scalar <code>alpha</code>.</p>
-</li>
-<li>
-<p><code>dst.combine(alpha, x, beta, y)</code> stores in <code>dst</code> the sum of <code>alpha</code> times <code>x</code>
-  plus <code>beta</code> times <code>y</code>.</p>
-</li>
-<li>
-<p><code>dst.combine(alpha, x, beta, y, gamma, z)</code></p>
-</li>
-<li>
-<p><code>vec.scale(val)</code> scales all the components of the vector <code>vec</code> by the scalar
-  <code>alpha</code></p>
-</li>
-<li>
-<p><code>dst.scale(alpha, src)</code> stores in vector <code>dst</code> the result of scaling vector
-  <code>src</code> by the scalar <code>alpha</code>.</p>
-</li>
-<li>
-<p><code>dst.multiply(w)</code> stores in vector <code>dst</code> the result of the component-wise
-  multiplication of <code>dst</code> by the vector <code>w</code>.</p>
-</li>
-<li>
-<p><code>dst.multiply(w, x)</code> stores in vector <code>dst</code> the result of the component-wise
-  multiplication of vectors <code>w</code> and <code>x</code>.</p>
-</li>
-</ul>
-<p>The above methods manipulate vectors globally are supposed to be efficient.
-Two methods are provided to examine or set individually the components of a
-vector.  These methods are mainly used for debugging or informative purposes
-and are not meant to be efficient (although it does not hurt if they are!).</p>
-<ul>
-<li>
-<p><code>vec.get(i)</code> get the value of <code>i</code>-th component of vector <code>vec</code>.</p>
-</li>
-<li>
-<p><code>vec.set(i, val)</code> set the <code>i</code>-th component of vector <code>vec</code> to the value <code>val</code>.</p>
-</li>
-</ul>
-<p>where index <code>i</code> is an integer between <code>0</code> for the first component and <code>n - 1</code>
-for the last component (<code>n</code> being the number of components of the vector).</p>
-<ul>
-<li>
-<p><code>vec.getNumber()</code> and <code>vec.length()</code> yields the number of components of the
-  vector <code>vec</code>.</p>
-</li>
-<li>
-<p><code>vec.getOwner()</code> and <code>vec.getSpace()</code> yields the vector space to which
-  belongs vector <code>vec</code>.</p>
-</li>
-</ul></div>
+<p>while in the directory where is the <code>mkdocs.yml</code> file (above the <code>docs</code>
+directory).  To generate manually the documentation, type (from the same
+directory):</p>
+<pre><code>mkdocs build --clean
+</code></pre>
+<h3 id="publishing-the-documentation">Publishing the documentation</h3>
+<p>To publish the doc:</p>
+<pre><code>git checkout gh-pages
+git merge master # or whatever
+mkdocs gh-deploy --clean
+git checkout master
+</code></pre></div>
             
         </div>
 

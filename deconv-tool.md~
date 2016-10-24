@@ -1,0 +1,59 @@
+# Deblurring/denoising of images with edge preserving
+
+As a demonstration, TiPi provides a command line tool for the
+deblurring/denoising of images.  This tool avoids border artifacts, implements
+edge-preserving regularization, accounts for bad/missing data and constraints
+such as nonnegativity.
+
+
+## Weighting of the data
+
+By default, the data noise is assumed to be i.i.d. (independent and identically
+distributed) with a normal distribution.  This amounts to having a simple
+least-squares norm is used for the data agreement term.
+
+It is assumed that the data noise distribution is approximately independent and
+Gaussian (though not necessarily identically distributed).
+
+
+In neither `--noise`, nor `--gain`, nor `--weight` are specified, a simple
+least-squares norm is used for the data agreement term.
+
+If only `--noise SIGMA` is specified, it is assumed that `SIGMA` is the
+standard deviation of the noise in the same units as the data for each
+measurement. `SIGMA` must be strictly positive.
+
+If `--noise SIGMA` and `--gain GAMMA` are both specified, it is assumed that
+`SIGMA` is the standard deviation of the readout noise in counts (*e.g.*
+photo-electrons) per pixel while `GAMMA` is the conversion factor in counts per
+analog digital unit (ADU) such that `GAMMA*DATA` is the measured data in count
+units.
+
+Note that option `--weight` has precedence over `--noise` and `--gain`, the two
+latter options are ignored if `--weight` is specified.
+
+
+
+## Specifying the bad data
+
+In the input data, all non-finite values will be considered as bad data and
+will be discarded in the processing.  Furthermore, if weights are specified
+(via the `--weight` option), any piece of data whose corresponding weight is
+zero is also not considered.
+
+This behavior can be combined with the option `--bad FILENAME` to specify the
+location of bad data.  Argument `FILENAME` is the name of a data file with the
+same dimensions as the input data and whose values are non-zero where the data
+should be discarded.
+
+
+## Bound constraints
+
+Options `--min LOWER` and `--max UPPER` can be used to sepcify a lower and an
+upper bounds for the result.  For instance, `--min 0` would enforces
+nonnegativity of the result.  Note that when any bound is specified, the
+optimization method is automatically set to be a variant of the limited memory
+BGFS method with bound constraints.
+
+
+

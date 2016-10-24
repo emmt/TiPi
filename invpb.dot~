@@ -1,0 +1,46 @@
+/* http://cyberzoide.developpez.com/graphviz/
+reverse communication optimization algorithm
+
+generate the TikZ figure with:
+
+dot -Txdot $NAME.dot | dot2tex --autosize -ftikz --codeonly > $NAME.tkz
+*/
+
+digraph G {
+  start [label = "Start with x,\nset stage = 0.", texlbl="start with $x$, let $k=0$", color=Orchid, style=filled];
+  project [label = "Projection: x = P(x).", texlbl="Compute $x \leftarrow P_\Omega(x)$", shape=box, color=Turquoise, style=filled];
+  fg [label = "Compute f = f(x)\nand g = ∇f(x).", shape=box, color=Turquoise, style=filled];
+  best [label = "Initialize or update\nbest solution.", shape=box, color=SteelBlue, style=filled];
+  first_try [label = "Compute spectral length λ,\nsave position: (x0,f0,g0) = (x,f,g)\nx = x0 - λ g0,\nstage = 1.", texlbl="$x_0 \leftarrow x$", shape=box, color=SteelBlue, style=filled];
+  /*starting [label = "Starting?"];*/
+  check_convergence [label = "Global\nconvergence?", color=PaleGreen, style=filled];
+  check_linesearch [label = "stage = 0 or linesearch\nconvergence?", color=PaleGreen, style=filled];
+  end [label = "End.", color=Orchid, style=filled];
+  backtrack [label = "α = ...,\nx = x0 + α d,\nstage = 2.", shape=box, color=SteelBlue, style=filled];
+  check_stage [label = "stage?", color=PaleGreen, style=filled];
+  compute_direction [label = "Compute direction: d = x - x0\nand initialize linesearch.", shape=box, color=SteelBlue, style=filled];
+  pre_proj_grad [label = "Save current variables: d = x\nx = x - η g\nstage = 3.", shape=box, color=SteelBlue, style=filled];
+  post_proj_grad [label = "Form projected gradient:\npg = (d - x)/η,\ncompute its norms,\nand restore variables: x = d.", shape=box, color=SteelBlue, style=filled];
+
+
+  start -> project [color=red4];
+
+  project -> check_stage [color=red4];
+  project -> check_stage [color="darkgreen"];
+  project -> check_stage [color=DeepSkyBlue3];
+
+  check_stage -> fg [label = "stage = 0", fontcolor=red4, color=red4];
+  check_stage -> compute_direction [label = "stage = 1", fontcolor="darkgreen", color="darkgreen"];
+  check_stage -> post_proj_grad [label = "stage = 3", fontcolor=DeepSkyBlue3, color=DeepSkyBlue3];
+  post_proj_grad -> check_convergence;
+
+  compute_direction -> fg;
+  fg -> best -> check_linesearch;
+  check_linesearch -> backtrack [label = "no"];
+  check_linesearch -> pre_proj_grad [label = "yes"];
+  pre_proj_grad -> project [fontcolor=DeepSkyBlue3, color=DeepSkyBlue3];
+  check_convergence -> end [label = "yes"];
+  check_convergence -> first_try [label = "no"];
+  first_try -> project [fontcolor="darkgreen", color="darkgreen"];
+  backtrack -> fg;
+}

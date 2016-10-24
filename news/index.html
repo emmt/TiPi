@@ -98,6 +98,12 @@
                         
                             
 <li >
+    <a href="../devel/">Code Maintenance</a>
+</li>
+
+                        
+                            
+<li >
     <a href="../new-vector-types/">New Vector Types</a>
 </li>
 
@@ -109,6 +115,12 @@
 
                         
                         </ul>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../deconv-tool/">Tools</a>
                     </li>
                 
                 
@@ -176,14 +188,34 @@
 <li>
 <p>Deconvolution works in single/double precision.</p>
 </li>
-<li>Deconvolution no longer zero-pad the data.</li>
-<li>Improved line search parameters.</li>
-<li>"Step changed" bug fixed.</li>
-<li>Add <code>isFlat</code> method for checking whether the array is already in a
-    <em>flat</em> form.  Methods <code>flatten()</code> and <code>isFlat()</code> are more consistent.</li>
+<li>
+<p>Deconvolution no longer zero-pad the data.</p>
+</li>
+<li>
+<p>Improved line search parameters.</p>
+</li>
+<li>
+<p>"Step changed" bug fixed.</p>
+</li>
+<li>
+<p>Add <code>isFlat</code> method for checking whether the array is already in a
+    <em>flat</em> form.  Methods <code>flatten()</code> and <code>isFlat()</code> are more consistent.
+    Some methods has been optimized to account for flat arrays.</p>
+</li>
 <li>
 <p>Speed up deconvolution by not zero-padding the data (but still use a
     larger object space to avoid border artifacts).</p>
+</li>
+<li>
+<p>Duplicated methods between <code>VectorSpace</code> and <code>Vector</code> have been removed.
+    the low level methods are kept in the <code>VectorSpace</code> class and all high
+    level methods which involve at least a vector are now provided in the
+    <code>Vector</code> class.  This yields more readable and consistent code.</p>
+</li>
+<li>
+<p><code>byte</code> type in shaped arrays is assumed to be unsigned as it makes more
+    sense for image processing.  This involves expressions like <code>(b &amp; 0xFF)</code>
+    when using byte value <code>b</code>.</p>
 </li>
 <li>
 <p>2014/11/04</p>

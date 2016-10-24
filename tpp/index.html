@@ -98,6 +98,12 @@
                         
                             
 <li >
+    <a href="../devel/">Code Maintenance</a>
+</li>
+
+                        
+                            
+<li >
     <a href="../new-vector-types/">New Vector Types</a>
 </li>
 
@@ -109,6 +115,12 @@
 
                         
                         </ul>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../deconv-tool/">Tools</a>
                     </li>
                 
                 
@@ -149,7 +161,7 @@
                         </a>
                     </li>
                     <li >
-                        <a rel="prev" href="../license/">
+                        <a rel="prev" href="../deconv-tool/">
                             Next <i class="fa fa-arrow-right"></i>
                         </a>
                     </li>
@@ -195,18 +207,18 @@
                 <div class="col-md-9" role="main">
 
 <h1 id="the-tipi-pre-processor">The TiPi Pre-processor</h1>
-<p><strong>tpp</strong>, the <em>TiPi Pre-processor</em>, is used to produce Java code of many TiPi
+<p><strong>TPP</strong>, the <em>TiPi Pre-processor</em>, is used to produce Java code of many TiPi
 classes from a single or a few source files.  In TiPi source tree, the files
-which need to be pre-processed by <code>tpp</code> to produce Java code are suffixed by
-<code>.javax</code> and are all in the <a href="../../src/codegen"><code>src/codegen</code></a> directory.</p>
-<p>The principles of <code>tpp</code> are simple: it interprets special pre-processor
+which need to be pre-processed by TPP to produce Java code are suffixed by
+<code>.javax</code> and are all in the <code>tpp</code> directory.</p>
+<p>The principles of TPP are simple: it interprets special pre-processor
 directives in the source code and re-emit other lines of code, possibly several
 times if these lines appear in a pre-processor loop, after performing macro
-substitution.  Compared to other programming language pre-processors, <code>tpp</code>
+substitution.  Compared to other programming language pre-processors, TPP
 provides macros with immediate and deferred substitution, loops, evaluation of
 expressions and can be used to generate almost arbitrary code.</p>
 <h2 id="calling-the-preprocessor">Calling the Preprocessor</h2>
-<p>The syntax for calling <code>tpp</code> is:</p>
+<p>The syntax for calling TPP is:</p>
 <pre><code class="sh">tpp [OPTIONS] [INPUT [OUTPUT]]
 </code></pre>
 
@@ -243,7 +255,7 @@ the standard input (resp.the standard output).</p>
 <p><code>--</code>: Indicate the end of the options.</p>
 </li>
 </ul>
-<p>Some options are clearly targeted at Java code, but <code>tpp</code> can be applied to
+<p>Some options are clearly targeted at Java code, but TPP can be applied to
 other programming languages.</p>
 <h2 id="general-syntax">General Syntax</h2>
 <p>Pre-processor directives are lines of the form:</p>
@@ -341,7 +353,7 @@ can be <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</
 <p>Note that macros are recursively substituted if they appear in an expression
 including whithin the double quotes of a string.</p>
 <h3 id="predefined-macros">Predefined Macros</h3>
-<p>When processing a file, <code>tpp</code> automatically define (and update) the following
+<p>When processing a file, TPP automatically define (and update) the following
 macros:</p>
 <ul>
 <li><code>${__FILE__}</code> yields the name of the current processed file.</li>
@@ -402,9 +414,9 @@ is processed if <code>EXPR2</code> evaluates to <code>true</code>, eventually <c
 if neither <code>EXPR1</code> nor <code>EXPR2</code> evaluate to <code>true</code>.  Conditional expressions are
 evaluated using the same rules as in the <code>#eval</code> directive.</p>
 <h2 id="loops">Loops</h2>
-<p>A distinctive feature of <code>tpp</code> is to provide loops which may be embedded in
-other loops to an arbitrarily level.  There are two kinds of loops: <code>for</code>-loops
-and <code>while</code>-loops.</p>
+<p>A distinctive feature of TPP is to provide loops which may be embedded in other
+loops to an arbitrarily level.  There are two kinds of loops: <code>for</code>-loops and
+<code>while</code>-loops.</p>
 <p>The syntax of a <code>for</code>-loop is:</p>
 <pre><code class="java">//# for NAME in EXPR
 ...

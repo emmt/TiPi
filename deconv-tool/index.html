@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+
+	<title>Tools - TiPi framework</title>
+
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.5.0.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">TiPi framework</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../framework/">Framework</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../shaped-arrays/">Shaped Arrays</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../array-factory/">Making Arrays</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../vectors/">Vectors</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Developpers <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../devel/">Code Maintenance</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../new-vector-types/">New Vector Types</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../tpp/">The TiPi Preprocessor</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li class="active">
+                        <a href="./">Tools</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../license/">License</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../news/">News</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                </ul>
+            
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                
+                    <li >
+                        <a rel="next" href="../tpp/">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../license/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#deblurringdenoising-of-images-with-edge-preserving">Deblurring/denoising of images with edge preserving</a></li>
+        
+            <li><a href="#inverse-problem">Inverse problem</a></li>
+        
+            <li><a href="#simple-usage">Simple usage</a></li>
+        
+            <li><a href="#initial-solution">Initial solution</a></li>
+        
+            <li><a href="#weighting-of-the-data">Weighting of the data</a></li>
+        
+            <li><a href="#invalid-data-and-avoiding-border-artifacts">Invalid data and avoiding border artifacts</a></li>
+        
+            <li><a href="#bound-constraints">Bound constraints</a></li>
+        
+            <li><a href="#tuning-the-optimizer">Tuning the optimizer</a></li>
+        
+    
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="deblurringdenoising-of-images-with-edge-preserving">Deblurring/denoising of images with edge preserving</h1>
+<p>As a demonstration, TiPi provides a command line tool <code>tipideconv</code> for the
+deblurring/denoising of images.  This tool avoids border artifacts, implements
+edge-preserving regularization, accounts for bad/missing data and constraints
+such as nonnegativity.</p>
+<h2 id="inverse-problem">Inverse problem</h2>
+<p>The principle of <code>tipideconv</code> is to solve the following inverse problem:</p>
+<p align="center"><code>
+    min { f(x) = f<sub>data</sub>(x) + µ f<sub>prior</sub>(x) }
+</code></p>
+
+<p>where <code>x</code> is the solution (<em>e.g.</em> the deblurred/denoised image) and <code>f(x)</code> is
+the objective function to minimize.  The objective function is specified by
+<code>f<sub>data</sub>(x)</code>, the <em>likelihood</em> term, which imposes to fit
+the data, <code>f<sub>prior</sub>(x)</code>, the <em>regularization</em> term, which
+imposes prior knowledge about <code>x</code> and <code>µ ≥ 0</code> which tune the relative
+importance of the regularization.  Minimizing <code>f(x)</code> can be seen as seeking for
+<code>x</code> which is compromise between good fit to the data and agreement with some
+priors.</p>
+<p>The likelihood term is defined as:</p>
+<p align="center"><code>
+    f<sub>data</sub>(x) = (1/2) ∥h*x - y∥<sup>2</sup><sub>W</sub>
+</code></p>
+
+<p>with <code>h</code> the point spread function (PSF), <code>h*x</code> the convolution of the image
+<code>x</code> by <code>h</code>, <code>y</code> the data and <code>W = diag(w)</code> a diagonal weighting operator.  The
+(squared) weighted norm is given by <code>∥u∥<sup>2</sup><sub>W</sub> =
+u<sup>t</sup>⋅W⋅u</code></p>
+<p>The regularization favors egde-preserving smoothness, it is given by:</p>
+<p align="center"><code>
+    f<sub>prior</sub>(x) = ∑<sub> i</sub>
+    sqrt( ∥(∇x)<sub>i</sub>∥<sup>2</sup> + ε<sup>2</sup> )
+</code></p>
+
+<p>where <code>∥(∇x)<sub>i</sub>∥</code> is the Euclidean norm of the spatial
+gradient at position <code>i</code> and <code>ε</code> is an edge threshold parameter.  The
+smoothness is less severely imposed where the spatial gradient is larger than
+this threshold which should be set to the typical height of the edges.</p>
+<p>The quantities <code>y</code>, <code>h</code>, <code>w</code>, <code>µ</code> and <code>ε</code> are all input parameters of
+<code>tipideconv</code>.  If the PSF <code>h</code> is not specified, it is assumed to be a Dirac
+delta function thus no attempt to deblur the image is done and the result of
+the inverse problem is a denoised image.</p>
+<h2 id="simple-usage">Simple usage</h2>
+<p>The command line tool is typically called as:</p>
+<pre><code>java -jar TiPi.jar [OPTIONS] INPUT OUTPUT
+</code></pre>
+<p>where <code>TiPi.jar</code> is the launchable JAR file of TiPi, <code>OPTIONS</code> represent
+optional settings, <code>INPUT</code> is the name of the file with the input image (or
+data) <code>y</code> and <code>OUTPUT</code> is the name of the file to save the result <code>x</code>. All
+files are identified by their extension (at least FITS and MDA format are
+supported).</p>
+<p>The most common options are:</p>
+<ul>
+<li>
+<p><code>--psf NAME</code> to specify the name of the file with the PSF <code>h</code>.  If not
+  specified, a Dirac delta function is assumed (<em>i.e.</em> no deblurring).</p>
+</li>
+<li>
+<p><code>--mu µ</code> to specify the regularization level.</p>
+</li>
+<li>
+<p><code>--epsilon ε</code> to specify the edge threshold.</p>
+</li>
+</ul>
+<p>There are many other options which are described in the following sections.
+Most parameters have default values.  All parameters (and their default values)
+can be displayed with:</p>
+<pre><code>tipideconv --help
+</code></pre>
+<h2 id="initial-solution">Initial solution</h2>
+<p>The image restoration is an iterative process.  By default, the initial image
+has the same value everywhere.  Another initial image may be provided with the
+option <code>--init FILENAME</code> where <code>FILENAME</code> is the name of the file with the
+image to start with.  Although the solution of the inverse problem is unique
+(provided <code>µ &gt; 0</code>), this option is useful to speedup computations by starting
+the algorithm with a better approximation of the solution than the default
+initial image.  This is of particular importance when tuning the parameters
+(<em>e.g.</em> <code>µ</code> and <code>ε</code>) which have an influence on the solution.</p>
+<h2 id="weighting-of-the-data">Weighting of the data</h2>
+<p>By default, the data noise is assumed to be i.i.d. (independent and identically
+distributed) with a normal distribution.  This amounts to having a simple
+squared Euclidean norm for the data agreement term
+<code>f<sub>data</sub>(x)</code>, <em>i.e.</em> the weighting operator is equal to the
+identity, <code>W = I</code>.  There are however options to specify other weights <code>w</code> and
+assume that the data noise distribution is approximately independent and
+Gaussian but not necessarily identically distributed.</p>
+<p>Option <code>--weights FILENAME</code> where <code>FILENAME</code> is the name of a file with the
+weights to use is the most flexible way to specify the weights <code>w</code>.  Note that
+the weights <code>w</code> must have the same dimensions as the data <code>y</code> (<em>i.e.</em> one
+weight per piece of data) and that all weights must be finite and nonnegative.</p>
+<p>Another possibility is to use options <code>--noise SIGMA</code> and <code>--gain GAMMA</code>
+to compute the weights using a simple model of the variance of the data:</p>
+<ul>
+<li>
+<p>If only <code>--noise SIGMA</code> is specified, it is assumed that <code>SIGMA</code> is the
+ standard deviation of the noise in the same units as the data for each
+ measurement. <code>SIGMA</code> must be strictly positive.</p>
+</li>
+<li>
+<p>If <code>--noise SIGMA</code> and <code>--gain GAMMA</code> are both specified, it is assumed that
+  <code>SIGMA</code> is the standard deviation of the readout noise in counts (<em>e.g.</em>
+  photo-electrons) per measurement while <code>GAMMA</code> is the conversion factor in
+  counts per analog digital unit (ADU) such that <code>GAMMA⋅y</code> is the measured
+  data in count units.</p>
+</li>
+</ul>
+<p>Note that option <code>--weights</code> has precedence over <code>--noise</code> and <code>--gain</code>, the
+two latter options are ignored if <code>--weights</code> is specified.  In neither
+<code>--noise</code>, nor <code>--gain</code>, nor <code>--weights</code> are specified, a simple least-squares
+norm is used for the data agreement term.</p>
+<h2 id="invalid-data-and-avoiding-border-artifacts">Invalid data and avoiding border artifacts</h2>
+<p>One of the important feature of <code>tipideconv</code> is to properly take into account
+missing or invalid data.  This however necessitates to properly specify where
+are the invalid measurements.</p>
+<p>In the input data, all non-finite values are assumed to be invalid and will not
+be considered by the processing.  Furthermore, if weights are specified (via
+the <code>--weights</code> option), any piece of data whose corresponding weight is zero
+is also not considered.</p>
+<p>This behavior can be combined with the option <code>--invalid FILENAME</code> to specify
+the name of a data file with the same dimensions as the input data and whose
+values are non-zero where the data should be discarded.</p>
+<p>To avoid aliasing and the resulting border artifacts, <code>tipideconv</code> is capable
+of restoring an image which is larger than the original data.  Option <code>--pad</code>
+can be used to control the amount of padding, its value can be <code>auto</code> (to avoid
+aliasing almost completely), <code>min</code> to work with the minimal possible size, or a
+number <code>n</code> to pad by at least <code>n</code> elements along all dimensions.  In addition
+to this padding, the dimensions may be enlarged to achieve faster operations
+(because of the FFT).  Option <code>--crop</code> can be specified to remove the extra
+padding in the saved solution.</p>
+<h2 id="bound-constraints">Bound constraints</h2>
+<p>Options <code>--min LOWER</code> and <code>--max UPPER</code> may be used to specify a lower and an
+upper bounds for the result.  For instance, <code>--min 0</code> would enforce
+nonnegativity of the result.  Note that when any bound is specified, the
+optimization method is automatically set to be a variant of the limited memory
+BGFS method with bound constraints.</p>
+<h2 id="tuning-the-optimizer">Tuning the optimizer</h2>
+<p>A limited memory optimizer is in charge of solving the inverse problem.  The
+number of memorized steps can be specified with option <code>--lbfgs NUMBER</code>.  If
+<code>NUMBER</code> is less or equal zero and if there are no bound constraints on the
+variables, then a non-linear conjugate gradient algorithm is used; otherwise, a
+limited memory quasi-Newton method (similar to L-BFGS) is used.  The number of
+memorized steps has only an incidence on the computation time, a moderate
+number of memorized steps is usually a good compromise to achieve the least
+number of iterations while keeping each iteration not too expensive to compute
+and the amount of memory reasonable.  For very large problems, you may have to
+take <code>NUMBER = 1</code> or <code>NUMBER = 0</code> to keep the memory requirements as low as
+possible.  You may also tune the parameters of the <code>java</code> command to allocate
+more memory to the Java virtual machine (in the limits of your machine memory of
+course).</p>
+<p>Another way to limit the amount of memory (and to speedup the computations) is
+to force the algorithm to use single precision floating point values by
+specifying option <code>--single</code>.  By default, single precision is used if all
+inputs files use integers or single precision floating point values.</p>
+<p>The convergence criterion is based on the Euclidean norm of the gradient of the
+objective function (or on the infinite norm of the gradient if there are bound
+constraints).  The convergence of the algorithm is assumed as soon as:</p>
+<p align="center"><code>
+    ∥∇f(x)∥ ≤ max( gatol, grtol⋅∥∇f(x<sub>0</sub>)∥ )
+</code></p>
+
+<p>where <code>x<sub>0</sub></code> is the initial solution and <code>gatol</code> and
+<code>grtol</code> are the absolute and relative gradient tolerances.  Both can be
+specified by the options <code>--gatol VALUE</code> and <code>--grtol VALUE</code>.</p>
+<p>It is possible to limit the number of iterations of the algorithm and/or the
+number of evaluations of the cost function respectively via the options
+<code>--maxiter NUMBER</code> and <code>--maxeval NUMBER</code>.  Note that at least one function
+(and gradient) evaluation per iteration is required.</p></div>
+            
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script>var base_url = '..';</script>
+        <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
+        <script src="../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
