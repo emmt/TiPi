@@ -56,7 +56,8 @@ public class ArrayFactory {
     /**
      * Create a new Scalar object with given type.
      *
-     * @param type - The type of the element of the result.
+     * @param type
+     *        The type of the element of the result.
      *
      * @return A new Scalar object.
      */
@@ -82,8 +83,12 @@ public class ArrayFactory {
     /**
      * Create a new Array1D object with given type and dimension.
      *
-     * @param type - The type of the elements of the result.
-     * @param dim1 - The 1st dimension of the 1D array.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param dim1
+     *        The 1st dimension of the 1D array.
+     *
      * @return A new Array1D object.
      */
     public static Array1D create(int type, int dim1) {
@@ -108,9 +113,15 @@ public class ArrayFactory {
     /**
      * Create a new Array2D object with given type and dimensions.
      *
-     * @param type - The type of the elements of the result.
-     * @param dim1 - The 1st dimension of the 2D array.
-     * @param dim2 - The 2nd dimension of the 2D array.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param dim1
+     *        The 1st dimension of the 2D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 2D array.
+     *
      * @return A new Array2D object.
      */
     public static Array2D create(int type, int dim1, int dim2) {
@@ -135,10 +146,18 @@ public class ArrayFactory {
     /**
      * Create a new Array3D object with given type and dimensions.
      *
-     * @param type - The type of the elements of the result.
-     * @param dim1 - The 1st dimension of the 3D array.
-     * @param dim2 - The 2nd dimension of the 3D array.
-     * @param dim3 - The 3rd dimension of the 3D array.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param dim1
+     *        The 1st dimension of the 3D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 3D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 3D array.
+     *
      * @return A new Array3D object.
      */
     public static Array3D create(int type, int dim1, int dim2, int dim3) {
@@ -163,11 +182,21 @@ public class ArrayFactory {
     /**
      * Create a new Array4D object with given type and dimensions.
      *
-     * @param type - The type of the elements of the result.
-     * @param dim1 - The 1st dimension of the 4D array.
-     * @param dim2 - The 2nd dimension of the 4D array.
-     * @param dim3 - The 3rd dimension of the 4D array.
-     * @param dim4 - The 4th dimension of the 4D array.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param dim1
+     *        The 1st dimension of the 4D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 4D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 4D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 4D array.
+     *
      * @return A new Array4D object.
      */
     public static Array4D create(int type, int dim1, int dim2, int dim3, int dim4) {
@@ -192,12 +221,24 @@ public class ArrayFactory {
     /**
      * Create a new Array5D object with given type and dimensions.
      *
-     * @param type - The type of the elements of the result.
-     * @param dim1 - The 1st dimension of the 5D array.
-     * @param dim2 - The 2nd dimension of the 5D array.
-     * @param dim3 - The 3rd dimension of the 5D array.
-     * @param dim4 - The 4th dimension of the 5D array.
-     * @param dim5 - The 5th dimension of the 5D array.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param dim1
+     *        The 1st dimension of the 5D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 5D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 5D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 5D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 5D array.
+     *
      * @return A new Array5D object.
      */
     public static Array5D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5) {
@@ -222,13 +263,27 @@ public class ArrayFactory {
     /**
      * Create a new Array6D object with given type and dimensions.
      *
-     * @param type - The type of the elements of the result.
-     * @param dim1 - The 1st dimension of the 6D array.
-     * @param dim2 - The 2nd dimension of the 6D array.
-     * @param dim3 - The 3rd dimension of the 6D array.
-     * @param dim4 - The 4th dimension of the 6D array.
-     * @param dim5 - The 5th dimension of the 6D array.
-     * @param dim6 - The 6th dimension of the 6D array.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param dim1
+     *        The 1st dimension of the 6D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 6D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 6D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 6D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 6D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 6D array.
+     *
      * @return A new Array6D object.
      */
     public static Array6D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
@@ -253,14 +308,30 @@ public class ArrayFactory {
     /**
      * Create a new Array7D object with given type and dimensions.
      *
-     * @param type - The type of the elements of the result.
-     * @param dim1 - The 1st dimension of the 7D array.
-     * @param dim2 - The 2nd dimension of the 7D array.
-     * @param dim3 - The 3rd dimension of the 7D array.
-     * @param dim4 - The 4th dimension of the 7D array.
-     * @param dim5 - The 5th dimension of the 7D array.
-     * @param dim6 - The 6th dimension of the 7D array.
-     * @param dim7 - The 7th dimension of the 7D array.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param dim1
+     *        The 1st dimension of the 7D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 7D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 7D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 7D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 7D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 7D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 7D array.
+     *
      * @return A new Array7D object.
      */
     public static Array7D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
@@ -285,15 +356,33 @@ public class ArrayFactory {
     /**
      * Create a new Array8D object with given type and dimensions.
      *
-     * @param type - The type of the elements of the result.
-     * @param dim1 - The 1st dimension of the 8D array.
-     * @param dim2 - The 2nd dimension of the 8D array.
-     * @param dim3 - The 3rd dimension of the 8D array.
-     * @param dim4 - The 4th dimension of the 8D array.
-     * @param dim5 - The 5th dimension of the 8D array.
-     * @param dim6 - The 6th dimension of the 8D array.
-     * @param dim7 - The 7th dimension of the 8D array.
-     * @param dim8 - The 8th dimension of the 8D array.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param dim1
+     *        The 1st dimension of the 8D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 8D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 8D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 8D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 8D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 8D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 8D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 8D array.
+     *
      * @return A new Array8D object.
      */
     public static Array8D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
@@ -318,16 +407,36 @@ public class ArrayFactory {
     /**
      * Create a new Array9D object with given type and dimensions.
      *
-     * @param type - The type of the elements of the result.
-     * @param dim1 - The 1st dimension of the 9D array.
-     * @param dim2 - The 2nd dimension of the 9D array.
-     * @param dim3 - The 3rd dimension of the 9D array.
-     * @param dim4 - The 4th dimension of the 9D array.
-     * @param dim5 - The 5th dimension of the 9D array.
-     * @param dim6 - The 6th dimension of the 9D array.
-     * @param dim7 - The 7th dimension of the 9D array.
-     * @param dim8 - The 8th dimension of the 9D array.
-     * @param dim9 - The 9th dimension of the 9D array.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param dim1
+     *        The 1st dimension of the 9D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 9D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 9D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 9D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 9D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 9D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 9D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 9D array.
+     *
+     * @param dim9
+     *        The 9th dimension of the 9D array.
+     *
      * @return A new Array9D object.
      */
     public static Array9D create(int type, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
@@ -352,8 +461,11 @@ public class ArrayFactory {
     /**
      * Create a new ShapedArray object with given type and dimensions.
      *
-     * @param type - The type of the elements of the result.
-     * @param dims - The dimension list of the result.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param dims
+     *        The dimension list of the result.
      *
      * @return A new ShapedArray object.
      */
@@ -513,8 +625,11 @@ public class ArrayFactory {
     /**
      * Create a new ShapedArray object with given type and shape.
      *
-     * @param type - The type of the elements of the result.
-     * @param shape  - The shape of the result.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param shape
+     *        The shape of the result.
      *
      * @return A new ShapedArray object.
      */
@@ -1088,8 +1203,11 @@ public class ArrayFactory {
     /**
      * Create a new ByteScalar object with given type.
      *
-     * @param arr  - The source array.
-     * @param off  - The offset of the element to wrap into the scalar.
+     * @param arr
+     *        The source array.
+     *
+     * @param off
+     *        The offset of the element to wrap into the scalar.
      *
      * @return A new ByteScalar object.
      */
@@ -1099,203 +1217,314 @@ public class ArrayFactory {
 
     /**
      * Wrap an array of byte values into a ByteArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ByteArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 1D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ByteArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 1D array.
+     *
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte1D wrap(byte[] arr, int dim1) {
         return Byte1D.wrap(arr, dim1);
     }
 
     /**
      * Wrap an array of byte values into a ByteArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ByteArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 2D array.
-     * @param dim2 - The 2nd dimension of the 2D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ByteArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 2D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 2D array.
+     *
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte2D wrap(byte[] arr, int dim1, int dim2) {
         return Byte2D.wrap(arr, dim1, dim2);
     }
 
     /**
      * Wrap an array of byte values into a ByteArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ByteArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 3D array.
-     * @param dim2 - The 2nd dimension of the 3D array.
-     * @param dim3 - The 3rd dimension of the 3D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ByteArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 3D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 3D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 3D array.
+     *
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte3D wrap(byte[] arr, int dim1, int dim2, int dim3) {
         return Byte3D.wrap(arr, dim1, dim2, dim3);
     }
 
     /**
      * Wrap an array of byte values into a ByteArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ByteArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 4D array.
-     * @param dim2 - The 2nd dimension of the 4D array.
-     * @param dim3 - The 3rd dimension of the 4D array.
-     * @param dim4 - The 4th dimension of the 4D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ByteArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 4D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 4D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 4D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 4D array.
+     *
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte4D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4) {
         return Byte4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
 
     /**
      * Wrap an array of byte values into a ByteArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ByteArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 5D array.
-     * @param dim2 - The 2nd dimension of the 5D array.
-     * @param dim3 - The 3rd dimension of the 5D array.
-     * @param dim4 - The 4th dimension of the 5D array.
-     * @param dim5 - The 5th dimension of the 5D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ByteArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 5D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 5D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 5D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 5D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 5D array.
+     *
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte5D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return Byte5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
 
     /**
      * Wrap an array of byte values into a ByteArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ByteArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 6D array.
-     * @param dim2 - The 2nd dimension of the 6D array.
-     * @param dim3 - The 3rd dimension of the 6D array.
-     * @param dim4 - The 4th dimension of the 6D array.
-     * @param dim5 - The 5th dimension of the 6D array.
-     * @param dim6 - The 6th dimension of the 6D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ByteArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 6D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 6D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 6D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 6D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 6D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 6D array.
+     *
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte6D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return Byte6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /**
      * Wrap an array of byte values into a ByteArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ByteArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 7D array.
-     * @param dim2 - The 2nd dimension of the 7D array.
-     * @param dim3 - The 3rd dimension of the 7D array.
-     * @param dim4 - The 4th dimension of the 7D array.
-     * @param dim5 - The 5th dimension of the 7D array.
-     * @param dim6 - The 6th dimension of the 7D array.
-     * @param dim7 - The 7th dimension of the 7D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ByteArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 7D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 7D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 7D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 7D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 7D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 7D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 7D array.
+     *
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte7D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return Byte7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /**
      * Wrap an array of byte values into a ByteArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ByteArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 8D array.
-     * @param dim2 - The 2nd dimension of the 8D array.
-     * @param dim3 - The 3rd dimension of the 8D array.
-     * @param dim4 - The 4th dimension of the 8D array.
-     * @param dim5 - The 5th dimension of the 8D array.
-     * @param dim6 - The 6th dimension of the 8D array.
-     * @param dim7 - The 7th dimension of the 8D array.
-     * @param dim8 - The 8th dimension of the 8D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ByteArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 8D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 8D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 8D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 8D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 8D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 8D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 8D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 8D array.
+     *
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte8D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return Byte8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /**
      * Wrap an array of byte values into a ByteArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ByteArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 9D array.
-     * @param dim2 - The 2nd dimension of the 9D array.
-     * @param dim3 - The 3rd dimension of the 9D array.
-     * @param dim4 - The 4th dimension of the 9D array.
-     * @param dim5 - The 5th dimension of the 9D array.
-     * @param dim6 - The 6th dimension of the 9D array.
-     * @param dim7 - The 7th dimension of the 9D array.
-     * @param dim8 - The 8th dimension of the 9D array.
-     * @param dim9 - The 9th dimension of the 9D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ByteArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 9D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 9D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 9D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 9D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 9D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 9D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 9D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 9D array.
+     *
+     * @param dim9
+     *        The 9th dimension of the 9D array.
+     *
      * @return A ByteArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Byte9D wrap(byte[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return Byte9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /**
      * Wrap a ByteArray object around a simple array of byte's.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Byte1D},
-     * {@link #Byte2D}, ... according to the number of dimensions in
-     * {@code shape}.
-     * </p>
-     * @param arr  - The input array.
-     * @param dims - The dimension list of the result.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
+     * dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The input array.
+     *
+     * @param dims
+     *        The dimension list of the result.
      *
      * @return An instance of ByteArray sharing its data with the input array
      *         {@code arr}.
@@ -1307,17 +1536,21 @@ public class ArrayFactory {
 
     /**
      * Wrap a ByteArray object around a simple array of byte's.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Byte1D},
-     * {@link #Byte2D}, ... according to the number of dimensions in
-     * {@code shape}.
      *
-     * @param data   - The input array.
-     * @param shape  - The shape of the result.
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
+     * dimensions in {@code shape}. </p>
      *
-     * @return An instance of ByteArray sharing its data with the input array
-     *         {@code data}.
+     * @param data
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
+     *
+     * @return An instance of ByteArray sharing its data with the input
+     *         array {@code data}.
+     *
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static ByteArray wrap(byte[] data, Shape shape) {
@@ -1350,8 +1583,11 @@ public class ArrayFactory {
     /**
      * Create a new ShortScalar object with given type.
      *
-     * @param arr  - The source array.
-     * @param off  - The offset of the element to wrap into the scalar.
+     * @param arr
+     *        The source array.
+     *
+     * @param off
+     *        The offset of the element to wrap into the scalar.
      *
      * @return A new ShortScalar object.
      */
@@ -1361,203 +1597,314 @@ public class ArrayFactory {
 
     /**
      * Wrap an array of short values into a ShortArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ShortArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 1D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ShortArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 1D array.
+     *
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short1D wrap(short[] arr, int dim1) {
         return Short1D.wrap(arr, dim1);
     }
 
     /**
      * Wrap an array of short values into a ShortArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ShortArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 2D array.
-     * @param dim2 - The 2nd dimension of the 2D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ShortArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 2D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 2D array.
+     *
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short2D wrap(short[] arr, int dim1, int dim2) {
         return Short2D.wrap(arr, dim1, dim2);
     }
 
     /**
      * Wrap an array of short values into a ShortArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ShortArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 3D array.
-     * @param dim2 - The 2nd dimension of the 3D array.
-     * @param dim3 - The 3rd dimension of the 3D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ShortArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 3D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 3D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 3D array.
+     *
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short3D wrap(short[] arr, int dim1, int dim2, int dim3) {
         return Short3D.wrap(arr, dim1, dim2, dim3);
     }
 
     /**
      * Wrap an array of short values into a ShortArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ShortArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 4D array.
-     * @param dim2 - The 2nd dimension of the 4D array.
-     * @param dim3 - The 3rd dimension of the 4D array.
-     * @param dim4 - The 4th dimension of the 4D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ShortArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 4D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 4D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 4D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 4D array.
+     *
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short4D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4) {
         return Short4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
 
     /**
      * Wrap an array of short values into a ShortArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ShortArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 5D array.
-     * @param dim2 - The 2nd dimension of the 5D array.
-     * @param dim3 - The 3rd dimension of the 5D array.
-     * @param dim4 - The 4th dimension of the 5D array.
-     * @param dim5 - The 5th dimension of the 5D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ShortArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 5D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 5D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 5D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 5D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 5D array.
+     *
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short5D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return Short5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
 
     /**
      * Wrap an array of short values into a ShortArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ShortArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 6D array.
-     * @param dim2 - The 2nd dimension of the 6D array.
-     * @param dim3 - The 3rd dimension of the 6D array.
-     * @param dim4 - The 4th dimension of the 6D array.
-     * @param dim5 - The 5th dimension of the 6D array.
-     * @param dim6 - The 6th dimension of the 6D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ShortArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 6D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 6D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 6D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 6D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 6D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 6D array.
+     *
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short6D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return Short6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /**
      * Wrap an array of short values into a ShortArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ShortArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 7D array.
-     * @param dim2 - The 2nd dimension of the 7D array.
-     * @param dim3 - The 3rd dimension of the 7D array.
-     * @param dim4 - The 4th dimension of the 7D array.
-     * @param dim5 - The 5th dimension of the 7D array.
-     * @param dim6 - The 6th dimension of the 7D array.
-     * @param dim7 - The 7th dimension of the 7D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ShortArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 7D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 7D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 7D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 7D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 7D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 7D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 7D array.
+     *
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short7D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return Short7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /**
      * Wrap an array of short values into a ShortArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ShortArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 8D array.
-     * @param dim2 - The 2nd dimension of the 8D array.
-     * @param dim3 - The 3rd dimension of the 8D array.
-     * @param dim4 - The 4th dimension of the 8D array.
-     * @param dim5 - The 5th dimension of the 8D array.
-     * @param dim6 - The 6th dimension of the 8D array.
-     * @param dim7 - The 7th dimension of the 8D array.
-     * @param dim8 - The 8th dimension of the 8D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ShortArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 8D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 8D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 8D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 8D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 8D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 8D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 8D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 8D array.
+     *
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short8D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return Short8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /**
      * Wrap an array of short values into a ShortArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ShortArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 9D array.
-     * @param dim2 - The 2nd dimension of the 9D array.
-     * @param dim3 - The 3rd dimension of the 9D array.
-     * @param dim4 - The 4th dimension of the 9D array.
-     * @param dim5 - The 5th dimension of the 9D array.
-     * @param dim6 - The 6th dimension of the 9D array.
-     * @param dim7 - The 7th dimension of the 9D array.
-     * @param dim8 - The 8th dimension of the 9D array.
-     * @param dim9 - The 9th dimension of the 9D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ShortArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 9D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 9D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 9D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 9D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 9D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 9D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 9D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 9D array.
+     *
+     * @param dim9
+     *        The 9th dimension of the 9D array.
+     *
      * @return A ShortArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Short9D wrap(short[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return Short9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /**
      * Wrap a ShortArray object around a simple array of short's.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Short1D},
-     * {@link #Short2D}, ... according to the number of dimensions in
-     * {@code shape}.
-     * </p>
-     * @param arr  - The input array.
-     * @param dims - The dimension list of the result.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
+     * dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The input array.
+     *
+     * @param dims
+     *        The dimension list of the result.
      *
      * @return An instance of ShortArray sharing its data with the input array
      *         {@code arr}.
@@ -1569,17 +1916,21 @@ public class ArrayFactory {
 
     /**
      * Wrap a ShortArray object around a simple array of short's.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Short1D},
-     * {@link #Short2D}, ... according to the number of dimensions in
-     * {@code shape}.
      *
-     * @param data   - The input array.
-     * @param shape  - The shape of the result.
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
+     * dimensions in {@code shape}. </p>
      *
-     * @return An instance of ShortArray sharing its data with the input array
-     *         {@code data}.
+     * @param data
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
+     *
+     * @return An instance of ShortArray sharing its data with the input
+     *         array {@code data}.
+     *
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static ShortArray wrap(short[] data, Shape shape) {
@@ -1612,8 +1963,11 @@ public class ArrayFactory {
     /**
      * Create a new IntScalar object with given type.
      *
-     * @param arr  - The source array.
-     * @param off  - The offset of the element to wrap into the scalar.
+     * @param arr
+     *        The source array.
+     *
+     * @param off
+     *        The offset of the element to wrap into the scalar.
      *
      * @return A new IntScalar object.
      */
@@ -1623,203 +1977,314 @@ public class ArrayFactory {
 
     /**
      * Wrap an array of int values into an IntArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 1D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * IntArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 1D array.
+     *
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int1D wrap(int[] arr, int dim1) {
         return Int1D.wrap(arr, dim1);
     }
 
     /**
      * Wrap an array of int values into an IntArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 2D array.
-     * @param dim2 - The 2nd dimension of the 2D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * IntArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 2D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 2D array.
+     *
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int2D wrap(int[] arr, int dim1, int dim2) {
         return Int2D.wrap(arr, dim1, dim2);
     }
 
     /**
      * Wrap an array of int values into an IntArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 3D array.
-     * @param dim2 - The 2nd dimension of the 3D array.
-     * @param dim3 - The 3rd dimension of the 3D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * IntArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 3D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 3D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 3D array.
+     *
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int3D wrap(int[] arr, int dim1, int dim2, int dim3) {
         return Int3D.wrap(arr, dim1, dim2, dim3);
     }
 
     /**
      * Wrap an array of int values into an IntArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 4D array.
-     * @param dim2 - The 2nd dimension of the 4D array.
-     * @param dim3 - The 3rd dimension of the 4D array.
-     * @param dim4 - The 4th dimension of the 4D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * IntArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 4D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 4D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 4D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 4D array.
+     *
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int4D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4) {
         return Int4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
 
     /**
      * Wrap an array of int values into an IntArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 5D array.
-     * @param dim2 - The 2nd dimension of the 5D array.
-     * @param dim3 - The 3rd dimension of the 5D array.
-     * @param dim4 - The 4th dimension of the 5D array.
-     * @param dim5 - The 5th dimension of the 5D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * IntArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 5D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 5D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 5D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 5D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 5D array.
+     *
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int5D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return Int5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
 
     /**
      * Wrap an array of int values into an IntArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 6D array.
-     * @param dim2 - The 2nd dimension of the 6D array.
-     * @param dim3 - The 3rd dimension of the 6D array.
-     * @param dim4 - The 4th dimension of the 6D array.
-     * @param dim5 - The 5th dimension of the 6D array.
-     * @param dim6 - The 6th dimension of the 6D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * IntArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 6D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 6D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 6D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 6D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 6D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 6D array.
+     *
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int6D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return Int6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /**
      * Wrap an array of int values into an IntArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 7D array.
-     * @param dim2 - The 2nd dimension of the 7D array.
-     * @param dim3 - The 3rd dimension of the 7D array.
-     * @param dim4 - The 4th dimension of the 7D array.
-     * @param dim5 - The 5th dimension of the 7D array.
-     * @param dim6 - The 6th dimension of the 7D array.
-     * @param dim7 - The 7th dimension of the 7D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * IntArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 7D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 7D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 7D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 7D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 7D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 7D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 7D array.
+     *
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int7D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return Int7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /**
      * Wrap an array of int values into an IntArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 8D array.
-     * @param dim2 - The 2nd dimension of the 8D array.
-     * @param dim3 - The 3rd dimension of the 8D array.
-     * @param dim4 - The 4th dimension of the 8D array.
-     * @param dim5 - The 5th dimension of the 8D array.
-     * @param dim6 - The 6th dimension of the 8D array.
-     * @param dim7 - The 7th dimension of the 8D array.
-     * @param dim8 - The 8th dimension of the 8D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * IntArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 8D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 8D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 8D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 8D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 8D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 8D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 8D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 8D array.
+     *
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int8D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return Int8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /**
      * Wrap an array of int values into an IntArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned IntArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 9D array.
-     * @param dim2 - The 2nd dimension of the 9D array.
-     * @param dim3 - The 3rd dimension of the 9D array.
-     * @param dim4 - The 4th dimension of the 9D array.
-     * @param dim5 - The 5th dimension of the 9D array.
-     * @param dim6 - The 6th dimension of the 9D array.
-     * @param dim7 - The 7th dimension of the 9D array.
-     * @param dim8 - The 8th dimension of the 9D array.
-     * @param dim9 - The 9th dimension of the 9D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * IntArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 9D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 9D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 9D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 9D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 9D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 9D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 9D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 9D array.
+     *
+     * @param dim9
+     *        The 9th dimension of the 9D array.
+     *
      * @return A IntArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Int9D wrap(int[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return Int9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /**
      * Wrap an IntArray object around a simple array of int's.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Int1D},
-     * {@link #Int2D}, ... according to the number of dimensions in
-     * {@code shape}.
-     * </p>
-     * @param arr  - The input array.
-     * @param dims - The dimension list of the result.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
+     * dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The input array.
+     *
+     * @param dims
+     *        The dimension list of the result.
      *
      * @return An instance of IntArray sharing its data with the input array
      *         {@code arr}.
@@ -1831,17 +2296,21 @@ public class ArrayFactory {
 
     /**
      * Wrap an IntArray object around a simple array of int's.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Int1D},
-     * {@link #Int2D}, ... according to the number of dimensions in
-     * {@code shape}.
      *
-     * @param data   - The input array.
-     * @param shape  - The shape of the result.
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
+     * dimensions in {@code shape}. </p>
      *
-     * @return An instance of IntArray sharing its data with the input array
-     *         {@code data}.
+     * @param data
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
+     *
+     * @return An instance of IntArray sharing its data with the input
+     *         array {@code data}.
+     *
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static IntArray wrap(int[] data, Shape shape) {
@@ -1874,8 +2343,11 @@ public class ArrayFactory {
     /**
      * Create a new LongScalar object with given type.
      *
-     * @param arr  - The source array.
-     * @param off  - The offset of the element to wrap into the scalar.
+     * @param arr
+     *        The source array.
+     *
+     * @param off
+     *        The offset of the element to wrap into the scalar.
      *
      * @return A new LongScalar object.
      */
@@ -1885,203 +2357,314 @@ public class ArrayFactory {
 
     /**
      * Wrap an array of long values into a LongArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned LongArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 1D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * LongArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 1D array.
+     *
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long1D wrap(long[] arr, int dim1) {
         return Long1D.wrap(arr, dim1);
     }
 
     /**
      * Wrap an array of long values into a LongArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned LongArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 2D array.
-     * @param dim2 - The 2nd dimension of the 2D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * LongArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 2D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 2D array.
+     *
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long2D wrap(long[] arr, int dim1, int dim2) {
         return Long2D.wrap(arr, dim1, dim2);
     }
 
     /**
      * Wrap an array of long values into a LongArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned LongArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 3D array.
-     * @param dim2 - The 2nd dimension of the 3D array.
-     * @param dim3 - The 3rd dimension of the 3D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * LongArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 3D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 3D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 3D array.
+     *
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long3D wrap(long[] arr, int dim1, int dim2, int dim3) {
         return Long3D.wrap(arr, dim1, dim2, dim3);
     }
 
     /**
      * Wrap an array of long values into a LongArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned LongArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 4D array.
-     * @param dim2 - The 2nd dimension of the 4D array.
-     * @param dim3 - The 3rd dimension of the 4D array.
-     * @param dim4 - The 4th dimension of the 4D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * LongArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 4D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 4D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 4D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 4D array.
+     *
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long4D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4) {
         return Long4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
 
     /**
      * Wrap an array of long values into a LongArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned LongArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 5D array.
-     * @param dim2 - The 2nd dimension of the 5D array.
-     * @param dim3 - The 3rd dimension of the 5D array.
-     * @param dim4 - The 4th dimension of the 5D array.
-     * @param dim5 - The 5th dimension of the 5D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * LongArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 5D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 5D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 5D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 5D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 5D array.
+     *
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long5D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return Long5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
 
     /**
      * Wrap an array of long values into a LongArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned LongArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 6D array.
-     * @param dim2 - The 2nd dimension of the 6D array.
-     * @param dim3 - The 3rd dimension of the 6D array.
-     * @param dim4 - The 4th dimension of the 6D array.
-     * @param dim5 - The 5th dimension of the 6D array.
-     * @param dim6 - The 6th dimension of the 6D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * LongArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 6D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 6D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 6D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 6D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 6D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 6D array.
+     *
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long6D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return Long6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /**
      * Wrap an array of long values into a LongArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned LongArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 7D array.
-     * @param dim2 - The 2nd dimension of the 7D array.
-     * @param dim3 - The 3rd dimension of the 7D array.
-     * @param dim4 - The 4th dimension of the 7D array.
-     * @param dim5 - The 5th dimension of the 7D array.
-     * @param dim6 - The 6th dimension of the 7D array.
-     * @param dim7 - The 7th dimension of the 7D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * LongArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 7D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 7D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 7D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 7D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 7D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 7D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 7D array.
+     *
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long7D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return Long7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /**
      * Wrap an array of long values into a LongArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned LongArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 8D array.
-     * @param dim2 - The 2nd dimension of the 8D array.
-     * @param dim3 - The 3rd dimension of the 8D array.
-     * @param dim4 - The 4th dimension of the 8D array.
-     * @param dim5 - The 5th dimension of the 8D array.
-     * @param dim6 - The 6th dimension of the 8D array.
-     * @param dim7 - The 7th dimension of the 8D array.
-     * @param dim8 - The 8th dimension of the 8D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * LongArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 8D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 8D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 8D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 8D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 8D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 8D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 8D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 8D array.
+     *
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long8D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return Long8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /**
      * Wrap an array of long values into a LongArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned LongArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 9D array.
-     * @param dim2 - The 2nd dimension of the 9D array.
-     * @param dim3 - The 3rd dimension of the 9D array.
-     * @param dim4 - The 4th dimension of the 9D array.
-     * @param dim5 - The 5th dimension of the 9D array.
-     * @param dim6 - The 6th dimension of the 9D array.
-     * @param dim7 - The 7th dimension of the 9D array.
-     * @param dim8 - The 8th dimension of the 9D array.
-     * @param dim9 - The 9th dimension of the 9D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * LongArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 9D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 9D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 9D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 9D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 9D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 9D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 9D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 9D array.
+     *
+     * @param dim9
+     *        The 9th dimension of the 9D array.
+     *
      * @return A LongArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Long9D wrap(long[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return Long9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /**
      * Wrap a LongArray object around a simple array of long's.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Long1D},
-     * {@link #Long2D}, ... according to the number of dimensions in
-     * {@code shape}.
-     * </p>
-     * @param arr  - The input array.
-     * @param dims - The dimension list of the result.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
+     * dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The input array.
+     *
+     * @param dims
+     *        The dimension list of the result.
      *
      * @return An instance of LongArray sharing its data with the input array
      *         {@code arr}.
@@ -2093,17 +2676,21 @@ public class ArrayFactory {
 
     /**
      * Wrap a LongArray object around a simple array of long's.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Long1D},
-     * {@link #Long2D}, ... according to the number of dimensions in
-     * {@code shape}.
      *
-     * @param data   - The input array.
-     * @param shape  - The shape of the result.
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
+     * dimensions in {@code shape}. </p>
      *
-     * @return An instance of LongArray sharing its data with the input array
-     *         {@code data}.
+     * @param data
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
+     *
+     * @return An instance of LongArray sharing its data with the input
+     *         array {@code data}.
+     *
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static LongArray wrap(long[] data, Shape shape) {
@@ -2136,8 +2723,11 @@ public class ArrayFactory {
     /**
      * Create a new FloatScalar object with given type.
      *
-     * @param arr  - The source array.
-     * @param off  - The offset of the element to wrap into the scalar.
+     * @param arr
+     *        The source array.
+     *
+     * @param off
+     *        The offset of the element to wrap into the scalar.
      *
      * @return A new FloatScalar object.
      */
@@ -2147,203 +2737,314 @@ public class ArrayFactory {
 
     /**
      * Wrap an array of float values into a FloatArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned FloatArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 1D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * FloatArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 1D array.
+     *
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float1D wrap(float[] arr, int dim1) {
         return Float1D.wrap(arr, dim1);
     }
 
     /**
      * Wrap an array of float values into a FloatArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned FloatArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 2D array.
-     * @param dim2 - The 2nd dimension of the 2D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * FloatArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 2D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 2D array.
+     *
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float2D wrap(float[] arr, int dim1, int dim2) {
         return Float2D.wrap(arr, dim1, dim2);
     }
 
     /**
      * Wrap an array of float values into a FloatArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned FloatArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 3D array.
-     * @param dim2 - The 2nd dimension of the 3D array.
-     * @param dim3 - The 3rd dimension of the 3D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * FloatArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 3D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 3D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 3D array.
+     *
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float3D wrap(float[] arr, int dim1, int dim2, int dim3) {
         return Float3D.wrap(arr, dim1, dim2, dim3);
     }
 
     /**
      * Wrap an array of float values into a FloatArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned FloatArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 4D array.
-     * @param dim2 - The 2nd dimension of the 4D array.
-     * @param dim3 - The 3rd dimension of the 4D array.
-     * @param dim4 - The 4th dimension of the 4D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * FloatArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 4D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 4D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 4D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 4D array.
+     *
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float4D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4) {
         return Float4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
 
     /**
      * Wrap an array of float values into a FloatArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned FloatArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 5D array.
-     * @param dim2 - The 2nd dimension of the 5D array.
-     * @param dim3 - The 3rd dimension of the 5D array.
-     * @param dim4 - The 4th dimension of the 5D array.
-     * @param dim5 - The 5th dimension of the 5D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * FloatArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 5D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 5D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 5D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 5D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 5D array.
+     *
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float5D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return Float5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
 
     /**
      * Wrap an array of float values into a FloatArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned FloatArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 6D array.
-     * @param dim2 - The 2nd dimension of the 6D array.
-     * @param dim3 - The 3rd dimension of the 6D array.
-     * @param dim4 - The 4th dimension of the 6D array.
-     * @param dim5 - The 5th dimension of the 6D array.
-     * @param dim6 - The 6th dimension of the 6D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * FloatArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 6D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 6D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 6D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 6D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 6D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 6D array.
+     *
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float6D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return Float6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /**
      * Wrap an array of float values into a FloatArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned FloatArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 7D array.
-     * @param dim2 - The 2nd dimension of the 7D array.
-     * @param dim3 - The 3rd dimension of the 7D array.
-     * @param dim4 - The 4th dimension of the 7D array.
-     * @param dim5 - The 5th dimension of the 7D array.
-     * @param dim6 - The 6th dimension of the 7D array.
-     * @param dim7 - The 7th dimension of the 7D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * FloatArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 7D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 7D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 7D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 7D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 7D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 7D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 7D array.
+     *
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float7D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return Float7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /**
      * Wrap an array of float values into a FloatArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned FloatArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 8D array.
-     * @param dim2 - The 2nd dimension of the 8D array.
-     * @param dim3 - The 3rd dimension of the 8D array.
-     * @param dim4 - The 4th dimension of the 8D array.
-     * @param dim5 - The 5th dimension of the 8D array.
-     * @param dim6 - The 6th dimension of the 8D array.
-     * @param dim7 - The 7th dimension of the 8D array.
-     * @param dim8 - The 8th dimension of the 8D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * FloatArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 8D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 8D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 8D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 8D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 8D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 8D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 8D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 8D array.
+     *
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float8D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return Float8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /**
      * Wrap an array of float values into a FloatArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned FloatArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 9D array.
-     * @param dim2 - The 2nd dimension of the 9D array.
-     * @param dim3 - The 3rd dimension of the 9D array.
-     * @param dim4 - The 4th dimension of the 9D array.
-     * @param dim5 - The 5th dimension of the 9D array.
-     * @param dim6 - The 6th dimension of the 9D array.
-     * @param dim7 - The 7th dimension of the 9D array.
-     * @param dim8 - The 8th dimension of the 9D array.
-     * @param dim9 - The 9th dimension of the 9D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * FloatArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 9D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 9D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 9D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 9D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 9D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 9D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 9D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 9D array.
+     *
+     * @param dim9
+     *        The 9th dimension of the 9D array.
+     *
      * @return A FloatArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Float9D wrap(float[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return Float9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /**
      * Wrap a FloatArray object around a simple array of float's.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Float1D},
-     * {@link #Float2D}, ... according to the number of dimensions in
-     * {@code shape}.
-     * </p>
-     * @param arr  - The input array.
-     * @param dims - The dimension list of the result.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
+     * dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The input array.
+     *
+     * @param dims
+     *        The dimension list of the result.
      *
      * @return An instance of FloatArray sharing its data with the input array
      *         {@code arr}.
@@ -2355,17 +3056,21 @@ public class ArrayFactory {
 
     /**
      * Wrap a FloatArray object around a simple array of float's.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Float1D},
-     * {@link #Float2D}, ... according to the number of dimensions in
-     * {@code shape}.
      *
-     * @param data   - The input array.
-     * @param shape  - The shape of the result.
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
+     * dimensions in {@code shape}. </p>
      *
-     * @return An instance of FloatArray sharing its data with the input array
-     *         {@code data}.
+     * @param data
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
+     *
+     * @return An instance of FloatArray sharing its data with the input
+     *         array {@code data}.
+     *
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static FloatArray wrap(float[] data, Shape shape) {
@@ -2398,8 +3103,11 @@ public class ArrayFactory {
     /**
      * Create a new DoubleScalar object with given type.
      *
-     * @param arr  - The source array.
-     * @param off  - The offset of the element to wrap into the scalar.
+     * @param arr
+     *        The source array.
+     *
+     * @param off
+     *        The offset of the element to wrap into the scalar.
      *
      * @return A new DoubleScalar object.
      */
@@ -2409,203 +3117,314 @@ public class ArrayFactory {
 
     /**
      * Wrap an array of double values into a DoubleArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned DoubleArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 1D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * DoubleArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 1D array.
+     *
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double1D wrap(double[] arr, int dim1) {
         return Double1D.wrap(arr, dim1);
     }
 
     /**
      * Wrap an array of double values into a DoubleArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned DoubleArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 2D array.
-     * @param dim2 - The 2nd dimension of the 2D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * DoubleArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 2D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 2D array.
+     *
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double2D wrap(double[] arr, int dim1, int dim2) {
         return Double2D.wrap(arr, dim1, dim2);
     }
 
     /**
      * Wrap an array of double values into a DoubleArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned DoubleArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 3D array.
-     * @param dim2 - The 2nd dimension of the 3D array.
-     * @param dim3 - The 3rd dimension of the 3D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * DoubleArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 3D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 3D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 3D array.
+     *
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double3D wrap(double[] arr, int dim1, int dim2, int dim3) {
         return Double3D.wrap(arr, dim1, dim2, dim3);
     }
 
     /**
      * Wrap an array of double values into a DoubleArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned DoubleArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 4D array.
-     * @param dim2 - The 2nd dimension of the 4D array.
-     * @param dim3 - The 3rd dimension of the 4D array.
-     * @param dim4 - The 4th dimension of the 4D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * DoubleArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 4D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 4D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 4D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 4D array.
+     *
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double4D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4) {
         return Double4D.wrap(arr, dim1, dim2, dim3, dim4);
     }
 
     /**
      * Wrap an array of double values into a DoubleArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned DoubleArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 5D array.
-     * @param dim2 - The 2nd dimension of the 5D array.
-     * @param dim3 - The 3rd dimension of the 5D array.
-     * @param dim4 - The 4th dimension of the 5D array.
-     * @param dim5 - The 5th dimension of the 5D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * DoubleArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 5D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 5D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 5D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 5D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 5D array.
+     *
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double5D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return Double5D.wrap(arr, dim1, dim2, dim3, dim4, dim5);
     }
 
     /**
      * Wrap an array of double values into a DoubleArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned DoubleArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 6D array.
-     * @param dim2 - The 2nd dimension of the 6D array.
-     * @param dim3 - The 3rd dimension of the 6D array.
-     * @param dim4 - The 4th dimension of the 6D array.
-     * @param dim5 - The 5th dimension of the 6D array.
-     * @param dim6 - The 6th dimension of the 6D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * DoubleArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 6D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 6D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 6D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 6D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 6D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 6D array.
+     *
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double6D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return Double6D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6);
     }
 
     /**
      * Wrap an array of double values into a DoubleArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned DoubleArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 7D array.
-     * @param dim2 - The 2nd dimension of the 7D array.
-     * @param dim3 - The 3rd dimension of the 7D array.
-     * @param dim4 - The 4th dimension of the 7D array.
-     * @param dim5 - The 5th dimension of the 7D array.
-     * @param dim6 - The 6th dimension of the 7D array.
-     * @param dim7 - The 7th dimension of the 7D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * DoubleArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 7D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 7D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 7D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 7D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 7D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 7D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 7D array.
+     *
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double7D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return Double7D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
     }
 
     /**
      * Wrap an array of double values into a DoubleArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned DoubleArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 8D array.
-     * @param dim2 - The 2nd dimension of the 8D array.
-     * @param dim3 - The 3rd dimension of the 8D array.
-     * @param dim4 - The 4th dimension of the 8D array.
-     * @param dim5 - The 5th dimension of the 8D array.
-     * @param dim6 - The 6th dimension of the 8D array.
-     * @param dim7 - The 7th dimension of the 8D array.
-     * @param dim8 - The 8th dimension of the 8D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * DoubleArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 8D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 8D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 8D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 8D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 8D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 8D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 8D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 8D array.
+     *
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double8D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return Double8D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8);
     }
 
     /**
      * Wrap an array of double values into a DoubleArray.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned DoubleArray
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
-     * @param dim1 - The 1st dimension of the 9D array.
-     * @param dim2 - The 2nd dimension of the 9D array.
-     * @param dim3 - The 3rd dimension of the 9D array.
-     * @param dim4 - The 4th dimension of the 9D array.
-     * @param dim5 - The 5th dimension of the 9D array.
-     * @param dim6 - The 6th dimension of the 9D array.
-     * @param dim7 - The 7th dimension of the 9D array.
-     * @param dim8 - The 8th dimension of the 9D array.
-     * @param dim9 - The 9th dimension of the 9D array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * DoubleArray share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 9D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 9D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 9D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 9D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 9D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 9D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 9D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 9D array.
+     *
+     * @param dim9
+     *        The 9th dimension of the 9D array.
+     *
      * @return A DoubleArray wrapped around the source array {@code arr}.
-      */
+     */
     public static Double9D wrap(double[] arr, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return Double9D.wrap(arr, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
     }
 
     /**
      * Wrap a DoubleArray object around a simple array of double's.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Double1D},
-     * {@link #Double2D}, ... according to the number of dimensions in
-     * {@code shape}.
-     * </p>
-     * @param arr  - The input array.
-     * @param dims - The dimension list of the result.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
+     * dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The input array.
+     *
+     * @param dims
+     *        The dimension list of the result.
      *
      * @return An instance of DoubleArray sharing its data with the input array
      *         {@code arr}.
@@ -2617,17 +3436,21 @@ public class ArrayFactory {
 
     /**
      * Wrap a DoubleArray object around a simple array of double's.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #Double1D},
-     * {@link #Double2D}, ... according to the number of dimensions in
-     * {@code shape}.
      *
-     * @param data   - The input array.
-     * @param shape  - The shape of the result.
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
+     * dimensions in {@code shape}. </p>
      *
-     * @return An instance of DoubleArray sharing its data with the input array
-     *         {@code data}.
+     * @param data
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
+     *
+     * @return An instance of DoubleArray sharing its data with the input
+     *         array {@code data}.
+     *
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static DoubleArray wrap(double[] data, Shape shape) {
@@ -2657,11 +3480,385 @@ public class ArrayFactory {
         }
     }
 
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param shape
+     *        The shape of the result.  Total number of elements must be the
+     *        same as the array in {@code obj}.
+     *
+     * @return A shaped array sharing its data with the input object
+     *         {@code obj}.
+     *
+     * @see {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static ShapedArray wrap(Object obj, Shape shape) {
+        int depth = 0;
+        Class<?> cls = obj.getClass();
+        while (cls.isArray()) {
+            cls = cls.getComponentType();
+            ++depth;
+        }
+        if (depth == 1) {
+            if (cls.equals(byte.class)) {
+                return wrap((byte[])obj, shape);
+            } else if (cls.equals(short.class)) {
+                return wrap((short[])obj, shape);
+            } else if (cls.equals(int.class)) {
+                return wrap((int[])obj, shape);
+            } else if (cls.equals(long.class)) {
+                return wrap((long[])obj, shape);
+            } else if (cls.equals(float.class)) {
+                return wrap((float[])obj, shape);
+            } else if (cls.equals(double.class)) {
+                return wrap((double[])obj, shape);
+            }
+        }
+        throw new IllegalTypeException("Only 1D array of numerical primitive types are supported");
+    }
+
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param dims
+     *        The dimensions of the result.  Total number of elements must be
+     *        the same as the array in {@code obj}.
+     *
+     * @return A shaped array sharing its data with the input object
+     *         {@code obj}.
+     *
+     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static ShapedArray wrap(Object obj, int[] dims) {
+        int depth = 0;
+        Class<?> cls = obj.getClass();
+        while (cls.isArray()) {
+            cls = cls.getComponentType();
+            ++depth;
+        }
+        if (depth == 1) {
+            if (cls.equals(byte.class)) {
+                return wrap((byte[])obj, new Shape(dims));
+            } else if (cls.equals(short.class)) {
+                return wrap((short[])obj, new Shape(dims));
+            } else if (cls.equals(int.class)) {
+                return wrap((int[])obj, new Shape(dims));
+            } else if (cls.equals(long.class)) {
+                return wrap((long[])obj, new Shape(dims));
+            } else if (cls.equals(float.class)) {
+                return wrap((float[])obj, new Shape(dims));
+            } else if (cls.equals(double.class)) {
+                return wrap((double[])obj, new Shape(dims));
+            }
+        }
+        throw new IllegalTypeException("Only 1D array of numerical primitive types are supported");
+    }
+
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @return A DoubleArray wrapped around the object {@code obj}.
+     *
+     * @see {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static Array1D wrap(Object obj, int dim1) {
+        return (Array1D)wrap(obj, new Shape(dim1));
+    }
+
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @return A DoubleArray wrapped around the object {@code obj}.
+     *
+     * @see {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static Array2D wrap(Object obj, int dim1, int dim2) {
+        return (Array2D)wrap(obj, new Shape(dim1, dim2));
+    }
+
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @return A DoubleArray wrapped around the object {@code obj}.
+     *
+     * @see {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static Array3D wrap(Object obj, int dim1, int dim2, int dim3) {
+        return (Array3D)wrap(obj, new Shape(dim1, dim2, dim3));
+    }
+
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @param dim4
+     *        The 4th dimension.
+     *
+     * @return A DoubleArray wrapped around the object {@code obj}.
+     *
+     * @see {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static Array4D wrap(Object obj, int dim1, int dim2, int dim3, int dim4) {
+        return (Array4D)wrap(obj, new Shape(dim1, dim2, dim3, dim4));
+    }
+
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @param dim4
+     *        The 4th dimension.
+     *
+     * @param dim5
+     *        The 5th dimension.
+     *
+     * @return A DoubleArray wrapped around the object {@code obj}.
+     *
+     * @see {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static Array5D wrap(Object obj, int dim1, int dim2, int dim3, int dim4, int dim5) {
+        return (Array5D)wrap(obj, new Shape(dim1, dim2, dim3, dim4, dim5));
+    }
+
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @param dim4
+     *        The 4th dimension.
+     *
+     * @param dim5
+     *        The 5th dimension.
+     *
+     * @param dim6
+     *        The 6th dimension.
+     *
+     * @return A DoubleArray wrapped around the object {@code obj}.
+     *
+     * @see {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static Array6D wrap(Object obj, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
+        return (Array6D)wrap(obj, new Shape(dim1, dim2, dim3, dim4, dim5, dim6));
+    }
+
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @param dim4
+     *        The 4th dimension.
+     *
+     * @param dim5
+     *        The 5th dimension.
+     *
+     * @param dim6
+     *        The 6th dimension.
+     *
+     * @param dim7
+     *        The 7th dimension.
+     *
+     * @return A DoubleArray wrapped around the object {@code obj}.
+     *
+     * @see {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static Array7D wrap(Object obj, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
+        return (Array7D)wrap(obj, new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7));
+    }
+
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @param dim4
+     *        The 4th dimension.
+     *
+     * @param dim5
+     *        The 5th dimension.
+     *
+     * @param dim6
+     *        The 6th dimension.
+     *
+     * @param dim7
+     *        The 7th dimension.
+     *
+     * @param dim8
+     *        The 8th dimension.
+     *
+     * @return A DoubleArray wrapped around the object {@code obj}.
+     *
+     * @see {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static Array8D wrap(Object obj, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
+        return (Array8D)wrap(obj, new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8));
+    }
+
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @param dim4
+     *        The 4th dimension.
+     *
+     * @param dim5
+     *        The 5th dimension.
+     *
+     * @param dim6
+     *        The 6th dimension.
+     *
+     * @param dim7
+     *        The 7th dimension.
+     *
+     * @param dim8
+     *        The 8th dimension.
+     *
+     * @param dim9
+     *        The 9th dimension.
+     *
+     * @return A DoubleArray wrapped around the object {@code obj}.
+     *
+     * @see {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static Array9D wrap(Object obj, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
+        return (Array9D)wrap(obj, new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9));
+    }
 
     /**
      * Wrap a shaped array around a shaped vector.
      *
-     * @param vec - A shaped vector.
+     * @param vec
+     *        A shaped vector.
      *
      * @return A flat shaped array whose elements are shared with the input vector.
      */
@@ -2679,7 +3876,8 @@ public class ArrayFactory {
     /**
      * Wrap a shaped array around a float shaped vector.
      *
-     * @param vec - A shaped vector.
+     * @param vec
+     *        A shaped vector.
      *
      * @return A flat shaped array whose elements are shared with the input vector.
      */
@@ -2690,7 +3888,8 @@ public class ArrayFactory {
     /**
      * Wrap a shaped array around a double shaped vector.
      *
-     * @param vec - A shaped vector.
+     * @param vec
+     *        A shaped vector.
      *
      * @return A flat shaped array whose elements are shared with the input vector.
      */

@@ -57,7 +57,8 @@ public class ${className} {
     /**
      * Create a new Scalar object with given type.
      *
-     * @param type - The type of the element of the result.
+     * @param type
+     *        The type of the element of the result.
      *
      * @return A new Scalar object.
      */
@@ -90,10 +91,14 @@ public class ${className} {
     /**
      * Create a new Array${rank}D object with given type and dimension${s}.
      *
-     * @param type - The type of the elements of the result.
+     * @param type
+     *        The type of the elements of the result.
+     *
      //#     for k in 1:${rank}
      //#         def kth = ${}{nth_${k}}
-     * @param dim${k} - The ${kth} dimension of the ${rank}D array.
+     * @param dim${k}
+     *        The ${kth} dimension of the ${rank}D array.
+     *
      //#     end
      * @return A new Array${rank}D object.
      */
@@ -114,8 +119,11 @@ public class ${className} {
     /**
      * Create a new ShapedArray object with given type and dimensions.
      *
-     * @param type - The type of the elements of the result.
-     * @param dims - The dimension list of the result.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param dims
+     *        The dimension list of the result.
      *
      * @return A new ShapedArray object.
      */
@@ -146,8 +154,11 @@ public class ${className} {
     /**
      * Create a new ShapedArray object with given type and shape.
      *
-     * @param type - The type of the elements of the result.
-     * @param shape  - The shape of the result.
+     * @param type
+     *        The type of the elements of the result.
+     *
+     * @param shape
+     *        The shape of the result.
      *
      * @return A new ShapedArray object.
      */
@@ -255,8 +266,11 @@ public class ${className} {
     /**
      * Create a new ${Type}Scalar object with given type.
      *
-     * @param arr  - The source array.
-     * @param off  - The offset of the element to wrap into the scalar.
+     * @param arr
+     *        The source array.
+     *
+     * @param off
+     *        The offset of the element to wrap into the scalar.
      *
      * @return A new ${Type}Scalar object.
      */
@@ -273,22 +287,26 @@ public class ${className} {
     //#         end
     /**
      * Wrap an array of ${type} values into ${a} ${Type}Array.
-     * <p>
-     * Notes: (i) The source array {@code arr} and the returned ${Type}Array
-     * share the same contents. (ii) The storage order is assumed to be
-     * {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted into a
-     * {@link #${Type}1D}, {@link #${Type}2D}, ... according to the number of
-     * dimensions in {@code shape}.
-     * </p>
-     * @param arr  - The source array.
+     *
+     * <p> Notes: (i) The source array {@code arr} and the returned
+     * ${Type}Array share the same contents. (ii) The storage order is assumed
+     * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
+     * into a {@link #${Type}1D}, {@link #${Type}2D}, ... according to the
+     * number of dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The source array.
      //#         def k = 0
      //#         while ${k} < ${rank}
      //#             eval k += 1
      //#             def kth = ${}{nth_${k}}
-     * @param dim${k} - The ${kth} dimension of the ${rank}D array.
+     *
+     * @param dim${k}
+     *        The ${kth} dimension of the ${rank}D array.
      //#         end
+     *
      * @return A ${Type}Array wrapped around the source array {@code arr}.
-      */
+     */
     public static ${Type}${rank}D wrap(${type}[] arr, ${dimDecl}) {
         return ${Type}${rank}D.wrap(arr, ${dimList});
     }
@@ -296,14 +314,17 @@ public class ${className} {
     //#     end // loop over rank
     /**
      * Wrap ${a} ${TypeArray} object around a simple array of ${type}'s.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #${Type}1D},
-     * {@link #${Type}2D}, ... according to the number of dimensions in
-     * {@code shape}.
-     * </p>
-     * @param arr  - The input array.
-     * @param dims - The dimension list of the result.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #${Type}1D}, {@link #${Type}2D}, ... according to the number of
+     * dimensions in {@code shape}.  </p>
+     *
+     * @param arr
+     *        The input array.
+     *
+     * @param dims
+     *        The dimension list of the result.
      *
      * @return An instance of ${TypeArray} sharing its data with the input array
      *         {@code arr}.
@@ -315,17 +336,21 @@ public class ${className} {
 
     /**
      * Wrap ${a} ${TypeArray} object around a simple array of ${type}'s.
-     * <p>
-     * Note that the storage order is assumed to be {@link Shaped#COLUMN_MAJOR}
-     * and that the result can be safely casted into a {@link #${Type}1D},
-     * {@link #${Type}2D}, ... according to the number of dimensions in
-     * {@code shape}.
      *
-     * @param data   - The input array.
-     * @param shape  - The shape of the result.
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
+     * {@link #${Type}1D}, {@link #${Type}2D}, ... according to the number of
+     * dimensions in {@code shape}. </p>
      *
-     * @return An instance of ${TypeArray} sharing its data with the input array
-     *         {@code data}.
+     * @param data
+     *        The input array.
+     *
+     * @param shape
+     *        The shape of the result.
+     *
+     * @return An instance of ${TypeArray} sharing its data with the input
+     *         array {@code data}.
+     *
      * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
      */
     public static ${Type}Array wrap(${type}[] data, Shape shape) {
@@ -342,11 +367,130 @@ public class ${className} {
     }
 
     //# end // loop over types
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param shape
+     *        The shape of the result.  Total number of elements must be the
+     *        same as the array in {@code obj}.
+     *
+     * @return A shaped array sharing its data with the input object
+     *         {@code obj}.
+     *
+     * @see {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static ShapedArray wrap(Object obj, Shape shape) {
+        int depth = 0;
+        Class<?> cls = obj.getClass();
+        while (cls.isArray()) {
+            cls = cls.getComponentType();
+            ++depth;
+        }
+        if (depth == 1) {
+            if (cls.equals(byte.class)) {
+                return wrap((byte[])obj, shape);
+            } else if (cls.equals(short.class)) {
+                return wrap((short[])obj, shape);
+            } else if (cls.equals(int.class)) {
+                return wrap((int[])obj, shape);
+            } else if (cls.equals(long.class)) {
+                return wrap((long[])obj, shape);
+            } else if (cls.equals(float.class)) {
+                return wrap((float[])obj, shape);
+            } else if (cls.equals(double.class)) {
+                return wrap((double[])obj, shape);
+            }
+        }
+        throw new IllegalTypeException("Only 1D array of numerical primitive types are supported");
+    }
 
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     *
+     * @param dims
+     *        The dimensions of the result.  Total number of elements must be
+     *        the same as the array in {@code obj}.
+     *
+     * @return A shaped array sharing its data with the input object
+     *         {@code obj}.
+     *
+     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static ShapedArray wrap(Object obj, int[] dims) {
+        int depth = 0;
+        Class<?> cls = obj.getClass();
+        while (cls.isArray()) {
+            cls = cls.getComponentType();
+            ++depth;
+        }
+        if (depth == 1) {
+            if (cls.equals(byte.class)) {
+                return wrap((byte[])obj, new Shape(dims));
+            } else if (cls.equals(short.class)) {
+                return wrap((short[])obj, new Shape(dims));
+            } else if (cls.equals(int.class)) {
+                return wrap((int[])obj, new Shape(dims));
+            } else if (cls.equals(long.class)) {
+                return wrap((long[])obj, new Shape(dims));
+            } else if (cls.equals(float.class)) {
+                return wrap((float[])obj, new Shape(dims));
+            } else if (cls.equals(double.class)) {
+                return wrap((double[])obj, new Shape(dims));
+            }
+        }
+        throw new IllegalTypeException("Only 1D array of numerical primitive types are supported");
+    }
+
+    //# for rank in 1 : 9
+    //#     def dimList = dim1
+    //#     def dimDecl = int dim1
+    //#     for k in 2:${rank}
+    //#         def dimList = ${dimList}, dim${k}
+    //#         def dimDecl = ${dimDecl}, int dim${k}
+    //#     end
+    /**
+     * Wrap a shaped array around a generic 1D array.
+     *
+     * <p> Note that the storage order is assumed to be {@link
+     * Shaped#COLUMN_MAJOR}. </p>
+     *
+     * @param obj
+     *        An object which is a 1D array of numerical primitive type.
+     //#         def k = 0
+     //#         while ${k} < ${rank}
+     //#             eval k += 1
+     //#             def kth = ${}{nth_${k}}
+     *
+     * @param dim${k}
+     *        The ${kth} dimension.
+     //#         end
+     *
+     * @return A ${Type}Array wrapped around the object {@code obj}.
+     *
+     * @see {@link Shaped#COLUMN_MAJOR}.
+     */
+    public static Array${rank}D wrap(Object obj, ${dimDecl}) {
+        return (Array${rank}D)wrap(obj, new Shape(${dimList}));
+    }
+
+    //# end
     /**
      * Wrap a shaped array around a shaped vector.
      *
-     * @param vec - A shaped vector.
+     * @param vec
+     *        A shaped vector.
      *
      * @return A flat shaped array whose elements are shared with the input vector.
      */
@@ -364,7 +508,8 @@ public class ${className} {
     /**
      * Wrap a shaped array around a float shaped vector.
      *
-     * @param vec - A shaped vector.
+     * @param vec
+     *        A shaped vector.
      *
      * @return A flat shaped array whose elements are shared with the input vector.
      */
@@ -375,7 +520,8 @@ public class ${className} {
     /**
      * Wrap a shaped array around a double shaped vector.
      *
-     * @param vec - A shaped vector.
+     * @param vec
+     *        A shaped vector.
      *
      * @return A flat shaped array whose elements are shared with the input vector.
      */
