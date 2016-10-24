@@ -34,6 +34,51 @@ import mitiv.exception.NonConformableArrayException;
 
 public class ArrayUtils {
 
+    /**
+     * Compute the sum of the elements of a shaped array.
+     *
+     * <p> This method does not need the caller to known the type of the
+     * elements but always yield a double precision floating point value. </p>
+     *
+     * @param arr
+     *        The shaped array.
+     *
+     * @return The sum of the elements of {@code arr}, zero if the elements of
+     *         {@code arr} are not of numerical type.
+     */
+    public static double sum(ShapedArray arr) {
+        double sum = 0.0;
+        if (arr != null) {
+            switch(arr.getType()) {
+
+            case Traits.BYTE:
+                sum = ((ByteArray)arr).sum();
+                break;
+
+            case Traits.SHORT:
+                sum = ((ShortArray)arr).sum();
+                break;
+
+            case Traits.INT:
+                sum = ((IntArray)arr).sum();
+                break;
+
+            case Traits.LONG:
+                sum = ((LongArray)arr).sum();
+                break;
+
+            case Traits.FLOAT:
+                sum = ((FloatArray)arr).sum();
+                break;
+
+            case Traits.DOUBLE:
+                sum = ((DoubleArray)arr).sum();
+                break;
+            }
+        }
+        return sum;
+    }
+
     /*=======================================================================*/
     /* CONVERSION */
 
