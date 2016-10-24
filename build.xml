@@ -1,46 +1,49 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. --><project basedir="." default="build" name="TiPi">
+<project basedir="." default="build" name="TiPi">
     <property environment="env"/>
-    <property name="ICY_HOME" value="D:/Users/light/icy"/>
-    <property name="tipi4icy.location" value="../tipi4icy"/>
-    <property name="ECLIPSE_HOME" value="D:/Users/light/Downloads/CODE/eclipse-standard-luna-R-win32-x86_64/eclipse/"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
+    <property name="version" value="v003"/>
     <property name="source.dir" location="src"/>
     <property name="doc.dir" location="javadoc"/>
+    <property name="bin.dir" location="bin"/>
+    <property name="lib.dir" location="lib"/>
+    <property name="jar.dir" location="."/>
     <path id="TiPi.classpath">
-        <pathelement location="bin"/>
-        <pathelement location="lib/args4j-2.0.21.jar"/>
-        <pathelement location="lib/JTransforms-3.1-with-dependencies.jar"/>
-        <pathelement location="lib/nom.tam.fits-v1.11.0.jar"/>
+        <pathelement location="${bin.dir}"/>
+        <pathelement location="${lib.dir}/JTransforms-3.1-with-dependencies.jar"/>
+        <pathelement location="${lib.dir}/args4j-2.33.jar"/>
+        <pathelement location="${lib.dir}/nom-tam-fits-1.15.0.jar"/>
     </path>
     <target name="init">
-        <mkdir dir="bin"/>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir="src">
+        <mkdir dir="${bin.dir}"/>
+        <copy includeemptydirs="false" todir="${bin.dir}">
+            <fileset dir="${source.dir}">
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
     </target>
     <target name="clean">
-        <delete dir="bin"/>
+        <delete dir="${bin.dir}"/>
     </target>
     <target depends="clean" name="cleanall"/>
     <target depends="build-subprojects,build-project" name="build"/>
     <target name="build-subprojects"/>
     <target depends="init" name="build-project">
         <echo message="${ant.project.name}: ${ant.file}"/>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
-            <src path="src"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="${bin.dir}" includeantruntime="false" source="${source}" target="${target}">
+            <src path="${source.dir}"/>
             <classpath refid="TiPi.classpath"/>
         </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="build.xml" dir="${Sandbox.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${Sandbox.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
         <ant antfile="build.xml" dir="${tipi4icy.location}" inheritAll="false" target="clean"/>
         <ant antfile="build.xml" dir="${tipi4icy.location}" inheritAll="false" target="build">
             <propertyset>
@@ -61,13 +64,32 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
+    <target name="Starter">
+        <java classname="commands.EdgePreservingDeconvolutionCommand" failonerror="true" fork="yes">
+            <classpath refid="TiPi.classpath"/>
+        </java>
+    </target>
      <!-- Generate javadocs for current project into ${doc.dir} -->
     <target name="doc" depends="init" description="generate documentation">
         <javadoc  encoding="UTF-8" charset="UTF-8" docencoding="UTF-8" additionalparam="-notimestamp" sourcepath="${source.dir}" destdir="${doc.dir}"/>
     </target>
-    <target name="build-jar">
-        <jar destfile = "lib/TiPi.jar"
-           basedir = "bin">
+    <!-- Generate JAR library for TiPi -->
+    <target depends="build" name="build-jar">
+      <jar destfile = "${jar.dir}/tipi-${version}.jar"
+           basedir = "${bin.dir}">
+      </jar>
+    </target>
+     <!-- Generate launchable JAR for TiPi tool -->
+   <target depends="build" name="build-deconv">
+        <jar destfile="${jar.dir}/tipi-deconv-${version}.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="commands.EdgePreservingDeconvolutionCommand"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${bin.dir}"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/JTransforms-3.1-with-dependencies.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/args4j-2.33.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/nom-tam-fits-1.15.0.jar"/>
         </jar>
     </target>
 </project>
