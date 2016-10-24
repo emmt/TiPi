@@ -92,10 +92,15 @@ public class ${className} extends Convolution${Type} {
     /**
      * Create a new convolution operator for ${rank}D arrays of ${type}'s.
      *
-     * @param inp - The input space.
-     * @param out - The output space.
-     * @param off - The position of the output relative to the result
-     *              of the convolution.
+     * @param inp
+     *        The input space.
+     *
+     * @param out
+     *        The output space.
+     *
+     * @param off
+     *        The position of the output relative to the result of the
+     *        convolution.
      */
     public ${className}(ShapedVectorSpace inp,
                         ShapedVectorSpace out, int[] off) {

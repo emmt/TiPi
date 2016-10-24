@@ -32,6 +32,7 @@
 //# end
 package mitiv.deconv.impl;
 
+import mitiv.array.ArrayUtils;
 import mitiv.array.${Type}Array;
 import mitiv.array.ShapedArray;
 import mitiv.base.Traits;
@@ -82,11 +83,11 @@ public abstract class ${className} extends Convolution {
     /**
      * Retrieve the internal workspace used for in-place FFT.
      *
-     * The methods {@link #forwardFFT()} and {@link #backwardFFT()} are
-     * applied in-place to the internal workspace array of the instance of
-     * this class.  This workspace is large enough to store
-     * <tt>2*<b>N</b></tt> values with <tt><b>N</b></tt> the number of
-     * elements of the convolution.
+     * <p> The methods {@link #forwardFFT()} and {@link #backwardFFT()} are
+     * applied in-place to the internal workspace array of the instance of this
+     * class.  This workspace is large enough to store <tt>2*<b>N</b></tt>
+     * values with <tt><b>N</b></tt> the number of elements of the
+     * convolution. </p>
      *
      * @return The internal workspace used for in-place FFT.
      */
@@ -128,20 +129,22 @@ public abstract class ${className} extends Convolution {
     /**
      * Copy input array in workspace.
      *
-     * This methods applies operator <b>S</b> if <b>adjoint</b> is false
-     * and operator <b>R</b><sup>*</sup> otherwise.
+     * <p> This methods applies operator <b>S</b> if <b>adjoint</b> is false
+     * and operator <b>R</b><sup>*</sup> otherwise. </p>
      *
-     * @param x - The array corresponding to the output vector.
+     * @param x
+     *        The array corresponding to the output vector.
      */
     public abstract void push(${type} x[], boolean adjoint);
 
     /**
      * Copy real part of workspace into output array.
      *
-     * This methods applies operator <b>R</b> if <b>adjoint</b> is false
-     * and operator <b>S</b><sup>*</sup> otherwise.
+     * <p> This methods applies operator <b>R</b> if <b>adjoint</b> is false
+     * and operator <b>S</b><sup>*</sup> otherwise. </p>
      *
-     * @param x - The array corresponding to the output vector.
+     * @param x
+     *        The array corresponding to the output vector.
      */
     public abstract void pull(${type} x[], boolean adjoint);
 
@@ -211,8 +214,16 @@ public abstract class ${className} extends Convolution {
     }
 
     @Override
-    public void setPSF(ShapedArray psf, int[] cen) {
-        psf = adjustPSF(psf.to${Type}(), cen);
+    public void setPSF(ShapedArray psf, int[] off, boolean normalize) {
+        if (normalize) {
+            if (psf.getType() == Traits.${TYPE}) {
+                psf = psf.copy();
+            } else {
+                psf = psf.to${Type}();
+            }
+            ((${Type}Array)psf).scale((${type})(1/ArrayUtils.sum(psf)));
+        }
+        psf = adjustPSF(psf.to${Type}(), off);
         computeMTF(((${Type}Array)psf).flatten());
     }
 

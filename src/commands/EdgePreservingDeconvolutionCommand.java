@@ -43,7 +43,6 @@ import mitiv.io.ColorModel;
 import mitiv.io.DataFormat;
 import mitiv.optim.OptimTask;
 import mitiv.utils.FFTUtils;
-import mitiv.utils.WeightFactory;
 
 
 public class EdgePreservingDeconvolutionCommand {
@@ -54,6 +53,9 @@ public class EdgePreservingDeconvolutionCommand {
 
     @Option(name = "--psf", usage = "Name of point spread function file.", metaVar = "FILENAME")
     private String psfName = null;
+
+    @Option(name = "--normalize", usage = "Normalize the point spread function.")
+    private boolean normalizePSF = false;
 
     @Option(name = "--weights", aliases = {"-w"}, usage = "Name statistical weights file.", metaVar = "FILENAME")
     private String weightsName = null;
@@ -111,6 +113,9 @@ public class EdgePreservingDeconvolutionCommand {
 
     @Option(name = "--pad", usage = "Padding method.", metaVar = "\"auto\"|\"min\"|NUMBER")
     private String paddingMethod = "auto";
+
+    @Option(name = "--fill", usage = "Value for padding.", metaVar = "VALUE")
+    private double fillValue = Double.NaN;
 
     @Option(name = "--crop", aliases = {"-c"}, usage = "Crop result to same size as input.")
     private boolean crop = false;
@@ -176,7 +181,9 @@ public class EdgePreservingDeconvolutionCommand {
             // Read the blurred data and the PSF.
             solver.setForceSinglePrecision(job.single);
             solver.setData(loadData(inputName, job.single));
-            solver.setPSF(loadData(job.psfName, job.single));
+            if (job.psfName != null) {
+                solver.setPSF(loadData(job.psfName, job.single), job.normalizePSF);
+            }
 
             // Deal with the weights.
             System.err.format("sigma = %g, gamma = %g\n", job.sigma, job.gamma);
@@ -186,29 +193,17 @@ public class EdgePreservingDeconvolutionCommand {
                 }
                 solver.setWeights(loadData(job.weightsName, job.single));
             } else {
-                double alpha;
-                double beta;
-                if (isnan(job.sigma)) {
-                    if (! isnan(job.gamma)) {
-                        System.err.println("Warning: option `--gain` alone is ignored, use it with `--noise`.");
-                    }
-                    alpha = 0;
-                    beta = 1;
-                } else if (isnan(job.gamma)) {
-                    alpha = 0;
-                    beta = abs2(job.sigma);
-                } else {
-                    alpha = 1/job.gamma;
-                    beta = abs2(job.sigma/job.gamma);
+                if (isnan(job.sigma) && ! isnan(job.gamma)) {
+                    System.err.println("Warning: option `--gain` alone is ignored, use it with `--noise`.");
                 }
-                System.err.format("alpha = %g, beta = %g\n", alpha, beta);
-                solver.setWeights(WeightFactory.computeWeightsFromData(solver.getData(), alpha, beta));
+                solver.setDetectorNoise(job.sigma);
+                solver.setDetectorGain(job.gamma);
             }
 
             // Deal with bad pixels.
             if (job.invalidName != null) {
                 // FIXME: there should be a way to load a mask (i.e. as a boolean array)
-                WeightFactory.removeBads(solver.getWeights(), loadData(job.invalidName, job.single));
+                solver.setBads(loadData(job.invalidName, job.single));
             }
 
             // Compute dimensions of result.
@@ -245,6 +240,7 @@ public class EdgePreservingDeconvolutionCommand {
                 }
             }
             solver.setObjectShape(objDims);
+            solver.setFillValue(job.fillValue);
 
             // Result and initial solution.
             if (job.initName != null) {
@@ -319,16 +315,8 @@ public class EdgePreservingDeconvolutionCommand {
         System.exit(0);
     }
 
-    private final static double abs2(double x) {
-        return x*x;
-    }
-
     private final static boolean isnan(double x) {
         return Double.isNaN(x);
-    }
-
-    private final static boolean isinf(double x) {
-        return Double.isInfinite(x);
     }
 
     private static void fatal(String mesg) {

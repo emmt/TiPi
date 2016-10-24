@@ -379,22 +379,59 @@ DifferentiableCostFunction {
      *        is at offset dim/2 along each dimension).
      */
     public void setPSF(ShapedArray psf) {
-        setPSF(psf, Convolution.center(psf.getShape()));
+        setPSF(psf, null, false);
     }
 
     /**
      * Set the PSF of the operator with given center coordinates.
      *
-     * @param psf - The PSF in the form of a shaped array.  It is
-     *              automatically converted to the correct data type,
-     *              zero-padded and rolled.
+     * @param psf
+     *        The PSF in the form of a shaped array. It is automatically
+     *        converted to the correct data type, zero-padded and rolled.
      *
-     * @param off - The offsets of the central element of the PSF.
-     *              There must be as many elements as the rank of
-     *              the PSF, each element is the 0-based offset of
-     *              the center along the corresponding dimension.
+     * @param off
+     *        The offsets of the central element of the PSF. There must be as
+     *        many elements as the rank of the PSF, each element is the 0-based
+     *        offset of the center along the corresponding dimension. If
+     *        {@code null}, the position of the geometric center is used.
      */
-    public abstract void setPSF(ShapedArray psf, int[] off);
+    public void setPSF(ShapedArray psf, int[] off) {
+        setPSF(psf, off, false);
+    }
+
+    /**
+     * Set the PSF of the operator with given center coordinates.
+     *
+     * @param psf
+     *        The PSF in the form of a shaped array. It is automatically
+     *        converted to the correct data type, zero-padded and rolled.
+     *
+     * @param normalize
+     *        Normalize the PSF? If true, all PSF values are divided by the sum
+     *        of the PSF values; otherwise, the PSF is used as it is.
+     */
+    public void setPSF(ShapedArray psf, boolean normalize) {
+        setPSF(psf, null, normalize);
+    }
+
+    /**
+     * Set the PSF of the operator with given center coordinates.
+     *
+     * @param psf
+     *        The PSF in the form of a shaped array. It is automatically
+     *        converted to the correct data type, zero-padded and rolled.
+     *
+     * @param off
+     *        The offsets of the central element of the PSF. There must be as
+     *        many elements as the rank of the PSF, each element is the 0-based
+     *        offset of the center along the corresponding dimension. If
+     *        {@code null}, the position of the geometric center is used.
+     *
+     * @param normalize
+     *        Normalize the PSF? If true, all PSF values are divided by the sum
+     *        of the PSF values; otherwise, the PSF is used as it is.
+     */
+    public abstract void setPSF(ShapedArray psf, int[] off, boolean normalize);
 
     /**
      * Check rank and input/output dimensions.

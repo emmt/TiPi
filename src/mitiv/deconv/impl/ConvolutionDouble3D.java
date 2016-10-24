@@ -95,10 +95,15 @@ public class ConvolutionDouble3D extends ConvolutionDouble {
     /**
      * Create a new convolution operator for 3D arrays of double's.
      *
-     * @param inp - The input space.
-     * @param out - The output space.
-     * @param off - The position of the output relative to the result
-     *              of the convolution.
+     * @param inp
+     *        The input space.
+     *
+     * @param out
+     *        The output space.
+     *
+     * @param off
+     *        The position of the output relative to the result of the
+     *        convolution.
      */
     public ConvolutionDouble3D(ShapedVectorSpace inp,
                         ShapedVectorSpace out, int[] off) {

@@ -200,8 +200,8 @@ public class WeightedConvolutionDouble1D
     }
 
     @Override
-    public void setPSF(ShapedArray psf, int[] off) {
-        cnvl.setPSF(psf, off);
+        public void setPSF(ShapedArray psf, int[] off, boolean normalize) {
+        cnvl.setPSF(psf, off, normalize);
     }
 
     @Override

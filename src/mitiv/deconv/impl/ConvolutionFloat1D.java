@@ -71,10 +71,15 @@ public class ConvolutionFloat1D extends ConvolutionFloat {
     /**
      * Create a new convolution operator for 1D arrays of float's.
      *
-     * @param inp - The input space.
-     * @param out - The output space.
-     * @param off - The position of the output relative to the result
-     *              of the convolution.
+     * @param inp
+     *        The input space.
+     *
+     * @param out
+     *        The output space.
+     *
+     * @param off
+     *        The position of the output relative to the result of the
+     *        convolution.
      */
     public ConvolutionFloat1D(ShapedVectorSpace inp,
                         ShapedVectorSpace out, int[] off) {

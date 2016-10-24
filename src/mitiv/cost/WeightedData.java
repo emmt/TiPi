@@ -97,7 +97,7 @@ import mitiv.utils.WeightFactory;
  */
 public class WeightedData implements DifferentiableCostFunction {
 
-    protected final ShapedVectorSpace dataSpace;
+    private final ShapedVectorSpace dataSpace;
     private final boolean single;
     private ShapedVector data = null;
     private ShapedVector weights = null;
@@ -128,6 +128,31 @@ public class WeightedData implements DifferentiableCostFunction {
      * <p> The data and, possibly, the weights can be specified later with one
      * of the {@link #setData()} and {@link #setWeights()} methods. </p>
      *
+     * @param space
+     *        The vector space of the data.
+     *
+     * @return A weighted data instance.
+     */
+    public WeightedData(ShapedVectorSpace space) {
+        switch (space.getType()) {
+        case Traits.FLOAT:
+            single = true;
+            break;
+        case Traits.DOUBLE:
+            single = false;
+            break;
+        default:
+            throw mustBeFloatingPoint();
+        }
+        this.dataSpace = space;
+    }
+
+    /**
+     * Create an empty instance of weighted data.
+     *
+     * <p> The data and, possibly, the weights can be specified later with one
+     * of the {@link #setData()} and {@link #setWeights()} methods. </p>
+     *
      * @param type
      *        The type of the data (must be {@link Traits#FLOAT} or
      *        {@link Traits#DOUBLE}).
@@ -148,7 +173,7 @@ public class WeightedData implements DifferentiableCostFunction {
             this.dataSpace = new DoubleShapedVectorSpace(shape);
             break;
         default:
-            throw new IllegalArgumentException("Weighted data type must be 'float' or 'double'");
+            throw mustBeFloatingPoint();
         }
     }
 
@@ -172,28 +197,23 @@ public class WeightedData implements DifferentiableCostFunction {
     }
 
     /**
-     * Create an empty instance of weighted data.
+     * Create an instance of weighted data from given data.
      *
-     * <p> The data and, possibly, the weights can be specified later with one
-     * of the {@link #setData()} and {@link #setWeights()} methods. </p>
+     * <p> The weights may be specified later with one of the
+     * {@link #setWeights()} methods. </p>
      *
-     * @param space
-     *        The vector space of the data.
+     * @param data
+     *        The data as a shaped array of type {@link Traits#FLOAT} or
+     *        {@link Traits#DOUBLE}.
+     *
+     * @param writable
+     *        Specify whether the {@code data} argument is writable.
      *
      * @return A weighted data instance.
      */
-    public WeightedData(ShapedVectorSpace space) {
-        switch (space.getType()) {
-        case Traits.FLOAT:
-            single = true;
-            break;
-        case Traits.DOUBLE:
-            single = false;
-            break;
-        default:
-            throw unsupportedDataType();
-        }
-        this.dataSpace = space;
+    public WeightedData(ShapedArray data, boolean writable) {
+        this(data.getType(), data.getShape());
+        setData(data, writable);
     }
 
     /**
@@ -204,13 +224,12 @@ public class WeightedData implements DifferentiableCostFunction {
      *
      * @param data
      *        The data as a shaped array of type {@link Traits#FLOAT} or
-     *        {@link Traits#DOUBLE}.
+     *        {@link Traits#DOUBLE}. The data is assumed to be read-only.
      *
      * @return A weighted data instance.
      */
     public WeightedData(ShapedArray data) {
-        this(data.getType(), data.getShape());
-        setData(data);
+        this(data, false);
     }
 
     /**
@@ -424,18 +443,30 @@ public class WeightedData implements DifferentiableCostFunction {
      * Set the data.
      *
      * @param arr
-     *        The data as a shaped array.
+     *        The data as a shaped array (assumed to be non-writable).
      */
     public void setData(ShapedArray arr) {
+        setData(arr, false);
+    }
+
+    /**
+     * Set the data.
+     *
+     * @param arr
+     *        The data as a shaped array.
+     *
+     * @param writable
+     *        Specify whether the data are writable.
+     */
+    public void setData(ShapedArray arr, boolean writable) {
         if (! arr.getShape().equals(dataSpace.getShape())) {
             throw nonconformableData();
         }
-        boolean writable;
         if (arr.getType() != dataSpace.getType()) {
             arr = (single ? arr.toFloat() : arr.toDouble());
             writable = true;
-        } else {
-            writable = ! arr.isFlat();
+        } else if (! arr.isFlat()) {
+            writable = true;
         }
         ShapedVector vec;
         if (single) {
@@ -483,18 +514,30 @@ public class WeightedData implements DifferentiableCostFunction {
      * Set the weights.
      *
      * @param arr
-     *        The weights as a shaped array.
+     *        The weights as a shaped array (assumed to be non-writable).
      */
     public void setWeights(ShapedArray arr) {
+        setWeights(arr, false);
+    }
+
+    /**
+     * Set the weights.
+     *
+     * @param arr
+     *        The weights as a shaped array.
+     *
+     * @param writable
+     *        Specify whether the weights are writable.
+     */
+    public void setWeights(ShapedArray arr, boolean writable) {
         if (! arr.getShape().equals(dataSpace.getShape())) {
             throw nonconformableData();
         }
-        boolean writable;
         if (arr.getType() != dataSpace.getType()) {
             arr = (single ? arr.toFloat() : arr.toDouble());
             writable = true;
-        } else {
-            writable = ! arr.isFlat();
+        } else if (! arr.isFlat()) {
+            writable = true;
         }
         ShapedVector vec;
         if (single) {
@@ -513,7 +556,7 @@ public class WeightedData implements DifferentiableCostFunction {
      * <p> Note that the weights can only be specified once. </p>
      *
      * @param weights
-     *        The weights (assumed to be non-writable).
+     *        The weights as a shaped vector (assumed to be non-writable).
      */
     public void setWeights(ShapedVector weights) {
         setWeights(weights, false);
@@ -525,7 +568,7 @@ public class WeightedData implements DifferentiableCostFunction {
      * <p> Note that the weights can only be specified once. </p>
      *
      * @param weights
-     *        The weights.
+     *        The weights as a shaped vector.
      *
      * @param writable
      *        Specify whether the weights are writable.
@@ -540,6 +583,23 @@ public class WeightedData implements DifferentiableCostFunction {
         this.updatePending = true;
     }
 
+    /**
+     * Compute the weights assuming a simple data-based model.
+     *
+     * <p> The variance of the data is assumed to be given by: </p>
+     *
+     * <pre>
+     * var(data) = alpha * max(0, data) + beta
+     * </pre>
+     *
+     * <p> and the weights are the reciprocal or the variances. </p>
+     *
+     * @param alpha
+     *        Linear parameter of the variance model.
+     *
+     * @param beta
+     *        Affine parameter of the variance mode.
+     */
     public void computeWeightsFromData(double alpha, double beta) {
         if (data == null) {
             noDataHasBeenSpecified();
@@ -1015,6 +1075,10 @@ public class WeightedData implements DifferentiableCostFunction {
 
     private static final IllegalArgumentException unsupportedDataType() {
         return new IllegalArgumentException("Unsupported data type");
+    }
+
+    private static final IllegalArgumentException mustBeFloatingPoint() {
+        return new IllegalArgumentException("Weighted data type must be 'float' or 'double'");
     }
 
 }

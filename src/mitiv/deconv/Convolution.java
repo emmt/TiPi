@@ -113,11 +113,12 @@ public abstract class Convolution extends ShapedLinearOperator {
     /**
      * Build a convolution operator.
      *
-     * @param space - The input and output spaces.
+     * @param space
+     *        The input and output spaces.
      *
-     * @return A new convolution operator.  The returned object is not a
-     *         valid operator until the point spread function (PSF) is set
-     *         with one of the {@link #setPSF()} methods.
+     * @return A new convolution operator. The returned object is not a valid
+     *         operator until the point spread function (PSF) is set with one of
+     *         the {@link #setPSF()} methods.
      */
     public static Convolution build(ShapedVectorSpace space) {
         final int type = space.getType();
@@ -152,12 +153,15 @@ public abstract class Convolution extends ShapedLinearOperator {
     /**
      * Build a convolution operator with centered output.
      *
-     * @param inp - The input space.
-     * @param out - The output space.
+     * @param inp
+     *        The input space.
      *
-     * @return A new convolution operator.  The returned object is not a
-     *         valid operator until the point spread function (PSF) is set
-     *         with one of the {@link #setPSF()} methods.
+     * @param out
+     *        The output space.
+     *
+     * @return A new convolution operator. The returned object is not a valid
+     *         operator until the point spread function (PSF) is set with one of
+     *         the {@link #setPSF()} methods.
      */
     public static Convolution build(ShapedVectorSpace inp,
             ShapedVectorSpace out) {
@@ -174,30 +178,31 @@ public abstract class Convolution extends ShapedLinearOperator {
 
     /**
      * Build a convolution operator.
-     * <p>
-     * This version of the factory for building a convolution operator
-     * let the caller specify precisely the position of the region corresponding to the
-     * output in the result of the convolution. The offsets of this region must be
-     * such that:
+     *
+     * <p> This version of the factory for building a convolution operator let
+     * the caller specify precisely the position of the region corresponding to
+     * the output in the result of the convolution. The offsets of this region
+     * must be such that: </p>
      *
      * <pre>
      * 0 &lt;= off[k] &lt;= inpDim[k] - outDim[k]
      * </pre>
      *
-     * where {@code inpDim} and {@code outDim} are the respective dimensions of
-     * the input and output spaces. If this does not hold (for all <i>k</i>),
-     * an {@link ArrayIndexOutOfBoundsException} is thrown.
-     * </p>
+     * <p> where {@code inpDim} and {@code outDim} are the respective dimensions
+     * of the input and output spaces. If this does not hold (for all <i>k</i>),
+     * an {@link ArrayIndexOutOfBoundsException} is thrown. </p>
      *
      * @param inp
-     *            - The input space.
+     *        The input space.
+     *
      * @param out
-     *            - The output space.
+     *        The output space.
+     *
      * @param off
-     *            - The relative position of the output with respect to the
-     *              result of the cyclic convolution. It must have as many
-     *              values as the rank of the input and output spaces of the
-     *              operator.
+     *        The relative position of the output with respect to the result of
+     *        the cyclic convolution. It must have as many values as the rank of
+     *        the input and output spaces of the operator.
+     *
      * @return A convolution operator.
      * @see {@link #build(ShapedVectorSpace, ShapedVectorSpace)}
      */
@@ -247,40 +252,40 @@ public abstract class Convolution extends ShapedLinearOperator {
     /**
      * Copy data to the internal workspace.
      *
-     * <p>
-     * This methods applies operator <b>R</b> if <b>adjoint</b> is false
-     * and operator <b>S</b><sup>*</sup> otherwise.
-     * This operation should be done before calling the {@link #convolve()}
-     * method.
+     * <p> This methods applies operator <b>R</b> if <b>adjoint</b> is false and
+     * operator <b>S</b><sup>*</sup> otherwise. This operation should be done
+     * before calling the {@link #convolve()} method. </p>
      *
-     * @param src     - The source vector to copy to the internal workspace.
-     * @param adjoint - Indicate whether to apply the adjoint or the direct
-     *                  operator.
+     * @param src
+     *        The source vector to copy to the internal workspace.
+     *
+     * @param adjoint
+     *        Indicate whether to apply the adjoint or the direct operator.
      */
     public abstract void push(ShapedVector src, boolean adjoint);
 
     /**
      * Retrieve the result of the convolution.
      *
-     * <p>
-     * This methods applies operator <b>S</b> if <b>adjoint</b> is false
-     * and operator <b>R</b><sup>*</sup> otherwise.  After calling the
-     * {@link #convolve()} method, this operation extracts the real part of
-     * the internal workspace for the output region and scales the values.
+     * <p> This methods applies operator <b>S</b> if <b>adjoint</b> is false and
+     * operator <b>R</b><sup>*</sup> otherwise. After calling the
+     * {@link #convolve()} method, this operation extracts the real part of the
+     * internal workspace for the output region and scales the values. </p>
      *
-     * @param dst     - The destination vector to store the real part of
-     *                  the internal workspace.
-     * @param adjoint - Indicate whether to apply the adjoint or the direct
-     *                  operator.
+     * @param dst
+     *        The destination vector to store the real part of the internal
+     *        workspace.
+     *
+     * @param adjoint
+     *        Indicate whether to apply the adjoint or the direct operator.
      */
     public abstract void pull(ShapedVector dst, boolean adjoint);
 
     /**
      * Apply the operator to the internal workspace.
      *
-     * <p>
-     * The linear operator which implements the convolution performs the
-     * following operations:
+     * <p> The linear operator which implements the convolution performs the
+     * following operations: </p>
      *
      * <pre>
      * this.push(src, adjoint);
@@ -288,32 +293,23 @@ public abstract class Convolution extends ShapedLinearOperator {
      * this.pull(dst, adjoint);
      * </pre>
      *
-     * where <b>src</b> is the source vector, <b>dst</b> is the destination
+     * <p> where <b>src</b> is the source vector, <b>dst</b> is the destination
      * vector, and <b>adjoint</b> is true to apply the adjoint of the operator.
-     * </p>
-     * <p>
-     * This splitting is intended to implement other operators or classes on top
-     * of the convolution operator.
-     * <p>
+     * </p> <p> This splitting is intended to implement other operators or
+     * classes on top of the convolution operator. </p>
      *
      * @param adjoint
-     *            - Apply the adjoint of the operator if true.
+     *        Apply the adjoint of the operator if true.
      */
     public abstract void convolve(boolean adjoint);
-
-    /**
-     * Set the PSF of the operator.
-     * @param vec - The PSF must belongs to the input space of the operator
-     *              and must be centered in the sense of the FFT.
-     */
-    public abstract void setPSF(ShapedVector vec);
 
     /**
      * Compute offset of array center.
      *
      * The center is at offset shape.dimension(k)/2 along each dimension k.
      *
-     * @param shape - The dimensions of the array.
+     * @param shape
+     *        The dimensions of the array.
      */
     public static int[] center(Shape shape) {
         int rank = shape.rank();
@@ -326,35 +322,88 @@ public abstract class Convolution extends ShapedLinearOperator {
 
     /**
      * Set the PSF of the operator.
-     * @param arr - The PSF in the form of a shaped array.  It is
-     *              automatically converted to the correct data type,
-     *              zero-padded and rolled.  It is assumed to be
-     *              geometrically centered (i.e. the center of the PSF
-     *              is at offset dim/2 along each dimension).
+     *
+     * @param psf
+     *        The PSF must belongs to the input space of the operator and must
+     *        be centered in the sense of of the FFT.
      */
-    public void setPSF(ShapedArray arr) {
-        setPSF(arr, center(arr.getShape()));
+    public abstract void setPSF(ShapedVector psf);
+
+    /**
+     * Set the PSF of the operator.
+     *
+     * @param psf
+     *        The PSF in the form of a shaped array. It is automatically
+     *        converted to the correct data type, zero-padded and rolled. It is
+     *        assumed to be geometrically centered (i.e. the center of the PSF
+     *        is at offset dim/2 along each dimension).
+     */
+    public void setPSF(ShapedArray psf) {
+        setPSF(psf, null, false);
     }
 
     /**
      * Set the PSF of the operator with given center coordinates.
-     * @param arr - The PSF in the form of a shaped array.  It is
-     *              automatically converted to the correct data type,
-     *              zero-padded and rolled.
-     * @param off - The offsets of the central element of the PSF.
-     *              There must be as many elements as the rank of
-     *              the PSF, each element is the 0-based offset of
-     *              the center along the corresponding dimension.
+     *
+     * @param psf
+     *        The PSF in the form of a shaped array. It is automatically
+     *        converted to the correct data type, zero-padded and rolled.
+     *
+     * @param off
+     *        The offsets of the central element of the PSF. There must be as
+     *        many elements as the rank of the PSF, each element is the 0-based
+     *        offset of the center along the corresponding dimension. If
+     *        {@code null}, the position of the geometric center is used.
      */
-    public abstract void setPSF(ShapedArray arr, int[] off);
+    public void setPSF(ShapedArray psf, int[] off) {
+        setPSF(psf, off, false);
+    }
+
+    /**
+     * Set the PSF of the operator with given center coordinates.
+     *
+     * @param psf
+     *        The PSF in the form of a shaped array. It is automatically
+     *        converted to the correct data type, zero-padded and rolled.
+     *
+     * @param normalize
+     *        Normalize the PSF? If true, all PSF values are divided by the sum
+     *        of the PSF values; otherwise, the PSF is used as it is.
+     */
+    public void setPSF(ShapedArray psf, boolean normalize) {
+        setPSF(psf, null, normalize);
+    }
+
+    /**
+     * Set the PSF of the operator with given center coordinates.
+     *
+     * @param psf
+     *        The PSF in the form of a shaped array. It is automatically
+     *        converted to the correct data type, zero-padded and rolled.
+     *
+     * @param off
+     *        The offsets of the central element of the PSF. There must be as
+     *        many elements as the rank of the PSF, each element is the 0-based
+     *        offset of the center along the corresponding dimension. If
+     *        {@code null}, the position of the geometric center is used.
+     *
+     * @param normalize
+     *        Normalize the PSF? If true, all PSF values are divided by the sum
+     *        of the PSF values; otherwise, the PSF is used as it is.
+     */
+    public abstract void setPSF(ShapedArray psf, int[] off, boolean normalize);
 
     /**
      * Helper function to zero-pad and roll the PSF.
-     * @param psf - The PSF as a shaped array.
-     * @param off - The offsets of the central element of the PSF.
-     *              There must be as many elements as the rank of
-     *              the PSF, each element is the 0-based offset of
-     *              the center along the corresponding dimension.
+     *
+     * @param psf
+     *        The PSF as a shaped array.
+     *
+     * @param off
+     *        The offsets of the central element of the PSF. There must be as
+     *        many elements as the rank of the PSF, each element is the 0-based
+     *        offset of the center along the corresponding dimension. If
+     *        {@code null}, the position of the geometric center is used.
      *
      * @return The PSF zero padded and appropriately rolled for the FFT.
      */
@@ -364,6 +413,9 @@ public abstract class Convolution extends ShapedLinearOperator {
         final int rank = inpShape.rank();
         if (psfShape.rank() != rank) {
             throw new IllegalArgumentException("PSF rank not conformable");
+        }
+        if (off == null) {
+            off = center(psfShape);
         }
         if (off.length != rank) {
             throw new IllegalArgumentException("Number of coordinates not conformable");
