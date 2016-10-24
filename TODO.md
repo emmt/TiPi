@@ -12,12 +12,15 @@
   version of integers is not worth the added complexity, and bugs), the
   cleanest way to do that is to change the `get()` method for `byte` arrays.
   Side effects: MDA format, etc.  Note that this is similar to how is
-  inetrpreted the `TYPE_BYTE` in `DataBuffer` objects.
+  interpreted the `TYPE_BYTE` in `DataBuffer` objects. **ALMOST DONE**
+
+* Optimize methods for flat arrays as for the conversion routines.
 
 * Use `ImageWriteParam` and `ImageReadParam` to improve reading/writing of
   images.  This can be set in `FormatOptions`.
 
-* Deal with `NaN` and `Infinite` when converting arrays to images.
+* Deal with `NaN` and `Infinite` when converting arrays to images.  In
+  particular with the initial image.
 
 * Implement broadcasting rules for `assign`.
 
@@ -56,3 +59,6 @@
 
 * In the cost functions, `evaluate` and `computeCostAndGradient` should check
   arguments?  Otherwise, make them low level (with an underscore).
+
+* Initial default image and padding should be the average of the data (divided
+  by PSF sum).

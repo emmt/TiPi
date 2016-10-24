@@ -1,9 +1,20 @@
 # TiPi framework for solving inverse problems
 
 TiPi is a Java *Toolkit for Inverse Problems and Imaging* developed as part the
-[MiTiV](http://mitiv.univ-lyon1.fr/) project.  The objective of TiPi is to
-provide a framework for developping fast algorithms for solving inverse
-problems in particular in the domain of imaging.
+[MiTiV](http://mitiv.univ-lyon1.fr/) project and supported by the **Magnum2**
+project.  The objective of TiPi is to provide a framework for developping fast
+algorithms for solving inverse problems in particular in the domain of imaging.
+TiPi has a number of applications, for instance:
+
+* **Astronomy**: TiPi is used for the deblurring and denoising of astronomical
+  images.
+
+* **Magnum2** project: TiPi is used to repair (inpainting) and enhance
+  (deblurring and denoising) images of license plates before automatic OCR.
+
+* **Microscopy**: TiPi is exploited to implement the *deconvolution* and
+  *blind deconvolution* plugins of [Icy](http://icy.bioimageanalysis.org/) of
+  3D images.
 
 
 ## Contents

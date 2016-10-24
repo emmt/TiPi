@@ -9,6 +9,7 @@ pages:
    - 'Making Arrays': array-factory.md
    - 'Vectors': vectors.md
 - 'Developpers':
+   - 'Code Maintenance': devel.md
    - 'New Vector Types': new-vector-types.md
    - 'The TiPi Preprocessor': tpp.md
 - 'Tools': deconv-tool.md
