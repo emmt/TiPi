@@ -33,12 +33,14 @@ import mitiv.linalg.VectorSpace;
 /**
  * Implementation of a quadratic cost function.
  *
- * A general form of a quadratic cost is:
+ * <p> A general form of a quadratic cost is: </p>
+ *
  * <pre>
  *     f(x) = (H.x - y)'.W.(H.x - y)
  * </pre>
- * where {@code H} and {@code W} are linear operators and {@code y} is a vector
- * of the the output space of {@code H}.
+ *
+ * <p> where {@code H} and {@code W} are linear operators and {@code y} is a
+ * vector of the the output space of {@code H}. </p>
  *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
@@ -62,7 +64,7 @@ public class QuadraticCost implements DifferentiableCostFunction {
      * {@code y} are {@code null} then {@code r = x} and the same storage can be
      * used for {@code r} and {@code x} however {@code r} is not writable in
      * this case and thus not usable for {@code Wr} unless {@code W} is also
-     * {@code null} and thus {@Wr = r}. </p>
+     * {@code null} and thus {@code Wr = r}. </p>
      */
     protected Vector r = null;
 
@@ -107,9 +109,14 @@ public class QuadraticCost implements DifferentiableCostFunction {
      * components. If this is inappropriate, the cost must be instantiated with
      * copies of the components which are subject to changes. </p>
      *
-     * @param H    A linear operator.
-     * @param y    A vector of the output space of {@code H}.
-     * @param W    An endomorphism of the output space of {@code H}.
+     * @param H
+     *        A linear operator.
+     *
+     * @param y
+     *        A vector of the output space of {@code H}.
+     *
+     * @param W
+     *        An endomorphism of the output space of {@code H}.
      */
     public QuadraticCost(LinearOperator H, Vector y, LinearOperator W) {
         setComponents(H, y, W);
@@ -147,9 +154,14 @@ public class QuadraticCost implements DifferentiableCostFunction {
      * {@link #QuadraticCost(LinearOperator, Vector, LinearOperator)} for a
      * comprehensive description of the arguments. </p>
      *
-     * @param H     A linear operator.
-     * @param y     A vector of the output space of {@code H}.
-     * @param W     An endomorphism of the output space of {@code H}.
+     * @param H
+     *        A linear operator.
+     *
+     * @param y
+     *        A vector of the output space of {@code H}.
+     *
+     * @param W
+     *        An endomorphism of the output space of {@code H}.
      */
     public void setComponents(LinearOperator H, Vector y, LinearOperator W) {
         /* Check consistency of the arguments. */
@@ -306,7 +318,8 @@ public class QuadraticCost implements DifferentiableCostFunction {
      * Wr = r         (W == null)
      * </pre>
      *
-     * @param x  The argument.
+     * @param x
+     *        The argument.
      */
     private void formResiduals(Vector x) {
         // Figure out the vector space for the residuals:

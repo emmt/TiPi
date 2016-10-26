@@ -269,9 +269,6 @@ public class ${className} {
      * @param arr
      *        The source array.
      *
-     * @param off
-     *        The offset of the element to wrap into the scalar.
-     *
      * @return A new ${Type}Scalar object.
      */
     public static ${Type}Scalar wrap(${type}[] arr) {
@@ -291,8 +288,8 @@ public class ${className} {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ${Type}Array share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #${Type}1D}, {@link #${Type}2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link ${Type}1D}, {@link ${Type}2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -317,7 +314,7 @@ public class ${className} {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #${Type}1D}, {@link #${Type}2D}, ... according to the number of
+     * {@link ${Type}1D}, {@link ${Type}2D}, ... according to the number of
      * dimensions in {@code shape}.  </p>
      *
      * @param arr
@@ -326,9 +323,10 @@ public class ${className} {
      * @param dims
      *        The dimension list of the result.
      *
-     * @return An instance of ${TypeArray} sharing its data with the input array
-     *         {@code arr}.
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @return An instance of ${TypeArray} sharing its data with the input
+     *         array {@code arr}.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ${TypeArray} wrap(${type}[] arr, int[] dims) {
         return wrap(arr, new Shape(dims));
@@ -339,7 +337,7 @@ public class ${className} {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #${Type}1D}, {@link #${Type}2D}, ... according to the number of
+     * {@link ${Type}1D}, {@link ${Type}2D}, ... according to the number of
      * dimensions in {@code shape}. </p>
      *
      * @param data
@@ -351,7 +349,7 @@ public class ${className} {
      * @return An instance of ${TypeArray} sharing its data with the input
      *         array {@code data}.
      *
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ${Type}Array wrap(${type}[] data, Shape shape) {
         switch (shape.rank()) {
@@ -383,7 +381,7 @@ public class ${className} {
      * @return A shaped array sharing its data with the input object
      *         {@code obj}.
      *
-     * @see {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ShapedArray wrap(Object obj, Shape shape) {
         int depth = 0;
@@ -426,7 +424,7 @@ public class ${className} {
      * @return A shaped array sharing its data with the input object
      *         {@code obj}.
      *
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ShapedArray wrap(Object obj, int[] dims) {
         int depth = 0;
@@ -479,7 +477,7 @@ public class ${className} {
      *
      * @return A ${Type}Array wrapped around the object {@code obj}.
      *
-     * @see {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Array${rank}D wrap(Object obj, ${dimDecl}) {
         return (Array${rank}D)wrap(obj, new Shape(${dimList}));

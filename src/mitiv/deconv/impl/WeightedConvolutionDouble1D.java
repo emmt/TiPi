@@ -35,16 +35,15 @@ import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 /**
  * Implements a FFT-based weighted convolution for 1D arrays of double's.
  *
- * <p>
- * It is recommended not to directly instantiate this class but rather use
+ * <p> It is recommended not to directly instantiate this class but rather use
  * one of the factory methods of the parent class
- * {@link  WeightedConvolutionOperator}.{@code build()}.  Have a look at the
- * documentation of {@link  WeightedConvolutionOperator} for a description
- * of what exaclty does this kind of operator.
- * </p>
+ * {@link mitiv.deconv.WeightedConvolutionCost#build}.  Have a look at the
+ * documentation of {@link mitiv.deconv.WeightedConvolutionCost} for a
+ * description of what exaclty does this kind of operator.  </p>
+ *
  * @author Éric Thiébaut
  *
- * @see {@link WeightedConvolutionOperator}
+ * @see mitiv.deconv.WeightedConvolutionCost
  */
 public class WeightedConvolutionDouble1D
      extends WeightedConvolutionDouble

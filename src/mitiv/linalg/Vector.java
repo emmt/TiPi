@@ -55,8 +55,9 @@ public abstract class Vector {
 
     /**
      * Create a vector from a given vector space.
-     * @param owner  The vector space to which the result belongs to.
-     * @return A new vector.
+     *
+     * @param owner
+     *        The vector space to which the result belongs to.
      */
     protected Vector(VectorSpace owner) {
         this.space = owner;
@@ -65,7 +66,8 @@ public abstract class Vector {
 
     /**
      * Get the vector space which owns the vector.
-     * @return The vector space owning the vector.
+     *
+     * @return The vector space which owns the vector.
      */
     public VectorSpace getOwner() {
         return space;
@@ -73,6 +75,7 @@ public abstract class Vector {
 
     /**
      * Get the vector space of the vector.
+     *
      * @return The vector space of the vector.
      */
     public VectorSpace getSpace() {
@@ -81,6 +84,7 @@ public abstract class Vector {
 
     /**
      * Get the size of the vector.
+     *
      * @return The number of scalars collected in the vector.
      */
     public final int getNumber() {
@@ -89,6 +93,7 @@ public abstract class Vector {
 
     /**
      * Get the size of the vector.
+     *
      * @return The number of scalars collected in the vector.
      */
     public final int length() {
@@ -99,7 +104,8 @@ public abstract class Vector {
      * Check whether a vector belongs to a given vector space.
      *
      * @param space
-     *            A vector space.
+     *        A vector space.
+     *
      * @return True or false.
      */
     public final boolean belongsTo(VectorSpace space) {
@@ -108,7 +114,10 @@ public abstract class Vector {
 
     /**
      * Throw an exception if a vector does not belong to a given vector space.
-     * @param space  The vector space.
+     *
+     * @param space
+     *        The vector space.
+     *
      * @throws IncorrectSpaceException The instance does not belong to the
      *         given vector space.
      */
@@ -126,14 +135,15 @@ public abstract class Vector {
      * testing or debugging purposes. To remain efficient, vector contents must
      * be managed in a more specific way. </p>
      *
-     * @param i   The index of the value (runs from 0 to {@code n}-1, with
-     *            {@code n} the number of components of the vector).
+     * @param i
+     *        The index of the value (runs from 0 to {@code n}-1, with
+     *        {@code n} the number of components of the vector).
      *
      * @return The value of the vector at the given index.
      *
      * @throws IndexOutOfBoundsException The index {@code i} is out of bounds.
      *
-     * @see {@link #set(int, double)}.
+     * @see #set(int, double).
      */
     public abstract double get(int i) throws IndexOutOfBoundsException;
 
@@ -144,14 +154,16 @@ public abstract class Vector {
      * testing or debugging purposes. To remain efficient, vector contents must
      * be managed in a more specific way. </p>
      *
-     * @param i        The index of the value (runs from 0 to {@code n}-1,
-     *                 with {@code n} the number of components of the vector).
+     * @param i
+     *        The index of the value (runs from 0 to {@code n}-1, with
+     *        {@code n} the number of components of the vector).
      *
-     * @param value   The value to store at the index position.
+     * @param value
+     *        The value to store at the index position.
      *
      * @throws IndexOutOfBoundsException The index {@code i} is out of bounds.
      *
-     * @see {@link #get(int)}.
+     * @see #get(int)
      */
     public abstract void set(int i, double value)
             throws IndexOutOfBoundsException;
@@ -188,7 +200,8 @@ public abstract class Vector {
      * this[i] = src[i];
      * </pre>
      *
-     * @param src   The source vector.
+     * @param src
+     *        The source vector.
      *
      * @throws IncorrectSpaceException {@code src} does not belong to the
      *         same vector space.
@@ -203,7 +216,8 @@ public abstract class Vector {
     /**
      * Exchange the contents of the vector with that of another one.
      *
-     * @param vec   The other vector.
+     * @param vec
+     *        The other vector.
      *
      * @throws IncorrectSpaceException {@code vec} does not belong to the
      *         same vector space.
@@ -231,7 +245,8 @@ public abstract class Vector {
      * this[0]*vec[0] + this[1]*vec[1] + ... + this[n-1]*vec[n-1]
      * </pre>
      *
-     * @param vec  Another vector of the vector space of {@code this}.
+     * @param vec
+     *        Another vector of the vector space of {@code this}.
      *
      * @return The inner product of {@code this} and {@code vec}.
      *
@@ -258,9 +273,11 @@ public abstract class Vector {
      * this[0]*x[0]*y[0] + this[1]*x[1]*y[0] + ... + this[n-1]*x[n-1]*y[n-1]
      * </pre>
      *
-     * @param x   Another vector of the vector space of {@code this}.
+     * @param x
+     *        Another vector of the vector space of {@code this}.
      *
-     * @param y   Yet another vector of the vector space of {@code this}.
+     * @param y
+     *        Yet another vector of the vector space of {@code this}.
      *
      * @return The sum of the products of the corresponding components of
      *         {@code this}, {@code v1} and {@code v2}.
@@ -307,10 +324,11 @@ public abstract class Vector {
      *
      * <p> Set all components of the vector with a value.  </p>
      *
-     * @param alpha   A scalar value.
+     * @param alpha
+     *        A scalar value.
      */
-    public final void fill(double value) {
-        space._fill(this, value);
+    public final void fill(double alpha) {
+        space._fill(this, alpha);
     }
 
     /**
@@ -332,7 +350,8 @@ public abstract class Vector {
      * this[i] *= alpha;
      * </pre>
      *
-     * @param alpha   The scale factor.
+     * @param alpha
+     *        The scale factor.
      */
     public final void scale(double alpha) {
         space._scale(this, alpha);
@@ -348,9 +367,11 @@ public abstract class Vector {
      * this[i] = alpha*vec[i];
      * </pre>
      *
-     * @param alpha   The scale factor.
+     * @param alpha
+     *        The scale factor.
      *
-     * @param vec     A vector of the vector space of {@code this}.
+     * @param vec
+     *        A vector of the vector space of {@code this}.
      *
      * @throws IncorrectSpaceException {@code vec} does not belong to the
      *         vector space of {@code this}.
@@ -370,9 +391,11 @@ public abstract class Vector {
      * this[i] += alpha*x[i];
      * </pre>
      *
-     * @param alpha  The scalar factor.
+     * @param alpha
+     *        The scalar factor.
      *
-     * @param x      A vector of the vector space of {@code this}.
+     * @param x
+     *        A vector of the vector space of {@code this}.
      *
      * @throws IncorrectSpaceException Vector {@code x} does not belong to the
      *         vector space of {@code this}.
@@ -394,13 +417,16 @@ public abstract class Vector {
      * </pre>
      *
      * @param alpha
-     *            The scalar factor for vector {@code x}.
+     *        The scalar factor for vector {@code x}.
+     *
      * @param x
-     *            A vector of the vector space of {@code this}.
+     *        A vector of the vector space of {@code this}.
+     *
      * @param beta
-     *            The scalar factor for vector {@code y}.
+     *        The scalar factor for vector {@code y}.
+     *
      * @param y
-     *            Another vector of the vector space of {@code this}.
+     *        Another vector of the vector space of {@code this}.
      *
      * @throws IncorrectSpaceException Not all vectors belong to the vector
      *         space of {@code this}.
@@ -423,17 +449,22 @@ public abstract class Vector {
      * </pre>
      *
      * @param alpha
-     *            The scalar factor for vector {@code x}.
+     *        The scalar factor for vector {@code x}.
+     *
      * @param x
-     *            A vector of the vector space of {@code this}.
+     *        A vector of the vector space of {@code this}.
+     *
      * @param beta
-     *            The scalar factor for vector {@code y}.
+     *        The scalar factor for vector {@code y}.
+     *
      * @param y
-     *            Another vector of the vector space of {@code this}.
+     *        Another vector of the vector space of {@code this}.
+     *
      * @param gamma
-     *            The scalar factor for vector {@code z}.
+     *        The scalar factor for vector {@code z}.
+     *
      * @param z
-     *            Yet another vector of the vector space of {@code this}.
+     *        Yet another vector of the vector space of {@code this}.
      *
      * @throws IncorrectSpaceException Not all vectors belong to the vector
      *         space of {@code this}.
@@ -457,7 +488,8 @@ public abstract class Vector {
      * this[i] *= x[i];
      * </pre>
      *
-     * @param x   A vector of the vector space of {@code this}.
+     * @param x
+     *        A vector of the vector space of {@code this}.
      *
      * @throws IncorrectSpaceException The argument does not belong to the
      *         vector space of {@code this}.
@@ -480,9 +512,11 @@ public abstract class Vector {
      * for all indices {@code i}.
      * </p>
      *
-     * @param x   A vector of the vector space of {@code this}.
+     * @param x
+     *        A vector of the vector space of {@code this}.
      *
-     * @param y   Another vector of the vector space of {@code this}.
+     * @param y
+     *        Another vector of the vector space of {@code this}.
      *
      * @throws IncorrectSpaceException Not all arguments belong to the vector
      *         space of {@code this}.
@@ -507,7 +541,8 @@ public abstract class Vector {
      * Make a, possibly truncated, string representation of the vector
      * contents.
      *
-     * @param n   The maximum number of components to show.
+     * @param n
+     *        The maximum number of components to show.
      *
      * @return A string like "{1.1, 0.0, ..., 9.7}", if {@code n = 3}.
      */
@@ -533,4 +568,5 @@ public abstract class Vector {
         }
         return buf.append("}").toString();
     }
+
 }

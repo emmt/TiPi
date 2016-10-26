@@ -68,17 +68,28 @@ public abstract class Float2D extends Array2D implements FloatArray {
 
     /**
      * Query the value stored at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
+     *
+     * @param i1
+     *        The index along the 1st dimension.
+     *
+     * @param i2
+     *        The index along the 2nd dimension.
+     *
      * @return The value stored at position {@code (i1,i2)}.
      */
     public abstract float get(int i1, int i2);
 
     /**
      * Set the value at a given position.
-     * @param i1    - The index along the 1st dimension.
-     * @param i2    - The index along the 2nd dimension.
-     * @param value - The value to store at position {@code (i1,i2)}.
+     *
+     * @param i1
+     *        The index along the 1st dimension.
+     *
+     * @param i2
+     *        The index along the 2nd dimension.
+     *
+     * @param value
+     *        The value to store at position {@code (i1,i2)}.
      */
     public abstract void set(int i1, int i2, float value);
 
@@ -598,13 +609,20 @@ public abstract class Float2D extends Array2D implements FloatArray {
 
     /**
      * Create a 2D array of float's with given dimensions.
-     * <p>
-     * This method creates a 2D array of float's with zero offset, contiguous
-     * elements and column-major order.  All dimensions must at least 1.
-     * @param dim1 - The 1st dimension of the 2D array.
-     * @param dim2 - The 2nd dimension of the 2D array.
+     *
+     * <p> This method creates a 2D array of float's with zero offset,
+     * contiguous elements and column-major order.  All dimensions must at
+     * least 1. </p>
+     *
+     * @param dim1
+     *        The 1st dimension of the 2D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 2D array.
+     *
      * @return A new 2D array of float's.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Float2D create(int dim1, int dim2) {
         return new FlatFloat2D(dim1,dim2);
@@ -612,15 +630,19 @@ public abstract class Float2D extends Array2D implements FloatArray {
 
     /**
      * Create a 2D array of float's with given shape.
-     * <p>
-     * This method creates a 2D array of float's with zero offset, contiguous
-     * elements and column-major order.
-     * @param dims - The list of dimensions of the 2D array (all dimensions
-     *               must at least 1).  This argument is not referenced by
-     *               the returned object and its contents can be modified
-     *               after calling this method.
+     *
+     * <p> This method creates a 2D array of float's with zero offset,
+     * contiguous elements and column-major order. </p>
+     *
+     * @param dims
+     *        The list of dimensions of the 2D array (all dimensions must
+     *        at least 1).  This argument is not referenced by the returned
+     *        object and its contents can be modified after calling this
+     *        method.
+     *
      * @return A new 2D array of float's.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Float2D create(int[] dims) {
         return new FlatFloat2D(dims);
@@ -628,52 +650,76 @@ public abstract class Float2D extends Array2D implements FloatArray {
 
     /**
      * Create a 2D array of float's with given shape.
-     * <p>
-     * This method creates a 2D array of float's with zero offset, contiguous
-     * elements and column-major order.
-     * @param shape      - The shape of the 2D array.
-     * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
-     *                     otherwise, the returned object will reference
-     *                     <b>shape</b> whose contents <b><i>must not be
-     *                     modified</i></b> while the returned object is in
-     *                     use.
+     *
+     * <p> This method creates a 2D array of float's with zero offset,
+     * contiguous elements and column-major order. </p>
+     *
+     * @param shape
+     *        The shape of the 2D array.
+     *
      * @return A new 2D array of float's.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Float2D create(Shape shape) {
         return new FlatFloat2D(shape);
     }
 
     /**
-     * Wrap an existing array in a 2D array of float's with given dimensions.
-     * <p>
-     * The returned 2D array have zero offset, contiguous elements and
-     * column-major storage order.  More specifically:
-     * <pre>arr.get(i1,i2) = data[i1 + dim1*i2]</pre>
-     * with {@code arr} the returned 2D array.
-     * @param data - The data to wrap in the 2D array.
-     * @param dim1 - The 1st dimension of the 2D array.
-     * @param dim2 - The 2nd dimension of the 2D array.
+     * Wrap an existing array in a 2D array of float's with given
+     * dimensions.
+     *
+     * <p> The returned 2D array have zero offset, contiguous elements
+     * and column-major storage order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(i1,i2) = data[i1 + dim1*i2]
+     * </pre>
+     *
+     * <p> with {@code arr} the returned 2D array. </p>
+     *
+     * @param data
+     *        The data to wrap in the 2D array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 2D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 2D array.
+     *
      * @return A 2D array sharing the elements of <b>data</b>.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Float2D wrap(float[] data, int dim1, int dim2) {
         return new FlatFloat2D(data, dim1,dim2);
     }
 
     /**
-     * Wrap an existing array in a 2D array of float's with given shape.
-     * <p>
-     * The returned 2D array have zero offset, contiguous elements and
-     * column-major storage order.  More specifically:
-     * <pre>arr.get(i1,i2) = data[i1 + shape[0]*i2]</pre>
-     * with {@code arr} the returned 2D array.
-     * @param data - The data to wrap in the 2D array.
-     * @param dims - The list of dimensions of the 2D array.  This argument is
-     *                not referenced by the returned object and its contents
-     *                can be modified after the call to this method.
-     * @return A new 2D array of float's sharing the elements of <b>data</b>.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     * Wrap an existing array in a 2D array of float's with given
+     * shape.
+     *
+     * <p> The returned 2D array have zero offset, contiguous elements
+     * and column-major storage order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(i1,i2) = data[i1 + shape[0]*i2]
+     * </pre>
+     *
+     * <p> with {@code arr} the returned 2D array. </p>
+     *
+     * @param data
+     *        The data to wrap in the 2D array.
+     *
+     * @param dims
+     *        The list of dimensions of the 2D array.  This argument is
+     *        not referenced by the returned object and its contents can be
+     *        modified after the call to this method.
+     *
+     * @return A new 2D array of float's sharing the elements of
+     *         <b>data</b>.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Float2D wrap(float[] data, int[] dims) {
         return new FlatFloat2D(data, dims);
@@ -681,41 +727,65 @@ public abstract class Float2D extends Array2D implements FloatArray {
 
     /**
      * Wrap an existing array in a 2D array of float's with given shape.
+     *
+     * <p> The returned 2D array have zero offset, contiguous elements
+     * and column-major storage order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(i1,i2) = data[i1 + shape[0]*i2]
+     * </pre>
+     *
      * <p>
-     * The returned 2D array have zero offset, contiguous elements and
-     * column-major storage order.  More specifically:
-     * <pre>arr.get(i1,i2) = data[i1 + shape[0]*i2]</pre>
-     * with {@code arr} the returned 2D array.
-     * @param data       - The data to wrap in the 2D array.
-     * @param shape      - The shape of the 2D array.
-     * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
-     *                     otherwise, the returned object will reference
-     *                     <b>shape</b> whose contents <b><i>must not be
-     *                     modified</i></b> while the returned object is in
-     *                     use.
-     * @return A new 2D array of float's sharing the elements of <b>data</b>.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     * with {@code arr} the returned 2D array. </p>
+     *
+     * @param data
+     *        The data to wrap in the 2D array.
+     *
+     * @param shape
+     *        The shape of the 2D array.
+     *
+     * @return A new 2D array of float's sharing the elements of
+     *         <b>data</b>.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Float2D wrap(float[] data, Shape shape) {
         return new FlatFloat2D(data, shape);
     }
 
     /**
-     * Wrap an existing array in a 2D array of float's with given dimensions,
-     * strides and offset.
-     * <p>
-     * This creates a 2D array of dimensions {{@code dim1,dim2}}
+     * Wrap an existing array in a 2D array of float's with given
+     * dimensions, strides and offset.
+     *
+     * <p> This creates a 2D array of dimensions {{@code dim1,dim2}}
      * sharing (part of) the contents of {@code data} in arbitrary storage
-     * order.  More specifically:
-     * <pre>arr.get(i1,i2) = data[offset + stride1*i1 + stride2*i2]</pre>
-     * with {@code arr} the returned 2D array.
-     * @param data    - The array to wrap in the 2D array.
-     * @param offset  - The offset in {@code data} of element (0,0) of
-     *                  the 2D array.
-     * @param stride1 - The stride along the 1st dimension.
-     * @param stride2 - The stride along the 2nd dimension.
-     * @param dim1    - The 1st dimension of the 2D array.
-     * @param dim2    - The 2nd dimension of the 2D array.
+     * order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(i1,i2) = data[offset + stride1*i1 + stride2*i2]
+     * </pre>
+     *
+     * <p> with {@code arr} the returned 2D array. </p>
+     *
+     * @param data
+     *        The array to wrap in the 2D array.
+     *
+     * @param offset
+     *        The offset in {@code data} of element (0,0) of the
+     *        2D array.
+     *
+     * @param stride1
+     *        The stride along the 1st dimension.
+     *
+     * @param stride2
+     *        The stride along the 2nd dimension.
+     *
+     * @param dim1
+     *        The 1st dimension of the 2D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 2D array.
+     *
      * @return A 2D array sharing the elements of <b>data</b>.
      */
     public static Float2D wrap(float[] data,
@@ -726,11 +796,12 @@ public abstract class Float2D extends Array2D implements FloatArray {
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.  The same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *        The same indexing rules as for {@link mitiv.base.indexing.Range}
+     *        apply for negative index: 0 for the first, 1 for the second, -1
+     *        for the last, -2 for penultimate, <i>etc.</i>
+     *
      * @return A Float1D view on the given slice of the array.
      */
     public abstract Float1D slice(int idx);
@@ -738,13 +809,14 @@ public abstract class Float2D extends Array2D implements FloatArray {
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.
-     * @param dim - The dimension to slice.  For these two arguments,
-     *              the same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *
+     * @param dim
+     *        The dimension to slice.  For these two arguments, the same
+     *        indexing rules as for {@link mitiv.base.indexing.Range} apply for
+     *        negative index: 0 for the first, 1 for the second, -1 for the
+     *        last, -2 for penultimate, <i>etc.</i>
      *
      * @return A Float1D view on the given slice of the array.
      */
@@ -753,10 +825,13 @@ public abstract class Float2D extends Array2D implements FloatArray {
     /**
      * Get a view of the array for given ranges of indices.
      *
-     * @param rng1 - The range of indices to select along 1st dimension
-     *               (or {@code null} to select all.
-     * @param rng2 - The range of indices to select along 2nd dimension
-     *               (or {@code null} to select all.
+     * @param rng1
+     *        The range of indices to select along 1st dimension (or
+     *        {@code null} to select all.
+     *
+     * @param rng2
+     *        The range of indices to select along 2nd dimension (or
+     *        {@code null} to select all.
      *
      * @return A Float2D view for the given ranges of the array.
      */
@@ -765,10 +840,13 @@ public abstract class Float2D extends Array2D implements FloatArray {
     /**
      * Get a view of the array for given ranges of indices.
      *
-     * @param idx1 - The list of indices to select along 1st dimension
-     *               (or {@code null} to select all.
-     * @param idx2 - The list of indices to select along 2nd dimension
-     *               (or {@code null} to select all.
+     * @param idx1
+     *        The list of indices to select along 1st dimension (or
+     *        {@code null} to select all.
+     *
+     * @param idx2
+     *        The list of indices to select along 2nd dimension (or
+     *        {@code null} to select all.
      *
      * @return A Float2D view for the given index selections of the
      *         array.

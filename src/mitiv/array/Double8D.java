@@ -68,29 +68,64 @@ public abstract class Double8D extends Array8D implements DoubleArray {
 
     /**
      * Query the value stored at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
-     * @param i4 - The index along the 4th dimension.
-     * @param i5 - The index along the 5th dimension.
-     * @param i6 - The index along the 6th dimension.
-     * @param i7 - The index along the 7th dimension.
-     * @param i8 - The index along the 8th dimension.
+     *
+     * @param i1
+     *        The index along the 1st dimension.
+     *
+     * @param i2
+     *        The index along the 2nd dimension.
+     *
+     * @param i3
+     *        The index along the 3rd dimension.
+     *
+     * @param i4
+     *        The index along the 4th dimension.
+     *
+     * @param i5
+     *        The index along the 5th dimension.
+     *
+     * @param i6
+     *        The index along the 6th dimension.
+     *
+     * @param i7
+     *        The index along the 7th dimension.
+     *
+     * @param i8
+     *        The index along the 8th dimension.
+     *
      * @return The value stored at position {@code (i1,i2,i3,i4,i5,i6,i7,i8)}.
      */
     public abstract double get(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int i8);
 
     /**
      * Set the value at a given position.
-     * @param i1    - The index along the 1st dimension.
-     * @param i2    - The index along the 2nd dimension.
-     * @param i3    - The index along the 3rd dimension.
-     * @param i4    - The index along the 4th dimension.
-     * @param i5    - The index along the 5th dimension.
-     * @param i6    - The index along the 6th dimension.
-     * @param i7    - The index along the 7th dimension.
-     * @param i8    - The index along the 8th dimension.
-     * @param value - The value to store at position {@code (i1,i2,i3,i4,i5,i6,i7,i8)}.
+     *
+     * @param i1
+     *        The index along the 1st dimension.
+     *
+     * @param i2
+     *        The index along the 2nd dimension.
+     *
+     * @param i3
+     *        The index along the 3rd dimension.
+     *
+     * @param i4
+     *        The index along the 4th dimension.
+     *
+     * @param i5
+     *        The index along the 5th dimension.
+     *
+     * @param i6
+     *        The index along the 6th dimension.
+     *
+     * @param i7
+     *        The index along the 7th dimension.
+     *
+     * @param i8
+     *        The index along the 8th dimension.
+     *
+     * @param value
+     *        The value to store at position {@code (i1,i2,i3,i4,i5,i6,i7,i8)}.
      */
     public abstract void set(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int i8, double value);
 
@@ -982,19 +1017,38 @@ public abstract class Double8D extends Array8D implements DoubleArray {
 
     /**
      * Create a 8D array of double's with given dimensions.
-     * <p>
-     * This method creates a 8D array of double's with zero offset, contiguous
-     * elements and column-major order.  All dimensions must at least 1.
-     * @param dim1 - The 1st dimension of the 8D array.
-     * @param dim2 - The 2nd dimension of the 8D array.
-     * @param dim3 - The 3rd dimension of the 8D array.
-     * @param dim4 - The 4th dimension of the 8D array.
-     * @param dim5 - The 5th dimension of the 8D array.
-     * @param dim6 - The 6th dimension of the 8D array.
-     * @param dim7 - The 7th dimension of the 8D array.
-     * @param dim8 - The 8th dimension of the 8D array.
+     *
+     * <p> This method creates a 8D array of double's with zero offset,
+     * contiguous elements and column-major order.  All dimensions must at
+     * least 1. </p>
+     *
+     * @param dim1
+     *        The 1st dimension of the 8D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 8D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 8D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 8D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 8D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 8D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 8D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 8D array.
+     *
      * @return A new 8D array of double's.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Double8D create(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return new FlatDouble8D(dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8);
@@ -1002,15 +1056,19 @@ public abstract class Double8D extends Array8D implements DoubleArray {
 
     /**
      * Create a 8D array of double's with given shape.
-     * <p>
-     * This method creates a 8D array of double's with zero offset, contiguous
-     * elements and column-major order.
-     * @param dims - The list of dimensions of the 8D array (all dimensions
-     *               must at least 1).  This argument is not referenced by
-     *               the returned object and its contents can be modified
-     *               after calling this method.
+     *
+     * <p> This method creates a 8D array of double's with zero offset,
+     * contiguous elements and column-major order. </p>
+     *
+     * @param dims
+     *        The list of dimensions of the 8D array (all dimensions must
+     *        at least 1).  This argument is not referenced by the returned
+     *        object and its contents can be modified after calling this
+     *        method.
+     *
      * @return A new 8D array of double's.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Double8D create(int[] dims) {
         return new FlatDouble8D(dims);
@@ -1018,58 +1076,94 @@ public abstract class Double8D extends Array8D implements DoubleArray {
 
     /**
      * Create a 8D array of double's with given shape.
-     * <p>
-     * This method creates a 8D array of double's with zero offset, contiguous
-     * elements and column-major order.
-     * @param shape      - The shape of the 8D array.
-     * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
-     *                     otherwise, the returned object will reference
-     *                     <b>shape</b> whose contents <b><i>must not be
-     *                     modified</i></b> while the returned object is in
-     *                     use.
+     *
+     * <p> This method creates a 8D array of double's with zero offset,
+     * contiguous elements and column-major order. </p>
+     *
+     * @param shape
+     *        The shape of the 8D array.
+     *
      * @return A new 8D array of double's.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Double8D create(Shape shape) {
         return new FlatDouble8D(shape);
     }
 
     /**
-     * Wrap an existing array in a 8D array of double's with given dimensions.
-     * <p>
-     * The returned 8D array have zero offset, contiguous elements and
-     * column-major storage order.  More specifically:
-     * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7,i8) = data[i1 + dim1*(i2 + dim2*(i3 + dim3*(i4 + dim4*(i5 + dim5*(i6 + dim6*(i7 + dim7*i8))))))]</pre>
-     * with {@code arr} the returned 8D array.
-     * @param data - The data to wrap in the 8D array.
-     * @param dim1 - The 1st dimension of the 8D array.
-     * @param dim2 - The 2nd dimension of the 8D array.
-     * @param dim3 - The 3rd dimension of the 8D array.
-     * @param dim4 - The 4th dimension of the 8D array.
-     * @param dim5 - The 5th dimension of the 8D array.
-     * @param dim6 - The 6th dimension of the 8D array.
-     * @param dim7 - The 7th dimension of the 8D array.
-     * @param dim8 - The 8th dimension of the 8D array.
+     * Wrap an existing array in a 8D array of double's with given
+     * dimensions.
+     *
+     * <p> The returned 8D array have zero offset, contiguous elements
+     * and column-major storage order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(i1,i2,i3,i4,i5,i6,i7,i8) = data[i1 + dim1*(i2 + dim2*(i3 + dim3*(i4 + dim4*(i5 + dim5*(i6 + dim6*(i7 + dim7*i8))))))]
+     * </pre>
+     *
+     * <p> with {@code arr} the returned 8D array. </p>
+     *
+     * @param data
+     *        The data to wrap in the 8D array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 8D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 8D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 8D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 8D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 8D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 8D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 8D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 8D array.
+     *
      * @return A 8D array sharing the elements of <b>data</b>.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Double8D wrap(double[] data, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return new FlatDouble8D(data, dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8);
     }
 
     /**
-     * Wrap an existing array in a 8D array of double's with given shape.
-     * <p>
-     * The returned 8D array have zero offset, contiguous elements and
-     * column-major storage order.  More specifically:
-     * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7,i8) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*(i4 + shape[3]*(i5 + shape[4]*(i6 + shape[5]*(i7 + shape[6]*i8))))))]</pre>
-     * with {@code arr} the returned 8D array.
-     * @param data - The data to wrap in the 8D array.
-     * @param dims - The list of dimensions of the 8D array.  This argument is
-     *                not referenced by the returned object and its contents
-     *                can be modified after the call to this method.
-     * @return A new 8D array of double's sharing the elements of <b>data</b>.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     * Wrap an existing array in a 8D array of double's with given
+     * shape.
+     *
+     * <p> The returned 8D array have zero offset, contiguous elements
+     * and column-major storage order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(i1,i2,i3,i4,i5,i6,i7,i8) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*(i4 + shape[3]*(i5 + shape[4]*(i6 + shape[5]*(i7 + shape[6]*i8))))))]
+     * </pre>
+     *
+     * <p> with {@code arr} the returned 8D array. </p>
+     *
+     * @param data
+     *        The data to wrap in the 8D array.
+     *
+     * @param dims
+     *        The list of dimensions of the 8D array.  This argument is
+     *        not referenced by the returned object and its contents can be
+     *        modified after the call to this method.
+     *
+     * @return A new 8D array of double's sharing the elements of
+     *         <b>data</b>.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Double8D wrap(double[] data, int[] dims) {
         return new FlatDouble8D(data, dims);
@@ -1077,53 +1171,101 @@ public abstract class Double8D extends Array8D implements DoubleArray {
 
     /**
      * Wrap an existing array in a 8D array of double's with given shape.
+     *
+     * <p> The returned 8D array have zero offset, contiguous elements
+     * and column-major storage order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(i1,i2,i3,i4,i5,i6,i7,i8) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*(i4 + shape[3]*(i5 + shape[4]*(i6 + shape[5]*(i7 + shape[6]*i8))))))]
+     * </pre>
+     *
      * <p>
-     * The returned 8D array have zero offset, contiguous elements and
-     * column-major storage order.  More specifically:
-     * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7,i8) = data[i1 + shape[0]*(i2 + shape[1]*(i3 + shape[2]*(i4 + shape[3]*(i5 + shape[4]*(i6 + shape[5]*(i7 + shape[6]*i8))))))]</pre>
-     * with {@code arr} the returned 8D array.
-     * @param data       - The data to wrap in the 8D array.
-     * @param shape      - The shape of the 8D array.
-     * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
-     *                     otherwise, the returned object will reference
-     *                     <b>shape</b> whose contents <b><i>must not be
-     *                     modified</i></b> while the returned object is in
-     *                     use.
-     * @return A new 8D array of double's sharing the elements of <b>data</b>.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     * with {@code arr} the returned 8D array. </p>
+     *
+     * @param data
+     *        The data to wrap in the 8D array.
+     *
+     * @param shape
+     *        The shape of the 8D array.
+     *
+     * @return A new 8D array of double's sharing the elements of
+     *         <b>data</b>.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Double8D wrap(double[] data, Shape shape) {
         return new FlatDouble8D(data, shape);
     }
 
     /**
-     * Wrap an existing array in a 8D array of double's with given dimensions,
-     * strides and offset.
-     * <p>
-     * This creates a 8D array of dimensions {{@code dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8}}
+     * Wrap an existing array in a 8D array of double's with given
+     * dimensions, strides and offset.
+     *
+     * <p> This creates a 8D array of dimensions {{@code dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8}}
      * sharing (part of) the contents of {@code data} in arbitrary storage
-     * order.  More specifically:
-     * <pre>arr.get(i1,i2,i3,i4,i5,i6,i7,i8) = data[offset + stride1*i1 + stride2*i2 + stride3*i3 + stride4*i4 + stride5*i5 + stride6*i6 + stride7*i7 + stride8*i8]</pre>
-     * with {@code arr} the returned 8D array.
-     * @param data    - The array to wrap in the 8D array.
-     * @param offset  - The offset in {@code data} of element (0,0,0,0,0,0,0,0) of
-     *                  the 8D array.
-     * @param stride1 - The stride along the 1st dimension.
-     * @param stride2 - The stride along the 2nd dimension.
-     * @param stride3 - The stride along the 3rd dimension.
-     * @param stride4 - The stride along the 4th dimension.
-     * @param stride5 - The stride along the 5th dimension.
-     * @param stride6 - The stride along the 6th dimension.
-     * @param stride7 - The stride along the 7th dimension.
-     * @param stride8 - The stride along the 8th dimension.
-     * @param dim1    - The 1st dimension of the 8D array.
-     * @param dim2    - The 2nd dimension of the 8D array.
-     * @param dim3    - The 3rd dimension of the 8D array.
-     * @param dim4    - The 4th dimension of the 8D array.
-     * @param dim5    - The 5th dimension of the 8D array.
-     * @param dim6    - The 6th dimension of the 8D array.
-     * @param dim7    - The 7th dimension of the 8D array.
-     * @param dim8    - The 8th dimension of the 8D array.
+     * order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(i1,i2,i3,i4,i5,i6,i7,i8) = data[offset + stride1*i1 + stride2*i2 + stride3*i3 + stride4*i4 + stride5*i5 + stride6*i6 + stride7*i7 + stride8*i8]
+     * </pre>
+     *
+     * <p> with {@code arr} the returned 8D array. </p>
+     *
+     * @param data
+     *        The array to wrap in the 8D array.
+     *
+     * @param offset
+     *        The offset in {@code data} of element (0,0,0,0,0,0,0,0) of the
+     *        8D array.
+     *
+     * @param stride1
+     *        The stride along the 1st dimension.
+     *
+     * @param stride2
+     *        The stride along the 2nd dimension.
+     *
+     * @param stride3
+     *        The stride along the 3rd dimension.
+     *
+     * @param stride4
+     *        The stride along the 4th dimension.
+     *
+     * @param stride5
+     *        The stride along the 5th dimension.
+     *
+     * @param stride6
+     *        The stride along the 6th dimension.
+     *
+     * @param stride7
+     *        The stride along the 7th dimension.
+     *
+     * @param stride8
+     *        The stride along the 8th dimension.
+     *
+     * @param dim1
+     *        The 1st dimension of the 8D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 8D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 8D array.
+     *
+     * @param dim4
+     *        The 4th dimension of the 8D array.
+     *
+     * @param dim5
+     *        The 5th dimension of the 8D array.
+     *
+     * @param dim6
+     *        The 6th dimension of the 8D array.
+     *
+     * @param dim7
+     *        The 7th dimension of the 8D array.
+     *
+     * @param dim8
+     *        The 8th dimension of the 8D array.
+     *
      * @return A 8D array sharing the elements of <b>data</b>.
      */
     public static Double8D wrap(double[] data,
@@ -1134,11 +1276,12 @@ public abstract class Double8D extends Array8D implements DoubleArray {
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.  The same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *        The same indexing rules as for {@link mitiv.base.indexing.Range}
+     *        apply for negative index: 0 for the first, 1 for the second, -1
+     *        for the last, -2 for penultimate, <i>etc.</i>
+     *
      * @return A Double7D view on the given slice of the array.
      */
     public abstract Double7D slice(int idx);
@@ -1146,13 +1289,14 @@ public abstract class Double8D extends Array8D implements DoubleArray {
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.
-     * @param dim - The dimension to slice.  For these two arguments,
-     *              the same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *
+     * @param dim
+     *        The dimension to slice.  For these two arguments, the same
+     *        indexing rules as for {@link mitiv.base.indexing.Range} apply for
+     *        negative index: 0 for the first, 1 for the second, -1 for the
+     *        last, -2 for penultimate, <i>etc.</i>
      *
      * @return A Double7D view on the given slice of the array.
      */
@@ -1161,22 +1305,37 @@ public abstract class Double8D extends Array8D implements DoubleArray {
     /**
      * Get a view of the array for given ranges of indices.
      *
-     * @param rng1 - The range of indices to select along 1st dimension
-     *               (or {@code null} to select all.
-     * @param rng2 - The range of indices to select along 2nd dimension
-     *               (or {@code null} to select all.
-     * @param rng3 - The range of indices to select along 3rd dimension
-     *               (or {@code null} to select all.
-     * @param rng4 - The range of indices to select along 4th dimension
-     *               (or {@code null} to select all.
-     * @param rng5 - The range of indices to select along 5th dimension
-     *               (or {@code null} to select all.
-     * @param rng6 - The range of indices to select along 6th dimension
-     *               (or {@code null} to select all.
-     * @param rng7 - The range of indices to select along 7th dimension
-     *               (or {@code null} to select all.
-     * @param rng8 - The range of indices to select along 8th dimension
-     *               (or {@code null} to select all.
+     * @param rng1
+     *        The range of indices to select along 1st dimension (or
+     *        {@code null} to select all.
+     *
+     * @param rng2
+     *        The range of indices to select along 2nd dimension (or
+     *        {@code null} to select all.
+     *
+     * @param rng3
+     *        The range of indices to select along 3rd dimension (or
+     *        {@code null} to select all.
+     *
+     * @param rng4
+     *        The range of indices to select along 4th dimension (or
+     *        {@code null} to select all.
+     *
+     * @param rng5
+     *        The range of indices to select along 5th dimension (or
+     *        {@code null} to select all.
+     *
+     * @param rng6
+     *        The range of indices to select along 6th dimension (or
+     *        {@code null} to select all.
+     *
+     * @param rng7
+     *        The range of indices to select along 7th dimension (or
+     *        {@code null} to select all.
+     *
+     * @param rng8
+     *        The range of indices to select along 8th dimension (or
+     *        {@code null} to select all.
      *
      * @return A Double8D view for the given ranges of the array.
      */
@@ -1185,22 +1344,37 @@ public abstract class Double8D extends Array8D implements DoubleArray {
     /**
      * Get a view of the array for given ranges of indices.
      *
-     * @param idx1 - The list of indices to select along 1st dimension
-     *               (or {@code null} to select all.
-     * @param idx2 - The list of indices to select along 2nd dimension
-     *               (or {@code null} to select all.
-     * @param idx3 - The list of indices to select along 3rd dimension
-     *               (or {@code null} to select all.
-     * @param idx4 - The list of indices to select along 4th dimension
-     *               (or {@code null} to select all.
-     * @param idx5 - The list of indices to select along 5th dimension
-     *               (or {@code null} to select all.
-     * @param idx6 - The list of indices to select along 6th dimension
-     *               (or {@code null} to select all.
-     * @param idx7 - The list of indices to select along 7th dimension
-     *               (or {@code null} to select all.
-     * @param idx8 - The list of indices to select along 8th dimension
-     *               (or {@code null} to select all.
+     * @param idx1
+     *        The list of indices to select along 1st dimension (or
+     *        {@code null} to select all.
+     *
+     * @param idx2
+     *        The list of indices to select along 2nd dimension (or
+     *        {@code null} to select all.
+     *
+     * @param idx3
+     *        The list of indices to select along 3rd dimension (or
+     *        {@code null} to select all.
+     *
+     * @param idx4
+     *        The list of indices to select along 4th dimension (or
+     *        {@code null} to select all.
+     *
+     * @param idx5
+     *        The list of indices to select along 5th dimension (or
+     *        {@code null} to select all.
+     *
+     * @param idx6
+     *        The list of indices to select along 6th dimension (or
+     *        {@code null} to select all.
+     *
+     * @param idx7
+     *        The list of indices to select along 7th dimension (or
+     *        {@code null} to select all.
+     *
+     * @param idx8
+     *        The list of indices to select along 8th dimension (or
+     *        {@code null} to select all.
      *
      * @return A Double8D view for the given index selections of the
      *         array.

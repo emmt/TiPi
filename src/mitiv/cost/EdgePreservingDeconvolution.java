@@ -192,7 +192,7 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
     /**
      * Set the PSF.
      *
-     * @param psf
+     * @param arr
      *        The point spread function.
      */
     public void setPSF(ShapedArray arr) {
@@ -202,7 +202,7 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
     /**
      * Set the PSF.
      *
-     * @param psf
+     * @param arr
      *        The point spread function.
      *
      * @param normalize
@@ -235,11 +235,12 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
      * Set regularization scale along the dimensions.
      *
      * @param delta
-     *        The regularization scale along the dimensions of the solution. If a single value is
-     *        given, the same scale for all dimensions will be used. Otherwise
-     *        there should be as many values as the number of dimensions.
+     *        The regularization scale along the dimensions of the solution. If
+     *        a single value is given, the same scale for all dimensions will
+     *        be used. Otherwise there should be as many values as the number
+     *        of dimensions.
      *
-     * @see {@link HyperbolicTotalVariation}.
+     * @see HyperbolicTotalVariation
      */
     public void setScale(double... delta) {
         scale = delta;

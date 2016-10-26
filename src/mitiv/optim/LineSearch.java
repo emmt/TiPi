@@ -30,115 +30,110 @@ package mitiv.optim;
  *
  * <h2>Introduction and description</h2>
  *
- * <p>
- * Line search aims at approximately solving the problem:
+ * <p> Line search aims at approximately solving the problem: </p>
  *
  * <pre>
  *     min f(x0 + alpha*d)
  * </pre>
  *
- * where the minimization is carried out with respect to the step length
- * <i>alpha</i>&nbsp;&gt;&nbsp;0, <i>x0</i> are the current variables, <i>d</i>
- * is the search direction and <i>f</i>(<i>x</i>) is a multivariate function.
- * The search direction <i>d</i> must be a descent direction, that is there
- * exists <i>epsilon</i> &gt; 0 such that for any <i>alpha</i> such that
- * 0&nbsp;&lt;&nbsp;<i>alpha</i>&nbsp;&lt;&nbsp;<i>epsilon</i>, the following
- * strict inequality holds:
+ * <p> where the minimization is carried out with respect to the step length
+ * <i>alpha</i>&nbsp;&gt;&nbsp;0, <i>x0</i> are the current variables,
+ * <i>d</i> is the search direction and <i>f</i>(<i>x</i>) is a multivariate
+ * function.  The search direction <i>d</i> must be a descent direction, that
+ * is there exists <i>epsilon</i> &gt; 0 such that for any <i>alpha</i> such
+ * that 0&nbsp;&lt;&nbsp;<i>alpha</i>&nbsp;&lt;&nbsp;<i>epsilon</i>, the
+ * following strict inequality holds: </p>
  *
  * <pre>
  * f(x0 + alpha * d) < f(x0)
  * </pre>
- * </p>
  *
- * <p>
- * Line search is used in numerical optimization of smooth multivariate
+ * <p> Line search is used in numerical optimization of smooth multivariate
  * functions. The other part of the optimization consists in choosing good
  * search directions. In this context, it is important to choose an efficient
  * step without too many function evaluations. To that end, <i>alpha</i> is
- * usually chosen so as to satisfy the so-called Wolfe conditions:
+ * usually chosen so as to satisfy the so-called Wolfe conditions: </p>
  *
  * <pre>
  *     f(x0 + alpha*d) - f(x0) <= sigma1*alpha*d'.g(x0)           (1)
  *     d'.g(x0 + alpha*d) >= sigma2*d'.g(x0)                      (2)
  * </pre>
  *
- * where <i>g</i>(<i>x</i>) is the gradient of <i>f</i>(<i>x</i>) with respect
- * to <i>x</i> and <i>d</i><sup>t</sup>.<i>g</i> denotes the inner product
- * between <i>d</i> and <i>g</i> while <i>sigma</i><sub>1</sub> and <i>sigma</i>
- * <sub>2</sub> are constants such that:
+ * <p> where <i>g</i>(<i>x</i>) is the gradient of <i>f</i>(<i>x</i>) with
+ * respect to <i>x</i> and <i>d</i><sup>t</sup>.<i>g</i> denotes the inner
+ * product between <i>d</i> and <i>g</i> while <i>sigma</i><sub>1</sub> and
+ * <i>sigma</i> <sub>2</sub> are constants such that: </p>
  *
  * <pre>
  * 0 < sigma1 < sigma2 < 1.
  * </pre>
  *
- * The first Wolfe condition (1) ensures a sufficient decrease of the function
- * and avoids making too long steps while the second Wolfe condition (2) ensures
- * a sufficient reduction of the gradient along the search direction thus
- * avoiding making too short steps. The first inequality (1) is also called the
- * Armijo condition. Sometimes, the strong Wolfe condition:
+ * <p> The first Wolfe condition (1) ensures a sufficient decrease of the
+ * function and avoids making too long steps while the second Wolfe condition
+ * (2) ensures a sufficient reduction of the gradient along the search
+ * direction thus avoiding making too short steps. The first inequality (1) is
+ * also called the Armijo condition. Sometimes, the strong Wolfe condition:
+ * </p>
  *
  * <pre>
  *     |d'.g(x0 + alpha*d)| <= sigma2*|d'.g(x0)|                  (3)
  * </pre>
  *
- * is used in place of (2). The conjunction of (1) and (2) &#8212; or (1) and
- * (3) &#8212; with 0&nbsp;&lt;&nbsp;<i>sigma</i><sub>1</sub>&nbsp;&lt;&nbsp;
+ * <p> is used in place of (2). The conjunction of (1) and (2) &#8212; or (1)
+ * and (3) &#8212; with
+ * 0&nbsp;&lt;&nbsp;<i>sigma</i><sub>1</sub>&nbsp;&lt;&nbsp;
  * <i>sigma</i><sub>2</sub>&nbsp;&lt;&nbsp;1 warrants global convergence.
  * </p>
  *
- * <p>
- * Alternative conditions are the Goldstein conditions:
+ * <p> Alternative conditions are the Goldstein conditions: </p>
  *
  * <pre>
  *     (1 - sigma)*alpha*d'.g(x0) <= f(x0 + alpha*d) - f(x0) <= sigma*alpha*d'.g(x0)
  * </pre>
  *
- * with 0&nbsp;&lt;&nbsp;<i>sigma</i>&nbsp;&lt;&nbsp;1/2.
- * </p>
+ * <p> with 0&nbsp;&lt;&nbsp;<i>sigma</i>&nbsp;&lt;&nbsp;1/2.  </p>
  *
- * <p>
- * Equivalently, defining:
+ * <p> Equivalently, defining: </p>
  *
  * <pre>
  * phi(alpha) = f(x0 + alpha * d) - f(x0)
  * </pre>
  *
- * the problem amounts to:
+ * <p> the problem amounts to: </p>
  *
  * <pre>
  *    min phi(alpha)
  * </pre>
  *
- * with respect to <i>alpha</i>. For a smooth function <i>f</i>(<i>x</i>), the
- * derivative of <i>phi</i>(<i>alpha</i>) is:
+ * <p> with respect to <i>alpha</i>. For a smooth function <i>f</i>(<i>x</i>),
+ * the derivative of <i>phi</i>(<i>alpha</i>) is: </p>
  *
  * <pre>
  *    phi'(alpha) = d'.g(x0 + alpha*d)
  * </pre>
  *
- * and the Wolfe conditions write:
+ * <p> and the Wolfe conditions write: </p>
  *
  * <pre>
  *    phi(alpha) <= sigma1*phi'(0)*alpha
  *    phi'(alpha) >= sigma2*phi'(0)
  *    |phi'(alpha)| <= sigma2*|phi'(0)|
  * </pre>
- * </p>
  *
- * <p>
- * Rounding errors may prevent using the value of the function <i>f</i>(<i>x</i>
- * ), in this case, the "<i>approximate Wolfe conditions</i>" [2] may be used
- * instead of the Wolfe conditions:
+ * <p> Rounding errors may prevent using the value of the function
+ * <i>f</i>(<i>x</i> ), in this case, the "<i>approximate Wolfe
+ * conditions</i>" [2] may be used instead of the Wolfe conditions: </p>
  *
  * <pre>
  *   sigma2*d'.g(x0) <= d'.g(x0 + alpha*d) <= (2*sigma1 - 1)*d'.g(x0)
  * </pre>
  *
- * The first inequality is just the second Wolfe condition while the second
- * inequality is the first Wolfe condition when <i>f</i>(<i>x</i>) is quadratic
- * (and <i>alpha</i>&nbsp;&gt;&nbsp;0). Since <i>g</i>(<i>x0</i>)<sup>t</sup>.
- * <i>d</i>&nbsp;&lt;&nbsp;0, then 0&nbsp;&lt;&nbsp;<i>sigma</i><sub>1</sub>
- * &nbsp;&lt;&nbsp;min(<i>sigma</i><sub>2</sub>,1/2).
+ * <p> The first inequality is just the second Wolfe condition while the
+ * second inequality is the first Wolfe condition when <i>f</i>(<i>x</i>) is
+ * quadratic (and <i>alpha</i>&nbsp;&gt;&nbsp;0). Since
+ * <i>g</i>(<i>x0</i>)<sup>t</sup>.  <i>d</i>&nbsp;&lt;&nbsp;0, then
+ * 0&nbsp;&lt;&nbsp;<i>sigma</i><sub>1</sub>
+ * &nbsp;&lt;&nbsp;min(<i>sigma</i><sub>2</sub>,1/2). </p>
  *
  * <h2>Using line search</h2>
  *
@@ -146,7 +141,7 @@ package mitiv.optim;
  * <li>choose search direction <i>d</i> at <i>x0</i>;</li>
  * <li>compute <i>f0</i>&nbsp;=&nbsp;<i>f</i>(<i>x0</i>) and <i>g0</i>
  * &nbsp;=&nbsp;<i>g</i>(<i>x0</i>)<sup>t</sup>.<i>d</i>;</li>
- * <li>perform line search:
+ * <li>perform line search: </p>
  *
  * <pre>
  *     SomeLineSearchClass lineSearch = new SomeLineSearchClass();
@@ -161,7 +156,7 @@ package mitiv.optim;
  *     }
  * </pre>
  *
- * or:
+ * <p> or: </p>
  *
  * <pre>
  *     SomeLineSearchClass lineSearch = new SomeLineSearchClass();
@@ -179,27 +174,22 @@ package mitiv.optim;
  * </li>
  * </ol>
  *
- * <p>
- * Beware that you can have an infinite loop if you do not check for the finish
- * condition.
- * </p>
+ * <p> Beware that you can have an infinite loop if you do not check for the
+ * finish condition.  </p>
  *
  *
  * <h2>Rationale</h2>
  *
- * <p>
- * The line search routines only work on scalars, they do not store the
- * "<i>vectors</i>" <i>x0</i>, <i>d</i>, <i>g</i>(<i>x</i>), <i>etc</i>.
- * </p>
+ * <p> The line search routines only work on scalars, they do not store the
+ * "<i>vectors</i>" <i>x0</i>, <i>d</i>, <i>g</i>(<i>x</i>), <i>etc</i>.  </p>
  *
- * <p>
- * When starting a line search, the initial parameters <i>x0</i>, function value
- * <i>f0</i>&nbsp;=&nbsp;<i>f</i>(<i>x0</i>), directional derivative <i>g0</i>
- * &nbsp;=&nbsp;<i>g</i>(<i>x0</i>)<sup>t</sup>.<i>d</i>, search direction
- * <i>d</i> and first step size must be known.
- * </p>
+ * <p> When starting a line search, the initial parameters <i>x0</i>, function
+ * value <i>f0</i>&nbsp;=&nbsp;<i>f</i>(<i>x0</i>), directional derivative
+ * <i>g0</i> &nbsp;=&nbsp;<i>g</i>(<i>x0</i>)<sup>t</sup>.<i>d</i>, search
+ * direction <i>d</i> and first step size must be known.  </p>
  *
  * <h2>References</h2>
+ *
  * <dl>
  * <dt>[1]</dt>
  * <dd>Nocedal, J. &amp; Wright, S.J., "<i>Numerical Optimization</i>", Springer
@@ -210,10 +200,7 @@ package mitiv.optim;
  * <b>16</b>, 170-192 (2005).</dd>
  * </dl>
  *
- * @author &Eacute;ric Thi&eacute;baut
- *         <a href="mailto:eric.thiebaut@univ-lyon1.fr">eric.thiebaut@univ-lyon1
- *         .fr</a>
- *
+ * @author Éric Thiébaut <eric.thiebaut@univ-lyon1>
  */
 public abstract class LineSearch {
 
@@ -236,21 +223,23 @@ public abstract class LineSearch {
      * Start a new line search.
      *
      * @param f0
-     *            Function value at {@code x0}, the start of the line search.
+     *        Function value at {@code x0}, the start of the line search.
+     *
      * @param g0
-     *            Directional derivative at {@code x0}, must be strictly
-     *            negative.
+     *        Directional derivative at {@code x0}, must be strictly negative.
+     *
      * @param nextStep
-     *            Guess for the next step length (must be strictly greater than
-     *            0 and this value will be returned by {@link #getStep} for the
-     *            first iteration of the line search after clipping into the
-     *            step bounds).
+     *        Guess for the next step length (must be strictly greater than 0
+     *        and this value will be returned by {@link #getStep()} for the
+     *        first iteration of the line search after clipping into the step
+     *        bounds).
+     *
      * @param minStep
-     *            The lower bound for the step length (must be greater or equal
-     *            0).
+     *        The lower bound for the step length (must be greater or equal 0).
+     *
      * @param maxStep
-     *            The upper bound for the step length (must be strictly greater
-     *            than {@code stepMin}).
+     *        The upper bound for the step length (must be strictly greater
+     *        than {@code stepMin}).
      *
      * @return The state of the line search.
      */
@@ -280,21 +269,22 @@ public abstract class LineSearch {
     /**
      * Perform a line search iteration.
      *
-     * This method is used to submit the function value (and its directional
-     * derivative) at the new position to try. Upon return, this method
-     * indicates whether the line search has converged. Otherwise, it computes a
-     * new step to try.
+     * <p> This method is used to submit the function value (and its
+     * directional derivative) at the new position to try. Upon return, this
+     * method indicates whether the line search has converged. Otherwise, it
+     * computes a new step to try. </p>
      *
      * @param f
-     *          - The value of the function at {@code x = x0 + alpha*p} where
-     *            {@code x0} are the variables at the start of the line search
-     *            and {@code p} is the search direction.
+     *        The value of the function at {@code x = x0 + alpha*p} where
+     *        {@code x0} are the variables at the start of the line search
+     *        and {@code p} is the search direction.
+     *
      * @param df
-     *          - The directional derivative at {@code x}, that is
-     *            {@code p'.g(x)} the inner product between the search direction
-     *            and the function gradient at {@code x}.  The {@link #useDerivative}
-     *            method may be used to check whether this term is required or is
-     *            ignored and may thus be set to any value saving some computations.
+     *        The directional derivative at {@code x}, that is {@code p'.g(x)}
+     *        the inner product between the search direction and the function
+     *        gradient at {@code x}.  The {@link #useDerivative} method may be
+     *        used to check whether this term is required or is ignored and
+     *        may thus be set to any value saving some computations.
      *
      * @return The new status of the line search instance.
      */
@@ -323,22 +313,22 @@ public abstract class LineSearch {
     /**
      * Check whether directional derivatives are needed by the line search.
      *
-     * @return A boolean value, true if the line search needs the
-     * directional derivative of the objective function.
+     * @return A boolean value, true if the line search needs the directional
+     *         derivative of the objective function.
      */
     public abstract boolean useDerivative();
 
     /**
      * Protected method to set internals at the start of a line search.
      *
-     * This protected method is called by the {@link #start} method to set
+     * <p> This protected method is called by the {@link #start} method to set
      * attributes of the line search instance after starting a new search. It
-     * can be overwritten as needed, the default method does nothing but set the
-     * next task to be {@code LineSearch.SEARCH}.
+     * can be overwritten as needed, the default method does nothing but set
+     * the next task to be {@code LineSearch#SEARCH}. </p>
      *
-     * Derived line search classes which override this method should call @{link
-     * success} or @{link failure} to set the next task on success or to set the
-     * reason of the error on failure.
+     * <p> Derived line search classes which override this method should call
+     * {@link #success} or {@link #failure} to set the next task on success or
+     * to set the reason of the error on failure. </p>
      */
     protected void startHook() {
         success(LineSearchTask.SEARCH);
@@ -347,32 +337,33 @@ public abstract class LineSearch {
     /**
      * Protected abstract method to iterate during a line search.
      *
-     * This protected method is called by the {@link #iterate} method to check
-     * whether line search has converged and, otherwise, to compute the next
-     * step to try (stored as attribute {@code stp}). The provided arguments
-     * have been checked. Upon return, the caller method, {@link #iterate},
-     * takes care of safeguarding the step.
+     * <p> This protected method is called by the {@link #iterate} method to
+     * check whether line search has converged and, otherwise, to compute the
+     * next step to try (stored as attribute {@code stp}). The provided
+     * arguments have been checked. Upon return, the caller method, {@link
+     * #iterate}, takes care of safeguarding the step. </p>
      *
-     * This method in derived line search classes must call @{link success}
-     * or @{link failure} to set the next task on success or to set the reason
-     * of the error on failure.
+     * <p> This method in derived line search classes must call {@link
+     * #success} or {@link #failure} to set the next task on success or to set
+     * the reason of the error on failure. </p>
      *
      * @param f
-     *            The value of the function at {@code x = x0 + stp*p} where
-     *            {@code x0} are the variables at the start of the line search
-     *            and {@code p} is the search direction.
+     *        The value of the function at {@code x = x0 + stp*p} where
+     *        {@code x0} are the variables at the start of the line search
+     *        and {@code p} is the search direction.
+     *
      * @param df
-     *            The directional derivative at {@code x}, that is
-     *            {@code p'.g(x)} the inner product between the search direction
-     *            and the function gradient at {@code x}.
+     *        The directional derivative at {@code x}, that is {@code p'.g(x)}
+     *        the inner product between the search direction and the function
+     *        gradient at {@code x}.
      */
     protected abstract void iterateHook(double f, double df);
 
     /**
      * Get the current step length.
      *
-     * This method should be called to query the value of the step to try during
-     * a line search.
+     * <p> This method should be called to query the value of the step to try
+     * during a line search. </p>
      *
      * @return The value of the step length.
      */
@@ -402,10 +393,11 @@ public abstract class LineSearch {
      * Set internal state to indicate a failure.
      *
      * @param status
-     *            - The new line search status (must not be
-     *            {@link OptimStatus.SUCCESS}).
+     *        The reason of the failure (must not be
+     *        {@link OptimStatus#SUCCESS})
+     *
      * @return The new line search task which has been set to
-     *         {@link LineSearchTask.ERROR}.
+     *         {@link LineSearchTask#ERROR}.
      */
     protected final LineSearchTask failure(OptimStatus status) {
         this.status = status;
@@ -416,9 +408,10 @@ public abstract class LineSearch {
     /**
      * Set internal state to indicate a non-fatal abnormal termination.
      *
-     * @param task
-     *            - The new line search status (must not be
-     *            {@link OptimStatus.SUCCESS}).
+     * @param status
+     *        The reason of the warning (must not be
+     *        {@link OptimStatus#SUCCESS})
+     *
      * @return The next line search task.
      */
     protected final LineSearchTask warning(OptimStatus status) {
@@ -431,8 +424,11 @@ public abstract class LineSearch {
      * Set next line search task.
      *
      * @param task
-     *            - The next line search task (must not be
-     *            {@link LineSearchTask.ERROR}).
+     *        The new pending line search status (must not be
+     *        {@link LineSearchTask#ERROR}, nor {@link LineSearchTask#WARNING},
+     *        use {@link #failure(OptimStatus)} and
+     *        {@link #warning(OptimStatus)} for that).
+     *
      * @return The next line search task.
      */
     protected final LineSearchTask success(LineSearchTask task) {
@@ -484,24 +480,31 @@ public abstract class LineSearch {
      * Check line search convergence conditions.
      *
      * @param alpha
-     *            - The current step length.
+     *        The current step length.
+     *
      * @param f
-     *            - The current function value.
+     *        The current function value.
+     *
      * @param g
-     *            - The current directional directional derivative.
+     *        The current directional directional derivative.
+     *
      * @param finit
-     *            - The function value at the start of the line search.
+     *        The function value at the start of the line search.
+     *
      * @param ginit
-     *            - The directional derivative at the start of the line search
-     *            (must be strictly negative).
+     *        The directional derivative at the start of the line search
+     *        (must be strictly negative).
+     *
      * @param ftol
-     *            - The function tolerance parameter.
+     *        The function tolerance parameter.
+     *
      * @param gtol
-     *            - The derivative tolerance.
+     *        The derivative tolerance.
      *
      * @return 0 if the first Wolfe condition does not hold; 1 if the first
-     *         condition holds but not the second one; 2 if the first and second
-     *         weak Wolfe condition hold; 3 if the strong conditions hold.
+     *         condition holds but not the second one; 2 if the first and
+     *         second weak Wolfe condition hold; 3 if the strong conditions
+     *         hold.
      */
     static int checkWolfeConditions(double alpha, double f, double g,
             double finit, double ginit, double ftol, double gtol) {
@@ -524,15 +527,3 @@ public abstract class LineSearch {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

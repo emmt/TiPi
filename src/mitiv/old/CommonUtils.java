@@ -1453,7 +1453,7 @@ public class CommonUtils {
      * @param psfWidth
      * @param psfHeight
      * @param psfZ
-     * @return
+     * @return The padded cube.
      */
     public static double[] psf3DPadding1D(double[] psfIn, double[] psfOut, int psfWidth, int psfHeight, int psfZ) {
         int demiPsfW = psfWidth/2;

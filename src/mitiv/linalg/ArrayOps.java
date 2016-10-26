@@ -33,11 +33,11 @@ import mitiv.exception.NonConformableArrayException;
 /**
  * Implementation of optimized array operations.
  *
- * The main purpose of this class is to collect basic vectorized operations
- * (static methods) which are useful elsewhere.
+ * <p> The main purpose of this class is to collect basic vectorized operations
+ * (static methods) which are useful elsewhere. </p>
  *
- * TODO: The code for most static methods should be automatically written from
- *       template code (easier maintenance and less bugs).
+ * <p> TODO: The code for most static methods should be automatically written
+ * from template code (easier maintenance and less bugs). </p>
  *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
@@ -45,7 +45,6 @@ public class ArrayOps {
     /**
      * Non instanciable class of static routines for linear algebra.
      */
-
     protected ArrayOps() {
     }
 
@@ -207,7 +206,8 @@ public class ArrayOps {
         return n;
     }
 
-    public static final int getLength(final float[][] x, final float[][] y) {
+    public static final int getLength(final float[][] x,
+                                      final float[][] y) {
         int n = getLength(x);
         if (getLength(y) != n) {
             throw new NonConformableArrayException(2);
@@ -215,8 +215,9 @@ public class ArrayOps {
         return n;
     }
 
-    public static final int getLength(final float[][] w, final float[][] x,
-            final float[][] y) {
+    public static final int getLength(final float[][] w,
+                                      final float[][] x,
+                                      final float[][] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
             throw new NonConformableArrayException(2);
@@ -224,6 +225,17 @@ public class ArrayOps {
         return n;
     }
 
+    /**
+     * Get the length of a "vector".
+     *
+     * @param x
+     *        A vector.
+     *
+     * @return The length of the vector.
+     *
+     * @throws IllegalArgumentException
+     *         Arument is {@code null} or its length is zero.
+     */
     public static final int getLength(final double[][][] x) {
         if (x == null) {
             throw new IllegalArgumentException("Illegal NULL array.");
@@ -235,6 +247,17 @@ public class ArrayOps {
         return n;
     }
 
+    /**
+     * Get the length of a "vector".
+     *
+     * @param x
+     *        A vector.
+     *
+     * @return The length of the vector.
+     *
+     * @throws IllegalArgumentException
+     *         Arument is {@code null} or its length is zero.
+     */
     public static final int getLength(final float[][][] x) {
         if (x == null) {
             throw new IllegalArgumentException("Illegal NULL array.");
@@ -246,7 +269,22 @@ public class ArrayOps {
         return n;
     }
 
-    public static final int getLength(final double[][][] x, final double[][][] y) {
+    /**
+     * Get the common length of "vectors".
+     *
+     * @param x
+     *        A vector.
+     *
+     * @param y
+     *        Another vector
+     *
+     * @return The length of the vectors.
+     *
+     * @throws NonConformableArrayException
+     *         Not all arguments have the same length.
+     */
+    public static final int getLength(final double[][][] x,
+                                      final double[][][] y) {
         int n = getLength(x);
         if (getLength(y) != n) {
             throw new NonConformableArrayException(3);
@@ -254,7 +292,22 @@ public class ArrayOps {
         return n;
     }
 
-    public static final int getLength(final float[][][] x, final float[][][] y) {
+    /**
+     * Get the common length of "vectors".
+     *
+     * @param x
+     *        A vector.
+     *
+     * @param y
+     *        Another vector
+     *
+     * @return The length of the vectors.
+     *
+     * @throws NonConformableArrayException
+     *         Not all arguments have the same length.
+     */
+    public static final int getLength(final float[][][] x,
+                                      final float[][][] y) {
         int n = getLength(x);
         if (getLength(y) != n) {
             throw new NonConformableArrayException(3);
@@ -266,13 +319,22 @@ public class ArrayOps {
      * Get the common length of "vectors".
      *
      * @param w
+     *        A vector.
+     *
      * @param x
+     *        Another vector
+     *
      * @param y
-     * @return
+     *        Yet another vector.
+     *
+     * @return The length of the vectors.
+     *
      * @throws NonConformableArrayException
+     *         Not all arguments have the same length.
      */
     public static final int getLength(final double[][][] w,
-            final double[][][] x, final double[][][] y) {
+                                      final double[][][] x,
+                                      final double[][][] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
             throw new NonConformableArrayException(3);
@@ -280,8 +342,26 @@ public class ArrayOps {
         return n;
     }
 
+    /**
+     * Get the common length of "vectors".
+     *
+     * @param w
+     *        A vector.
+     *
+     * @param x
+     *        Another vector
+     *
+     * @param y
+     *        Yet another vector.
+     *
+     * @return The length of the vectors.
+     *
+     * @throws NonConformableArrayException
+     *         Not all arguments have the same length.
+     */
     public static final int getLength(final float[][][] w,
-            final float[][][] x, final float[][][] y) {
+                                      final float[][][] x,
+                                      final float[][][] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
             throw new NonConformableArrayException(3);
@@ -447,12 +527,15 @@ public class ArrayOps {
      * Dot product for 1D vectors of double's.
      *
      * @param n
-     *            - number of elements
+     *        number of elements
+     *
      * @param x
-     *            - first vector
+     *        first vector
+     *
      * @param y
-     *            - second vector
-     * @return
+     *        second vector
+     *
+     * @return The dot product of x by y.
      */
     public static final double dot(int n, final double[] x, final double[] y) {
         double result = 0.0;

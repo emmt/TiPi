@@ -68,19 +68,34 @@ public abstract class Float3D extends Array3D implements FloatArray {
 
     /**
      * Query the value stored at a given position.
-     * @param i1 - The index along the 1st dimension.
-     * @param i2 - The index along the 2nd dimension.
-     * @param i3 - The index along the 3rd dimension.
+     *
+     * @param i1
+     *        The index along the 1st dimension.
+     *
+     * @param i2
+     *        The index along the 2nd dimension.
+     *
+     * @param i3
+     *        The index along the 3rd dimension.
+     *
      * @return The value stored at position {@code (i1,i2,i3)}.
      */
     public abstract float get(int i1, int i2, int i3);
 
     /**
      * Set the value at a given position.
-     * @param i1    - The index along the 1st dimension.
-     * @param i2    - The index along the 2nd dimension.
-     * @param i3    - The index along the 3rd dimension.
-     * @param value - The value to store at position {@code (i1,i2,i3)}.
+     *
+     * @param i1
+     *        The index along the 1st dimension.
+     *
+     * @param i2
+     *        The index along the 2nd dimension.
+     *
+     * @param i3
+     *        The index along the 3rd dimension.
+     *
+     * @param value
+     *        The value to store at position {@code (i1,i2,i3)}.
      */
     public abstract void set(int i1, int i2, int i3, float value);
 
@@ -662,14 +677,23 @@ public abstract class Float3D extends Array3D implements FloatArray {
 
     /**
      * Create a 3D array of float's with given dimensions.
-     * <p>
-     * This method creates a 3D array of float's with zero offset, contiguous
-     * elements and column-major order.  All dimensions must at least 1.
-     * @param dim1 - The 1st dimension of the 3D array.
-     * @param dim2 - The 2nd dimension of the 3D array.
-     * @param dim3 - The 3rd dimension of the 3D array.
+     *
+     * <p> This method creates a 3D array of float's with zero offset,
+     * contiguous elements and column-major order.  All dimensions must at
+     * least 1. </p>
+     *
+     * @param dim1
+     *        The 1st dimension of the 3D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 3D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 3D array.
+     *
      * @return A new 3D array of float's.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Float3D create(int dim1, int dim2, int dim3) {
         return new FlatFloat3D(dim1,dim2,dim3);
@@ -677,15 +701,19 @@ public abstract class Float3D extends Array3D implements FloatArray {
 
     /**
      * Create a 3D array of float's with given shape.
-     * <p>
-     * This method creates a 3D array of float's with zero offset, contiguous
-     * elements and column-major order.
-     * @param dims - The list of dimensions of the 3D array (all dimensions
-     *               must at least 1).  This argument is not referenced by
-     *               the returned object and its contents can be modified
-     *               after calling this method.
+     *
+     * <p> This method creates a 3D array of float's with zero offset,
+     * contiguous elements and column-major order. </p>
+     *
+     * @param dims
+     *        The list of dimensions of the 3D array (all dimensions must
+     *        at least 1).  This argument is not referenced by the returned
+     *        object and its contents can be modified after calling this
+     *        method.
+     *
      * @return A new 3D array of float's.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Float3D create(int[] dims) {
         return new FlatFloat3D(dims);
@@ -693,53 +721,79 @@ public abstract class Float3D extends Array3D implements FloatArray {
 
     /**
      * Create a 3D array of float's with given shape.
-     * <p>
-     * This method creates a 3D array of float's with zero offset, contiguous
-     * elements and column-major order.
-     * @param shape      - The shape of the 3D array.
-     * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
-     *                     otherwise, the returned object will reference
-     *                     <b>shape</b> whose contents <b><i>must not be
-     *                     modified</i></b> while the returned object is in
-     *                     use.
+     *
+     * <p> This method creates a 3D array of float's with zero offset,
+     * contiguous elements and column-major order. </p>
+     *
+     * @param shape
+     *        The shape of the 3D array.
+     *
      * @return A new 3D array of float's.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Float3D create(Shape shape) {
         return new FlatFloat3D(shape);
     }
 
     /**
-     * Wrap an existing array in a 3D array of float's with given dimensions.
-     * <p>
-     * The returned 3D array have zero offset, contiguous elements and
-     * column-major storage order.  More specifically:
-     * <pre>arr.get(i1,i2,i3) = data[i1 + dim1*(i2 + dim2*i3)]</pre>
-     * with {@code arr} the returned 3D array.
-     * @param data - The data to wrap in the 3D array.
-     * @param dim1 - The 1st dimension of the 3D array.
-     * @param dim2 - The 2nd dimension of the 3D array.
-     * @param dim3 - The 3rd dimension of the 3D array.
+     * Wrap an existing array in a 3D array of float's with given
+     * dimensions.
+     *
+     * <p> The returned 3D array have zero offset, contiguous elements
+     * and column-major storage order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(i1,i2,i3) = data[i1 + dim1*(i2 + dim2*i3)]
+     * </pre>
+     *
+     * <p> with {@code arr} the returned 3D array. </p>
+     *
+     * @param data
+     *        The data to wrap in the 3D array.
+     *
+     * @param dim1
+     *        The 1st dimension of the 3D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 3D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 3D array.
+     *
      * @return A 3D array sharing the elements of <b>data</b>.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Float3D wrap(float[] data, int dim1, int dim2, int dim3) {
         return new FlatFloat3D(data, dim1,dim2,dim3);
     }
 
     /**
-     * Wrap an existing array in a 3D array of float's with given shape.
-     * <p>
-     * The returned 3D array have zero offset, contiguous elements and
-     * column-major storage order.  More specifically:
-     * <pre>arr.get(i1,i2,i3) = data[i1 + shape[0]*(i2 + shape[1]*i3)]</pre>
-     * with {@code arr} the returned 3D array.
-     * @param data - The data to wrap in the 3D array.
-     * @param dims - The list of dimensions of the 3D array.  This argument is
-     *                not referenced by the returned object and its contents
-     *                can be modified after the call to this method.
-     * @return A new 3D array of float's sharing the elements of <b>data</b>.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     * Wrap an existing array in a 3D array of float's with given
+     * shape.
+     *
+     * <p> The returned 3D array have zero offset, contiguous elements
+     * and column-major storage order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(i1,i2,i3) = data[i1 + shape[0]*(i2 + shape[1]*i3)]
+     * </pre>
+     *
+     * <p> with {@code arr} the returned 3D array. </p>
+     *
+     * @param data
+     *        The data to wrap in the 3D array.
+     *
+     * @param dims
+     *        The list of dimensions of the 3D array.  This argument is
+     *        not referenced by the returned object and its contents can be
+     *        modified after the call to this method.
+     *
+     * @return A new 3D array of float's sharing the elements of
+     *         <b>data</b>.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Float3D wrap(float[] data, int[] dims) {
         return new FlatFloat3D(data, dims);
@@ -747,43 +801,71 @@ public abstract class Float3D extends Array3D implements FloatArray {
 
     /**
      * Wrap an existing array in a 3D array of float's with given shape.
+     *
+     * <p> The returned 3D array have zero offset, contiguous elements
+     * and column-major storage order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(i1,i2,i3) = data[i1 + shape[0]*(i2 + shape[1]*i3)]
+     * </pre>
+     *
      * <p>
-     * The returned 3D array have zero offset, contiguous elements and
-     * column-major storage order.  More specifically:
-     * <pre>arr.get(i1,i2,i3) = data[i1 + shape[0]*(i2 + shape[1]*i3)]</pre>
-     * with {@code arr} the returned 3D array.
-     * @param data       - The data to wrap in the 3D array.
-     * @param shape      - The shape of the 3D array.
-     * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
-     *                     otherwise, the returned object will reference
-     *                     <b>shape</b> whose contents <b><i>must not be
-     *                     modified</i></b> while the returned object is in
-     *                     use.
-     * @return A new 3D array of float's sharing the elements of <b>data</b>.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     * with {@code arr} the returned 3D array. </p>
+     *
+     * @param data
+     *        The data to wrap in the 3D array.
+     *
+     * @param shape
+     *        The shape of the 3D array.
+     *
+     * @return A new 3D array of float's sharing the elements of
+     *         <b>data</b>.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Float3D wrap(float[] data, Shape shape) {
         return new FlatFloat3D(data, shape);
     }
 
     /**
-     * Wrap an existing array in a 3D array of float's with given dimensions,
-     * strides and offset.
-     * <p>
-     * This creates a 3D array of dimensions {{@code dim1,dim2,dim3}}
+     * Wrap an existing array in a 3D array of float's with given
+     * dimensions, strides and offset.
+     *
+     * <p> This creates a 3D array of dimensions {{@code dim1,dim2,dim3}}
      * sharing (part of) the contents of {@code data} in arbitrary storage
-     * order.  More specifically:
-     * <pre>arr.get(i1,i2,i3) = data[offset + stride1*i1 + stride2*i2 + stride3*i3]</pre>
-     * with {@code arr} the returned 3D array.
-     * @param data    - The array to wrap in the 3D array.
-     * @param offset  - The offset in {@code data} of element (0,0,0) of
-     *                  the 3D array.
-     * @param stride1 - The stride along the 1st dimension.
-     * @param stride2 - The stride along the 2nd dimension.
-     * @param stride3 - The stride along the 3rd dimension.
-     * @param dim1    - The 1st dimension of the 3D array.
-     * @param dim2    - The 2nd dimension of the 3D array.
-     * @param dim3    - The 3rd dimension of the 3D array.
+     * order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(i1,i2,i3) = data[offset + stride1*i1 + stride2*i2 + stride3*i3]
+     * </pre>
+     *
+     * <p> with {@code arr} the returned 3D array. </p>
+     *
+     * @param data
+     *        The array to wrap in the 3D array.
+     *
+     * @param offset
+     *        The offset in {@code data} of element (0,0,0) of the
+     *        3D array.
+     *
+     * @param stride1
+     *        The stride along the 1st dimension.
+     *
+     * @param stride2
+     *        The stride along the 2nd dimension.
+     *
+     * @param stride3
+     *        The stride along the 3rd dimension.
+     *
+     * @param dim1
+     *        The 1st dimension of the 3D array.
+     *
+     * @param dim2
+     *        The 2nd dimension of the 3D array.
+     *
+     * @param dim3
+     *        The 3rd dimension of the 3D array.
+     *
      * @return A 3D array sharing the elements of <b>data</b>.
      */
     public static Float3D wrap(float[] data,
@@ -794,11 +876,12 @@ public abstract class Float3D extends Array3D implements FloatArray {
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.  The same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *        The same indexing rules as for {@link mitiv.base.indexing.Range}
+     *        apply for negative index: 0 for the first, 1 for the second, -1
+     *        for the last, -2 for penultimate, <i>etc.</i>
+     *
      * @return A Float2D view on the given slice of the array.
      */
     public abstract Float2D slice(int idx);
@@ -806,13 +889,14 @@ public abstract class Float3D extends Array3D implements FloatArray {
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.
-     * @param dim - The dimension to slice.  For these two arguments,
-     *              the same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *
+     * @param dim
+     *        The dimension to slice.  For these two arguments, the same
+     *        indexing rules as for {@link mitiv.base.indexing.Range} apply for
+     *        negative index: 0 for the first, 1 for the second, -1 for the
+     *        last, -2 for penultimate, <i>etc.</i>
      *
      * @return A Float2D view on the given slice of the array.
      */
@@ -821,12 +905,17 @@ public abstract class Float3D extends Array3D implements FloatArray {
     /**
      * Get a view of the array for given ranges of indices.
      *
-     * @param rng1 - The range of indices to select along 1st dimension
-     *               (or {@code null} to select all.
-     * @param rng2 - The range of indices to select along 2nd dimension
-     *               (or {@code null} to select all.
-     * @param rng3 - The range of indices to select along 3rd dimension
-     *               (or {@code null} to select all.
+     * @param rng1
+     *        The range of indices to select along 1st dimension (or
+     *        {@code null} to select all.
+     *
+     * @param rng2
+     *        The range of indices to select along 2nd dimension (or
+     *        {@code null} to select all.
+     *
+     * @param rng3
+     *        The range of indices to select along 3rd dimension (or
+     *        {@code null} to select all.
      *
      * @return A Float3D view for the given ranges of the array.
      */
@@ -835,12 +924,17 @@ public abstract class Float3D extends Array3D implements FloatArray {
     /**
      * Get a view of the array for given ranges of indices.
      *
-     * @param idx1 - The list of indices to select along 1st dimension
-     *               (or {@code null} to select all.
-     * @param idx2 - The list of indices to select along 2nd dimension
-     *               (or {@code null} to select all.
-     * @param idx3 - The list of indices to select along 3rd dimension
-     *               (or {@code null} to select all.
+     * @param idx1
+     *        The list of indices to select along 1st dimension (or
+     *        {@code null} to select all.
+     *
+     * @param idx2
+     *        The list of indices to select along 2nd dimension (or
+     *        {@code null} to select all.
+     *
+     * @param idx3
+     *        The list of indices to select along 3rd dimension (or
+     *        {@code null} to select all.
      *
      * @return A Float3D view for the given index selections of the
      *         array.

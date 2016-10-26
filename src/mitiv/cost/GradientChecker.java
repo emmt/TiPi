@@ -47,7 +47,9 @@ public class GradientChecker {
 
     /**
      * Create a gradient checker.
-     * @param cost - The differentiable cost function to check.
+     *
+     * @param cost
+     *        The differentiable cost function to check.
      */
     public GradientChecker(DifferentiableCostFunction cost) {
         this.f = cost;
@@ -57,13 +59,16 @@ public class GradientChecker {
     /**
      * Set the value of the variables.
      *
-     * Setting the variables must be done prior to any gradient check and trigger
-     * the computation of the function and its gradient at the position of the
-     * variables.
+     * <p> Setting the variables must be done prior to any gradient check and
+     * trigger the computation of the function and its gradient at the
+     * position of the variables. </p>
      *
-     * @param x     - The value of the variables where to perform the check.
-     * @param clone - Indicate whether the vector {@code x} should be cloned;
-     *                otherwise, a simple reference to {@code x} is stored.
+     * @param x
+     *        The value of the variables where to perform the check.
+     *
+     * @param clone
+     *        Indicate whether the vector {@code x} should be cloned;
+     *        otherwise, a simple reference to {@code x} is stored.
      */
     public void setVariables(Vector x, boolean clone) {
         if (clone) {
@@ -83,8 +88,10 @@ public class GradientChecker {
 
     /**
      * Set the relative size of the finite difference step.
-     * @param value - The relative step size.  If smaller than {@code MINIMAL_EPSILON},
-     *                the value {@DEFAULT_EPSILON} is taken.
+     *
+     * @param value
+     *        The relative step size.  If smaller than {@code
+     *        MINIMAL_EPSILON}, the value {@code DEFAULT_EPSILON} is taken.
      */
     public void setStepScale(double value) {
         if (value < MINIMAL_EPSILON) {
@@ -96,6 +103,7 @@ public class GradientChecker {
 
     /**
      * Get the relative step size.
+     *
      * @return The value of the relative step size.
      */
     public final double getStepScale() {
@@ -104,7 +112,9 @@ public class GradientChecker {
 
     /**
      * Set the minimum size of the finite difference step.
-     * @param value - The minimum step size.  If negative, 0 is taken.
+     *
+     * @param value
+     *        The minimum step size.  If negative, 0 is taken.
      */
     public void setMinStep(double value) {
         minStep = Math.max(value, 0.0);
@@ -112,6 +122,7 @@ public class GradientChecker {
 
     /**
      * Get the minimal step size.
+     *
      * @return The value of the minimal step size.
      */
     public final double getMinStep() {
@@ -120,9 +131,11 @@ public class GradientChecker {
 
     /**
      * Set the finite difference method.
-     * @param value - The finite difference method to use.  Backward differences if
-     *                {@code value < 0}; forward differences if {@code value > 0};
-     *                centered differences otherwise.
+     *
+     * @param value
+     *        The finite difference method to use.  Backward differences if
+     *        {@code value < 0}; forward differences if {@code value > 0};
+     *        centered differences otherwise.
      */
     public void setMethod(int value) {
         if (value < 0) {
@@ -136,9 +149,11 @@ public class GradientChecker {
 
     /**
      * Get finite difference method.
-     * @return A value indicating the current finite differences method
-     *         used to approximate the gradient: -1 ({@code BACKWARD_DIFFERENCE}),
-     *         0 ({@code CENTERED_DIFFERENCE}), or +1 ({@code FORWARD_DIFFERENCE}).
+     *
+     * @return A value indicating the current finite differences method used
+     *         to approximate the gradient: -1 ({@code BACKWARD_DIFFERENCE}),
+     *         0 ({@code CENTERED_DIFFERENCE}), or +1 ({@code
+     *         FORWARD_DIFFERENCE}).
      */
     public final int getMethod() {
         return method;
@@ -189,8 +204,13 @@ public class GradientChecker {
 
     /**
      * Compute relative difference.
-     * @param a - Left operand.
-     * @param b - Right operand.
+     *
+     * @param a
+     *        Left operand.
+     *
+     * @param b
+     *        Right operand.
+     *
      * @return The difference {@code a - b} divided by the largest magnitude
      *         of {@code a} and {@code b}.  Division by zero is avoided by
      *         returning 0 whenever {@code a} and {@code b} are equal.
@@ -206,10 +226,12 @@ public class GradientChecker {
     /**
      * Compute a small step size.
      *
-     * This method computes a small but non-negligible step size given the
-     * value of the parameter to pertubate.
+     * <p> This method computes a small but non-negligible step size given the
+     * value of the parameter to pertubate. </p>
      *
-     * @param x - The value of the parameter to pertubate.
+     * @param x
+     *        The value of the parameter to pertubate.
+     *
      * @return A small step size
      */
     public double stepSize(double x) {
@@ -225,15 +247,3 @@ public class GradientChecker {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

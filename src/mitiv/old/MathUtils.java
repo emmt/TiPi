@@ -1484,7 +1484,7 @@ public class MathUtils {
     /**
      * Average or mean value of array
      * @param a
-     * @return
+     * @return the mean
      */
     public static double avg(double[] a)
     {
@@ -1494,7 +1494,7 @@ public class MathUtils {
     /**
      * Average or mean value of array
      * @param a
-     * @return
+     * @return the mean
      */
     public static double avg(long[] a)
 
@@ -1505,7 +1505,7 @@ public class MathUtils {
     /**
      * Average or mean value of array
      * @param a
-     * @return
+     * @return the mean
      */
     public static double avg(double[][] a)
     {
@@ -1517,7 +1517,7 @@ public class MathUtils {
     /**
      * Average or mean value of array
      * @param a
-     * @return
+     * @return the mean
      */
     public static double avg(double[][][] a)
     {
@@ -1530,7 +1530,7 @@ public class MathUtils {
     /**
      * Sum of the values in the array
      * @param a
-     * @return
+     * @return the mean
      */
     public static double sum(double a[])
     {
@@ -1548,7 +1548,7 @@ public class MathUtils {
      * @param a
      * @param begin
      * @param end
-     * @return
+     * @return the sum
      */
     public static double sum(double a[], int begin, int end)
     {
@@ -1563,7 +1563,7 @@ public class MathUtils {
     /**
      * Sum of the values in the array
      * @param array
-     * @return
+     * @return the sum
      */
     public static long sum(long array[])
     {
@@ -1579,7 +1579,7 @@ public class MathUtils {
     /**
      * Sum of the values in the array
      * @param array
-     * @return
+     * @return the sum
      */
     public static double sum(double array[][])
     {
@@ -1595,7 +1595,7 @@ public class MathUtils {
     /**
      * Sum of the values in the array
      * @param array
-     * @return
+     * @return the sum
      */
     public static double sum(double array[][][])
     {
@@ -1613,7 +1613,7 @@ public class MathUtils {
      *
      * @param a the a
      * @param b the b
-     * @return the double[]
+     * @return the inner product
      */
     public static double innerProd(double a[], double b[])
     {
@@ -1967,7 +1967,7 @@ public class MathUtils {
     /**
      * Standard deviation of an 1d array σ
      * @param a
-     * @return
+     * @return the standard deviation
      */
     public static double std(double a[])
     {
@@ -1978,7 +1978,7 @@ public class MathUtils {
     /**
      * Standard deviation of the matrix σ
      * @param a
-     * @return
+     * @return the standard deviation
      */
     public static double std(double a[][])
     {
@@ -1989,7 +1989,7 @@ public class MathUtils {
     /**
      * Standard deviation of the matrix σ
      * @param a
-     * @return
+     * @return the standard deviation
      */
     public static double std(double a[][][])
     {
@@ -2001,7 +2001,7 @@ public class MathUtils {
      * Variance σ² of a 1d array
      * var = 1/N \sum_i (x_i - E[x])^2 = E[x'x]-E[x]^2
      * @param a
-     * @return
+     * @return the standard deviation
      */
     public static double var(double a[])
     {
@@ -2017,7 +2017,7 @@ public class MathUtils {
     /**
      * Variance of the matrix
      * @param a
-     * @return
+     * @return the standard deviation
      */
     public static double var(double a[][])
     {
@@ -2031,7 +2031,7 @@ public class MathUtils {
      * Variance σ² of the 3d matrix
      * var = 1/N \sum_i (x_i - E[x])^2
      * @param a
-     * @return
+     * @return the standard deviation
      */
     public static double var(double a[][][])
     {
@@ -2538,16 +2538,3 @@ public class MathUtils {
         return out/n;
     }
 }
-
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

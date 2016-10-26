@@ -99,7 +99,7 @@ public class BufferedImageUtils {
      * By default we use double precision
      *
      * @param listImage
-     * @return
+     * @return a shaped array
      */
     public static ShapedArray imageToArray(ArrayList<BufferedImage> listImage) {
         return imageToArray(listImage, false);
@@ -294,7 +294,7 @@ public class BufferedImageUtils {
      *
      * @param input
      * @param coef
-     * @return
+     * @return a shaped array
      */
     public static ShapedArray imagePad(ShapedArray input, double coef) {
         Shape shape = input.getShape();
@@ -313,7 +313,7 @@ public class BufferedImageUtils {
      * @param height
      * @param sizeZ
      * @param coef
-     * @return
+     * @return a shaped array
      */
     public static ShapedArray imagePad(ShapedArray input, int width, int height, int sizeZ, double coef) {
         return imagePad(input, width, height, sizeZ, coef, coef);
@@ -332,7 +332,7 @@ public class BufferedImageUtils {
      * @param sizeZ
      * @param coefWH
      * @param coefZ
-     * @return
+     * @return a shaped array
      */
     public static ShapedArray imagePad(ShapedArray input, int width, int height, int sizeZ, double coefWH, double coefZ) {
         int sizePadW = (int)(width*coefWH-width);

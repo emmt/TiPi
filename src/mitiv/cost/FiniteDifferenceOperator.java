@@ -42,8 +42,9 @@ public class FiniteDifferenceOperator extends LinearOperator {
     private int[][] index;
     final boolean single;
 
-    private static void testDoubleOperator(DoubleGenerator generator, int[] shape,
-            BoundaryConditions condition) {
+    private static void testDoubleOperator(DoubleGenerator generator,
+                                           int[] shape,
+                                           BoundaryConditions condition) {
         DoubleShapedVectorSpace inp = new DoubleShapedVectorSpace(shape);
         LinearOperator D = new FiniteDifferenceOperator(inp, condition);
         DoubleShapedVectorSpace out = (DoubleShapedVectorSpace) D.getOutputSpace();
@@ -57,8 +58,9 @@ public class FiniteDifferenceOperator extends LinearOperator {
         System.out.println("  relative error = " + D.checkAdjoint(a, b));
     }
 
-    private static void testFloatOperator(FloatGenerator generator, int[] shape,
-            BoundaryConditions condition) {
+    private static void testFloatOperator(FloatGenerator generator,
+                                          int[] shape,
+                                          BoundaryConditions condition) {
         FloatShapedVectorSpace inp = new FloatShapedVectorSpace(shape);
         LinearOperator D = new FiniteDifferenceOperator(inp, condition);
         FloatShapedVectorSpace out = (FloatShapedVectorSpace) D.getOutputSpace();
@@ -110,19 +112,23 @@ public class FiniteDifferenceOperator extends LinearOperator {
 
     /**
      * Create an instance of a finite difference operator.
-     * <p>
-     * The finite difference operator, computes the difference between each element
-     * of its argument and its preceding element for each dimensions.  Thus a 1D array yields
-     * a 1D result while a {@code n}-dimensional array yields a {@code n + 1} dimensional
-     * result with an additional leading dimension of length {@code n} to store the finite
-     * differences along each of the {@code n} dimensions.
-     * @param inputSpace - The inputs space of the operator (the output space is automatically
-     *                     built).
-     * @param bounds     - An array indicating the boundary conditions for
-     *                     each dimension.  If {@code null}, normal conditions are assumed for
-     *                     all dimensions; otherwise, if shorter than {@code n}, the rank of
-     *                     {@code inputSpace}, missing values are assumed to be
-     *                     {@link BoundaryConditions#NORMAL}.
+     *
+     * <p> The finite difference operator, computes the difference between
+     * each element of its argument and its preceding element for each
+     * dimensions.  Thus a 1D array yields a 1D result while a {@code
+     * n}-dimensional array yields a {@code n + 1} dimensional result with an
+     * additional leading dimension of length {@code n} to store the finite
+     * differences along each of the {@code n} dimensions. </p>
+     *
+     * @param inputSpace
+     *        The inputs space of the operator (the output space is
+     *        automatically built).
+     *
+     * @param bounds An array indicating the boundary conditions for each
+     *        dimension.  If {@code null}, normal conditions are assumed for
+     *        all dimensions; otherwise, if shorter than {@code n}, the rank
+     *        of {@code inputSpace}, missing values are assumed to be {@link
+     *        BoundaryConditions#NORMAL}.
      */
     public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, BoundaryConditions[] bounds) {
         super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.getShape())));
@@ -132,14 +138,18 @@ public class FiniteDifferenceOperator extends LinearOperator {
 
     /**
      * Create an instance of a finite difference operator.
-     * <p>
-     * See {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace, boolean[])} for more
-     * explanations.
-     * @param inputSpace - The inputs space of the operator
-     * @param bounds     - Indicates the boundary conditions for all dimensions, one of
-     *                     {@link BoundaryConditions#PERIODIC}, or
-     *                     {@link BoundaryConditions#MIRROR}, otherwise
-     *                     {@link BoundaryConditions#NORMAL} is assumed.
+     *
+     * <p> See {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace,
+     * BoundaryConditions[])} for more explanations. </p>
+     *
+     * @param inputSpace
+     *        The inputs space of the operator
+     *
+     * @param bounds
+     *        Indicates the boundary conditions for all dimensions, one of
+     *        {@link BoundaryConditions#PERIODIC}, or {@link
+     *        BoundaryConditions#MIRROR}, otherwise {@link
+     *        BoundaryConditions#NORMAL} is assumed.
      */
     public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, BoundaryConditions bounds) {
         super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.getShape())));
@@ -149,10 +159,13 @@ public class FiniteDifferenceOperator extends LinearOperator {
 
     /**
      * Create an instance of a finite difference operator.
-     * <p>
-     * Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace, boolean[])} but with
-     * non-periodic conditions along all dimensions.
-     * @param inputSpace - The inputs space of the operator
+     *
+     * <p> Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace,
+     * BoundaryConditions[])} but with non-periodic conditions along all
+     * dimensions. </p>
+     *
+     * @param inputSpace
+     *        The inputs space of the operator
      */
     public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace) {
         this(inputSpace, BoundaryConditions.NORMAL);
@@ -160,15 +173,20 @@ public class FiniteDifferenceOperator extends LinearOperator {
 
     /**
      * Create an instance of a finite difference operator.
-     * <p>
-     * Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace, boolean[])} but for
-     * single precision floating point shaped vectors.
-     * @param inputSpace - The inputs space of the operator
-     * @param bounds     - An array of integers indicating the boundary conditions for
-     *                     each dimension.  If {@code null}, normal conditions are assumed for
-     *                     all dimensions; otherwise, if shorter than {@code n}, the rank of
-     *                     {@code inputSpace}, missing values are assumed to be
-     *                     {@link BoundaryConditions#NORMAL}.
+     *
+     * <p> Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace,
+     * BoundaryConditions[])} but for single precision floating point shaped
+     * vectors. </p>
+     *
+     * @param inputSpace
+     *        The inputs space of the operator
+     *
+     * @param bounds
+     *        An array of integers indicating the boundary conditions for each
+     *        dimension.  If {@code null}, normal conditions are assumed for
+     *        all dimensions; otherwise, if shorter than {@code n}, the rank
+     *        of {@code inputSpace}, missing values are assumed to be {@link
+     *        BoundaryConditions#NORMAL}.
      */
     public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace,
             BoundaryConditions[] bounds) {
@@ -179,14 +197,19 @@ public class FiniteDifferenceOperator extends LinearOperator {
 
     /**
      * Create an instance of a finite difference operator.
-     * <p>
-     * Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace, boolean)} but for
-     * single precision floating point shaped vectors.
-     * @param inputSpace - The inputs space of the operator
-     * @param bounds     - Indicates the boundary conditions for all dimensions, one of
-     *                     {@link BoundaryConditions#PERIODIC}, or
-     *                     {@link BoundaryConditions#MIRROR}, otherwise
-     *                     {@link BoundaryConditions#NORMAL} is assumed.
+     *
+     * <p> Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace,
+     * BoundaryConditions)} but for single precision floating point shaped
+     * vectors. </p>
+     *
+     * @param inputSpace
+     *        The inputs space of the operator.
+     *
+     * @param bounds
+     *        Indicates the boundary conditions for all dimensions, one of
+     *        {@link BoundaryConditions#PERIODIC}, or {@link
+     *        BoundaryConditions#MIRROR}, otherwise {@link
+     *        BoundaryConditions#NORMAL} is assumed.
      */
     public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace,
             BoundaryConditions bounds) {
@@ -197,15 +220,16 @@ public class FiniteDifferenceOperator extends LinearOperator {
 
     /**
      * Create an instance of a finite difference operator.
-     * <p>
-     * Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace)} but for
-     * single precision floating point shaped vectors.
-     * @param inputSpace - The inputs space of the operator
+     *
+     * <p> Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace)}
+     * but for single precision floating point shaped vectors. </p>
+     *
+     * @param inputSpace
+     *        The inputs space of the operator.
      */
     public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace) {
         this(inputSpace, BoundaryConditions.NORMAL);
     }
-
 
     private static Shape buildShape(Shape inputShape) {
         int rank = inputShape.rank();
@@ -775,15 +799,3 @@ public class FiniteDifferenceOperator extends LinearOperator {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

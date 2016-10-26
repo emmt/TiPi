@@ -319,7 +319,7 @@ public abstract class VectorSpace {
     /**
      * Perform a component-wise multiplication of two vectors (low level).
      *
-     * <p> This low-level method is called by {@link vector#multiply} which
+     * <p> This low-level method is called by {@link Vector#multiply} which
      * insures that all vectors do belong to this vector space. </p>
      *
      * <p> In pseudo-code, this method must perform the following operation (for
@@ -329,9 +329,14 @@ public abstract class VectorSpace {
      * dst[i] = x[i]*y[i];
      * </pre>
      *
-     * @param dst   The destination vector.
-     * @param x     A vector.
-     * @param y     Another vector.
+     * @param dst
+     *        The destination vector.
+     *
+     * @param x
+     *        A vector.
+     *
+     * @param y
+     *        Another vector.
      */
     protected abstract void _multiply(Vector dst, Vector x, Vector y);
 
@@ -341,13 +346,15 @@ public abstract class VectorSpace {
      * <p> Low level method which is called by {@link Vector#copy} which inusres
      * that the arguments are vectors of this space. </p>
      *
-     * <p> This basic implementation calls
-     * {@link #_combine(double, Vector, double, Vector)} method and is expected
-     * to be overridden with a more efficient version by the descendants of this
-     * class. </p>
+     * <p> This basic implementation calls {@link #_combine(Vector, double,
+     * Vector, double, Vector)} method and is expected to be overridden with a
+     * more efficient version by the descendants of this class. </p>
      *
-     * @param dst   The destination vector.
-     * @param src   The source vector.
+     * @param dst
+     *        The destination vector.
+     *
+     * @param src
+     *        The source vector.
      */
     protected void _copy(Vector dst, Vector src) {
         _combine(dst, 1, src, 0, src);
@@ -359,8 +366,11 @@ public abstract class VectorSpace {
      * <p> Any concrete derived class must implement this low level method which
      * is guaranteed to be called with arguments by {@link Vector#swap}. </p>
      *
-     * @param dst   The destination vector.
-     * @param src   The source vector.
+     * @param x
+     *        A vector of this space.
+     *
+     * @param y
+     *        Another vector of this space.
      */
     protected abstract void _swap(Vector x, Vector y);
 
@@ -372,7 +382,8 @@ public abstract class VectorSpace {
      * more efficient version than this one which is based on the
      * {@link #create} method and the {@link #_copy} protected method. </p>
      *
-     * @param vec   A vector from this space.
+     * @param vec
+     *        A vector from this space.
      *
      * @return A new duplicate copy of the vector {@code vec}.
      */

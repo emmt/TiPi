@@ -77,7 +77,7 @@ public class ColorMap
      * Create a color map witn n entries that looks like Matlab's jet
      * color map
      * @param n
-     * @return
+     * @return a colormap
      */
     public static ColorMap getJet(int n)
     {
@@ -116,7 +116,7 @@ public class ColorMap
     /**
      * Get the RGB value associated with an entry in this ColorMap
      * @param idx
-     * @return
+     * @return the RGB pixel value
      */
     public int getColor(int idx)
     {

@@ -30,11 +30,13 @@ import java.nio.ByteOrder;
 
 /**
  * Class for data input/output buffer.
- * 
- * An InternalBuffer is a small {@link #ByteBuffer} designed for efficient
- * input/output of binary data.
- * 
- * @see {@link #ByteBuffer}, {@link #BufferedInputData}, {@link #BufferedOutputData}.
+ *
+ * <p> An InternalBuffer is a small {@link ByteBuffer} designed for efficient
+ * input/output of binary data. </p>
+ *
+ * @see ByteBuffer
+ * @see BufferedInputDataStream
+ * @see BufferedOutputDataStream
  *
  * @author Éric Thiébaut
  */
@@ -51,8 +53,10 @@ public class InternalBuffer {
 
     /**
      * Create a buffer with given size.
-     * @param capacity - The size of the internal buffer (in bytes).  In any
-     *                   case, the buffer size will be at least {@link #BUFSIZ}.
+     *
+     * @param capacity
+     *        The size of the internal buffer (in bytes).  In any case, the
+     *        buffer size will be at least {@link #BUFSIZ}.
      */
     InternalBuffer(int capacity) {
         buffer = ByteBuffer.allocateDirect(Math.max(capacity,  BUFSIZ));
@@ -67,6 +71,7 @@ public class InternalBuffer {
 
     /**
      * Get byte order of the internal buffer.
+     *
      * @return The current byte order of the internal buffer.
      */
     public final ByteOrder getByteOrder() {
@@ -75,7 +80,9 @@ public class InternalBuffer {
 
     /**
      * Set the byte order of the internal buffer.
-     * @param order - The chosen byte order.
+     *
+     * @param order
+     *        The chosen byte order.
      */
     public final void setByteOrder(ByteOrder order) {
         buffer.order(order);
@@ -83,6 +90,7 @@ public class InternalBuffer {
 
     /**
      * Query the number of bytes left in the internal buffer.
+     *
      * @return The number of remaining bytes.
      */
     public final int remaining() {
@@ -91,17 +99,19 @@ public class InternalBuffer {
 
     /**
      * Sets the mark of the internal buffer at its current position.
-     * <p>
-     * Note that the buffer capacity sets the maximum number of bytes that
+     *
+     * <p> Note that the buffer capacity sets the maximum number of bytes that
      * can be preserved in the data stream between a mark() and a reset().
-     * Make sure to fill()/flush() the stream to have the maximum capacity.
+     * Make sure to fill()/flush() the stream to have the maximum
+     * capacity. </p>
      */
     public final void mark() {
         buffer.mark();
     }
 
     /**
-     * Resets the position of the internal buffer to the previously-marked position.
+     * Resets the position of the internal buffer to the previously-marked
+     * position.
      */
     public final void reset() {
         buffer.reset();
@@ -115,16 +125,3 @@ public class InternalBuffer {
      */
 
 }
-
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

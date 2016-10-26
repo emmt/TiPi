@@ -151,8 +151,8 @@ public class SmoothInverseProblem extends IterativeDifferentiableSolver {
     /**
      * Get the lower bound on the variables.
      *
-     * @return The value of the lower bound, {@link Double.NEGATIVE_INFINITY} if
-     *         none.
+     * @return The value of the lower bound, {@link Double#NEGATIVE_INFINITY}
+     *         if none.
      */
     public double getLowerBound() {
         return lowerBound;
@@ -177,8 +177,8 @@ public class SmoothInverseProblem extends IterativeDifferentiableSolver {
     /**
      * Get the upper bound on the variables.
      *
-     * @return The value of the upper bound, {@link Double.POSITIVE_INFINITY} if
-     *         none.
+     * @return The value of the upper bound, {@link Double#POSITIVE_INFINITY}
+     *         if none.
      */
     public double getUpperBound() {
         return upperBound;

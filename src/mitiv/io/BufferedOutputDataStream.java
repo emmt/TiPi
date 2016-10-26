@@ -36,8 +36,9 @@ import java.nio.channels.WritableByteChannel;
 
 /**
  * Class for efficient writing of binary data with any byte ordering.
- * 
- * @see {@link #BufferedInputData}, {@link #InternalBuffer}.
+ *
+ * @see BufferedInputDataStream
+ * @see InternalBuffer
  *
  * @author Éric Thiébaut
  */
@@ -47,13 +48,16 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Create a BufferedOutputDataStream with given buffer size.
-     * <p>
-     * Do not forget to call the {@link #close()} method when no longer in
-     * use or you will have leakage.
-     * 
-     * @param file     - The output stream.
-     * @param capacity - The size of the internal buffer (in bytes).  In any
-     *                   case, the buffer size will be at least {@link #BUFSIZ}.
+     *
+     * <p> Do not forget to call the {@link #close()} method when no longer in
+     * use or you will have leakage. </p>
+     *
+     * @param file
+     *        The output stream.
+     *
+     * @param capacity
+     *        The size of the internal buffer (in bytes).  In any case, the
+     *        buffer size will be at least {@link #BUFSIZ}.
      */
     BufferedOutputDataStream(FileOutputStream file, int capacity) {
         /* Allocate resources and make sure buffer is empty and in write mode.. */
@@ -65,11 +69,12 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Create a BufferedOutputDataStream with minimal buffer size.
-     * <p>
-     * Do not forget to call the {@link #close()} method when no longer in
-     * use or you will have leakage.
-     * 
-     * @param file - The output stream.
+     *
+     * <p> Do not forget to call the {@link #close()} method when no longer in
+     * use or you will have leakage. </p>
+     *
+     * @param file
+     *        The output stream.
      */
     BufferedOutputDataStream(FileOutputStream file) {
         this(file, 0);
@@ -77,9 +82,10 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Close the channel.
-     * <p>
-     * Close the output channel of the stream after flushing any
-     * remaining unwritten data.
+     *
+     * <p> Close the output channel of the stream after flushing any remaining
+     * unwritten data. </p>
+     *
      * @throws IOException
      */
     public void close() throws IOException {
@@ -90,7 +96,7 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write as much data as possible.
-     * @return The number of bytes not yet written.
+     *
      * @throws IOException
      */
     public void flush() throws IOException {
@@ -113,6 +119,7 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write a single byte value.
+     *
      * @throws IOException
      */
     public void writeByte(byte value) throws IOException {
@@ -124,6 +131,7 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write a single short value.
+     *
      * @throws IOException
      */
     public void writeShort(short value) throws IOException {
@@ -135,6 +143,7 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write a single int value.
+     *
      * @throws IOException
      */
     public void writeInt(int value) throws IOException {
@@ -146,6 +155,7 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write a single long value.
+     *
      * @throws IOException
      */
     public void writeLong(long value) throws IOException {
@@ -157,6 +167,7 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write a single float value.
+     *
      * @throws IOException
      */
     public void writeFloat(float value) throws IOException {
@@ -168,6 +179,7 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write a single double value.
+     *
      * @throws IOException
      */
     public void writeDouble(double value) throws IOException {
@@ -179,15 +191,22 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write some bytes to the data stream.
-     * <p>
-     * Note that the stream being buffered, the written data may be
+     *
+     * <p> Note that the stream being buffered, the written data may be
      * partially in the buffer.  To force writing all remaining unwritten
-     * data, call the {@link #flush()} method.
-     * 
-     * @param arr     - The source array.
-     * @param offset  - The first index to consider in the source array.
-     * @param number  - The number of elements to write.
+     * data, call the {@link #flush()} method. </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param offset
+     *        The first index to consider in the source array.
+     *
+     * @param number
+     *        The number of elements to write.
+     *
      * @return The number of elements actually written.
+     *
      * @throws IOException
      */
     public int write(byte[] arr, int offset, int number) throws IOException {
@@ -214,18 +233,25 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write some short's to the data stream.
-     * <p>
-     * Byte swapping if performed according to the current byte order of
-     * the data stream.
-     * <p>
-     * Note that the stream being buffered, the written data may be
-     * partially in the buffer.  To force writing all remaining unwritten
-     * data, call the {@link #flush()} method.
      *
-     * @param arr     - The source array.
-     * @param offset  - The first index to consider in the source array.
-     * @param number  - The number of elements to write.
+     * <p> Byte swapping is performed according to the current byte order of
+     * the data stream. </p>
+     *
+     * <p> Note that the stream being buffered, the written data may be
+     * partially in the buffer.  To force writing all remaining unwritten
+     * data, call the {@link #flush()} method. </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param offset
+     *        The first index to consider in the source array.
+     *
+     * @param number
+     *        The number of elements to write.
+     *
      * @return The number of elements actually written.
+     *
      * @throws IOException
      */
     public int write(short[] arr, int offset, int number) throws IOException {
@@ -255,18 +281,25 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write some int's to the data stream.
-     * <p>
-     * Byte swapping if performed according to the current byte order of
-     * the data stream.
-     * <p>
-     * Note that the stream being buffered, the written data may be
+     *
+     * <p> Byte swapping is performed according to the current byte order of
+     * the data stream. </p>
+     *
+     * <p> Note that the stream being buffered, the written data may be
      * partially in the buffer.  To force writing all remaining unwritten
-     * data, call the {@link #flush()} method.
-     * 
-     * @param arr     - The source array.
-     * @param offset  - The first index to consider in the source array.
-     * @param number  - The number of elements to write.
+     * data, call the {@link #flush()} method. </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param offset
+     *        The first index to consider in the source array.
+     *
+     * @param number
+     *        The number of elements to write.
+     *
      * @return The number of elements actually written.
+     *
      * @throws IOException
      */
     public int write(int[] arr, int offset, int number) throws IOException {
@@ -296,18 +329,25 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write some long's to the data stream.
-     * <p>
-     * Byte swapping if performed according to the current byte order of
-     * the data stream.
-     * <p>
-     * Note that the stream being buffered, the written data may be
+     *
+     * <p> Byte swapping is performed according to the current byte order of
+     * the data stream. </p>
+     *
+     * <p> Note that the stream being buffered, the written data may be
      * partially in the buffer.  To force writing all remaining unwritten
-     * data, call the {@link #flush()} method.
-     * 
-     * @param arr     - The source array.
-     * @param offset  - The first index to consider in the source array.
-     * @param number  - The number of elements to write.
+     * data, call the {@link #flush()} method. </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param offset
+     *        The first index to consider in the source array.
+     *
+     * @param number
+     *        The number of elements to write.
+     *
      * @return The number of elements actually written.
+     *
      * @throws IOException
      */
     public int write(long[] arr, int offset, int number) throws IOException {
@@ -337,18 +377,25 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write some float's to the data stream.
-     * <p>
-     * Byte swapping if performed according to the current byte order of
-     * the data stream.
-     * <p>
-     * Note that the stream being buffered, the written data may be
+     *
+     * <p> Byte swapping is performed according to the current byte order of
+     * the data stream. </p>
+     *
+     * <p> Note that the stream being buffered, the written data may be
      * partially in the buffer.  To force writing all remaining unwritten
-     * data, call the {@link #flush()} method.
-     * 
-     * @param arr     - The source array.
-     * @param offset  - The first index to consider in the source array.
-     * @param number  - The number of elements to write.
+     * data, call the {@link #flush()} method. </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param offset
+     *        The first index to consider in the source array.
+     *
+     * @param number
+     *        The number of elements to write.
+     *
      * @return The number of elements actually written.
+     *
      * @throws IOException
      */
     public int write(float[] arr, int offset, int number) throws IOException {
@@ -378,18 +425,25 @@ public class BufferedOutputDataStream extends InternalBuffer {
 
     /**
      * Write some double's to the data stream.
-     * <p>
-     * Byte swapping if performed according to the current byte order of
-     * the data stream.
-     * <p>
-     * Note that the stream being buffered, the written data may be
+     *
+     * <p> Byte swapping is performed according to the current byte order of
+     * the data stream. </p>
+     *
+     * <p> Note that the stream being buffered, the written data may be
      * partially in the buffer.  To force writing all remaining unwritten
-     * data, call the {@link #flush()} method.
-     * 
-     * @param arr     - The source array.
-     * @param offset  - The first index to consider in the source array.
-     * @param number  - The number of elements to write.
+     * data, call the {@link #flush()} method. </p>
+     *
+     * @param arr
+     *        The source array.
+     *
+     * @param offset
+     *        The first index to consider in the source array.
+     *
+     * @param number
+     *        The number of elements to write.
+     *
      * @return The number of elements actually written.
+     *
      * @throws IOException
      */
     public int write(double[] arr, int offset, int number) throws IOException {
@@ -418,15 +472,3 @@ public class BufferedOutputDataStream extends InternalBuffer {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

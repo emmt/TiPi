@@ -75,10 +75,10 @@ import nom.tam.util.BufferedFile;
 /**
  * Implement reading/writing of FITS files.
  *
- * @author Éric
+ * <p> See https://archive.stsci.edu/fits/users_guide/node21.html for an
+ * explanation of the standard FITS keywords. </p>
  *
- * @see {@link https://archive.stsci.edu/fits/users_guide/node21.html} for an
- *      explanation of the standard FITS keywords.
+ * @author Éric
  */
 public class FitsFormat {
 
@@ -110,12 +110,13 @@ public class FitsFormat {
     /**
      * Read the primary FITS "image" as a shaped array.
      *
-     * <p> The "image" in the primary HDU of the FITS file is read and converted
-     * into a shaped array with floating point values. The conversion takes into
-     * account the keywords "BLANK" (for bad data), "BSCALE" and "BZERO" (for
-     * value correction). </p>
+     * <p> The "image" in the primary HDU of the FITS file is read and
+     * converted into a shaped array with floating point values. The conversion
+     * takes into account the keywords "BLANK" (for bad data), "BSCALE" and
+     * "BZERO" (for value correction). </p>
      *
-     * @param filename   The name of the FITS (can also be an URL).
+     * @param filename
+     *        The name of the FITS (can also be an URL).
      *
      * @return A shaped array.
      *
@@ -136,9 +137,11 @@ public class FitsFormat {
      * account the keywords "BLANK" (for bad data), "BSCALE" and "BZERO" (for
      * value correction). The HDU must be an "image" extension. </p>
      *
-     * @param filename   The name of the FITS (can also be an URL).
+     * @param filename
+     *        The name of the FITS (can also be an URL).
      *
-     * @param index      The HDU index (starting at 0).
+     * @param index
+     *        The HDU index (starting at 0).
      *
      * @return A shaped array.
      *
@@ -160,11 +163,14 @@ public class FitsFormat {
      * and the keywords "BLANK" (for bad data), "BSCALE" and "BZERO" (for
      * value correction) are taken into account. </p>
      *
-     * @param filename   The name of the FITS (can also be an URL).
+     * @param filename
+     *        The name of the FITS (can also be an URL).
      *
-     * @param index      The HDU index (starting at 0).
+     * @param index
+     *        The HDU index (starting at 0).
      *
-     * @param raw        True to avoid value correction and data conversion.
+     * @param raw
+     *        True to avoid value correction and data conversion.
      *
      * @return A shaped array.
      *
@@ -792,4 +798,3 @@ public class FitsFormat {
         }
     }
 }
-

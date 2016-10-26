@@ -120,7 +120,8 @@ public enum DataFormat {
     /**
      * Check whether a suffix matches recognized file name extensions.
      *
-     * @param suffix   The suffix to check.
+     * @param suffix
+     *        The suffix to check.
      *
      * @return A boolean value.
      */
@@ -142,7 +143,8 @@ public enum DataFormat {
      * <p> This function examines the extension of the file name to determine
      * the data format.  </p>
      *
-     * @param name   The name of the destination file.
+     * @param name
+     *        The name of the destination file.
      *
      * @return A file format identifier: {@code null} if the
      *         format is not recognized; otherwise {@link #PNM},
@@ -197,7 +199,8 @@ public enum DataFormat {
      * is returned; otherwise, the extension of the file name is examined to
      * determine the data format.  </p>
      *
-     * @param name   The name of the destination file.
+     * @param name
+     *        The name of the destination file.
      *
      * @return A file format identifier: {@code null} if the
      *         format is not recognized; otherwise {@link #PNM},
@@ -222,7 +225,8 @@ public enum DataFormat {
      * is left where it was prior to calling the function (i.e. there is no
      * data consumption). </p>
      *
-     * @param stream   The input data stream.
+     * @param stream
+     *        The input data stream.
      *
      * @return A file format identifier (see {@link #guessFormat(String)}),
      *         or {@code null} if the format is not recognized,.
@@ -319,7 +323,8 @@ public enum DataFormat {
      * {@link ColorModel#filterImageAsDouble} to convert such an image
      * according to your needs.  </p>
      *
-     * @param name   The name of the source file.
+     * @param name
+     *        The name of the source file.
      *
      * @return A shaped array.
      */
@@ -347,9 +352,11 @@ public enum DataFormat {
      * <p> The file format is guessed from the extension of the file name and
      * default options are used to encode the file.  </p>
      *
-     * @param arr    The shaped array to save.
+     * @param arr
+     *        The shaped array to save.
      *
-     * @param name   The name of the destination file.
+     * @param name
+     *        The name of the destination file.
      *
      * @throws IOException
      * @throws FileNotFoundException
@@ -365,11 +372,14 @@ public enum DataFormat {
      * <p> The file format is guessed from the extension of the file name and
      * default options are used to encode the file.  </p>
      *
-     * @param arr    The shaped array to save.
+     * @param arr
+     *        The shaped array to save.
      *
-     * @param name   The name of the destination file.
+     * @param name
+     *        The name of the destination file.
      *
-     * @param opts   Options for encoding the data.
+     * @param opts
+     *        Options for encoding the data.
      *
      * @throws IOException
      * @throws FileNotFoundException
@@ -411,9 +421,11 @@ public enum DataFormat {
      * <p> The file format is guessed from the extension of the file name and
      * default options are used to encode the file.  </p>
      *
-     * @param vec    The shaped vector to save.
+     * @param vec
+     *        The shaped vector to save.
      *
-     * @param name   The name of the destination file.
+     * @param name
+     *        The name of the destination file.
      *
      * @throws IOException
      * @throws FileNotFoundException
@@ -429,11 +441,14 @@ public enum DataFormat {
      * <p> The file format is guessed from the extension of the file name and
      * default options are used to encode the file.  </p>
      *
-     * @param vec    The shaped vector to save.
+     * @param vec
+     *        The shaped vector to save.
      *
-     * @param name   The name of the destination file.
+     * @param name
+     *        The name of the destination file.
      *
-     * @param opts   Options for encoding the data.
+     * @param opts
+     *        Options for encoding the data.
      *
      * @throws IOException
      * @throws FileNotFoundException
@@ -450,10 +465,11 @@ public enum DataFormat {
      * <p> The file format is guessed from the extension of the file name and
      * default options are used to encode the file.  </p>
      *
-     * @param vec    The vector to save (only shaped vectors are supported
-     *               for now).
+     * @param vec
+     *        The vector to save (only shaped vectors are supported for now).
      *
-     * @param name   The name of the destination file.
+     * @param name
+     *        The name of the destination file.
      *
      * @throws IOException
      * @throws FileNotFoundException
@@ -469,12 +485,14 @@ public enum DataFormat {
      * <p> The file format is guessed from the extension of the file name and
      * default options are used to encode the file.  </p>
      *
-     * @param vec    The vector to save (only shaped vectors are supported
-     *               for now).
+     * @param vec
+     *        The vector to save (only shaped vectors are supported for now).
      *
-     * @param name   The name of the destination file.
+     * @param name
+     *        The name of the destination file.
      *
-     * @param opts   Options for encoding the data.
+     * @param opts
+     *        Options for encoding the data.
      *
      * @throws IOException
      * @throws FileNotFoundException
@@ -498,9 +516,10 @@ public enum DataFormat {
     /**
      * Make a buffered image from a shaped array with default options.
      *
-     * @param arr    The array to convert into an image.
+     * @param arr
+     *        The array to convert into an image.
      *
-     * @see {@link #makeBufferedImage(ShapedArray, FormatOptions)} for more
+     * @see #makeBufferedImage(ShapedArray,FormatOptions) for more
      *      details about how is interpreted the array.
      */
     public static BufferedImage makeBufferedImage(ShapedArray arr) {
@@ -525,9 +544,11 @@ public enum DataFormat {
      * returned buffer image will have the same color model as the input one.
      * </p>
      *
-     * @param arr    The array to convert into an image.
+     * @param arr
+     *        The array to convert into an image.
      *
-     * @param opts   Options for conversion.
+     * @param opts
+     *        Options for conversion.
      */
     public static BufferedImage makeBufferedImage(ShapedArray arr,
                                                   FormatOptions opts) {
@@ -877,25 +898,27 @@ public enum DataFormat {
      * operation is lazy: if the image type of the original image is already
      * the correct one, it is returned as the result.  </p>>
      *
-     * @param img   The input image.
+     * @param img
+     *        The input image.
      *
-     * @param type  The image type of the result.
+     * @param type
+     *        The image type of the result.
      *
      * @return A {@link BufferedImage} of the requested type.
      *
-     * @see {@link BufferedImage#TYPE_3BYTE_BGR}
-     *      {@link BufferedImage#TYPE_4BYTE_ABGR},
-     *      {@link BufferedImage#TYPE_4BYTE_ABGR_PRE},
-     *      {@link BufferedImage#TYPE_BYTE_BINARY},
-     *      {@link BufferedImage#TYPE_BYTE_INDEXED},
-     *      {@link BufferedImage#TYPE_BYTE_GRAY},
-     *      {@link BufferedImage#TYPE_USHORT_555_RGB},
-     *      {@link BufferedImage#TYPE_USHORT_565_RGB},
-     *      {@link BufferedImage#TYPE_USHORT_GRAY},
-     *      {@link BufferedImage#TYPE_INT_RGB},
-     *      {@link BufferedImage#TYPE_INT_BGR},
-     *      {@link BufferedImage#TYPE_INT_ARGB},
-     *      {@link BufferedImage#TYPE_INT_ARGB_PRE}.
+     * @see BufferedImage#TYPE_3BYTE_BGR
+     * @see BufferedImage#TYPE_4BYTE_ABGR
+     * @see BufferedImage#TYPE_4BYTE_ABGR_PRE
+     * @see BufferedImage#TYPE_BYTE_BINARY
+     * @see BufferedImage#TYPE_BYTE_INDEXED
+     * @see BufferedImage#TYPE_BYTE_GRAY
+     * @see BufferedImage#TYPE_USHORT_555_RGB
+     * @see BufferedImage#TYPE_USHORT_565_RGB
+     * @see BufferedImage#TYPE_USHORT_GRAY
+     * @see BufferedImage#TYPE_INT_RGB
+     * @see BufferedImage#TYPE_INT_BGR
+     * @see BufferedImage#TYPE_INT_ARGB
+     * @see BufferedImage#TYPE_INT_ARGB_PRE
      */
     public static BufferedImage convertImage(BufferedImage img, int type) {
         if (img.getType() == type) {
@@ -930,8 +953,8 @@ public enum DataFormat {
      *    Array2D alpha = arr.slice(3, 0);
      * </pre>
      *
-     * <p> If the result is a {@link ByteArray}, the bytes are to be
-     * interpreted as being unsigned.  For {@link
+     * <p> If the result is a {@link mitiv.array.ByteArray}, the bytes are to
+     * be interpreted as being unsigned.  For {@link
      * BufferedImage#TYPE_USHORT_GRAY} images, the result is a {@link Int2D}
      * array as TiPi does not implement {@code unsigned short} data. </p>
      *

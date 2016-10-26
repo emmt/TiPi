@@ -76,6 +76,7 @@ public class DataSummary {
 
     /**
      * Get minimum finite value.
+     *
      * @return The minimum finite value, may be NaN if there are no finite
      *         values.
      */
@@ -85,6 +86,7 @@ public class DataSummary {
 
     /**
      * Get maximum finite value.
+     *
      * @return The maximum finite value, may be NaN if there are no finite
      *         values.
      */
@@ -94,6 +96,7 @@ public class DataSummary {
 
     /**
      * Get sum of finite values.
+     *
      * @return The sum of finite values, may be NaN if there are no finite
      *         values.
      */
@@ -103,6 +106,7 @@ public class DataSummary {
 
     /**
      * Get number of finite values.
+     *
      * @return The number of finite values.
      */
     public int getNumberOfFiniteValues() {
@@ -110,7 +114,8 @@ public class DataSummary {
     }
 
     /**
-     * Get number of NaN values
+     * Get number of NaN values.
+     *
      * @return The number of NaN values.
      */
     public int getNumberOfNaNs() {
@@ -118,7 +123,8 @@ public class DataSummary {
     }
 
     /**
-     * Get number of positive infinite values
+     * Get number of positive infinite values.
+     *
      * @return The number of positive infinite values.
      */
     public int getNumberOfPositiveInfinites() {
@@ -126,7 +132,8 @@ public class DataSummary {
     }
 
     /**
-     * Get number of negative infinite values
+     * Get number of negative infinite values.
+     *
      * @return The number of negative infinite values.
      */
     public int getNumberOfNegativeInfinites() {
@@ -142,7 +149,8 @@ public class DataSummary {
     /**
      * Create a summary from the values of a shaped array.
      *
-     * @param arr - A shaped array.
+     * @param arr
+     *        A shaped array.
      */
     public DataSummary(ShapedArray arr) {
         update(arr);
@@ -151,9 +159,8 @@ public class DataSummary {
     /**
      * Create a summary from the values of a shaped vector.
      *
-     * @param vec - A shaped vector.
-     *
-     * @return The object itself after the updating.
+     * @param vec
+     *        A shaped vector.
      */
     public DataSummary(ShapedVector vec) {
         update(vec);

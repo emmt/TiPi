@@ -77,15 +77,17 @@ public abstract class LinearOperator extends DifferentiableMapping {
      *
      * @param dst
      *        The destination vector.
+     *
      * @param src
      *        The source vector.
+     *
      * @param job
      *        The type of operation to perform ({@link #DIRECT},
-     *        {@link #ADJOINT}, {@link INVERSE} or {@link INVERSE_ADJOINT}).
+     *        {@link #ADJOINT}, {@link #INVERSE} or {@link #INVERSE_ADJOINT}).
      *
      * @throws IncorrectSpaceException
-     *         If {@code job} is {@link #DIRECT}, or {@link INVERSE_ADJOINT}
-     *         (resp. {@link #ADJOINT} or {@link INVERSE}), {@code src} (resp.
+     *         If {@code job} is {@link #DIRECT}, or {@link #INVERSE_ADJOINT}
+     *         (resp. {@link #ADJOINT} or {@link #INVERSE}), {@code src} (resp.
      *         {@code dst}) must belongs to the input vector space of the
      *         operator and {@code dst} (resp. {@code src}) must belongs to the
      *         output vector space of the operator.
@@ -129,8 +131,10 @@ public abstract class LinearOperator extends DifferentiableMapping {
      *
      * @param dst
      *        The destination vector.
+     *
      * @param src
      *        The source vector.
+     *
      * @param job
      *        The type of operation to perform.
      *
@@ -159,12 +163,15 @@ public abstract class LinearOperator extends DifferentiableMapping {
      *
      * @param A
      *        The <i>left-hand-side</i> (LHS) matrix of the problem.
+     *
      * @param b
      *        The <i>right-hand-side</i> (RHS) vector of the problem (must
      *        belongs to output space of <b>A</b>).
+     *
      * @param x
      *        A vector to store the solution (must belongs to the input space of
      *        <b>A</b>).
+     *
      * @param endomorphism
      *        Assert that output and input spaces are the same?
      *
@@ -186,6 +193,7 @@ public abstract class LinearOperator extends DifferentiableMapping {
      *
      * @param x
      *        A vector of the input space.
+     *
      * @param y
      *        A vector of the output space.
      *

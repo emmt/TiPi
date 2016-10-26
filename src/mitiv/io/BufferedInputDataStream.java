@@ -36,8 +36,9 @@ import java.nio.channels.ReadableByteChannel;
 
 /**
  * Class for efficient reading of binary data with any byte ordering.
- * 
- * @see {@link #BufferedOutputData}, {@link #InternalBuffer}.
+ *
+ * @see BufferedOutputDataStream
+ * @see InternalBuffer
  *
  * @author Éric Thiébaut
  */
@@ -47,13 +48,16 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Create a BufferedInputDataStream with given buffer size.
-     * <p>
-     * Do not forget to call the {@link #close()} method when no longer in
-     * use or you will have leakage.
-     * 
-     * @param file     - The input stream.
-     * @param capacity - The size of the internal buffer (in bytes).  In any
-     *                   case, the buffer size will be at least {@link #BUFSIZ}.
+     *
+     * <p> Do not forget to call the {@link #close()} method when no longer in
+     * use or you will have leakage. </p>
+     *
+     * @param file
+     *        The input stream.
+     *
+     * @param capacity
+     *        The size of the internal buffer (in bytes).  In any case, the
+     *        buffer size will be at least {@link #BUFSIZ}.
      */
     BufferedInputDataStream(FileInputStream file, int capacity) {
         /* Allocate resources and make sure the internal buffer is empty and in read mode. */
@@ -65,11 +69,12 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Create a BufferedInputDataStream with minimal buffer size.
-     * <p>
-     * Do not forget to call the {@link #close()} method when no longer in
-     * use or you will have leakage.
-     * 
-     * @param file - The input stream.
+     *
+     * <p> Do not forget to call the {@link #close()} method when no longer in
+     * use or you will have leakage. </p>
+     *
+     * @param file
+     *        The input stream.
      */
     BufferedInputDataStream(FileInputStream file) {
         this(file, 0);
@@ -85,9 +90,13 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Make sure a minimum number of bytes are available in the internal buffer.
-     * @param size  - The required number of bytes.
+     *
+     * @param size
+     *        The required number of bytes.
+     *
      * @return The number of remaining bytes which cannot exceed the capacity of
      *         the internal buffer, nor the remaining data from the stream.
+     *
      * @throws IOException
      */
     public int insure(int size) throws IOException {
@@ -101,7 +110,9 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read as much data as possible.
+     *
      * @return The number of available bytes for reading.
+     *
      * @throws IOException
      */
     public int fill() throws IOException {
@@ -126,7 +137,9 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read a single byte value.
+     *
      * @return The next byte value from the stream.
+     *
      * @throws IOException not enough data available.
      */
     public byte readByte() throws IOException {
@@ -138,7 +151,9 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read a single short value.
+     *
      * @return The next short value from the stream.
+     *
      * @throws IOException not enough data available.
      */
     public short readShort() throws IOException {
@@ -150,7 +165,9 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read a single int value.
+     *
      * @return The next int value from the stream.
+     *
      * @throws IOException not enough data available.
      */
     public int readInt() throws IOException {
@@ -162,7 +179,9 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read a single long value.
+     *
      * @return The next long value from the stream.
+     *
      * @throws IOException not enough data available.
      */
     public long readLong() throws IOException {
@@ -174,7 +193,9 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read a single float value.
+     *
      * @return The next float value from the stream.
+     *
      * @throws IOException not enough data available.
      */
     public float readFloat() throws IOException {
@@ -186,7 +207,9 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read a single double value.
+     *
      * @return The next double value from the stream.
+     *
      * @throws IOException not enough data available.
      */
     public double readDouble() throws IOException {
@@ -198,10 +221,18 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read some bytes from the data stream.
-     * @param arr     - The destination array.
-     * @param offset  - The first index to store data in the destination array.
-     * @param number  - The number of elements to read.
+     *
+     * @param arr
+     *        The destination array.
+     *
+     * @param offset
+     *        The first index to store data in the destination array.
+     *
+     * @param number
+     *        The number of elements to read.
+     *
      * @return The number of elements actually read.
+     *
      * @throws IOException
      */
     public int read(byte[] arr, int offset, int number) throws IOException {
@@ -220,13 +251,21 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read some short's from the data stream.
-     * <p>
-     * Byte swapping if performed according to the current byte order of
-     * the data stream.
-     * @param arr     - The destination array.
-     * @param offset  - The first index to store data in the destination array.
-     * @param number  - The number of elements to read.
+     *
+     * <p> Byte swapping is performed according to the current byte order of
+     * the data stream. </p>
+     *
+     * @param arr
+     *        The destination array.
+     *
+     * @param offset
+     *        The first index to store data in the destination array.
+     *
+     * @param number
+     *        The number of elements to read.
+     *
      * @return The number of elements actually read.
+     *
      * @throws IOException
      */
     public int read(short[] arr, int offset, int number) throws IOException {
@@ -248,13 +287,21 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read some int's from the data stream.
-     * <p>
-     * Byte swapping if performed according to the current byte order of
-     * the data stream.
-     * @param arr     - The destination array.
-     * @param offset  - The first index to store data in the destination array.
-     * @param number  - The number of elements to read.
+     *
+     * <p> Byte swapping is performed according to the current byte order of
+     * the data stream. </p>
+     *
+     * @param arr
+     *        The destination array.
+     *
+     * @param offset
+     *        The first index to store data in the destination array.
+     *
+     * @param number
+     *        The number of elements to read.
+     *
      * @return The number of elements actually read.
+     *
      * @throws IOException
      */
     public int read(int[] arr, int offset, int number) throws IOException {
@@ -276,13 +323,21 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read some long's from the data stream.
-     * <p>
-     * Byte swapping if performed according to the current byte order of
-     * the data stream.
-     * @param arr     - The destination array.
-     * @param offset  - The first index to store data in the destination array.
-     * @param number  - The number of elements to read.
+     *
+     * <p> Byte swapping is performed according to the current byte order of
+     * the data stream. </p>
+     *
+     * @param arr
+     *        The destination array.
+     *
+     * @param offset
+     *        The first index to store data in the destination array.
+     *
+     * @param number
+     *        The number of elements to read.
+     *
      * @return The number of elements actually read.
+     *
      * @throws IOException
      */
     public int read(long[] arr, int offset, int number) throws IOException {
@@ -304,13 +359,21 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read some float's from the data stream.
-     * <p>
-     * Byte swapping if performed according to the current byte order of
-     * the data stream.
-     * @param arr     - The destination array.
-     * @param offset  - The first index to store data in the destination array.
-     * @param number  - The number of elements to read.
+     *
+     * <p> Byte swapping is performed according to the current byte order of
+     * the data stream. </p>
+     *
+     * @param arr
+     *        The destination array.
+     *
+     * @param offset
+     *        The first index to store data in the destination array.
+     *
+     * @param number
+     *        The number of elements to read.
+     *
      * @return The number of elements actually read.
+     *
      * @throws IOException
      */
     public int read(float[] arr, int offset, int number) throws IOException {
@@ -332,13 +395,22 @@ public class BufferedInputDataStream extends InternalBuffer {
 
     /**
      * Read some double's from the data stream.
+     *
      * <p>
      * Byte swapping if performed according to the current byte order of
      * the data stream.
-     * @param arr     - The destination array.
-     * @param offset  - The first index to store data in the destination array.
-     * @param number  - The number of elements to read.
+     *
+     * @param arr
+     *        The destination array.
+     *
+     * @param offset
+     *        The first index to store data in the destination array.
+     *
+     * @param number
+     *        The number of elements to read.
+     *
      * @return The number of elements actually read.
+     *
      * @throws IOException
      */
     public int read(double[] arr, int offset, int number) throws IOException {
@@ -365,16 +437,3 @@ public class BufferedInputDataStream extends InternalBuffer {
     }
      */
 }
-
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

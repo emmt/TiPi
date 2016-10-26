@@ -118,10 +118,13 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
 
     /**
      * Query the value stored at a given position.
+     *
      //# def k = 1
      //# while ${k} <= ${rank}
      //#   def kth = ${}{nth_${k}}
-     * @param i${k} - The index along the ${kth} dimension.
+     * @param i${k}
+     *        The index along the ${kth} dimension.
+     *
      //#   eval k += 1
      //# end
      * @return The value stored at position {@code (${indexList})}.
@@ -130,13 +133,17 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
 
     /**
      * Set the value at a given position.
+     *
      //# def k = 1
      //# while ${k} <= ${rank}
      //#   def kth = ${}{nth_${k}}
-     * @param i${k}    - The index along the ${kth} dimension.
+     * @param i${k}
+     *        The index along the ${kth} dimension.
+     *
      //#   eval k += 1
      //# end
-     * @param value - The value to store at position {@code (${indexList})}.
+     * @param value
+     *        The value to store at position {@code (${indexList})}.
      */
     public abstract void set(${declIndexList}, ${type} value);
 
@@ -160,7 +167,8 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
     //# // The following macros must be defined just before emitting the code.
     //# suspend loopFirstIndent loopBody
     //#
-    //# // Templates for the row-major and column-major loops (will be expanded later).
+    //# // Templates for the row-major and column-major loops (will
+    //# // be expanded later).
     //# def rowMajTemplate := for (int i${k} = 0; i${k} < dim${k}; ++i${k}) {
     //# def colMajTemplate := for (int i${j} = 0; i${j} < dim${j}; ++i${j}) {
     //#
@@ -513,17 +521,22 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
 
     /**
      * Create a ${rank}D array of ${type}'s with given dimensions.
-     * <p>
-     * This method creates a ${rank}D array of ${type}'s with zero offset, contiguous
-     * elements and column-major order.  All dimensions must at least 1.
+     *
+     * <p> This method creates a ${rank}D array of ${type}'s with zero offset,
+     * contiguous elements and column-major order.  All dimensions must at
+     * least 1. </p>
+     *
      //# def k = 1
      //# while ${k} <= ${rank}
      //#   def kth = ${}{nth_${k}}
-     * @param dim${k} - The ${kth} dimension of the ${rank}D array.
+     * @param dim${k}
+     *        The ${kth} dimension of the ${rank}D array.
+     *
      //#   eval k += 1
      //# end
      * @return A new ${rank}D array of ${type}'s.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ${className} create(${declDimList}) {
         return new Flat${className}(${dimList});
@@ -531,15 +544,19 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
 
     /**
      * Create a ${rank}D array of ${type}'s with given shape.
-     * <p>
-     * This method creates a ${rank}D array of ${type}'s with zero offset, contiguous
-     * elements and column-major order.
-     * @param dims - The list of dimensions of the ${rank}D array (all dimensions
-     *               must at least 1).  This argument is not referenced by
-     *               the returned object and its contents can be modified
-     *               after calling this method.
+     *
+     * <p> This method creates a ${rank}D array of ${type}'s with zero offset,
+     * contiguous elements and column-major order. </p>
+     *
+     * @param dims
+     *        The list of dimensions of the ${rank}D array (all dimensions must
+     *        at least 1).  This argument is not referenced by the returned
+     *        object and its contents can be modified after calling this
+     *        method.
+     *
      * @return A new ${rank}D array of ${type}'s.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ${className} create(int[] dims) {
         return new Flat${className}(dims);
@@ -547,56 +564,78 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
 
     /**
      * Create a ${rank}D array of ${type}'s with given shape.
-     * <p>
-     * This method creates a ${rank}D array of ${type}'s with zero offset, contiguous
-     * elements and column-major order.
-     * @param shape      - The shape of the ${rank}D array.
-     * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
-     *                     otherwise, the returned object will reference
-     *                     <b>shape</b> whose contents <b><i>must not be
-     *                     modified</i></b> while the returned object is in
-     *                     use.
+     *
+     * <p> This method creates a ${rank}D array of ${type}'s with zero offset,
+     * contiguous elements and column-major order. </p>
+     *
+     * @param shape
+     *        The shape of the ${rank}D array.
+     *
      * @return A new ${rank}D array of ${type}'s.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ${className} create(Shape shape) {
         return new Flat${className}(shape);
     }
 
     /**
-     * Wrap an existing array in a ${rank}D array of ${type}'s with given dimensions.
-     * <p>
-     * The returned ${rank}D array have zero offset, contiguous elements and
-     * column-major storage order.  More specifically:
-     * <pre>arr.get(${indexList}) = data[${flatIndexDoc}]</pre>
-     * with {@code arr} the returned ${rank}D array.
-     * @param data - The data to wrap in the ${rank}D array.
+     * Wrap an existing array in a ${rank}D array of ${type}'s with given
+     * dimensions.
+     *
+     * <p> The returned ${rank}D array have zero offset, contiguous elements
+     * and column-major storage order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(${indexList}) = data[${flatIndexDoc}]
+     * </pre>
+     *
+     * <p> with {@code arr} the returned ${rank}D array. </p>
+     *
+     * @param data
+     *        The data to wrap in the ${rank}D array.
+     *
      //# def k = 1
      //# while ${k} <= ${rank}
      //#   def kth = ${}{nth_${k}}
-     * @param dim${k} - The ${kth} dimension of the ${rank}D array.
+     * @param dim${k}
+     *        The ${kth} dimension of the ${rank}D array.
+     *
      //#   eval k += 1
      //# end
      * @return A ${rank}D array sharing the elements of <b>data</b>.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ${className} wrap(${type}[] data, ${declDimList}) {
         return new Flat${className}(data, ${dimList});
     }
 
     /**
-     * Wrap an existing array in a ${rank}D array of ${type}'s with given shape.
-     * <p>
-     * The returned ${rank}D array have zero offset, contiguous elements and
-     * column-major storage order.  More specifically:
-     * <pre>arr.get(${indexList}) = data[${shapeIndexDoc}]</pre>
-     * with {@code arr} the returned ${rank}D array.
-     * @param data - The data to wrap in the ${rank}D array.
-     * @param dims - The list of dimensions of the ${rank}D array.  This argument is
-     *                not referenced by the returned object and its contents
-     *                can be modified after the call to this method.
-     * @return A new ${rank}D array of ${type}'s sharing the elements of <b>data</b>.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     * Wrap an existing array in a ${rank}D array of ${type}'s with given
+     * shape.
+     *
+     * <p> The returned ${rank}D array have zero offset, contiguous elements
+     * and column-major storage order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(${indexList}) = data[${shapeIndexDoc}]
+     * </pre>
+     *
+     * <p> with {@code arr} the returned ${rank}D array. </p>
+     *
+     * @param data
+     *        The data to wrap in the ${rank}D array.
+     *
+     * @param dims
+     *        The list of dimensions of the ${rank}D array.  This argument is
+     *        not referenced by the returned object and its contents can be
+     *        modified after the call to this method.
+     *
+     * @return A new ${rank}D array of ${type}'s sharing the elements of
+     *         <b>data</b>.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ${className} wrap(${type}[] data, int[] dims) {
         return new Flat${className}(data, dims);
@@ -604,44 +643,64 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
 
     /**
      * Wrap an existing array in a ${rank}D array of ${type}'s with given shape.
+     *
+     * <p> The returned ${rank}D array have zero offset, contiguous elements
+     * and column-major storage order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(${indexList}) = data[${shapeIndexDoc}]
+     * </pre>
+     *
      * <p>
-     * The returned ${rank}D array have zero offset, contiguous elements and
-     * column-major storage order.  More specifically:
-     * <pre>arr.get(${indexList}) = data[${shapeIndexDoc}]</pre>
-     * with {@code arr} the returned ${rank}D array.
-     * @param data       - The data to wrap in the ${rank}D array.
-     * @param shape      - The shape of the ${rank}D array.
-     * @param cloneShape - If true, the <b>shape</b> argument is duplicated;
-     *                     otherwise, the returned object will reference
-     *                     <b>shape</b> whose contents <b><i>must not be
-     *                     modified</i></b> while the returned object is in
-     *                     use.
-     * @return A new ${rank}D array of ${type}'s sharing the elements of <b>data</b>.
-     * @see {@link Shaped#COLUMN_MAJOR}
+     * with {@code arr} the returned ${rank}D array. </p>
+     *
+     * @param data
+     *        The data to wrap in the ${rank}D array.
+     *
+     * @param shape
+     *        The shape of the ${rank}D array.
+     *
+     * @return A new ${rank}D array of ${type}'s sharing the elements of
+     *         <b>data</b>.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ${className} wrap(${type}[] data, Shape shape) {
         return new Flat${className}(data, shape);
     }
 
     /**
-     * Wrap an existing array in a ${rank}D array of ${type}'s with given dimensions,
-     * strides and offset.
-     * <p>
-     * This creates a ${rank}D array of dimensions {{@code ${dimList}}}
+     * Wrap an existing array in a ${rank}D array of ${type}'s with given
+     * dimensions, strides and offset.
+     *
+     * <p> This creates a ${rank}D array of dimensions {{@code ${dimList}}}
      * sharing (part of) the contents of {@code data} in arbitrary storage
-     * order.  More specifically:
-     * <pre>arr.get(${indexList}) = data[${strideIndexDoc}]</pre>
-     * with {@code arr} the returned ${rank}D array.
-     * @param data    - The array to wrap in the ${rank}D array.
-     * @param offset  - The offset in {@code data} of element (${zeroList}) of
-     *                  the ${rank}D array.
+     * order.  More specifically: </p>
+     *
+     * <pre>
+     * arr.get(${indexList}) = data[${strideIndexDoc}]
+     * </pre>
+     *
+     * <p> with {@code arr} the returned ${rank}D array. </p>
+     *
+     * @param data
+     *        The array to wrap in the ${rank}D array.
+     *
+     * @param offset
+     *        The offset in {@code data} of element (${zeroList}) of the
+     *        ${rank}D array.
+     *
      //# for k in 1:${rank}
      //#   def kth = ${}{nth_${k}}
-     * @param stride${k} - The stride along the ${kth} dimension.
+     * @param stride${k}
+     *        The stride along the ${kth} dimension.
+     *
      //# end
      //# for k in 1:${rank}
      //#   def kth = ${}{nth_${k}}
-     * @param dim${k}    - The ${kth} dimension of the ${rank}D array.
+     * @param dim${k}
+     *        The ${kth} dimension of the ${rank}D array.
+     *
      //# end
      * @return A ${rank}D array sharing the elements of <b>data</b>.
      */
@@ -660,11 +719,12 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.  The same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *        The same indexing rules as for {@link mitiv.base.indexing.Range}
+     *        apply for negative index: 0 for the first, 1 for the second, -1
+     *        for the last, -2 for penultimate, <i>etc.</i>
+     *
      * @return A ${reducedClassName} view on the given slice of the array.
      */
     public abstract ${reducedClassName} slice(int idx);
@@ -672,13 +732,14 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
     /**
      * Get a slice of the array.
      *
-     * @param idx - The index of the slice along the last dimension of
-     *              the array.
-     * @param dim - The dimension to slice.  For these two arguments,
-     *              the same indexing rules as for
-     *              {@link mitiv.base.indexing.Range} apply for negative
-     *              index: 0 for the first, 1 for the second, -1 for the
-     *              last, -2 for penultimate, <i>etc.</i>
+     * @param idx
+     *        The index of the slice along the last dimension of the array.
+     *
+     * @param dim
+     *        The dimension to slice.  For these two arguments, the same
+     *        indexing rules as for {@link mitiv.base.indexing.Range} apply for
+     *        negative index: 0 for the first, 1 for the second, -1 for the
+     *        last, -2 for penultimate, <i>etc.</i>
      *
      * @return A ${reducedClassName} view on the given slice of the array.
      */
@@ -702,10 +763,11 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
      //#         def argList = ${argList}, ${argType} ${argName}${k}
      //#     end
      //#     def kth = ${}{nth_${k}}
-     * @param ${argName}${k} - The range of indices to select along ${kth} dimension
-     *               (or {@code null} to select all.
-     //# end
+     * @param ${argName}${k}
+     *        The range of indices to select along ${kth} dimension (or
+     *        {@code null} to select all.
      *
+     //# end
      * @return A ${className} view for the given range${s} of the array.
      */
     public abstract ${className} view(${argList});
@@ -723,10 +785,11 @@ public abstract class ${className} extends ${superName} implements ${Type}Array 
      //#         def argList = ${argList}, ${argType} ${argName}${k}
      //#     end
      //#     def kth = ${}{nth_${k}}
-     * @param ${argName}${k} - The list of indices to select along ${kth} dimension
-     *               (or {@code null} to select all.
-     //# end
+     * @param ${argName}${k}
+     *        The list of indices to select along ${kth} dimension (or
+     *        {@code null} to select all.
      *
+     //# end
      * @return A ${className} view for the given index selection${s} of the
      *         array.
      */

@@ -56,9 +56,10 @@ import mitiv.exception.IllegalTypeException;
  * when selecting different color channels or applying color conversion.
  *
  * <h2>Conventions</h2>
- * <p>
- * A simple heuristic is applied to determine the color model of a shaped
- * array when it is interpreted as an image.  The rules are:
+ *
+ * <p> A simple heuristic is applied to determine the color model of a shaped
+ * array when it is interpreted as an image.  The rules are:</p>
+ *
  * <ol>
  * <li>a 2D shaped array of any type is a gray-scale image with color
  *     model {@link #GRAY};</li>
@@ -68,83 +69,88 @@ import mitiv.exception.IllegalTypeException;
  *     equals to 4 and is a RGBA image with color model {@link #RGBA};</li>
  * <li>anything else corresponds to the the color model {@link #NONE}.</li>
  * </ol>
- * </p><p>
- * These conventions are assumed by the various conversion routines, <i>e.g.</i>
- * {@link DataFormat#makeBufferedImage} to convert a buffered image to a
- * shaped array or {@link DataFormat#imageToShapedArray} to perform the
- * opposite conversion.
- * </p><p>
- * When reading data as a shaped array, the method {@link #guessColorModel}
- * can be used to determine the color model following the aforementioned
- * rules.
- * </p><p>
- * The methods {@link #filterImageAsFloat} and {@link #filterImageAsDouble}
- * may be used to filter or convert an image represented by a shaped array
- * into a specific color model with a floating-point representaion.  These
- * methods can also be used to extract a specific color channel or the alpha
- * channel.
- * </p>
+ *
+ * <p> These conventions are assumed by the various conversion routines,
+ * <i>e.g.</i> {@link DataFormat#makeBufferedImage} to convert a buffered
+ * image to a shaped array or {@link DataFormat#imageToShapedArray} to perform
+ * the opposite conversion.  </p>
+ *
+ * <p> When reading data as a shaped array, the method {@link
+ * #guessColorModel} can be used to determine the color model following the
+ * aforementioned rules.  </p>
+ *
+ * <p> The methods {@link #filterImageAsFloat} and {@link
+ * #filterImageAsDouble} may be used to filter or convert an image represented
+ * by a shaped array into a specific color model with a floating-point
+ * representaion.  These methods can also be used to extract a specific color
+ * channel or the alpha channel.  </p>
+ *
  *
  * <h2>Gray-scale images</h2>
- * <p>
- * A gray-scale image is stored into a shaped array as a 2D array with the
+ *
+ * <p> A gray-scale image is stored into a shaped array as a 2D array with the
  * first dimension equals to the width of the image and the second dimension
  * equals to the height of the image.  The pixels of a gray-scale image have a
  * single value: their intensity or their gray level.  The gray level of a
  * shaped array interpreted as a gray-scale image can be accessed as follows:
+ * </p>
+ *
  * <pre>
  *      gray = img.get(x,y);
  * </pre>
- * where <b>img</b> is an {@link Array2D} object and (<b>x</b>,<b>y</b>)
- * are the pixel coordinates.
- * </p>
+ *
+ * <p> where <b>img</b> is an {@link Array2D} object and (<b>x</b>,<b>y</b>)
+ * are the pixel coordinates.  </p>
+ *
  *
  * <h2>RGB images</h2>
- * <p>
- * A RGB image is stored into a shaped array as a 3D array with the first
+ *
+ * <p> A RGB image is stored into a shaped array as a 3D array with the first
  * dimension equals to 3, the second dimension equals to the width of the
  * image and the third dimension equals to the height of the image.  The
  * pixels of a RGB image have three colors: red (R), blue (B) and green (G).
  * The colors of a shaped array interpreted as a RGB image can be accessed as
- * follows:
+ * follows: </p>
+ *
  * <pre>
  *      red   = img.get(0,x,y);
  *      green = img.get(1,x,y);
  *      blue  = img.get(2,x,y);
  * </pre>
- * where <b>img</b> is an {@link Array3D} object and (<b>x</b>,<b>y</b>)
- * are the pixel coordinates.
- * </p>
+ *
+ * <p> where <b>img</b> is an {@link Array3D} object and (<b>x</b>,<b>y</b>)
+ * are the pixel coordinates.  </p>
+ *
  *
  * <h2>RGBA images</h2>
- * <p>
- * A RGBA image is stored into a shaped array as a 3D array with the first
+ *
+ * <p> A RGBA image is stored into a shaped array as a 3D array with the first
  * dimension equals to 4, the second dimension equals to the width of the
  * image and the third dimension equals to the height of the image.  The
  * pixels of a RGBA image have four values: red (R), blue (B), green (G) and
  * alpha (A).  The values of a shaped array interpreted as a RGBA image can be
- * accessed as follows:
+ * accessed as follows: </p>
+ *
  * <pre>
  *      red   = img.get(0,x,y);
  *      green = img.get(1,x,y);
  *      blue  = img.get(2,x,y);
  *      alpha = img.get(3,x,y);
  * </pre>
- * where <b>img</b> is an {@link Array3D} object and (<b>x</b>,<b>y</b>)
- * are the pixel coordinates.
- * </p><p>
-
- * Currently, to avoid ambiguities about the interpretation of the alpha
+ *
+ * <p> where <b>img</b> is an {@link Array3D} object and (<b>x</b>,<b>y</b>)
+ * are the pixel coordinates.  </p>
+ *
+ * <p> Currently, to avoid ambiguities about the interpretation of the alpha
  * channel, we only support RGBA images with {@code byte} values.  These
  * values are understood as being unsigned.  A value of zero for alpha
  * corresponds to a transparent pixel, the highest possible value of alpha,
  * <i>i.e.</i> {@code 0xFF}, corresponds to an opaque pixel.  It is assumed by
  * the various conversion routines, that the color levels are not
  * pre-multiplied by the alpha value.  When converting a buffered image of
- * type {@link BufferedImage#TYPE_INT_ARGB_PRE} or
- * {@link BufferedImage#TYPE_4BYTE_ABGR}, the pre-multiplication is
- * reversed to follow this convention.
- * </p>
+ * type {@link BufferedImage#TYPE_INT_ARGB_PRE} or {@link
+ * BufferedImage#TYPE_4BYTE_ABGR}, the pre-multiplication is reversed to
+ * follow this convention.  </p>
  *
  * @author Éric Thiébaut.
  *
@@ -167,13 +173,13 @@ public enum ColorModel {
 
     /**
      * A RGB image.
-     * @see {@link guessColorModel} for a discussion about the conventions.
+     * @see #guessColorModel for a discussion about the conventions.
      */
     RGB(3, "red-green-blue"),
 
     /**
      * A RGBA image.
-     * @see {@link guessColorModel} for a discussion about the conventions.
+     * @see #guessColorModel for a discussion about the conventions.
      */
     RGBA(4, "red-green-blue-alpha"),
 
@@ -205,17 +211,22 @@ public enum ColorModel {
 
     /**
      * Guess the color model of a shaped array.
-     * <p>
-     * This method applies a simple heuristic (see {@link ColorModel}) to
-     * determine the color model of a shaped array when it is interpreted
-     * as an image.
-     * </p>
-     * @param arr - The shaped array.
      *
-     * @return One of the following color models: {@link #GRAY},
-     *          {@link #RGB}, {@link #RGBA} or {@link #NONE}.
+     * <p> This method applies a simple heuristic (see {@link ColorModel}) to
+     * determine the color model of a shaped array when it is interpreted as
+     * an image.  </p>
      *
-     * @see {@link ColorModel}, {@link #GRAY}, {@link #RGB}, {@link #RGBA} or {@link #NONE}.
+     * @param arr
+     *        The shaped array.
+     *
+     * @return One of the following color models: {@link #GRAY}, {@link #RGB},
+     *         {@link #RGBA} or {@link #NONE}.
+     *
+     * @see ColorModel
+     * @see #GRAY
+     * @see #RGB
+     * @see #RGBA
+     * @see #NONE
      */
     static public ColorModel guessColorModel(ShapedArray arr) {
         int rank = arr.getRank();
@@ -240,9 +251,16 @@ public enum ColorModel {
 
     /**
      * Convert red, green and blue levels in a gray level.
-     * @param red   - The red level.
-     * @param green - The green level.
-     * @param blue  - The blue level.
+     *
+     * @param red
+     *        The red level.
+     *
+     * @param green
+     *        The green level.
+     *
+     * @param blue
+     *        The blue level.
+     *
      * @return The gray level.
      */
     public static double colorToGrey(double red, double green, double blue) {
@@ -251,9 +269,16 @@ public enum ColorModel {
 
     /**
      * Convert red, green and blue levels in a gray level.
-     * @param red   - The red level.
-     * @param green - The green level.
-     * @param blue  - The blue level.
+     *
+     * @param red
+     *        The red level.
+     *
+     * @param green
+     *        The green level.
+     *
+     * @param blue
+     *        The blue level.
+     *
      * @return The gray level.
      */
     public static float colorToGrey(float red, float green, float blue) {
@@ -262,9 +287,16 @@ public enum ColorModel {
 
     /**
      * Convert red, green and blue levels in a gray level.
-     * @param red   - The red level.
-     * @param green - The green level.
-     * @param blue  - The blue level.
+     *
+     * @param red
+     *        The red level.
+     *
+     * @param green
+     *        The green level.
+     *
+     * @param blue
+     *        The blue level.
+     *
      * @return The gray level.
      */
     public static int colorToGrey(int red, int green, int blue) {
@@ -296,16 +328,20 @@ public enum ColorModel {
     /**
      * Filter the channels of an image stored as a shaped array to produce
      * a floating point image suitable for inverse problem data processing.
-     * <p>
-     * This method must be called after converting a buffered image with
-     * {@link #imageToShapedArray}.  The method is lazy: the input array is
-     * returned if possible.
-     * </p>
-     * @param image      - The array to filter.
-     * @param colorModel - The color model for the result.
+     *
+     * <p> This method must be called after converting a buffered image with
+     * {@link DataFormat#imageToShapedArray}.  The method is lazy: the input
+     * array is returned if possible.  </p>
+     *
+     * @param arr
+     *        The array to filter.
+     *
+     * @param colorModel
+     *        The color model for the result.
+     *
      * @return A FloatArray object with shape {width,height} for a
-     * grayscale image, with shape {depth,width,height} for a RGB or RGBA
-     * image (depth = 3 or 4 respectively).
+     *         grayscale image, with shape {depth,width,height} for a RGB or
+     *         RGBA image (depth = 3 or 4 respectively).
      */
     public static FloatArray filterImageAsFloat(ShapedArray arr, ColorModel colorModel) {
         int type = arr.getType();
@@ -938,16 +974,20 @@ public enum ColorModel {
     /**
      * Filter the channels of an image stored as a shaped array to produce
      * a floating point image suitable for inverse problem data processing.
-     * <p>
-     * This method must be called after converting a buffered image with
-     * {@link #imageToShapedArray}.  The method is lazy: the input array is
-     * returned if possible.
-     * </p>
-     * @param image      - The array to filter.
-     * @param colorModel - The color model for the result.
+     *
+     * <p> This method must be called after converting a buffered image with
+     * {@link DataFormat#imageToShapedArray}.  The method is lazy: the input
+     * array is returned if possible.  </p>
+     *
+     * @param arr
+     *        The array to filter.
+     *
+     * @param colorModel
+     *        The color model for the result.
+     *
      * @return A DoubleArray object with shape {width,height} for a
-     * grayscale image, with shape {depth,width,height} for a RGB or RGBA
-     * image (depth = 3 or 4 respectively).
+     *         grayscale image, with shape {depth,width,height} for a RGB or
+     *         RGBA image (depth = 3 or 4 respectively).
      */
     public static DoubleArray filterImageAsDouble(ShapedArray arr, ColorModel colorModel) {
         int type = arr.getType();
@@ -1579,15 +1619,3 @@ public enum ColorModel {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

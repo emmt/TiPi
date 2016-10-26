@@ -35,29 +35,45 @@ import mitiv.tests.MinPack1Tests;
 /**
  * Non-linear conjugate gradient methods.
  *
- * References: [1] Hestenes, M.R. & Stiefel, E., "Methods of Conjugate Gradients
- * for Solving Linear Systems," Journal of Research of the National Bureau of
- * Standards 49, 409-436 (1952).
+ * <p>References:</p>
  *
- * [2] Hager, W.W. & Zhang, H., "A survey of nonlinear conjugate gradient
- * methods," Pacific Journal of Optimization, Vol. 2, pp. 35-58 (2006).
+ * <dl>
+ * <dt> [1] </dt>
+ * <dd> Hestenes, M.R. & Stiefel, E., "Methods of Conjugate Gradients for
+ * Solving Linear Systems," Journal of Research of the National Bureau of
+ * Standards 49, 409-436 (1952). </dd>
  *
- * [3] Hager, W. W. & Zhang, H. "A New Conjugate Gradient Method with Guaranteed
- * Descent and an Efficient Line Search," SIAM J. Optim., Vol. 16, pp. 170-192
- * (2005).
+ * <dt> [2] </dt>
+ * <dd> Hager, W.W. & Zhang, H., "A survey of nonlinear conjugate gradient
+ * methods," Pacific Journal of Optimization, Vol. 2, pp. 35-58 (2006). </dd>
+ *
+ * <dt> [3] </dt>
+ * <dd> Hager, W. W. & Zhang, H. "A New Conjugate Gradient Method with
+ * Guaranteed Descent and an Efficient Line Search," SIAM J. Optim., Vol. 16,
+ * pp. 170-192 (2005). </dd>
+ * </dl>
  *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 public class NonLinearConjugateGradient
 extends ReverseCommunicationOptimizerWithLineSearch {
 
-    /** Default value for {@code ftol} parameter in More & Thuente line search. */
+    /**
+     * Default value for {@code ftol} parameter in More & Thuente line
+     * search.
+     */
     static public final double SFTOL = 0.05;
 
-    /** Default value for {@code gtol} parameter in More & Thuente line search. */
+    /**
+     * Default value for {@code gtol} parameter in More & Thuente line
+     * search.
+     */
     static public final double SGTOL = 0.1;
 
-    /** Default value for {@code xtol} parameter in More & Thuente line search. */
+    /**
+     * Default value for {@code xtol} parameter in More & Thuente line
+     * search.
+     */
     static public final double SXTOL = Traits.DBL_EPSILON;
 
 
@@ -119,14 +135,6 @@ extends ReverseCommunicationOptimizerWithLineSearch {
     private final int method; /* Conjugate gradient method. */
     private boolean fmin_given; /* Indicate whether FMIN is specified. */
     private final boolean update_Hager_Zhang_orig = false;
-
-    private static double max(double a1, double a2, double a3) {
-        if (a3 >= a2) {
-            return (a3 >= a1 ? a3 : a1);
-        } else {
-            return (a2 >= a1 ? a2 : a1);
-        }
-    }
 
     public NonLinearConjugateGradient(VectorSpace space) {
         this(space, DEFAULT_METHOD);
@@ -476,8 +484,9 @@ extends ReverseCommunicationOptimizerWithLineSearch {
             if (evaluations <= 1) {
                 ginit = gnorm;
             }
-            return success(gnorm <= getGradientThreshold() ? OptimTask.FINAL_X
-                    : OptimTask.NEW_X);
+            return success(gnorm <= getGradientThreshold(ginit)
+                           ? OptimTask.FINAL_X
+                           : OptimTask.NEW_X);
 
         case NEW_X:
         case FINAL_X:
@@ -561,9 +570,11 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      * Set the absolute tolerance for the convergence criterion.
      *
      * @param gatol
-     *            - Absolute tolerance for the convergence criterion.
-     * @see {@link #setRelativeTolerance}, {@link #getAbsoluteTolerance},
-     *      {@link #getGradientThreshold}.
+     *        Absolute tolerance for the convergence criterion.
+     *
+     * @see #setRelativeTolerance(double)
+     * @see #getAbsoluteTolerance()
+     * @see #getGradientThreshold(double)
      */
     public void setAbsoluteTolerance(double gatol) {
         this.gatol = gatol;
@@ -573,9 +584,11 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      * Set the relative tolerance for the convergence criterion.
      *
      * @param grtol
-     *            - Relative tolerance for the convergence criterion.
-     * @see {@link #setAbsoluteTolerance}, {@link #getRelativeTolerance},
-     *      {@link #getGradientThreshold}.
+     *        Relative tolerance for the convergence criterion.
+     *
+     * @see #setAbsoluteTolerance(double)
+     * @see #getRelativeTolerance()
+     * @see #getGradientThreshold(double)
      */
     public void setRelativeTolerance(double grtol) {
         this.grtol = grtol;
@@ -584,8 +597,9 @@ extends ReverseCommunicationOptimizerWithLineSearch {
     /**
      * Query the absolute tolerance for the convergence criterion.
      *
-     * @see {@link #setAbsoluteTolerance}, {@link #getRelativeTolerance},
-     *      {@link #getGradientThreshold}.
+     * @see #setAbsoluteTolerance(double)
+     * @see #getRelativeTolerance()
+     * @see #getGradientThreshold(double)
      */
     public double getAbsoluteTolerance() {
         return gatol;
@@ -594,8 +608,9 @@ extends ReverseCommunicationOptimizerWithLineSearch {
     /**
      * Query the relative tolerance for the convergence criterion.
      *
-     * @see {@link #setRelativeTolerance}, {@link #getAbsoluteTolerance},
-     *      {@link #getGradientThreshold}.
+     * @see #setRelativeTolerance(double)
+     * @see #getAbsoluteTolerance()
+     * @see #getGradientThreshold(double)
      */
     public double getRelativeTolerance() {
         return grtol;
@@ -604,23 +619,38 @@ extends ReverseCommunicationOptimizerWithLineSearch {
     /**
      * Query the gradient threshold for the convergence criterion.
      *
-     * The convergence of the optimization method is achieved when the Euclidean
-     * norm of the gradient at a new iterate is less or equal the threshold:
+     * <p> The convergence of the optimization method is achieved when the
+     * Euclidean norm of the gradient at a new iterate is less or equal the
+     * threshold: </p>
      *
      * <pre>
-     * max(0.0, gatol, grtol * gtest)
+     *    max(0.0, gatol, grtol*g0nrm)
      * </pre>
      *
-     * where {@code gtest} is the norm of the initial gradient, {@code gatol}
-     * {@code grtol} are the absolute and relative tolerances for the
-     * convergence criterion.
+     * <p> where {@code gtest} is the norm of the initial gradient, {@code
+     * gatol} {@code grtol} are the absolute and relative tolerances for the
+     * convergence criterion. </p>
+     *
+     * @param g0nrm
+     *        The norm of the initial gradient.
      *
      * @return The gradient threshold.
-     * @see {@link #setAbsoluteTolerance}, {@link #setRelativeTolerance},
-     *      {@link #getAbsoluteTolerance}, {@link #getRelativeTolerance}.
+     *
+     * @see #setAbsoluteTolerance(double)
+     * @see #setRelativeTolerance(double)
+     * @see #getAbsoluteTolerance()
+     * @see #getRelativeTolerance()
      */
-    public double getGradientThreshold() {
-        return max(0.0, gatol, grtol * ginit);
+    public double getGradientThreshold(double g0nrm) {
+        return max(0.0, gatol, grtol*g0nrm);
+    }
+
+    private static final double max(double a1, double a2, double a3) {
+        if (a3 >= a2) {
+            return (a3 >= a1 ? a3 : a1);
+        } else {
+            return (a2 >= a1 ? a2 : a1);
+        }
     }
 
     /**
@@ -734,15 +764,3 @@ extends ReverseCommunicationOptimizerWithLineSearch {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

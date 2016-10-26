@@ -286,15 +286,15 @@ public class IterativeDifferentiableSolver {
     /**
      * Get current stepping.
      *
-     * This function returns the current behavior of the iterator.  When
-     * stepping is false (the default) the algorithm automatically iterates
-     * for each line search and the returned task by the {@link #start()} and
-     * {@link #iterate()} methods is only {@link OptimTask#NEW_X} or
-     * {@link OptimTask#FINAL_X} or an error.  When stepping is false, each
-     * call to the {@link #start} and {@link #iterate} methods results in at
-     * most one cost function evaluation and the returned task can also be
-     * {@link OptimTask#COMPUTE_FG} to indicate that the current line search
-     * has not converged.
+     * <p> This function returns the current behavior of the iterator.  When
+     * stepping is false (the default) the algorithm automatically iterates for
+     * each line search and the returned task by the {@link #start} and {@link
+     * #iterate} methods is only {@link OptimTask#NEW_X} or {@link
+     * OptimTask#FINAL_X} or an error.  When stepping is false, each call to
+     * the {@link #start} and {@link #iterate} methods results in at most one
+     * cost function evaluation and the returned task can also be {@link
+     * OptimTask#COMPUTE_FG} to indicate that the current line search has not
+     * converged. </p>
      *
      * @return Current stepping setting.
      */
@@ -307,7 +307,7 @@ public class IterativeDifferentiableSolver {
      *
      * @param value - The new stepping value.
      *
-     * @see {@link #getStepping()} for a description of the stepping behavior.
+     * @see #getStepping for a description of the stepping behavior.
      */
     public void setStepping(boolean value) {
         stepping = value;
@@ -353,14 +353,15 @@ public class IterativeDifferentiableSolver {
     /**
      * Get the maximum number of evaluations.
      *
-     * <p>
-     * The {@link #iterate()} and {@link #start()} methods of the solver return
+     * <p> The {@link #iterate} and {@link #start} methods of the solver return
      * a warning ({@link OptimTask#WARNING}) if the cost function is about to
      * be called more than this parameter.  A negative value allows an infinite
-     * number of evaluations.
+     * number of evaluations. </p>
      *
      * @return The maximum number of evaluations.
-     * @see {@link #setMaximumEvaluations()}, {@link #getEvaluations()}.
+     *
+     * @see #setMaximumEvaluations
+     * @see #getEvaluations
      */
     public int getMaximumEvaluations() {
         return maxeval;
@@ -368,7 +369,8 @@ public class IterativeDifferentiableSolver {
 
     /**
      * Set the maximum number of evaluations.
-     * @see {@link #getMaximumEvaluations()}, {@link #getEvaluations()}.
+     * @see #getMaximumEvaluations
+     * @see #getEvaluations
      */
     public void setMaximumEvaluations(int value) {
         if (value < 0) {
@@ -380,13 +382,15 @@ public class IterativeDifferentiableSolver {
     /**
      * Get the maximum number of iterations.
      *
-     * <p>
-     * The {@link #iterate()} and {@link #start()} methods of the solver return
+     * <p> The {@link #iterate} and {@link #start} methods of the solver return
      * a warning ({@link OptimTask#WARNING}) if the number of iteration exceeds
-     * this parameter.  A negative value allows an infinite number of iterations.
+     * this parameter.  A negative value allows an infinite number of
+     * iterations. </p>
      *
      * @return The maximum number of iterations.
-     * @see {@link #setMaximumIterations()}, {@link #getIterations()}.
+     *
+     * @see #setMaximumIterations
+     * @see #getIterations
      */
     public int getMaximumIterations() {
         return maxiter;
@@ -394,7 +398,8 @@ public class IterativeDifferentiableSolver {
 
     /**
      * Set the maximum number of iterations.
-     * @see {@link #getMaximumIterations()}, {@link #getIterations()}.
+     * @see #getMaximumIterations
+     * @see #getIterations
      */
     public void setMaximumIterations(int value) {
         if (value < 0) {
@@ -407,7 +412,7 @@ public class IterativeDifferentiableSolver {
      * Get the optimizer used to solve the problem.
      *
      * @return The current reverse communication optimizer (may be
-     * {@code null} if none has been chosen yet).
+     *         {@code null} if none has been chosen yet).
      */
     public ReverseCommunicationOptimizer getOptimizer() {
         return optimizer;
@@ -447,8 +452,11 @@ public class IterativeDifferentiableSolver {
 
     /**
      * Get whether the best solution is saved.
+     *
      * @return A boolean value.
-     * @see {@link #getBestSolution()}, {@link #setSaveBest()}.
+     *
+     * @see #getBestSolution
+     * @see #setSaveBest
      */
     public boolean getSaveBest() {
         return saveBest;
@@ -456,13 +464,17 @@ public class IterativeDifferentiableSolver {
 
     /**
      * Set whether the best solution is saved.
-     * <p>
-     * The last tried solution may not be the best one.  The solver may keep
-     * a track of the best (according to the value of the cost function) of the
-     * best solution so that it is possible to retrieve it at any time.  The
-     * drawback is that this require some memory.
-     * @param value - True, to save the best solution; false, to save memory.
-     * @see {@link #getBestSolution()}, {@link #getSaveBest()}.
+     *
+     * <p> The last tried solution may not be the best one.  The solver may
+     * keep a track of the best (according to the value of the cost function)
+     * of the best solution so that it is possible to retrieve it at any time.
+     * The drawback is that this require some memory. </p>
+     *
+     * @param value
+     *        True, to save the best solution; false, to save memory.
+     *
+     * @see #getBestSolution
+     * @see #getSaveBest
      */
     public void setSaveBest(boolean value) {
         saveBest = value;

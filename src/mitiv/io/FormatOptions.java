@@ -38,7 +38,8 @@ import mitiv.exception.IllegalTypeException;
 
 
 /**
- * This class is used to collect options for reading/writing data in different format.
+ * This class is used to collect options for reading/writing data in different
+ * format.
  *
  * @author Éric.
  */
@@ -73,9 +74,9 @@ public class FormatOptions {
     /**
      * Set preferred data type for saving.
      *
-     * @param type - A type identifier like {@link Traits#SHORT}.
-     *               The value {@link Traits#VOID} indicates that no
-     *               preferred type has been specified.
+     * @param type
+     *        A type identifier like {@link Traits#SHORT}.  The value {@link
+     *        Traits#VOID} indicates that no preferred type has been specified.
      *
      * @throws IllegalTypeException if {@code type} is invalid.
      */
@@ -108,9 +109,9 @@ public class FormatOptions {
     /**
      * Set preferred byte order for saving.
      *
-     * @param A byte order identifier like {@link Traits#BIG_ENDIAN},
-     *         {@link Traits#LITTLE_ENDIAN}, or
-     *         {@link Traits#NATIVE_BYTE_ORDER}.
+     * @param order
+     *        A byte order identifier like {@link Traits#BIG_ENDIAN},
+     *        {@link Traits#LITTLE_ENDIAN}, or {@link Traits#NATIVE_BYTE_ORDER}.
      *
      * @throws IllegalByteOrderException if {@code order} is invalid.
      */
@@ -131,6 +132,7 @@ public class FormatOptions {
 
     /**
      * Get the specified minimum data value.
+     *
      * @return The specified value or NaN if it has not been specified.
      */
     public double getMinValue() {
@@ -139,7 +141,9 @@ public class FormatOptions {
 
     /**
      * Set the minimum data value.
-     * @param value - The new minimum data value.
+     *
+     * @param value
+     *        The new minimum data value.
      */
     public void setMinValue(double value) {
         if (nonfinite(value)) {
@@ -151,8 +155,8 @@ public class FormatOptions {
 
     /**
      * Unset the minimum data value.
-     * <p>
-     * Unset the minimum data value if any has been specified.
+     *
+     * <p> Unset the minimum data value if any has been specified. </p>
      */
     public void unsetMinValue() {
         minValue = Double.NaN;
@@ -161,6 +165,7 @@ public class FormatOptions {
 
     /**
      * Get the specified maximum data value.
+     *
      * @return The specified value or NaN if it has not been specified.
      */
     public double getMaxValue() {
@@ -169,7 +174,9 @@ public class FormatOptions {
 
     /**
      * Set the maximum data value.
-     * @param value - The new maximum data value.
+     *
+     * @param value
+     *        The new maximum data value.
      */
     public void setMaxValue(double value) {
         if (nonfinite(value)) {
@@ -181,8 +188,8 @@ public class FormatOptions {
 
     /**
      * Unset the maximum data value.
-     * <p>
-     * Unset the maximum data value if any has been specified.
+     *
+     * <p> Unset the maximum data value if any has been specified. </p>
      */
     public void unsetMaxValue() {
         maxValue = Double.NaN;
@@ -203,9 +210,10 @@ public class FormatOptions {
      * Set whether extreme data values are exactly represented after
      * digitization.
      *
-     * @param value - If true, the digitization will exactly interpolate the
-     *                extreme data values; otherwise, digitization attempts
-     *                to preserve specific data values such as zero.
+     * @param value
+     *        If true, the digitization will exactly interpolate the extreme
+     *        data values; otherwise, digitization attempts to preserve
+     *        specific data values such as zero.
      */
     public void setInterpolate(boolean value) {
         interpolate = value;
@@ -213,6 +221,7 @@ public class FormatOptions {
 
     /**
      * Get the chosen color model.
+     *
      * @return The color model or {@code null} if not set.
      */
     public ColorModel getColorModel() {
@@ -221,7 +230,9 @@ public class FormatOptions {
 
     /**
      * Set the color model.
-     * @param value - The color model.
+     *
+     * @param value
+     *        The color model.
      */
     public void setColorModel(ColorModel value) {
         colorModel = value;
@@ -237,6 +248,7 @@ public class FormatOptions {
 
     /**
      * Get the chosen data format.
+     *
      * @return The data format or {@code null} if not set.
      */
     public DataFormat getDataFormat() {
@@ -245,7 +257,9 @@ public class FormatOptions {
 
     /**
      * Set the data format.
-     * @param value - The data format.
+     *
+     * @param value
+     *        The data format.
      */
     public void setDataFormat(DataFormat value) {
         dataFormat = value;
@@ -264,7 +278,10 @@ public class FormatOptions {
 
     /**
      * Get scaling parameters under user constraints solely.
-     * @param arr - The array to save.
+     *
+     * @param arr
+     *        The array to save.
+     *
      * @return An array of 2 doubles <b>{scale,bias}</b> (in that order).
      */
     public double[] getScaling(ShapedArray arr) {
@@ -290,14 +307,19 @@ public class FormatOptions {
 
     /**
      * Get scaling parameters under user and file constraints.
-     * <p>
-     * This method determines the best scaling parameters.  No scaling
-     * (SCALE = 1, BIAS = 0) is preferred if possible.
-     * </p>
      *
-     * @param arr - The array to save.
-     * @param kmin - The minimum digitization level.
-     * @param kmax - The maximum digitization level.
+     * <p> This method determines the best scaling parameters.  No scaling
+     * (SCALE = 1, BIAS = 0) is preferred if possible.  </p>
+     *
+     * @param arr
+     *        The array to save.
+     *
+     * @param kmin
+     *        The minimum digitization level.
+     *
+     * @param kmax
+     *        The maximum digitization level.
+     *
      * @return An array of 2 doubles <b>{scale,bias}</b> (in that order).
      */
     public double[] getScaling(ShapedArray arr, long kmin, long kmax) {
@@ -308,7 +330,8 @@ public class FormatOptions {
         }
 
         /*
-         * No scaling is chosen if the number of digitization levels are sufficient.
+         * No scaling is chosen if the number of digitization levels are
+         * sufficient.
          */
         switch (arr.getType()) {
         case Traits.BYTE:
@@ -445,30 +468,43 @@ public class FormatOptions {
 
     /**
      * Compute scaling factors SCALE and BIAS.
-     * <p>
-     * Scaling factors {@code SCALE} and {@code BIAS} are used to convert
-     * data values into scaled values suitable to be stored in integers.
-     * This conversion is similar to digitization.  To convert integer value
-     * {@code fileValue} into a data value {@code dataValue},
-     * the formula is:
+     *
+     * <p> Scaling factors {@code SCALE} and {@code BIAS} are used to convert
+     * data values into scaled values suitable to be stored in integers.  This
+     * conversion is similar to digitization.  To convert integer value {@code
+     * fileValue} into a data value {@code dataValue}, the formula is: </p>
+     *
      * <pre>
      *     dataValue = SCALE*fileValue + BIAS
      * </pre>
-     * Assuming SCALE is not equal to zero, the (approximate, but with least
-     * error) reciprocal formula is:
+     *
+     * <p> Assuming SCALE is not equal to zero, the (approximate, but with
+     * least error) reciprocal formula is: </p>
+     *
      * <pre>
      *     fileValue = round((dataValue - BIAS)/SCALE)
      * </pre>
-     * where {@code round()} rounds its argument to the nearest integer.
      *
-     * @param dmin   - The minimum data value.
-     * @param dmax   - The maximum data value.
-     * @param kmin   - The minimum digitization level.
-     * @param kmax   - The maximum digitization level (should be strictly
-     *                 greater than {@code kmin}).
-     * @param interp - Compute an exact transform for the bounds; otherwise
-     *                 make BIAS a multiple of SCALE to preserve specific data
-     *                 values such as zero.
+     * <p> where {@code round()} rounds its argument to the nearest
+     * integer. </p>
+     *
+     * @param dmin
+     *        The minimum data value.
+     *
+     * @param dmax
+     *        The maximum data value.
+     *
+     * @param kmin
+     *        The minimum digitization level.
+     *
+     * @param kmax
+     *        The maximum digitization level (should be strictly greater than
+     *        {@code kmin}).
+     *
+     * @param interp
+     *        Compute an exact transform for the bounds; otherwise make BIAS a
+     *        multiple of SCALE to preserve specific data values such as zero.
+     *
      * @return An array of 2 doubles {SCALE,BIAS} (in that order).
      */
     public static double[] computeScalingFactors(double dmin, double dmax,
@@ -481,18 +517,28 @@ public class FormatOptions {
     /**
      * Compute scaling factors SCALE and BIAS.
      *
-     * @param dmin   - The minimum data value.
-     * @param dmax   - The maximum data value.
-     * @param kmin   - The minimum digitization level.
-     * @param kmax   - The maximum digitization level (should be strictly
-     *                 greater than {@code kmin}).
-     * @param interp - Compute an exact transform for the bounds; otherwise
-     *                 make BIAS a multiple of SCALE to preserve specific data
-     *                 values such as zero.
-     * @param param  - An array to store the scaling parameters: SCALE and
-     *                 BIAS (in that order).
-     * @see {@link #computeScalingFactors(double, double, double, double)} for
-     * more explanations.
+     * @param dmin
+     *        The minimum data value.
+     *
+     * @param dmax
+     *        The maximum data value.
+     *
+     * @param kmin
+     *        The minimum digitization level.
+     *
+     * @param kmax
+     *        The maximum digitization level (should be strictly greater than
+     *        {@code kmin}).
+     *
+     * @param interp
+     *        Compute an exact transform for the bounds; otherwise make BIAS a
+     *        multiple of SCALE to preserve specific data values such as zero.
+     *
+     * @param param
+     *        An array to store the scaling parameters: SCALE and BIAS (in that
+     *        order).
+     *
+     * @see #computeScalingFactors(double,double,double,double,boolean)
      */
     public static void computeScalingFactors(double dmin, double dmax,
             double kmin, double kmax, boolean interp, double[] param) {

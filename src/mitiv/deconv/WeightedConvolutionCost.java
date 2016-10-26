@@ -158,7 +158,7 @@ DifferentiableCostFunction {
 
     /**
      * The following constructors makes this class non instantiable, but still
-     * let others inherit from this class.  You must use the {@link #build()}
+     * let others inherit from this class.  You must use the {@link #build}
      * factory to build a convolution cost function.
      */
     protected WeightedConvolutionCost(ShapedVectorSpace objectSpace,
@@ -211,9 +211,9 @@ DifferentiableCostFunction {
      * to select a different region. </p>
      *
      * <p> The returned object is not a valid cost function until you set the
-     * point spread function (PSF) with one of the {@link #setPSF()} methods and
+     * point spread function (PSF) with one of the {@link #setPSF} methods and
      * the data and, optionally, the weights with one of the
-     * {@link #setWeightsAndData()} methods. </p>
+     * {@link #setWeights} methods. </p>
      *
      * <p> See {@link WeightedConvolutionCost} for a detailed description of
      * what is computed by this cost function. </p>
@@ -226,7 +226,7 @@ DifferentiableCostFunction {
      *
      * @return An instance of the weighted convolution cost function.
      *
-     * @see {@link #build(ShapedVectorSpace, ShapedVectorSpace, int[])}
+     * @see #build(ShapedVectorSpace, ShapedVectorSpace, int[])
      */
     public static WeightedConvolutionCost build(ShapedVectorSpace objectSpace,
             ShapedVectorSpace dataSpace) {
@@ -274,7 +274,7 @@ DifferentiableCostFunction {
      *
      * @return A weighted convolution cost function.
      *
-     * @see {@link #build(ShapedVectorSpace, ShapedVectorSpace)}
+     * @see #build(ShapedVectorSpace, ShapedVectorSpace)
      */
     public static WeightedConvolutionCost build(ShapedVectorSpace objectSpace,
             ShapedVectorSpace dataSpace, int[] dataOffset) {
@@ -442,9 +442,9 @@ DifferentiableCostFunction {
      * @param inputShape
      *        The shape of input arrays.
      *
-     * @param output
-     *        Shape The shape of output arrays (must be smaller or equal input
-     *        shape for all dimensions).
+     * @param outputShape
+     *        The shape of output arrays (must be smaller or equal input shape
+     *        for all dimensions).
      *
      * @param offset
      *        For each dimension, the offset in input array of the first element

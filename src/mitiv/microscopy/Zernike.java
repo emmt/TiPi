@@ -55,20 +55,27 @@ public class Zernike
     }
 
 
-    /** Compute the coefficient of the radial Zernike polynomial
+    /**
+     * Compute the coefficient of the radial Zernike polynomial.
+     *
      * <p>
-     *  Compute a Zernike polynomial of size Height rows and Width columns
-     *  of degree J over the radius of the pupil.
+     * Compute a Zernike polynomial of size Height rows and Width columns
+     * of degree J over the radius of the pupil.
+     * </p>
+     *
+     * <pre>
      *                                    (-1)^k (n-k)! r^{n-2*k}
      *   R^m_n(r) = sum_{k=0}^{(n-m)/2} ----------------------------
      *                                  k! ((n+m)/2-k)! ((n-m)/2-k)!
-     *  <p>
-     *  Utilisation du logarithme de la somme cumulé
-     *  <p>
-     *  k = mod number of the Zernike polynomials (Noll indexing)
+     * </pre>
+     *
+     * <p> Utilisation du logarithme de la somme cumulé</p>
+     *
+     * <p> k = mod number of the Zernike polynomials (Noll indexing)</p>
+     *
      *  @param n
      *  @param m
-     * @return
+     * @return An array with the Zernike polynomial.
      */
     public static   double[] coeffRadialZCumSumLog(int n, int m)
     {

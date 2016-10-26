@@ -51,7 +51,8 @@ public class LBFGSOperator extends LinearEndomorphism {
     /**
      * Use Oren-Spedicato approximation of the inverse Hessian.
      *
-     * This approximation is a simple scaling by:
+     * <p> This approximation is a simple scaling by: </p>
+     *
      * <pre>
      * gamma = (s'.y)/(y'.y)
      * </pre>
@@ -61,7 +62,8 @@ public class LBFGSOperator extends LinearEndomorphism {
     /**
      * Use Barzilai-Borwein approximation of the inverse Hessian.
      *
-     * This approximation is a simple scaling by:
+     * <p> This approximation is a simple scaling by: </p>
+     *
      * <pre>
      * gamma = (s'.s)/(s'.y)
      * </pre>
@@ -71,7 +73,7 @@ public class LBFGSOperator extends LinearEndomorphism {
     /**
      * Do not update the scaling.
      *
-     * The scaling is only computed at the first update.
+     * <p> TThe scaling is only computed at the first update. </p>
      */
     static final int CONSTANT_SCALING = 4;
 
@@ -95,8 +97,11 @@ public class LBFGSOperator extends LinearEndomorphism {
     /**
      * Create a limited memory BFGS operator without preconditioner.
      *
-     * @param space - The vector space to operate on.
-     * @param m     - The number of previous updates to memorize.
+     * @param space
+     *        The vector space to operate on.
+     *
+     * @param m
+     *        The number of previous updates to memorize.
      */
     public LBFGSOperator(VectorSpace space, int m) {
         super(space);
@@ -108,22 +113,23 @@ public class LBFGSOperator extends LinearEndomorphism {
     /**
      * Create a limited memory BFGS operator with a preconditioner.
      *
-     * The LBFGS operator just stores a reference to the preconditioner
+     * <p> The LBFGS operator just stores a reference to the preconditioner
      * {@code H0} and does not assume that the preconditioner is a constant
      * operator.  It is therefore possible for the caller to adjust the
      * preconditioner at every iteration.  The LBFGS operator will have the
-     * same input and output spaces as the preconditioner and can be thought
-     * as a refined version of {@code H0}.  The preconditioner {@code H0} will
-     * be used <i>in-place</i>, that is with the same source and destination
+     * same input and output spaces as the preconditioner and can be thought as
+     * a refined version of {@code H0}.  The preconditioner {@code H0} will be
+     * used <i>in-place</i>, that is with the same source and destination
      * vector, it is the user responsibility to make sure that this is
      * possible.  In addition, if bound constraints are applied to the
      * variables, the preconditioner {@code H0} must be a diagonal operator
-     * (this is not checked).
+     * (this is not checked). </p>
      *
      * @param H0
-     *            - The preconditioner.
+     *        The preconditioner.
+     *
      * @param m
-     *            - The number of previous updates to memorize.
+     *        The number of previous updates to memorize.
      */
     public LBFGSOperator(LinearEndomorphism H0, int m) {
         super(H0.getSpace());
@@ -149,7 +155,7 @@ public class LBFGSOperator extends LinearEndomorphism {
     /**
      * Reset the operator.
      *
-     * Forget all memorized pairs.
+     * <p> Forget all memorized pairs. </p>
      */
     public void reset() {
         mp = 0;
@@ -158,12 +164,12 @@ public class LBFGSOperator extends LinearEndomorphism {
     /**
      * Set the scaling of the initial approximation of the inverse Hessian.
      *
-     * The best scaling strategy is probably {@link
-     * #InverseHessianApproximation.BY_SY_OVER_YY} when no preconditioner
-     * {@code H0} is provided.
+     * <p> The best scaling strategy is probably
+     * {@link #OREN_SPEDICATO_SCALING} when no preconditioner {@code H0}
+     * is provided. </p>
      *
-     * @param id
-     *            - The strategy to use.
+     * @param value
+     *        The strategy to use.
      */
     public void setScaling(int value) {
         rule = value;
@@ -181,10 +187,11 @@ public class LBFGSOperator extends LinearEndomorphism {
     /**
      * Set the scaling parameter.
      *
-     * This automatically set the scaling strategy to {@link #USER_SCALING}.
+     * <p> This automatically set the scaling strategy to
+     * {@link #CONSTANT_SCALING}. </p>
      *
      * @param value
-     *            - The value of gamma. Must be strictly positive.
+     *        The value of gamma. Must be strictly positive.
      */
     public void setScale(double value) {
         if (value <= 0.0) {
@@ -210,17 +217,18 @@ public class LBFGSOperator extends LinearEndomorphism {
     /**
      * Get slot index of a saved pair of variables and gradient differences.
      *
-     * The offset {@code j} must be between {@code 0} and {@code mp}
+     * <p> The offset {@code j} must be between {@code 0} and {@code mp}
      * (inclusive); {@code slot(0)} is the index of the slot just after the
      * last saved one, that is the one which will be used for the next update;
      * {@code slot(1)} is the last saved pair (newest one), {@code slot(2)} is
-     * the previous pair, ..., {@code slot(mp)} is the oldest saved pair.
+     * the previous pair, ..., {@code slot(mp)} is the oldest saved pair. </p>
      *
-     * In principle, {@code j} in the range {@code 1} to {@code mp} (inclusive)
-     * is used to apply the operator; while {@code j = 0} is only used to
-     * update the operator.
+     * <p> In principle, {@code j} in the range {@code 1} to {@code mp}
+     * (inclusive) is used to apply the operator; while {@code j = 0} is only
+     * used to update the operator. </p>
      *
-     * @param j - The offset.
+     * @param j
+     *        The offset.
      *
      * @return The index of {@code j}-th slot relative to the current
      * iteration.
@@ -245,11 +253,12 @@ public class LBFGSOperator extends LinearEndomorphism {
     /**
      * Apply L-BFGS operator in-place.
      *
-     * <p>
-     * Apply the original L-BFGS Strang's two-loop recursion.  This private
-     * method assumes that the arguments are correct.
+     * <p> Apply the original L-BFGS Strang's two-loop recursion.  This private
+     * method assumes that the arguments are correct. </p>
      *
-     * @param vec - The vector to which apply the operator (operation is done in-place).
+     * @param vec
+     *        The vector to which apply the operator (operation is done
+     *        in-place).
      *
      * @return The result indicates whether the operation was a success.
      */
@@ -285,13 +294,16 @@ public class LBFGSOperator extends LinearEndomorphism {
     /**
      * Apply L-BFGS operator in-place.
      *
-     * <p>
-     * Apply the L-BFGS Strang's two-loop recursion modified to account for
+     * <p> Apply the L-BFGS Strang's two-loop recursion modified to account for
      * free variables.  This private method assumes that the arguments are
-     * correct.
+     * correct. </p>
      *
-     * @param wgt - The weight to use for all inner products.
-     * @param vec - The vector to which apply the operator (operation is done in-place).
+     * @param wgt
+     *        The weight to use for all inner products.
+     *
+     * @param vec
+     *        The vector to which apply the operator (operation is done
+     *        in-place).
      *
      * @return The result indicates whether the operation was a success.
      */
@@ -381,10 +393,18 @@ public class LBFGSOperator extends LinearEndomorphism {
      * Update LBFGS operator with a new pair of variables and gradient
      * differences.
      *
-     * @param x1 - The new variables.
-     * @param x0 - The previous variables.
-     * @param g1 - The gradient at {@code x1}.
-     * @param g0 - The gradient at {@code x0}.
+     * @param x1
+     *        The new variables.
+     *
+     * @param x0
+     *        The previous variables.
+     *
+     * @param g1
+     *        The gradient at {@code x1}.
+     *
+     * @param g0
+     *        The gradient at {@code x0}.
+     *
      * @throws IncorrectSpaceException
      */
     public void update(Vector x1, Vector x0, Vector g1, Vector g0)
@@ -396,11 +416,20 @@ public class LBFGSOperator extends LinearEndomorphism {
      * Update LBFGS operator with a new pair of variables and gradient
      * differences.
      *
-     * @param x1 - The new variables.
-     * @param x0 - The previous variables.
-     * @param g1 - The gradient at {@code x1}.
-     * @param g0 - The gradient at {@code x0}.
-     * @param partial - Perform only partial update?
+     * @param x1
+     *        The new variables.
+     *
+     * @param x0
+     *        The previous variables.
+     *
+     * @param g1
+     *        The gradient at {@code x1}.
+     *
+     * @param g0
+     *        The gradient at {@code x0}.
+     *
+     * @param partial
+     *        Perform only partial update?
      *
      * @throws IncorrectSpaceException
      */

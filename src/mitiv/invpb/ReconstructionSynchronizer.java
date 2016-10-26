@@ -60,8 +60,8 @@ public class ReconstructionSynchronizer {
      * the current one.  </p>
      *
      * @param value
-     *        {@link RUN} to let the reconstruction run, or
-     *        {@link STOP} to interrupt it as soon as possible.
+     *        {@link #RUN} to let the reconstruction run, or
+     *        {@link #STOP} to interrupt it as soon as possible.
      */
     public synchronized void setTask(int value) {
         task = value;

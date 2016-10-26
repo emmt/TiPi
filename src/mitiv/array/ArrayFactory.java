@@ -1206,9 +1206,6 @@ public class ArrayFactory {
      * @param arr
      *        The source array.
      *
-     * @param off
-     *        The offset of the element to wrap into the scalar.
-     *
      * @return A new ByteScalar object.
      */
     public static ByteScalar wrap(byte[] arr) {
@@ -1221,8 +1218,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ByteArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Byte1D}, {@link Byte2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1242,8 +1239,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ByteArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Byte1D}, {@link Byte2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1266,8 +1263,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ByteArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Byte1D}, {@link Byte2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1293,8 +1290,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ByteArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Byte1D}, {@link Byte2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1323,8 +1320,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ByteArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Byte1D}, {@link Byte2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1356,8 +1353,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ByteArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Byte1D}, {@link Byte2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1392,8 +1389,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ByteArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Byte1D}, {@link Byte2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1431,8 +1428,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ByteArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Byte1D}, {@link Byte2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1473,8 +1470,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ByteArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Byte1D}, {@link #Byte2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Byte1D}, {@link Byte2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1517,7 +1514,7 @@ public class ArrayFactory {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
+     * {@link Byte1D}, {@link Byte2D}, ... according to the number of
      * dimensions in {@code shape}.  </p>
      *
      * @param arr
@@ -1526,9 +1523,10 @@ public class ArrayFactory {
      * @param dims
      *        The dimension list of the result.
      *
-     * @return An instance of ByteArray sharing its data with the input array
-     *         {@code arr}.
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @return An instance of ByteArray sharing its data with the input
+     *         array {@code arr}.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ByteArray wrap(byte[] arr, int[] dims) {
         return wrap(arr, new Shape(dims));
@@ -1539,7 +1537,7 @@ public class ArrayFactory {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #Byte1D}, {@link #Byte2D}, ... according to the number of
+     * {@link Byte1D}, {@link Byte2D}, ... according to the number of
      * dimensions in {@code shape}. </p>
      *
      * @param data
@@ -1551,7 +1549,7 @@ public class ArrayFactory {
      * @return An instance of ByteArray sharing its data with the input
      *         array {@code data}.
      *
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ByteArray wrap(byte[] data, Shape shape) {
         switch (shape.rank()) {
@@ -1586,9 +1584,6 @@ public class ArrayFactory {
      * @param arr
      *        The source array.
      *
-     * @param off
-     *        The offset of the element to wrap into the scalar.
-     *
      * @return A new ShortScalar object.
      */
     public static ShortScalar wrap(short[] arr) {
@@ -1601,8 +1596,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ShortArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Short1D}, {@link Short2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1622,8 +1617,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ShortArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Short1D}, {@link Short2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1646,8 +1641,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ShortArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Short1D}, {@link Short2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1673,8 +1668,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ShortArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Short1D}, {@link Short2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1703,8 +1698,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ShortArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Short1D}, {@link Short2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1736,8 +1731,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ShortArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Short1D}, {@link Short2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1772,8 +1767,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ShortArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Short1D}, {@link Short2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1811,8 +1806,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ShortArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Short1D}, {@link Short2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1853,8 +1848,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * ShortArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Short1D}, {@link #Short2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Short1D}, {@link Short2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -1897,7 +1892,7 @@ public class ArrayFactory {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
+     * {@link Short1D}, {@link Short2D}, ... according to the number of
      * dimensions in {@code shape}.  </p>
      *
      * @param arr
@@ -1906,9 +1901,10 @@ public class ArrayFactory {
      * @param dims
      *        The dimension list of the result.
      *
-     * @return An instance of ShortArray sharing its data with the input array
-     *         {@code arr}.
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @return An instance of ShortArray sharing its data with the input
+     *         array {@code arr}.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ShortArray wrap(short[] arr, int[] dims) {
         return wrap(arr, new Shape(dims));
@@ -1919,7 +1915,7 @@ public class ArrayFactory {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #Short1D}, {@link #Short2D}, ... according to the number of
+     * {@link Short1D}, {@link Short2D}, ... according to the number of
      * dimensions in {@code shape}. </p>
      *
      * @param data
@@ -1931,7 +1927,7 @@ public class ArrayFactory {
      * @return An instance of ShortArray sharing its data with the input
      *         array {@code data}.
      *
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ShortArray wrap(short[] data, Shape shape) {
         switch (shape.rank()) {
@@ -1966,9 +1962,6 @@ public class ArrayFactory {
      * @param arr
      *        The source array.
      *
-     * @param off
-     *        The offset of the element to wrap into the scalar.
-     *
      * @return A new IntScalar object.
      */
     public static IntScalar wrap(int[] arr) {
@@ -1981,8 +1974,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * IntArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Int1D}, {@link Int2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2002,8 +1995,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * IntArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Int1D}, {@link Int2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2026,8 +2019,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * IntArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Int1D}, {@link Int2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2053,8 +2046,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * IntArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Int1D}, {@link Int2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2083,8 +2076,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * IntArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Int1D}, {@link Int2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2116,8 +2109,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * IntArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Int1D}, {@link Int2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2152,8 +2145,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * IntArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Int1D}, {@link Int2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2191,8 +2184,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * IntArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Int1D}, {@link Int2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2233,8 +2226,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * IntArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Int1D}, {@link #Int2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Int1D}, {@link Int2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2277,7 +2270,7 @@ public class ArrayFactory {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
+     * {@link Int1D}, {@link Int2D}, ... according to the number of
      * dimensions in {@code shape}.  </p>
      *
      * @param arr
@@ -2286,9 +2279,10 @@ public class ArrayFactory {
      * @param dims
      *        The dimension list of the result.
      *
-     * @return An instance of IntArray sharing its data with the input array
-     *         {@code arr}.
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @return An instance of IntArray sharing its data with the input
+     *         array {@code arr}.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static IntArray wrap(int[] arr, int[] dims) {
         return wrap(arr, new Shape(dims));
@@ -2299,7 +2293,7 @@ public class ArrayFactory {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #Int1D}, {@link #Int2D}, ... according to the number of
+     * {@link Int1D}, {@link Int2D}, ... according to the number of
      * dimensions in {@code shape}. </p>
      *
      * @param data
@@ -2311,7 +2305,7 @@ public class ArrayFactory {
      * @return An instance of IntArray sharing its data with the input
      *         array {@code data}.
      *
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static IntArray wrap(int[] data, Shape shape) {
         switch (shape.rank()) {
@@ -2346,9 +2340,6 @@ public class ArrayFactory {
      * @param arr
      *        The source array.
      *
-     * @param off
-     *        The offset of the element to wrap into the scalar.
-     *
      * @return A new LongScalar object.
      */
     public static LongScalar wrap(long[] arr) {
@@ -2361,8 +2352,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * LongArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Long1D}, {@link Long2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2382,8 +2373,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * LongArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Long1D}, {@link Long2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2406,8 +2397,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * LongArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Long1D}, {@link Long2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2433,8 +2424,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * LongArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Long1D}, {@link Long2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2463,8 +2454,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * LongArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Long1D}, {@link Long2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2496,8 +2487,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * LongArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Long1D}, {@link Long2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2532,8 +2523,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * LongArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Long1D}, {@link Long2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2571,8 +2562,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * LongArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Long1D}, {@link Long2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2613,8 +2604,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * LongArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Long1D}, {@link #Long2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Long1D}, {@link Long2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2657,7 +2648,7 @@ public class ArrayFactory {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
+     * {@link Long1D}, {@link Long2D}, ... according to the number of
      * dimensions in {@code shape}.  </p>
      *
      * @param arr
@@ -2666,9 +2657,10 @@ public class ArrayFactory {
      * @param dims
      *        The dimension list of the result.
      *
-     * @return An instance of LongArray sharing its data with the input array
-     *         {@code arr}.
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @return An instance of LongArray sharing its data with the input
+     *         array {@code arr}.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static LongArray wrap(long[] arr, int[] dims) {
         return wrap(arr, new Shape(dims));
@@ -2679,7 +2671,7 @@ public class ArrayFactory {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #Long1D}, {@link #Long2D}, ... according to the number of
+     * {@link Long1D}, {@link Long2D}, ... according to the number of
      * dimensions in {@code shape}. </p>
      *
      * @param data
@@ -2691,7 +2683,7 @@ public class ArrayFactory {
      * @return An instance of LongArray sharing its data with the input
      *         array {@code data}.
      *
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static LongArray wrap(long[] data, Shape shape) {
         switch (shape.rank()) {
@@ -2726,9 +2718,6 @@ public class ArrayFactory {
      * @param arr
      *        The source array.
      *
-     * @param off
-     *        The offset of the element to wrap into the scalar.
-     *
      * @return A new FloatScalar object.
      */
     public static FloatScalar wrap(float[] arr) {
@@ -2741,8 +2730,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * FloatArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Float1D}, {@link Float2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2762,8 +2751,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * FloatArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Float1D}, {@link Float2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2786,8 +2775,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * FloatArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Float1D}, {@link Float2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2813,8 +2802,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * FloatArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Float1D}, {@link Float2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2843,8 +2832,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * FloatArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Float1D}, {@link Float2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2876,8 +2865,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * FloatArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Float1D}, {@link Float2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2912,8 +2901,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * FloatArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Float1D}, {@link Float2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2951,8 +2940,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * FloatArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Float1D}, {@link Float2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -2993,8 +2982,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * FloatArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Float1D}, {@link #Float2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Float1D}, {@link Float2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -3037,7 +3026,7 @@ public class ArrayFactory {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
+     * {@link Float1D}, {@link Float2D}, ... according to the number of
      * dimensions in {@code shape}.  </p>
      *
      * @param arr
@@ -3046,9 +3035,10 @@ public class ArrayFactory {
      * @param dims
      *        The dimension list of the result.
      *
-     * @return An instance of FloatArray sharing its data with the input array
-     *         {@code arr}.
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @return An instance of FloatArray sharing its data with the input
+     *         array {@code arr}.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static FloatArray wrap(float[] arr, int[] dims) {
         return wrap(arr, new Shape(dims));
@@ -3059,7 +3049,7 @@ public class ArrayFactory {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #Float1D}, {@link #Float2D}, ... according to the number of
+     * {@link Float1D}, {@link Float2D}, ... according to the number of
      * dimensions in {@code shape}. </p>
      *
      * @param data
@@ -3071,7 +3061,7 @@ public class ArrayFactory {
      * @return An instance of FloatArray sharing its data with the input
      *         array {@code data}.
      *
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static FloatArray wrap(float[] data, Shape shape) {
         switch (shape.rank()) {
@@ -3106,9 +3096,6 @@ public class ArrayFactory {
      * @param arr
      *        The source array.
      *
-     * @param off
-     *        The offset of the element to wrap into the scalar.
-     *
      * @return A new DoubleScalar object.
      */
     public static DoubleScalar wrap(double[] arr) {
@@ -3121,8 +3108,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * DoubleArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Double1D}, {@link Double2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -3142,8 +3129,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * DoubleArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Double1D}, {@link Double2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -3166,8 +3153,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * DoubleArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Double1D}, {@link Double2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -3193,8 +3180,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * DoubleArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Double1D}, {@link Double2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -3223,8 +3210,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * DoubleArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Double1D}, {@link Double2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -3256,8 +3243,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * DoubleArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Double1D}, {@link Double2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -3292,8 +3279,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * DoubleArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Double1D}, {@link Double2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -3331,8 +3318,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * DoubleArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Double1D}, {@link Double2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -3373,8 +3360,8 @@ public class ArrayFactory {
      * <p> Notes: (i) The source array {@code arr} and the returned
      * DoubleArray share the same contents. (ii) The storage order is assumed
      * to be {@link Shaped#COLUMN_MAJOR}. (iii) The result can be safely casted
-     * into a {@link #Double1D}, {@link #Double2D}, ... according to the
-     * number of dimensions in {@code shape}.  </p>
+     * into a {@link Double1D}, {@link Double2D}, ... according to the number
+     * of dimensions in {@code shape}.  </p>
      *
      * @param arr
      *        The source array.
@@ -3417,7 +3404,7 @@ public class ArrayFactory {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
+     * {@link Double1D}, {@link Double2D}, ... according to the number of
      * dimensions in {@code shape}.  </p>
      *
      * @param arr
@@ -3426,9 +3413,10 @@ public class ArrayFactory {
      * @param dims
      *        The dimension list of the result.
      *
-     * @return An instance of DoubleArray sharing its data with the input array
-     *         {@code arr}.
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @return An instance of DoubleArray sharing its data with the input
+     *         array {@code arr}.
+     *
+     * @see Shaped#COLUMN_MAJOR
      */
     public static DoubleArray wrap(double[] arr, int[] dims) {
         return wrap(arr, new Shape(dims));
@@ -3439,7 +3427,7 @@ public class ArrayFactory {
      *
      * <p> Note that the storage order is assumed to be {@link
      * Shaped#COLUMN_MAJOR} and that the result can be safely casted into a
-     * {@link #Double1D}, {@link #Double2D}, ... according to the number of
+     * {@link Double1D}, {@link Double2D}, ... according to the number of
      * dimensions in {@code shape}. </p>
      *
      * @param data
@@ -3451,7 +3439,7 @@ public class ArrayFactory {
      * @return An instance of DoubleArray sharing its data with the input
      *         array {@code data}.
      *
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static DoubleArray wrap(double[] data, Shape shape) {
         switch (shape.rank()) {
@@ -3496,7 +3484,7 @@ public class ArrayFactory {
      * @return A shaped array sharing its data with the input object
      *         {@code obj}.
      *
-     * @see {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ShapedArray wrap(Object obj, Shape shape) {
         int depth = 0;
@@ -3539,7 +3527,7 @@ public class ArrayFactory {
      * @return A shaped array sharing its data with the input object
      *         {@code obj}.
      *
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static ShapedArray wrap(Object obj, int[] dims) {
         int depth = 0;
@@ -3580,7 +3568,7 @@ public class ArrayFactory {
      *
      * @return A DoubleArray wrapped around the object {@code obj}.
      *
-     * @see {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Array1D wrap(Object obj, int dim1) {
         return (Array1D)wrap(obj, new Shape(dim1));
@@ -3603,7 +3591,7 @@ public class ArrayFactory {
      *
      * @return A DoubleArray wrapped around the object {@code obj}.
      *
-     * @see {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Array2D wrap(Object obj, int dim1, int dim2) {
         return (Array2D)wrap(obj, new Shape(dim1, dim2));
@@ -3629,7 +3617,7 @@ public class ArrayFactory {
      *
      * @return A DoubleArray wrapped around the object {@code obj}.
      *
-     * @see {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Array3D wrap(Object obj, int dim1, int dim2, int dim3) {
         return (Array3D)wrap(obj, new Shape(dim1, dim2, dim3));
@@ -3658,7 +3646,7 @@ public class ArrayFactory {
      *
      * @return A DoubleArray wrapped around the object {@code obj}.
      *
-     * @see {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Array4D wrap(Object obj, int dim1, int dim2, int dim3, int dim4) {
         return (Array4D)wrap(obj, new Shape(dim1, dim2, dim3, dim4));
@@ -3690,7 +3678,7 @@ public class ArrayFactory {
      *
      * @return A DoubleArray wrapped around the object {@code obj}.
      *
-     * @see {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Array5D wrap(Object obj, int dim1, int dim2, int dim3, int dim4, int dim5) {
         return (Array5D)wrap(obj, new Shape(dim1, dim2, dim3, dim4, dim5));
@@ -3725,7 +3713,7 @@ public class ArrayFactory {
      *
      * @return A DoubleArray wrapped around the object {@code obj}.
      *
-     * @see {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Array6D wrap(Object obj, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         return (Array6D)wrap(obj, new Shape(dim1, dim2, dim3, dim4, dim5, dim6));
@@ -3763,7 +3751,7 @@ public class ArrayFactory {
      *
      * @return A DoubleArray wrapped around the object {@code obj}.
      *
-     * @see {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Array7D wrap(Object obj, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         return (Array7D)wrap(obj, new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7));
@@ -3804,7 +3792,7 @@ public class ArrayFactory {
      *
      * @return A DoubleArray wrapped around the object {@code obj}.
      *
-     * @see {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Array8D wrap(Object obj, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         return (Array8D)wrap(obj, new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8));
@@ -3848,7 +3836,7 @@ public class ArrayFactory {
      *
      * @return A DoubleArray wrapped around the object {@code obj}.
      *
-     * @see {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     public static Array9D wrap(Object obj, int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         return (Array9D)wrap(obj, new Shape(dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9));

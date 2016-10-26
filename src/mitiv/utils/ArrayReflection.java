@@ -40,20 +40,19 @@ import mitiv.linalg.shaped.ShapedVector;
  * build shaped arrays, shaped vectors, etc.
  *
  * @author Éric.
- *
  */
 public class ArrayReflection {
 
     /**
      * Get the "deep" component type of an object.
      *
-     * <p>
-     * This static method travels all the levels (including none if argument is
-     * not an array) of the argument and returns the class of the deepest
-     * component.
+     * <p> This static method travels all the levels (including none if
+     * argument is not an array) of the argument and returns the class of the
+     * deepest component., </p>
      *
      * @param o
-     *            - The object (must not be null).
+     *        The object (must not be null).
+     *
      * @return The component type at the deepest level of the argument.
      */
     public static Class<?> deepComponentType(Object o) {
@@ -68,7 +67,8 @@ public class ArrayReflection {
      * Get the depth of an object.
      *
      * @param o
-     *            - The object (must not be null).
+     *        The object (must not be null).
+     *
      * @return The number of dimensions of an array, 0 otherwise.
      */
     public static int getDepth(Object o) {
@@ -85,7 +85,8 @@ public class ArrayReflection {
      * Count the total number of components of an object.
      *
      * @param obj
-     *            - The object.
+     *        The object.
+     *
      * @return 0 for a null object, 1 for a non-array object, the total number
      *         of components for an array.
      */
@@ -117,13 +118,16 @@ public class ArrayReflection {
      * array.
      *
      * @param dst
-     *            - The destination, a flat array.
+     *        The destination, a flat array.
+     *
      * @param off
-     *            - The index of the first element to write in the destination.
+     *        The index of the first element to write in the destination.
+     *
      * @param src
-     *            - The source (ignored if non-array or null).
-     * @return The updated offset, that is the index of the next element to write
-     *         in the destination.
+     *        The source (ignored if non-array or null).
+     *
+     * @return The updated offset, that is the index of the next element to
+     *         write in the destination.
      */
     public static int recursiveCopy(Object dst, int off, Object src) {
         if (src != null) {
@@ -153,7 +157,8 @@ public class ArrayReflection {
      * Get all the components of an object as a flat array.
      *
      * @param obj
-     *            - The source object.
+     *        The source object.
+     *
      * @return A flat array which is the object itself if it is already a
      *         flat array.
      */
@@ -165,10 +170,12 @@ public class ArrayReflection {
      * Get all the components of an object as a flat array.
      *
      * @param obj
-     *            - The source object.
+     *        The source object.
+     *
      * @param forceCopy
-     *            - If true, return a copy of the argument even if it is already
-     *            a mono-dimensional array.
+     *        If true, return a copy of the argument even if it is already
+     *        a mono-dimensional array.
+     *
      * @return A flat array which is the object itself if it is already a
      *         flat array. and {@code forceCopy} is true.
      */
@@ -196,7 +203,8 @@ public class ArrayReflection {
      * Make a single element array with a {@code boolean} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @return A single element array of type {@code boolean[]}.
      */
     public static Object flatten(boolean value) {
@@ -207,7 +215,8 @@ public class ArrayReflection {
      * Make a single element array with a {@code char} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @return A single element array of type {@code char[]}.
      */
     public static Object flatten(char value) {
@@ -218,7 +227,8 @@ public class ArrayReflection {
      * Make a single element array with a {@code byte} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @return A single element array of type {@code byte[]}.
      */
     public static Object flatten(byte value) {
@@ -229,7 +239,8 @@ public class ArrayReflection {
      * Make a single element array with a {@code short} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @return A single element array of type {@code short[]}.
      */
     public static Object flatten(short value) {
@@ -240,7 +251,8 @@ public class ArrayReflection {
      * Make a single element array with an {@code int} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @return A single element array of type {@code int[]}.
      */
     public static Object flatten(int value) {
@@ -251,7 +263,8 @@ public class ArrayReflection {
      * Make a single element array with a {@code long} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @return A single element array of type {@code long[]}.
      */
     public static Object flatten(long value) {
@@ -262,7 +275,8 @@ public class ArrayReflection {
      * Make a single element array with a {@code float} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @return A single element array of type {@code float[]}.
      */
     public static Object flatten(float value) {
@@ -273,7 +287,8 @@ public class ArrayReflection {
      * Make a single element array with a {@code double} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @return A single element array of type {@code double[]}.
      */
     public static Object flatten(double value) {
@@ -284,10 +299,12 @@ public class ArrayReflection {
      * Make a single element array with a {@code boolean} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @param forceCopy
-     *            - Ignored, a new array is always returned for
-     *              this type of argument.
+     *        Ignored, a new array is always returned for
+     *        this type of argument.
+     *
      * @return A single element array of type {@code boolean[]}.
      */
     public static Object flatten(boolean value, boolean forceCopy) {
@@ -298,11 +315,13 @@ public class ArrayReflection {
      * Make a single element array with a {@code char} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @param forceCopy
-     *            - Ignored, a new array is always returned for
-     *              this type of argument.
-     * @return A single element array of type {@code char[]}.
+     *        Ignored, a new array is always returned for
+     *        this type of argument.
+      *
+    * @return A single element array of type {@code char[]}.
      */
     public static Object flatten(char value, boolean forceCopy) {
         return new char[]{value};
@@ -312,10 +331,12 @@ public class ArrayReflection {
      * Make a single element array with a {@code byte} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @param forceCopy
-     *            - Ignored, a new array is always returned for
-     *              this type of argument.
+     *        Ignored, a new array is always returned for
+     *        this type of argument.
+     *
      * @return A single element array of type {@code byte[]}.
      */
     public static Object flatten(byte value, boolean forceCopy) {
@@ -326,10 +347,12 @@ public class ArrayReflection {
      * Make a single element array with a {@code short} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @param forceCopy
-     *            - Ignored, a new array is always returned for
-     *              this type of argument.
+     *        Ignored, a new array is always returned for
+     *        this type of argument.
+     *
      * @return A single element array of type {@code short[]}.
      */
     public static Object flatten(short value, boolean forceCopy) {
@@ -340,10 +363,12 @@ public class ArrayReflection {
      * Make a single element array with an {@code int} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @param forceCopy
-     *            - Ignored, a new array is always returned for
-     *              this type of argument.
+     *        Ignored, a new array is always returned for
+     *         this type of argument.
+     *
      * @return A single element array of type {@code int[]}.
      */
     public static Object flatten(int value, boolean forceCopy) {
@@ -354,11 +379,13 @@ public class ArrayReflection {
      * Make a single element array with a {@code long} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @param forceCopy
-     *            - Ignored, a new array is always returned for
-     *              this type of argument.
-     * @return A single element array of type {@code long[]}.
+     *        Ignored, a new array is always returned for
+     *        this type of argument.
+      *
+    * @return A single element array of type {@code long[]}.
      */
     public static Object flatten(long value, boolean forceCopy) {
         return new long[]{value};
@@ -368,10 +395,12 @@ public class ArrayReflection {
      * Make a single element array with a {@code float} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @param forceCopy
-     *            - Ignored, a new array is always returned for
-     *              this type of argument.
+     *        Ignored, a new array is always returned for
+     *        this type of argument.
+     *
      * @return A single element array of type {@code float[]}.
      */
     public static Object flatten(float value, boolean forceCopy) {
@@ -382,10 +411,12 @@ public class ArrayReflection {
      * Make a single element array with a {@code double} value.
      *
      * @param value
-     *            - The value of the element of the returned array.
+     *        The value of the element of the returned array.
+     *
      * @param forceCopy
-     *            - Ignored, a new array is always returned for
-     *              this type of argument.
+     *        Ignored, a new array is always returned for
+     *        this type of argument.
+     *
      * @return A single element array of type {@code double[]}.
      */
     public static Object flatten(double value, boolean forceCopy) {
@@ -418,22 +449,24 @@ public class ArrayReflection {
     /**
      * Attempt to make an array descriptor from any object.
      *
-     * <p>
-     * This method retrieves all information of the argument type and
-     * dimensions and make sure it is suitable for being interpreted as a shaped
-     * array or vector. The argument must be a scalar or an array (with any
-     * number of dimensions) of a numerical primitive type. If it is a
-     * multi-dimensional array it must be rectangular.
+     * <p> This method retrieves all information of the argument type and
+     * dimensions and make sure it is suitable for being interpreted as a
+     * shaped array or vector. The argument must be a scalar or an array (with
+     * any number of dimensions) of a numerical primitive type. If it is a
+     * multi-dimensional array it must be rectangular. </p>
      *
      * @param obj
-     *            - The input object.
+     *        The input object.
+     *
      * @return An array descriptor.
+     *
      * @throws IllegalTypeException
-     *             The type of the components of the argument is not a numerical
-     *             primitive type.
+     *         The type of the components of the argument is not a numerical
+     *         primitive type.
+     *
      * @throws IllegalArgumentException
-     *             The argument is not a rectangular array or a scalar of
-     *             primitive type.
+     *         The argument is not a rectangular array or a scalar of primitive
+     *         type.
      */
     public static ArrayDescriptor makeArrayDescriptor(Object obj) {
         Class<?> c = obj.getClass();
@@ -499,19 +532,25 @@ public class ArrayReflection {
 
     /**
      * Make an object into a shaped array.
-     * <p>
-     * This method yields a shaped array whose elements are the same as the
+     *
+     * <p> This method yields a shaped array whose elements are the same as the
      * argument. The argument must be a scalar or an array (with any number of
      * dimensions) of a numerical primitive type. If it is a multi-dimensional
-     * array it must be rectangular.
-     * </p>
+     * array it must be rectangular.  </p>
+     *
      * @param obj
-     *            - The object.
+     *        The object.
+     *
      * @return A shaped array which may share its contents with the argument.
-     * @see {@link #flatten(Object)} and {@link #makeArrayDescriptor(Object)}.
+     *
+     * @see #flatten(Object)
+     *
+     * @see #makeArrayDescriptor(Object)
+     *
      * @throws IllegalTypeException
      *             The type of the components of the argument is not a numerical
      *             primitive type.
+     *
      * @throws IllegalArgumentException
      *             The argument is not a rectangular array or a scalar of
      *             primitive type.

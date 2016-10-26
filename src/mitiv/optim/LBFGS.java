@@ -61,13 +61,22 @@ import mitiv.linalg.VectorSpace;
  */
 public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
-    /** Default value for {@code ftol} parameter in More & Thuente line search. */
+    /**
+     * Default value for {@code ftol} parameter in More & Thuente line
+     * search.
+     */
     static public final double SFTOL = 1.0e-4;
 
-    /** Default value for {@code gtol} parameter in More & Thuente line search. */
+    /**
+     * Default value for {@code gtol} parameter in More & Thuente line
+     * search.
+     */
     static public final double SGTOL = 0.9;
 
-    /** Default value for {@code xtol} parameter in More & Thuente line search. */
+    /**
+     * Default value for {@code xtol} parameter in More & Thuente line
+     * search.
+     */
     static public final double SXTOL = Traits.DBL_EPSILON;
 
     /** LBFGS approximation of the inverse Hessian */
@@ -102,11 +111,9 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
     /**
      * Attempt to save some memory?
      *
-     * <p>
-     * To save space, the variable and gradient at the start of a line search
-     * may be references to the (s,y) pair of vectors of the LBFGS operator
-     * just after the mark.
-     * </p>
+     * <p> To save space, the variable and gradient at the start of a line
+     * search may be references to the (s,y) pair of vectors of the LBFGS
+     * operator just after the mark.  </p>
      */
     private final boolean saveMemory = true;
 
@@ -122,9 +129,8 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
     /**
      * The (anti-)search direction.
      *
-     * <p>
-     * An iterate is computed as: x = x0 - alpha*p with alpha > 0.
-     * </p>
+     * <p> An iterate is computed as: {@code x = x0 - alpha*p} with
+     * {@code alpha > 0}. </p>
      */
     protected Vector p = null;
 
@@ -210,7 +216,7 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             if (evaluations == 1) {
                 ginit = gnorm;
             }
-            final double gtest = getGradientThreshold();
+            final double gtest = getGradientThreshold(ginit);
             return success(gnorm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
 
         case NEW_X:
@@ -303,9 +309,13 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
     /**
      * Set the absolute tolerance for the convergence criterion.
-     * @param gatol - Absolute tolerance for the convergence criterion.
-     * @see {@link #setRelativeTolerance}, {@link #getAbsoluteTolerance},
-     *      {@link #getGradientThreshold}.
+     *
+     * @param gatol
+     *        Absolute tolerance for the convergence criterion.
+     *
+     * @see #setRelativeTolerance(double)
+     * @see #getAbsoluteTolerance()
+     * @see #getGradientThreshold(double)
      */
     public void setAbsoluteTolerance(double gatol) {
         this.gatol = gatol;
@@ -313,9 +323,13 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
     /**
      * Set the relative tolerance for the convergence criterion.
-     * @param grtol - Relative tolerance for the convergence criterion.
-     * @see {@link #setAbsoluteTolerance}, {@link #getRelativeTolerance},
-     *      {@link #getGradientThreshold}.
+     *
+     * @param grtol
+     *        Relative tolerance for the convergence criterion.
+     *
+     * @see #setAbsoluteTolerance(double)
+     * @see #getRelativeTolerance()
+     * @see #getGradientThreshold(double)
      */
     public void setRelativeTolerance(double grtol) {
         this.grtol = grtol;
@@ -323,8 +337,10 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
     /**
      * Query the absolute tolerance for the convergence criterion.
-     * @see {@link #setAbsoluteTolerance}, {@link #getRelativeTolerance},
-     *      {@link #getGradientThreshold}.
+     *
+     * @see #setAbsoluteTolerance(double)
+     * @see #getRelativeTolerance()
+     * @see #getGradientThreshold(double)
      */
     public double getAbsoluteTolerance() {
         return gatol;
@@ -332,8 +348,10 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
 
     /**
      * Query the relative tolerance for the convergence criterion.
-     * @see {@link #setRelativeTolerance}, {@link #getAbsoluteTolerance},
-     *      {@link #getGradientThreshold}.
+     *
+     * @see #setRelativeTolerance(double)
+     * @see #getAbsoluteTolerance()
+     * @see #getGradientThreshold(double)
      */
     public double getRelativeTolerance() {
         return grtol;
@@ -342,21 +360,30 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
     /**
      * Query the gradient threshold for the convergence criterion.
      *
-     * The convergence of the optimization method is achieved when the
-     * Euclidean norm of the gradient at a new iterate is less or equal
-     * the threshold:
+     * <p> The convergence of the optimization method is achieved when the
+     * Euclidean norm of the gradient at a new iterate is less or equal the
+     * threshold: </p>
+     *
      * <pre>
-     *    max(0.0, gatol, grtol*gtest)
+     *    max(0.0, gatol, grtol*g0nrm)
      * </pre>
-     * where {@code gtest} is the norm of the initial gradient, {@code gatol}
-     * {@code grtol} are the absolute and relative tolerances for the
-     * convergence criterion.
+     *
+     * <p> where {@code gtest} is the norm of the initial gradient, {@code
+     * gatol} {@code grtol} are the absolute and relative tolerances for the
+     * convergence criterion. </p>
+     *
+     * @param g0nrm
+     *        The norm of the initial gradient.
+     *
      * @return The gradient threshold.
-     * @see {@link #setAbsoluteTolerance}, {@link #setRelativeTolerance},
-     *      {@link #getAbsoluteTolerance}, {@link #getRelativeTolerance}.
+     *
+     * @see #setAbsoluteTolerance(double)
+     * @see #setRelativeTolerance(double)
+     * @see #getAbsoluteTolerance()
+     * @see #getRelativeTolerance()
      */
-    public double getGradientThreshold() {
-        return max(0.0, gatol, grtol*ginit);
+    public double getGradientThreshold(double g0nrm) {
+        return max(0.0, gatol, grtol*g0nrm);
     }
 
     private static final double max(double a1, double a2, double a3) {
@@ -366,16 +393,5 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             return (a2 >= a1 ? a2 : a1);
         }
     }
-}
 
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
+}

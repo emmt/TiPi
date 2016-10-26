@@ -32,7 +32,7 @@ import mitiv.utils.Timer;
 /**
  * Implement a simple viewer for displaying information during an iterative
  * reconstruction.
- * 
+ *
  * @author Éric and Jonathan
  */
 public class SimpleViewer implements ReconstructionViewer {
@@ -58,9 +58,10 @@ public class SimpleViewer implements ReconstructionViewer {
 
     /**
      * Set the output stream of the viewer.
-     * 
-     *  @param ouput - The output stream to use, {@code null} to
-     *                 use the standard output stream.
+     *
+     *  @param output
+     *         The output stream to use, {@code null} to use the standard
+     *         output stream.
      */
     public void setOutput(PrintStream output) {
         stream = (output == null ? System.out : output);

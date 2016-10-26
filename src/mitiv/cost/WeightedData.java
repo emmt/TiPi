@@ -67,15 +67,15 @@ import mitiv.utils.WeightFactory;
  * this class take care of creating copies of the data and weights only when
  * necessary.</p>
  *
- * <p>To construct an instance of this class, the data must be specified exactly
- * once and the weights can be specified at most once, using
- * {@link #setWeights(ShapedVector, boolean)} or
- * {@link #computeWeightsFromData(double, double)}. When the checked/fixed data
- * or weights are requested by {@link #getData()} or {@link #getWeights()},
+ * <p>To construct an instance of this class, the data must be specified
+ * exactly once and the weights can be specified at most once, using {@link
+ * #setWeights(ShapedVector, boolean)} or {@link
+ * #computeWeightsFromData(double, double)}. When the checked/fixed data or
+ * weights are requested by {@link #getData()} or {@link #getWeights()},
  * default weights, initially all equal to one, are created if no weights have
  * been specified yet. Non-finite values in the input data and zero weights are
  * assumed to indicate invalid data. It is possible to indicate additional bad
- * data with one of the {@link #markBadData()} methods. Marking bad data can be
+ * data with one of the {@code markBadData} methods. Marking bad data can be
  * done in as many steps as needed but cannot be undone</p>
  *
  * <p>A typical usage is:</p>
@@ -110,13 +110,11 @@ public class WeightedData implements DifferentiableCostFunction {
      * Create an empty instance of weighted data.
      *
      * <p> The data and, possibly, the weights can be specified later with one
-     * of the {@link #setData()} and {@link #setWeights()} methods. </p>
+     * of the {@link #setData} and {@link #setWeights} methods. </p>
      *
      * @param descr
      *        The array descriptor of the data (type must be
      *        {@link Traits#FLOAT} or {@link Traits#DOUBLE}).
-     *
-     * @return A weighted data instance.
      */
     public WeightedData(ArrayDescriptor descr) {
         this(descr.getType(), descr.getShape());
@@ -126,12 +124,10 @@ public class WeightedData implements DifferentiableCostFunction {
      * Create an empty instance of weighted data.
      *
      * <p> The data and, possibly, the weights can be specified later with one
-     * of the {@link #setData()} and {@link #setWeights()} methods. </p>
+     * of the {@link #setData} and {@link #setWeights} methods. </p>
      *
      * @param space
      *        The vector space of the data.
-     *
-     * @return A weighted data instance.
      */
     public WeightedData(ShapedVectorSpace space) {
         switch (space.getType()) {
@@ -151,7 +147,7 @@ public class WeightedData implements DifferentiableCostFunction {
      * Create an empty instance of weighted data.
      *
      * <p> The data and, possibly, the weights can be specified later with one
-     * of the {@link #setData()} and {@link #setWeights()} methods. </p>
+     * of the {@link #setData} and {@link #setWeights} methods. </p>
      *
      * @param type
      *        The type of the data (must be {@link Traits#FLOAT} or
@@ -159,8 +155,6 @@ public class WeightedData implements DifferentiableCostFunction {
      *
      * @param shape
      *        The dimensions of the data.
-     *
-     * @return A weighted data instance.
      */
     public WeightedData(int type, Shape shape) {
         switch (type) {
@@ -181,7 +175,7 @@ public class WeightedData implements DifferentiableCostFunction {
      * Create an empty instance of weighted data.
      *
      * <p> The data and, possibly, the weights can be specified later with one
-     * of the {@link #setData()} and {@link #setWeights()} methods. </p>
+     * of the {@link #setData} and {@link #setWeights} methods. </p>
      *
      * @param type
      *        The type of the data (must be {@link Traits#FLOAT} or
@@ -189,8 +183,6 @@ public class WeightedData implements DifferentiableCostFunction {
      *
      * @param dims
      *        The dimensions of the data.
-     *
-     * @return A weighted data instance.
      */
     public WeightedData(int type, int... dims) {
         this(type, new Shape(dims));
@@ -200,7 +192,7 @@ public class WeightedData implements DifferentiableCostFunction {
      * Create an instance of weighted data from given data.
      *
      * <p> The weights may be specified later with one of the
-     * {@link #setWeights()} methods. </p>
+     * {@link #setWeights} methods. </p>
      *
      * @param data
      *        The data as a shaped array of type {@link Traits#FLOAT} or
@@ -208,8 +200,6 @@ public class WeightedData implements DifferentiableCostFunction {
      *
      * @param writable
      *        Specify whether the {@code data} argument is writable.
-     *
-     * @return A weighted data instance.
      */
     public WeightedData(ShapedArray data, boolean writable) {
         this(data.getType(), data.getShape());
@@ -220,13 +210,11 @@ public class WeightedData implements DifferentiableCostFunction {
      * Create an instance of weighted data from given data.
      *
      * <p> The weights may be specified later with one of the
-     * {@link #setWeights()} methods. </p>
+     * {@link #setWeights} methods. </p>
      *
      * @param data
      *        The data as a shaped array of type {@link Traits#FLOAT} or
      *        {@link Traits#DOUBLE}. The data is assumed to be read-only.
-     *
-     * @return A weighted data instance.
      */
     public WeightedData(ShapedArray data) {
         this(data, false);
@@ -236,15 +224,13 @@ public class WeightedData implements DifferentiableCostFunction {
      * Create an instance of weighted data from given data.
      *
      * <p> The weights may be specified later with one of the
-     * {@link #setWeights()} methods. </p>
+     * {@link #setWeights} methods. </p>
      *
      * @param data
      *        The data.
      *
      * @param writable
      *        Specify whether the {@code data} argument is writable.
-     *
-     * @return A weighted data instance.
      */
     public WeightedData(ShapedVector data, boolean writable) {
         this(data.getSpace());
@@ -255,12 +241,10 @@ public class WeightedData implements DifferentiableCostFunction {
      * Create an instance of weighted data from given data.
      *
      * <p> The data is assumed to be non-writable and the weights may be
-     * specified later with one of the {@link #setWeights()} methods. </p>
+     * specified later with one of the {@link #setWeights} methods. </p>
      *
      * @param data
      *        The data (assumed to be read-only).
-     *
-     * @return A weighted data instance.
      */
     public WeightedData(ShapedVector data) {
         this(data.getSpace());
@@ -278,8 +262,6 @@ public class WeightedData implements DifferentiableCostFunction {
      *
      * @param weights
      *        The weights (assumed to be read-only).
-     *
-     * @return A weighted data instance.
      */
     public WeightedData(ShapedArray data, ShapedArray weights) {
         this(Math.max(data.getType(), weights.getType()), data.getShape());
@@ -303,8 +285,6 @@ public class WeightedData implements DifferentiableCostFunction {
      *
      * @param writableWeights
      *        Specify whether the weights are writable.
-     *
-     * @return A weighted data instance.
      */
     public WeightedData(ShapedVector data, boolean writableData,
             ShapedVector weights, boolean writableWeights) {
@@ -324,8 +304,6 @@ public class WeightedData implements DifferentiableCostFunction {
      *
      * @param weights
      *        The weights (assumed to be read-only).
-     *
-     * @return A weighted data instance.
      */
     public WeightedData(ShapedVector data, ShapedVector weights) {
         this(data.getSpace());
@@ -653,7 +631,7 @@ public class WeightedData implements DifferentiableCostFunction {
      *        same shape as the data and be true (i.e. non-zero) where data has
      *        to be discarded.
      *
-     * @see {@link #markBadData(ShapedVector)} for details.
+     * @see #markBadData(ShapedVector) for details.
      */
     public void markBadData(ShapedArray bad) {
         if (! bad.getShape().equals(dataSpace.getShape())) {
@@ -670,7 +648,7 @@ public class WeightedData implements DifferentiableCostFunction {
      *        must have the same number of elements as the data and be true
      *        where data has to be discarded.
      *
-     * @see {@link #markBadData(ShapedVector)} for details.
+     * @see #markBadData(ShapedVector) for details.
      */
     public final void markBadData(boolean[] bad) {
         if (data == null) {

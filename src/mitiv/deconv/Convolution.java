@@ -46,34 +46,30 @@ import mitiv.utils.Timer;
 /**
  * This class implements a linear operator to apply the convolution.
  *
- * <p>
- * The convolution operator <b>H</b> writes:
- * </p>
+ * <p> The convolution operator <b>H</b> writes: </p>
+ *
  * <p align="center">
  * <b>H</b> =
  * <b>R</b>.<b>F</b><sup>*</sup>.diag(<b>F</b>.<b><i>h</i></b>).<b>F</b>.<b>S</b>
  * </p>
- * <p>
- * with <b>F</b> the FFT (Fast Fourier Transform) operator, <b><i>h</i></b> the
- * point spread function (PSF), <b>R</b> a linear operator which selects a
+ *
+ * <p> with <b>F</b> the FFT (Fast Fourier Transform) operator, <b><i>h</i></b>
+ * the point spread function (PSF), <b>R</b> a linear operator which selects a
  * sub-region of the output of the convolution and <b>S</b> a linear operator
- * which prepares the input for the FFT.  The * superscript denotes the
- * adjoint of the operator (complex transpose in this specific case) and
+ * which prepares the input for the FFT.  The * superscript denotes the adjoint
+ * of the operator (complex transpose in this specific case) and
  * diag(<i><b>v</i></b>) is a diagonal operator whose diagonal elements are
- * those of the vector <i><b>v</i></b>.
- * </p>
- * <p>
- * The vector space of the operator is that of the arguments of the
- * convolution.  Currently only 1D, 2D or 3D arguments of type float
- * or double are supported due to a limitation of the FFT in JTransforms.
- * </p><p>
- * A convolution operator provides methods to perform the convolution
- * but also to apply the forward or backward FFT -- see
- * {@link #forwardFFT()} and {@link #backwardFFT()}.
- * </p>
+ * those of the vector <i><b>v</i></b>.  </p>
+ *
+ * <p> The vector space of the operator is that of the arguments of the
+ * convolution.  Currently only 1D, 2D or 3D arguments of type float or double
+ * are supported due to a limitation of the FFT in JTransforms.  </p>
+ *
+ * <p> A convolution operator provides methods to perform the convolution but
+ * also to apply the forward or backward FFT -- see {@link #forwardFFT()} and
+ * {@link #backwardFFT()}.  </p>
  *
  * @author Éric Thiébaut.
- *
  */
 public abstract class Convolution extends ShapedLinearOperator {
 
@@ -82,7 +78,7 @@ public abstract class Convolution extends ShapedLinearOperator {
 
     /**
      * The following constructor makes this class non instantiable, but still
-     * let others inherit from this class.  Users shall use the {@link #build()}
+     * let others inherit from this class.  Users shall use the {@link #build}
      * factory to build a convolution operator.
      */
     protected Convolution(ShapedVectorSpace space) {
@@ -91,7 +87,7 @@ public abstract class Convolution extends ShapedLinearOperator {
 
     /**
      * The following constructor makes this class non instantiable, but still
-     * let others inherit from this class.  Users shall use the {@link #build()}
+     * let others inherit from this class.  Users shall use the {@link #build}
      * factory to build a convolution operator.
      */
     protected Convolution(ShapedVectorSpace inp, ShapedVectorSpace out) {
@@ -118,7 +114,7 @@ public abstract class Convolution extends ShapedLinearOperator {
      *
      * @return A new convolution operator. The returned object is not a valid
      *         operator until the point spread function (PSF) is set with one of
-     *         the {@link #setPSF()} methods.
+     *         the {@link #setPSF} methods.
      */
     public static Convolution build(ShapedVectorSpace space) {
         final int type = space.getType();
@@ -161,7 +157,7 @@ public abstract class Convolution extends ShapedLinearOperator {
      *
      * @return A new convolution operator. The returned object is not a valid
      *         operator until the point spread function (PSF) is set with one of
-     *         the {@link #setPSF()} methods.
+     *         the {@link #setPSF} methods.
      */
     public static Convolution build(ShapedVectorSpace inp,
             ShapedVectorSpace out) {
@@ -204,7 +200,8 @@ public abstract class Convolution extends ShapedLinearOperator {
      *        the input and output spaces of the operator.
      *
      * @return A convolution operator.
-     * @see {@link #build(ShapedVectorSpace, ShapedVectorSpace)}
+     *
+     * @see #build(ShapedVectorSpace, ShapedVectorSpace)
      */
     public static Convolution build(ShapedVectorSpace inp,
             ShapedVectorSpace out, int[] off) {
@@ -254,7 +251,7 @@ public abstract class Convolution extends ShapedLinearOperator {
      *
      * <p> This methods applies operator <b>R</b> if <b>adjoint</b> is false and
      * operator <b>S</b><sup>*</sup> otherwise. This operation should be done
-     * before calling the {@link #convolve()} method. </p>
+     * before calling the {@link #convolve} method. </p>
      *
      * @param src
      *        The source vector to copy to the internal workspace.
@@ -267,10 +264,10 @@ public abstract class Convolution extends ShapedLinearOperator {
     /**
      * Retrieve the result of the convolution.
      *
-     * <p> This methods applies operator <b>S</b> if <b>adjoint</b> is false and
-     * operator <b>R</b><sup>*</sup> otherwise. After calling the
-     * {@link #convolve()} method, this operation extracts the real part of the
-     * internal workspace for the output region and scales the values. </p>
+     * <p> This methods applies operator <b>S</b> if <b>adjoint</b> is false
+     * and operator <b>R</b><sup>*</sup> otherwise. After calling the {@link
+     * #convolve} method, this operation extracts the real part of the internal
+     * workspace for the output region and scales the values. </p>
      *
      * @param dst
      *        The destination vector to store the real part of the internal

@@ -33,8 +33,9 @@ import mitiv.linalg.VectorSpace;
  * Multivariate non-linear optimization with simple bound constraints by
  * BLMVM method.
  *
- * <p>There are some differences compared to {@link LBFGS}, the unconstrained
- * version of the algorithm:
+ * <p> There are some differences compared to {@link LBFGS}, the unconstrained
+ * version of the algorithm: </p>
+
  * <ol>
  * <li>The initial variables must be feasible.  This is easily achieved by
  *     applying the projector on the initial variables.</li>
@@ -43,10 +44,8 @@ import mitiv.linalg.VectorSpace;
  * <li>The line search procedure should only implement a sufficient decrease
  *     test (<i>e.g.</i> first Wolfe condition).</li>
  * </ol>
- * </p>
  *
  * @author Éric Thiébaut.
- *
  */
 public class BLMVM extends ReverseCommunicationOptimizer {
 
@@ -133,9 +132,8 @@ public class BLMVM extends ReverseCommunicationOptimizer {
     /**
      * The (anti-)search direction.
      *
-     * <p>
-     * An iterate is computed as: x = x0 - alpha*p with alpha > 0.
-     * </p>
+     * <p> An iterate is computed as: {@code x = x0 - alpha*p} with
+     * {@code alpha > 0.} </p>
      */
     protected Vector p = null;
 
@@ -205,7 +203,7 @@ public class BLMVM extends ReverseCommunicationOptimizer {
             if (evaluations == 1) {
                 pginit = pgnorm;
             }
-            if (pgnorm <= max(0.0, gatol, grtol*pginit)) {
+            if (pgnorm <= getGradientThreshold(pginit)) {
                 /* Global convergence. */
                 return success(OptimTask.FINAL_X);
             }
@@ -307,9 +305,13 @@ public class BLMVM extends ReverseCommunicationOptimizer {
 
     /**
      * Set the absolute tolerance for the convergence criterion.
-     * @param gatol - Absolute tolerance for the convergence criterion.
-     * @see {@link #setRelativeTolerance}, {@link #getAbsoluteTolerance},
-     *      {@link #getGradientThreshold}.
+     *
+     * @param gatol
+     *        Absolute tolerance for the convergence criterion.
+     *
+     * @see #setRelativeTolerance(double)
+     * @see #getAbsoluteTolerance()
+     * @see #getGradientThreshold(double)
      */
     public void setAbsoluteTolerance(double gatol) {
         this.gatol = gatol;
@@ -317,9 +319,13 @@ public class BLMVM extends ReverseCommunicationOptimizer {
 
     /**
      * Set the relative tolerance for the convergence criterion.
-     * @param grtol - Relative tolerance for the convergence criterion.
-     * @see {@link #setAbsoluteTolerance}, {@link #getRelativeTolerance},
-     *      {@link #getGradientThreshold}.
+     *
+     * @param grtol
+     *        Relative tolerance for the convergence criterion.
+     *
+     * @see #setAbsoluteTolerance(double)
+     * @see #getRelativeTolerance()
+     * @see #getGradientThreshold(double)
      */
     public void setRelativeTolerance(double grtol) {
         this.grtol = grtol;
@@ -327,8 +333,10 @@ public class BLMVM extends ReverseCommunicationOptimizer {
 
     /**
      * Query the absolute tolerance for the convergence criterion.
-     * @see {@link #setAbsoluteTolerance}, {@link #getRelativeTolerance},
-     *      {@link #getGradientThreshold}.
+     *
+     * @see #setAbsoluteTolerance(double)
+     * @see #getRelativeTolerance()
+     * @see #getGradientThreshold(double)
      */
     public double getAbsoluteTolerance() {
         return gatol;
@@ -336,15 +344,47 @@ public class BLMVM extends ReverseCommunicationOptimizer {
 
     /**
      * Query the relative tolerance for the convergence criterion.
-     * @see {@link #setRelativeTolerance}, {@link #getAbsoluteTolerance},
-     *      {@link #getGradientThreshold}.
+     *
+     * @see #setRelativeTolerance(double)
+     * @see #getAbsoluteTolerance()
+     * @see #getGradientThreshold(double)
      */
     public double getRelativeTolerance() {
         return grtol;
     }
 
     /**
+     * Query the gradient threshold for the convergence criterion.
+     *
+     * <p> The convergence of the optimization method is achieved when the
+     * Euclidean norm of the gradient at a new iterate is less or equal the
+     * threshold: </p>
+     *
+     * <pre>
+     *    max(0.0, gatol, grtol*g0nrm)
+     * </pre>
+     *
+     * <p> where {@code g0nrm} is the norm of the initial (projected) gradient,
+     * {@code gatol} {@code grtol} are the absolute and relative tolerances for
+     * the convergence criterion. </p>
+     *
+     * @param g0nrm
+     *        The norm of the initial (projected) gradient.
+     *
+     * @return The gradient threshold.
+     *
+     * @see #setAbsoluteTolerance(double)
+     * @see #setRelativeTolerance(double)
+     * @see #getAbsoluteTolerance()
+     * @see #getRelativeTolerance()
+     */
+    public double getGradientThreshold(double g0nrm) {
+        return max(0.0, gatol, grtol*g0nrm);
+    }
+
+    /**
      * Retrieve the projected gradient for the last set of variables.
+     *
      * @return The projected gradient for the last set of variables
      *         tried by the method; {@code null} is returned if no
      *         evaluations have been performed.  The returned vector

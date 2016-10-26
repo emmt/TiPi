@@ -31,53 +31,53 @@ import mitiv.linalg.VectorSpace;
 /**
  * Interface for multivariate optimization methods with reverse communication.
  *
- * The typical usage of reverse communication optimization methods is as
- * follows:
+ * <p> The typical usage of reverse communication optimization methods is as
+ * follows: </p>
  *
  * <pre>
- *   // Define the vector space to which belong the variables.
- *   VectorSpace space = new ...;
+ * / Define the vector space to which belong the variables.
+ * ectorSpace space = new ...;
  *
- *   // Create the optimizer and configure it.
- *   ReverseCommunicationOptimizer optimizer = new ...;
+ * / Create the optimizer and configure it.
+ * everseCommunicationOptimizer optimizer = new ...;
  *
- *   // Allocate storage for the variables and the gradient.
- *   Vector x = space.create();
- *   Vector gx = space.create();
+ * / Allocate storage for the variables and the gradient.
+ * ector x = space.create();
+ * ector gx = space.create();
  *
- *   // Choose initial variables.
- *   x.fill(0.0);
+ * / Choose initial variables.
+ * .fill(0.0);
  *
- *   // Loop to optimize.
- *   int eval = 0;
- *   int iter = 0;
- *   double fx = 0.0;
- *   OptimTask task = optimizer.start();
- *   while (true) {
- *       if (task == OptimTask.COMPUTE_FG) {
- *           // Compute the function and its gradient at x:
- *           fx = ...;
- *           gx = ...;
- *           ++eval; // keep track of the number of function evaluations
- *       } else if (task == OptimTask.NEW_X) {
- *           // A new iterate is available for examination.
- *           ++iter; // keep track of the number of iterations
- *       } else if (task == OptimTask.FINAL_X) {
- *           // Algorithm has converged.
- *           ++iter; // keep track of the number of iterations
- *           System.out.println("Algorithm has converged.");
- *       } else {
- *           // An error or a warning has occurred.
- *           int reason = optimizer.getMessage();
- *           System.err.format("Algorithm terminates with errors or warnings: %s\n",
- *               optimizer.getMessage(reason));
- *           break;
- *       }
- *       task = optimizer.iterate(x, fx, gx);
+ * / Loop to optimize.
+ * nt eval = 0;
+ * nt iter = 0;
+ * ouble fx = 0.0;
+ * ptimTask task = optimizer.start();
+ * hile (true) {
+ *    if (task == OptimTask.COMPUTE_FG) {
+ *        // Compute the function and its gradient at x:
+ *        fx = ...;
+ *        gx = ...;
+ *        ++eval; // keep track of the number of function evaluations
+ *    } else if (task == OptimTask.NEW_X) {
+ *        // A new iterate is available for examination.
+ *        ++iter; // keep track of the number of iterations
+ *    } else if (task == OptimTask.FINAL_X) {
+ *        // Algorithm has converged.
+ *        ++iter; // keep track of the number of iterations
+ *        System.out.println("Algorithm has converged.");
+ *    } else {
+ *        // An error or a warning has occurred.
+ *        int reason = optimizer.getMessage();
+ *        System.err.format("Algorithm terminates with errors or warnings: %s\n",
+ *            optimizer.getMessage(reason));
+ *        break;
  *    }
+ *    task = optimizer.iterate(x, fx, gx);
+ * }
  *
- *    // On normal exit, X contains the solution (or at least the best
- *    // solution so far).
+ * // On normal exit, X contains the solution (or at least the best
+ * // solution so far).
  * </pre>
  *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
@@ -109,7 +109,9 @@ public abstract class ReverseCommunicationOptimizer {
     /**
      * Create a reverse communication optimizer.
      *
-     * @param space - The vector space to which belong the variables of the optimization problem.
+     * @param space
+     *        The vector space to which belong the variables of the
+     *        optimization problem.
      */
     protected ReverseCommunicationOptimizer(VectorSpace space) {
         if (space == null) {
@@ -136,11 +138,14 @@ public abstract class ReverseCommunicationOptimizer {
      * Proceed with next iteration.
      *
      * @param x
-     *            - The current set of variables.
+     *        The current set of variables.
+     *
      * @param fx
-     *            - The value of the function at {@code x}.
+     *        The value of the function at {@code x}.
+     *
      * @param gx
-     *            - The value of the gradient at {@code x}.
+     *        The value of the gradient at {@code x}.
+     *
      * @return The next task to perform.
      */
     public abstract OptimTask iterate(Vector x, double fx, Vector gx);
@@ -157,7 +162,8 @@ public abstract class ReverseCommunicationOptimizer {
     /**
      * Get the vector space of the variables.
      *
-     * @return The vector space to which belong the variables of the optimization problem.
+     * @return The vector space to which belong the variables of the
+     *         optimization problem.
      */
     public final VectorSpace getSpace() {
         return space;
@@ -195,10 +201,10 @@ public abstract class ReverseCommunicationOptimizer {
      * Set internal state to indicate a failure.
      *
      * @param status
-     *            - The reason of failure (must not be
-     *             {@link #OptimStatus.SUCCESS}).
+     *        The reason of failure.
+     *
      * @return The next pending task which has been set to
-     *         {@link LineSearchTask.ERROR}.
+     *         {@link LineSearchTask#ERROR}.
      */
     protected final OptimTask failure(OptimStatus status) {
         this.status = status;
@@ -209,11 +215,11 @@ public abstract class ReverseCommunicationOptimizer {
     /**
      * Set internal state to indicate a non-fatal abnormal termination.
      *
-     * @param task
-     *            - The reason of the termination (must not be
-     *            {@link OptimStatus.SUCCESS}).
+     * @param status
+     *        The reason of the termination.
+     *
      * @return The next pending task which has been set to
-     *         {@link #LineSearchTask.WARNING}.
+     *         {@link LineSearchTask#WARNING}.
      */
     protected final OptimTask warning(OptimStatus status) {
         this.status = status;
@@ -225,8 +231,8 @@ public abstract class ReverseCommunicationOptimizer {
      * Set next pending task.
      *
      * @param task
-     *            - The next pending task (must not be
-     *            {@link LineSearchTask.ERROR}).
+     *        The next pending task (must not be {@link LineSearchTask#ERROR}).
+     *
      * @return The next pending task.
      */
     protected final OptimTask success(OptimTask task) {
@@ -249,7 +255,8 @@ public abstract class ReverseCommunicationOptimizer {
      * Get the optimizer internal status.
      *
      * @return The current optimizer status.
-     * @see {@link #getMessage}();
+     *
+     * @see OptimStatus#toString
      */
     public final OptimStatus getStatus() {
         return status;

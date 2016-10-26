@@ -29,14 +29,15 @@ package mitiv.base;
  * A Typed object has a primitive type.
  *
  * @author Éric Thiébaut
- *
  */
 public interface Typed {
     /**
      * Query the type of the elements stored by the typed object.
-     * @return One of: {@link Traits#BYTE}, {@link Traits#SHORT}, {@link Traits#INT},
-     *         {@link Traits#LONG}, {@link Traits#FLOAT}, {@link Traits#DOUBLE},
-     *         {@link Traits#BOOLEAN}, {@link Traits#STRING}, or {@link Traits#VOID}.
+     *
+     * @return One of: {@link Traits#BYTE}, {@link Traits#SHORT},
+     *         {@link Traits#INT}, {@link Traits#LONG}, {@link Traits#FLOAT},
+     *         {@link Traits#DOUBLE}, {@link Traits#BOOLEAN}, or
+     *         {@link Traits#VOID}.
      */
     public abstract int getType();
 

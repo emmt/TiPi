@@ -31,7 +31,10 @@ package mitiv.base.indexing;
  * @author Éric Thiébaut.
  */
 public enum BoundaryConditions {
-    /** Ordinary boundary conditions amounts to propagate leftmost or rightmost values. */
+    /**
+     * Ordinary boundary conditions amounts to propagate leftmost or rightmost
+     * values.
+     */
     NORMAL(0, "propagate leftmost or rightmost value"),
 
     /** Periodic boundary conditions. */
@@ -65,20 +68,28 @@ public enum BoundaryConditions {
 
     /**
      * Store index values with given offset and boundary conditions.
-     * <p>
-     * This static method stores the shifted index:
+     *
+     * <p> This static method stores the shifted index: </p>
+     *
      * <pre>
      *     index[j] = f(j + offset);
      * </pre>
-     * where {@code f(k)} depends on the boundary condition and maps index {@code k} in
-     * <tt>&#123;0, 1, ..., N-1&#125;</tt> with {@code N = index.length} is the length
-     * of the considered dimension.
-     * <p>
-     * See {@link #buildIndex(int, int, int)} for examples.
-     * @param index     - An array to store the result.
-     * @param offset    - The offset of positions.
-     * @param condition - The boundary conditions ({@link #PERIODIC}, or {@link #MIRROR},
-     *                    otherwise {@link #NORMAL}).
+     *
+     * <p> where {@code f(k)} depends on the boundary condition and maps index
+     * {@code k} in <tt>&#123;0, 1, ..., N-1&#125;</tt> with {@code N =
+     * index.length} is the length of the considered dimension.  </p>
+     *
+     * @param index
+     *        An array to store the result.
+     *
+     * @param offset
+     *        The offset of positions.
+     *
+     * @param condition
+     *        The boundary conditions ({@link #PERIODIC}, or {@link #MIRROR},
+     *        otherwise {@link #NORMAL}).
+     *
+     * @see #buildIndex for examples.
      */
     public static final void buildIndex(int[] index, int offset, BoundaryConditions condition) {
         int n = index.length;
@@ -123,20 +134,29 @@ public enum BoundaryConditions {
     }
 
     /**
-     * Create an array of index values with given offset and boundary conditions.
-     * <p>
-     * For instance:
+     * Create an array of index values with given offset and boundary
+     * conditions.
+     *
+     * <p> For instance:</p>
+     *
      * <pre>
      *     buildIndex(7, -1, NORMAL) -----> {0, 0, 1, 2, 3, 4, 5}
      *     buildIndex(7, -2, PERIODIC) ---> {5, 6, 0, 1, 2, 3, 4}
      *     buildIndex(7, -2, MIRROR) -----> {2, 1, 0, 1, 2, 3, 4}
      * </pre>
      *
-     * @param length    - The length of the dimension.
-     * @param offset    - The offset along the dimension.
-     * @param condition - The boundary conditions ({@link #PERIODIC}, or {@link #MIRROR},
-     *                    otherwise {@link #NORMAL}).
-     * @return An array of indexes in the set <tt>&#123;0, 1, ..., length-1&#125;</tt>.
+     * @param length
+     *        The length of the dimension.
+     *
+     * @param offset
+     *        The offset along the dimension.
+     *
+     * @param condition
+     *        The boundary conditions ({@link #PERIODIC}, or {@link #MIRROR},
+     *        otherwise {@link #NORMAL}).
+     *
+     * @return An array of indexes in the set
+     *         <tt>&#123;0, 1, ..., length-1&#125;</tt>.
      */
     public static final int[] buildIndex(int length, int offset, BoundaryConditions condition) {
         int[] index = new int[length];
@@ -201,7 +221,6 @@ public enum BoundaryConditions {
         buf.append("}");
         return buf.toString();
     }
-
 
     public static void main(String[] args) {
         int n = 10;

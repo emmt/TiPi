@@ -105,8 +105,8 @@ public interface FloatArray extends ShapedArray {
      * @return A simple generic {@code float[]} array with the contents of
      *         the FloatArray array.
      *
-     * @see {@link mitiv.array.ShapedArray#flatten(boolean)} for a general
-     *      description, {@link mitiv.base.Shaped#COLUMN_MAJOR} for
+     * @see mitiv.array.ShapedArray#flatten(boolean) for a general
+     *      description. {@link mitiv.base.Shaped#COLUMN_MAJOR} for
      *      explanations about storage order.
      */
     @Override
@@ -117,15 +117,15 @@ public interface FloatArray extends ShapedArray {
      * copies if possible.
      *
      * <p>This method behaves as if argument {@code forceCopy} was set to
-     * false in {@link #flatten(boolean)}.  Depending on the storage layout,
-     * the returned array may or may not share the same storage as the
+     * {@code false} in {@link #flatten(boolean)}.  Depending on the storage
+     * layout, the returned array may or may not share the same storage as the
      * FloatArray array.  Call {@code flatten(true)} to make sure that the
      * two storage areas are independent.</p>
      *
      * @return A simple generic {@code float[]} array with the contents of
      *         the FloatArray array.
      *
-     * @see {@link #flatten(boolean)}, {@link Shaped#COLUMN_MAJOR}.
+     * @see Shaped#COLUMN_MAJOR
      */
     @Override
     public abstract float[] flatten();
@@ -153,16 +153,17 @@ public interface FloatArray extends ShapedArray {
     /**
      * Get the minimal and maximal values of all the elements.
      *
-     * @return A 2-element array with the minimum and maximum values of {@code
-     * this}.
+     * @return A 2-element array with the minimum and maximum values of
+     *         {@code this}.
      */
     public abstract float[] getMinAndMax();
 
     /**
      * Get the minimal and maximal values of all the elements.
      *
-     * @param mm    A 2-element array to store the minimum and maximum values
-     *              of{@code this}.
+     * @param mm
+     *        A 2-element array to store the minimum and maximum values
+     *        of {@code this}.
      */
     public abstract void getMinAndMax(float[] mm);
 

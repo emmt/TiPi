@@ -31,22 +31,25 @@ import org.jtransforms.fft.DoubleFFT_2D;
 import mitiv.old.MathUtils;
 
 /**
- * Compute a 3D point spread function of a wide field fluorescence microscope (WFFM)
- * <p>
- * The 3D PSF is modeled after a parameterized pupil function. It is a monochromatic
- * scalar model that defines the 3D PSF h from pupil function p.
- * Both modulus ρ(i,j) and phase φ(i,j) of pupil function p are expressed on a basis
- * of Zernike polynomials Zn.
- * <p>
+ * Compute a 3D point spread function of a wide field fluorescence microscope
+ * (WFFM).
+ *
+ * <p> The 3D PSF is modeled after a parameterized pupil function. It is a
+ * monochromatic scalar model that defines the 3D PSF h from pupil function p.
+ * Both modulus ρ(i,j) and phase φ(i,j) of pupil function p are expressed on a
+ * basis of Zernike polynomials Zn.</p>
+ *
+ * <pre>
  * A(z) = ρ.exp(iΦ(z)) with Φ(z) = φ + 2π( z.ψ)
  * ψ the defocus function :  ψ
- * <p>
+ * </pre>
+
  * <p>
  * References:
  * [1] Yves Tourneur & Eric Thiébaut, Ferreol Soulez, Loïc Denis.
  * Blind deconvolution of 3d data in wide field fluorescence microscopy.
- * <p>
- * @version
+ * </p>
+ *
  * @author Ferréol Soulez	 <ferreol.soulez@epfl.ch>
  */
 public class MicroscopeModel

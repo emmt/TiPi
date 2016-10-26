@@ -40,9 +40,10 @@ import mitiv.base.Traits;
  *
  * <h3>Description</h3>
  *
- * Assuming uncorrelated noise, statistical weights are arrays of nonnegative values
- * of same shape as the data to process. The following stages are required to build
- * and validate the weights:
+ * <p> Assuming uncorrelated noise, statistical weights are arrays of
+ * nonnegative values of same shape as the data to process. The following
+ * stages are required to build and validate the weights: </p>
+
  * <ul>
  * <li>Compute initial weights</li>
  *     <ul>
@@ -51,13 +52,14 @@ import mitiv.base.Traits;
  *     <li>assuming uniform noise distribution</li>
  *     <li>assuming a simple model for the variance of the data</li>
  *     </ul>
- * <li>Account for bad data (using a mask whose values indicate which are the bad measurement)</li>
- * <li>Check the weights and fix the data.  This step is needed to check that weights
- *     are nonnegative and to invalidate data with non finite values.</li>
+ * <li>Account for bad data (using a mask whose values indicate which are the
+ *     bad measurement)</li>
+ * <li>Check the weights and fix the data.  This step is needed to check that
+ *     weights are nonnegative and to invalidate data with non finite
+ *     values.</li>
  * </ul>
  *
  * @author Éric
- *
  */
 public class WeightFactory {
 
@@ -68,7 +70,9 @@ public class WeightFactory {
     /**
      * Make default weights from a data array.
      *
-     * @param dat - The data array.
+     * @param dat
+     *        The data array.
+     *
      * @return The weights.
      */
 
@@ -100,7 +104,8 @@ public class WeightFactory {
     /**
      * Compute weights given the variance of the data.
      *
-     * @param var - The variance of the data.
+     * @param var
+     *        The variance of the data.
      *
      * @return An array of weights.
      */
@@ -154,55 +159,64 @@ public class WeightFactory {
      *
      * <h3>Description</h3>
      *
-     * This routine computes statistical weights, say <tt>wgt</tt>, for the data <tt>dat</tt> assuming the
-     * following simple model for the variance of the data:
-     *  <pre>
+     * <p> This routine computes statistical weights, say <tt>wgt</tt>, for the
+     * data <tt>dat</tt> assuming the following simple model for the variance
+     * of the data: </p>
+     *
+     * <pre>
      *     Var(dat[i]) = alpha*max(dat[i],0) + beta                      (1)
      * </pre>
-     * where <tt>alpha ≥ 0</tt> and <tt>beta > 0</tt> are the parameters of the noise model.
-     * The computed weights are:
-     *  <pre>
+     *
+     * <p> where <tt>alpha ≥ 0</tt> and <tt>beta > 0</tt> are the parameters of
+     * the noise model.  The computed weights are: </p>
+     *
+     * <pre>
      *     wgt[i] = 1/Var(dat[i])    if dat[i] is finite and not a NaN
      *            = 0                else
      * </pre>
-     * and thus account for valid data which must have a finite value and not
-     * be a NaN.  The rationale is that saturations may be marked with an
+     *
+     * <p> and thus account for valid data which must have a finite value and
+     * not be a NaN.  The rationale is that saturations may be marked with an
      * infinite value while bad data are marked by a NaN.  Note that the
-     * weights are guaranteed to be nonnegative and that, with <tt>alpha = 0</tt>,
-     * uniform variance is assumed.
-     * <br>
+     * weights are guaranteed to be nonnegative and that, with <tt>alpha =
+     * 0</tt>, uniform variance is assumed. </p>
      *
-     * An error is thrown if it is found that there are no valid data.
-     * <br>
+     * <p> An error is thrown if it is found that there are no valid data. </p>
      *
-     * If argument <tt>bad</tt> is specified with a finite value, all data with this specific
-     * value will be considered as being invalid.
-     * <br>
+     * <p> If argument <tt>bad</tt> is specified with a finite value, all data
+     * with this specific value will be considered as being invalid. </p>
      *
      *
      * <h3>Rationale</h3>
      *
-     * For a signal based on counts (for instance, photo-electrons), the
-     * variance of the data should be given by:
+     * <p> For a signal based on counts (for instance, photo-electrons), the
+     * variance of the data should be given by: </p>
+     *
      * <pre>
      *     Var(dat) = (E(gamma*dat) + sigma^2)/gamma^2
      * </pre>
-     * with <tt>gamma</tt> the <i>gain</i> of the detector and <tt>sigma</tt> the standard
-     * deviation (rms value) of the detector noise in electrons per pixel per
-     * frame.  The gain <tt>gamma</tt> is the conversion factor in electrons per
-     * analog digital unit (ADU) such that <tt>gamma*dat</tt> is the measured data in
-     * count units, <tt>E(gamma*dat)</tt> is the expected number of counts (which is
-     * also the variance of the counts assuming Poisson statistics).  Expanding
-     * the above expression yields:
+     *
+     * <p> with <tt>gamma</tt> the <i>gain</i> of the detector and
+     * <tt>sigma</tt> the standard deviation (rms value) of the detector noise
+     * in electrons per pixel per frame.  The gain <tt>gamma</tt> is the
+     * conversion factor in electrons per analog digital unit (ADU) such that
+     * <tt>gamma*dat</tt> is the measured data in count units,
+     * <tt>E(gamma*dat)</tt> is the expected number of counts (which is also
+     * the variance of the counts assuming Poisson statistics).  Expanding the
+     * above expression yields: </p>
+     *
      * <pre>
      *     Var(dat) = alpha*E(dat) + beta
      * </pre>
-     * with <tt>alpha = 1/gamma</tt> and <tt>beta = (sigma/gamma)^2</tt>.  Finally, the
-     * following approximation:
+     *
+     * <p> with <tt>alpha = 1/gamma</tt> and <tt>beta = (sigma/gamma)^2</tt>.
+     * Finally, the following approximation: </p>
+     *
      * <pre>
      *     E(dat) ≈ max(dat, 0)
      * </pre>
-     * leads to Eq. (1).
+     *
+     * <p> leads to Eq. (1). </p>
      *
      *
      * <h3>References</h3>
@@ -219,10 +233,18 @@ public class WeightFactory {
      *   pp. 1737-1754 (2008).</li>
      * </ul>
      *
-     * @param dat   - The data array.
-     * @param alpha - The first scalar parameter of the variance model.
-     * @param beta  - The second parameter of the variance model.
-     * @param bad   - The value of bad data.
+     * @param dat
+     *        The data array.
+     *
+     * @param alpha
+     *        The first scalar parameter of the variance model.
+     *
+     * @param beta
+     *        The second parameter of the variance model.
+     *
+     * @param bad
+     *        The value of bad data.
+     *
      * @return An array of weights.
      */
 
@@ -254,7 +276,7 @@ public class WeightFactory {
     /**
      * Compute statistical weights for counting data.
      *
-     * <p>This method computes weights assuming the following simple variance
+     * <p> This method computes weights assuming the following simple variance
      * model:</p>
      *
      * <pre>
@@ -279,7 +301,7 @@ public class WeightFactory {
      *
      * @return The number of valid data which have nonzero weights.
      *
-     * @see {@link #computeWeightsFromData(ShapedArray, double, double)} for
+     * @see #computeWeightsFromData(ShapedArray, double, double) for
      *      explanation about the arguments.
      */
     static public int computeWeightsFromData(float[] wgt, float[] dat,
@@ -428,11 +450,17 @@ public class WeightFactory {
     /**
      * Remove bad data by setting their weights to zero.
      *
-     * @param wgt - The array of weights.  Operation is done in-place an this array must be flat.
-     * @param bad - An array whose elements are true (non-zero) where data have to be discarded.
+     * @param wgt
+     *        The array of weights.  Operation is done in-place an this array
+     *        must be flat.
      *
-     * @throws IllegalArgumentException if <tt>wgt</tt> is not flat or has unsupported type or if <tt>wgt</tt>
-     *         and <tt>bad</tt> do not have the same shape.
+     * @param bad
+     *        An array whose elements are true (non-zero) where data have to
+     *        be discarded.
+     *
+     * @throws IllegalArgumentException if <tt>wgt</tt> is not flat or has
+     *         unsupported type or if <tt>wgt</tt> and <tt>bad</tt> do not have
+     *         the same shape.
      */
     static public void removeBads(ShapedArray wgt, ShapedArray bad) {
         if (! wgt.getShape().equals(bad.getShape())) {
@@ -506,10 +534,11 @@ public class WeightFactory {
     /**
      * Check array of weights.
      *
-     * This function checks that all weights have finite, nonnegative values and throws
-     * an <tt>IllegalArgumentException</tt> otherwise.
+     * <p> This function checks that all weights have finite, nonnegative
+     * values and throws an <tt>IllegalArgumentException</tt> otherwise. </p>
      *
-     * @param wgt - The array of weights.
+     * @param wgt
+     *        The array of weights.
      */
     static public void checkWeights(ShapedArray wgt) {
         switch (wgt.getType()) {
@@ -559,25 +588,27 @@ public class WeightFactory {
     /**
      * Fix statistical weights and data.
      *
-     * This function fixes the statistical weights and the data arrays.
+     * <p> This function fixes the statistical weights and the data arrays.
      * On input, weights must be nonnegative.  Invalid data (because their
      * weights are zero or because they have non-finite value
      * are replaced by zeros (to avoid further numerical issues) and their
      * corresponding weights are also set to zero (to make sure invalid data
-     * are never used).
+     * are never used). </p>
      *
-     * <br>
-     * The rationale is to assume that invalid data are marked by a NaN
-     * or by infinity (e.g. to indicate a saturation).
+     * <p> The rationale is to assume that invalid data are marked by a NaN or
+     * by infinity (e.g. to indicate a saturation). </p>
      *
-     * <br>
-     * Beware that operation is done in-place: the contents of the array may be modified.
+     * <p> Beware that operation is done in-place: the contents of the array
+     * may be modified. </p>
      *
-     * <br>
-     * The two arguments must be flat arrays of same floating point type and of same shape.
+     * <p> The two arguments must be flat arrays of same floating point type
+     * and of same shape. </p>
      *
-     * @param wgt - The weights.
-     * @param dat - The data.
+     * @param wgt
+     *        The weights.
+     *
+     * @param dat
+     *        The data.
      */
 
     static public void fixWeightsAndData(ShapedArray wgt, ShapedArray dat) {

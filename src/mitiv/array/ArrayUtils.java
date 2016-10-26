@@ -1165,17 +1165,17 @@ public class ArrayUtils {
      * Extract a rectangular region of an array by cropping and/or padding along
      * its dimensions.
      *
-     * <p>This methods extracts a rectangular region out of a shaped array.
+     * <p> This methods extracts a rectangular region out of a shaped array.
      * The region is specified by its offsets relative to the input array and
      * by its dimensions.  The parts of the region not in the input array are
      * filled by a given value.  The operation is lazy: if the extracted region
-     * exactly matches the input array, the input array is returned.</p>
+     * exactly matches the input array, the input array is returned. </p>
      *
-     * <p>Note that this method combines the effects of the {@link #crop()} and
-     * {@link #pad()} operations.</p>
+     * <p> Note that this method combines the effects of the {@link #crop} and
+     * {@link #pad} operations. </p>
      *
-     * <p>In pseudo-code and assuming 1-D arrays, the destination array {@code
-     * dst} is filled as follows:</p>
+     * <p> In pseudo-code and assuming 1-D arrays, the destination array {@code
+     * dst} is filled as follows: </p>
      *
      * <pre>
      * for (int i = 0; i < dst.length; ++i) {
@@ -1199,7 +1199,7 @@ public class ArrayUtils {
      *
      * @return A shaped array of the required shape.
      *
-     * @see {@link #crop()} and {@link #pad()}.
+     * @see #crop and {@link #pad}.
      */
     public static ShapedArray extract(ShapedArray array, Shape shape,
                                       int[] offset, double value) {

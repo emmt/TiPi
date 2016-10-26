@@ -31,16 +31,15 @@ import mitiv.exception.IllegalRangeException;
 /**
  * Compiled ranges.
  *
- * <p>
- * A CompiledRange instance is an immutable object which stores all the needed
- * information to walk through the indices specified by a {@link Range} object.
- * It is necessary to distinguish a {@link Range} object and the corresponding
- * {@link CompliedRange} object because the former may have relative end-points
- * while the latter give absolute information and thus requires to known all
- * details about the length of the considered dimension but also the offset of
- * the first element along this dimension and the spacing of successive
- * elements. Walking through the elements selected by a range is typically done
- * by:
+ * <p> A CompiledRange instance is an immutable object which stores all the
+ * needed information to walk through the indices specified by a {@link Range}
+ * object.  It is necessary to distinguish a {@link Range} object and the
+ * corresponding {@link CompiledRange} object because the former may have
+ * relative end-points while the latter give absolute information and thus
+ * requires to known all details about the length of the considered dimension
+ * but also the offset of the first element along this dimension and the
+ * spacing of successive elements. Walking through the elements selected by a
+ * range is typically done by: </p>
  *
  * <pre>
  * Range rng = ...;
@@ -50,7 +49,6 @@ import mitiv.exception.IllegalRangeException;
  *     a[j] = ...;
  * }
  * </pre>
- * </p>
  *
  * @author Éric Thiébaut.
  */

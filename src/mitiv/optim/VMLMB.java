@@ -33,8 +33,9 @@ import mitiv.linalg.VectorSpace;
  * Multivariate non-linear optimization with simple bound constraints by
  * VMLMB method.
  *
- * <p>There are some differences compared to {@link LBFGS}, the unconstrained
- * version of the algorithm:
+ * <p> There are some differences compared to {@link LBFGS}, the unconstrained
+ * version of the algorithm: </p>
+ *
  * <ol>
  * <li>The initial variables must be feasible.  This is easily achieved by
  *     applying the projector on the initial variables.</li>
@@ -43,10 +44,8 @@ import mitiv.linalg.VectorSpace;
  * <li>The line search procedure should only implement a sufficient decrease
  *     test (<i>e.g.</i> first Wolfe condition).</li>
  * </ol>
- * </p>
  *
  * @author Éric Thiébaut.
- *
  */
 public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
 
@@ -85,11 +84,9 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
     /**
      * Attempt to save some memory?
      *
-     * <p>
-     * To save space, the variable and gradient at the start of a line search
-     * may be references to the `(s,y)` pair of vectors of the LBFGS operator
-     * just after the mark.
-     * </p>
+     * <p> To save space, the variable and gradient at the start of a line
+     * search may be references to the `(s,y)` pair of vectors of the LBFGS
+     * operator just after the mark.  </p>
      */
     private final boolean saveMemory = true;
 
@@ -107,9 +104,8 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
     /**
      * The (anti-)search direction.
      *
-     * <p>
-     * An iterate is computed as: x = x0 - alpha*p with alpha > 0.
-     * </p>
+     * <p> An iterate is computed as: {@code x = x0 - alpha*p} with
+     * {@code alpha > 0}. </p>
      */
     protected Vector p = null;
 
@@ -201,7 +197,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             if (evaluations == 1) {
                 ginit = gnorm;
             }
-            final double gtest = getGradientThreshold();
+            final double gtest = getGradientThreshold(ginit);
             return success(gnorm <= gtest ? OptimTask.FINAL_X : OptimTask.NEW_X);
 
         case NEW_X:
@@ -343,7 +339,7 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
         return 1.0/dnorm;
     }
 
-    /** Build the new step to try as: x = Proj(x0 - alpha*p). */
+    /** Build the new step to try as: {@code x = Proj(x0 - alpha*p)}. */
     private OptimTask nextStep(Vector x) {
         alpha = lnsrch.getStep();
         x.combine(1.0, x0, -alpha, p);
@@ -355,9 +351,13 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
 
     /**
      * Set the absolute tolerance for the convergence criterion.
-     * @param gatol - Absolute tolerance for the convergence criterion.
-     * @see {@link #setRelativeTolerance}, {@link #getAbsoluteTolerance},
-     *      {@link #getGradientThreshold}.
+     *
+     * @param gatol
+     *        Absolute tolerance for the convergence criterion.
+     *
+     * @see #setRelativeTolerance(double)
+     * @see #getAbsoluteTolerance()
+     * @see #getGradientThreshold(double)
      */
     public void setAbsoluteTolerance(double gatol) {
         this.gatol = gatol;
@@ -365,9 +365,13 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
 
     /**
      * Set the relative tolerance for the convergence criterion.
-     * @param grtol - Relative tolerance for the convergence criterion.
-     * @see {@link #setAbsoluteTolerance}, {@link #getRelativeTolerance},
-     *      {@link #getGradientThreshold}.
+     *
+     * @param grtol
+     *        Relative tolerance for the convergence criterion.
+     *
+     * @see #setAbsoluteTolerance(double)
+     * @see #getRelativeTolerance()
+     * @see #getGradientThreshold(double)
      */
     public void setRelativeTolerance(double grtol) {
         this.grtol = grtol;
@@ -375,8 +379,10 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
 
     /**
      * Query the absolute tolerance for the convergence criterion.
-     * @see {@link #setAbsoluteTolerance}, {@link #getRelativeTolerance},
-     *      {@link #getGradientThreshold}.
+     *
+     * @see #setAbsoluteTolerance(double)
+     * @see #getRelativeTolerance()
+     * @see #getGradientThreshold(double)
      */
     public double getAbsoluteTolerance() {
         return gatol;
@@ -384,8 +390,10 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
 
     /**
      * Query the relative tolerance for the convergence criterion.
-     * @see {@link #setRelativeTolerance}, {@link #getAbsoluteTolerance},
-     *      {@link #getGradientThreshold}.
+     *
+     * @see #setRelativeTolerance(double)
+     * @see #getAbsoluteTolerance()
+     * @see #getGradientThreshold(double)
      */
     public double getRelativeTolerance() {
         return grtol;
@@ -394,21 +402,30 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
     /**
      * Query the gradient threshold for the convergence criterion.
      *
-     * The convergence of the optimization method is achieved when the
-     * Euclidean norm of the gradient at a new iterate is less or equal
-     * the threshold:
+     * <p> The convergence of the optimization method is achieved when the
+     * Euclidean norm of the gradient at a new iterate is less or equal the
+     * threshold: </p>
+     *
      * <pre>
-     *    max(0.0, gatol, grtol*gtest)
+     *    max(0.0, gatol, grtol*g0nrm)
      * </pre>
-     * where {@code gtest} is the norm of the initial gradient, {@code gatol}
-     * {@code grtol} are the absolute and relative tolerances for the
-     * convergence criterion.
+     *
+     * <p> where {@code gtest} is the norm of the initial (projected) gradient,
+     * {@code gatol} {@code grtol} are the absolute and relative tolerances for
+     * the convergence criterion. </p>
+     *
+     * @param g0nrm
+     *        The norm of the initial (projected) gradient.
+     *
      * @return The gradient threshold.
-     * @see {@link #setAbsoluteTolerance}, {@link #setRelativeTolerance},
-     *      {@link #getAbsoluteTolerance}, {@link #getRelativeTolerance}.
+     *
+     * @see #setAbsoluteTolerance(double)
+     * @see #setRelativeTolerance(double)
+     * @see #getAbsoluteTolerance()
+     * @see #getRelativeTolerance()
      */
-    public double getGradientThreshold() {
-        return max(0.0, gatol, grtol*ginit);
+    public double getGradientThreshold(double g0nrm) {
+        return max(0.0, gatol, grtol*g0nrm);
     }
 
     private static final double max(double a1, double a2, double a3) {

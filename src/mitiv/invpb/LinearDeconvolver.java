@@ -334,7 +334,7 @@ public class LinearDeconvolver {
      * @param x
      * @param maxiter
      * @param reset
-     * @return
+     * @return a value
      */
     public int solve(float[] x, int maxiter, boolean reset) {
         if (! single) {
@@ -349,7 +349,7 @@ public class LinearDeconvolver {
      * @param x
      * @param maxiter
      * @param reset
-     * @return
+     * @return a value
      */
     public int solve(double[] x, int maxiter, boolean reset) {
         if (single) {
@@ -364,7 +364,7 @@ public class LinearDeconvolver {
      * @param x
      * @param maxiter
      * @param reset
-     * @return
+     * @return a value
      */
     public int solve(Vector x, int maxiter, boolean reset) {
         return cg.solve(x, maxiter, reset);
