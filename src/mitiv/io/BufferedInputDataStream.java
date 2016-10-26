@@ -25,6 +25,7 @@
 
 package mitiv.io;
 
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.DoubleBuffer;
@@ -42,7 +43,7 @@ import java.nio.channels.ReadableByteChannel;
  *
  * @author Éric Thiébaut
  */
-public class BufferedInputDataStream extends InternalBuffer {
+public class BufferedInputDataStream extends InternalBuffer implements Closeable {
     private final ReadableByteChannel channel;
     private boolean readable;
 
@@ -83,6 +84,7 @@ public class BufferedInputDataStream extends InternalBuffer {
     /** Close the channel.
      * @throws IOException
      */
+    @Override
     public void close() throws IOException {
         channel.close();
         readable = false;
