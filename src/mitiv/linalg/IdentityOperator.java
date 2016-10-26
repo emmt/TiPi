@@ -46,7 +46,7 @@ public class IdentityOperator extends DiagonalOperator {
 
     @Override
     public void setDiagonal(Vector diag) {
-        throw new NotImplementedException("attempting to set the diagonal of the identity operator");
+        throw new NotImplementedException("Attempting to set the diagonal of the identity operator");
     }
 
     @Override
