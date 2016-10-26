@@ -30,7 +30,7 @@ import mitiv.array.ShapedArray;
 /**
  * Interface to allow external viewers display information during an
  * iterative reconstruction.
- * 
+ *
  * @author Éric and Jonathan
  */
 public interface ReconstructionJob {
@@ -58,15 +58,3 @@ public interface ReconstructionJob {
 
     public abstract double getRelativeTolerance();
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
