@@ -30,26 +30,29 @@ import mitiv.linalg.VectorSpace;
 
 /**
  * Base class for multivariate cost functions.
- * 
- * The solution of many inverse problems can be expressed as minimizing a cost
- * which is a function of the parameters of interest.  A cost function is then
- * just a mapping of an input vector space to the set of reals (possibly
+ *
+ * <p> The solution of many inverse problems can be expressed as minimizing a
+ * cost which is a function of the parameters of interest.  A cost function is
+ * then just a mapping of an input vector space to the set of reals (possibly
  * including {@link Double#POSITIVE_INFINITY}.  An instance of this class is
- * able to return {@code f(x)} given the variables {@code x} (a vector).
- * <p>
- * There are many "optimizable" cost functions: smooth functions which are differentiable,
- * non-smooth functions for which we can compute their proximal operator, continuous
- * separable functions (which can be minimized by, e.g., Brent's method), non-smooth
- * separable functions but for which we can compute the subgradient, etc.
- * 
+ * able to return {@code f(x)} given the variables {@code x} (a vector). </p>
+ *
+ * <p> There are many "optimizable" cost functions: smooth functions which are
+ * differentiable, non-smooth functions for which we can compute their proximal
+ * operator, continuous separable functions (which can be minimized by, e.g.,
+ * Brent's method), non-smooth separable functions but for which we can compute
+ * the subgradient, etc. </p>
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 public interface CostFunction {
     /**
      * Get the input space of the cost function.
-     * 
-     * A cost function is a mapping from an input space (which can be queried by this
-     * method) to the set of reals (possibly including {@link Double#POSITIVE_INFINITY}).
+     *
+     * <p> A cost function is a mapping from an input space (which can be
+     * queried by this method) to the set of reals (possibly including {@link
+     * Double#POSITIVE_INFINITY}). </p>
+     *
      * @return The input space of the cost function.
      */
     abstract public VectorSpace getInputSpace();
@@ -57,9 +60,12 @@ public interface CostFunction {
     /**
      * Compute the value of the cost function.
      *
-     * @param alpha - A non-negative multiplier for the cost.
-     * @param x     - The vector of variables.
-     * 
+     * @param alpha
+     *        A non-negative multiplier for the cost.
+     *
+     * @param x
+     *        The vector of variables.
+     *
      * @return The value of the cost function times {@code alpha}.
      */
     abstract public double evaluate(double alpha, Vector x);

@@ -29,52 +29,54 @@ import mitiv.linalg.Vector;
 
 /**
  * Interface for cost functions implementing their proximal operator.
- * 
- * The proximal operator of a function {@code f : R^n -> R^n} is defined by:
+ *
+ * <p> The proximal operator of a function {@code f : R^n -> R^n} is defined
+ * by: </p>
+ *
  * <pre>
  *     prox_f(x) = argmin_y { f(y) + (1/2) ||x - y||^2 }
  * </pre>
- * Functions for which the proximal operator can be computed can be minimized
- * even though there are non-smooth and thus non-differentiable.  They are
- * notably useful to implement constraints or to impose sparsity. See reference
- * below for a review.
- * 
+ *
+ * <p> Functions for which the proximal operator can be computed can be
+ * minimized even though there are non-smooth and thus non-differentiable.
+ * They are notably useful to implement constraints or to impose sparsity. See
+ * reference below for a review. </p>
+ *
  * <ol>
  * <li>Parikh, N. & Boyd, S. "<i>Proximal Algorithms,</i>" in Foundations and
  *     Trends in Optimization, Vol. <b>1</b>, pp. 123-231 (2013)
  *     <a href="http://web.stanford.edu/~boyd/papers/prox_algs.html">web<a>
  *     <a href="http://dx.doi.org/10.1561/2400000003">doi</a>.</li>
  * </ol>
- * 
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 public interface ProximalOperator extends CostFunction {
     /**
      * Apply the proximal operator of a cost function.
      *
-     * The purpose of this method is to find the minimum of:
+     * <p> The purpose of this method is to find the minimum of: </p>
+     *
      * <pre>
-     * alpha*f(out) + (1/2)*norm2(out - inp)
+     * alpha*f(dst) + (1/2)*norm2(dst - src)
      * </pre>
-     * with respect to vector {@code out} and given weight {@code alpha} and
-     * the input vector {@code out}.  The argument {@code tol} is a relative
-     * tolerance parameter to find an approximate solution to the problem.
-     * @param out    - The vector of output variables.
-     * @param alpha  - A non-negative weight for the cost.
-     * @param inp    - The vector of input variables.
-     * @param tol    - A non-negative tolerance parameter.
+     *
+     * <p> with respect to vector {@code dst} and given weight {@code alpha}
+     * and the input vector {@code src}.  The argument {@code tol} is a
+     * relative tolerance parameter to find an approximate solution to the
+     * problem. </p>
+     *
+     * @param dst
+     *        The vector of output variables.
+     *
+     * @param alpha
+     *        A non-negative weight for the cost.
+     *
+     * @param src
+     *        The vector of input variables.
+     *
+     * @param tol
+     *        A non-negative tolerance parameter.
      */
-    abstract public void applyProx(Vector out, double alpha, Vector inp, double tol);
+    abstract public void applyProx(Vector dst, double alpha, Vector src, double tol);
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

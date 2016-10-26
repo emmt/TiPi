@@ -29,28 +29,27 @@ import mitiv.linalg.Vector;
 
 /**
  * Interface for differentiable cost functions.
- * 
- * A differentiable cost function is a smooth cost function for which it
- * is possible to compute the function value and its gradient.
- * 
+ *
+ * <p> A differentiable cost function is a smooth cost function for which it is
+ * possible to compute the function value and its gradient. </p>
+ *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
 public interface DifferentiableCostFunction extends CostFunction {
     /**
      * Compute the value of the cost function and its gradient.
      *
-     * <p>
-     * This method is intended to compute the value and the gradient of a
+     * <p> This method is intended to compute the value and the gradient of a
      * cost function which are needed by limited memory non-linear optimization
      * methods like the non-linear conjugate gradient and quasi-Newton methods
-     * such as L-BFGS.
-     * <p>
-     * The rationale of the {@code alpha} and {@code clear} arguments is to
+     * such as L-BFGS. </p>
+     *
+     * <p> The rationale of the {@code alpha} and {@code clear} arguments is to
      * let one builds a composite cost function efficiently.  Below is the
      * pseudo-code of an example which shows how to compute the value and the
      * gradient of a function which is a linear combination of other functions
-     * (in the array {@code f}) with different multipliers (in the array
-     * {@code alpha}):
+     * (in the array {@code f}) with different multipliers (in the array {@code
+     * alpha}): </p>
      *
      * <pre>
      *     DifferentiableCostFunction[] f;
@@ -63,20 +62,27 @@ public interface DifferentiableCostFunction extends CostFunction {
      *         fx += f[j].computeCostAndGradient(alpha[j], x, gx, (j == 0));
      *     }
      * </pre>
-     * 
-     * Note that the gradient vector has to be cleared for the first
-     * ({@code j == 0}) function of the list.
      *
-     * @param alpha - A non-negative multiplier for the cost.
-     * @param x     - The vector of variables (must belongs to the input space of the
-     *                cost function).
-     * @param gx    - The vector to store the gradient of the cost function times the
-     *                weight  (must belongs to the input space of the cost function).
-     * @param clr   - Indicate whether the gradient vector has to be cleared (that is,
-     *                filled with zeros) prior to the computation.  If false, the
-     *                contents of the gradient vector is incremented with the gradient
-     *                of the cost function (times {@code alpha}).
-     * 
+     * <p> Note that the gradient vector has to be cleared for the first
+     * ({@code j == 0}) function of the list. </p>
+     *
+     * @param alpha
+     *        A non-negative multiplier for the cost.
+     *
+     * @param x
+     *        The vector of variables (must belongs to the input space of the
+     *        cost function).
+     *
+     * @param gx
+     *        The vector to store the gradient of the cost function times the
+     *        weight (must belongs to the input space of the cost function).
+     *
+     * @param clr
+     *        Indicate whether the gradient vector has to be cleared (that is,
+     *        filled with zeros) prior to the computation.  If false, the
+     *        contents of the gradient vector is incremented with the gradient
+     *        of the cost function (times {@code alpha}).
+     *
      * @return The value of the cost function times the weight.
      */
     abstract public double computeCostAndGradient(double alpha, Vector x,

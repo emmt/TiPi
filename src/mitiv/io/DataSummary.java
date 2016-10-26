@@ -351,7 +351,7 @@ public class DataSummary {
 
         @Override
         public void initialize(byte arg) {
-            double val = arg;
+            double val = (arg & 0xff);
             vsum = val;
             vmin = val;
             vmax = val;

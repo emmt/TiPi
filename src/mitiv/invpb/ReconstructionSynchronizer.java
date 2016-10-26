@@ -28,7 +28,7 @@ package mitiv.invpb;
 /**
  * A reconstruction synchronizer is used to schedule an iterative
  * reconstruction and modify its parameters "<i>on the fly</i>".
- * 
+ *
  * @author Éric and Jonathan.
  */
 public class ReconstructionSynchronizer {
@@ -50,17 +50,18 @@ public class ReconstructionSynchronizer {
 
     /**
      * Schedule the task for a reconstruction process.
-     * <p>
-     * Any change in the scheduled task will be taken into account as soon
-     * as possible by the reconstruction process.  If reconstruction has not
-     * yet been started, the task will be taken into account when the
-     * reconstruction is started.
-     * </p><p>
-     * Note that there is no queuing of the tasks any new value replaces the
-     * current one.
-     * </p>
-     * @param value - {@link RUN} to let the reconstruction run, or
-     *                {@link STOP} to interrupt it as soon as possible.
+     *
+     *  <p> Any change in the scheduled task will be taken into account as
+     * soon as possible by the reconstruction process.  If reconstruction has
+     * not yet been started, the task will be taken into account when the
+     * reconstruction is started.  </p>
+     *
+     * <p> Note that there is no queuing of the tasks any new value replaces
+     * the current one.  </p>
+     *
+     * @param value
+     *        {@link RUN} to let the reconstruction run, or
+     *        {@link STOP} to interrupt it as soon as possible.
      */
     public synchronized void setTask(int value) {
         task = value;
@@ -68,16 +69,18 @@ public class ReconstructionSynchronizer {
 
     /**
      * Set a given reconstruction parameter.
-     * 
-     * <p>
-     * Any change in the reconstruction parameter values will be taken
-     * into account as soon as possible by the reconstruction process.
-     * If reconstruction has not yet been started, the parameters will
-     * be taken into account when the reconstruction is started.
-     * </p>
-     * @param i - The index of the parameter to change.
-     * @param value - The new value of the parameter.
-     * 
+     *
+     * <p> Any change in the reconstruction parameter values will be taken
+     * into account as soon as possible by the reconstruction process.  If
+     * reconstruction has not yet been started, the parameters will be taken
+     * into account when the reconstruction is started.  </p>
+     *
+     * @param i
+     *        The index of the parameter to change.
+     *
+     * @param value
+     *        The new value of the parameter.
+     *
      * @return Whether the parameter has changed.
      */
     public synchronized boolean setParameter(int i, double value) {
@@ -92,7 +95,8 @@ public class ReconstructionSynchronizer {
     /**
      * Create an instance of synchronizer for a reconstruction task.
      *
-     * @param init - The initial values of the reconstruction method.
+     * @param init
+     *        The initial values of the reconstruction method.
      */
     public ReconstructionSynchronizer(double[] init) {
         number = (init != null ? init.length : 0);
@@ -105,14 +109,17 @@ public class ReconstructionSynchronizer {
 
     /**
      * Update the values of the reconstruction parameters.
-     * 
-     * <p>
-     * This synchronized method compares its own set of parameters to the ones
-     * given in argument.  The values of the argument are updated and any change
-     * is reported.
-     * </p>
-     * @param values - The values of the parameter of the running reconstruction.
-     * @param changed - On return, set to indicate which parameters have changed.
+     *
+     * <p> This synchronized method compares its own set of parameters to the
+     * ones given in argument.  The values of the argument are updated and any
+     * change is reported.  </p>
+     *
+     * @param values
+     *        The values of the parameter of the running reconstruction.
+     *
+     * @param changed
+     *        On return, set to indicate which parameters have changed.
+     *
      * @return Whether some parameters have changed.
      */
     public synchronized boolean updateParameters(double[] values, boolean[] changed) {
@@ -130,15 +137,3 @@ public class ReconstructionSynchronizer {
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
