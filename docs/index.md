@@ -12,9 +12,9 @@ TiPi has a number of applications, for instance:
 * **Magnum2** project: TiPi is used to repair (inpainting) and enhance
   (deblurring and denoising) images of license plates before automatic OCR.
 
-* **Microscopy**: TiPi is exploited to implement the *deconvolution* and
-  *blind deconvolution* plugins of [Icy](http://icy.bioimageanalysis.org/) of
-  3D images.
+* **Microscopy**: TiPi is exploited to implement the
+  [Icy](http://icy.bioimageanalysis.org/) plugins for *deconvolution* and
+  *blind deconvolution* of 3D images.
 
 
 ## Contents
