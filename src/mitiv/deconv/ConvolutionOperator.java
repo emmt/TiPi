@@ -37,14 +37,16 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
 
 /**
  * Implements a FFT-based convolution.
- * 
- * <p>
- * The convolution operator {@code H} writes:
+ *
+ * <p> The convolution operator {@code H} writes: </p>
+ *
  * <pre>
- *   H = F'.diag(F.h).F</pre>
- * with {@code F} the FFT (Fast Fourier Transform) operator and {@code h} the
- * PSF (Point Spread Function).
- * 
+ *   H = F'.diag(F.h).F
+ * </pre>
+ *
+ * <p> with {@code F} the FFT (Fast Fourier Transform) operator and {@code h}
+ * the PSF (Point Spread Function). </p>
+ *
  * @author Jonathan Léger
  */
 public class ConvolutionOperator extends ShapedLinearOperator {
@@ -57,9 +59,11 @@ public class ConvolutionOperator extends ShapedLinearOperator {
 
     /**
      * Create a new FFT-based convolution operator given the PSF.
-     * 
-     * @param FFT - The Fast Fourier Transform operator.
-     * @param psf - The point spread function.
+     *
+     * @param FFT
+     *        The Fast Fourier Transform operator.
+     * @param psf
+     *        The point spread function.
      */
     public ConvolutionOperator(RealComplexFFT FFT, Vector psf) {
         this(FFT, psf, null);
@@ -67,25 +71,23 @@ public class ConvolutionOperator extends ShapedLinearOperator {
 
     /**
      * Create a new FFT-based convolution operator given the PSF or the MTF.
-     * 
-     * <p>
-     * At least one of the point spread function (PSF) or the modulation
-     * transfer function (MTF) must be given (that is non-{@code null}).
-     * If {@code mtf} is not {@code null} it is used as the MTF; otherwise
-     * the FFT operator is applied to {@code psf} to compute the MTF.
-     * Note that if the MTF is directly provided, a simple reference to
-     * {@code mtf} is kept by the operator.  Thus, you may have to clone
-     * {@code mtf} if you intend to modify its contents while using the
-     * operator.
-     * 
-     * @param FFT - The Fast Fourier Transform operator.
-     * @param psf - The point spread function (PSF) or {@code null}.
-     * @param mtf - The modulation transfer function (MTF) or {@code null}.
-     *            - If true, {@code h} is the MTF; otherwise, {@code h} is
-     *              the PSF.  Note that if {@code h} is the MTF, a simple
-     *              reference to it is kept by the operator.  Thus, you
-     *              should clone {@code h} if you intend to modify its
-     *              contents while using the operator.
+     *
+     * <p> At least one of the point spread function (PSF) or the modulation
+     * transfer function (MTF) must be given (that is non-{@code null}).  If
+     * {@code mtf} is not {@code null} it is used as the MTF; otherwise the
+     * FFT operator is applied to {@code psf} to compute the MTF.  Note that
+     * if the MTF is directly provided, a simple reference to {@code mtf} is
+     * kept by the operator.  Thus, you may have to clone {@code mtf} if you
+     * intend to modify its contents while using the operator. </p>
+     *
+     * @param FFT
+     *        The Fast Fourier Transform operator.
+     *
+     * @param psf
+     *        The point spread function (PSF) or {@code null}.
+     *
+     * @param mtf
+     *        The modulation transfer function (MTF) or {@code null}.
      */
     public ConvolutionOperator(RealComplexFFT FFT, Vector psf, Vector mtf) {
         super(FFT.getInputSpace());
@@ -181,15 +183,3 @@ public class ConvolutionOperator extends ShapedLinearOperator {
         FFT.apply(dst, tmp, INVERSE);
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

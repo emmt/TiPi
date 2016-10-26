@@ -40,8 +40,8 @@ import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
 /**
- * 
- * @author Leger Jonathan
+ *
+ * @author Jonathan Léger
  */
 public class LinearDeconvolver {
     private int rank;
@@ -62,7 +62,7 @@ public class LinearDeconvolver {
 
     /**
      * Float Version.
-     * 
+     *
      * @param shape
      * @param data
      * @param psf
@@ -82,7 +82,7 @@ public class LinearDeconvolver {
 
     /**
      * Double version.
-     * 
+     *
      * @param shape
      * @param data
      * @param psf
@@ -330,7 +330,7 @@ public class LinearDeconvolver {
 
     /**
      * Compute the solution and store the result in x
-     * 
+     *
      * @param x
      * @param maxiter
      * @param reset
@@ -345,7 +345,7 @@ public class LinearDeconvolver {
 
     /**
      * Compute the solution and store the result in x
-     * 
+     *
      * @param x
      * @param maxiter
      * @param reset
@@ -359,7 +359,7 @@ public class LinearDeconvolver {
     }
 
     /**
-     * 
+     *
      * Not sure if can really be used
      * @param x
      * @param maxiter
@@ -370,15 +370,3 @@ public class LinearDeconvolver {
         return cg.solve(x, maxiter, reset);
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

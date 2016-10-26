@@ -26,8 +26,9 @@
 package mitiv.exception;
 
 /**
- * Exception thrown when input data does not conform to assumed format but the stream is left as if no data were read.
- * 
+ * Exception thrown when input data does not conform to assumed format but the
+ * stream is left as if no data were read.
+ *
  * @author Éric Thiébaut
  */
 public class RecoverableFormatException extends Exception {
@@ -41,15 +42,3 @@ public class RecoverableFormatException extends Exception {
         super(message);
     }
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

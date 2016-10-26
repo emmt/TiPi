@@ -30,7 +30,7 @@ import mitiv.array.ShapedArray;
 /**
  * Interface to allow external viewers display information during an
  * iterative reconstruction.
- * 
+ *
  * @author Éric and Jonathan
  */
 public interface ReconstructionJob {
@@ -47,26 +47,20 @@ public interface ReconstructionJob {
     /** Get the current value of the objective function. */
     public abstract double getCost();
 
-    /** Get the Euclidean (L2) norm of the current gradient of the objective function. */
+    /**
+     * Get the Euclidean (L2) norm of the current gradient of the objective *
+     * function.
+     */
     public abstract double getGradientNorm2();
 
     /** Get the L1 norm of the current gradient of the objective function. */
     public abstract double getGradientNorm1();
 
-    /** Get the infinite norm of the current gradient of the objective function. */
+    /**
+     * Get the infinite norm of the current gradient of the objective
+     * function.
+     */
     public abstract double getGradientNormInf();
 
     public abstract double getRelativeTolerance();
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */
