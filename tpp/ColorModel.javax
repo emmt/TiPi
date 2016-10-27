@@ -61,7 +61,7 @@ import mitiv.exception.IllegalTypeException;
  * array when it is interpreted as an image.  The rules are:</p>
  *
  * <ol>
- * <li>a 2D shaped array of any type is a gray-scale image with color
+ * <li>a 2D shaped array of any type is a gray-scaled image with color
  *     model {@link #GRAY};</li>
  * <li>a 3D shaped array of any type with first dimension equals to 3 is
  *     a RGB image with color model {@link #RGB};</li>
@@ -86,13 +86,13 @@ import mitiv.exception.IllegalTypeException;
  * channel or the alpha channel.  </p>
  *
  *
- * <h2>Gray-scale images</h2>
+ * <h2>Gray-scaled images</h2>
  *
- * <p> A gray-scale image is stored into a shaped array as a 2D array with the
+ * <p> A gray-scaled image is stored into a shaped array as a 2D array with the
  * first dimension equals to the width of the image and the second dimension
- * equals to the height of the image.  The pixels of a gray-scale image have a
+ * equals to the height of the image.  The pixels of a gray-scaled image have a
  * single value: their intensity or their gray level.  The gray level of a
- * shaped array interpreted as a gray-scale image can be accessed as follows:
+ * shaped array interpreted as a gray-scaled image can be accessed as follows:
  * </p>
  *
  * <pre>
@@ -168,7 +168,7 @@ public enum ColorModel {
     /** The alpha channel of an RGBA image. */
     ALPHA(1, "alpha channel"),
 
-    /** A gray-scale image. */
+    /** A gray-scaled image. */
     GRAY(1, "intensity or gray-scale"),
 
     /**
@@ -357,24 +357,18 @@ public enum ColorModel {
      *        The color model for the result.
      *
      * @return A ${dst_Type}Array object with shape {width,height} for a
-     *         grayscale image, with shape {depth,width,height} for a RGB or
+     *         gray-scaled image, with shape {depth,width,height} for a RGB or
      *         RGBA image (depth = 3 or 4 respectively).
      */
     public static ${dst_Type}Array filterImageAs${dst_Type}(ShapedArray arr, ColorModel colorModel) {
-        int type = arr.getType();
-        Shape shape = arr.getShape();
-        int rank = shape.rank();
+        final int type = arr.getType();
+        final int rank = arr.getRank();
         int depth = -1;
-        boolean colored = false;
         if (rank == 2) {
             depth = 1;
         } else if (rank == 3) {
-            depth = shape.dimension(0);
-            if (depth == 3) {
-                colored = true;
-            } else if (depth == 4 && type == Traits.BYTE) {
-                colored = true;
-            } else {
+            depth = arr.getDimension(0);
+            if (depth != 3 && (depth != 4 || type != Traits.BYTE)) {
                 depth = -1;
             }
         }
@@ -382,64 +376,53 @@ public enum ColorModel {
             throw new IllegalArgumentException("Images must be WIDTH x HEIGHT arrays, 3 x WIDTH x HEIGHT arrays or 4 x WIDTH x HEIGHT byte arrays");
 
         }
-        final int width = shape.dimension(rank - 2);
-        final int height = shape.dimension(rank - 1);
+        final int width = arr.getDimension(rank - 2);
+        final int height = arr.getDimension(rank - 1);
 
-        /* Perhaps simply getting a slice is sufficient. */
+        /* Perform the conversion.  Perhaps simply getting a slice is
+         * sufficient. */
         ShapedArray view = null;
-
-        //# //if (depth == 1 && (colorModel == ColorModel.GRAY ||
-        //# //                   colorModel == ColorModel.RED ||
-        //# //                   colorModel == ColorModel.GREEN ||
-        //# //                   colorModel == ColorModel.BLUE)) {
-        //# //    view = arr;
-        //# //} else if (colored && colorModel == ColorModel.RED) {
-        //# //    view = arr.slice(0, 0);
-        //# //} else if (colored && colorModel == ColorModel.GREEN) {
-        //# //    view = arr.slice(1, 0);
-        //# //} else if (colored && colorModel == ColorModel.BLUE) {
-        //# //    view = arr.slice(2, 0);
-        //# //} else if (translucent && colorModel == ColorModel.ALPHA) {
-        //# //    view = arr.slice(3, 0);
-        //# //}
-        //# //
-        //# //view = arr.slice(0, 0);
         if (colorModel == ColorModel.GRAY) {
-            if (colored) {
+
+            if (depth == 1) {
+                /* Source is already a gray-scaled image. */
+                view = arr;
+            } else {
+                /* Convert RGB or RGBA image to gray-scaled image. */
                 ${dst_Type}2D dst = ${dst_Type}2D.create(width, height);
-                switch (type) {
-                    //# for src in ${BYTE} : ${DOUBLE}
-                    //#
-                    //#     // Define type names.
-                    //#     def src_type = ${}{type_${src}}
-                    //#     def src_Type = ${}{Type_${src}}
-                    //#     def src_TYPE = ${}{TYPE_${src}}
-                    //#
-                    //#     // Define a template to get the values from the source array.
-                    //#     suspend coordinates
-                    //#     def getValue = src.get(${coordinates})
-                    //#     if ${src} != ${dst}
-                    //#         if ${src} == ${BYTE}
-                    //#             def getValue = (${dst_type})((int)${getValue} & 0xFF)
-                    //#         else
-                    //#             def getValue = (${dst_type})${getValue}
-                    //#         end
-                    //#     end
-                    //#
-                    //#     // Expand the the template to get the different channels.
-                    //#     //def coordinates = x,y
-                    //#     //def getGray = ${getValue}
-                    //#     def coordinates = 0,x,y
-                    //#     def getRed = ${getValue}
-                    //#     def coordinates = 1,x,y
-                    //#     def getGreen = ${getValue}
-                    //#     def coordinates = 2,x,y
-                    //#     def getBlue = ${getValue}
-                    //#     //def coordinates = 3,x,y
-                    //#     //def getAlpha = ${getValue}
-                    //#
-                    //#     // OK now let's generate the code...
-                case Traits.${src_TYPE}: {
+                //# def if = if
+                //# for src in ${BYTE} : ${DOUBLE}
+                //#
+                //#     // Define type names.
+                //#     def src_type = ${}{type_${src}}
+                //#     def src_Type = ${}{Type_${src}}
+                //#     def src_TYPE = ${}{TYPE_${src}}
+                //#
+                //#     // Define a template to get the values from the source array.
+                //#     suspend coordinates
+                //#     def getValue = src.get(${coordinates})
+                //#     if ${src} != ${dst}
+                //#         if ${src} == ${BYTE}
+                //#             def getValue = (${dst_type})((int)${getValue} & 0xFF)
+                //#         else
+                //#             def getValue = (${dst_type})${getValue}
+                //#         end
+                //#     end
+                //#
+                //#     // Expand the the template to get the different channels.
+                //#     //def coordinates = x,y
+                //#     //def getGray = ${getValue}
+                //#     def coordinates = 0,x,y
+                //#     def getRed = ${getValue}
+                //#     def coordinates = 1,x,y
+                //#     def getGreen = ${getValue}
+                //#     def coordinates = 2,x,y
+                //#     def getBlue = ${getValue}
+                //#     //def coordinates = 3,x,y
+                //#     //def getAlpha = ${getValue}
+                //#
+                //#     // OK now let's generate the code...
+                ${if} (type == Traits.${src_TYPE}) {
                     ${src_Type}3D src = (${src_Type}3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -449,15 +432,12 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                //#     end
-                default:
+                //#     def if = } else if
+                //# end
+                } else {
                     throw new IllegalTypeException();
                 }
                 return dst;
-            } else {
-                view = arr;
             }
 
        } else if (colorModel == ColorModel.RGB) {
@@ -470,39 +450,39 @@ public enum ColorModel {
                 /* Make an RGB image from a gray image.  (FIXME: Things could
                  * be much simpler if only we can insert a dimension.) */
                 ${dst_Type}3D dst = ${dst_Type}3D.create(3, width, height);
-                switch (type) {
-                    //# for src in ${BYTE} : ${DOUBLE}
-                    //#
-                    //#     // Define type names.
-                    //#     def src_type = ${}{type_${src}}
-                    //#     def src_Type = ${}{Type_${src}}
-                    //#     def src_TYPE = ${}{TYPE_${src}}
-                    //#
-                    //#     // Define a template to get the values from the source array.
-                    //#     suspend coordinates
-                    //#     def getValue = src.get(${coordinates})
-                    //#     if ${src} != ${dst}
-                    //#         if ${src} == ${BYTE}
-                    //#             def getValue = (${dst_type})((int)${getValue} & 0xFF)
-                    //#         else
-                    //#             def getValue = (${dst_type})${getValue}
-                    //#         end
-                    //#     end
-                    //#
-                    //#     // Expand the the template to get the different channels.
-                    //#     def coordinates = x,y
-                    //#     def getGray = ${getValue}
-                    //#     //def coordinates = 0,x,y
-                    //#     //def getRed = ${getValue}
-                    //#     //def coordinates = 1,x,y
-                    //#     //def getGreen = ${getValue}
-                    //#     //def coordinates = 2,x,y
-                    //#     //def getBlue = ${getValue}
-                    //#     //def coordinates = 3,x,y
-                    //#     //def getAlpha = ${getValue}
-                    //#
-                    //#     // OK now let's generate the code...
-                case Traits.${src_TYPE}: {
+                //# def if = if
+                //# for src in ${BYTE} : ${DOUBLE}
+                //#
+                //#     // Define type names.
+                //#     def src_type = ${}{type_${src}}
+                //#     def src_Type = ${}{Type_${src}}
+                //#     def src_TYPE = ${}{TYPE_${src}}
+                //#
+                //#     // Define a template to get the values from the source array.
+                //#     suspend coordinates
+                //#     def getValue = src.get(${coordinates})
+                //#     if ${src} != ${dst}
+                //#         if ${src} == ${BYTE}
+                //#             def getValue = (${dst_type})((int)${getValue} & 0xFF)
+                //#         else
+                //#             def getValue = (${dst_type})${getValue}
+                //#         end
+                //#     end
+                //#
+                //#     // Expand the the template to get the different channels.
+                //#     def coordinates = x,y
+                //#     def getGray = ${getValue}
+                //#     //def coordinates = 0,x,y
+                //#     //def getRed = ${getValue}
+                //#     //def coordinates = 1,x,y
+                //#     //def getGreen = ${getValue}
+                //#     //def coordinates = 2,x,y
+                //#     //def getBlue = ${getValue}
+                //#     //def coordinates = 3,x,y
+                //#     //def getAlpha = ${getValue}
+                //#
+                //#     // OK now let's generate the code...
+                ${if} (type == Traits.${src_TYPE}) {
                     ${src_Type}2D src = (${src_Type}2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -512,10 +492,9 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                //#     end
-                default:
+                //#     def if = } else if
+                //# end
+                } else {
                     throw new IllegalTypeException();
                 }
                 return dst;
@@ -530,39 +509,39 @@ public enum ColorModel {
 
                 /* Make an floating point RGBA image from a gray image. */
                 final ${dst_type} opaque = ${OPAQUE};
-                switch (type) {
-                    //# for src in ${BYTE} : ${DOUBLE}
-                    //#
-                    //#     // Define type names.
-                    //#     def src_type = ${}{type_${src}}
-                    //#     def src_Type = ${}{Type_${src}}
-                    //#     def src_TYPE = ${}{TYPE_${src}}
-                    //#
-                    //#     // Define a template to get the values from the source array.
-                    //#     suspend coordinates
-                    //#     def getValue = src.get(${coordinates})
-                    //#     if ${src} != ${dst}
-                    //#         if ${src} == ${BYTE}
-                    //#             def getValue = (${dst_type})((int)${getValue} & 0xFF)
-                    //#         else
-                    //#             def getValue = (${dst_type})${getValue}
-                    //#         end
-                    //#     end
-                    //#
-                    //#     // Expand the the template to get the different channels.
-                    //#     def coordinates = x,y
-                    //#     def getGray = ${getValue}
-                    //#     //def coordinates = 0,x,y
-                    //#     //def getRed = ${getValue}
-                    //#     //def coordinates = 1,x,y
-                    //#     //def getGreen = ${getValue}
-                    //#     //def coordinates = 2,x,y
-                    //#     //def getBlue = ${getValue}
-                    //#     //def coordinates = 3,x,y
-                    //#     //def getAlpha = ${getValue}
-                    //#
-                    //#     // OK now let's generate the code...
-                case Traits.${src_TYPE}: {
+                //# def if = if
+                //# for src in ${BYTE} : ${DOUBLE}
+                //#
+                //#     // Define type names.
+                //#     def src_type = ${}{type_${src}}
+                //#     def src_Type = ${}{Type_${src}}
+                //#     def src_TYPE = ${}{TYPE_${src}}
+                //#
+                //#     // Define a template to get the values from the source array.
+                //#     suspend coordinates
+                //#     def getValue = src.get(${coordinates})
+                //#     if ${src} != ${dst}
+                //#         if ${src} == ${BYTE}
+                //#             def getValue = (${dst_type})((int)${getValue} & 0xFF)
+                //#         else
+                //#             def getValue = (${dst_type})${getValue}
+                //#         end
+                //#     end
+                //#
+                //#     // Expand the the template to get the different channels.
+                //#     def coordinates = x,y
+                //#     def getGray = ${getValue}
+                //#     //def coordinates = 0,x,y
+                //#     //def getRed = ${getValue}
+                //#     //def coordinates = 1,x,y
+                //#     //def getGreen = ${getValue}
+                //#     //def coordinates = 2,x,y
+                //#     //def getBlue = ${getValue}
+                //#     //def coordinates = 3,x,y
+                //#     //def getAlpha = ${getValue}
+                //#
+                //#     // OK now let's generate the code...
+                ${if} (type == Traits.${src_TYPE}) {
                     ${src_Type}2D src = (${src_Type}2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -573,49 +552,49 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                //#     end
-                default:
+                //#     def if = } else if
+                //# end
+                } else {
                     throw new IllegalTypeException();
                 }
 
             } else if (depth == 3) {
 
                 /* Make an floating point RGBA image from a RGB image. */
-                final ${dst_type} opaque = 1;
-                switch (type) {
-                    //# for src in ${BYTE} : ${DOUBLE}
-                    //#
-                    //#     // Define type names.
-                    //#     def src_type = ${}{type_${src}}
-                    //#     def src_Type = ${}{Type_${src}}
-                    //#     def src_TYPE = ${}{TYPE_${src}}
-                    //#
-                    //#     // Define a template to get the values from the source array.
-                    //#     suspend coordinates
-                    //#     def getValue = src.get(${coordinates})
-                    //#     if ${src} != ${dst}
-                    //#         if ${src} == ${BYTE}
-                    //#             def getValue = (${dst_type})((int)${getValue} & 0xFF)
-                    //#         else
-                    //#             def getValue = (${dst_type})${getValue}
-                    //#         end
-                    //#     end
-                    //#
-                    //#     // Expand the the template to get the different channels.
-                    //#     //def coordinates = x,y
-                    //#     //def getGray = ${getValue}
-                    //#     def coordinates = 0,x,y
-                    //#     def getRed = ${getValue}
-                    //#     def coordinates = 1,x,y
-                    //#     def getGreen = ${getValue}
-                    //#     def coordinates = 2,x,y
-                    //#     def getBlue = ${getValue}
-                    //#     //def coordinates = 3,x,y
-                    //#     //def getAlpha = ${getValue}
-                    //#
-                    //#     // OK now let's generate the code...
-                case Traits.${src_TYPE}: {
+                final ${dst_type} opaque = ${OPAQUE};
+                //# def if = if
+                //# for src in ${BYTE} : ${DOUBLE}
+                //#
+                //#     // Define type names.
+                //#     def src_type = ${}{type_${src}}
+                //#     def src_Type = ${}{Type_${src}}
+                //#     def src_TYPE = ${}{TYPE_${src}}
+                //#
+                //#     // Define a template to get the values from the source array.
+                //#     suspend coordinates
+                //#     def getValue = src.get(${coordinates})
+                //#     if ${src} != ${dst}
+                //#         if ${src} == ${BYTE}
+                //#             def getValue = (${dst_type})((int)${getValue} & 0xFF)
+                //#         else
+                //#             def getValue = (${dst_type})${getValue}
+                //#         end
+                //#     end
+                //#
+                //#     // Expand the the template to get the different channels.
+                //#     //def coordinates = x,y
+                //#     //def getGray = ${getValue}
+                //#     def coordinates = 0,x,y
+                //#     def getRed = ${getValue}
+                //#     def coordinates = 1,x,y
+                //#     def getGreen = ${getValue}
+                //#     def coordinates = 2,x,y
+                //#     def getBlue = ${getValue}
+                //#     //def coordinates = 3,x,y
+                //#     //def getAlpha = ${getValue}
+                //#
+                //#     // OK now let's generate the code...
+                ${if} (type == Traits.${src_TYPE}) {
                     ${src_Type}3D src = (${src_Type}3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -628,9 +607,9 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                //#     end
-                default:
+                //#     def if = } else if
+                //# end
+                } else {
                     throw new IllegalTypeException();
                 }
 
@@ -687,89 +666,82 @@ public enum ColorModel {
 
         } else  {
 
-            throw new IllegalArgumentException("Unkwnon color filter");
+            throw new IllegalArgumentException("Unknown color filter");
         }
 
-        /* If arrive here, we just have to convert the view.   At most what is needed
-           is pixel unpacking and data conversion. */
+        /* If we arrive here, we just have to convert the view.  At most what
+           is needed is pixel unpacking and data conversion.  FIXME: all the
+           code below should be equivalent to view.to${dst_Type}()? */
         if (view == arr && type == Traits.${dst_TYPE}) {
             /* Never forget to be lazy. */
             return (${dst_Type}Array)arr;
         }
-        shape = view.getShape();
-        rank = view.getRank();
-        if (rank == 2) {
-            depth = 1;
+        //# def if = if
+        //# for src in ${BYTE} : ${DOUBLE}
+        //#
+        //#     // Define type names.
+        //#     def src_type = ${}{type_${src}}
+        //#     def src_Type = ${}{Type_${src}}
+        //#     def src_TYPE = ${}{TYPE_${src}}
+        //#
+        //#     // Define a template to get the values from the source
+        //#     // array.
+        //#     suspend coordinates
+        //#     def getValue = src.get(${coordinates})
+        //#     if ${src} != ${dst}
+        //#         if ${src} == ${BYTE}
+        //#             def getValue = (${dst_type})((int)${getValue} & 0xFF)
+        //#         else
+        //#             def getValue = (${dst_type})${getValue}
+        //#         end
+        //#     end
+        //#
+        //#     // Expand the the template to get the different channels.
+        //#     def coordinates = 0,x,y
+        //#     def getRed = ${getValue}
+        //#     def coordinates = 1,x,y
+        //#     def getGreen = ${getValue}
+        //#     def coordinates = 2,x,y
+        //#     def getBlue = ${getValue}
+        //#     def coordinates = 3,x,y
+        //#     def getAlpha = ${getValue}
+        //#     def coordinates = x,y
+        //#     def getValue = ${getValue}
+        //#     def getGray = ${getValue}
+        //#
+        //#     // OK now let's generate the code...
+        ${if} (type == Traits.${src_TYPE}) {
+            if (view.getRank() == 2) {
+                ${dst_Type}2D dst = ${dst_Type}2D.create(width, height);
+                ${src_Type}2D src = (${src_Type}2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        ${dst_type} value = ${getValue};
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                ${dst_Type}3D dst = ${dst_Type}3D.create(depth, width, height);
+                ${src_Type}3D src = (${src_Type}3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        ${dst_type} red   = ${getRed};
+                        ${dst_type} green = ${getGreen};
+                        ${dst_type} blue  = ${getBlue};
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
+        //#     def if = } else if
+        //# end
         } else {
-            depth = shape.dimension(0);
-        }
-        switch (type) {
-            //# for src in ${BYTE} : ${DOUBLE}
-            //#
-            //#     // Define type names.
-            //#     def src_type = ${}{type_${src}}
-            //#     def src_Type = ${}{Type_${src}}
-            //#     def src_TYPE = ${}{TYPE_${src}}
-            //#
-            //#     // Define a template to get the values from the source array.
-            //#     suspend coordinates
-            //#     def getValue = src.get(${coordinates})
-            //#     if ${src} != ${dst}
-            //#         if ${src} == ${BYTE}
-            //#             def getValue = (${dst_type})((int)${getValue} & 0xFF)
-            //#         else
-            //#             def getValue = (${dst_type})${getValue}
-            //#         end
-            //#     end
-            //#
-            //#     // Expand the the template to get the different channels.
-            //#     def coordinates = 0,x,y
-            //#     def getRed = ${getValue}
-            //#     def coordinates = 1,x,y
-            //#     def getGreen = ${getValue}
-            //#     def coordinates = 2,x,y
-            //#     def getBlue = ${getValue}
-            //#     def coordinates = 3,x,y
-            //#     def getAlpha = ${getValue}
-            //#     def coordinates = x,y
-            //#     def getValue = ${getValue}
-            //#     def getGray = ${getValue}
-            //#
-            //#     // OK now let's generate the code...
-        case Traits.${src_TYPE}:
-             if (depth == 1) {
-                 ${dst_Type}2D dst = ${dst_Type}2D.create(width, height);
-                 ${src_Type}2D src = (${src_Type}2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         ${dst_type} value = ${getValue};
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 ${dst_Type}3D dst = ${dst_Type}3D.create(depth, width, height);
-                 ${src_Type}3D src = (${src_Type}3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         ${dst_type} red   = ${getRed};
-                         ${dst_type} green = ${getGreen};
-                         ${dst_type} blue  = ${getBlue};
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-             //#     end
-        default:
             throw new IllegalTypeException();
         }
     }
-    //# end
 
+    //# end
 }

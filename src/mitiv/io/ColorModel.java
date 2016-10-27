@@ -61,7 +61,7 @@ import mitiv.exception.IllegalTypeException;
  * array when it is interpreted as an image.  The rules are:</p>
  *
  * <ol>
- * <li>a 2D shaped array of any type is a gray-scale image with color
+ * <li>a 2D shaped array of any type is a gray-scaled image with color
  *     model {@link #GRAY};</li>
  * <li>a 3D shaped array of any type with first dimension equals to 3 is
  *     a RGB image with color model {@link #RGB};</li>
@@ -86,13 +86,13 @@ import mitiv.exception.IllegalTypeException;
  * channel or the alpha channel.  </p>
  *
  *
- * <h2>Gray-scale images</h2>
+ * <h2>Gray-scaled images</h2>
  *
- * <p> A gray-scale image is stored into a shaped array as a 2D array with the
+ * <p> A gray-scaled image is stored into a shaped array as a 2D array with the
  * first dimension equals to the width of the image and the second dimension
- * equals to the height of the image.  The pixels of a gray-scale image have a
+ * equals to the height of the image.  The pixels of a gray-scaled image have a
  * single value: their intensity or their gray level.  The gray level of a
- * shaped array interpreted as a gray-scale image can be accessed as follows:
+ * shaped array interpreted as a gray-scaled image can be accessed as follows:
  * </p>
  *
  * <pre>
@@ -168,7 +168,7 @@ public enum ColorModel {
     /** The alpha channel of an RGBA image. */
     ALPHA(1, "alpha channel"),
 
-    /** A gray-scale image. */
+    /** A gray-scaled image. */
     GRAY(1, "intensity or gray-scale"),
 
     /**
@@ -340,24 +340,18 @@ public enum ColorModel {
      *        The color model for the result.
      *
      * @return A FloatArray object with shape {width,height} for a
-     *         grayscale image, with shape {depth,width,height} for a RGB or
+     *         gray-scaled image, with shape {depth,width,height} for a RGB or
      *         RGBA image (depth = 3 or 4 respectively).
      */
     public static FloatArray filterImageAsFloat(ShapedArray arr, ColorModel colorModel) {
-        int type = arr.getType();
-        Shape shape = arr.getShape();
-        int rank = shape.rank();
+        final int type = arr.getType();
+        final int rank = arr.getRank();
         int depth = -1;
-        boolean colored = false;
         if (rank == 2) {
             depth = 1;
         } else if (rank == 3) {
-            depth = shape.dimension(0);
-            if (depth == 3) {
-                colored = true;
-            } else if (depth == 4 && type == Traits.BYTE) {
-                colored = true;
-            } else {
+            depth = arr.getDimension(0);
+            if (depth != 3 && (depth != 4 || type != Traits.BYTE)) {
                 depth = -1;
             }
         }
@@ -365,17 +359,21 @@ public enum ColorModel {
             throw new IllegalArgumentException("Images must be WIDTH x HEIGHT arrays, 3 x WIDTH x HEIGHT arrays or 4 x WIDTH x HEIGHT byte arrays");
 
         }
-        final int width = shape.dimension(rank - 2);
-        final int height = shape.dimension(rank - 1);
+        final int width = arr.getDimension(rank - 2);
+        final int height = arr.getDimension(rank - 1);
 
-        /* Perhaps simply getting a slice is sufficient. */
+        /* Perform the conversion.  Perhaps simply getting a slice is
+         * sufficient. */
         ShapedArray view = null;
-
         if (colorModel == ColorModel.GRAY) {
-            if (colored) {
+
+            if (depth == 1) {
+                /* Source is already a gray-scaled image. */
+                view = arr;
+            } else {
+                /* Convert RGB or RGBA image to gray-scaled image. */
                 Float2D dst = Float2D.create(width, height);
-                switch (type) {
-                case Traits.BYTE: {
+                if (type == Traits.BYTE) {
                     Byte3D src = (Byte3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -385,9 +383,7 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                case Traits.SHORT: {
+                } else if (type == Traits.SHORT) {
                     Short3D src = (Short3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -397,9 +393,7 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                case Traits.INT: {
+                } else if (type == Traits.INT) {
                     Int3D src = (Int3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -409,9 +403,7 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                case Traits.LONG: {
+                } else if (type == Traits.LONG) {
                     Long3D src = (Long3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -421,9 +413,7 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                case Traits.FLOAT: {
+                } else if (type == Traits.FLOAT) {
                     Float3D src = (Float3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -433,9 +423,7 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                case Traits.DOUBLE: {
+                } else if (type == Traits.DOUBLE) {
                     Double3D src = (Double3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -445,14 +433,10 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                default:
+                } else {
                     throw new IllegalTypeException();
                 }
                 return dst;
-            } else {
-                view = arr;
             }
 
        } else if (colorModel == ColorModel.RGB) {
@@ -465,8 +449,7 @@ public enum ColorModel {
                 /* Make an RGB image from a gray image.  (FIXME: Things could
                  * be much simpler if only we can insert a dimension.) */
                 Float3D dst = Float3D.create(3, width, height);
-                switch (type) {
-                case Traits.BYTE: {
+                if (type == Traits.BYTE) {
                     Byte2D src = (Byte2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -476,9 +459,7 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                case Traits.SHORT: {
+                } else if (type == Traits.SHORT) {
                     Short2D src = (Short2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -488,9 +469,7 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                case Traits.INT: {
+                } else if (type == Traits.INT) {
                     Int2D src = (Int2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -500,9 +479,7 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                case Traits.LONG: {
+                } else if (type == Traits.LONG) {
                     Long2D src = (Long2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -512,9 +489,7 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                case Traits.FLOAT: {
+                } else if (type == Traits.FLOAT) {
                     Float2D src = (Float2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -524,9 +499,7 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                case Traits.DOUBLE: {
+                } else if (type == Traits.DOUBLE) {
                     Double2D src = (Double2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -536,9 +509,7 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                default:
+                } else {
                     throw new IllegalTypeException();
                 }
                 return dst;
@@ -553,8 +524,7 @@ public enum ColorModel {
 
                 /* Make an floating point RGBA image from a gray image. */
                 final float opaque = 1.0F;
-                switch (type) {
-                case Traits.BYTE: {
+                if (type == Traits.BYTE) {
                     Byte2D src = (Byte2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -565,8 +535,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.SHORT: {
+                } else if (type == Traits.SHORT) {
                     Short2D src = (Short2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -577,8 +546,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.INT: {
+                } else if (type == Traits.INT) {
                     Int2D src = (Int2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -589,8 +557,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.LONG: {
+                } else if (type == Traits.LONG) {
                     Long2D src = (Long2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -601,8 +568,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.FLOAT: {
+                } else if (type == Traits.FLOAT) {
                     Float2D src = (Float2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -613,8 +579,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.DOUBLE: {
+                } else if (type == Traits.DOUBLE) {
                     Double2D src = (Double2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -625,17 +590,15 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                default:
+                } else {
                     throw new IllegalTypeException();
                 }
 
             } else if (depth == 3) {
 
                 /* Make an floating point RGBA image from a RGB image. */
-                final float opaque = 1;
-                switch (type) {
-                case Traits.BYTE: {
+                final float opaque = 1.0F;
+                if (type == Traits.BYTE) {
                     Byte3D src = (Byte3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -648,8 +611,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.SHORT: {
+                } else if (type == Traits.SHORT) {
                     Short3D src = (Short3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -662,8 +624,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.INT: {
+                } else if (type == Traits.INT) {
                     Int3D src = (Int3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -676,8 +637,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.LONG: {
+                } else if (type == Traits.LONG) {
                     Long3D src = (Long3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -690,8 +650,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.FLOAT: {
+                } else if (type == Traits.FLOAT) {
                     Float3D src = (Float3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -704,8 +663,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.DOUBLE: {
+                } else if (type == Traits.DOUBLE) {
                     Double3D src = (Double3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -718,8 +676,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                default:
+                } else {
                     throw new IllegalTypeException();
                 }
 
@@ -776,201 +733,177 @@ public enum ColorModel {
 
         } else  {
 
-            throw new IllegalArgumentException("Unkwnon color filter");
+            throw new IllegalArgumentException("Unknown color filter");
         }
 
-        /* If arrive here, we just have to convert the view.   At most what is needed
-           is pixel unpacking and data conversion. */
+        /* If we arrive here, we just have to convert the view.  At most what
+           is needed is pixel unpacking and data conversion.  FIXME: all the
+           code below should be equivalent to view.toFloat()? */
         if (view == arr && type == Traits.FLOAT) {
             /* Never forget to be lazy. */
             return (FloatArray)arr;
         }
-        shape = view.getShape();
-        rank = view.getRank();
-        if (rank == 2) {
-            depth = 1;
+        if (type == Traits.BYTE) {
+            if (view.getRank() == 2) {
+                Float2D dst = Float2D.create(width, height);
+                Byte2D src = (Byte2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float value = (float)((int)src.get(x,y) & 0xFF);
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                Float3D dst = Float3D.create(depth, width, height);
+                Byte3D src = (Byte3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float red   = (float)((int)src.get(0,x,y) & 0xFF);
+                        float green = (float)((int)src.get(1,x,y) & 0xFF);
+                        float blue  = (float)((int)src.get(2,x,y) & 0xFF);
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
+        } else if (type == Traits.SHORT) {
+            if (view.getRank() == 2) {
+                Float2D dst = Float2D.create(width, height);
+                Short2D src = (Short2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float value = (float)src.get(x,y);
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                Float3D dst = Float3D.create(depth, width, height);
+                Short3D src = (Short3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float red   = (float)src.get(0,x,y);
+                        float green = (float)src.get(1,x,y);
+                        float blue  = (float)src.get(2,x,y);
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
+        } else if (type == Traits.INT) {
+            if (view.getRank() == 2) {
+                Float2D dst = Float2D.create(width, height);
+                Int2D src = (Int2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float value = (float)src.get(x,y);
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                Float3D dst = Float3D.create(depth, width, height);
+                Int3D src = (Int3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float red   = (float)src.get(0,x,y);
+                        float green = (float)src.get(1,x,y);
+                        float blue  = (float)src.get(2,x,y);
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
+        } else if (type == Traits.LONG) {
+            if (view.getRank() == 2) {
+                Float2D dst = Float2D.create(width, height);
+                Long2D src = (Long2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float value = (float)src.get(x,y);
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                Float3D dst = Float3D.create(depth, width, height);
+                Long3D src = (Long3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float red   = (float)src.get(0,x,y);
+                        float green = (float)src.get(1,x,y);
+                        float blue  = (float)src.get(2,x,y);
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
+        } else if (type == Traits.FLOAT) {
+            if (view.getRank() == 2) {
+                Float2D dst = Float2D.create(width, height);
+                Float2D src = (Float2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float value = src.get(x,y);
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                Float3D dst = Float3D.create(depth, width, height);
+                Float3D src = (Float3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float red   = src.get(0,x,y);
+                        float green = src.get(1,x,y);
+                        float blue  = src.get(2,x,y);
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
+        } else if (type == Traits.DOUBLE) {
+            if (view.getRank() == 2) {
+                Float2D dst = Float2D.create(width, height);
+                Double2D src = (Double2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float value = (float)src.get(x,y);
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                Float3D dst = Float3D.create(depth, width, height);
+                Double3D src = (Double3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        float red   = (float)src.get(0,x,y);
+                        float green = (float)src.get(1,x,y);
+                        float blue  = (float)src.get(2,x,y);
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
         } else {
-            depth = shape.dimension(0);
-        }
-        switch (type) {
-        case Traits.BYTE:
-             if (depth == 1) {
-                 Float2D dst = Float2D.create(width, height);
-                 Byte2D src = (Byte2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         float value = (float)((int)src.get(x,y) & 0xFF);
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 Float3D dst = Float3D.create(depth, width, height);
-                 Byte3D src = (Byte3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         float red   = (float)((int)src.get(0,x,y) & 0xFF);
-                         float green = (float)((int)src.get(1,x,y) & 0xFF);
-                         float blue  = (float)((int)src.get(2,x,y) & 0xFF);
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-        case Traits.SHORT:
-             if (depth == 1) {
-                 Float2D dst = Float2D.create(width, height);
-                 Short2D src = (Short2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         float value = (float)src.get(x,y);
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 Float3D dst = Float3D.create(depth, width, height);
-                 Short3D src = (Short3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         float red   = (float)src.get(0,x,y);
-                         float green = (float)src.get(1,x,y);
-                         float blue  = (float)src.get(2,x,y);
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-        case Traits.INT:
-             if (depth == 1) {
-                 Float2D dst = Float2D.create(width, height);
-                 Int2D src = (Int2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         float value = (float)src.get(x,y);
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 Float3D dst = Float3D.create(depth, width, height);
-                 Int3D src = (Int3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         float red   = (float)src.get(0,x,y);
-                         float green = (float)src.get(1,x,y);
-                         float blue  = (float)src.get(2,x,y);
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-        case Traits.LONG:
-             if (depth == 1) {
-                 Float2D dst = Float2D.create(width, height);
-                 Long2D src = (Long2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         float value = (float)src.get(x,y);
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 Float3D dst = Float3D.create(depth, width, height);
-                 Long3D src = (Long3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         float red   = (float)src.get(0,x,y);
-                         float green = (float)src.get(1,x,y);
-                         float blue  = (float)src.get(2,x,y);
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-        case Traits.FLOAT:
-             if (depth == 1) {
-                 Float2D dst = Float2D.create(width, height);
-                 Float2D src = (Float2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         float value = src.get(x,y);
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 Float3D dst = Float3D.create(depth, width, height);
-                 Float3D src = (Float3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         float red   = src.get(0,x,y);
-                         float green = src.get(1,x,y);
-                         float blue  = src.get(2,x,y);
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-        case Traits.DOUBLE:
-             if (depth == 1) {
-                 Float2D dst = Float2D.create(width, height);
-                 Double2D src = (Double2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         float value = (float)src.get(x,y);
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 Float3D dst = Float3D.create(depth, width, height);
-                 Double3D src = (Double3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         float red   = (float)src.get(0,x,y);
-                         float green = (float)src.get(1,x,y);
-                         float blue  = (float)src.get(2,x,y);
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-        default:
             throw new IllegalTypeException();
         }
     }
+
     /**
      * Filter the channels of an image stored as a shaped array to produce
      * a floating point image suitable for inverse problem data processing.
@@ -986,24 +919,18 @@ public enum ColorModel {
      *        The color model for the result.
      *
      * @return A DoubleArray object with shape {width,height} for a
-     *         grayscale image, with shape {depth,width,height} for a RGB or
+     *         gray-scaled image, with shape {depth,width,height} for a RGB or
      *         RGBA image (depth = 3 or 4 respectively).
      */
     public static DoubleArray filterImageAsDouble(ShapedArray arr, ColorModel colorModel) {
-        int type = arr.getType();
-        Shape shape = arr.getShape();
-        int rank = shape.rank();
+        final int type = arr.getType();
+        final int rank = arr.getRank();
         int depth = -1;
-        boolean colored = false;
         if (rank == 2) {
             depth = 1;
         } else if (rank == 3) {
-            depth = shape.dimension(0);
-            if (depth == 3) {
-                colored = true;
-            } else if (depth == 4 && type == Traits.BYTE) {
-                colored = true;
-            } else {
+            depth = arr.getDimension(0);
+            if (depth != 3 && (depth != 4 || type != Traits.BYTE)) {
                 depth = -1;
             }
         }
@@ -1011,17 +938,21 @@ public enum ColorModel {
             throw new IllegalArgumentException("Images must be WIDTH x HEIGHT arrays, 3 x WIDTH x HEIGHT arrays or 4 x WIDTH x HEIGHT byte arrays");
 
         }
-        final int width = shape.dimension(rank - 2);
-        final int height = shape.dimension(rank - 1);
+        final int width = arr.getDimension(rank - 2);
+        final int height = arr.getDimension(rank - 1);
 
-        /* Perhaps simply getting a slice is sufficient. */
+        /* Perform the conversion.  Perhaps simply getting a slice is
+         * sufficient. */
         ShapedArray view = null;
-
         if (colorModel == ColorModel.GRAY) {
-            if (colored) {
+
+            if (depth == 1) {
+                /* Source is already a gray-scaled image. */
+                view = arr;
+            } else {
+                /* Convert RGB or RGBA image to gray-scaled image. */
                 Double2D dst = Double2D.create(width, height);
-                switch (type) {
-                case Traits.BYTE: {
+                if (type == Traits.BYTE) {
                     Byte3D src = (Byte3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1031,9 +962,7 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                case Traits.SHORT: {
+                } else if (type == Traits.SHORT) {
                     Short3D src = (Short3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1043,9 +972,7 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                case Traits.INT: {
+                } else if (type == Traits.INT) {
                     Int3D src = (Int3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1055,9 +982,7 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                case Traits.LONG: {
+                } else if (type == Traits.LONG) {
                     Long3D src = (Long3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1067,9 +992,7 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                case Traits.FLOAT: {
+                } else if (type == Traits.FLOAT) {
                     Float3D src = (Float3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1079,9 +1002,7 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                case Traits.DOUBLE: {
+                } else if (type == Traits.DOUBLE) {
                     Double3D src = (Double3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1091,14 +1012,10 @@ public enum ColorModel {
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
-                    break;
-                }
-                default:
+                } else {
                     throw new IllegalTypeException();
                 }
                 return dst;
-            } else {
-                view = arr;
             }
 
        } else if (colorModel == ColorModel.RGB) {
@@ -1111,8 +1028,7 @@ public enum ColorModel {
                 /* Make an RGB image from a gray image.  (FIXME: Things could
                  * be much simpler if only we can insert a dimension.) */
                 Double3D dst = Double3D.create(3, width, height);
-                switch (type) {
-                case Traits.BYTE: {
+                if (type == Traits.BYTE) {
                     Byte2D src = (Byte2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1122,9 +1038,7 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                case Traits.SHORT: {
+                } else if (type == Traits.SHORT) {
                     Short2D src = (Short2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1134,9 +1048,7 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                case Traits.INT: {
+                } else if (type == Traits.INT) {
                     Int2D src = (Int2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1146,9 +1058,7 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                case Traits.LONG: {
+                } else if (type == Traits.LONG) {
                     Long2D src = (Long2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1158,9 +1068,7 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                case Traits.FLOAT: {
+                } else if (type == Traits.FLOAT) {
                     Float2D src = (Float2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1170,9 +1078,7 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                case Traits.DOUBLE: {
+                } else if (type == Traits.DOUBLE) {
                     Double2D src = (Double2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1182,9 +1088,7 @@ public enum ColorModel {
                             dst.set(2,x,y, value);
                         }
                     }
-                    break;
-                }
-                default:
+                } else {
                     throw new IllegalTypeException();
                 }
                 return dst;
@@ -1199,8 +1103,7 @@ public enum ColorModel {
 
                 /* Make an floating point RGBA image from a gray image. */
                 final double opaque = 1.0;
-                switch (type) {
-                case Traits.BYTE: {
+                if (type == Traits.BYTE) {
                     Byte2D src = (Byte2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1211,8 +1114,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.SHORT: {
+                } else if (type == Traits.SHORT) {
                     Short2D src = (Short2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1223,8 +1125,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.INT: {
+                } else if (type == Traits.INT) {
                     Int2D src = (Int2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1235,8 +1136,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.LONG: {
+                } else if (type == Traits.LONG) {
                     Long2D src = (Long2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1247,8 +1147,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.FLOAT: {
+                } else if (type == Traits.FLOAT) {
                     Float2D src = (Float2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1259,8 +1158,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.DOUBLE: {
+                } else if (type == Traits.DOUBLE) {
                     Double2D src = (Double2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1271,17 +1169,15 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                default:
+                } else {
                     throw new IllegalTypeException();
                 }
 
             } else if (depth == 3) {
 
                 /* Make an floating point RGBA image from a RGB image. */
-                final double opaque = 1;
-                switch (type) {
-                case Traits.BYTE: {
+                final double opaque = 1.0;
+                if (type == Traits.BYTE) {
                     Byte3D src = (Byte3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1294,8 +1190,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.SHORT: {
+                } else if (type == Traits.SHORT) {
                     Short3D src = (Short3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1308,8 +1203,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.INT: {
+                } else if (type == Traits.INT) {
                     Int3D src = (Int3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1322,8 +1216,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.LONG: {
+                } else if (type == Traits.LONG) {
                     Long3D src = (Long3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1336,8 +1229,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.FLOAT: {
+                } else if (type == Traits.FLOAT) {
                     Float3D src = (Float3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1350,8 +1242,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                case Traits.DOUBLE: {
+                } else if (type == Traits.DOUBLE) {
                     Double3D src = (Double3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
@@ -1364,8 +1255,7 @@ public enum ColorModel {
                             dst.set(3,x,y, opaque);
                         }
                     }
-                }
-                default:
+                } else {
                     throw new IllegalTypeException();
                 }
 
@@ -1422,198 +1312,173 @@ public enum ColorModel {
 
         } else  {
 
-            throw new IllegalArgumentException("Unkwnon color filter");
+            throw new IllegalArgumentException("Unknown color filter");
         }
 
-        /* If arrive here, we just have to convert the view.   At most what is needed
-           is pixel unpacking and data conversion. */
+        /* If we arrive here, we just have to convert the view.  At most what
+           is needed is pixel unpacking and data conversion.  FIXME: all the
+           code below should be equivalent to view.toDouble()? */
         if (view == arr && type == Traits.DOUBLE) {
             /* Never forget to be lazy. */
             return (DoubleArray)arr;
         }
-        shape = view.getShape();
-        rank = view.getRank();
-        if (rank == 2) {
-            depth = 1;
+        if (type == Traits.BYTE) {
+            if (view.getRank() == 2) {
+                Double2D dst = Double2D.create(width, height);
+                Byte2D src = (Byte2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double value = (double)((int)src.get(x,y) & 0xFF);
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                Double3D dst = Double3D.create(depth, width, height);
+                Byte3D src = (Byte3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double red   = (double)((int)src.get(0,x,y) & 0xFF);
+                        double green = (double)((int)src.get(1,x,y) & 0xFF);
+                        double blue  = (double)((int)src.get(2,x,y) & 0xFF);
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
+        } else if (type == Traits.SHORT) {
+            if (view.getRank() == 2) {
+                Double2D dst = Double2D.create(width, height);
+                Short2D src = (Short2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double value = (double)src.get(x,y);
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                Double3D dst = Double3D.create(depth, width, height);
+                Short3D src = (Short3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double red   = (double)src.get(0,x,y);
+                        double green = (double)src.get(1,x,y);
+                        double blue  = (double)src.get(2,x,y);
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
+        } else if (type == Traits.INT) {
+            if (view.getRank() == 2) {
+                Double2D dst = Double2D.create(width, height);
+                Int2D src = (Int2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double value = (double)src.get(x,y);
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                Double3D dst = Double3D.create(depth, width, height);
+                Int3D src = (Int3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double red   = (double)src.get(0,x,y);
+                        double green = (double)src.get(1,x,y);
+                        double blue  = (double)src.get(2,x,y);
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
+        } else if (type == Traits.LONG) {
+            if (view.getRank() == 2) {
+                Double2D dst = Double2D.create(width, height);
+                Long2D src = (Long2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double value = (double)src.get(x,y);
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                Double3D dst = Double3D.create(depth, width, height);
+                Long3D src = (Long3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double red   = (double)src.get(0,x,y);
+                        double green = (double)src.get(1,x,y);
+                        double blue  = (double)src.get(2,x,y);
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
+        } else if (type == Traits.FLOAT) {
+            if (view.getRank() == 2) {
+                Double2D dst = Double2D.create(width, height);
+                Float2D src = (Float2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double value = (double)src.get(x,y);
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                Double3D dst = Double3D.create(depth, width, height);
+                Float3D src = (Float3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double red   = (double)src.get(0,x,y);
+                        double green = (double)src.get(1,x,y);
+                        double blue  = (double)src.get(2,x,y);
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
+        } else if (type == Traits.DOUBLE) {
+            if (view.getRank() == 2) {
+                Double2D dst = Double2D.create(width, height);
+                Double2D src = (Double2D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double value = src.get(x,y);
+                        dst.set(x,y, value);
+                    }
+                }
+                return dst;
+            } else {
+                Double3D dst = Double3D.create(depth, width, height);
+                Double3D src = (Double3D)view;
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        double red   = src.get(0,x,y);
+                        double green = src.get(1,x,y);
+                        double blue  = src.get(2,x,y);
+                        dst.set(0,x,y, red);
+                        dst.set(1,x,y, green);
+                        dst.set(2,x,y, blue);
+                    }
+                }
+                return dst;
+            }
         } else {
-            depth = shape.dimension(0);
-        }
-        switch (type) {
-        case Traits.BYTE:
-             if (depth == 1) {
-                 Double2D dst = Double2D.create(width, height);
-                 Byte2D src = (Byte2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         double value = (double)((int)src.get(x,y) & 0xFF);
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 Double3D dst = Double3D.create(depth, width, height);
-                 Byte3D src = (Byte3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         double red   = (double)((int)src.get(0,x,y) & 0xFF);
-                         double green = (double)((int)src.get(1,x,y) & 0xFF);
-                         double blue  = (double)((int)src.get(2,x,y) & 0xFF);
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-        case Traits.SHORT:
-             if (depth == 1) {
-                 Double2D dst = Double2D.create(width, height);
-                 Short2D src = (Short2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         double value = (double)src.get(x,y);
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 Double3D dst = Double3D.create(depth, width, height);
-                 Short3D src = (Short3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         double red   = (double)src.get(0,x,y);
-                         double green = (double)src.get(1,x,y);
-                         double blue  = (double)src.get(2,x,y);
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-        case Traits.INT:
-             if (depth == 1) {
-                 Double2D dst = Double2D.create(width, height);
-                 Int2D src = (Int2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         double value = (double)src.get(x,y);
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 Double3D dst = Double3D.create(depth, width, height);
-                 Int3D src = (Int3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         double red   = (double)src.get(0,x,y);
-                         double green = (double)src.get(1,x,y);
-                         double blue  = (double)src.get(2,x,y);
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-        case Traits.LONG:
-             if (depth == 1) {
-                 Double2D dst = Double2D.create(width, height);
-                 Long2D src = (Long2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         double value = (double)src.get(x,y);
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 Double3D dst = Double3D.create(depth, width, height);
-                 Long3D src = (Long3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         double red   = (double)src.get(0,x,y);
-                         double green = (double)src.get(1,x,y);
-                         double blue  = (double)src.get(2,x,y);
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-        case Traits.FLOAT:
-             if (depth == 1) {
-                 Double2D dst = Double2D.create(width, height);
-                 Float2D src = (Float2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         double value = (double)src.get(x,y);
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 Double3D dst = Double3D.create(depth, width, height);
-                 Float3D src = (Float3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         double red   = (double)src.get(0,x,y);
-                         double green = (double)src.get(1,x,y);
-                         double blue  = (double)src.get(2,x,y);
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-        case Traits.DOUBLE:
-             if (depth == 1) {
-                 Double2D dst = Double2D.create(width, height);
-                 Double2D src = (Double2D)view;
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         double value = src.get(x,y);
-                         dst.set(x,y, value);
-                     }
-                 }
-                 return dst;
-             } else {
-                 Double3D dst = Double3D.create(depth, width, height);
-                 Double3D src = (Double3D)view;
-                 if (depth != 3) {
-                     throw new IllegalArgumentException("assertion failed");
-                 }
-                 for (int y = 0; y < height; ++y) {
-                     for (int x = 0; x < width; ++x) {
-                         double red   = src.get(0,x,y);
-                         double green = src.get(1,x,y);
-                         double blue  = src.get(2,x,y);
-                         dst.set(0,x,y, red);
-                         dst.set(1,x,y, green);
-                         dst.set(2,x,y, blue);
-                     }
-                 }
-                 return dst;
-             }
-        default:
             throw new IllegalTypeException();
         }
     }
