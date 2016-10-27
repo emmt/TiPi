@@ -26,6 +26,10 @@
 
 package mitiv.io;
 
+import static java.lang.Math.min;
+import static java.lang.Math.max;
+import static java.lang.Math.round;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
@@ -242,7 +246,7 @@ public enum DataFormat {
         DataFormat format = null;
         stream.mark();
         try {
-            int length = Math.min(preserved, 80);
+            int length = min(preserved, 80);
             byte[] magic = new byte[length];
             length = stream.read(magic, 0, length);
             if (length < 2) {
@@ -313,7 +317,7 @@ public enum DataFormat {
    /**
      * Load formatted data from a file.
      *
-     * <p> This method attempts to give the most apprpriate representation of
+     * <p> This method attempts to give the most appropriate representation of
      * the data stored in the file as a shaped array.  For instance, it relies
      * on {@link #imageToShapedArray} to convert an image in a shaped array.
      * See {@link ColorModel} for the assumed conventions about the
@@ -530,7 +534,7 @@ public enum DataFormat {
      * Make a buffered image from a shaped array with given options.
      *
      * <p> Different kind of shaped array can be interpreted as an image: 2D
-     * shaped array are interpreted as grey scale images, 3D shaped arrays are
+     * shaped array are interpreted as grey-scaled images, 3D shaped arrays are
      * interpreted as RGB array if their first dimension is 3 and as RGBA array
      * if their first dimension is 4.  All other shapes result in throwing an
      * {@link IllegalArgumentException}.  The penultimate dimension of the
@@ -552,8 +556,7 @@ public enum DataFormat {
      */
     public static BufferedImage makeBufferedImage(ShapedArray arr,
                                                   FormatOptions opts) {
-        final Shape shape = arr.getShape();
-        final int rank = shape.rank();
+        final int rank =  arr.getRank();
         final int arrayType = arr.getType();
         int depth = -1;
         int imageType = -1;
@@ -565,20 +568,18 @@ public enum DataFormat {
                 imageType = BufferedImage.TYPE_USHORT_GRAY;
             }
         } else if (rank == 3) {
-            depth = shape.dimension(0);
+            depth = arr.getDimension(0);
             if (depth == 3) {
                 imageType = BufferedImage.TYPE_3BYTE_BGR;
             } else if (depth == 4 && arrayType == Traits.BYTE) {
                 imageType = BufferedImage.TYPE_4BYTE_ABGR;
-            } else {
-                depth = -1;
             }
         }
-        if (depth < 0) {
+        if (imageType < 0) {
             throw new IllegalArgumentException("Conversion to image is only allowed for WIDTH x HEIGHT arrays, 3 x WIDTH x HEIGHT arrays or 4 x WIDTH x HEIGHT byte arrays");
         }
-        final int width = shape.dimension(rank - 2);
-        final int height = shape.dimension(rank - 1);
+        final int width = arr.getDimension(rank - 2);
+        final int height = arr.getDimension(rank - 1);
         final BufferedImage image = new BufferedImage(width, height, imageType);
         final WritableRaster raster = image.getRaster();
         final int minX = raster.getMinX();
@@ -603,14 +604,15 @@ public enum DataFormat {
                 }
             }
         } else if (imageType == BufferedImage.TYPE_USHORT_GRAY) {
-            /* Input is 2-D array of any type but byte. */
+            /* Input is 2-D array of any type but byte.  (FIXME: for small
+             * integer types we can use a look-up table to speed up
+             * computations.) */
             if (raster.getNumBands() != 1 || raster.getNumDataElements() != 1 ||
                 raster.getTransferType() != DataBuffer.TYPE_USHORT) {
                 throw new IllegalArgumentException("Assertion failed for TYPE_USHORT_GRAY");
             }
             short[] data = new short[1];
-            switch (arrayType) {
-            case Traits.SHORT: {
+            if (arrayType == Traits.SHORT) {
                 Short2D src = (Short2D)arr;
                 double[] sf = opts.getScaling(arr, 0, 0xFFFF);
                 final float scale = (float)sf[0];
@@ -624,17 +626,14 @@ public enum DataFormat {
                     }
                 } else {
                     final float factor = 1/scale;
-                    final float minLevel = 0;
-                    final float maxLevel = 0xFFFF;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            data[0] = (short)((int)Math.max(minLevel, Math.min(((float)src.get(x,y) - bias)*factor, maxLevel)) & 0xFFFF);
+                            data[0] = toUInt16(((float)src.get(x,y) - bias)*factor);
                             raster.setDataElements(minX + x, minY + y, data);
                         }
                     }
                 }
-            }
-            case Traits.INT: {
+            } else if (arrayType == Traits.INT) {
                 Int2D src = (Int2D)arr;
                 double[] sf = opts.getScaling(arr, 0, 0xFFFF);
                 final float scale = (float)sf[0];
@@ -648,17 +647,14 @@ public enum DataFormat {
                     }
                 } else {
                     final float factor = 1/scale;
-                    final float minLevel = 0;
-                    final float maxLevel = 0xFFFF;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            data[0] = (short)((int)Math.max(minLevel, Math.min(((float)src.get(x,y) - bias)*factor, maxLevel)) & 0xFFFF);
+                            data[0] = toUInt16(((float)src.get(x,y) - bias)*factor);
                             raster.setDataElements(minX + x, minY + y, data);
                         }
                     }
                 }
-            }
-            case Traits.LONG: {
+            } else if (arrayType == Traits.LONG) {
                 Long2D src = (Long2D)arr;
                 double[] sf = opts.getScaling(arr, 0, 0xFFFF);
                 final double scale = (double)sf[0];
@@ -672,17 +668,14 @@ public enum DataFormat {
                     }
                 } else {
                     final double factor = 1/scale;
-                    final double minLevel = 0;
-                    final double maxLevel = 0xFFFF;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            data[0] = (short)((int)Math.max(minLevel, Math.min(((double)src.get(x,y) - bias)*factor, maxLevel)) & 0xFFFF);
+                            data[0] = toUInt16(((double)src.get(x,y) - bias)*factor);
                             raster.setDataElements(minX + x, minY + y, data);
                         }
                     }
                 }
-            }
-            case Traits.FLOAT: {
+            } else if (arrayType == Traits.FLOAT) {
                 Float2D src = (Float2D)arr;
                 double[] sf = opts.getScaling(arr, 0, 0xFFFF);
                 final float scale = (float)sf[0];
@@ -696,17 +689,14 @@ public enum DataFormat {
                     }
                 } else {
                     final float factor = 1/scale;
-                    final float minLevel = 0;
-                    final float maxLevel = 0xFFFF;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            data[0] = (short)((int)Math.max(minLevel, Math.min((src.get(x,y) - bias)*factor, maxLevel)) & 0xFFFF);
+                            data[0] = toUInt16((src.get(x,y) - bias)*factor);
                             raster.setDataElements(minX + x, minY + y, data);
                         }
                     }
                 }
-            }
-            case Traits.DOUBLE: {
+            } else if (arrayType == Traits.DOUBLE) {
                 Double2D src = (Double2D)arr;
                 double[] sf = opts.getScaling(arr, 0, 0xFFFF);
                 final double scale = (double)sf[0];
@@ -720,17 +710,14 @@ public enum DataFormat {
                     }
                 } else {
                     final double factor = 1/scale;
-                    final double minLevel = 0;
-                    final double maxLevel = 0xFFFF;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            data[0] = (short)((int)Math.max(minLevel, Math.min((src.get(x,y) - bias)*factor, maxLevel)) & 0xFFFF);
+                            data[0] = toUInt16((src.get(x,y) - bias)*factor);
                             raster.setDataElements(minX + x, minY + y, data);
                         }
                     }
                 }
-            }
-            default:
+            } else {
                 throw new IllegalTypeException();
             }
         } else if (imageType == BufferedImage.TYPE_3BYTE_BGR) {
@@ -740,8 +727,7 @@ public enum DataFormat {
                 throw new IllegalArgumentException("Assertion failed for TYPE_3BYTE_BGR");
             }
             byte[] data = new byte[3];
-            switch (arrayType) {
-            case Traits.BYTE: {
+            if (arrayType == Traits.BYTE) {
                 Byte3D src = (Byte3D)arr;
                 if (src.isFlat()) {
                     raster.setDataElements(minX, minY, width, height, src.flatten());
@@ -755,93 +741,132 @@ public enum DataFormat {
                         }
                     }
                 }
-            }
-            case Traits.SHORT: {
+            } else if (arrayType == Traits.SHORT) {
                 Short3D src = (Short3D)arr;
                 double[] sf = opts.getScaling(arr, 0, 0xFF);
                 final float scale = (float)sf[0];
                 final float bias = (float)sf[1];
                 final float factor = 1/scale;
-                final float minLevel = 0;
-                final float maxLevel = 0xFF;
-                for (int y = 0; y < height; ++y) {
-                    for (int x = 0; x < width; ++x) {
-                        data[0] = (byte)((int)Math.max(minLevel, Math.min(((float)src.get(0,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        data[1] = (byte)((int)Math.max(minLevel, Math.min(((float)src.get(1,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        data[2] = (byte)((int)Math.max(minLevel, Math.min(((float)src.get(2,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        raster.setDataElements(minX + x, minY + y, data);
+                if (scale == 0) {
+                    data[0] = 0;
+                    data[1] = 0;
+                    data[2] = 0;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            raster.setDataElements(minX + x, minY + y, data);
+                        }
+                    }
+                } else {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            data[0] = toUInt8(((float)src.get(0,x,y) - bias)*factor);
+                            data[1] = toUInt8(((float)src.get(1,x,y) - bias)*factor);
+                            data[2] = toUInt8(((float)src.get(2,x,y) - bias)*factor);
+                            raster.setDataElements(minX + x, minY + y, data);
+                        }
                     }
                 }
-            }
-            case Traits.INT: {
+            } else if (arrayType == Traits.INT) {
                 Int3D src = (Int3D)arr;
                 double[] sf = opts.getScaling(arr, 0, 0xFF);
                 final float scale = (float)sf[0];
                 final float bias = (float)sf[1];
                 final float factor = 1/scale;
-                final float minLevel = 0;
-                final float maxLevel = 0xFF;
-                for (int y = 0; y < height; ++y) {
-                    for (int x = 0; x < width; ++x) {
-                        data[0] = (byte)((int)Math.max(minLevel, Math.min(((float)src.get(0,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        data[1] = (byte)((int)Math.max(minLevel, Math.min(((float)src.get(1,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        data[2] = (byte)((int)Math.max(minLevel, Math.min(((float)src.get(2,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        raster.setDataElements(minX + x, minY + y, data);
+                if (scale == 0) {
+                    data[0] = 0;
+                    data[1] = 0;
+                    data[2] = 0;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            raster.setDataElements(minX + x, minY + y, data);
+                        }
+                    }
+                } else {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            data[0] = toUInt8(((float)src.get(0,x,y) - bias)*factor);
+                            data[1] = toUInt8(((float)src.get(1,x,y) - bias)*factor);
+                            data[2] = toUInt8(((float)src.get(2,x,y) - bias)*factor);
+                            raster.setDataElements(minX + x, minY + y, data);
+                        }
                     }
                 }
-            }
-            case Traits.LONG: {
+            } else if (arrayType == Traits.LONG) {
                 Long3D src = (Long3D)arr;
                 double[] sf = opts.getScaling(arr, 0, 0xFF);
                 final double scale = (double)sf[0];
                 final double bias = (double)sf[1];
                 final double factor = 1/scale;
-                final double minLevel = 0;
-                final double maxLevel = 0xFF;
-                for (int y = 0; y < height; ++y) {
-                    for (int x = 0; x < width; ++x) {
-                        data[0] = (byte)((int)Math.max(minLevel, Math.min(((double)src.get(0,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        data[1] = (byte)((int)Math.max(minLevel, Math.min(((double)src.get(1,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        data[2] = (byte)((int)Math.max(minLevel, Math.min(((double)src.get(2,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        raster.setDataElements(minX + x, minY + y, data);
+                if (scale == 0) {
+                    data[0] = 0;
+                    data[1] = 0;
+                    data[2] = 0;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            raster.setDataElements(minX + x, minY + y, data);
+                        }
+                    }
+                } else {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            data[0] = toUInt8(((double)src.get(0,x,y) - bias)*factor);
+                            data[1] = toUInt8(((double)src.get(1,x,y) - bias)*factor);
+                            data[2] = toUInt8(((double)src.get(2,x,y) - bias)*factor);
+                            raster.setDataElements(minX + x, minY + y, data);
+                        }
                     }
                 }
-            }
-            case Traits.FLOAT: {
+            } else if (arrayType == Traits.FLOAT) {
                 Float3D src = (Float3D)arr;
                 double[] sf = opts.getScaling(arr, 0, 0xFF);
                 final float scale = (float)sf[0];
                 final float bias = (float)sf[1];
                 final float factor = 1/scale;
-                final float minLevel = 0;
-                final float maxLevel = 0xFF;
-                for (int y = 0; y < height; ++y) {
-                    for (int x = 0; x < width; ++x) {
-                        data[0] = (byte)((int)Math.max(minLevel, Math.min((src.get(0,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        data[1] = (byte)((int)Math.max(minLevel, Math.min((src.get(1,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        data[2] = (byte)((int)Math.max(minLevel, Math.min((src.get(2,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        raster.setDataElements(minX + x, minY + y, data);
+                if (scale == 0) {
+                    data[0] = 0;
+                    data[1] = 0;
+                    data[2] = 0;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            raster.setDataElements(minX + x, minY + y, data);
+                        }
+                    }
+                } else {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            data[0] = toUInt8((src.get(0,x,y) - bias)*factor);
+                            data[1] = toUInt8((src.get(1,x,y) - bias)*factor);
+                            data[2] = toUInt8((src.get(2,x,y) - bias)*factor);
+                            raster.setDataElements(minX + x, minY + y, data);
+                        }
                     }
                 }
-            }
-            case Traits.DOUBLE: {
+            } else if (arrayType == Traits.DOUBLE) {
                 Double3D src = (Double3D)arr;
                 double[] sf = opts.getScaling(arr, 0, 0xFF);
                 final double scale = (double)sf[0];
                 final double bias = (double)sf[1];
                 final double factor = 1/scale;
-                final double minLevel = 0;
-                final double maxLevel = 0xFF;
-                for (int y = 0; y < height; ++y) {
-                    for (int x = 0; x < width; ++x) {
-                        data[0] = (byte)((int)Math.max(minLevel, Math.min((src.get(0,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        data[1] = (byte)((int)Math.max(minLevel, Math.min((src.get(1,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        data[2] = (byte)((int)Math.max(minLevel, Math.min((src.get(2,x,y) - bias)*factor, maxLevel)) & 0xFF);
-                        raster.setDataElements(minX + x, minY + y, data);
+                if (scale == 0) {
+                    data[0] = 0;
+                    data[1] = 0;
+                    data[2] = 0;
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            raster.setDataElements(minX + x, minY + y, data);
+                        }
+                    }
+                } else {
+                    for (int y = 0; y < height; ++y) {
+                        for (int x = 0; x < width; ++x) {
+                            data[0] = toUInt8((src.get(0,x,y) - bias)*factor);
+                            data[1] = toUInt8((src.get(1,x,y) - bias)*factor);
+                            data[2] = toUInt8((src.get(2,x,y) - bias)*factor);
+                            raster.setDataElements(minX + x, minY + y, data);
+                        }
                     }
                 }
-            }
-            default:
+            } else {
                 throw new IllegalTypeException();
             }
         } else /* imageType == BufferedImage.TYPE_4BYTE_ABGR */ {
@@ -869,35 +894,50 @@ public enum DataFormat {
         return image;
     }
 
+    /**
+     * Make a buffered image from a shaped vector with default options.
+     *
+     * @param vec
+     *        The shaped vector.
+     */
     public static BufferedImage makeBufferedImage(ShapedVector vec) {
-        if (vec instanceof DoubleShapedVector) {
-            return makeBufferedImage(ArrayFactory.wrap(((DoubleShapedVector)vec).getData(), vec.getShape()));
-        }
-        if (vec instanceof FloatShapedVector) {
-            return makeBufferedImage(ArrayFactory.wrap(((FloatShapedVector)vec).getData(), vec.getShape()));
-        }
-        throw new IllegalArgumentException("Unable to convert shaped vector to image");
+        return makeBufferedImage(vec.asShapedArray());
     }
 
+    /**
+     * Make a buffered image from a shaped vector with given options.
+     *
+     * @param vec
+     *        The shaped vector.
+     *
+     * @param opts
+     *        The options for conversion.
+     */
     public static BufferedImage makeBufferedImage(ShapedVector vec,
                                                   FormatOptions opts) {
-        if (vec instanceof DoubleShapedVector) {
-            return makeBufferedImage(ArrayFactory.wrap(((DoubleShapedVector)vec).getData(), vec.getShape()), opts);
-        }
-        if (vec instanceof FloatShapedVector) {
-            return makeBufferedImage(ArrayFactory.wrap(((FloatShapedVector)vec).getData(), vec.getShape()), opts);
-        }
-        throw new IllegalArgumentException("Unable to convert shaped vector to image");
+        return makeBufferedImage(vec.asShapedArray(), opts);
     }
 
 
     /*=======================================================================*/
     /* BUFFERED IMAGES TO ARRAYS */
 
+    /**
+     * Get the type name of a buffered image.
+     *
+     * @param image
+     *        The buffered image.
+     */
     public static String getImageTypeName(BufferedImage image) {
         return getImageTypeName(image.getType());
     }
 
+    /**
+     * Get the type name of a given buffered image type number.
+     *
+     * @param type
+     *        The buffered image type number.
+     */
     public static String getImageTypeName(int type) {
         switch (type) {
         case BufferedImage.TYPE_INT_RGB:
@@ -1027,7 +1067,7 @@ public enum DataFormat {
      * information.  The data type and rank of the result depend on the image
      * type. </p>
      *
-     * <p> Gray scaled images yield 2D array while colored (RGB) and
+     * <p> Gray-scaled images yield 2D array while colored (RGB) and
      * translucent (RGBA) images yields 3D images.  The penultimate dimension
      * is the width of the image and the last dimension is the height of the
      * image.  For RGB and RGBA images, the first dimension is respectively 3
@@ -1065,8 +1105,7 @@ public enum DataFormat {
         final int transferType = raster.getTransferType();
         final int numDataElements = raster.getNumDataElements();
         final int type = image.getType();
-        switch (type) {
-        case BufferedImage.TYPE_INT_RGB: {
+        if (type == BufferedImage.TYPE_INT_RGB) {
             if (numBands != 3 || numDataElements != 1 || transferType != DataBuffer.TYPE_INT) {
                 throw new IllegalArgumentException("Assertion failed for TYPE_INT_RGB");
             }
@@ -1076,17 +1115,16 @@ public enum DataFormat {
                 for (int x = 0; x < width; ++x) {
                     raster.getDataElements(x + minX, y + minY, data);
                     int pixel = data[0];
-                    int red   = (pixel >> 16) & 0xFF;
-                    int green = (pixel >>  8) & 0xFF;
-                    int blue  = (pixel      ) & 0xFF;
-                    arr.set(0, x, y, (byte)red);
-                    arr.set(1, x, y, (byte)green);
-                    arr.set(2, x, y, (byte)blue);
+                    byte red   = (byte)((pixel >> 16) & 0xFF);
+                    byte green = (byte)((pixel >>  8) & 0xFF);
+                    byte blue  = (byte)((pixel      ) & 0xFF);
+                    arr.set(0, x, y, red);
+                    arr.set(1, x, y, green);
+                    arr.set(2, x, y, blue);
                 }
             }
             return arr;
-        }
-        case BufferedImage.TYPE_INT_ARGB: {
+        } else if (type == BufferedImage.TYPE_INT_ARGB) {
             if (numBands != 4 || numDataElements != 1 || transferType != DataBuffer.TYPE_INT) {
                 throw new IllegalArgumentException("Assertion failed for TYPE_INT_ARGB");
             }
@@ -1096,19 +1134,18 @@ public enum DataFormat {
                 for (int x = 0; x < width; ++x) {
                     raster.getDataElements(x + minX, y + minY, data);
                     int pixel = data[0];
-                    int alpha = (pixel >> 24) & 0xFF;
-                    int red   = (pixel >> 16) & 0xFF;
-                    int green = (pixel >>  8) & 0xFF;
-                    int blue  = (pixel      ) & 0xFF;
-                    arr.set(0, x, y, (byte)red);
-                    arr.set(1, x, y, (byte)green);
-                    arr.set(2, x, y, (byte)blue);
-                    arr.set(3, x, y, (byte)alpha);
+                    byte alpha = (byte)((pixel >> 24) & 0xFF);
+                    byte red   = (byte)((pixel >> 16) & 0xFF);
+                    byte green = (byte)((pixel >>  8) & 0xFF);
+                    byte blue  = (byte)((pixel      ) & 0xFF);
+                    arr.set(0, x, y, red);
+                    arr.set(1, x, y, green);
+                    arr.set(2, x, y, blue);
+                    arr.set(3, x, y, alpha);
                 }
             }
             return arr;
-        }
-        case BufferedImage.TYPE_INT_ARGB_PRE: {
+        } else if (type == BufferedImage.TYPE_INT_ARGB_PRE) {
             /* Assume colors have been premultiplied by alpha/255. */
             final int b = 255;
             final int a = 2*b;
@@ -1133,8 +1170,7 @@ public enum DataFormat {
                 }
             }
             return arr;
-        }
-        case BufferedImage.TYPE_INT_BGR: {
+        } else if (type == BufferedImage.TYPE_INT_BGR) {
             if (numBands != 3 || numDataElements != 1 || transferType != DataBuffer.TYPE_INT) {
                 throw new IllegalArgumentException("Assertion failed for TYPE_INT_BGR");
             }
@@ -1153,8 +1189,7 @@ public enum DataFormat {
                 }
             }
             return arr;
-        }
-        case BufferedImage.TYPE_USHORT_565_RGB: {
+        } else if (type == BufferedImage.TYPE_USHORT_565_RGB) {
             if (numBands != 3 || numDataElements != 1 || transferType != DataBuffer.TYPE_USHORT) {
                 throw new IllegalArgumentException("Assertion failed for TYPE_USHORT_565_RGB");
             }
@@ -1173,8 +1208,7 @@ public enum DataFormat {
                 }
             }
             return arr;
-        }
-        case BufferedImage.TYPE_USHORT_555_RGB: {
+        } else if (type == BufferedImage.TYPE_USHORT_555_RGB) {
             if (numBands != 3 || numDataElements != 1 || transferType != DataBuffer.TYPE_USHORT) {
                 throw new IllegalArgumentException("Assertion failed for TYPE_USHORT_555_RGB");
             }
@@ -1193,8 +1227,7 @@ public enum DataFormat {
                 }
             }
             return arr;
-        }
-        case BufferedImage.TYPE_3BYTE_BGR: {
+        } else if (type == BufferedImage.TYPE_3BYTE_BGR) {
             if (numBands != 3 || numDataElements != 3 || transferType != DataBuffer.TYPE_BYTE) {
                 throw new IllegalArgumentException("Assertion failed for TYPE_3BYTE_BGR");
             }
@@ -1209,8 +1242,7 @@ public enum DataFormat {
                 }
             }
             return arr;
-        }
-        case BufferedImage.TYPE_4BYTE_ABGR: {
+        } else if (type == BufferedImage.TYPE_4BYTE_ABGR) {
             if (numBands != 4 || numDataElements != 4 || transferType != DataBuffer.TYPE_BYTE) {
                 throw new IllegalArgumentException("Assertion failed for TYPE_4BYTE_ABGR");
             }
@@ -1226,8 +1258,7 @@ public enum DataFormat {
                 }
             }
             return arr;
-        }
-        case BufferedImage.TYPE_4BYTE_ABGR_PRE: {
+        } else if (type == BufferedImage.TYPE_4BYTE_ABGR_PRE) {
             /* Assume colors have been premultiplied by alpha/255. */
             final int b = 255;
             final int a = 2*b;
@@ -1251,8 +1282,7 @@ public enum DataFormat {
                 }
             }
             return arr;
-        }
-        case BufferedImage.TYPE_BYTE_GRAY: {
+        } else if (type == BufferedImage.TYPE_BYTE_GRAY) {
             if (numBands != 1 || numDataElements != 1 || transferType != DataBuffer.TYPE_BYTE) {
                 throw new IllegalArgumentException("Assertion failed for TYPE_BYTE_GRAY");
             }
@@ -1261,12 +1291,11 @@ public enum DataFormat {
             for (int y = 0; y < height; ++y) {
                 for (int x = 0; x < width; ++x) {
                     raster.getDataElements(x + minX, y + minY, data);
-                    arr.set(x, y, (byte)data[0]);
+                    arr.set(x, y, data[0]);
                 }
             }
             return arr;
-        }
-        case BufferedImage.TYPE_USHORT_GRAY: {
+        } else if (type == BufferedImage.TYPE_USHORT_GRAY) {
             if (numBands != 1 || numDataElements != 1 || transferType != DataBuffer.TYPE_USHORT) {
                 throw new IllegalArgumentException("Assertion failed for TYPE_USHORT_GRAY");
             }
@@ -1279,8 +1308,7 @@ public enum DataFormat {
                 }
             }
             return arr;
-        }
-        case BufferedImage.TYPE_BYTE_BINARY: {
+        } else if (type == BufferedImage.TYPE_BYTE_BINARY) {
             if (numBands != 1 || numDataElements != 1 || transferType != DataBuffer.TYPE_BYTE) {
                 throw new IllegalArgumentException("Assertion failed for TYPE_BYTE_BINARY");
             }
@@ -1294,9 +1322,8 @@ public enum DataFormat {
                 }
             }
             return arr;
-        }
-        //case BufferedImage.TYPE_BYTE_INDEXED:
-        //case BufferedImage.TYPE_CUSTOM:
+      //} else if (type == BufferedImage.TYPE_BYTE_INDEXED) {
+      //} else if (type == BufferedImage.TYPE_CUSTOM) {
         }
 
         /* For all other image types, we use a fallback method. */
@@ -1394,6 +1421,66 @@ public enum DataFormat {
                 return arr;
             }
         }
+    }
+
+    /**
+     * Convert a floating point value in an 8-bit unsigned integer.
+     *
+     * <p> This static method, round the floating point value and clamp it to
+     * fit in an 8-bit unsigned integer. </p>
+     *
+     * @param val
+     *        A single precision floating point value.
+     *
+     * @return An 8-bit unsigned integer value stored into a {@code byte}.
+     */
+    private static final byte toUInt8(float val) {
+        return (byte)max(0, min(round(val), 0xFF));
+    }
+
+    /**
+     * Convert a floating point value in a 16-bit unsigned integer.
+     *
+     * <p> This static method, round the floating point value and clamp it to
+     * fit in an 16-bit unsigned integer. </p>
+     *
+     * @param val
+     *        A single precision floating point value.
+     *
+     * @return A 16-bit unsigned integer value stored into a {@code short}.
+     */
+    private static final short toUInt16(float val) {
+        return (short)max(0, min(round(val), 0xFFFF));
+    }
+
+    /**
+     * Convert a floating point value in an 8-bit unsigned integer.
+     *
+     * <p> This static method, round the floating point value and clamp it to
+     * fit in an 8-bit unsigned integer. </p>
+     *
+     * @param val
+     *        A double precision floating point value.
+     *
+     * @return An 8-bit unsigned integer value stored into a {@code byte}.
+     */
+    private static final byte toUInt8(double val) {
+        return (byte)max(0, min(round(val), 0xFF));
+    }
+
+    /**
+     * Convert a floating point value in a 16-bit unsigned integer.
+     *
+     * <p> This static method, round the floating point value and clamp it to
+     * fit in an 16-bit unsigned integer. </p>
+     *
+     * @param val
+     *        A double precision floating point value.
+     *
+     * @return A 16-bit unsigned integer value stored into a {@code short}.
+     */
+    private static final short toUInt16(double val) {
+        return (short)max(0, min(round(val), 0xFFFF));
     }
 
 
