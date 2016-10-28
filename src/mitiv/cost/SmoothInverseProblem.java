@@ -128,7 +128,6 @@ public class SmoothInverseProblem extends IterativeDifferentiableSolver {
         return limitedMemorySize;
     }
 
-
     /**
      * Set the number of previous steps to memorize.
      *
@@ -306,6 +305,14 @@ public class SmoothInverseProblem extends IterativeDifferentiableSolver {
         } else {
             return super.iterate(x);
         }
+    }
+
+    /**
+     * Release as much resources as possible.
+     */
+    public void releaseResources() {
+        setOptimizer(null);
+        restart = true;
     }
 
     /** Initialize all resources. */
