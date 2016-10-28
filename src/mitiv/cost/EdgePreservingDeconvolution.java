@@ -583,7 +583,7 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         double val;
         if (isnan(padValue)) {
             val = weightedData.getWeightedMean();
-            if (psf != null) {
+            if (psf != null && ! normalizePSF) {
                 val /= sum(psf);
             }
         } else {
