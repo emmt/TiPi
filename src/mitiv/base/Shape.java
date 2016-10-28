@@ -103,8 +103,11 @@ public class Shape {
     }
 
     /**
-     * Make a 1-D shape
-     * @param dim1   The 1st dimension.
+     * Make a 1-D shape.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
      *
      * @return A new 1-dimensional shape built from the given dimensions.
      *
@@ -116,9 +119,14 @@ public class Shape {
     }
 
     /**
-     * Make a 2-D shape
-     * @param dim1   The 1st dimension.
-     * @param dim2   The 2nd dimension.
+     * Make a 2-D shape.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
      *
      * @return A new 2-dimensional shape built from the given dimensions.
      *
@@ -130,10 +138,17 @@ public class Shape {
     }
 
     /**
-     * Make a 3-D shape
-     * @param dim1   The 1st dimension.
-     * @param dim2   The 2nd dimension.
-     * @param dim3   The 3rd dimension.
+     * Make a 3-D shape.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
      *
      * @return A new 3-dimensional shape built from the given dimensions.
      *
@@ -145,11 +160,20 @@ public class Shape {
     }
 
     /**
-     * Make a 4-D shape
-     * @param dim1   The 1st dimension.
-     * @param dim2   The 2nd dimension.
-     * @param dim3   The 3rd dimension.
-     * @param dim4   The 4th dimension.
+     * Make a 4-D shape.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @param dim4
+     *        The 4th dimension.
+     *
      *
      * @return A new 4-dimensional shape built from the given dimensions.
      *
@@ -161,12 +185,23 @@ public class Shape {
     }
 
     /**
-     * Make a 5-D shape
-     * @param dim1   The 1st dimension.
-     * @param dim2   The 2nd dimension.
-     * @param dim3   The 3rd dimension.
-     * @param dim4   The 4th dimension.
-     * @param dim5   The 5th dimension.
+     * Make a 5-D shape.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @param dim4
+     *        The 4th dimension.
+     *
+     * @param dim5
+     *        The 5th dimension.
+     *
      *
      * @return A new 5-dimensional shape built from the given dimensions.
      *
@@ -178,13 +213,26 @@ public class Shape {
     }
 
     /**
-     * Make a 6-D shape
-     * @param dim1   The 1st dimension.
-     * @param dim2   The 2nd dimension.
-     * @param dim3   The 3rd dimension.
-     * @param dim4   The 4th dimension.
-     * @param dim5   The 5th dimension.
-     * @param dim6   The 6th dimension.
+     * Make a 6-D shape.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @param dim4
+     *        The 4th dimension.
+     *
+     * @param dim5
+     *        The 5th dimension.
+     *
+     * @param dim6
+     *        The 6th dimension.
+     *
      *
      * @return A new 6-dimensional shape built from the given dimensions.
      *
@@ -196,14 +244,29 @@ public class Shape {
     }
 
     /**
-     * Make a 7-D shape
-     * @param dim1   The 1st dimension.
-     * @param dim2   The 2nd dimension.
-     * @param dim3   The 3rd dimension.
-     * @param dim4   The 4th dimension.
-     * @param dim5   The 5th dimension.
-     * @param dim6   The 6th dimension.
-     * @param dim7   The 7th dimension.
+     * Make a 7-D shape.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @param dim4
+     *        The 4th dimension.
+     *
+     * @param dim5
+     *        The 5th dimension.
+     *
+     * @param dim6
+     *        The 6th dimension.
+     *
+     * @param dim7
+     *        The 7th dimension.
+     *
      *
      * @return A new 7-dimensional shape built from the given dimensions.
      *
@@ -215,15 +278,32 @@ public class Shape {
     }
 
     /**
-     * Make a 8-D shape
-     * @param dim1   The 1st dimension.
-     * @param dim2   The 2nd dimension.
-     * @param dim3   The 3rd dimension.
-     * @param dim4   The 4th dimension.
-     * @param dim5   The 5th dimension.
-     * @param dim6   The 6th dimension.
-     * @param dim7   The 7th dimension.
-     * @param dim8   The 8th dimension.
+     * Make a 8-D shape.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @param dim4
+     *        The 4th dimension.
+     *
+     * @param dim5
+     *        The 5th dimension.
+     *
+     * @param dim6
+     *        The 6th dimension.
+     *
+     * @param dim7
+     *        The 7th dimension.
+     *
+     * @param dim8
+     *        The 8th dimension.
+     *
      *
      * @return A new 8-dimensional shape built from the given dimensions.
      *
@@ -235,16 +315,35 @@ public class Shape {
     }
 
     /**
-     * Make a 9-D shape
-     * @param dim1   The 1st dimension.
-     * @param dim2   The 2nd dimension.
-     * @param dim3   The 3rd dimension.
-     * @param dim4   The 4th dimension.
-     * @param dim5   The 5th dimension.
-     * @param dim6   The 6th dimension.
-     * @param dim7   The 7th dimension.
-     * @param dim8   The 8th dimension.
-     * @param dim9   The 9th dimension.
+     * Make a 9-D shape.
+     *
+     * @param dim1
+     *        The 1st dimension.
+     *
+     * @param dim2
+     *        The 2nd dimension.
+     *
+     * @param dim3
+     *        The 3rd dimension.
+     *
+     * @param dim4
+     *        The 4th dimension.
+     *
+     * @param dim5
+     *        The 5th dimension.
+     *
+     * @param dim6
+     *        The 6th dimension.
+     *
+     * @param dim7
+     *        The 7th dimension.
+     *
+     * @param dim8
+     *        The 8th dimension.
+     *
+     * @param dim9
+     *        The 9th dimension.
+     *
      *
      * @return A new 9-dimensional shape built from the given dimensions.
      *
@@ -406,6 +505,7 @@ public class Shape {
      *
      * @param dim1
      *        The 1st dimension.
+     *
      */
     public Shape(int dim1) {
         this(new int[]{dim1}, true);
@@ -419,6 +519,7 @@ public class Shape {
      *
      * @param dim2
      *        The 2nd dimension.
+     *
      */
     public Shape(int dim1, int dim2) {
         this(new int[]{dim1, dim2}, true);
@@ -435,6 +536,7 @@ public class Shape {
      *
      * @param dim3
      *        The 3rd dimension.
+     *
      */
     public Shape(int dim1, int dim2, int dim3) {
         this(new int[]{dim1, dim2, dim3}, true);
@@ -454,6 +556,7 @@ public class Shape {
      *
      * @param dim4
      *        The 4th dimension.
+     *
      */
     public Shape(int dim1, int dim2, int dim3, int dim4) {
         this(new int[]{dim1, dim2, dim3, dim4}, true);
@@ -476,6 +579,7 @@ public class Shape {
      *
      * @param dim5
      *        The 5th dimension.
+     *
      */
     public Shape(int dim1, int dim2, int dim3, int dim4, int dim5) {
         this(new int[]{dim1, dim2, dim3, dim4, dim5}, true);
@@ -501,6 +605,7 @@ public class Shape {
      *
      * @param dim6
      *        The 6th dimension.
+     *
      */
     public Shape(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6) {
         this(new int[]{dim1, dim2, dim3, dim4, dim5, dim6}, true);
@@ -529,6 +634,7 @@ public class Shape {
      *
      * @param dim7
      *        The 7th dimension.
+     *
      */
     public Shape(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7) {
         this(new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7}, true);
@@ -560,6 +666,7 @@ public class Shape {
      *
      * @param dim8
      *        The 8th dimension.
+     *
      */
     public Shape(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8) {
         this(new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8}, true);
@@ -594,6 +701,7 @@ public class Shape {
      *
      * @param dim9
      *        The 9th dimension.
+     *
      */
     public Shape(int dim1, int dim2, int dim3, int dim4, int dim5, int dim6, int dim7, int dim8, int dim9) {
         this(new int[]{dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9}, true);

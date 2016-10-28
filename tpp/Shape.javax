@@ -118,7 +118,8 @@ public class Shape {
 
     //# for rank in 1:9
     /**
-     * Make a ${rank}-D shape
+     * Make a ${rank}-D shape.
+     *
     //#     def k = 0
     //#     while ${k} < ${rank}
     //#         eval k += 1
@@ -133,7 +134,9 @@ public class Shape {
     //#             def intList = ${intList},int
     //#         end
     //#         def k_th = ${}{nth_${k}}
-     * @param ${arg}   The ${k_th} dimension.
+     * @param ${arg}
+     *        The ${k_th} dimension.
+     *
     //#     end
      *
      * @return A new ${rank}-dimensional shape built from the given dimensions.
@@ -306,6 +309,7 @@ public class Shape {
     //# for rank in 1:9
     /**
      * Create a ${rank}-D Shape object.
+     *
     //#     def k = 0
     //#     while ${k} < ${rank}
     //#         eval k += 1
@@ -318,9 +322,10 @@ public class Shape {
     //#             def dimList = ${dimList}, ${arg}
     //#         end
     //#         def k_th = ${}{nth_${k}}
-     * @param ${arg}   The ${k_th} dimension.
+     * @param ${arg}
+     *        The ${k_th} dimension.
+     *
     //#     end
-     * @return A new ${rank}-dimensional shape built from the given dimensions.
      */
     public Shape(${argList}) {
         this(new int[]{${dimList}}, true);
