@@ -32,7 +32,6 @@ import mitiv.array.Double3D;
 import mitiv.array.DoubleArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.indexing.Range;
-import mitiv.invpb.LinearDeconvolver;
 import mitiv.linalg.LinearConjugateGradient;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;

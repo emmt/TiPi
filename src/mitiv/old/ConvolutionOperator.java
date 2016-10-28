@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv;
+package mitiv.old;
 
 import mitiv.base.Traits;
 import mitiv.exception.IncorrectSpaceException;

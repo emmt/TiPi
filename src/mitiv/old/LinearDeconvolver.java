@@ -23,11 +23,11 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.invpb;
+package mitiv.old;
 
 import mitiv.base.Shape;
-import mitiv.deconv.ConvolutionOperator;
 import mitiv.exception.NotImplementedException;
+import mitiv.invpb.LeftHandSideMatrix;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.IdentityOperator;
 import mitiv.linalg.LinearConjugateGradient;
