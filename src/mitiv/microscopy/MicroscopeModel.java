@@ -28,6 +28,8 @@ package mitiv.microscopy;
 
 import org.jtransforms.fft.DoubleFFT_2D;
 
+import mitiv.linalg.Vector;
+import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.old.MathUtils;
 
 /**
@@ -204,6 +206,10 @@ public class MicroscopeModel
         freePSF();
     }
 
+    public void setRho(Vector beta)
+    {
+        setRho(((DoubleShapedVector)beta).getData());
+    }
 
     /**
      * Compute φ the part of the phase of the pupil function
