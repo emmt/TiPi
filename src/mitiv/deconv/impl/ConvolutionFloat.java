@@ -85,7 +85,7 @@ public abstract class ConvolutionFloat extends Convolution {
      *
      * @return The internal workspace used for in-place FFT.
      */
-    public float[] getWorkspace() {
+    public float[] getWorkArray() {
         if (tmp == null) {
             tmp = new float[2*inpSize];
         }
@@ -147,7 +147,7 @@ public abstract class ConvolutionFloat extends Convolution {
 
     @Override
     public void forwardFFT() {
-        forwardFFT(getWorkspace());
+        forwardFFT(getWorkArray());
     }
 
     /** Apply in-place backward complex FFT. */
@@ -155,7 +155,7 @@ public abstract class ConvolutionFloat extends Convolution {
 
     @Override
     public void backwardFFT() {
-        forwardFFT(getWorkspace());
+        forwardFFT(getWorkArray());
     }
 
     /**
@@ -168,7 +168,7 @@ public abstract class ConvolutionFloat extends Convolution {
             throw new IllegalArgumentException("You must set the PSF or the MTF first");
         }
         float h[] = mtf;
-        float z[] = getWorkspace();
+        float z[] = getWorkArray();
 
         /* Apply forward complex FFT, multiply by the MTF and
          * apply backward FFT. */
@@ -209,27 +209,35 @@ public abstract class ConvolutionFloat extends Convolution {
 
     @Override
     public void setPSF(ShapedArray psf, int[] off, boolean normalize) {
-        if (normalize) {
-            if (psf.getType() == Traits.FLOAT) {
-                psf = psf.copy();
-            } else {
-                psf = psf.toFloat();
-            }
-            ((FloatArray)psf).scale((float)(1/ArrayUtils.sum(psf)));
+        boolean writable = false;
+        if (psf.getType() != Traits.FLOAT) {
+            psf = psf.toFloat();
+            writable = true;
         }
-        psf = adjustPSF(psf.toFloat(), off);
+        if (normalize) {
+            float sum = (float)ArrayUtils.sum(psf);
+            if (sum != 1) {
+                if (! writable) {
+                    psf = psf.copy();
+                }
+                ((FloatArray)psf).scale((float)1/sum);
+            }
+        }
+        System.out.format("sum(PSF) = %g\n", ArrayUtils.sum(psf));
+        psf = adjustPSF(psf, off);
         computeMTF(((FloatArray)psf).flatten());
     }
 
     private final void computeMTF(float[] psf) {
         final float zero = 0;
+        final float scale = (float)1/(float)inpSize;
         if (mtf == null) {
             mtf = new float[2*inpSize];
         }
         for (int k = 0; k < inpSize; ++k) {
             int real = k + k;
             int imag = real + 1;
-            mtf[real] = psf[k];
+            mtf[real] = psf[k]*scale;
             mtf[imag] = zero;
         }
         forwardFFT(mtf);

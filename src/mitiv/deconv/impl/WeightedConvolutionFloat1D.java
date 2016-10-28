@@ -111,7 +111,7 @@ public class WeightedConvolutionFloat1D
 
         /* Integrate cost. */
         double sum = 0.0;
-        float z[] = cnvl.getWorkspace();
+        float z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 2*off1; // index in work array z
         if (wgt == null) {
@@ -146,7 +146,7 @@ public class WeightedConvolutionFloat1D
         final boolean weighted = (wgt != null);
         final float q = scale*(float)alpha;
         double sum = 0.0;
-        float z[] = cnvl.getWorkspace();
+        float z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 0; // index in work array z
         for (int i1 = 0; i1 < off1; ++i1) {

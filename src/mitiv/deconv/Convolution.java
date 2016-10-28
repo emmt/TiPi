@@ -50,16 +50,17 @@ import mitiv.utils.Timer;
  *
  * <p align="center">
  * <b>H</b> =
- * <b>R</b>.<b>F</b><sup>*</sup>.diag(<b>F</b>.<b><i>h</i></b>).<b>F</b>.<b>S</b>
+ * <b>R</b>.<b>F</b><sup>*</sup>.diag((1/n) <b>F</b>.<b><i>h</i></b>).<b>F</b>.<b>S</b>
  * </p>
  *
  * <p> with <b>F</b> the FFT (Fast Fourier Transform) operator, <b><i>h</i></b>
  * the point spread function (PSF), <b>R</b> a linear operator which selects a
  * sub-region of the output of the convolution and <b>S</b> a linear operator
  * which prepares the input for the FFT.  The * superscript denotes the adjoint
- * of the operator (complex transpose in this specific case) and
+ * of the operator (complex transpose in this specific case),
  * diag(<i><b>v</i></b>) is a diagonal operator whose diagonal elements are
- * those of the vector <i><b>v</i></b>.  </p>
+ * those of the vector <i><b>v</i></b> and <i><b>n</i></b> it the number of
+ * elements used to scale the FFT.  </p>
  *
  * <p> The vector space of the operator is that of the arguments of the
  * convolution.  Currently only 1D, 2D or 3D arguments of type float or double

@@ -129,7 +129,7 @@ public class WeightedConvolutionDouble2D
 
         /* Integrate cost. */
         double sum = 0.0;
-        double z[] = cnvl.getWorkspace();
+        double z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
         int k; // index in work array z
         if (wgt == null) {
@@ -170,7 +170,7 @@ public class WeightedConvolutionDouble2D
         final boolean weighted = (wgt != null);
         final double q = scale*alpha;
         double sum = 0.0;
-        double z[] = cnvl.getWorkspace();
+        double z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 0; // index in work array z
         for (int i2 = 0; i2 < off2; ++i2) {

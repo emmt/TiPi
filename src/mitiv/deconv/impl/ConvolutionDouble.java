@@ -85,7 +85,7 @@ public abstract class ConvolutionDouble extends Convolution {
      *
      * @return The internal workspace used for in-place FFT.
      */
-    public double[] getWorkspace() {
+    public double[] getWorkArray() {
         if (tmp == null) {
             tmp = new double[2*inpSize];
         }
@@ -147,7 +147,7 @@ public abstract class ConvolutionDouble extends Convolution {
 
     @Override
     public void forwardFFT() {
-        forwardFFT(getWorkspace());
+        forwardFFT(getWorkArray());
     }
 
     /** Apply in-place backward complex FFT. */
@@ -155,7 +155,7 @@ public abstract class ConvolutionDouble extends Convolution {
 
     @Override
     public void backwardFFT() {
-        forwardFFT(getWorkspace());
+        forwardFFT(getWorkArray());
     }
 
     /**
@@ -168,7 +168,7 @@ public abstract class ConvolutionDouble extends Convolution {
             throw new IllegalArgumentException("You must set the PSF or the MTF first");
         }
         double h[] = mtf;
-        double z[] = getWorkspace();
+        double z[] = getWorkArray();
 
         /* Apply forward complex FFT, multiply by the MTF and
          * apply backward FFT. */
@@ -209,27 +209,35 @@ public abstract class ConvolutionDouble extends Convolution {
 
     @Override
     public void setPSF(ShapedArray psf, int[] off, boolean normalize) {
-        if (normalize) {
-            if (psf.getType() == Traits.DOUBLE) {
-                psf = psf.copy();
-            } else {
-                psf = psf.toDouble();
-            }
-            ((DoubleArray)psf).scale((double)(1/ArrayUtils.sum(psf)));
+        boolean writable = false;
+        if (psf.getType() != Traits.DOUBLE) {
+            psf = psf.toDouble();
+            writable = true;
         }
-        psf = adjustPSF(psf.toDouble(), off);
+        if (normalize) {
+            double sum = (double)ArrayUtils.sum(psf);
+            if (sum != 1) {
+                if (! writable) {
+                    psf = psf.copy();
+                }
+                ((DoubleArray)psf).scale((double)1/sum);
+            }
+        }
+        System.out.format("sum(PSF) = %g\n", ArrayUtils.sum(psf));
+        psf = adjustPSF(psf, off);
         computeMTF(((DoubleArray)psf).flatten());
     }
 
     private final void computeMTF(double[] psf) {
         final double zero = 0;
+        final double scale = (double)1/(double)inpSize;
         if (mtf == null) {
             mtf = new double[2*inpSize];
         }
         for (int k = 0; k < inpSize; ++k) {
             int real = k + k;
             int imag = real + 1;
-            mtf[real] = psf[k];
+            mtf[real] = psf[k]*scale;
             mtf[imag] = zero;
         }
         forwardFFT(mtf);

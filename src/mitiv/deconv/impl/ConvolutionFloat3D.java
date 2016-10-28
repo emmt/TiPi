@@ -39,9 +39,6 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
     /** FFT operator. */
     private FloatFFT_3D fft = null;
 
-    /** Factor to scale the result of the backward FFT. */
-    private final float scale;
-
     /** Number of element along 1st dimension of the input variables. */
     private final int dim1;
 
@@ -80,7 +77,6 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
         if (space.getRank() != 3) {
             throw new IllegalArgumentException("Vector space must be have 3 dimension(s)");
         }
-        scale = 1.0F/inpSize;
         dim1 = space.getDimension(2);
         off1 = 0;
         end1 = dim1;
@@ -116,7 +112,6 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
         if (out.getRank() != 3) {
             throw new IllegalArgumentException("Output space is not 3D");
         }
-        scale = 1.0F/inpSize;
         dim1 = inp.getDimension(0);
         off1 = off[0];
         end1 = off1 + out.getDimension(0);
@@ -189,14 +184,14 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
             throw new IllegalArgumentException("Bad input size");
         }
         final float zero = 0;
-        float z[] = getWorkspace();
+        float z[] = getWorkArray();
         if (adjoint) {
-            /* Apply R': set real part of workspace to zero-padded and scaled
-               input, set the imaginary part to zero. */
+            /* Apply R': set real part of workspace to zero-padded input, set
+               the imaginary part to zero. */
             if (outSize == inpSize) {
                 /* Output and input have the same size. */
                 for (int k = 0, j = 0; j < inpSize; ++j, k += 2) {
-                    z[k] = scale*x[j];
+                    z[k] = x[j];
                     z[k+1] = zero;
                 }
             } else {
@@ -224,7 +219,7 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
                             z[k+1] = zero;
                         }
                         for (int i1 = off1; i1 < end1; ++i1, ++j, k += 2) {
-                            z[k] = scale*x[j];
+                            z[k] = x[j];
                             z[k+1] = zero;
                         }
                         for (int i1 = end1; i1 < dim1; ++i1, k += 2) {
@@ -262,7 +257,7 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
         if (x == null || x.length != (adjoint ? inpSize : outSize)) {
             throw new IllegalArgumentException("Bad input size");
         }
-        float z[] = getWorkspace();
+        float z[] = getWorkArray();
         if (adjoint) {
             /* Apply operator S' */
             for (int j = 0, k = 0; j < inpSize; ++j, k += 2) {
@@ -273,7 +268,7 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
             if (outSize == inpSize) {
                 /* Output and input have the same size. */
                 for (int j = 0, k = 0; j < inpSize; k += 2, ++j) {
-                    x[j] = scale*z[k];
+                    x[j] = z[k];
                 }
             } else {
                 /* Output size is smaller than input size. */
@@ -282,7 +277,7 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
                     for (int i2 = off2; i2 < end2; ++i2) {
                         int k = (off1 + dim1*(i2 + dim3*i3))*2;
                         for (int i1 = off1; i1 < end1; ++i1, ++j, k += 2) {
-                            x[j] = scale*z[k];
+                            x[j] = z[k];
                         }
                     }
                 }

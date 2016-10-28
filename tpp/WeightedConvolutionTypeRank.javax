@@ -154,7 +154,7 @@ public class ${className}
 
         /* Integrate cost. */
         double sum = 0.0;
-        ${type} z[] = cnvl.getWorkspace();
+        ${type} z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
         //# if ${rank} == 1
         int k = 2*off1; // index in work array z
@@ -245,7 +245,7 @@ public class ${className}
         final boolean weighted = (wgt != null);
         final ${type} q = scale*${cast}alpha;
         double sum = 0.0;
-        ${type} z[] = cnvl.getWorkspace();
+        ${type} z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 0; // index in work array z
         //# if ${rank} == 1

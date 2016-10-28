@@ -147,7 +147,7 @@ public class WeightedConvolutionDouble3D
 
         /* Integrate cost. */
         double sum = 0.0;
-        double z[] = cnvl.getWorkspace();
+        double z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
         int k; // index in work array z
         if (wgt == null) {
@@ -192,7 +192,7 @@ public class WeightedConvolutionDouble3D
         final boolean weighted = (wgt != null);
         final double q = scale*alpha;
         double sum = 0.0;
-        double z[] = cnvl.getWorkspace();
+        double z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 0; // index in work array z
         for (int i3 = 0; i3 < off3; ++i3) {
