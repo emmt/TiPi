@@ -110,8 +110,8 @@ public interface ShapedArray extends Shaped, Typed {
 
     /**
      * Convert array elements to type {@code byte}.
-      *
-    * @return A {@link ByteArray} object which may be the object itself
+     *
+     * @return A {@link ByteArray} object which may be the object itself
      *         if it is already a ByteArray.
      */
     public abstract ByteArray toByte();
@@ -126,8 +126,8 @@ public interface ShapedArray extends Shaped, Typed {
 
     /**
      * Convert array elements to type {@code int}.
-      *
-    * @return A {@link IntArray} object which may be the object itself
+     *
+     * @return A {@link IntArray} object which may be the object itself
      *         if it is already an IntArray.
      */
     public abstract IntArray toInt();
@@ -142,16 +142,16 @@ public interface ShapedArray extends Shaped, Typed {
 
     /**
      * Convert array elements to type {@code float}.
-      *
-    * @return A {@link FloatArray} object which may be the object itself
+     *
+     * @return A {@link FloatArray} object which may be the object itself
      *         if it is already a FloatArray.
      */
     public abstract FloatArray toFloat();
 
     /**
      * Convert array elements to type {@code double}.
-      *
-    * @return A {@link DoubleArray} object which may be the object itself
+     *
+     * @return A {@link DoubleArray} object which may be the object itself
      *         if it is already a DoubleArray.
      */
     public abstract DoubleArray toDouble();
@@ -174,8 +174,8 @@ public interface ShapedArray extends Shaped, Typed {
      * and values as the object but whose contents is independent from that of
      * the object.  If the object is a <i>view</i>, then this method yields a
      * compact array in a <i>flat</i> form.  </p>
-      *
-    * @return A flat shaped array.
+     *
+     * @return A flat shaped array.
      */
     public abstract ShapedArray copy();
 
