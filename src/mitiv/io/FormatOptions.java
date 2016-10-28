@@ -44,11 +44,9 @@ import mitiv.exception.IllegalTypeException;
  * @author Éric.
  */
 public class FormatOptions {
-    private double minValue = 0.0;
-    private boolean minValueGiven = false;
+    private double minValue = Double.NaN;
 
-    private double maxValue = 0.0;
-    private boolean maxValueGiven = false;
+    private double maxValue = Double.NaN;
 
     private int type = Traits.VOID;
 
@@ -59,6 +57,12 @@ public class FormatOptions {
     private DataFormat dataFormat = null;
 
     private boolean interpolate = false;
+
+    /**
+     * Create a new format options with defaults.
+     */
+    public FormatOptions() {
+    }
 
     /**
      * Get preferred data type for saving.
@@ -126,17 +130,13 @@ public class FormatOptions {
         }
     }
 
-
-    public FormatOptions() {
-    }
-
     /**
      * Get the specified minimum data value.
      *
      * @return The specified value or NaN if it has not been specified.
      */
     public double getMinValue() {
-        return (minValueGiven ? minValue : Double.NaN);
+        return minValue;
     }
 
     /**
@@ -146,11 +146,10 @@ public class FormatOptions {
      *        The new minimum data value.
      */
     public void setMinValue(double value) {
-        if (nonfinite(value)) {
+        if (Double.isInfinite(value)) {
             throw new IllegalArgumentException("Minimum data value must be finite");
         }
         minValue = value;
-        minValueGiven = true;
     }
 
     /**
@@ -160,7 +159,13 @@ public class FormatOptions {
      */
     public void unsetMinValue() {
         minValue = Double.NaN;
-        minValueGiven = false;
+    }
+
+    /**
+     * Check whether the minimum data value has been specified.
+     */
+    public boolean isMinValueGiven() {
+        return Double.isNaN(minValue);
     }
 
     /**
@@ -169,7 +174,7 @@ public class FormatOptions {
      * @return The specified value or NaN if it has not been specified.
      */
     public double getMaxValue() {
-        return (maxValueGiven ? maxValue : Double.NaN);
+        return maxValue;
     }
 
     /**
@@ -179,11 +184,10 @@ public class FormatOptions {
      *        The new maximum data value.
      */
     public void setMaxValue(double value) {
-        if (nonfinite(value)) {
+        if (Double.isInfinite(value)) {
             throw new IllegalArgumentException("Maximum data value must be finite");
         }
         maxValue = value;
-        maxValueGiven = true;
     }
 
     /**
@@ -193,7 +197,13 @@ public class FormatOptions {
      */
     public void unsetMaxValue() {
         maxValue = Double.NaN;
-        maxValueGiven = false;
+    }
+
+    /**
+     * Check whether the maximum data value has been specified.
+     */
+    public boolean isMaxValueGiven() {
+        return Double.isNaN(minValue);
     }
 
     /**
@@ -363,13 +373,10 @@ public class FormatOptions {
 
         /* Figure out the minimum and maximum data value. */
         double dataMin, dataMax;
-        if (minValueGiven && maxValueGiven) {
+        if (isMinValueGiven() && isMaxValueGiven()) {
             dataMin = minValue;
             dataMax = maxValue;
-            //} else {
-            //    DataSummary ds = new DataSummary(arr);
-
-        } else if (minValueGiven) {
+        } else if (isMinValueGiven()) {
             dataMin = minValue;
             switch (arr.getType()) {
             case Traits.BYTE:
@@ -393,7 +400,7 @@ public class FormatOptions {
             default:
                 throw new IllegalTypeException();
             }
-        } else if (maxValueGiven) {
+        } else if (isMaxValueGiven()) {
             dataMax = maxValue;
             switch (arr.getType()) {
             case Traits.BYTE:
