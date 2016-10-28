@@ -366,7 +366,7 @@ public class DataSummary {
 
         @Override
         public void update(byte arg) {
-            double val = arg;
+            double val = (arg & 0xff);
             vsum += val;
             if (val < vmin) {
                 vmin = val;
