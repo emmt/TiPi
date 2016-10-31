@@ -60,7 +60,7 @@ public class GradientChecker {
      * Set the value of the variables.
      *
      * <p> Setting the variables must be done prior to any gradient check and
-     * trigger the computation of the function and its gradient at the
+     * triggers the computation of the function and its gradient at the
      * position of the variables. </p>
      *
      * @param x
@@ -227,10 +227,10 @@ public class GradientChecker {
      * Compute a small step size.
      *
      * <p> This method computes a small but non-negligible step size given the
-     * value of the parameter to pertubate. </p>
+     * value of the parameter to perturbate. </p>
      *
      * @param x
-     *        The value of the parameter to pertubate.
+     *        The value of the parameter to perturbate.
      *
      * @return A small step size
      */
