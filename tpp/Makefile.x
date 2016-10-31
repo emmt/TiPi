@@ -108,19 +108,19 @@ STRIDDEN_ARRAY_INPUTS = StriddenArray.javax $(ARRAY_IMPL_INPUTS)
 
 SELECTED_ARRAY_INPUTS = SelectedArray.javax $(ARRAY_IMPL_INPUTS)
 
-CONVOLUTION_IMPL = $(ROOT)deconv/impl/
+CONVOLUTION_DIR = $(ROOT)deconv/
 CONVOLUTION_RANKS = 1 2 3
 CONVOLUTION_TYPES = Float Double
 CONVOLUTION_OUTPUTS = $(foreach TYPE, $(CONVOLUTION_TYPES), \
-                          $(CONVOLUTION_IMPL)Convolution$(TYPE).java) \
+                          $(CONVOLUTION_DIR)Convolution$(TYPE).java) \
                       $(foreach TYPE, $(CONVOLUTION_TYPES), \
                           $(foreach RANK, $(CONVOLUTION_RANKS), \
-                              $(CONVOLUTION_IMPL)Convolution$(TYPE)$(RANK)D.java)) \
+                              $(CONVOLUTION_DIR)Convolution$(TYPE)$(RANK)D.java)) \
                       $(foreach TYPE, $(CONVOLUTION_TYPES), \
-                          $(CONVOLUTION_IMPL)WeightedConvolution$(TYPE).java) \
+                          $(CONVOLUTION_DIR)WeightedConvolution$(TYPE).java) \
                       $(foreach TYPE, $(CONVOLUTION_TYPES), \
                           $(foreach RANK, $(CONVOLUTION_RANKS), \
-                              $(CONVOLUTION_IMPL)WeightedConvolution$(TYPE)$(RANK)D.java))
+                              $(CONVOLUTION_DIR)WeightedConvolution$(TYPE)$(RANK)D.java))
 
 MAPPING_OUTPUTS = $(foreach TYPE, $(TYPES), $(MAPPING)$(TYPE)Scanner.java) \
                   $(foreach TYPE, $(TYPES), $(MAPPING)$(TYPE)Function.java)
@@ -180,12 +180,12 @@ all-convolution: $(CONVOLUTION_OUTPUTS)
 //#     def Type = ${Type}
 //#     def TYPE = ${}{TYPE_${typeId}}
 //#     def TYPE = ${TYPE}
-$(CONVOLUTION_IMPL)Convolution${Type}.java: ConvolutionType.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=Convolution${Type} -Dtype=${type} $< $@
+$(CONVOLUTION_DIR)Convolution${Type}.java: ConvolutionType.javax common.javax
+	$(CODGER) --autopkg -DclassName=Convolution${Type} -Dtype=${type} $< $@
 
 //#     for rank in 1:3
-$(CONVOLUTION_IMPL)Convolution${Type}${rank}D.java: ConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=Convolution${Type}${rank}D -Drank=${rank} -Dtype=${type} $< $@
+$(CONVOLUTION_DIR)Convolution${Type}${rank}D.java: ConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=Convolution${Type}${rank}D -Drank=${rank} -Dtype=${type} $< $@
 //#     end
 //# end
 
@@ -196,12 +196,12 @@ $(CONVOLUTION_IMPL)Convolution${Type}${rank}D.java: ConvolutionTypeRank.javax co
 //#     def Type = ${Type}
 //#     def TYPE = ${}{TYPE_${typeId}}
 //#     def TYPE = ${TYPE}
-$(CONVOLUTION_IMPL)WeightedConvolution${Type}.java: WeightedConvolutionType.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolution${Type} -Dtype=${type} $< $@
+$(CONVOLUTION_DIR)WeightedConvolution${Type}.java: WeightedConvolutionType.javax common.javax
+	$(CODGER) --autopkg -DclassName=WeightedConvolution${Type} -Dtype=${type} $< $@
 
 //#     for rank in 1:3
-$(CONVOLUTION_IMPL)WeightedConvolution${Type}${rank}D.java: WeightedConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolution${Type}${rank}D -Drank=${rank} -Dtype=${type} $< $@
+$(CONVOLUTION_DIR)WeightedConvolution${Type}${rank}D.java: WeightedConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=WeightedConvolution${Type}${rank}D -Drank=${rank} -Dtype=${type} $< $@
 //#     end
 //# end
 

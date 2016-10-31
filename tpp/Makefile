@@ -64,19 +64,19 @@ STRIDDEN_ARRAY_INPUTS = StriddenArray.javax $(ARRAY_IMPL_INPUTS)
 
 SELECTED_ARRAY_INPUTS = SelectedArray.javax $(ARRAY_IMPL_INPUTS)
 
-CONVOLUTION_IMPL = $(ROOT)deconv/impl/
+CONVOLUTION_DIR = $(ROOT)deconv/
 CONVOLUTION_RANKS = 1 2 3
 CONVOLUTION_TYPES = Float Double
 CONVOLUTION_OUTPUTS = $(foreach TYPE, $(CONVOLUTION_TYPES), \
-                          $(CONVOLUTION_IMPL)Convolution$(TYPE).java) \
+                          $(CONVOLUTION_DIR)Convolution$(TYPE).java) \
                       $(foreach TYPE, $(CONVOLUTION_TYPES), \
                           $(foreach RANK, $(CONVOLUTION_RANKS), \
-                              $(CONVOLUTION_IMPL)Convolution$(TYPE)$(RANK)D.java)) \
+                              $(CONVOLUTION_DIR)Convolution$(TYPE)$(RANK)D.java)) \
                       $(foreach TYPE, $(CONVOLUTION_TYPES), \
-                          $(CONVOLUTION_IMPL)WeightedConvolution$(TYPE).java) \
+                          $(CONVOLUTION_DIR)WeightedConvolution$(TYPE).java) \
                       $(foreach TYPE, $(CONVOLUTION_TYPES), \
                           $(foreach RANK, $(CONVOLUTION_RANKS), \
-                              $(CONVOLUTION_IMPL)WeightedConvolution$(TYPE)$(RANK)D.java))
+                              $(CONVOLUTION_DIR)WeightedConvolution$(TYPE)$(RANK)D.java))
 
 MAPPING_OUTPUTS = $(foreach TYPE, $(TYPES), $(MAPPING)$(TYPE)Scanner.java) \
                   $(foreach TYPE, $(TYPES), $(MAPPING)$(TYPE)Function.java)
@@ -129,43 +129,43 @@ $(ROOT)io/DataFormat.java: DataFormat.javax common.javax
 
 all-convolution: $(CONVOLUTION_OUTPUTS)
 
-$(CONVOLUTION_IMPL)ConvolutionFloat.java: ConvolutionType.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionFloat -Dtype=float $< $@
+$(CONVOLUTION_DIR)ConvolutionFloat.java: ConvolutionType.javax common.javax
+	$(CODGER) --autopkg -DclassName=ConvolutionFloat -Dtype=float $< $@
 
-$(CONVOLUTION_IMPL)ConvolutionFloat1D.java: ConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionFloat1D -Drank=1 -Dtype=float $< $@
-$(CONVOLUTION_IMPL)ConvolutionFloat2D.java: ConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionFloat2D -Drank=2 -Dtype=float $< $@
-$(CONVOLUTION_IMPL)ConvolutionFloat3D.java: ConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionFloat3D -Drank=3 -Dtype=float $< $@
-$(CONVOLUTION_IMPL)ConvolutionDouble.java: ConvolutionType.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionDouble -Dtype=double $< $@
+$(CONVOLUTION_DIR)ConvolutionFloat1D.java: ConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=ConvolutionFloat1D -Drank=1 -Dtype=float $< $@
+$(CONVOLUTION_DIR)ConvolutionFloat2D.java: ConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=ConvolutionFloat2D -Drank=2 -Dtype=float $< $@
+$(CONVOLUTION_DIR)ConvolutionFloat3D.java: ConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=ConvolutionFloat3D -Drank=3 -Dtype=float $< $@
+$(CONVOLUTION_DIR)ConvolutionDouble.java: ConvolutionType.javax common.javax
+	$(CODGER) --autopkg -DclassName=ConvolutionDouble -Dtype=double $< $@
 
-$(CONVOLUTION_IMPL)ConvolutionDouble1D.java: ConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionDouble1D -Drank=1 -Dtype=double $< $@
-$(CONVOLUTION_IMPL)ConvolutionDouble2D.java: ConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionDouble2D -Drank=2 -Dtype=double $< $@
-$(CONVOLUTION_IMPL)ConvolutionDouble3D.java: ConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=ConvolutionDouble3D -Drank=3 -Dtype=double $< $@
+$(CONVOLUTION_DIR)ConvolutionDouble1D.java: ConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=ConvolutionDouble1D -Drank=1 -Dtype=double $< $@
+$(CONVOLUTION_DIR)ConvolutionDouble2D.java: ConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=ConvolutionDouble2D -Drank=2 -Dtype=double $< $@
+$(CONVOLUTION_DIR)ConvolutionDouble3D.java: ConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=ConvolutionDouble3D -Drank=3 -Dtype=double $< $@
 
-$(CONVOLUTION_IMPL)WeightedConvolutionFloat.java: WeightedConvolutionType.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolutionFloat -Dtype=float $< $@
+$(CONVOLUTION_DIR)WeightedConvolutionFloat.java: WeightedConvolutionType.javax common.javax
+	$(CODGER) --autopkg -DclassName=WeightedConvolutionFloat -Dtype=float $< $@
 
-$(CONVOLUTION_IMPL)WeightedConvolutionFloat1D.java: WeightedConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolutionFloat1D -Drank=1 -Dtype=float $< $@
-$(CONVOLUTION_IMPL)WeightedConvolutionFloat2D.java: WeightedConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolutionFloat2D -Drank=2 -Dtype=float $< $@
-$(CONVOLUTION_IMPL)WeightedConvolutionFloat3D.java: WeightedConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolutionFloat3D -Drank=3 -Dtype=float $< $@
-$(CONVOLUTION_IMPL)WeightedConvolutionDouble.java: WeightedConvolutionType.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolutionDouble -Dtype=double $< $@
+$(CONVOLUTION_DIR)WeightedConvolutionFloat1D.java: WeightedConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=WeightedConvolutionFloat1D -Drank=1 -Dtype=float $< $@
+$(CONVOLUTION_DIR)WeightedConvolutionFloat2D.java: WeightedConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=WeightedConvolutionFloat2D -Drank=2 -Dtype=float $< $@
+$(CONVOLUTION_DIR)WeightedConvolutionFloat3D.java: WeightedConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=WeightedConvolutionFloat3D -Drank=3 -Dtype=float $< $@
+$(CONVOLUTION_DIR)WeightedConvolutionDouble.java: WeightedConvolutionType.javax common.javax
+	$(CODGER) --autopkg -DclassName=WeightedConvolutionDouble -Dtype=double $< $@
 
-$(CONVOLUTION_IMPL)WeightedConvolutionDouble1D.java: WeightedConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolutionDouble1D -Drank=1 -Dtype=double $< $@
-$(CONVOLUTION_IMPL)WeightedConvolutionDouble2D.java: WeightedConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolutionDouble2D -Drank=2 -Dtype=double $< $@
-$(CONVOLUTION_IMPL)WeightedConvolutionDouble3D.java: WeightedConvolutionTypeRank.javax common.javax
-	$(CODGER) -Dpackage=mitiv.deconv.impl -DclassName=WeightedConvolutionDouble3D -Drank=3 -Dtype=double $< $@
+$(CONVOLUTION_DIR)WeightedConvolutionDouble1D.java: WeightedConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=WeightedConvolutionDouble1D -Drank=1 -Dtype=double $< $@
+$(CONVOLUTION_DIR)WeightedConvolutionDouble2D.java: WeightedConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=WeightedConvolutionDouble2D -Drank=2 -Dtype=double $< $@
+$(CONVOLUTION_DIR)WeightedConvolutionDouble3D.java: WeightedConvolutionTypeRank.javax common.javax
+	$(CODGER) --autopkg -DclassName=WeightedConvolutionDouble3D -Drank=3 -Dtype=double $< $@
 
 #-----------------------------------------------------------------------------
 # Array

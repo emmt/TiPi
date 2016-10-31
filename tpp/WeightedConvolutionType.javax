@@ -33,7 +33,7 @@
 //#     def zero = 0.0
 //#     def one  = 1.0
 //# end
-package mitiv.deconv.impl;
+package ${package};
 
 import mitiv.base.Traits;
 import mitiv.deconv.WeightedConvolutionCost;
@@ -45,7 +45,7 @@ import mitiv.linalg.shaped.${Type}ShapedVectorSpace;
  *
  * @author Éric Thiébaut
  */
-public abstract class ${className}
+abstract class ${className}
      extends WeightedConvolutionCost
 {
     /** The data. */

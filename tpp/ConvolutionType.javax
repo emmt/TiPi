@@ -30,7 +30,7 @@
 //# else
 //#     def cast =
 //# end
-package mitiv.deconv.impl;
+package ${package};
 
 import mitiv.array.ArrayUtils;
 import mitiv.array.${Type}Array;
@@ -48,7 +48,7 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
  *
  * @author Éric Thiébaut
  */
-public abstract class ${className} extends Convolution {
+abstract class ${className} extends Convolution {
 
     /** Workspace array. */
     private ${type}[] wrk = null;

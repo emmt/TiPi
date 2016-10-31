@@ -24,42 +24,42 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv.impl;
+package mitiv.deconv;
 
 import mitiv.array.ArrayUtils;
-import mitiv.array.DoubleArray;
+import mitiv.array.FloatArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
 import mitiv.deconv.Convolution;
 import mitiv.exception.IncorrectSpaceException;
-import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 
 /**
- * Implements abstract class for FFT-based convolution of arrays of double's.
+ * Implements abstract class for FFT-based convolution of arrays of float's.
  *
  * @author Éric Thiébaut
  */
-public abstract class ConvolutionDouble extends Convolution {
+abstract class ConvolutionFloat extends Convolution {
 
     /** Workspace array. */
-    private double[] wrk = null;
+    private float[] wrk = null;
 
     /** Complex modulation transfer function (MTF). */
-    private double[] mtf = null;
+    private float[] mtf = null;
 
     /**
      * The following constructor make this class non instantiable, but still
      * let others inherit from this class.
      */
-    protected ConvolutionDouble(Shape wrk,
+    protected ConvolutionFloat(Shape wrk,
                            ShapedVectorSpace inp, int[] inpOff,
                            ShapedVectorSpace out, int[] outOff) {
         super(wrk, inp, inpOff, out, outOff);
-        if (getType() != Traits.DOUBLE) {
-            throw new IllegalArgumentException("Input and output vector spaces must be for double data type");
+        if (getType() != Traits.FLOAT) {
+            throw new IllegalArgumentException("Input and output vector spaces must be for float data type");
         }
     }
 
@@ -74,9 +74,9 @@ public abstract class ConvolutionDouble extends Convolution {
      *
      * @return The internal workspace used for in-place FFT.
      */
-    public double[] getWorkArray() {
+    public float[] getWorkArray() {
         if (wrk == null) {
-            wrk = new double[2*getNumberOfFrequencies()];
+            wrk = new float[2*getNumberOfFrequencies()];
         }
         return wrk;
     }
@@ -92,7 +92,7 @@ public abstract class ConvolutionDouble extends Convolution {
                 throw new IncorrectSpaceException("Vector does not belong to input space");
             }
         }
-        push(getWorkArray(), ((DoubleShapedVector)src).getData(), adjoint);
+        push(getWorkArray(), ((FloatShapedVector)src).getData(), adjoint);
     }
 
     @Override
@@ -106,7 +106,7 @@ public abstract class ConvolutionDouble extends Convolution {
                 throw new IncorrectSpaceException("Vector does not belong to output space");
             }
         }
-        pull(((DoubleShapedVector)dst).getData(), getWorkArray(), adjoint);
+        pull(((FloatShapedVector)dst).getData(), getWorkArray(), adjoint);
     }
 
     /**
@@ -124,7 +124,7 @@ public abstract class ConvolutionDouble extends Convolution {
      * @param adjoint
      *        Push for the adjoint operation?
      */
-    public abstract void push(double dst[], double src[], boolean adjoint);
+    public abstract void push(float dst[], float src[], boolean adjoint);
 
     /**
      * Copy real part of work array into user array.
@@ -138,10 +138,10 @@ public abstract class ConvolutionDouble extends Convolution {
      * @param adjoint
      *        Pull for the adjoint operation?
      */
-    public abstract void pull(double dst[], double src[], boolean adjoint);
+    public abstract void pull(float dst[], float src[], boolean adjoint);
 
     /** Apply in-place forward complex FFT. */
-    public abstract void forwardFFT(double z[]);
+    public abstract void forwardFFT(float z[]);
 
     @Override
     public void forwardFFT() {
@@ -149,7 +149,7 @@ public abstract class ConvolutionDouble extends Convolution {
     }
 
     /** Apply in-place backward complex FFT. */
-    public abstract void backwardFFT(double z[]);
+    public abstract void backwardFFT(float z[]);
 
     @Override
     public void backwardFFT() {
@@ -165,8 +165,8 @@ public abstract class ConvolutionDouble extends Convolution {
         if (mtf == null) {
             throw new IllegalArgumentException("You must set the PSF or the MTF first");
         }
-        final double h[] = mtf;
-        final double z[] = getWorkArray();
+        final float h[] = mtf;
+        final float z[] = getWorkArray();
         final int n = getNumberOfFrequencies();
 
         /* Apply forward complex FFT, multiply by the MTF and
@@ -176,10 +176,10 @@ public abstract class ConvolutionDouble extends Convolution {
             for (int k = 0; k < n; ++k) {
                 int real = k + k;
                 int imag = real + 1;
-                double h_re = h[real];
-                double h_im = h[imag];
-                double z_re = z[real];
-                double z_im = z[imag];
+                float h_re = h[real];
+                float h_im = h[imag];
+                float z_re = z[real];
+                float z_im = z[imag];
                 z[real] = h_re*z_re + h_im*z_im;
                 z[imag] = h_re*z_im - h_im*z_re;
             }
@@ -187,10 +187,10 @@ public abstract class ConvolutionDouble extends Convolution {
             for (int k = 0; k < n; ++k) {
                 int real = k + k;
                 int imag = real + 1;
-                double h_re = h[real];
-                double h_im = h[imag];
-                double z_re = z[real];
-                double z_im = z[imag];
+                float h_re = h[real];
+                float h_im = h[imag];
+                float z_re = z[real];
+                float z_im = z[imag];
                 z[real] = h_re*z_re - h_im*z_im;
                 z[imag] = h_re*z_im + h_im*z_re;
             }
@@ -203,36 +203,36 @@ public abstract class ConvolutionDouble extends Convolution {
         if (! psf.belongsTo(inputSpace)) {
             throw new IncorrectSpaceException("PSF does not belong to the correct space");
         }
-        computeMTF(((DoubleShapedVector)psf).getData());
+        computeMTF(((FloatShapedVector)psf).getData());
     }
 
     @Override
     public void setPSF(ShapedArray psf, int[] off, boolean normalize) {
         boolean writable = false;
-        if (psf.getType() != Traits.DOUBLE) {
-            psf = psf.toDouble();
+        if (psf.getType() != Traits.FLOAT) {
+            psf = psf.toFloat();
             writable = true;
         }
         if (normalize) {
-            double sum = (double)ArrayUtils.sum(psf);
+            float sum = (float)ArrayUtils.sum(psf);
             if (sum != 1) {
                 if (! writable) {
                     psf = psf.copy();
                 }
-                ((DoubleArray)psf).scale((double)1/sum);
+                ((FloatArray)psf).scale((float)1/sum);
             }
         }
         System.out.format("sum(PSF) = %g\n", ArrayUtils.sum(psf));
         psf = adjustPSF(psf, off);
-        computeMTF(((DoubleArray)psf).flatten());
+        computeMTF(((FloatArray)psf).flatten());
     }
 
-    private final void computeMTF(double[] psf) {
-        final double zero = 0;
+    private final void computeMTF(float[] psf) {
+        final float zero = 0;
         final int n = getNumberOfFrequencies();
-        final double scale = (double)1/(double)n;
+        final float scale = (float)1/(float)n;
         if (mtf == null) {
-            mtf = new double[2*n];
+            mtf = new float[2*n];
         }
         for (int k = 0; k < n; ++k) {
             int real = k + k;

@@ -24,7 +24,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv.impl;
+package mitiv.deconv;
 
 import mitiv.base.Shape;
 import mitiv.deconv.Convolution;
@@ -37,7 +37,7 @@ import org.jtransforms.fft.DoubleFFT_2D;
  *
  * @author Éric Thiébaut
  */
-public class ConvolutionDouble2D extends ConvolutionDouble {
+class ConvolutionDouble2D extends ConvolutionDouble {
 
     /** FFT operator. */
     private DoubleFFT_2D fft = null;

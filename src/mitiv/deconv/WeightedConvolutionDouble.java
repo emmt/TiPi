@@ -24,47 +24,47 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv.impl;
+package mitiv.deconv;
 
 import mitiv.base.Traits;
 import mitiv.deconv.WeightedConvolutionCost;
-import mitiv.linalg.shaped.FloatShapedVector;
-import mitiv.linalg.shaped.FloatShapedVectorSpace;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 
 /**
- * Abstract class for FFT-based weighted convolution of arrays of float's.
+ * Abstract class for FFT-based weighted convolution of arrays of double's.
  *
  * @author Éric Thiébaut
  */
-public abstract class WeightedConvolutionFloat
+abstract class WeightedConvolutionDouble
      extends WeightedConvolutionCost
 {
     /** The data. */
-    protected float dat[] = null;
+    protected double dat[] = null;
 
     /** The statistical weights of the data. */
-    protected float wgt[] = null;
+    protected double wgt[] = null;
 
 
     /**
      * The following constructors make this class non instantiable, but still
      * let others inherit from this class.
      */
-    protected WeightedConvolutionFloat(FloatShapedVectorSpace objectSpace,
-                           FloatShapedVectorSpace dataSpace) {
+    protected WeightedConvolutionDouble(DoubleShapedVectorSpace objectSpace,
+                           DoubleShapedVectorSpace dataSpace) {
         /* Initialize super class and check types. */
         super(objectSpace, dataSpace);
-        if (objectSpace.getType() != Traits.FLOAT) {
-            throw new IllegalArgumentException("Object space must be for float data type");
+        if (objectSpace.getType() != Traits.DOUBLE) {
+            throw new IllegalArgumentException("Object space must be for double data type");
         }
-        if (dataSpace.getType() != Traits.FLOAT) {
-            throw new IllegalArgumentException("Data space must be for float data type");
+        if (dataSpace.getType() != Traits.DOUBLE) {
+            throw new IllegalArgumentException("Data space must be for double data type");
         }
     }
 
     protected void checkSetup() {
-        dat = ((FloatShapedVector)getData()).getData();
-        wgt = ((FloatShapedVector)getWeights()).getData();
+        dat = ((DoubleShapedVector)getData()).getData();
+        wgt = ((DoubleShapedVector)getWeights()).getData();
     }
 
 }

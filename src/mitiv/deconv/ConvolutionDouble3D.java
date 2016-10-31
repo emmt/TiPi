@@ -24,23 +24,23 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv.impl;
+package mitiv.deconv;
 
 import mitiv.base.Shape;
 import mitiv.deconv.Convolution;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 
-import org.jtransforms.fft.FloatFFT_3D;
+import org.jtransforms.fft.DoubleFFT_3D;
 
 /**
- * Implements FFT-based convolution for 3D arrays of float's.
+ * Implements FFT-based convolution for 3D arrays of double's.
  *
  * @author Éric Thiébaut
  */
-public class ConvolutionFloat3D extends ConvolutionFloat {
+class ConvolutionDouble3D extends ConvolutionDouble {
 
     /** FFT operator. */
-    private FloatFFT_3D fft = null;
+    private DoubleFFT_3D fft = null;
 
     /** The operator R. */
     private final PushPullOperator R;
@@ -58,7 +58,7 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
     private final int dim3;
 
     /**
-     * Create a new convolution operator for 3D arrays of float's.
+     * Create a new convolution operator for 3D arrays of double's.
      *
      * <p> This protected constructor should not be directly used.  Call {@link
      * Convolution#build(Shape, ShapedVectorSpace, int[], ShapedVectorSpace,
@@ -94,7 +94,7 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
      * @see Convolution#build(Shape, ShapedVectorSpace, int[],
      *      ShapedVectorSpace, int[])
      */
-    public ConvolutionFloat3D(Shape wrk,
+    public ConvolutionDouble3D(Shape wrk,
                                 ShapedVectorSpace inp, int[] inpOff,
                                 ShapedVectorSpace out, int[] outOff) {
         /* Initialize super class and check rank and dimensions (element type
@@ -115,13 +115,13 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
     /** Create low-level FFT operator. */
     private final void createFFT() {
         if (fft == null) {
-            fft = new FloatFFT_3D(dim1, dim2, dim3);
+            fft = new DoubleFFT_3D(dim1, dim2, dim3);
         }
     }
 
     /** Apply in-place forward complex FFT. */
     @Override
-    public final void forwardFFT(float z[]) {
+    public final void forwardFFT(double z[]) {
         if (z.length != 2*getNumberOfFrequencies()) {
             throw new IllegalArgumentException("Bad argument size");
         }
@@ -135,7 +135,7 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
 
     /** Apply in-place backward complex FFT. */
     @Override
-    public final void backwardFFT(float z[]) {
+    public final void backwardFFT(double z[]) {
         if (z.length != 2*getNumberOfFrequencies()) {
             throw new IllegalArgumentException("Bad argument size");
         }
@@ -148,7 +148,7 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
     }
 
     @Override
-    public void push(float z[], float x[], boolean adjoint) {
+    public void push(double z[], double x[], boolean adjoint) {
         if (adjoint) {
             R.push(z, x);
         } else {
@@ -157,7 +157,7 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
     }
 
     @Override
-    public void pull(float x[], float z[], boolean adjoint) {
+    public void pull(double x[], double z[], boolean adjoint) {
         if (adjoint) {
             S.pull(x, z);
         } else {
@@ -223,8 +223,8 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
         }
 
         /** Set contents of work array. */
-        private void push(final float[] z, final float[] x) {
-            final float zero = 0;
+        private void push(final double[] z, final double[] x) {
+            final double zero = 0;
             if (fast) {
                 /* User and work spaces have the same size. */
                 for (int j = 0, k = 0; j < x.length; ++j, k += 2) {
@@ -283,7 +283,7 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
         }
 
         /** Extract contents of work array. */
-        private void pull(final float[] x, final float[] z) {
+        private void pull(final double[] x, final double[] z) {
             if (fast) {
                 /* User and work spaces have the same size. */
                 for (int j = 0, k = 0; j < x.length; ++j, k += 2) {

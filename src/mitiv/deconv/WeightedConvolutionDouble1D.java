@@ -24,7 +24,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv.impl;
+package mitiv.deconv;
 
 import mitiv.array.ShapedArray;
 import mitiv.linalg.Vector;
@@ -33,7 +33,7 @@ import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 
 /**
- * Implements a FFT-based weighted convolution for 2D arrays of double's.
+ * Implements a FFT-based weighted convolution for 1D arrays of double's.
  *
  * <p> It is recommended not to directly instantiate this class but rather use
  * one of the factory methods of the parent class
@@ -45,7 +45,7 @@ import mitiv.linalg.shaped.DoubleShapedVectorSpace;
  *
  * @see mitiv.deconv.WeightedConvolutionCost
  */
-public class WeightedConvolutionDouble2D
+class WeightedConvolutionDouble1D
      extends WeightedConvolutionDouble
 {
     /** Number of element along 1st dimension of the variables. */
@@ -57,17 +57,8 @@ public class WeightedConvolutionDouble2D
     /** End of data along 1st dimension. */
     private final int end1;
 
-    /** Number of element along 2nd dimension of the variables. */
-    private final int dim2;
-
-    /** Offset of data along 2nd dimension. */
-    private final int off2;
-
-    /** End of data along 2nd dimension. */
-    private final int end2;
-
     /** Convolution operator. */
-    private final ConvolutionDouble2D cnvl;
+    private final ConvolutionDouble1D cnvl;
 
     /**
      * Create a new FFT-based weighted convolution cost function.
@@ -81,20 +72,20 @@ public class WeightedConvolutionDouble2D
      * @param dataOffsets
      *        The position of the data space relative to the object space.
      */
-    public WeightedConvolutionDouble2D(DoubleShapedVectorSpace objectSpace,
+    public WeightedConvolutionDouble1D(DoubleShapedVectorSpace objectSpace,
                         DoubleShapedVectorSpace dataSpace, int[] dataOffsets) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
         super(objectSpace, dataSpace);
-        if (objectSpace.getRank() != 2) {
-            throw new IllegalArgumentException("Object space is not 2D");
+        if (objectSpace.getRank() != 1) {
+            throw new IllegalArgumentException("Object space is not 1D");
         }
-        if (dataSpace.getRank() != 2) {
-            throw new IllegalArgumentException("Data space is not 2D");
+        if (dataSpace.getRank() != 1) {
+            throw new IllegalArgumentException("Data space is not 1D");
         }
 
         /* Create the convolution (which checks arguments). */
-        cnvl = new ConvolutionDouble2D(objectSpace.getShape(),
+        cnvl = new ConvolutionDouble1D(objectSpace.getShape(),
                                               objectSpace, null,
                                               dataSpace, dataOffsets);
 
@@ -102,9 +93,6 @@ public class WeightedConvolutionDouble2D
         dim1 = objectSpace.getDimension(0);
         off1 = dataOffsets[0];
         end1 = off1 + dataSpace.getDimension(0);
-        dim2 = objectSpace.getDimension(1);
-        off2 = dataOffsets[1];
-        end2 = off2 + dataSpace.getDimension(1);
     }
 
 
@@ -121,27 +109,21 @@ public class WeightedConvolutionDouble2D
         double sum = 0.0;
         double z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
-        int k; // index in work array z
+        int k = 2*off1; // index in work array z
         if (wgt == null) {
-            for (int i2 = off2; i2 < end2; ++i2) {
-                k = 2*(off1 + dim1*i2);
-                for (int i1 = off1; i1 < end1; ++i1) {
-                    double r = z[k] - dat[j];
-                    sum += r*r;
-                    j += 1;
-                    k += 2;
-                }
+            for (int i1 = off1; i1 < end1; ++i1) {
+                double r = z[k] - dat[j];
+                sum += r*r;
+                j += 1;
+                k += 2;
             }
         } else {
-            for (int i2 = off2; i2 < end2; ++i2) {
-                k = 2*(off1 + dim1*i2);
-                for (int i1 = off1; i1 < end1; ++i1) {
-                    double w = wgt[j];
-                    double r = z[k] - dat[j];
-                    sum += w*r*r;
-                    j += 1;
-                    k += 2;
-                }
+            for (int i1 = off1; i1 < end1; ++i1) {
+                double w = wgt[j];
+                double r = z[k] - dat[j];
+                sum += w*r*r;
+                j += 1;
+                k += 2;
             }
         }
         return alpha*sum/2;
@@ -164,52 +146,36 @@ public class WeightedConvolutionDouble2D
         double z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 0; // index in work array z
-        for (int i2 = 0; i2 < off2; ++i2) {
-            for (int i1 = 0; i1 < dim1; ++i1) {
-                z[k] = zero;
+        for (int i1 = 0; i1 < off1; ++i1) {
+            z[k] = zero;
+            z[k+1] = zero;
+            k += 2;
+        }
+        if (weighted) {
+            for (int i1 = off1; i1 < end1; ++i1) {
+                double w = wgt[j];
+                double r = z[k] - dat[j];
+                double wr = w*r;
+                sum += r*wr;
+                z[k] = q*wr;
                 z[k+1] = zero;
+                j += 1;
+                k += 2;
+            }
+        } else {
+            for (int i1 = off1; i1 < end1; ++i1) {
+                double r = z[k] - dat[j];
+                sum += r*r;
+                z[k] = q*r;
+                z[k+1] = zero;
+                j += 1;
                 k += 2;
             }
         }
-        for (int i2 = off2; i2 < end2; ++i2) {
-            for (int i1 = 0; i1 < off1; ++i1) {
-                z[k] = zero;
-                z[k+1] = zero;
-                k += 2;
-            }
-            if (weighted) {
-                for (int i1 = off1; i1 < end1; ++i1) {
-                    double w = wgt[j];
-                    double r = z[k] - dat[j];
-                    double wr = w*r;
-                    sum += r*wr;
-                    z[k] = q*wr;
-                    z[k+1] = zero;
-                    j += 1;
-                    k += 2;
-                }
-            } else {
-                for (int i1 = off1; i1 < end1; ++i1) {
-                    double r = z[k] - dat[j];
-                    sum += r*r;
-                    z[k] = q*r;
-                    z[k+1] = zero;
-                    j += 1;
-                    k += 2;
-                }
-            }
-            for (int i1 = end1; i1 < dim1; ++i1) {
-                z[k] = zero;
-                z[k+1] = zero;
-                k += 2;
-            }
-        }
-        for (int i2 = end2; i2 < dim2; ++i2) {
-            for (int i1 = 0; i1 < dim1; ++i1) {
-                z[k] = zero;
-                z[k+1] = zero;
-                k += 2;
-            }
+        for (int i1 = end1; i1 < dim1; ++i1) {
+            z[k] = zero;
+            z[k+1] = zero;
+            k += 2;
         }
 
         /* Finalize computation of gradient. */

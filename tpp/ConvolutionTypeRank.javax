@@ -33,7 +33,7 @@
 //#     def zero = 0.0
 //#     def one  = 1.0
 //# end
-package mitiv.deconv.impl;
+package ${package};
 
 import mitiv.base.Shape;
 import mitiv.deconv.Convolution;
@@ -46,7 +46,7 @@ import org.jtransforms.fft.${Type}FFT_${rank}D;
  *
  * @author Éric Thiébaut
  */
-public class ${className} extends Convolution${Type} {
+class ${className} extends Convolution${Type} {
 
     /** FFT operator. */
     private ${Type}FFT_${rank}D fft = null;

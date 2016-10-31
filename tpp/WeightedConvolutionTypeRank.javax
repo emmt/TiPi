@@ -33,7 +33,7 @@
 //#     def zero = 0.0
 //#     def one  = 1.0
 //# end
-package mitiv.deconv.impl;
+package ${package};
 
 import mitiv.array.ShapedArray;
 import mitiv.linalg.Vector;
@@ -54,7 +54,7 @@ import mitiv.linalg.shaped.${Type}ShapedVectorSpace;
  *
  * @see mitiv.deconv.WeightedConvolutionCost
  */
-public class ${className}
+class ${className}
      extends WeightedConvolution${Type}
 {
     //# for k in 1:${rank}
