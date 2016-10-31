@@ -39,7 +39,7 @@ import mitiv.linalg.shaped.FloatShapedVectorSpace;
  * one of the factory methods of the parent class
  * {@link mitiv.deconv.WeightedConvolutionCost#build}.  Have a look at the
  * documentation of {@link mitiv.deconv.WeightedConvolutionCost} for a
- * description of what exaclty does this kind of operator.  </p>
+ * description of what exactly does this kind of operator.  </p>
  *
  * @author Éric Thiébaut
  *
@@ -48,12 +48,6 @@ import mitiv.linalg.shaped.FloatShapedVectorSpace;
 public class WeightedConvolutionFloat1D
      extends WeightedConvolutionFloat
 {
-    /** Factor to scale the result of the backward FFT. */
-    private final float scale;
-
-    /** Number of variables. */
-    private final int number;
-
     /** Number of element along 1st dimension of the variables. */
     private final int dim1;
 
@@ -69,13 +63,17 @@ public class WeightedConvolutionFloat1D
     /**
      * Create a new FFT-based weighted convolution cost function.
      *
-     * @param objectSpace   The object space.
-     * @param dataSpace     The data space.
-     * @param dataOffset    The position of the data space relative
-     *                      to the object space.
+     * @param objectSpace
+     *        The object space which also gives the size of the work space.
+     *
+     * @param dataSpace
+     *        The data space.
+     *
+     * @param dataOffsets
+     *        The position of the data space relative to the object space.
      */
     public WeightedConvolutionFloat1D(FloatShapedVectorSpace objectSpace,
-                        FloatShapedVectorSpace dataSpace, int[] dataOffset) {
+                        FloatShapedVectorSpace dataSpace, int[] dataOffsets) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
         super(objectSpace, dataSpace);
@@ -85,28 +83,26 @@ public class WeightedConvolutionFloat1D
         if (dataSpace.getRank() != 1) {
             throw new IllegalArgumentException("Data space is not 1D");
         }
-        number = (int)objectSpace.getNumber();
-        scale = 1.0F/number;
+
+        /* Create the convolution (which checks arguments). */
+        cnvl = new ConvolutionFloat1D(objectSpace.getShape(),
+                                              objectSpace, null,
+                                              dataSpace, dataOffsets);
+
+        /* Store dimensions, offsets, etc. */
         dim1 = objectSpace.getDimension(0);
-        off1 = dataOffset[0];
-        if (off1 < 0 || off1 >= dim1) {
-            throw new IllegalArgumentException("Out of range offset along 1st dimension");
-        }
+        off1 = dataOffsets[0];
         end1 = off1 + dataSpace.getDimension(0);
-        if (end1 > dim1) {
-            throw new IllegalArgumentException("Data (+ offset) beyond 1st dimension");
-        }
-        cnvl = new ConvolutionFloat1D(objectSpace);
     }
 
 
     @Override
-    protected double cost(double alpha, Vector x) {
+    protected double _cost(double alpha, Vector x) {
         /* Check whether instance has been fully initialized. */
         checkSetup();
 
         /* Compute the convolution. */
-        cnvl.push(((FloatShapedVector)x).getData(), false);
+        cnvl.push((ShapedVector)x, false);
         cnvl.convolve(false);
 
         /* Integrate cost. */
@@ -116,7 +112,7 @@ public class WeightedConvolutionFloat1D
         int k = 2*off1; // index in work array z
         if (wgt == null) {
             for (int i1 = off1; i1 < end1; ++i1) {
-                float r = scale*z[k] - dat[j];
+                float r = z[k] - dat[j];
                 sum += r*r;
                 j += 1;
                 k += 2;
@@ -124,7 +120,7 @@ public class WeightedConvolutionFloat1D
         } else {
             for (int i1 = off1; i1 < end1; ++i1) {
                 float w = wgt[j];
-                float r = scale*z[k] - dat[j];
+                float r = z[k] - dat[j];
                 sum += w*r*r;
                 j += 1;
                 k += 2;
@@ -134,50 +130,51 @@ public class WeightedConvolutionFloat1D
     }
 
     @Override
-    protected double cost(double alpha, Vector x, Vector gx, boolean clr) {
+    protected double _cost(double alpha, Vector x, Vector gx, boolean clr) {
         /* Check whether instance has been fully initialized. */
         checkSetup();
 
         /* Compute the convolution. */
-        cnvl.push(((FloatShapedVector)x).getData(), false);
+        cnvl.push((ShapedVector)x, false);
         cnvl.convolve(false);
 
         /* Integrate cost and gradient. */
         final boolean weighted = (wgt != null);
-        final float q = scale*(float)alpha;
+        final float zero = 0.0F;
+        final float q = (float)alpha;
         double sum = 0.0;
         float z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 0; // index in work array z
         for (int i1 = 0; i1 < off1; ++i1) {
-            z[k] = 0.0F;
-            z[k+1] = 0.0F;
+            z[k] = zero;
+            z[k+1] = zero;
             k += 2;
         }
         if (weighted) {
             for (int i1 = off1; i1 < end1; ++i1) {
                 float w = wgt[j];
-                float r = scale*z[k] - dat[j];
+                float r = z[k] - dat[j];
                 float wr = w*r;
                 sum += r*wr;
                 z[k] = q*wr;
-                z[k+1] = 0.0F;
+                z[k+1] = zero;
                 j += 1;
                 k += 2;
             }
         } else {
             for (int i1 = off1; i1 < end1; ++i1) {
-                float r = scale*z[k] - dat[j];
+                float r = z[k] - dat[j];
                 sum += r*r;
                 z[k] = q*r;
-                z[k+1] = 0.0F;
+                z[k+1] = zero;
                 j += 1;
                 k += 2;
             }
         }
         for (int i1 = end1; i1 < dim1; ++i1) {
-            z[k] = 0.0F;
-            z[k+1] = 0.0F;
+            z[k] = zero;
+            z[k+1] = zero;
             k += 2;
         }
 
@@ -185,11 +182,11 @@ public class WeightedConvolutionFloat1D
         float g[] = ((FloatShapedVector)gx).getData();
         cnvl.convolve(true);
         if (clr) {
-            for (j = 0, k = 0; j < number; ++j, k += 2) {
+            for (j = 0, k = 0; j < g.length; ++j, k += 2) {
                 g[j] = z[k];
             }
         } else {
-            for (j = 0, k = 0; j < number; ++j, k += 2) {
+            for (j = 0, k = 0; j < g.length; ++j, k += 2) {
                 g[j] += z[k];
             }
         }

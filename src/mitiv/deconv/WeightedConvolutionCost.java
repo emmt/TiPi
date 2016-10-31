@@ -336,7 +336,7 @@ DifferentiableCostFunction {
         }
 
         /* Call low-level function. */
-        return cost(alpha, x);
+        return _cost(alpha, x);
     }
 
     @Override
@@ -354,11 +354,48 @@ DifferentiableCostFunction {
         }
 
         /* Call low-level function. */
-        return cost(alpha, x, gx, clr);
+        return _cost(alpha, x, gx, clr);
     }
 
-    protected abstract double cost(double alpha, Vector x);
-    protected abstract double cost(double alpha, Vector x, Vector gx, boolean clr);
+    /**
+     * Low-level method to compute the cost.
+     *
+     * <p> This method is called with all arguments checked for validity. </p>
+     *
+     * @param alpha
+     *        The multiplier of the cost (guaranteed to be non-zero).
+     *
+     * @param x
+     *        The input variables (guaranteed to belong to the correct vector
+     *        space).
+     *
+     * @return The cost.
+     */
+    protected abstract double _cost(double alpha, Vector x);
+
+    /**
+     * Low-level method to compute the cost.
+     *
+     * <p> This method is called with all arguments checked for validity. </p>
+     *
+     * @param alpha
+     *        The multiplier of the cost (guaranteed to be non-zero).
+     *
+     * @param x
+     *        The input variables (guaranteed to belong to the correct vector
+     *        space).
+     *
+     * @param gx
+     *        The vector to store the gradient (guaranteed to belong to the
+     *        same, correct, vector space as {@code x}).
+     *
+     * @param clr
+     *        If true, store the gradient in {@code gx}; otherwise, increment
+     *        the values of {@code gx} with the gradient.
+     *
+     * @return The cost.
+     */
+    protected abstract double _cost(double alpha, Vector x, Vector gx, boolean clr);
 
     /**
      * Set the PSF of the operator.

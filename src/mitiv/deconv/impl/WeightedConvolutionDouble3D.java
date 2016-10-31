@@ -39,7 +39,7 @@ import mitiv.linalg.shaped.DoubleShapedVectorSpace;
  * one of the factory methods of the parent class
  * {@link mitiv.deconv.WeightedConvolutionCost#build}.  Have a look at the
  * documentation of {@link mitiv.deconv.WeightedConvolutionCost} for a
- * description of what exaclty does this kind of operator.  </p>
+ * description of what exactly does this kind of operator.  </p>
  *
  * @author Éric Thiébaut
  *
@@ -48,12 +48,6 @@ import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 public class WeightedConvolutionDouble3D
      extends WeightedConvolutionDouble
 {
-    /** Factor to scale the result of the backward FFT. */
-    private final double scale;
-
-    /** Number of variables. */
-    private final int number;
-
     /** Number of element along 1st dimension of the variables. */
     private final int dim1;
 
@@ -87,13 +81,17 @@ public class WeightedConvolutionDouble3D
     /**
      * Create a new FFT-based weighted convolution cost function.
      *
-     * @param objectSpace   The object space.
-     * @param dataSpace     The data space.
-     * @param dataOffset    The position of the data space relative
-     *                      to the object space.
+     * @param objectSpace
+     *        The object space which also gives the size of the work space.
+     *
+     * @param dataSpace
+     *        The data space.
+     *
+     * @param dataOffsets
+     *        The position of the data space relative to the object space.
      */
     public WeightedConvolutionDouble3D(DoubleShapedVectorSpace objectSpace,
-                        DoubleShapedVectorSpace dataSpace, int[] dataOffset) {
+                        DoubleShapedVectorSpace dataSpace, int[] dataOffsets) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
         super(objectSpace, dataSpace);
@@ -103,46 +101,32 @@ public class WeightedConvolutionDouble3D
         if (dataSpace.getRank() != 3) {
             throw new IllegalArgumentException("Data space is not 3D");
         }
-        number = (int)objectSpace.getNumber();
-        scale = 1.0/number;
+
+        /* Create the convolution (which checks arguments). */
+        cnvl = new ConvolutionDouble3D(objectSpace.getShape(),
+                                              objectSpace, null,
+                                              dataSpace, dataOffsets);
+
+        /* Store dimensions, offsets, etc. */
         dim1 = objectSpace.getDimension(0);
-        off1 = dataOffset[0];
-        if (off1 < 0 || off1 >= dim1) {
-            throw new IllegalArgumentException("Out of range offset along 1st dimension");
-        }
+        off1 = dataOffsets[0];
         end1 = off1 + dataSpace.getDimension(0);
-        if (end1 > dim1) {
-            throw new IllegalArgumentException("Data (+ offset) beyond 1st dimension");
-        }
         dim2 = objectSpace.getDimension(1);
-        off2 = dataOffset[1];
-        if (off2 < 0 || off2 >= dim2) {
-            throw new IllegalArgumentException("Out of range offset along 2nd dimension");
-        }
+        off2 = dataOffsets[1];
         end2 = off2 + dataSpace.getDimension(1);
-        if (end2 > dim2) {
-            throw new IllegalArgumentException("Data (+ offset) beyond 2nd dimension");
-        }
         dim3 = objectSpace.getDimension(2);
-        off3 = dataOffset[2];
-        if (off3 < 0 || off3 >= dim3) {
-            throw new IllegalArgumentException("Out of range offset along 3rd dimension");
-        }
+        off3 = dataOffsets[2];
         end3 = off3 + dataSpace.getDimension(2);
-        if (end3 > dim3) {
-            throw new IllegalArgumentException("Data (+ offset) beyond 3rd dimension");
-        }
-        cnvl = new ConvolutionDouble3D(objectSpace);
     }
 
 
     @Override
-    protected double cost(double alpha, Vector x) {
+    protected double _cost(double alpha, Vector x) {
         /* Check whether instance has been fully initialized. */
         checkSetup();
 
         /* Compute the convolution. */
-        cnvl.push(((DoubleShapedVector)x).getData(), false);
+        cnvl.push((ShapedVector)x, false);
         cnvl.convolve(false);
 
         /* Integrate cost. */
@@ -155,7 +139,7 @@ public class WeightedConvolutionDouble3D
                 for (int i2 = off2; i2 < end2; ++i2) {
                     k = 2*(off1 + dim1*(i2 + dim2*i3));
                     for (int i1 = off1; i1 < end1; ++i1) {
-                        double r = scale*z[k] - dat[j];
+                        double r = z[k] - dat[j];
                         sum += r*r;
                         j += 1;
                         k += 2;
@@ -168,7 +152,7 @@ public class WeightedConvolutionDouble3D
                     k = 2*(off1 + dim1*(i2 + dim2*i3));
                     for (int i1 = off1; i1 < end1; ++i1) {
                         double w = wgt[j];
-                        double r = scale*z[k] - dat[j];
+                        double r = z[k] - dat[j];
                         sum += w*r*r;
                         j += 1;
                         k += 2;
@@ -180,17 +164,18 @@ public class WeightedConvolutionDouble3D
     }
 
     @Override
-    protected double cost(double alpha, Vector x, Vector gx, boolean clr) {
+    protected double _cost(double alpha, Vector x, Vector gx, boolean clr) {
         /* Check whether instance has been fully initialized. */
         checkSetup();
 
         /* Compute the convolution. */
-        cnvl.push(((DoubleShapedVector)x).getData(), false);
+        cnvl.push((ShapedVector)x, false);
         cnvl.convolve(false);
 
         /* Integrate cost and gradient. */
         final boolean weighted = (wgt != null);
-        final double q = scale*alpha;
+        final double zero = 0.0;
+        final double q = alpha;
         double sum = 0.0;
         double z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
@@ -198,8 +183,8 @@ public class WeightedConvolutionDouble3D
         for (int i3 = 0; i3 < off3; ++i3) {
             for (int i2 = 0; i2 < dim2; ++i2) {
                 for (int i1 = 0; i1 < dim1; ++i1) {
-                    z[k] = 0.0;
-                    z[k+1] = 0.0;
+                    z[k] = zero;
+                    z[k+1] = zero;
                     k += 2;
                 }
             }
@@ -207,48 +192,48 @@ public class WeightedConvolutionDouble3D
         for (int i3 = off3; i3 < end3; ++i3) {
             for (int i2 = 0; i2 < off2; ++i2) {
                 for (int i1 = 0; i1 < dim1; ++i1) {
-                    z[k] = 0.0;
-                    z[k+1] = 0.0;
+                    z[k] = zero;
+                    z[k+1] = zero;
                     k += 2;
                 }
             }
             for (int i2 = off2; i2 < end2; ++i2) {
                 for (int i1 = 0; i1 < off1; ++i1) {
-                    z[k] = 0.0;
-                    z[k+1] = 0.0;
+                    z[k] = zero;
+                    z[k+1] = zero;
                     k += 2;
                 }
                 if (weighted) {
                     for (int i1 = off1; i1 < end1; ++i1) {
                         double w = wgt[j];
-                        double r = scale*z[k] - dat[j];
+                        double r = z[k] - dat[j];
                         double wr = w*r;
                         sum += r*wr;
                         z[k] = q*wr;
-                        z[k+1] = 0.0;
+                        z[k+1] = zero;
                         j += 1;
                         k += 2;
                     }
                 } else {
                     for (int i1 = off1; i1 < end1; ++i1) {
-                        double r = scale*z[k] - dat[j];
+                        double r = z[k] - dat[j];
                         sum += r*r;
                         z[k] = q*r;
-                        z[k+1] = 0.0;
+                        z[k+1] = zero;
                         j += 1;
                         k += 2;
                     }
                 }
                 for (int i1 = end1; i1 < dim1; ++i1) {
-                    z[k] = 0.0;
-                    z[k+1] = 0.0;
+                    z[k] = zero;
+                    z[k+1] = zero;
                     k += 2;
                 }
             }
             for (int i2 = end2; i2 < dim2; ++i2) {
                 for (int i1 = 0; i1 < dim1; ++i1) {
-                    z[k] = 0.0;
-                    z[k+1] = 0.0;
+                    z[k] = zero;
+                    z[k+1] = zero;
                     k += 2;
                 }
             }
@@ -256,8 +241,8 @@ public class WeightedConvolutionDouble3D
         for (int i3 = end3; i3 < dim3; ++i3) {
             for (int i2 = 0; i2 < dim2; ++i2) {
                 for (int i1 = 0; i1 < dim1; ++i1) {
-                    z[k] = 0.0;
-                    z[k+1] = 0.0;
+                    z[k] = zero;
+                    z[k+1] = zero;
                     k += 2;
                 }
             }
@@ -267,11 +252,11 @@ public class WeightedConvolutionDouble3D
         double g[] = ((DoubleShapedVector)gx).getData();
         cnvl.convolve(true);
         if (clr) {
-            for (j = 0, k = 0; j < number; ++j, k += 2) {
+            for (j = 0, k = 0; j < g.length; ++j, k += 2) {
                 g[j] = z[k];
             }
         } else {
-            for (j = 0, k = 0; j < number; ++j, k += 2) {
+            for (j = 0, k = 0; j < g.length; ++j, k += 2) {
                 g[j] += z[k];
             }
         }

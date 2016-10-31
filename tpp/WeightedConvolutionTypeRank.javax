@@ -48,7 +48,7 @@ import mitiv.linalg.shaped.${Type}ShapedVectorSpace;
  * one of the factory methods of the parent class
  * {@link mitiv.deconv.WeightedConvolutionCost#build}.  Have a look at the
  * documentation of {@link mitiv.deconv.WeightedConvolutionCost} for a
- * description of what exaclty does this kind of operator.  </p>
+ * description of what exactly does this kind of operator.  </p>
  *
  * @author Éric Thiébaut
  *
@@ -57,12 +57,6 @@ import mitiv.linalg.shaped.${Type}ShapedVectorSpace;
 public class ${className}
      extends WeightedConvolution${Type}
 {
-    /** Factor to scale the result of the backward FFT. */
-    private final ${type} scale;
-
-    /** Number of variables. */
-    private final int number;
-
     //# for k in 1:${rank}
     //#     def kth = ${}{nth_${k}}
     /** Number of element along ${kth} dimension of the variables. */
@@ -81,13 +75,17 @@ public class ${className}
     /**
      * Create a new FFT-based weighted convolution cost function.
      *
-     * @param objectSpace   The object space.
-     * @param dataSpace     The data space.
-     * @param dataOffset    The position of the data space relative
-     *                      to the object space.
+     * @param objectSpace
+     *        The object space which also gives the size of the work space.
+     *
+     * @param dataSpace
+     *        The data space.
+     *
+     * @param dataOffsets
+     *        The position of the data space relative to the object space.
      */
     public ${className}(${Type}ShapedVectorSpace objectSpace,
-                        ${Type}ShapedVectorSpace dataSpace, int[] dataOffset) {
+                        ${Type}ShapedVectorSpace dataSpace, int[] dataOffsets) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
         super(objectSpace, dataSpace);
@@ -97,22 +95,20 @@ public class ${className}
         if (dataSpace.getRank() != ${rank}) {
             throw new IllegalArgumentException("Data space is not ${rank}D");
         }
-        number = (int)objectSpace.getNumber();
-        scale = ${one}/number;
+
+        /* Create the convolution (which checks arguments). */
+        cnvl = new Convolution${Type}${rank}D(objectSpace.getShape(),
+                                              objectSpace, null,
+                                              dataSpace, dataOffsets);
+
+        /* Store dimensions, offsets, etc. */
         //# for k in 1:${rank}
         //#     eval km1 = ${k} - 1
         //#     def  kth = ${}{nth_${k}}
         dim${k} = objectSpace.getDimension(${km1});
-        off${k} = dataOffset[${km1}];
-        if (off${k} < 0 || off${k} >= dim${k}) {
-            throw new IllegalArgumentException("Out of range offset along ${kth} dimension");
-        }
+        off${k} = dataOffsets[${km1}];
         end${k} = off${k} + dataSpace.getDimension(${km1});
-        if (end${k} > dim${k}) {
-            throw new IllegalArgumentException("Data (+ offset) beyond ${kth} dimension");
-        }
         //# end
-        cnvl = new Convolution${Type}${rank}D(objectSpace);
     }
 
     //# // Define some macros for indexing in the different regions delimited
@@ -144,12 +140,12 @@ public class ${className}
     //# undef k all beg mid end
 
     @Override
-    protected double cost(double alpha, Vector x) {
+    protected double _cost(double alpha, Vector x) {
         /* Check whether instance has been fully initialized. */
         checkSetup();
 
         /* Compute the convolution. */
-        cnvl.push(((${Type}ShapedVector)x).getData(), false);
+        cnvl.push((ShapedVector)x, false);
         cnvl.convolve(false);
 
         /* Integrate cost. */
@@ -160,7 +156,7 @@ public class ${className}
         int k = 2*off1; // index in work array z
         if (wgt == null) {
             for (${i1_in_mid}) {
-                ${type} r = scale*z[k] - dat[j];
+                ${type} r = z[k] - dat[j];
                 sum += r*r;
                 j += 1;
                 k += 2;
@@ -168,7 +164,7 @@ public class ${className}
         } else {
             for (${i1_in_mid}) {
                 ${type} w = wgt[j];
-                ${type} r = scale*z[k] - dat[j];
+                ${type} r = z[k] - dat[j];
                 sum += w*r*r;
                 j += 1;
                 k += 2;
@@ -180,7 +176,7 @@ public class ${className}
             for (${i2_in_mid}) {
                 k = 2*(off1 + dim1*i2);
                 for (${i1_in_mid}) {
-                    ${type} r = scale*z[k] - dat[j];
+                    ${type} r = z[k] - dat[j];
                     sum += r*r;
                     j += 1;
                     k += 2;
@@ -191,7 +187,7 @@ public class ${className}
                 k = 2*(off1 + dim1*i2);
                 for (${i1_in_mid}) {
                     ${type} w = wgt[j];
-                    ${type} r = scale*z[k] - dat[j];
+                    ${type} r = z[k] - dat[j];
                     sum += w*r*r;
                     j += 1;
                     k += 2;
@@ -205,7 +201,7 @@ public class ${className}
                 for (${i2_in_mid}) {
                     k = 2*(off1 + dim1*(i2 + dim2*i3));
                     for (${i1_in_mid}) {
-                        ${type} r = scale*z[k] - dat[j];
+                        ${type} r = z[k] - dat[j];
                         sum += r*r;
                         j += 1;
                         k += 2;
@@ -218,7 +214,7 @@ public class ${className}
                     k = 2*(off1 + dim1*(i2 + dim2*i3));
                     for (${i1_in_mid}) {
                         ${type} w = wgt[j];
-                        ${type} r = scale*z[k] - dat[j];
+                        ${type} r = z[k] - dat[j];
                         sum += w*r*r;
                         j += 1;
                         k += 2;
@@ -233,98 +229,99 @@ public class ${className}
     }
 
     @Override
-    protected double cost(double alpha, Vector x, Vector gx, boolean clr) {
+    protected double _cost(double alpha, Vector x, Vector gx, boolean clr) {
         /* Check whether instance has been fully initialized. */
         checkSetup();
 
         /* Compute the convolution. */
-        cnvl.push(((${Type}ShapedVector)x).getData(), false);
+        cnvl.push((ShapedVector)x, false);
         cnvl.convolve(false);
 
         /* Integrate cost and gradient. */
         final boolean weighted = (wgt != null);
-        final ${type} q = scale*${cast}alpha;
+        final ${type} zero = ${zero};
+        final ${type} q = ${cast}alpha;
         double sum = 0.0;
         ${type} z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 0; // index in work array z
         //# if ${rank} == 1
         for (${i1_in_beg}) {
-            z[k] = ${zero};
-            z[k+1] = ${zero};
+            z[k] = zero;
+            z[k+1] = zero;
             k += 2;
         }
         if (weighted) {
             for (${i1_in_mid}) {
                 ${type} w = wgt[j];
-                ${type} r = scale*z[k] - dat[j];
+                ${type} r = z[k] - dat[j];
                 ${type} wr = w*r;
                 sum += r*wr;
                 z[k] = q*wr;
-                z[k+1] = ${zero};
+                z[k+1] = zero;
                 j += 1;
                 k += 2;
             }
         } else {
             for (${i1_in_mid}) {
-                ${type} r = scale*z[k] - dat[j];
+                ${type} r = z[k] - dat[j];
                 sum += r*r;
                 z[k] = q*r;
-                z[k+1] = ${zero};
+                z[k+1] = zero;
                 j += 1;
                 k += 2;
             }
         }
         for (${i1_in_end}) {
-            z[k] = ${zero};
-            z[k+1] = ${zero};
+            z[k] = zero;
+            z[k+1] = zero;
             k += 2;
         }
         //# elif ${rank} == 2
         for (${i2_in_beg}) {
             for (${i1_in_all}) {
-                z[k] = ${zero};
-                z[k+1] = ${zero};
+                z[k] = zero;
+                z[k+1] = zero;
                 k += 2;
             }
         }
         for (${i2_in_mid}) {
             for (${i1_in_beg}) {
-                z[k] = ${zero};
-                z[k+1] = ${zero};
+                z[k] = zero;
+                z[k+1] = zero;
                 k += 2;
             }
             if (weighted) {
                 for (${i1_in_mid}) {
                     ${type} w = wgt[j];
-                    ${type} r = scale*z[k] - dat[j];
+                    ${type} r = z[k] - dat[j];
                     ${type} wr = w*r;
                     sum += r*wr;
                     z[k] = q*wr;
-                    z[k+1] = ${zero};
+                    z[k+1] = zero;
                     j += 1;
                     k += 2;
                 }
             } else {
                 for (${i1_in_mid}) {
-                    ${type} r = scale*z[k] - dat[j];
+                    ${type} r = z[k] - dat[j];
                     sum += r*r;
                     z[k] = q*r;
-                    z[k+1] = ${zero};
+                    z[k+1] = zero;
                     j += 1;
                     k += 2;
                 }
             }
             for (${i1_in_end}) {
-                z[k] = ${zero};
-                z[k+1] = ${zero};
+                z[k] = zero;
+                z[k+1] = zero;
                 k += 2;
             }
         }
         for (${i2_in_end}) {
             for (${i1_in_all}) {
-                z[k] = ${zero};
-                z[k+1] = ${zero};
+                z[k] = zero;
+                z[k+1] = zero;
                 k += 2;
             }
         }
@@ -332,8 +329,8 @@ public class ${className}
         for (${i3_in_beg}) {
             for (${i2_in_all}) {
                 for (${i1_in_all}) {
-                    z[k] = ${zero};
-                    z[k+1] = ${zero};
+                    z[k] = zero;
+                    z[k+1] = zero;
                     k += 2;
                 }
             }
@@ -341,48 +338,48 @@ public class ${className}
         for (${i3_in_mid}) {
             for (${i2_in_beg}) {
                 for (${i1_in_all}) {
-                    z[k] = ${zero};
-                    z[k+1] = ${zero};
+                    z[k] = zero;
+                    z[k+1] = zero;
                     k += 2;
                 }
             }
             for (${i2_in_mid}) {
                 for (${i1_in_beg}) {
-                    z[k] = ${zero};
-                    z[k+1] = ${zero};
+                    z[k] = zero;
+                    z[k+1] = zero;
                     k += 2;
                 }
                 if (weighted) {
                     for (${i1_in_mid}) {
                         ${type} w = wgt[j];
-                        ${type} r = scale*z[k] - dat[j];
+                        ${type} r = z[k] - dat[j];
                         ${type} wr = w*r;
                         sum += r*wr;
                         z[k] = q*wr;
-                        z[k+1] = ${zero};
+                        z[k+1] = zero;
                         j += 1;
                         k += 2;
                     }
                 } else {
                     for (${i1_in_mid}) {
-                        ${type} r = scale*z[k] - dat[j];
+                        ${type} r = z[k] - dat[j];
                         sum += r*r;
                         z[k] = q*r;
-                        z[k+1] = ${zero};
+                        z[k+1] = zero;
                         j += 1;
                         k += 2;
                     }
                 }
                 for (${i1_in_end}) {
-                    z[k] = ${zero};
-                    z[k+1] = ${zero};
+                    z[k] = zero;
+                    z[k+1] = zero;
                     k += 2;
                 }
             }
             for (${i2_in_end}) {
                 for (${i1_in_all}) {
-                    z[k] = ${zero};
-                    z[k+1] = ${zero};
+                    z[k] = zero;
+                    z[k+1] = zero;
                     k += 2;
                 }
             }
@@ -390,8 +387,8 @@ public class ${className}
         for (${i3_in_end}) {
             for (${i2_in_all}) {
                 for (${i1_in_all}) {
-                    z[k] = ${zero};
-                    z[k+1] = ${zero};
+                    z[k] = zero;
+                    z[k+1] = zero;
                     k += 2;
                 }
             }
@@ -404,11 +401,11 @@ public class ${className}
         ${type} g[] = ((${Type}ShapedVector)gx).getData();
         cnvl.convolve(true);
         if (clr) {
-            for (j = 0, k = 0; j < number; ++j, k += 2) {
+            for (j = 0, k = 0; j < g.length; ++j, k += 2) {
                 g[j] = z[k];
             }
         } else {
-            for (j = 0, k = 0; j < number; ++j, k += 2) {
+            for (j = 0, k = 0; j < g.length; ++j, k += 2) {
                 g[j] += z[k];
             }
         }

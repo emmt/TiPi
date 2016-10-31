@@ -26,7 +26,10 @@
 
 package mitiv.deconv.impl;
 
+import mitiv.base.Shape;
+import mitiv.deconv.Convolution;
 import mitiv.linalg.shaped.ShapedVectorSpace;
+
 import org.jtransforms.fft.FloatFFT_3D;
 
 /**
@@ -39,108 +42,75 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
     /** FFT operator. */
     private FloatFFT_3D fft = null;
 
-    /** Number of element along 1st dimension of the input variables. */
+    /** The operator R. */
+    private final PushPullOperator R;
+
+    /** The operator S. */
+    private final PushPullOperator S;
+
+    /** Number of element along 1st dimension of the work space. */
     private final int dim1;
 
-    /** Number of element along 2nd dimension of the input variables. */
+    /** Number of element along 2nd dimension of the work space. */
     private final int dim2;
 
-    /** Number of element along 3rd dimension of the input variables. */
+    /** Number of element along 3rd dimension of the work space. */
     private final int dim3;
-
-    /** Offset of output along 1st input dimension. */
-    private final int off1;
-
-    /** Offset of output along 2nd input dimension. */
-    private final int off2;
-
-    /** Offset of output along 3rd input dimension. */
-    private final int off3;
-
-    /** End of output along 1st input dimension. */
-    private final int end1;
-
-    /** End of output along 2nd input dimension. */
-    private final int end2;
-
-    /** End of output along 3rd input dimension. */
-    private final int end3;
-
 
     /**
      * Create a new convolution operator for 3D arrays of float's.
      *
-     * @param space - The input and output space.
-     */
-    public ConvolutionFloat3D(ShapedVectorSpace space) {
-        super(space);
-        if (space.getRank() != 3) {
-            throw new IllegalArgumentException("Vector space must be have 3 dimension(s)");
-        }
-        dim1 = space.getDimension(2);
-        off1 = 0;
-        end1 = dim1;
-        dim2 = space.getDimension(1);
-        off2 = 0;
-        end2 = dim2;
-        dim3 = space.getDimension(0);
-        off3 = 0;
-        end3 = dim3;
-    }
-
-    /**
-     * Create a new convolution operator for 3D arrays of float's.
+     * <p> This protected constructor should not be directly used.  Call {@link
+     * Convolution#build(Shape, ShapedVectorSpace, int[], ShapedVectorSpace,
+     * int[]) instead. </p>
+     *
+     * @param wrk
+     *        The dimensions of the work space. If {@code null}, the dimensions
+     *        of the work space are automatically computed to be the smallest
+     *        dimensions suitable for the FFT (see
+     *        {@link FFTUtils#bestDimension(int)}) and large enough to encompass
+     *        the input and output dimensions. If {@code wrk} is {@code null},
+     *        it is probably better to left the offsets unspecified and set
+     *        {@code inpOff} and {@code outOff} to be {@code null}.
      *
      * @param inp
      *        The input space.
      *
+     * @param inpOff
+     *        The position of the input region within the work space. If
+     *        {@code null}, the input region is assumed to be centered;
+     *        otherwise, it must have as many values as the rank of the input
+     *        and output spaces of the operator.
+     *
      * @param out
      *        The output space.
      *
-     * @param off
-     *        The position of the output relative to the result of the
-     *        convolution.
+     * @param outOff
+     *        The position of the output region within the work space. If
+     *        {@code null}, the output region assumed to be centered; otherwise,
+     *        it must have as many values as the rank of the input and output
+     *        spaces of the operator.
+     *
+     * @see Convolution#build(Shape, ShapedVectorSpace, int[],
+     *      ShapedVectorSpace, int[])
      */
-    public ConvolutionFloat3D(ShapedVectorSpace inp,
-                        ShapedVectorSpace out, int[] off) {
+    public ConvolutionFloat3D(Shape wrk,
+                                ShapedVectorSpace inp, int[] inpOff,
+                                ShapedVectorSpace out, int[] outOff) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
-        super(inp, out);
-        if (inp.getRank() != 3) {
-            throw new IllegalArgumentException("Input space is not 3D");
+        super(wrk, inp, inpOff, out, outOff);
+        if (getRank() != 3) {
+            throw new IllegalArgumentException("Input and output spaces must be 3D");
         }
-        if (out.getRank() != 3) {
-            throw new IllegalArgumentException("Output space is not 3D");
-        }
-        dim1 = inp.getDimension(0);
-        off1 = off[0];
-        end1 = off1 + out.getDimension(0);
-        if (off1 < 0 || off1 >= dim1) {
-            throw new IllegalArgumentException("Out of range offset along 1st dimension");
-        }
-        if (end1 > dim1) {
-            throw new IllegalArgumentException("Data (+ offset) beyond 1st dimension");
-        }
-        dim2 = inp.getDimension(1);
-        off2 = off[1];
-        end2 = off2 + out.getDimension(1);
-        if (off2 < 0 || off2 >= dim2) {
-            throw new IllegalArgumentException("Out of range offset along 2nd dimension");
-        }
-        if (end2 > dim2) {
-            throw new IllegalArgumentException("Data (+ offset) beyond 2nd dimension");
-        }
-        dim3 = inp.getDimension(2);
-        off3 = off[2];
-        end3 = off3 + out.getDimension(2);
-        if (off3 < 0 || off3 >= dim3) {
-            throw new IllegalArgumentException("Out of range offset along 3rd dimension");
-        }
-        if (end3 > dim3) {
-            throw new IllegalArgumentException("Data (+ offset) beyond 3rd dimension");
-        }
+        this.dim1 = workShape.dimension(2);
+        this.dim2 = workShape.dimension(1);
+        this.dim3 = workShape.dimension(0);
+        this.R = new PushPullOperator(workShape, out.getShape(),
+                                      outputOffsets, fastOutput);
+        this.S = new PushPullOperator(workShape, inp.getShape(),
+                                      inputOffsets, fastInput);
     }
-
 
     /** Create low-level FFT operator. */
     private final void createFFT() {
@@ -152,8 +122,8 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
     /** Apply in-place forward complex FFT. */
     @Override
     public final void forwardFFT(float z[]) {
-        if (z.length != 2*inpSize) {
-            throw new IllegalArgumentException("Bad workspace size");
+        if (z.length != 2*getNumberOfFrequencies()) {
+            throw new IllegalArgumentException("Bad argument size");
         }
         timerForFFT.resume();
         if (fft == null) {
@@ -166,7 +136,7 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
     /** Apply in-place backward complex FFT. */
     @Override
     public final void backwardFFT(float z[]) {
-        if (z.length != 2*inpSize) {
+        if (z.length != 2*getNumberOfFrequencies()) {
             throw new IllegalArgumentException("Bad argument size");
         }
         timerForFFT.resume();
@@ -177,25 +147,92 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
         timerForFFT.stop();
     }
 
+    @Override
+    public void push(float z[], float x[], boolean adjoint) {
+        if (adjoint) {
+            R.push(z, x);
+        } else {
+            S.push(z, x);
+        }
+    }
 
     @Override
-    public void push(float x[], boolean adjoint) {
-        if (x == null || x.length != (adjoint ? outSize : inpSize)) {
-            throw new IllegalArgumentException("Bad input size");
-        }
-        final float zero = 0;
-        float z[] = getWorkArray();
+    public void pull(float x[], float z[], boolean adjoint) {
         if (adjoint) {
-            /* Apply R': set real part of workspace to zero-padded input, set
-               the imaginary part to zero. */
-            if (outSize == inpSize) {
-                /* Output and input have the same size. */
-                for (int k = 0, j = 0; j < inpSize; ++j, k += 2) {
+            S.pull(x, z);
+        } else {
+            R.pull(x, z);
+        }
+    }
+
+
+    private class PushPullOperator {
+        /** Internal and external spaces have the same dimensions. */
+        private final boolean fast;
+
+        /** Offset of region along 1st input dimension. */
+        private final int off1;
+
+        /** Offset of region along 2nd input dimension. */
+        private final int off2;
+
+        /** Offset of region along 3rd input dimension. */
+        private final int off3;
+
+        /** End of region along 1st input dimension. */
+        private final int end1;
+
+        /** End of region along 2nd input dimension. */
+        private final int end2;
+
+        /** End of region along 3rd input dimension. */
+        private final int end3;
+
+        /**
+         * Create a real-complex push/pull operator.
+         *
+         * <p> A push/pull operator is in charge of exchanging the contents of
+         * vectors between an internal space (the work space with complex
+         * values) and an external space (the user space with real values). The
+         * dimensions of the user space must be smaller or equal those of the
+         * work space. This method assumes that the arguments are valid (in
+         * fact they have been already checked by the constructors of the
+         * {@link Convolution} class). </p>
+         *
+         * @param wrk
+         *        The dimensions of the work space.
+         *
+         * @param usr
+         *        The dimensions of the user space.
+         *
+         * @param off
+         *        The offsets of the user space relative to the work space.
+         *
+         * @param fast
+         *        True if user and work spaces have the same dimensions;
+         *        false otherwise.
+         */
+        private PushPullOperator(Shape wrk, Shape usr, int[] off, boolean fast) {
+            this.fast = fast;
+            this.off1 = off[0];
+            this.end1 = off1 + usr.dimension(0);
+            this.off2 = off[1];
+            this.end2 = off2 + usr.dimension(1);
+            this.off3 = off[2];
+            this.end3 = off3 + usr.dimension(2);
+        }
+
+        /** Set contents of work array. */
+        private void push(final float[] z, final float[] x) {
+            final float zero = 0;
+            if (fast) {
+                /* User and work spaces have the same size. */
+                for (int j = 0, k = 0; j < x.length; ++j, k += 2) {
                     z[k] = x[j];
                     z[k+1] = zero;
                 }
             } else {
-                /* Output size is smaller than input size. */
+                /* User space is smaller than work space. */
                 int j = 0; // index in x array
                 int k = 0; // index of real part in z array
                 for (int i3 = 0; i3 < off3; ++i3) {
@@ -243,39 +280,22 @@ public class ConvolutionFloat3D extends ConvolutionFloat {
                     }
                 }
             }
-        } else {
-            /* Apply S */
-            for (int j = 0, k = 0; j < inpSize; ++j, k += 2) {
-                z[k] = x[j];
-                z[k+1] = zero;
-            }
         }
-    }
 
-    @Override
-    public void pull(float x[], boolean adjoint) {
-        if (x == null || x.length != (adjoint ? inpSize : outSize)) {
-            throw new IllegalArgumentException("Bad input size");
-        }
-        float z[] = getWorkArray();
-        if (adjoint) {
-            /* Apply operator S' */
-            for (int j = 0, k = 0; j < inpSize; ++j, k += 2) {
-                x[j] = z[k];
-            }
-        } else {
-            /* Apply operator R */
-            if (outSize == inpSize) {
-                /* Output and input have the same size. */
-                for (int j = 0, k = 0; j < inpSize; k += 2, ++j) {
+        /** Extract contents of work array. */
+        private void pull(final float[] x, final float[] z) {
+            if (fast) {
+                /* User and work spaces have the same size. */
+                for (int j = 0, k = 0; j < x.length; ++j, k += 2) {
                     x[j] = z[k];
                 }
             } else {
-                /* Output size is smaller than input size. */
+                /* User space is smaller than work space. */
                 int j = 0; // index in x array
+                int k; // index of real part in z array
                 for (int i3 = off3; i3 < end3; ++i3) {
                     for (int i2 = off2; i2 < end2; ++i2) {
-                        int k = (off1 + dim1*(i2 + dim3*i3))*2;
+                        k = (off1 + dim1*(i2 + dim3*i3))*2;
                         for (int i1 = off1; i1 < end1; ++i1, ++j, k += 2) {
                             x[j] = z[k];
                         }

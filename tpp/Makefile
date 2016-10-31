@@ -101,9 +101,9 @@ clean:
 
 all-misc: $(MISC_OUTPUTS)
 
-Makefile: Makefile.x
+Makefile: Makefile.x ./tpp
 	$(RM) $@
-	$(CODGER) $< $@
+	./tpp $< $@
 	chmod 444 $@
 
 $(ARRAY)ArrayFactory.java: ArrayFactory.javax

@@ -29,6 +29,7 @@ package mitiv.deconv.impl;
 import mitiv.array.ArrayUtils;
 import mitiv.array.DoubleArray;
 import mitiv.array.ShapedArray;
+import mitiv.base.Shape;
 import mitiv.base.Traits;
 import mitiv.deconv.Convolution;
 import mitiv.exception.IncorrectSpaceException;
@@ -44,7 +45,7 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
 public abstract class ConvolutionDouble extends Convolution {
 
     /** Workspace array. */
-    private double[] tmp = null;
+    private double[] wrk = null;
 
     /** Complex modulation transfer function (MTF). */
     private double[] mtf = null;
@@ -53,24 +54,12 @@ public abstract class ConvolutionDouble extends Convolution {
      * The following constructor make this class non instantiable, but still
      * let others inherit from this class.
      */
-    protected ConvolutionDouble(ShapedVectorSpace space) {
-        super(space);
-        if (space.getType() != Traits.DOUBLE) {
-            throw new IllegalArgumentException("Vector space must be for double data type");
-        }
-    }
-
-    /**
-     * The following constructor make this class non instantiable, but still
-     * let others inherit from this class.
-     */
-    protected ConvolutionDouble(ShapedVectorSpace inp, ShapedVectorSpace out) {
-        super(inp, out);
-        if (inp.getType() != Traits.DOUBLE) {
-            throw new IllegalArgumentException("Input vector space must be for double data type");
-        }
-        if (out.getType() != Traits.DOUBLE) {
-            throw new IllegalArgumentException("Output vector space must be for double data type");
+    protected ConvolutionDouble(Shape wrk,
+                           ShapedVectorSpace inp, int[] inpOff,
+                           ShapedVectorSpace out, int[] outOff) {
+        super(wrk, inp, inpOff, out, outOff);
+        if (getType() != Traits.DOUBLE) {
+            throw new IllegalArgumentException("Input and output vector spaces must be for double data type");
         }
     }
 
@@ -86,10 +75,10 @@ public abstract class ConvolutionDouble extends Convolution {
      * @return The internal workspace used for in-place FFT.
      */
     public double[] getWorkArray() {
-        if (tmp == null) {
-            tmp = new double[2*inpSize];
+        if (wrk == null) {
+            wrk = new double[2*getNumberOfFrequencies()];
         }
-        return tmp;
+        return wrk;
     }
 
     @Override
@@ -103,7 +92,7 @@ public abstract class ConvolutionDouble extends Convolution {
                 throw new IncorrectSpaceException("Vector does not belong to input space");
             }
         }
-        push(((DoubleShapedVector)src).getData(), adjoint);
+        push(getWorkArray(), ((DoubleShapedVector)src).getData(), adjoint);
     }
 
     @Override
@@ -117,30 +106,39 @@ public abstract class ConvolutionDouble extends Convolution {
                 throw new IncorrectSpaceException("Vector does not belong to output space");
             }
         }
-        pull(((DoubleShapedVector)dst).getData(), adjoint);
+        pull(((DoubleShapedVector)dst).getData(), getWorkArray(), adjoint);
     }
 
     /**
-     * Copy input array in workspace.
+     * Copy user array to work array.
      *
      * <p> This methods applies operator <b>S</b> if <b>adjoint</b> is false
      * and operator <b>R</b><sup>*</sup> otherwise. </p>
      *
-     * @param x
-     *        The array corresponding to the output vector.
+     * @param dst
+     *        The destination work array.
+     *
+     * @param src
+     *        The source user array.
+     *
+     * @param adjoint
+     *        Push for the adjoint operation?
      */
-    public abstract void push(double x[], boolean adjoint);
+    public abstract void push(double dst[], double src[], boolean adjoint);
 
     /**
-     * Copy real part of workspace into output array.
+     * Copy real part of work array into user array.
      *
-     * <p> This methods applies operator <b>R</b> if <b>adjoint</b> is false
-     * and operator <b>S</b><sup>*</sup> otherwise. </p>
+     * @param dst
+     *        The destination user array.
      *
-     * @param x
-     *        The array corresponding to the output vector.
+     * @param src
+     *        The source work array.
+     *
+     * @param adjoint
+     *        Pull for the adjoint operation?
      */
-    public abstract void pull(double x[], boolean adjoint);
+    public abstract void pull(double dst[], double src[], boolean adjoint);
 
     /** Apply in-place forward complex FFT. */
     public abstract void forwardFFT(double z[]);
@@ -167,14 +165,15 @@ public abstract class ConvolutionDouble extends Convolution {
         if (mtf == null) {
             throw new IllegalArgumentException("You must set the PSF or the MTF first");
         }
-        double h[] = mtf;
-        double z[] = getWorkArray();
+        final double h[] = mtf;
+        final double z[] = getWorkArray();
+        final int n = getNumberOfFrequencies();
 
         /* Apply forward complex FFT, multiply by the MTF and
          * apply backward FFT. */
         forwardFFT();
         if (conj) {
-            for (int k = 0; k < inpSize; ++k) {
+            for (int k = 0; k < n; ++k) {
                 int real = k + k;
                 int imag = real + 1;
                 double h_re = h[real];
@@ -185,7 +184,7 @@ public abstract class ConvolutionDouble extends Convolution {
                 z[imag] = h_re*z_im - h_im*z_re;
             }
         } else {
-            for (int k = 0; k < inpSize; ++k) {
+            for (int k = 0; k < n; ++k) {
                 int real = k + k;
                 int imag = real + 1;
                 double h_re = h[real];
@@ -230,11 +229,12 @@ public abstract class ConvolutionDouble extends Convolution {
 
     private final void computeMTF(double[] psf) {
         final double zero = 0;
-        final double scale = (double)1/(double)inpSize;
+        final int n = getNumberOfFrequencies();
+        final double scale = (double)1/(double)n;
         if (mtf == null) {
-            mtf = new double[2*inpSize];
+            mtf = new double[2*n];
         }
-        for (int k = 0; k < inpSize; ++k) {
+        for (int k = 0; k < n; ++k) {
             int real = k + k;
             int imag = real + 1;
             mtf[real] = psf[k]*scale;

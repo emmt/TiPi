@@ -35,6 +35,7 @@ package mitiv.deconv.impl;
 import mitiv.array.ArrayUtils;
 import mitiv.array.${Type}Array;
 import mitiv.array.ShapedArray;
+import mitiv.base.Shape;
 import mitiv.base.Traits;
 import mitiv.deconv.Convolution;
 import mitiv.exception.IncorrectSpaceException;
@@ -50,7 +51,7 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
 public abstract class ${className} extends Convolution {
 
     /** Workspace array. */
-    private ${type}[] tmp = null;
+    private ${type}[] wrk = null;
 
     /** Complex modulation transfer function (MTF). */
     private ${type}[] mtf = null;
@@ -59,24 +60,12 @@ public abstract class ${className} extends Convolution {
      * The following constructor make this class non instantiable, but still
      * let others inherit from this class.
      */
-    protected ${className}(ShapedVectorSpace space) {
-        super(space);
-        if (space.getType() != Traits.${TYPE}) {
-            throw new IllegalArgumentException("Vector space must be for ${type} data type");
-        }
-    }
-
-    /**
-     * The following constructor make this class non instantiable, but still
-     * let others inherit from this class.
-     */
-    protected ${className}(ShapedVectorSpace inp, ShapedVectorSpace out) {
-        super(inp, out);
-        if (inp.getType() != Traits.${TYPE}) {
-            throw new IllegalArgumentException("Input vector space must be for ${type} data type");
-        }
-        if (out.getType() != Traits.${TYPE}) {
-            throw new IllegalArgumentException("Output vector space must be for ${type} data type");
+    protected ${className}(Shape wrk,
+                           ShapedVectorSpace inp, int[] inpOff,
+                           ShapedVectorSpace out, int[] outOff) {
+        super(wrk, inp, inpOff, out, outOff);
+        if (getType() != Traits.${TYPE}) {
+            throw new IllegalArgumentException("Input and output vector spaces must be for ${type} data type");
         }
     }
 
@@ -92,10 +81,10 @@ public abstract class ${className} extends Convolution {
      * @return The internal workspace used for in-place FFT.
      */
     public ${type}[] getWorkArray() {
-        if (tmp == null) {
-            tmp = new ${type}[2*inpSize];
+        if (wrk == null) {
+            wrk = new ${type}[2*getNumberOfFrequencies()];
         }
-        return tmp;
+        return wrk;
     }
 
     @Override
@@ -109,7 +98,7 @@ public abstract class ${className} extends Convolution {
                 throw new IncorrectSpaceException("Vector does not belong to input space");
             }
         }
-        push(((${Type}ShapedVector)src).getData(), adjoint);
+        push(getWorkArray(), ((${Type}ShapedVector)src).getData(), adjoint);
     }
 
     @Override
@@ -123,30 +112,39 @@ public abstract class ${className} extends Convolution {
                 throw new IncorrectSpaceException("Vector does not belong to output space");
             }
         }
-        pull(((${Type}ShapedVector)dst).getData(), adjoint);
+        pull(((${Type}ShapedVector)dst).getData(), getWorkArray(), adjoint);
     }
 
     /**
-     * Copy input array in workspace.
+     * Copy user array to work array.
      *
      * <p> This methods applies operator <b>S</b> if <b>adjoint</b> is false
      * and operator <b>R</b><sup>*</sup> otherwise. </p>
      *
-     * @param x
-     *        The array corresponding to the output vector.
+     * @param dst
+     *        The destination work array.
+     *
+     * @param src
+     *        The source user array.
+     *
+     * @param adjoint
+     *        Push for the adjoint operation?
      */
-    public abstract void push(${type} x[], boolean adjoint);
+    public abstract void push(${type} dst[], ${type} src[], boolean adjoint);
 
     /**
-     * Copy real part of workspace into output array.
+     * Copy real part of work array into user array.
      *
-     * <p> This methods applies operator <b>R</b> if <b>adjoint</b> is false
-     * and operator <b>S</b><sup>*</sup> otherwise. </p>
+     * @param dst
+     *        The destination user array.
      *
-     * @param x
-     *        The array corresponding to the output vector.
+     * @param src
+     *        The source work array.
+     *
+     * @param adjoint
+     *        Pull for the adjoint operation?
      */
-    public abstract void pull(${type} x[], boolean adjoint);
+    public abstract void pull(${type} dst[], ${type} src[], boolean adjoint);
 
     /** Apply in-place forward complex FFT. */
     public abstract void forwardFFT(${type} z[]);
@@ -173,14 +171,15 @@ public abstract class ${className} extends Convolution {
         if (mtf == null) {
             throw new IllegalArgumentException("You must set the PSF or the MTF first");
         }
-        ${type} h[] = mtf;
-        ${type} z[] = getWorkArray();
+        final ${type} h[] = mtf;
+        final ${type} z[] = getWorkArray();
+        final int n = getNumberOfFrequencies();
 
         /* Apply forward complex FFT, multiply by the MTF and
          * apply backward FFT. */
         forwardFFT();
         if (conj) {
-            for (int k = 0; k < inpSize; ++k) {
+            for (int k = 0; k < n; ++k) {
                 int real = k + k;
                 int imag = real + 1;
                 ${type} h_re = h[real];
@@ -191,7 +190,7 @@ public abstract class ${className} extends Convolution {
                 z[imag] = h_re*z_im - h_im*z_re;
             }
         } else {
-            for (int k = 0; k < inpSize; ++k) {
+            for (int k = 0; k < n; ++k) {
                 int real = k + k;
                 int imag = real + 1;
                 ${type} h_re = h[real];
@@ -236,11 +235,12 @@ public abstract class ${className} extends Convolution {
 
     private final void computeMTF(${type}[] psf) {
         final ${type} zero = 0;
-        final ${type} scale = (${type})1/(${type})inpSize;
+        final int n = getNumberOfFrequencies();
+        final ${type} scale = (${type})1/(${type})n;
         if (mtf == null) {
-            mtf = new ${type}[2*inpSize];
+            mtf = new ${type}[2*n];
         }
-        for (int k = 0; k < inpSize; ++k) {
+        for (int k = 0; k < n; ++k) {
             int real = k + k;
             int imag = real + 1;
             mtf[real] = psf[k]*scale;

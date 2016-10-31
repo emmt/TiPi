@@ -35,7 +35,10 @@
 //# end
 package mitiv.deconv.impl;
 
+import mitiv.base.Shape;
+import mitiv.deconv.Convolution;
 import mitiv.linalg.shaped.ShapedVectorSpace;
+
 import org.jtransforms.fft.${Type}FFT_${rank}D;
 
 /**
@@ -48,82 +51,73 @@ public class ${className} extends Convolution${Type} {
     /** FFT operator. */
     private ${Type}FFT_${rank}D fft = null;
 
+    /** The operator R. */
+    private final PushPullOperator R;
+
+    /** The operator S. */
+    private final PushPullOperator S;
+
     //# for k in 1:${rank}
     //#     def kth = ${}{nth_${k}}
-    /** Number of element along ${kth} dimension of the input variables. */
+    /** Number of element along ${kth} dimension of the work space. */
     private final int dim${k};
 
     //# end
-    //# for k in 1:${rank}
-    //#     def kth = ${}{nth_${k}}
-    /** Offset of output along ${kth} input dimension. */
-    private final int off${k};
-
-    //# end
-    //# for k in 1:${rank}
-    //#     def kth = ${}{nth_${k}}
-    /** End of output along ${kth} input dimension. */
-    private final int end${k};
-
-    //# end
-
     /**
      * Create a new convolution operator for ${rank}D arrays of ${type}'s.
      *
-     * @param space - The input and output space.
-     */
-    public ${className}(ShapedVectorSpace space) {
-        super(space);
-        if (space.getRank() != ${rank}) {
-            throw new IllegalArgumentException("Vector space must be have ${rank} dimension(s)");
-        }
-        //# for k in 1:${rank}
-        //#     eval km1 = ${rank} - ${k}
-        dim${k} = space.getDimension(${km1});
-        off${k} = 0;
-        end${k} = dim${k};
-        //# end
-    }
-
-    /**
-     * Create a new convolution operator for ${rank}D arrays of ${type}'s.
+     * <p> This protected constructor should not be directly used.  Call {@link
+     * Convolution#build(Shape, ShapedVectorSpace, int[], ShapedVectorSpace,
+     * int[]) instead. </p>
+     *
+     * @param wrk
+     *        The dimensions of the work space. If {@code null}, the dimensions
+     *        of the work space are automatically computed to be the smallest
+     *        dimensions suitable for the FFT (see
+     *        {@link FFTUtils#bestDimension(int)}) and large enough to encompass
+     *        the input and output dimensions. If {@code wrk} is {@code null},
+     *        it is probably better to left the offsets unspecified and set
+     *        {@code inpOff} and {@code outOff} to be {@code null}.
      *
      * @param inp
      *        The input space.
      *
+     * @param inpOff
+     *        The position of the input region within the work space. If
+     *        {@code null}, the input region is assumed to be centered;
+     *        otherwise, it must have as many values as the rank of the input
+     *        and output spaces of the operator.
+     *
      * @param out
      *        The output space.
      *
-     * @param off
-     *        The position of the output relative to the result of the
-     *        convolution.
+     * @param outOff
+     *        The position of the output region within the work space. If
+     *        {@code null}, the output region assumed to be centered; otherwise,
+     *        it must have as many values as the rank of the input and output
+     *        spaces of the operator.
+     *
+     * @see Convolution#build(Shape, ShapedVectorSpace, int[],
+     *      ShapedVectorSpace, int[])
      */
-    public ${className}(ShapedVectorSpace inp,
-                        ShapedVectorSpace out, int[] off) {
+    public ${className}(Shape wrk,
+                                ShapedVectorSpace inp, int[] inpOff,
+                                ShapedVectorSpace out, int[] outOff) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
-        super(inp, out);
-        if (inp.getRank() != ${rank}) {
-            throw new IllegalArgumentException("Input space is not ${rank}D");
-        }
-        if (out.getRank() != ${rank}) {
-            throw new IllegalArgumentException("Output space is not ${rank}D");
+        super(wrk, inp, inpOff, out, outOff);
+        if (getRank() != ${rank}) {
+            throw new IllegalArgumentException("Input and output spaces must be ${rank}D");
         }
         //# for k in 1:${rank}
-        //#     eval km1 = ${k} - 1
-        //#     def  kth = ${}{nth_${k}}
-        dim${k} = inp.getDimension(${km1});
-        off${k} = off[${km1}];
-        end${k} = off${k} + out.getDimension(${km1});
-        if (off${k} < 0 || off${k} >= dim${k}) {
-            throw new IllegalArgumentException("Out of range offset along ${kth} dimension");
-        }
-        if (end${k} > dim${k}) {
-            throw new IllegalArgumentException("Data (+ offset) beyond ${kth} dimension");
-        }
+        //#     eval km1 = ${rank} - ${k}
+        this.dim${k} = workShape.dimension(${km1});
         //# end
+        this.R = new PushPullOperator(workShape, out.getShape(),
+                                      outputOffsets, fastOutput);
+        this.S = new PushPullOperator(workShape, inp.getShape(),
+                                      inputOffsets, fastInput);
     }
-
 
     /** Create low-level FFT operator. */
     private final void createFFT() {
@@ -139,8 +133,8 @@ public class ${className} extends Convolution${Type} {
     /** Apply in-place forward complex FFT. */
     @Override
     public final void forwardFFT(${type} z[]) {
-        if (z.length != 2*inpSize) {
-            throw new IllegalArgumentException("Bad workspace size");
+        if (z.length != 2*getNumberOfFrequencies()) {
+            throw new IllegalArgumentException("Bad argument size");
         }
         timerForFFT.resume();
         if (fft == null) {
@@ -153,7 +147,7 @@ public class ${className} extends Convolution${Type} {
     /** Apply in-place backward complex FFT. */
     @Override
     public final void backwardFFT(${type} z[]) {
-        if (z.length != 2*inpSize) {
+        if (z.length != 2*getNumberOfFrequencies()) {
             throw new IllegalArgumentException("Bad argument size");
         }
         timerForFFT.resume();
@@ -162,6 +156,24 @@ public class ${className} extends Convolution${Type} {
         }
         fft.complexInverse(z, false);
         timerForFFT.stop();
+    }
+
+    @Override
+    public void push(${type} z[], ${type} x[], boolean adjoint) {
+        if (adjoint) {
+            R.push(z, x);
+        } else {
+            S.push(z, x);
+        }
+    }
+
+    @Override
+    public void pull(${type} x[], ${type} z[], boolean adjoint) {
+        if (adjoint) {
+            S.pull(x, z);
+        } else {
+            R.pull(x, z);
+        }
     }
 
     //# // Define some macros for indexing in the different regions delimited
@@ -195,24 +207,66 @@ public class ${className} extends Convolution${Type} {
     //#
     //# undef k all beg mid end
 
-    @Override
-    public void push(${type} x[], boolean adjoint) {
-        if (x == null || x.length != (adjoint ? outSize : inpSize)) {
-            throw new IllegalArgumentException("Bad input size");
+    private class PushPullOperator {
+        /** Internal and external spaces have the same dimensions. */
+        private final boolean fast;
+
+        //# for k in 1:${rank}
+        //#     def kth = ${}{nth_${k}}
+        /** Offset of region along ${kth} input dimension. */
+        private final int off${k};
+
+        //# end
+        //# for k in 1:${rank}
+        //#     def kth = ${}{nth_${k}}
+        /** End of region along ${kth} input dimension. */
+        private final int end${k};
+
+        //# end
+        /**
+         * Create a real-complex push/pull operator.
+         *
+         * <p> A push/pull operator is in charge of exchanging the contents of
+         * vectors between an internal space (the work space with complex
+         * values) and an external space (the user space with real values). The
+         * dimensions of the user space must be smaller or equal those of the
+         * work space. This method assumes that the arguments are valid (in
+         * fact they have been already checked by the constructors of the
+         * {@link Convolution} class). </p>
+         *
+         * @param wrk
+         *        The dimensions of the work space.
+         *
+         * @param usr
+         *        The dimensions of the user space.
+         *
+         * @param off
+         *        The offsets of the user space relative to the work space.
+         *
+         * @param fast
+         *        True if user and work spaces have the same dimensions;
+         *        false otherwise.
+         */
+        private PushPullOperator(Shape wrk, Shape usr, int[] off, boolean fast) {
+            this.fast = fast;
+            //# for k in 1:${rank}
+            //#     eval km1 = ${k} - 1
+            this.off${k} = off[${km1}];
+            this.end${k} = off${k} + usr.dimension(${km1});
+            //# end
         }
-        final ${type} zero = 0;
-        ${type} z[] = getWorkArray();
-        if (adjoint) {
-            /* Apply R': set real part of workspace to zero-padded input, set
-               the imaginary part to zero. */
-            if (outSize == inpSize) {
-                /* Output and input have the same size. */
-                for (int k = 0, j = 0; j < inpSize; ++j, k += 2) {
+
+        /** Set contents of work array. */
+        private void push(final ${type}[] z, final ${type}[] x) {
+            final ${type} zero = 0;
+            if (fast) {
+                /* User and work spaces have the same size. */
+                for (int j = 0, k = 0; j < x.length; ++j, k += 2) {
                     z[k] = x[j];
                     z[k+1] = zero;
                 }
             } else {
-                /* Output size is smaller than input size. */
+                /* User space is smaller than work space. */
                 int j = 0; // index in x array
                 int k = 0; // index of real part in z array
                 //# if ${rank} == 1
@@ -304,52 +358,36 @@ public class ${className} extends Convolution${Type} {
                 //#     error only 1D, 2D and 3D implemented
                 //# end
             }
-        } else {
-            /* Apply S */
-            for (int j = 0, k = 0; j < inpSize; ++j, k += 2) {
-                z[k] = x[j];
-                z[k+1] = zero;
-            }
         }
-    }
 
-    @Override
-    public void pull(${type} x[], boolean adjoint) {
-        if (x == null || x.length != (adjoint ? inpSize : outSize)) {
-            throw new IllegalArgumentException("Bad input size");
-        }
-        ${type} z[] = getWorkArray();
-        if (adjoint) {
-            /* Apply operator S' */
-            for (int j = 0, k = 0; j < inpSize; ++j, k += 2) {
-                x[j] = z[k];
-            }
-        } else {
-            /* Apply operator R */
-            if (outSize == inpSize) {
-                /* Output and input have the same size. */
-                for (int j = 0, k = 0; j < inpSize; k += 2, ++j) {
+        /** Extract contents of work array. */
+        private void pull(final ${type}[] x, final ${type}[] z) {
+            if (fast) {
+                /* User and work spaces have the same size. */
+                for (int j = 0, k = 0; j < x.length; ++j, k += 2) {
                     x[j] = z[k];
                 }
             } else {
-                /* Output size is smaller than input size. */
+                /* User space is smaller than work space. */
                 int j = 0; // index in x array
                 //# if ${rank} == 1
-                int k = off1*2;
+                int k = off1*2; // index of real part in z array
                 for (${i1_in_mid}, ++j, k += 2) {
                     x[j] = z[k];
                 }
                 //# elif ${rank} == 2
+                int k; // index of real part in z array
                 for (${i2_in_mid}) {
-                    int k = (off1 + dim1*i2)*2;
+                    k = (off1 + dim1*i2)*2;
                     for (${i1_in_mid}, ++j, k += 2) {
                         x[j] = z[k];
                     }
                 }
                 //# elif ${rank} == 3
+                int k; // index of real part in z array
                 for (${i3_in_mid}) {
                     for (${i2_in_mid}) {
-                        int k = (off1 + dim1*(i2 + dim3*i3))*2;
+                        k = (off1 + dim1*(i2 + dim3*i3))*2;
                         for (${i1_in_mid}, ++j, k += 2) {
                             x[j] = z[k];
                         }
