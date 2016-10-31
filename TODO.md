@@ -7,6 +7,9 @@
 
 * Add support for `boolean` arrays.
 
+* Have public methods of `CostFunction` and descendants check the arguments and
+  short-circuit if `alpha = 0`, not the low level implementations.
+
 * Decide that `byte` are interpreted as being unsigned (there is no real use of
   `signed byte` in image processing and having both `signed` and `unsigned`
   version of integers is not worth the added complexity, and bugs), the
