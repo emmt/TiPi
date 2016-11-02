@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.microscopy;
+package mitiv.old.microscopy;
 
 
 import org.jtransforms.fft.DoubleFFT_2D;
@@ -322,18 +322,18 @@ public class MicroscopeModel
         nb_defocus_coefs = defocus.length;
         switch (nb_defocus_coefs)
         {
-        case 3:
-            deltaX = defocus[1];
-            deltaY = defocus[2];
-        case 1:
-            lambda_ni = defocus[0];
-            break;
-        case 2:
-            deltaX = defocus[1];
-            deltaY = defocus[2];
-            break;
-        default:
-            throw new IllegalArgumentException("bad defocus  parameters");
+            case 3:
+                deltaX = defocus[1];
+                deltaY = defocus[2];
+            case 1:
+                lambda_ni = defocus[0];
+                break;
+            case 2:
+                deltaX = defocus[1];
+                deltaY = defocus[2];
+                break;
+            default:
+                throw new IllegalArgumentException("bad defocus  parameters");
         }
         computeDefocus();
         freePSF();
@@ -588,7 +588,6 @@ public class MicroscopeModel
                     int in = i + j*Nx;
                     if(maskPupil[in] == 1)
                     {
-                        Ci = iz*Npix + in;
                         idef= 1./psi[in];
                         double ph = phi[in] + defoc_scale*psi[in];
                         tmpvar = -DEUXPI*rho[in]*( Aq[2*in]*Math.sin(ph) + Aq[2*in + 1]*Math.cos(ph) )*PSFNorm;
@@ -605,16 +604,16 @@ public class MicroscopeModel
 
         switch(nb_defocus_coefs)
         {
-        case 3:
-            grd[2] = d2;
-            grd[1] = d1;
-        case 1:
-            grd[0] = d0;
-            break;
-        case 2:
-            grd[2] = d2;
-            grd[1] = d1;
-            break;
+            case 3:
+                grd[2] = d2;
+                grd[1] = d1;
+            case 1:
+                grd[0] = d0;
+                break;
+            case 2:
+                grd[2] = d2;
+                grd[1] = d1;
+                break;
         }
         return grd;
     }

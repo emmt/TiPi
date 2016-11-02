@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.microscopy;
+package mitiv.old.microscopy;
 
 import mitiv.array.ArrayFactory;
 import mitiv.array.DoubleArray;
