@@ -471,7 +471,7 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
                     break;
                 }
             }
-            System.err.format("Pad initial array with value %g\n", val);
+            // System.err.format("Pad initial array with value %g\n", val);
             object = ArrayUtils.extract(object, objectShape, val);
         }
 
@@ -597,29 +597,29 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         if (arr != null) {
             switch(arr.getType()) {
 
-            case Traits.BYTE:
-                sum = ((ByteArray)arr).sum();
-                break;
+                case Traits.BYTE:
+                    sum = ((ByteArray)arr).sum();
+                    break;
 
-            case Traits.SHORT:
-                sum = ((ShortArray)arr).sum();
-                break;
+                case Traits.SHORT:
+                    sum = ((ShortArray)arr).sum();
+                    break;
 
-            case Traits.INT:
-                sum = ((IntArray)arr).sum();
-                break;
+                case Traits.INT:
+                    sum = ((IntArray)arr).sum();
+                    break;
 
-            case Traits.LONG:
-                sum = ((LongArray)arr).sum();
-                break;
+                case Traits.LONG:
+                    sum = ((LongArray)arr).sum();
+                    break;
 
-            case Traits.FLOAT:
-                sum = ((FloatArray)arr).sum();
-                break;
+                case Traits.FLOAT:
+                    sum = ((FloatArray)arr).sum();
+                    break;
 
-            case Traits.DOUBLE:
-                sum = ((DoubleArray)arr).sum();
-                break;
+                case Traits.DOUBLE:
+                    sum = ((DoubleArray)arr).sum();
+                    break;
             }
         }
         return sum;
