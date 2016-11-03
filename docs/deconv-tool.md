@@ -67,7 +67,9 @@ supported).
 The most common options are:
 
 * `--psf NAME` to specify the name of the file with the PSF `h`.  If not
-  specified, a Dirac delta function is assumed (*i.e.* no deblurring).
+  specified, a Dirac delta function is assumed (*i.e.* no deblurring).  If
+  option `--normalize` is given, the input PSF is normalized so that `sum(h) =
+  1`.
 
 * `--mu µ` to specify the regularization level.
 
@@ -148,16 +150,18 @@ aliasing almost completely), `min` to work with the minimal possible size, or a
 number `n` to pad by at least `n` elements along all dimensions.  In addition
 to this padding, the dimensions may be enlarged to achieve faster operations
 (because of the FFT).  Option `--crop` can be specified to remove the extra
-padding in the saved solution.
+padding in the saved solution.  By default, the value of the padding elements
+is set to the weighted mean of the data divided by the sum of the PSF values,
+another value can be specified with `--fill VALUE`.
 
 
 ## Bound constraints
 
 Options `--min LOWER` and `--max UPPER` may be used to specify a lower and an
-upper bounds for the result.  For instance, `--min 0` would enforce
-nonnegativity of the result.  Note that when any bound is specified, the
-optimization method is automatically set to be a variant of the limited memory
-BGFS method with bound constraints.
+upper bounds for the result.  For instance, `--min 0` enforces the result to be
+nonnegative.  Note that when any bound is specified, the optimization method is
+automatically set to be a variant of the limited memory BGFS method with bound
+constraints.
 
 
 ## Tuning the optimizer
@@ -189,7 +193,7 @@ constraints).  The convergence of the algorithm is assumed as soon as:
     ∥∇f(x)∥ ≤ max( gatol, grtol⋅∥∇f(x<sub>0</sub>)∥ )
 </code></p>
 
-where <code>x<sub>0</sub></code> is the initial solution and `gatol` and
+where <code>x<sub>0</sub></code> is the initial solution while `gatol` and
 `grtol` are the absolute and relative gradient tolerances.  Both can be
 specified by the options `--gatol VALUE` and `--grtol VALUE`.
 
