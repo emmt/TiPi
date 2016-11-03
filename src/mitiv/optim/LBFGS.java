@@ -25,7 +25,6 @@
 
 package mitiv.optim;
 
-import mitiv.base.Traits;
 import mitiv.linalg.LinearEndomorphism;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
@@ -59,54 +58,10 @@ import mitiv.linalg.VectorSpace;
  * @author Éric Thiébaut.
  *
  */
-public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
-
-    /**
-     * Default value for {@code ftol} parameter in More & Thuente line
-     * search.
-     */
-    static public final double SFTOL = 1.0e-4;
-
-    /**
-     * Default value for {@code gtol} parameter in More & Thuente line
-     * search.
-     */
-    static public final double SGTOL = 0.9;
-
-    /**
-     * Default value for {@code xtol} parameter in More & Thuente line
-     * search.
-     */
-    static public final double SXTOL = Traits.DBL_EPSILON;
+public class LBFGS extends QuasiNewton {
 
     /** LBFGS approximation of the inverse Hessian */
     protected LBFGSOperator H = null;
-
-    /** Relative threshold for the sufficient descent condition. */
-    protected double delta = 0.01;
-
-    /** Small relative size for the initial step or after a restart. */
-    protected double epsilon = 1e-3;
-
-    /**
-     * Relative threshold for the norm or the gradient (relative to the norm
-     * of the initial gradient) for convergence.
-     */
-    protected double grtol;
-
-    /**
-     * Absolute threshold for the norm or the gradient for convergence.
-     */
-    protected double gatol;
-
-    /** Norm or the initial gradient. */
-    protected double ginit;
-
-    /** Lower relative step bound. */
-    protected double stpmin = 1e-20;
-
-    /** Upper relative step bound. */
-    protected double stpmax = 1e+20;
 
     /**
      * Attempt to save some memory?
@@ -228,19 +183,14 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
             }
 
             /* Compute a anti-search direction P.  We take care of checking
-             * whether D = -P is a sufficient descent direction.  As shown by
-             * Zoutendijk, this is true if: -(D/|D|)'.(G/|G|) >= DELTA > 0
-             * where G is the gradient.  Below, R = DELTA*|D|*|G|.
-             * See Nocedal & Wright, "Numerical Optimization", section 3.2,
-             * p. 44 (1999). */
+             * whether D = -P is a sufficient descent direction. */
             while (true) {
                 H.apply(p, g);
                 dg0 = -p.dot(g);
-                double r = (delta > 0.0 ? delta*gnorm*p.norm2() : 0.0);
-                if (r > 0.0 ? (dg0 <= -r) : (dg0 < 0.0)) {
-                    /* Sufficient descent condition holds.  Estimate the
-                     * length of the first step and break to proceed with
-                     * first iterate along the new direction. */
+                if (checkSufficientDescent(dg0, gnorm, p)) {
+                    /* Sufficient descent condition holds. Estimate the length
+                     * of the first step and break to proceed with first iterate
+                     * along the new direction. */
                     alpha = initialStep(x, gnorm);
                     break;
                 }
@@ -291,10 +241,10 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
         if (H.mp >= 1 || H.rule == LBFGSOperator.NO_SCALING) {
             return 1.0;
         }
-        if (0.0 < epsilon && epsilon < 1.0) {
+        if (0.0 < delta && delta < 1.0) {
             final double xnorm = x.norm2();
             if (xnorm > 0.0) {
-                return (xnorm/dnorm)*epsilon;
+                return (xnorm/dnorm)*delta;
             }
         }
         return 1.0/dnorm;
@@ -305,93 +255,6 @@ public class LBFGS extends ReverseCommunicationOptimizerWithLineSearch {
         alpha = lnsrch.getStep();
         x.combine(1.0, x0, -alpha, p);
         return success(OptimTask.COMPUTE_FG);
-    }
-
-    /**
-     * Set the absolute tolerance for the convergence criterion.
-     *
-     * @param gatol
-     *        Absolute tolerance for the convergence criterion.
-     *
-     * @see #setRelativeTolerance(double)
-     * @see #getAbsoluteTolerance()
-     * @see #getGradientThreshold(double)
-     */
-    public void setAbsoluteTolerance(double gatol) {
-        this.gatol = gatol;
-    }
-
-    /**
-     * Set the relative tolerance for the convergence criterion.
-     *
-     * @param grtol
-     *        Relative tolerance for the convergence criterion.
-     *
-     * @see #setAbsoluteTolerance(double)
-     * @see #getRelativeTolerance()
-     * @see #getGradientThreshold(double)
-     */
-    public void setRelativeTolerance(double grtol) {
-        this.grtol = grtol;
-    }
-
-    /**
-     * Query the absolute tolerance for the convergence criterion.
-     *
-     * @see #setAbsoluteTolerance(double)
-     * @see #getRelativeTolerance()
-     * @see #getGradientThreshold(double)
-     */
-    public double getAbsoluteTolerance() {
-        return gatol;
-    }
-
-    /**
-     * Query the relative tolerance for the convergence criterion.
-     *
-     * @see #setRelativeTolerance(double)
-     * @see #getAbsoluteTolerance()
-     * @see #getGradientThreshold(double)
-     */
-    public double getRelativeTolerance() {
-        return grtol;
-    }
-
-    /**
-     * Query the gradient threshold for the convergence criterion.
-     *
-     * <p> The convergence of the optimization method is achieved when the
-     * Euclidean norm of the gradient at a new iterate is less or equal the
-     * threshold: </p>
-     *
-     * <pre>
-     *    max(0.0, gatol, grtol*g0nrm)
-     * </pre>
-     *
-     * <p> where {@code gtest} is the norm of the initial gradient, {@code
-     * gatol} {@code grtol} are the absolute and relative tolerances for the
-     * convergence criterion. </p>
-     *
-     * @param g0nrm
-     *        The norm of the initial gradient.
-     *
-     * @return The gradient threshold.
-     *
-     * @see #setAbsoluteTolerance(double)
-     * @see #setRelativeTolerance(double)
-     * @see #getAbsoluteTolerance()
-     * @see #getRelativeTolerance()
-     */
-    public double getGradientThreshold(double g0nrm) {
-        return max(0.0, gatol, grtol*g0nrm);
-    }
-
-    private static final double max(double a1, double a2, double a3) {
-        if (a3 >= a2) {
-            return (a3 >= a1 ? a3 : a1);
-        } else {
-            return (a2 >= a1 ? a2 : a1);
-        }
     }
 
 }

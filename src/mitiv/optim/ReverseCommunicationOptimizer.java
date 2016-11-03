@@ -92,10 +92,10 @@ public abstract class ReverseCommunicationOptimizer {
     protected final VectorSpace space;
 
     /** Pending task for the caller. */
-    protected OptimTask task;
+    private OptimTask task;
 
     /** Reason of failure. */
-    protected OptimStatus status;
+    private OptimStatus status;
 
     /** Number of function (and gradient) evaluations since start. */
     protected int evaluations = 0;
@@ -118,6 +118,7 @@ public abstract class ReverseCommunicationOptimizer {
             throw new IllegalArgumentException("Illegal null vector space");
         }
         this.space = space;
+        failure(OptimStatus.ALGORITHM_NOT_STARTED);
     }
 
     /**

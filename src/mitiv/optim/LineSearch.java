@@ -216,7 +216,7 @@ public abstract class LineSearch {
 
     protected LineSearch() {
         /* Set initial task and status. */
-        failure(OptimStatus.NOT_STARTED);
+        failure(OptimStatus.LNSRCH_NOT_STARTED);
     }
 
     /**
@@ -290,22 +290,33 @@ public abstract class LineSearch {
      */
     public LineSearchTask iterate(double f, double df) {
         if (task == LineSearchTask.SEARCH) {
+            int bnd;
+            if (stp <= stpmin) {
+                bnd = -1;
+            } else if (stp >= stpmax) {
+                bnd = +1;
+            } else {
+                bnd = 0;
+            }
             iterateHook(f, df);
-            if (status == OptimStatus.SUCCESS) {
-                if (stp >= stpmax) {
-                    if (stp >= stpmax) {
-                        warning(OptimStatus.STEP_EQ_STPMAX);
-                    }
-                    stp = stpmax;
-                } else if (stp <= stpmin) {
-                    if (stp <= stpmin) {
+            if (task == LineSearchTask.SEARCH) {
+                /* Force the step to be within the bounds. */
+                if (stp <= stpmin) {
+                    if (bnd  < 0) {
+                        /* Step was already at the inferior bound. */
                         warning(OptimStatus.STEP_EQ_STPMIN);
                     }
                     stp = stpmin;
+                } else if (stp >= stpmax) {
+                    if (bnd > 0) {
+                        /* Step was already at the superior bound. */
+                        warning(OptimStatus.STEP_EQ_STPMAX);
+                    }
+                    stp = stpmax;
                 }
             }
         } else {
-            failure(OptimStatus.NOT_STARTED);
+            failure(OptimStatus.LNSRCH_NOT_STARTED);
         }
         return task;
     }

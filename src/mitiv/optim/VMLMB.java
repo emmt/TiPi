@@ -47,39 +47,13 @@ import mitiv.linalg.VectorSpace;
  *
  * @author Éric Thiébaut.
  */
-public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
+public class VMLMB extends QuasiNewton {
 
     /** LBFGS approximation of the inverse Hessian */
     private LBFGSOperator H = null;
 
-    /** Relative threshold for the sufficient descent condition. */
-    private final double delta = 5e-2;
-
-    /** Small relative size for the initial step or after a restart. */
-    private final double epsilon = 0.0;
-
-    /**
-     * Relative threshold for the norm or the gradient (relative to the norm
-     * of the initial gradient) for convergence.
-     */
-    protected double grtol;
-
-    /**
-     * Absolute threshold for the norm or the gradient for convergence.
-     */
-    protected double gatol;
-
-    /** Norm or the initial gradient. */
-    protected double ginit;
-
     /** The norm of the search direction. */
     protected double pnorm;
-
-    /** Lower relative step bound. */
-    protected double stpmin = 1e-20;
-
-    /** Upper relative step bound. */
-    protected double stpmax = 1e+20;
 
     /**
      * Attempt to save some memory?
@@ -212,13 +186,13 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
             /* Compute a search direction, possibly after updating the LBFGS
              * matrix.  We take care of checking whether D = -P is a
              * sufficient descent direction.  As shown by Zoutendijk, this is
-             * true if: cos(theta) = -(D/|D|)'.(G/|G|) >= DELTA > 0
+             * true if: cos(theta) = -(D/|D|)'.(G/|G|) >= EPSILON > 0
              * where G is the gradient. */
             while (true) {
                 H.apply(p, g);
                 pnorm = p.norm2(); // FIXME: in some cases, can be just GNORM*GAMMA
                 final double pg = p.dot(g);
-                if (pg >= delta*pnorm*gnorm) {
+                if (pg >= epsilon*pnorm*gnorm) { // FIXME:
                     /* Accept P (respectively D = -P) as a sufficient ascent
                      * (respectively descent) direction and set the directional
                      * derivative. */
@@ -330,10 +304,10 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
 
     protected double initialStep(Vector x, Vector d) {
         final double dnorm = d.norm2();
-        if (0.0 < epsilon && epsilon < 1.0) {
+        if (0.0 < delta && delta < 1.0) {
             final double xnorm = x.norm2();
             if (xnorm > 0.0) {
-                return (xnorm/dnorm)*epsilon;
+                return (xnorm/dnorm)*delta;
             }
         }
         return 1.0/dnorm;
@@ -349,90 +323,4 @@ public class VMLMB extends ReverseCommunicationOptimizerWithLineSearch {
         return success(OptimTask.COMPUTE_FG);
     }
 
-    /**
-     * Set the absolute tolerance for the convergence criterion.
-     *
-     * @param gatol
-     *        Absolute tolerance for the convergence criterion.
-     *
-     * @see #setRelativeTolerance(double)
-     * @see #getAbsoluteTolerance()
-     * @see #getGradientThreshold(double)
-     */
-    public void setAbsoluteTolerance(double gatol) {
-        this.gatol = gatol;
-    }
-
-    /**
-     * Set the relative tolerance for the convergence criterion.
-     *
-     * @param grtol
-     *        Relative tolerance for the convergence criterion.
-     *
-     * @see #setAbsoluteTolerance(double)
-     * @see #getRelativeTolerance()
-     * @see #getGradientThreshold(double)
-     */
-    public void setRelativeTolerance(double grtol) {
-        this.grtol = grtol;
-    }
-
-    /**
-     * Query the absolute tolerance for the convergence criterion.
-     *
-     * @see #setAbsoluteTolerance(double)
-     * @see #getRelativeTolerance()
-     * @see #getGradientThreshold(double)
-     */
-    public double getAbsoluteTolerance() {
-        return gatol;
-    }
-
-    /**
-     * Query the relative tolerance for the convergence criterion.
-     *
-     * @see #setRelativeTolerance(double)
-     * @see #getAbsoluteTolerance()
-     * @see #getGradientThreshold(double)
-     */
-    public double getRelativeTolerance() {
-        return grtol;
-    }
-
-    /**
-     * Query the gradient threshold for the convergence criterion.
-     *
-     * <p> The convergence of the optimization method is achieved when the
-     * Euclidean norm of the gradient at a new iterate is less or equal the
-     * threshold: </p>
-     *
-     * <pre>
-     *    max(0.0, gatol, grtol*g0nrm)
-     * </pre>
-     *
-     * <p> where {@code gtest} is the norm of the initial (projected) gradient,
-     * {@code gatol} {@code grtol} are the absolute and relative tolerances for
-     * the convergence criterion. </p>
-     *
-     * @param g0nrm
-     *        The norm of the initial (projected) gradient.
-     *
-     * @return The gradient threshold.
-     *
-     * @see #setAbsoluteTolerance(double)
-     * @see #setRelativeTolerance(double)
-     * @see #getAbsoluteTolerance()
-     * @see #getRelativeTolerance()
-     */
-    public double getGradientThreshold(double g0nrm) {
-        return max(0.0, gatol, grtol*g0nrm);
-    }
-
-    private static final double max(double a1, double a2, double a3) {
-        if (a3 >= a2) {
-            return (a3 >= a1 ? a3 : a1);
-        } else {
-            return (a2 >= a1 ? a2 : a1);
-        }
-    }
 }

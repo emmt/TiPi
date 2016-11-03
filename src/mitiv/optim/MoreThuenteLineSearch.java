@@ -23,15 +23,13 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+package mitiv.optim;
+
 /**
  * Moré & Thuente inexact line search based on cubic interpolation.
  *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
-package mitiv.optim;
-
-// FIXME: deal with overflows
-
 public class MoreThuenteLineSearch extends LineSearch {
 
     /* Convergence parameters. */
@@ -56,7 +54,7 @@ public class MoreThuenteLineSearch extends LineSearch {
     private double width = 0.0;
     private double width1 = 0.0;
     private boolean brackt = false;
-    private double[] ws;
+    private double[] ws = new double[9];
 
     /* The algorithm has two different stages. */
     private int stage = 0;
@@ -64,43 +62,51 @@ public class MoreThuenteLineSearch extends LineSearch {
     public MoreThuenteLineSearch(double ftol, double gtol, double xtol)
     {
         /* FIXME: check arguments */
-        ws = new double[9];
         this.ftol = Math.max(ftol, 0.0);
         this.gtol = Math.max(gtol, 0.0);
         this.xtol = Math.max(xtol, 0.0);
     }
 
     @Override
-    public boolean useDerivative()
-    {
+    public boolean useDerivative() {
         return true;
     }
 
     @Override
     protected void startHook() {
-        /* Convergence threshold for this step. */
+        /*
+         * Convergence threshold for this step.
+         */
         gtest = ftol*ginit;
 
-        /* Initialize parameters for the interval of search. */
+        /*
+         * Initialize parameters for the interval of search.
+         */
         stmin = stpmin;
         stmax = stpmax;
         width = stpmax - stpmin;
         width1 = 2.0*width;
         brackt = false;
 
-        /* The variables STX, FX, GX contain the values of the step,
-           function, and derivative at the best step. */
+        /*
+         * The variables STX, FX, GX contain the values of the step, function,
+         * and derivative at the best step.
+         */
         stx = 0.0;
         fx = finit;
         gx = ginit;
 
-        /* The variables STY, FY, GY contain the value of the step,
-           function, and derivative at STY. */
+        /*
+         * The variables STY, FY, GY contain the value of the step, function,
+         * and derivative at STY.
+         */
         sty = 0.0;
         fy = finit;
         gy = ginit;
 
-        /* Algorithm starts with STAGE = 1. */
+        /*
+         * Algorithm starts with STAGE = 1.
+         */
         stage = 1;
         success(LineSearchTask.SEARCH);
     }
@@ -108,15 +114,21 @@ public class MoreThuenteLineSearch extends LineSearch {
     @Override
     protected void iterateHook(double f, double g)
     {
-        /* Test for convergence. */
+        /*
+         * Test for convergence.
+         */
         double ftest = finit + stp*gtest;
         if (f <= ftest && Math.abs(g) <= -gtol*ginit) {
-            /* Strong Wolfe conditions satisfied. */
+            /*
+             * Strong Wolfe conditions satisfied.
+             */
             success(LineSearchTask.CONVERGENCE);
             return;
         }
 
-        /* Test for warnings. */
+        /*
+         * Test for warnings.
+         */
         if (stp == stpmin && (f > ftest || g >= gtest)) {
             failure(OptimStatus.STEP_EQ_STPMIN);
             return;
@@ -134,19 +146,25 @@ public class MoreThuenteLineSearch extends LineSearch {
             return;
         }
 
-        /* If psi(stp) <= 0 and f'(stp) >= 0 for some step, then the
-           algorithm enters the second stage. */
+        /*
+         * If psi(stp) <= 0 and f'(stp) >= 0 for some step, then the algorithm
+         * enters the second stage.
+         */
         if (stage == 1 && f <= ftest && g >= 0.0) {
             stage = 2;
         }
 
-        /* A modified function is used to predict the step during the first stage if
-         a lower function value has been obtained but the decrease is not
-         sufficient. */
+        /*
+         * A modified function is used to predict the step during the first
+         * stage if a lower function value has been obtained but the decrease is
+         * not sufficient.
+         */
         if (this.stage == 1 && f <= this.fx && f > ftest) {
-            /* Define the modified function and derivative values and call CSTEP to
-             update STX, STY, and to compute the new step.  Then restore the
-             function and derivative values for F. */
+            /*
+             * Define the modified function and derivative values and call CSTEP
+             * to update STX, STY, and to compute the new step. Then restore the
+             * function and derivative values for F.
+             */
             ws[0] = stx;
             ws[1] = fx - gtest*stx;
             ws[2] = gx - gtest;
@@ -169,7 +187,9 @@ public class MoreThuenteLineSearch extends LineSearch {
             gy  = ws[5] + gtest;
             stp = ws[6];
         } else {
-            /* Call CSTEP to update STX, STY, and to compute the new step. */
+            /*
+             * Call CSTEP to update STX, STY, and to compute the new step.
+             */
             ws[0] = stx;
             ws[1] = fx;
             ws[2] = gx;
@@ -193,7 +213,9 @@ public class MoreThuenteLineSearch extends LineSearch {
             stp = ws[6];
         }
 
-        /* Decide if a bisection step is needed. */
+        /*
+         * Decide if a bisection step is needed.
+         */
         if (this.brackt) {
             double new_width = Math.abs(this.sty - this.stx);
             if (new_width >= 0.66*this.width1) {
@@ -203,7 +225,9 @@ public class MoreThuenteLineSearch extends LineSearch {
             this.width = new_width;
         }
 
-        /* Set the minimum and maximum steps allowed for stp. */
+        /*
+         * Set the minimum and maximum steps allowed for stp.
+         */
         if (this.brackt) {
             this.stmin = Math.min(this.stx, this.sty);
             this.stmax = Math.max(this.stx, this.sty);
@@ -212,32 +236,33 @@ public class MoreThuenteLineSearch extends LineSearch {
             this.stmax = stp + (stp - this.stx)*4.0;
         }
 
-        /* Force the step to be within the bounds stpmax and stpmin. */
+        /*
+         * Force the step to be within the bounds stpmax and stpmin.
+         */
         stp = Math.max(stp, this.stpmin);
         stp = Math.min(stp, this.stpmax);
 
-        /* If further progress is not possible, let stp be the best
-         point obtained during the search. */
+        /*
+         * If further progress is not possible, let stp be the best point
+         * obtained during the search.
+         */
         if (this.brackt && (stp <= this.stmin || stp >= this.stmax ||
                 this.stmax - this.stmin <= this.xtol * this.stmax)) {
             stp = this.stx;
         }
 
-        /* Obtain another function and derivative. */
+        /*
+         * Obtain another function and derivative.
+         */
         success(LineSearchTask.SEARCH);
     }
 
 
-    private final static double max3(double val1, double val2, double val3)
-    {
-        double result = val1;
-        if (val2 > result) result = val2;
-        if (val3 > result) result = val3;
-        return result;
+    private final static double max(double val1, double val2, double val3) {
+        return Math.max(Math.max(val1, val2), val3);
     }
 
-    private final OptimStatus cstep()
-    {
+    private final OptimStatus cstep() {
         /* Constants. */
         final double ZERO = 0.0;
         final double TWO = 2.0;
@@ -281,7 +306,7 @@ public class MoreThuenteLineSearch extends LineSearch {
                taken. */
             brackt = true;
             theta = THREE*(fx - fp)/(stp - stx) + dx + dp;
-            s = max3(Math.abs(theta), Math.abs(dx), Math.abs(dp));
+            s = max(Math.abs(theta), Math.abs(dx), Math.abs(dp));
             temp = theta/s;
             gamma = s*Math.sqrt(temp*temp - (dx/s)*(dp/s));
             if (stp < stx) gamma = -gamma;
@@ -302,7 +327,7 @@ public class MoreThuenteLineSearch extends LineSearch {
                secant step is taken. */
             brackt = true;
             theta = THREE*(fx - fp)/(stp - stx) + dx + dp;
-            s = max3(Math.abs(theta), Math.abs(dx), Math.abs(dp));
+            s = max(Math.abs(theta), Math.abs(dx), Math.abs(dp));
             temp = theta/s;
             gamma = s*Math.sqrt(temp*temp - (dx/s)*(dp/s));
             if (stp > stx) gamma = -gamma;
@@ -324,7 +349,7 @@ public class MoreThuenteLineSearch extends LineSearch {
                defined to be the secant step.  The case GAMMA = 0 only arises if the
                cubic does not tend to infinity in the direction of the step. */
             theta = THREE*(fx - fp)/(stp - stx) + dx + dp;
-            s = max3(Math.abs(theta), Math.abs(dx), Math.abs(dp));
+            s = max(Math.abs(theta), Math.abs(dx), Math.abs(dp));
             temp = theta/s;
             temp = temp*temp - (dx/s)*(dp/s);
             if (temp > ZERO) {
@@ -377,7 +402,7 @@ public class MoreThuenteLineSearch extends LineSearch {
                step is taken. */
             if (brackt) {
                 theta = THREE*(fp - fy)/(sty - stp) + dy + dp;
-                s = max3(Math.abs(theta), Math.abs(dy), Math.abs(dp));
+                s = max(Math.abs(theta), Math.abs(dy), Math.abs(dp));
                 temp = theta/s;
                 gamma = s*Math.sqrt(temp*temp - (dy/s)*(dp/s));
                 if (stp > sty) gamma = -gamma;
@@ -420,16 +445,3 @@ public class MoreThuenteLineSearch extends LineSearch {
         return OptimStatus.SUCCESS;
     }
 }
-
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

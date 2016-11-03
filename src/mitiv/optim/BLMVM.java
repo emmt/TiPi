@@ -25,6 +25,8 @@
 
 package mitiv.optim;
 
+import static java.lang.Math.min;
+
 import mitiv.linalg.LinearEndomorphism;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
@@ -47,28 +49,10 @@ import mitiv.linalg.VectorSpace;
  *
  * @author Éric Thiébaut.
  */
-public class BLMVM extends ReverseCommunicationOptimizer {
+public class BLMVM extends QuasiNewton {
 
     /** LBFGS approximation of the inverse Hessian */
     protected LBFGSOperator H = null;
-
-    /** Relative threshold for the sufficient descent condition. */
-    protected double delta = 0.01;
-
-    /** Small relative size for the initial step or after a restart. */
-    protected double epsilon = 1e-3;
-
-    /**
-     * Relative threshold for the norm or the projected gradient (relative to
-     * the norm of the initial projected gradient) for global convergence.
-     */
-    protected double grtol;
-
-    /**
-     * Absolute threshold for the norm or the projected gradient for
-     * global convergence.
-     */
-    protected double gatol;
 
     /**
      * The Euclidean norm or the initial projected gradient.
@@ -77,12 +61,6 @@ public class BLMVM extends ReverseCommunicationOptimizer {
 
     /** The norm of the search direction. */
     protected double pnorm;
-
-    /** Lower relative step bound. */
-    protected double stpmin = 1e-20;
-
-    /** Upper relative step bound. */
-    protected double stpmax = 1e+20;
 
     /**
      * Parameter to control the convergence of the line search.
@@ -152,7 +130,7 @@ public class BLMVM extends ReverseCommunicationOptimizer {
     }
 
     private BLMVM(LBFGSOperator H, BoundProjector bp) {
-        super(H.getSpace());
+        super(H.getSpace(), null);
         this.H = H;
         if (bp == null) {
             throw new IllegalArgumentException("Illegal null projector");
@@ -294,92 +272,13 @@ public class BLMVM extends ReverseCommunicationOptimizer {
         if (H.mp >= 1 || H.rule == LBFGSOperator.NO_SCALING) {
             return 1.0;
         }
-        if (0.0 < epsilon && epsilon < 1.0) {
+        if (0.0 < delta && delta < 1.0) {
             final double xnorm = x.norm2();
             if (xnorm > 0.0) {
-                return (xnorm/dnorm)*epsilon;
+                return (xnorm/dnorm)*delta;
             }
         }
         return 1.0/dnorm;
-    }
-
-    /**
-     * Set the absolute tolerance for the convergence criterion.
-     *
-     * @param gatol
-     *        Absolute tolerance for the convergence criterion.
-     *
-     * @see #setRelativeTolerance(double)
-     * @see #getAbsoluteTolerance()
-     * @see #getGradientThreshold(double)
-     */
-    public void setAbsoluteTolerance(double gatol) {
-        this.gatol = gatol;
-    }
-
-    /**
-     * Set the relative tolerance for the convergence criterion.
-     *
-     * @param grtol
-     *        Relative tolerance for the convergence criterion.
-     *
-     * @see #setAbsoluteTolerance(double)
-     * @see #getRelativeTolerance()
-     * @see #getGradientThreshold(double)
-     */
-    public void setRelativeTolerance(double grtol) {
-        this.grtol = grtol;
-    }
-
-    /**
-     * Query the absolute tolerance for the convergence criterion.
-     *
-     * @see #setAbsoluteTolerance(double)
-     * @see #getRelativeTolerance()
-     * @see #getGradientThreshold(double)
-     */
-    public double getAbsoluteTolerance() {
-        return gatol;
-    }
-
-    /**
-     * Query the relative tolerance for the convergence criterion.
-     *
-     * @see #setRelativeTolerance(double)
-     * @see #getAbsoluteTolerance()
-     * @see #getGradientThreshold(double)
-     */
-    public double getRelativeTolerance() {
-        return grtol;
-    }
-
-    /**
-     * Query the gradient threshold for the convergence criterion.
-     *
-     * <p> The convergence of the optimization method is achieved when the
-     * Euclidean norm of the gradient at a new iterate is less or equal the
-     * threshold: </p>
-     *
-     * <pre>
-     *    max(0.0, gatol, grtol*g0nrm)
-     * </pre>
-     *
-     * <p> where {@code g0nrm} is the norm of the initial (projected) gradient,
-     * {@code gatol} {@code grtol} are the absolute and relative tolerances for
-     * the convergence criterion. </p>
-     *
-     * @param g0nrm
-     *        The norm of the initial (projected) gradient.
-     *
-     * @return The gradient threshold.
-     *
-     * @see #setAbsoluteTolerance(double)
-     * @see #setRelativeTolerance(double)
-     * @see #getAbsoluteTolerance()
-     * @see #getRelativeTolerance()
-     */
-    public double getGradientThreshold(double g0nrm) {
-        return max(0.0, gatol, grtol*g0nrm);
     }
 
     /**
@@ -404,16 +303,6 @@ public class BLMVM extends ReverseCommunicationOptimizer {
      */
     public double getProjectedGradientNorm2() {
         return (evaluations >= 1 ? pgnorm : -1.0);
-    }
-
-    private static final double max(double a1, double a2, double a3) {
-        if (a2 < a3) {
-            a2 = a3;
-        }
-        return (a1 >= a2 ? a1 : a2);
-    }
-    private static final double min(double a1, double a2) {
-        return (a1 <= a2 ? a1 : a2);
     }
 
 }

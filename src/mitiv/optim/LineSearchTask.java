@@ -68,21 +68,8 @@ public enum LineSearchTask {
     /**
      * Check whether line search status corresponds to an error.
      */
-    public final boolean isError()
-    {
+    public final boolean isError() {
         return (code < 0);
     }
 
 }
-
-/*
- * Local Variables:
- * mode: Java
- * tab-width: 8
- * indent-tabs-mode: nil
- * c-basic-offset: 4
- * fill-column: 78
- * coding: utf-8
- * ispell-local-dictionary: "american"
- * End:
- */

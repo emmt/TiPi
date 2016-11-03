@@ -205,7 +205,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
         this.d = space.create();
         this.y = (y_needed ? space.create() : null);
         this.evaluations = 0;
-        failure(OptimStatus.NOT_STARTED);
+        failure(OptimStatus.LNSRCH_NOT_STARTED);
     }
 
     /*
