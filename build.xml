@@ -4,7 +4,7 @@
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
-    <property name="version" value="v003"/>
+    <property name="version" value="v004"/>
     <property name="src.dir" location="src"/>
     <property name="doc.dir" location="javadoc"/>
     <property name="bin.dir" location="bin"/>
