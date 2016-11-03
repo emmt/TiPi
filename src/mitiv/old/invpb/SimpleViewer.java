@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.invpb;
+package mitiv.old.invpb;
 
 import java.io.PrintStream;
 

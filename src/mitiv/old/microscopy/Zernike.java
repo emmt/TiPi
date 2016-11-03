@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.microscopy;
+package mitiv.old.microscopy;
 
 import mitiv.old.MathUtils;
 import mitiv.utils.*;

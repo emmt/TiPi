@@ -27,7 +27,6 @@ package mitiv.old;
 
 import mitiv.base.Shape;
 import mitiv.exception.NotImplementedException;
-import mitiv.invpb.LeftHandSideMatrix;
 import mitiv.linalg.ArrayOps;
 import mitiv.linalg.IdentityOperator;
 import mitiv.linalg.LinearConjugateGradient;
@@ -39,6 +38,7 @@ import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
+import mitiv.old.invpb.LeftHandSideMatrix;
 /**
  *
  * @author Jonathan Léger

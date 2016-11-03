@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.invpb;
+package mitiv.old.invpb;
 
 /**
  * Interface implemented by external viewers for displaying information during
