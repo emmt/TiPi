@@ -461,7 +461,9 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
             } else {
                 ((DoubleArray)object).fill(val);
             }
-            System.err.format("Create initial array with value %g\n", val);
+            if (debug) {
+                System.err.format("Create initial array with value %g\n", val);
+            }
         } else {
             /* Crop/pad the given object to the proper dimensions. */
             double val = 0;
@@ -471,7 +473,9 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
                     break;
                 }
             }
-            // System.err.format("Pad initial array with value %g\n", val);
+            if (debug) {
+                System.err.format("Pad initial array with value %g\n", val);
+            }
             object = ArrayUtils.extract(object, objectShape, val);
         }
 
@@ -597,29 +601,29 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         if (arr != null) {
             switch(arr.getType()) {
 
-                case Traits.BYTE:
-                    sum = ((ByteArray)arr).sum();
-                    break;
+            case Traits.BYTE:
+                sum = ((ByteArray)arr).sum();
+                break;
 
-                case Traits.SHORT:
-                    sum = ((ShortArray)arr).sum();
-                    break;
+            case Traits.SHORT:
+                sum = ((ShortArray)arr).sum();
+                break;
 
-                case Traits.INT:
-                    sum = ((IntArray)arr).sum();
-                    break;
+            case Traits.INT:
+                sum = ((IntArray)arr).sum();
+                break;
 
-                case Traits.LONG:
-                    sum = ((LongArray)arr).sum();
-                    break;
+            case Traits.LONG:
+                sum = ((LongArray)arr).sum();
+                break;
 
-                case Traits.FLOAT:
-                    sum = ((FloatArray)arr).sum();
-                    break;
+            case Traits.FLOAT:
+                sum = ((FloatArray)arr).sum();
+                break;
 
-                case Traits.DOUBLE:
-                    sum = ((DoubleArray)arr).sum();
-                    break;
+            case Traits.DOUBLE:
+                sum = ((DoubleArray)arr).sum();
+                break;
             }
         }
         return sum;

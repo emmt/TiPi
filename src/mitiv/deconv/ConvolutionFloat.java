@@ -31,6 +31,7 @@ import mitiv.array.FloatArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
+import mitiv.deconv.Convolution;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -54,8 +55,8 @@ abstract class ConvolutionFloat extends Convolution {
      * let others inherit from this class.
      */
     protected ConvolutionFloat(Shape wrk,
-            ShapedVectorSpace inp, int[] inpOff,
-            ShapedVectorSpace out, int[] outOff) {
+                           ShapedVectorSpace inp, int[] inpOff,
+                           ShapedVectorSpace out, int[] outOff) {
         super(wrk, inp, inpOff, out, outOff);
         if (getType() != Traits.FLOAT) {
             throw new IllegalArgumentException("Input and output vector spaces must be for float data type");
@@ -218,10 +219,9 @@ abstract class ConvolutionFloat extends Convolution {
                 if (! writable) {
                     psf = psf.copy();
                 }
-                ((FloatArray)psf).scale(1/sum);
+                ((FloatArray)psf).scale(1.0F/sum);
             }
         }
-        //  System.out.format("sum(PSF) = %g\n", ArrayUtils.sum(psf));
         psf = adjustPSF(psf, off);
         computeMTF(((FloatArray)psf).flatten());
     }
@@ -229,7 +229,7 @@ abstract class ConvolutionFloat extends Convolution {
     private final void computeMTF(float[] psf) {
         final float zero = 0;
         final int n = getNumberOfFrequencies();
-        final float scale = (float)1/(float)n;
+        final float scale = 1.0F/(float)n;
         if (mtf == null) {
             mtf = new float[2*n];
         }

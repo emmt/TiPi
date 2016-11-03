@@ -25,10 +25,14 @@
 
 //# include <common.javax>
 //# def clasName = Convolution${Type}
-//# if ${type_id} != ${DOUBLE}
+//# if ${type_id} == ${FLOAT}
 //#     def cast = (${type})
+//#     def zero = 0.0F
+//#     def one = 1.0F
 //# else
 //#     def cast =
+//#     def zero = 0.0
+//#     def one = 1.0
 //# end
 package ${package};
 
@@ -220,15 +224,14 @@ abstract class ${className} extends Convolution {
             writable = true;
         }
         if (normalize) {
-            ${type} sum = (${type})ArrayUtils.sum(psf);
+            ${type} sum = ${cast}ArrayUtils.sum(psf);
             if (sum != 1) {
                 if (! writable) {
                     psf = psf.copy();
                 }
-                ((${Type}Array)psf).scale((${type})1/sum);
+                ((${Type}Array)psf).scale(${one}/sum);
             }
         }
-        System.out.format("sum(PSF) = %g\n", ArrayUtils.sum(psf));
         psf = adjustPSF(psf, off);
         computeMTF(((${Type}Array)psf).flatten());
     }
@@ -236,7 +239,7 @@ abstract class ${className} extends Convolution {
     private final void computeMTF(${type}[] psf) {
         final ${type} zero = 0;
         final int n = getNumberOfFrequencies();
-        final ${type} scale = (${type})1/(${type})n;
+        final ${type} scale = ${one}/(${type})n;
         if (mtf == null) {
             mtf = new ${type}[2*n];
         }

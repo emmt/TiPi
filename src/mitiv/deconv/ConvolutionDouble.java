@@ -31,6 +31,7 @@ import mitiv.array.DoubleArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
+import mitiv.deconv.Convolution;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
@@ -54,8 +55,8 @@ abstract class ConvolutionDouble extends Convolution {
      * let others inherit from this class.
      */
     protected ConvolutionDouble(Shape wrk,
-            ShapedVectorSpace inp, int[] inpOff,
-            ShapedVectorSpace out, int[] outOff) {
+                           ShapedVectorSpace inp, int[] inpOff,
+                           ShapedVectorSpace out, int[] outOff) {
         super(wrk, inp, inpOff, out, outOff);
         if (getType() != Traits.DOUBLE) {
             throw new IllegalArgumentException("Input and output vector spaces must be for double data type");
@@ -218,10 +219,9 @@ abstract class ConvolutionDouble extends Convolution {
                 if (! writable) {
                     psf = psf.copy();
                 }
-                ((DoubleArray)psf).scale(1/sum);
+                ((DoubleArray)psf).scale(1.0/sum);
             }
         }
-        // System.out.format("sum(PSF) = %g\n", ArrayUtils.sum(psf));
         psf = adjustPSF(psf, off);
         computeMTF(((DoubleArray)psf).flatten());
     }
@@ -229,7 +229,7 @@ abstract class ConvolutionDouble extends Convolution {
     private final void computeMTF(double[] psf) {
         final double zero = 0;
         final int n = getNumberOfFrequencies();
-        final double scale = (double)1/(double)n;
+        final double scale = 1.0/(double)n;
         if (mtf == null) {
             mtf = new double[2*n];
         }
