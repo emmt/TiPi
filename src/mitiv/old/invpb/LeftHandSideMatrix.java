@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.invpb;
+package mitiv.old.invpb;
 
 import mitiv.exception.IllegalLinearOperationException;
 import mitiv.linalg.LinearOperator;

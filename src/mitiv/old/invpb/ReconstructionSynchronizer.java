@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.invpb;
+package mitiv.old.invpb;
 
 /**
  * A reconstruction synchronizer is used to schedule an iterative
