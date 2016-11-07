@@ -36,6 +36,7 @@
 package ${package};
 
 import mitiv.array.ShapedArray;
+import mitiv.base.Shape;
 import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.${Type}ShapedVector;
@@ -59,7 +60,7 @@ class ${className}
 {
     //# for k in 1:${rank}
     //#     def kth = ${}{nth_${k}}
-    /** Number of element along ${kth} dimension of the variables. */
+    /** Number of element along ${kth} dimension of the work space. */
     private final int dim${k};
 
     /** Offset of data along ${kth} dimension. */
@@ -73,41 +74,27 @@ class ${className}
     private final Convolution${Type}${rank}D cnvl;
 
     /**
-     * Create a new FFT-based weighted convolution cost function.
+     * Create a new FFT-based weighted convolution cost function given
+     * a convolution operator.
      *
-     * @param objectSpace
-     *        The object space which also gives the size of the work space.
-     *
-     * @param dataSpace
-     *        The data space.
-     *
-     * @param dataOffsets
-     *        The position of the data space relative to the object space.
+     * @param cnvl
+     *        The convolution operator (the PSF may have not been set).
      */
-    public ${className}(${Type}ShapedVectorSpace objectSpace,
-                        ${Type}ShapedVectorSpace dataSpace, int[] dataOffsets) {
-        /* Initialize super class and check rank and dimensions (element type
-           is checked by the super class constructor). */
-        super(objectSpace, dataSpace);
-        if (objectSpace.getRank() != ${rank}) {
-            throw new IllegalArgumentException("Object space is not ${rank}D");
-        }
-        if (dataSpace.getRank() != ${rank}) {
-            throw new IllegalArgumentException("Data space is not ${rank}D");
-        }
-
-        /* Create the convolution (which checks arguments). */
-        cnvl = new Convolution${Type}${rank}D(objectSpace.getShape(),
-                                              objectSpace, null,
-                                              dataSpace, dataOffsets);
+    public ${className}(Convolution${Type}${rank}D cnvl) {
+        /* Initialize super class and stor operator. */
+        super(cnvl.getInputSpace(), cnvl.getOutputSpace());
+        this.cnvl = cnvl;
 
         /* Store dimensions, offsets, etc. */
+        Shape workShape = cnvl.workShape;
+        Shape dataShape = cnvl.getOutputSpace().getShape();
+        int[] dataOffsets = cnvl.outputOffsets;
         //# for k in 1:${rank}
         //#     eval km1 = ${k} - 1
         //#     def  kth = ${}{nth_${k}}
-        dim${k} = objectSpace.getDimension(${km1});
+        dim${k} = workShape.dimension(${km1});
         off${k} = dataOffsets[${km1}];
-        end${k} = off${k} + dataSpace.getDimension(${km1});
+        end${k} = off${k} + dataShape.dimension(${km1});
         //# end
     }
 

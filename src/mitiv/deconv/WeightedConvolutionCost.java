@@ -33,10 +33,9 @@ import mitiv.cost.QuadraticCost;
 import mitiv.cost.WeightedData;
 import mitiv.exception.IllegalTypeException;
 import mitiv.linalg.Vector;
-import mitiv.linalg.shaped.DoubleShapedVectorSpace;
-import mitiv.linalg.shaped.FloatShapedVectorSpace;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
+import mitiv.utils.FFTUtils;
 import mitiv.utils.Timer;
 
 /**
@@ -182,8 +181,66 @@ DifferentiableCostFunction {
         return objectSpace;
     }
 
+    /**
+     * Build a weighted convolution cost function given a convolution operator.
+     *
+     * @param cnvl
+     *        The convolution operator (the PSF may have not been set).
+     *
+     * @return An instance of the weighted convolution cost function. The
+     *         returned object is not usable until the data, and possibly the
+     *         PSF, are set with one of the {@link #setData} and {@link
+     *         #setPSF} methods.
+     */
+    public static WeightedConvolutionCost build(Convolution cnvl) {
+        switch (cnvl.getType()) {
+        case Traits.FLOAT:
+            switch (cnvl.getRank()) {
+            case 1: return new WeightedConvolutionFloat1D((ConvolutionFloat1D)cnvl);
+            case 2: return new WeightedConvolutionFloat2D((ConvolutionFloat2D)cnvl);
+            case 3: return new WeightedConvolutionFloat3D((ConvolutionFloat3D)cnvl);
+            }
+            break;
+        case Traits.DOUBLE:
+            switch (cnvl.getRank()) {
+            case 1: return new WeightedConvolutionDouble1D((ConvolutionDouble1D)cnvl);
+            case 2: return new WeightedConvolutionDouble2D((ConvolutionDouble2D)cnvl);
+            case 3: return new WeightedConvolutionDouble3D((ConvolutionDouble3D)cnvl);
+            }
+            break;
+        default:
+            throw new IllegalTypeException("Only float and double types are implemented");
+        }
+        throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented");
+    }
+
+    /**
+     * Build a weighted convolution cost function with identical input and
+     * output spaces.
+     *
+     * <p> This methods creates a convolution operator with a work space of
+     * suitable dimensions for the FFT. The input and output regions are
+     * identical and are assumed to be centered into the work space. </p>
+     *
+     * <p> If you want to force the work space to have the same size as the
+     * input and output spaces, call: </p>
+     *
+     * <pre>
+     * WeightedConvolutionCost.build(space.getShape(), space, space);
+     * </pre>
+     *
+     * @param space
+     *        The input and output spaces.
+     *
+     * @return A new weighted convolution cost function. The returned object is
+     *         not a valid operator until the point spread function (PSF) is set
+     *         with one of the {@link #setPSF} methods.
+     *
+     * @see WeightedConvolutionCost#build(Convolution)
+     * @see Convolution#build(ShapedVectorSpace)
+     */
     public static WeightedConvolutionCost build(ShapedVectorSpace space) {
-        return build(space, space);
+        return build(Convolution.build(space));
     }
 
     /**
@@ -206,8 +263,8 @@ DifferentiableCostFunction {
      *
      * <p> The returned object is not a valid cost function until you set the
      * point spread function (PSF) with one of the {@link #setPSF} methods and
-     * the data and, optionally, the weights with one of the
-     * {@link #setWeights} methods. </p>
+     * the data and, optionally, the weights with one of the {@link #setWeights}
+     * methods. </p>
      *
      * <p> See {@link WeightedConvolutionCost} for a detailed description of
      * what is computed by this cost function. </p>
@@ -218,93 +275,115 @@ DifferentiableCostFunction {
      * @param dataSpace
      *        The data space.
      *
-     * @return An instance of the weighted convolution cost function.
+     * @return A new weighted convolution cost function. The returned object is
+     *         not usable until the data and point spread function (PSF) are set
+     *         with one of the {@link #setData} and {@link #setPSF} methods.
      *
-     * @see #build(ShapedVectorSpace, ShapedVectorSpace, int[])
+     * @return A new weighted convolution cost function. The returned object is
+     *         not a valid operator until the point spread function (PSF) is set
+     *         with one of the {@link #setPSF} methods.
+     *
+     * @see WeightedConvolutionCost#build(Convolution)
+     * @see Convolution#build(ShapedVector, SpaceShapedVectorSpace)
      */
     public static WeightedConvolutionCost build(ShapedVectorSpace objectSpace,
             ShapedVectorSpace dataSpace) {
-        /* Compute offsets (we take the least rank to avoid out of bound index exception
-         * although the subsequent call to the builder will fail if the ranks are not
-         * equal). */
-        int rank = Math.min(objectSpace.getRank(), dataSpace.getRank());
-        int[] dataOffset = new int[rank];
-        for (int k = 0; k < rank; ++k) {
-            dataOffset[k] = (objectSpace.getDimension(k)/2) - (dataSpace.getDimension(k)/2);
-        }
-        return build(objectSpace, dataSpace, dataOffset);
+        return build(Convolution.build(objectSpace, dataSpace));
+    }
+
+    /**
+     * Build a weighted convolution cost function with given workspace
+     * dimensions.
+     *
+     * <p> This version of the factory for building a weighted convolution cost
+     * function let the caller specify the dimensions of the work space over
+     * which the FFT is computed. The object and data spaces will be assumed to
+     * be centered within the work space. The dimensions of the work space must
+     * not be smaller that the corresponding dimensions in the data and object
+     * spaces. </p>
+     *
+     * @param wrk
+     *        The dimensions of the work space. If {@code null}, the dimensions
+     *        of the work space are automatically computed to be the smallest
+     *        dimensions suitable for the FFT (see
+     *        {@link FFTUtils#bestDimension(int)}) and large enough to encompass
+     *        the input and output dimensions. If {@code wrk} is {@code null},
+     *        it is probably better to left the offsets unspecified and set
+     *        {@code inpOff} and {@code outOff} to be {@code null}.
+     *
+     * @param inp
+     *        The input space, assumed to be centered within the work space.
+     *
+     * @param out
+     *        The output space, assumed to be centered within the work space.
+     *
+     * @return A new convolution operator. The returned object is not a valid
+     *         operator until the point spread function (PSF) is set with one of
+     *         the {@link #setPSF} methods.
+     *
+     * @see Convolution#build(Shape, ShapedVectorSpace, int[],
+     *      ShapedVectorSpace, int[])
+     */
+    public static WeightedConvolutionCost build(Shape wrk,
+            ShapedVectorSpace inp, ShapedVectorSpace out) {
+        return build(Convolution.build(wrk, inp, out));
     }
 
     /**
      * Build a weighted convolution cost function.
      *
      * <p> This version of the factory for building a weighted convolution cost
-     * function let the caller specify precisely the position of the region
-     * corresponding to the data in the result of the convolution. The offsets
-     * of this region must be such that: </p>
+     * function let the caller specify precisely the position of the regions
+     * corresponding to the input and output of the convolution relative to the
+     * work region over which the FFT is computed. The offsets of these regions
+     * must be such that: </p>
      *
      * <pre>
-     * 0 &lt;= dataOffset[k] &lt;= objectDim[k] - dataDim[k]
+     * 0 &le; inpOff[k] &le; wrkDim[k] - inpDim[k]
+     * 0 &le; outOff[k] &le; wrkDim[k] - outDim[k]
      * </pre>
      *
-     * <p>where {@code objectDim} and {@code dataDim} are the respective
-     * dimensions of the object and data spaces. If this does not hold (for all
-     * <i>k</i>), an {@link ArrayIndexOutOfBoundsException} is thrown. </p>
+     * <p> where {@code wrkDim}, {@code inpDim} and {@code outDim} are the
+     * respective dimensions of the work, input and output spaces. As a
+     * consequence, the work space must be larger (or equal) than the input and
+     * output spaces. If these constraints do not hold (for all <i>k</i>), an
+     * {@link ArrayIndexOutOfBoundsException} is thrown. </p>
      *
-     * <p> See {@link #build(ShapedVectorSpace, ShapedVectorSpace)} for more
-     * details on the meaning of the object and data spaces and
-     * {@link WeightedConvolutionCost} for a more general overview. </p>
+     * @param wrk
+     *        The dimensions of the work space. If {@code null}, the dimensions
+     *        of the work space are automatically computed to be the smallest
+     *        dimensions suitable for the FFT (see
+     *        {@link FFTUtils#bestDimension(int)}) and large enough to encompass
+     *        the input and output dimensions. If {@code wrk} is {@code null},
+     *        it is probably better to left the offsets unspecified and set
+     *        {@code inpOff} and {@code outOff} to be {@code null}.
      *
-     * @param objectSpace
-     *        The object space.
+     * @param inp
+     *        The input space.
      *
-     * @param dataSpace
-     *        The data space.
+     * @param inpOff
+     *        The position of the input region within the work space. If
+     *        {@code null}, the input region is assumed to be centered;
+     *        otherwise, it must have as many values as the rank of the input
+     *        and output spaces of the operator.
      *
-     * @param dataOffset
-     *        The relative position of the data within the output of the
-     *        convolution. It must have as many values as the rank of the object
-     *        and data spaces of the operator.
+     * @param out
+     *        The output space.
      *
-     * @return A weighted convolution cost function.
+     * @param outOff
+     *        The position of the output region within the work space. If
+     *        {@code null}, the output region assumed to be centered; otherwise,
+     *        it must have as many values as the rank of the input and output
+     *        spaces of the operator.
      *
-     * @see #build(ShapedVectorSpace, ShapedVectorSpace)
+     * @return A new weighted convolution cost function. The returned object is
+     *         not usable until the data and point spread function (PSF) are set
+     *         with one of the {@link #setData} and {@link #setPSF} methods.
      */
-    public static WeightedConvolutionCost build(ShapedVectorSpace objectSpace,
-            ShapedVectorSpace dataSpace, int[] dataOffset) {
-        int type = objectSpace.getType();
-        if (dataSpace.getType() != type) {
-            throw new IllegalTypeException("Input and output spaces must have same element type");
-        }
-        int rank = objectSpace.getRank();
-        if (dataSpace.getShape().rank() != rank) {
-            throw new IllegalTypeException("Input and output spaces must have same rank");
-        }
-        switch (type) {
-        case Traits.FLOAT:
-            switch (rank) {
-            case 1:
-                return new WeightedConvolutionFloat1D((FloatShapedVectorSpace)objectSpace, (FloatShapedVectorSpace)dataSpace, dataOffset);
-            case 2:
-                return new WeightedConvolutionFloat2D((FloatShapedVectorSpace)objectSpace, (FloatShapedVectorSpace)dataSpace, dataOffset);
-            case 3:
-                return new WeightedConvolutionFloat3D((FloatShapedVectorSpace)objectSpace, (FloatShapedVectorSpace)dataSpace, dataOffset);
-            }
-            break;
-        case Traits.DOUBLE:
-            switch (rank) {
-            case 1:
-                return new WeightedConvolutionDouble1D((DoubleShapedVectorSpace)objectSpace, (DoubleShapedVectorSpace)dataSpace, dataOffset);
-            case 2:
-                return new WeightedConvolutionDouble2D((DoubleShapedVectorSpace)objectSpace, (DoubleShapedVectorSpace)dataSpace, dataOffset);
-            case 3:
-                return new WeightedConvolutionDouble3D((DoubleShapedVectorSpace)objectSpace, (DoubleShapedVectorSpace)dataSpace, dataOffset);
-            }
-            break;
-        default:
-            throw new IllegalTypeException("Only float and double types are implemented");
-        }
-        throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented");
+    public static WeightedConvolutionCost build(Shape wrk,
+            ShapedVectorSpace inp, int[] inpOff,
+            ShapedVectorSpace out, int[] outOff) {
+        return build(Convolution.build(wrk, inp, inpOff, out, outOff));
     }
 
     private final void checkObject(Vector x) {

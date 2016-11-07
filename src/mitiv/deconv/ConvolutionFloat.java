@@ -34,6 +34,7 @@ import mitiv.base.Traits;
 import mitiv.deconv.Convolution;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.FloatShapedVectorSpace;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 
@@ -242,4 +243,13 @@ abstract class ConvolutionFloat extends Convolution {
         forwardFFT(mtf);
     }
 
+    @Override
+    public FloatShapedVectorSpace getInputSpace() {
+        return (FloatShapedVectorSpace)inputSpace;
+    }
+
+    @Override
+    public FloatShapedVectorSpace getOutputSpace() {
+        return (FloatShapedVectorSpace)outputSpace;
+    }
 }

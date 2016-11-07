@@ -250,7 +250,7 @@ public abstract class Convolution extends ShapedLinearOperator {
      * input and output spaces, call: </p>
      *
      * <pre>
-     * Convolution.build(spage.getShape(), space, null, space, null);
+     * Convolution.build(space.getShape(), space, null, space, null);
      * </pre>
      *
      * @param space

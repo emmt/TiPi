@@ -27,6 +27,7 @@
 package mitiv.deconv;
 
 import mitiv.array.ShapedArray;
+import mitiv.base.Shape;
 import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVector;
@@ -48,7 +49,7 @@ import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 class WeightedConvolutionDouble2D
      extends WeightedConvolutionDouble
 {
-    /** Number of element along 1st dimension of the variables. */
+    /** Number of element along 1st dimension of the work space. */
     private final int dim1;
 
     /** Offset of data along 1st dimension. */
@@ -57,7 +58,7 @@ class WeightedConvolutionDouble2D
     /** End of data along 1st dimension. */
     private final int end1;
 
-    /** Number of element along 2nd dimension of the variables. */
+    /** Number of element along 2nd dimension of the work space. */
     private final int dim2;
 
     /** Offset of data along 2nd dimension. */
@@ -70,41 +71,27 @@ class WeightedConvolutionDouble2D
     private final ConvolutionDouble2D cnvl;
 
     /**
-     * Create a new FFT-based weighted convolution cost function.
+     * Create a new FFT-based weighted convolution cost function given
+     * a convolution operator.
      *
-     * @param objectSpace
-     *        The object space which also gives the size of the work space.
-     *
-     * @param dataSpace
-     *        The data space.
-     *
-     * @param dataOffsets
-     *        The position of the data space relative to the object space.
+     * @param cnvl
+     *        The convolution operator (the PSF may have not been set).
      */
-    public WeightedConvolutionDouble2D(DoubleShapedVectorSpace objectSpace,
-                        DoubleShapedVectorSpace dataSpace, int[] dataOffsets) {
-        /* Initialize super class and check rank and dimensions (element type
-           is checked by the super class constructor). */
-        super(objectSpace, dataSpace);
-        if (objectSpace.getRank() != 2) {
-            throw new IllegalArgumentException("Object space is not 2D");
-        }
-        if (dataSpace.getRank() != 2) {
-            throw new IllegalArgumentException("Data space is not 2D");
-        }
-
-        /* Create the convolution (which checks arguments). */
-        cnvl = new ConvolutionDouble2D(objectSpace.getShape(),
-                                              objectSpace, null,
-                                              dataSpace, dataOffsets);
+    public WeightedConvolutionDouble2D(ConvolutionDouble2D cnvl) {
+        /* Initialize super class and stor operator. */
+        super(cnvl.getInputSpace(), cnvl.getOutputSpace());
+        this.cnvl = cnvl;
 
         /* Store dimensions, offsets, etc. */
-        dim1 = objectSpace.getDimension(0);
+        Shape workShape = cnvl.workShape;
+        Shape dataShape = cnvl.getOutputSpace().getShape();
+        int[] dataOffsets = cnvl.outputOffsets;
+        dim1 = workShape.dimension(0);
         off1 = dataOffsets[0];
-        end1 = off1 + dataSpace.getDimension(0);
-        dim2 = objectSpace.getDimension(1);
+        end1 = off1 + dataShape.dimension(0);
+        dim2 = workShape.dimension(1);
         off2 = dataOffsets[1];
-        end2 = off2 + dataSpace.getDimension(1);
+        end2 = off2 + dataShape.dimension(1);
     }
 
 

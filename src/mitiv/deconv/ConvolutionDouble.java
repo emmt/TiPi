@@ -34,6 +34,7 @@ import mitiv.base.Traits;
 import mitiv.deconv.Convolution;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 
@@ -242,4 +243,13 @@ abstract class ConvolutionDouble extends Convolution {
         forwardFFT(mtf);
     }
 
+    @Override
+    public DoubleShapedVectorSpace getInputSpace() {
+        return (DoubleShapedVectorSpace)inputSpace;
+    }
+
+    @Override
+    public DoubleShapedVectorSpace getOutputSpace() {
+        return (DoubleShapedVectorSpace)outputSpace;
+    }
 }
