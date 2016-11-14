@@ -1,4 +1,9 @@
+* For typical inverse problems where `f(x) = fdata(x) + µ fprior(x)`, set
+  convergebce criterion to be `‖∇f(x)‖ ≪ max(‖∇fdata(x)‖, |µ|⋅‖∇fprior(x)‖)`.
+
 * Rename `HyperbolicTotalVariation` as `EdgePreservingSmoothness`.
+
+* Force a cubic step for the initial step or after a restart in LBFGS.
 
 * Optimize methods like `sum`, `increment`, `scan` for multi-dimensional arrays
   when `getdata()` returns non-null.
@@ -27,12 +32,6 @@
 
 * Implement broadcasting rules for `assign`.
 
-* Deprecate type conversions via the `ArrayFactory`,
-  e.g. `ArrayFactory.toByte(arr)` in favor of `arr.toByte()`.
-
-* Cleanup unused or poorly designed code: `ColorMap.java`, `MathUtils.java`,
-  `mitivCLI.java`, `NavigableImagePanel.java`, `CommonUtils.java`...
-
 * Move `mitiv.array.ArrayUtils.java` into `mitiv.utils.ArrayUtils.java`.
 
 * Use varargs, e.g. `int... dims` to simplify the code of, e.g. `Shape.java`,
@@ -48,9 +47,12 @@
 * In `FlatArray.javax` and `StriddenArray.javax` there is no checking nor
   wrapping of the slicing index (contrarily to the `dim` arg).
 
-* Many operations such as slice, view, etc. could have their args tested at an
-  higher level and a low level, e.g. _slice, method is then called whith
+* Many operations such as `slice`, `view`, etc. could have their args tested at
+  an higher level and a low level, e.g. `_slice`, method is then called whith
   different implementations.
+
+* In the cost functions, `evaluate` and `computeCostAndGradient` should check
+  arguments?  Otherwise, make them low level (with an underscore).
 
 * Make `Flat{Double,Float}*` and `ShapedVector` more intricate?
 
@@ -59,9 +61,3 @@
 * Automatically build JavaDoc.
 
 * Rename toplevel package as `tipi`.
-
-* In the cost functions, `evaluate` and `computeCostAndGradient` should check
-  arguments?  Otherwise, make them low level (with an underscore).
-
-* Initial default image and padding should be the average of the data (divided
-  by PSF sum).
