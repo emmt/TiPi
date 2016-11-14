@@ -48,73 +48,73 @@ import mitiv.utils.FFTUtils;
 public class EdgePreservingDeconvolutionCommand {
     private PrintStream stream = System.out;
 
-    @Option(name = "--init", aliases = {"-i"}, usage = "Name of initial image file.", metaVar = "INIT")
+    @Option(name = "-init", usage = "Name of initial image file.", metaVar = "INIT")
     private String initName = null;
 
-    @Option(name = "--psf", usage = "Name of point spread function file.", metaVar = "FILENAME")
+    @Option(name = "-psf", usage = "Name of point spread function file.", metaVar = "FILENAME")
     private String psfName = null;
 
-    @Option(name = "--normalize", usage = "Normalize the point spread function.")
+    @Option(name = "-normalize", usage = "Normalize the point spread function.")
     private boolean normalizePSF = false;
 
-    @Option(name = "--weights", aliases = {"-w"}, usage = "Name statistical weights file.", metaVar = "FILENAME")
+    @Option(name = "-weights", usage = "Name statistical weights file.", metaVar = "FILENAME")
     private String weightsName = null;
 
-    @Option(name = "--noise", usage = "Standard deviation of the noise.", metaVar = "SIGMA")
+    @Option(name = "-noise", usage = "Standard deviation of the noise.", metaVar = "SIGMA")
     private double sigma = Double.NaN;
 
-    @Option(name = "--gain", usage = "Detector gain.", metaVar = "GAMMA")
+    @Option(name = "-gain", usage = "Detector gain.", metaVar = "GAMMA")
     private double gamma = Double.NaN;
 
-    @Option(name = "--invalid", usage = "Name of invalid data file.", metaVar = "FILENAME")
+    @Option(name = "-invalid", usage = "Name of invalid data file.", metaVar = "FILENAME")
     private String invalidName = null;
 
-    @Option(name = "--mu", aliases = {"-m"}, usage = "Regularization level.", metaVar = "MU")
+    @Option(name = "-mu", usage = "Regularization level.", metaVar = "MU")
     private double mu = 10.0;
 
-    @Option(name = "--tau", aliases = {"-t"}, usage = "Edge threshold.", metaVar = "TAU")
+    @Option(name = "-tau", usage = "Edge threshold.", metaVar = "TAU")
     private double tau = 1.0;
 
-    @Option(name = "--gatol", usage = "Absolute gradient tolerance for the convergence.", metaVar = "GATOL")
+    @Option(name = "-gatol", usage = "Absolute gradient tolerance for the convergence.", metaVar = "GATOL")
     private double gatol = 0.0;
 
-    @Option(name = "--grtol", usage = "Relative gradient tolerance for the convergence.", metaVar = "GRTOL")
+    @Option(name = "-grtol", usage = "Relative gradient tolerance for the convergence.", metaVar = "GRTOL")
     private double grtol = 1e-3;
 
-    @Option(name = "--mem", usage = "If M > 0, use quasi-Newton method with M previous steps; otherwise, use non-linear conjugate gradient.", metaVar = "M")
+    @Option(name = "-mem", usage = "If M > 0, use quasi-Newton method with M previous steps; otherwise, use non-linear conjugate gradient.", metaVar = "M")
     private int limitedMemorySize = 5;
 
-    @Option(name = "--min", usage = "Lower bound for the variables.", metaVar = "LOWER")
+    @Option(name = "-min", usage = "Lower bound for the variables.", metaVar = "LOWER")
     private double lowerBound = Double.NEGATIVE_INFINITY;
 
-    @Option(name = "--max", usage = "Upper bound for the variables.", metaVar = "UPPER")
+    @Option(name = "-max", usage = "Upper bound for the variables.", metaVar = "UPPER")
     private double upperBound = Double.POSITIVE_INFINITY;
 
-    @Option(name = "--single", aliases = {"-s"}, usage = "Force single precision.")
+    @Option(name = "-single", usage = "Force single precision.")
     private boolean single = false;
 
-    @Option(name = "--help", aliases = {"-h", "-?"}, usage = "Display help.")
+    @Option(name = "-help", aliases = {"--help", "-h", "-?"}, usage = "Display help.")
     private boolean help;
 
-    @Option(name = "--verbose", aliases = {"-v"}, usage = "Verbose mode.")
+    @Option(name = "-verbose", usage = "Verbose mode.")
     private boolean verbose = false;
 
-    @Option(name = "--debug", aliases = {"-d"}, usage = "Debug mode.")
+    @Option(name = "-debug", usage = "Debug mode.")
     private boolean debug = false;
 
-    @Option(name = "--maxiter", aliases = {"-l"}, usage = "Maximum number of iterations, -1 for no limits.")
+    @Option(name = "-maxiter", usage = "Maximum number of iterations, -1 for no limits.")
     private int maxiter = 200;
 
-    @Option(name = "--maxeval", aliases = {"-L"}, usage = "Maximum number of evaluations, -1 for no limits.")
+    @Option(name = "-maxeval", usage = "Maximum number of evaluations, -1 for no limits.")
     private int maxeval = -1;
 
-    @Option(name = "--pad", usage = "Padding method.", metaVar = "\"auto\"|\"min\"|NUMBER")
+    @Option(name = "-pad", usage = "Padding method.", metaVar = "\"auto\"|\"min\"|NUMBER")
     private String paddingMethod = "auto";
 
-    @Option(name = "--fill", usage = "Value for padding.", metaVar = "VALUE")
+    @Option(name = "-fill", usage = "Value for padding.", metaVar = "VALUE")
     private double fillValue = Double.NaN;
 
-    @Option(name = "--crop", aliases = {"-c"}, usage = "Crop result to same size as input.")
+    @Option(name = "-crop", usage = "Crop result to same size as input.")
     private boolean crop = false;
 
     @Argument
@@ -140,7 +140,7 @@ public class EdgePreservingDeconvolutionCommand {
             parser.getProperties().withUsageWidth(80);
             parser.printUsage(stream);
         } else {
-            stream.println("Try option --help for a more complete description of options.");
+            stream.println("Try option -help for a more complete description of options.");
         }
         System.exit(code);
     }
@@ -186,12 +186,12 @@ public class EdgePreservingDeconvolutionCommand {
             System.err.format("sigma = %g, gamma = %g\n", job.sigma, job.gamma);
             if (job.weightsName != null) {
                 if (! isnan(job.sigma) || ! isnan(job.gamma)) {
-                    System.err.println("Warning: options `--gain` and `--noise` are ignored when `--weights` is specified.");
+                    System.err.println("Warning: options `-gain` and `-noise` are ignored when `-weights` is specified.");
                 }
                 solver.setWeights(loadData(job.weightsName, job.single));
             } else {
                 if (isnan(job.sigma) && ! isnan(job.gamma)) {
-                    System.err.println("Warning: option `--gain` alone is ignored, use it with `--noise`.");
+                    System.err.println("Warning: option `-gain` alone is ignored, use it with `-noise`.");
                 }
                 solver.setDetectorNoise(job.sigma);
                 solver.setDetectorGain(job.gamma);
@@ -225,7 +225,7 @@ public class EdgePreservingDeconvolutionCommand {
                 try {
                     pad = Integer.parseInt(job.paddingMethod);
                 } catch (NumberFormatException ex) {
-                    throw new IllegalArgumentException("Invalid value for option `--pad`, must be \"auto\", \"min\" or an integer");
+                    throw new IllegalArgumentException("Invalid value for option `-pad`, must be \"auto\", \"min\" or an integer");
                 }
                 if (pad < 0) {
                     throw new IllegalArgumentException("Padding value must be nonnegative");
