@@ -73,7 +73,7 @@ The most common options are:
 
 * `--mu µ` to specify the regularization level.
 
-* `--epsilon ε` to specify the edge threshold.
+* `--tau τ` to specify the edge threshold.
 
 There are many other options which are described in the following sections.
 Most parameters have default values.  All parameters (and their default values)
@@ -167,7 +167,7 @@ constraints.
 ## Tuning the optimizer
 
 A limited memory optimizer is in charge of solving the inverse problem.  The
-number of memorized steps can be specified with option `--lbfgs NUMBER`.  If
+number of memorized steps can be specified with option `--mem NUMBER`.  If
 `NUMBER` is less or equal zero and if there are no bound constraints on the
 variables, then a non-linear conjugate gradient algorithm is used; otherwise, a
 limited memory quasi-Newton method (similar to L-BFGS) is used.  The number of

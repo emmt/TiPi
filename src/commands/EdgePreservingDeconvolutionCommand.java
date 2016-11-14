@@ -72,8 +72,8 @@ public class EdgePreservingDeconvolutionCommand {
     @Option(name = "--mu", aliases = {"-m"}, usage = "Regularization level.", metaVar = "MU")
     private double mu = 10.0;
 
-    @Option(name = "--epsilon", aliases = {"-t"}, usage = "Edge threshold.", metaVar = "EPSILON")
-    private double epsilon = 1.0;
+    @Option(name = "--tau", aliases = {"-t"}, usage = "Edge threshold.", metaVar = "TAU")
+    private double tau = 1.0;
 
     @Option(name = "--gatol", usage = "Absolute gradient tolerance for the convergence.", metaVar = "GATOL")
     private double gatol = 0.0;
@@ -81,8 +81,8 @@ public class EdgePreservingDeconvolutionCommand {
     @Option(name = "--grtol", usage = "Relative gradient tolerance for the convergence.", metaVar = "GRTOL")
     private double grtol = 1e-3;
 
-    @Option(name = "--lbfgs", usage = "Use LBFGS method with M saved steps.", metaVar = "M")
-    private int limitedMemorySize = 0;
+    @Option(name = "--mem", usage = "If M > 0, use quasi-Newton method with M previous steps; otherwise, use non-linear conjugate gradient.", metaVar = "M")
+    private int limitedMemorySize = 5;
 
     @Option(name = "--min", usage = "Lower bound for the variables.", metaVar = "LOWER")
     private double lowerBound = Double.NEGATIVE_INFINITY;
@@ -92,9 +92,6 @@ public class EdgePreservingDeconvolutionCommand {
 
     @Option(name = "--single", aliases = {"-s"}, usage = "Force single precision.")
     private boolean single = false;
-
-    @Option(name = "--newcode", usage = "Try to use new code.")
-    private boolean newCode = false;
 
     @Option(name = "--help", aliases = {"-h", "-?"}, usage = "Display help.")
     private boolean help;
@@ -251,14 +248,13 @@ public class EdgePreservingDeconvolutionCommand {
             solver.setRelativeTolerance(job.grtol);
             solver.setLowerBound(job.lowerBound);
             solver.setUpperBound(job.upperBound);
-            solver.setLimitedMemorySize(job.limitedMemorySize);
+            solver.setLimitedMemorySize(Math.max(0, job.limitedMemorySize));
             solver.setRegularizationLevel(job.mu);
-            solver.setEdgeThreshold(job.epsilon);
+            solver.setEdgeThreshold(job.tau);
             solver.setMaximumIterations(job.maxiter);
             solver.setMaximumEvaluations(job.maxeval);
             solver.setDebug(job.debug);
             solver.setSaveBest(true);
-            solver.setUseNewCode(job.newCode);
 
             OptimTask task = solver.start();
             while (true) {
