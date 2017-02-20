@@ -661,13 +661,14 @@ public class ArrayUtils {
                 offset = (dim + (off[k]%dim))%dim;
             }
             if (offset != 0) {
-                int[] index = new int[dim];
-                for (int j = 0; j < dim; ++j) {
-                    index[j] = (j + offset)%dim;
-                }
-                sel[k] = index;
                 nothing = false;
             }
+
+            int[] index = new int[dim];
+            for (int j = 0; j < dim; ++j) {
+                index[j] = (j + offset)%dim;
+            }
+            sel[k] = index;
         }
         if (nothing) {
             return arr;
