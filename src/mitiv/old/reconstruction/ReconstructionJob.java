@@ -27,6 +27,12 @@ package mitiv.old.reconstruction;
 
 import mitiv.array.ShapedArray;
 
+/**
+ * @author ferreol
+ *
+ * @deprecated
+ */
+@Deprecated
 public abstract class ReconstructionJob implements Runnable {
 
     protected ShapedArray data;
@@ -42,6 +48,7 @@ public abstract class ReconstructionJob implements Runnable {
         this(null, token);
     }
 
+    @Override
     public abstract void run();
 }
 /*

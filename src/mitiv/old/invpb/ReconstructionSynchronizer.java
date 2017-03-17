@@ -31,6 +31,7 @@ package mitiv.old.invpb;
  *
  * @author Éric and Jonathan.
  */
+@Deprecated
 public class ReconstructionSynchronizer {
 
     /** The reconstruction process can run. */

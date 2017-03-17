@@ -33,6 +33,7 @@ import mitiv.array.ShapedArray;
  *
  * @author Éric and Jonathan
  */
+@Deprecated
 public interface ReconstructionJob {
 
     /** Get the current reconstruction result. */

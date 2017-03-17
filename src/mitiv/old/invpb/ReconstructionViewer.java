@@ -28,9 +28,10 @@ package mitiv.old.invpb;
 /**
  * Interface implemented by external viewers for displaying information during
  * an iterative reconstruction.
- * 
+ *
  * @author Éric and Jonathan
  */
+@Deprecated
 public interface ReconstructionViewer {
     /**
      * Display or print information of the iterative reconstruction.

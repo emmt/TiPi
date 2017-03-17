@@ -36,6 +36,7 @@ import mitiv.linalg.shaped.ShapedVector;
  * @author Leger Jonathan
  *
  */
+@Deprecated
 public class Filter{
     int width;
     int height;

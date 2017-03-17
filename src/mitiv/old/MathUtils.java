@@ -40,16 +40,17 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import org.jtransforms.fft.DoubleFFT_2D;
+
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
-
-import org.jtransforms.fft.DoubleFFT_2D;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class MathUtils.
  */
+@Deprecated
 public class MathUtils {
 
     /** The Constant COLORMAP_GRAYSCALE. */
@@ -784,12 +785,12 @@ public class MathUtils {
         double minScaleA = min(A);
         double maxScaleA = max(A);
         double deltaScaleA = maxScaleA - minScaleA;
-            for(int i = 0; i < L; i++)
-            {
-                A[i] = (A[i] - minScaleA)*65535/deltaScaleA;
-            }
-            return A;
+        for(int i = 0; i < L; i++)
+        {
+            A[i] = (A[i] - minScaleA)*65535/deltaScaleA;
         }
+        return A;
+    }
 
     /**
      * Scale array values into a 8bit (between 0 and 255).
@@ -1124,29 +1125,29 @@ public class MathUtils {
         //ColorMap map = ColorMap.getJet(256);
 
         switch (colorMap) {
-        case COLORMAP_JET:
-            ColorMap map = ColorMap.getJet(256);
-            for(int j = 0; j < W; j++)
-            {
-                for(int i = 0; i < H; i++)
+            case COLORMAP_JET:
+                ColorMap map = ColorMap.getJet(256);
+                for(int j = 0; j < W; j++)
                 {
-                    Color b = map.table[ (int) S[i][j] ];
-                    bufferedI.setRGB(i, j, b.getRGB()); // j, i inversé
+                    for(int i = 0; i < H; i++)
+                    {
+                        Color b = map.table[ (int) S[i][j] ];
+                        bufferedI.setRGB(i, j, b.getRGB()); // j, i inversé
+                    }
                 }
-            }
-            break;
-        case COLORMAP_GRAYSCALE:
-            Color b;
-            for(int j = 0; j < W; j++)
-            {
-                for(int i = 0; i < H; i++)
+                break;
+            case COLORMAP_GRAYSCALE:
+                Color b;
+                for(int j = 0; j < W; j++)
                 {
-                    b = new Color( (int) S[i][j], (int) S[i][j], (int) S[i][j] );
-                    bufferedI.setRGB(i, j, b.getRGB()); // j, i inversé
+                    for(int i = 0; i < H; i++)
+                    {
+                        b = new Color( (int) S[i][j], (int) S[i][j], (int) S[i][j] );
+                        bufferedI.setRGB(i, j, b.getRGB()); // j, i inversé
+                    }
                 }
-            }
-        default:
-            throw new IllegalArgumentException("bad value for colorMap");
+            default:
+                throw new IllegalArgumentException("bad value for colorMap");
         }
 
         JFrame frame = new JFrame();
@@ -1175,29 +1176,29 @@ public class MathUtils {
         BufferedImage bufferedI = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
 
         switch (colorMap) {
-        case COLORMAP_JET:
-            ColorMap map = ColorMap.getJet(256);
-            for(int j = 0; j < W; j++)
-            {
-                for(int i = 0; i < H; i++)
+            case COLORMAP_JET:
+                ColorMap map = ColorMap.getJet(256);
+                for(int j = 0; j < W; j++)
                 {
-                    Color b = map.table[ (int) S[i][j] ];
-                    bufferedI.setRGB(i, j, b.getRGB()); // j, i inversé
+                    for(int i = 0; i < H; i++)
+                    {
+                        Color b = map.table[ (int) S[i][j] ];
+                        bufferedI.setRGB(i, j, b.getRGB()); // j, i inversé
+                    }
                 }
-            }
-            break;
-        case COLORMAP_GRAYSCALE:
-            Color b;
-            for(int j = 0; j < W; j++)
-            {
-                for(int i = 0; i < H; i++)
+                break;
+            case COLORMAP_GRAYSCALE:
+                Color b;
+                for(int j = 0; j < W; j++)
                 {
-                    b = new Color( (int) S[i][j], (int) S[i][j], (int) S[i][j] );
-                    bufferedI.setRGB(i, j, b.getRGB()); // j, i inversé
+                    for(int i = 0; i < H; i++)
+                    {
+                        b = new Color( (int) S[i][j], (int) S[i][j], (int) S[i][j] );
+                        bufferedI.setRGB(i, j, b.getRGB()); // j, i inversé
+                    }
                 }
-            }
-        default:
-            throw new IllegalArgumentException("bad value for colorMap");
+            default:
+                throw new IllegalArgumentException("bad value for colorMap");
         }
         NavigableImagePanel.afficher(bufferedI);
     }
@@ -1221,30 +1222,30 @@ public class MathUtils {
 
         switch (colorMap)
         {
-        case COLORMAP_JET:
-            ColorMap map = ColorMap.getJet(256);
-            for(int j = 0; j < H; j++)
-            {
-                for(int i = 0; i < W; i++)
+            case COLORMAP_JET:
+                ColorMap map = ColorMap.getJet(256);
+                for(int j = 0; j < H; j++)
                 {
-                    Color b = map.table[ (int) S[i + j*W] ];
-                    bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+                    for(int i = 0; i < W; i++)
+                    {
+                        Color b = map.table[ (int) S[i + j*W] ];
+                        bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+                    }
                 }
-            }
-            break;
-        case COLORMAP_GRAYSCALE:
-            Color b;
-            for(int j = 0; j < H; j++)
-            {
-                for(int i = 0; i < W; i++)
+                break;
+            case COLORMAP_GRAYSCALE:
+                Color b;
+                for(int j = 0; j < H; j++)
                 {
-                    b = new Color( (int) S[i + j*W], (int) S[i + j*W], (int) S[i + j*W] );
-                    bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+                    for(int i = 0; i < W; i++)
+                    {
+                        b = new Color( (int) S[i + j*W], (int) S[i + j*W], (int) S[i + j*W] );
+                        bufferedI.setRGB(j, i, b.getRGB()); // j, i inversé
+                    }
                 }
-            }
-            break;
-        default:
-            throw new IllegalArgumentException("bad value for colorMap");
+                break;
+            default:
+                throw new IllegalArgumentException("bad value for colorMap");
         }
         NavigableImagePanel.afficher(bufferedI);
     }
@@ -1657,73 +1658,73 @@ public class MathUtils {
         double New[][] = new double[newH][newW];
         switch (just)
         {
-        case 0:
-            /* image will not be centered */
-            for(int i = 0; i < oldH; i++)
-            {
-                for(int j = 0; j < oldW; j++)
+            case 0:
+                /* image will not be centered */
+                for(int i = 0; i < oldH; i++)
                 {
-                    New[i][j] = img[i][j];
-                }
-            }
-            break;
-        case 1:
-            /* image will be centered */
-            int i1 = (newW - oldW)/2;
-            int i2 = (newH - oldH)/2;
-            for(int i = 0; i < oldH; i++)
-            {
-                for(int j = 0; j < oldW; j++)
-                {
-                    New[i2 + i][j + i1] = img[i][j];
-                }
-            }
-            break;
-        case -1:
-            /* preserve FFT indexing */
-            int oldW2 = oldW/2;
-            int oldH2 = oldH/2;
-            if (oldW2 != 0 || oldH2 != 0) // haut gauche->bas droit
-            {
-                for(int i = 0; i < oldH2; i++)
-                {
-                    for(int j = 0; j < oldW2; j++)
+                    for(int j = 0; j < oldW; j++)
                     {
-                        New[newH - oldH2 + i][newW - oldW2 + j] = img[i][j];
+                        New[i][j] = img[i][j];
                     }
                 }
-            }
-            if(oldW2 != 0) // Haut droit->bas gauche
-            {
-                for(int i = 0; i < oldH2; i++)
+                break;
+            case 1:
+                /* image will be centered */
+                int i1 = (newW - oldW)/2;
+                int i2 = (newH - oldH)/2;
+                for(int i = 0; i < oldH; i++)
+                {
+                    for(int j = 0; j < oldW; j++)
+                    {
+                        New[i2 + i][j + i1] = img[i][j];
+                    }
+                }
+                break;
+            case -1:
+                /* preserve FFT indexing */
+                int oldW2 = oldW/2;
+                int oldH2 = oldH/2;
+                if (oldW2 != 0 || oldH2 != 0) // haut gauche->bas droit
+                {
+                    for(int i = 0; i < oldH2; i++)
+                    {
+                        for(int j = 0; j < oldW2; j++)
+                        {
+                            New[newH - oldH2 + i][newW - oldW2 + j] = img[i][j];
+                        }
+                    }
+                }
+                if(oldW2 != 0) // Haut droit->bas gauche
+                {
+                    for(int i = 0; i < oldH2; i++)
+                    {
+                        for(int j = 0; j < oldW-oldW2; j++)
+                        {
+                            New[newH - oldH2 + i][j] = img[i][j + oldW2];
+                        }
+                    }
+                }
+                if(oldH2 != 0) // bas gauche->haut droit
+                {
+                    for(int i = 0; i < oldH - oldH2; i++)
+                    {
+                        for(int j = 0; j < oldW2; j++)
+                        {
+                            New[i][newW - oldW2 + j] = img[i + oldH2][j];
+                        }
+                    }
+                }
+
+                for(int i = 0; i < oldH-oldH2; i++) // Bas droit->Haut gaucHe
                 {
                     for(int j = 0; j < oldW-oldW2; j++)
                     {
-                        New[newH - oldH2 + i][j] = img[i][j + oldW2];
+                        New[i][j] = img[i + oldH2][j + oldW2];
                     }
                 }
-            }
-            if(oldH2 != 0) // bas gauche->haut droit
-            {
-                for(int i = 0; i < oldH - oldH2; i++)
-                {
-                    for(int j = 0; j < oldW2; j++)
-                    {
-                        New[i][newW - oldW2 + j] = img[i + oldH2][j];
-                    }
-                }
-            }
-
-            for(int i = 0; i < oldH-oldH2; i++) // Bas droit->Haut gaucHe
-            {
-                for(int j = 0; j < oldW-oldW2; j++)
-                {
-                    New[i][j] = img[i + oldH2][j + oldW2];
-                }
-            }
-            break;
-        default:
-            System.out.println("bad value for keyword JUST");
+                break;
+            default:
+                System.out.println("bad value for keyword JUST");
         }
 
         return New;
@@ -1735,72 +1736,72 @@ public class MathUtils {
         double New[] = new double[newH*newW];
         switch (just)
         {
-        case 0:
-            /* image will not be centered */
-            for(int j = 0; j < oldH; j++)
-            {
-                for(int i = 0; i < oldW; i++)
+            case 0:
+                /* image will not be centered */
+                for(int j = 0; j < oldH; j++)
                 {
-                    New[i + j*newW] = img[i + j*oldW];
-                }
-            }
-            break;
-        case 1:
-            /* image will be centered */
-            int i1 = (newW - oldW)/2;
-            int i2 = (newH - oldH)/2;
-            for(int j = 0; j < oldH; j++)
-            {
-                for(int i = 0; i < oldW; i++)
-                {
-                    New[i2 + j + (i + i1)*newW] = img[i*oldW + j];
-                }
-            }
-            break;
-        case -1:
-            /* preserve FFT indexing */
-            int oldW2 = oldW/2;
-            int oldH2 = oldH/2;
-            if (oldW2 != 0 || oldH2 != 0) // haut gauche->bas droit
-            {
-                for(int j = 0; j < oldH2; j++)
-                {
-                    for(int i = 0; i < oldW2; i++)
+                    for(int i = 0; i < oldW; i++)
                     {
-                        New[newH - oldH2 + j + (newW - oldW2 + i)*newW] = img[i*oldW + j];
+                        New[i + j*newW] = img[i + j*oldW];
                     }
                 }
-            }
-            if(oldW2 != 0) // Haut droit->bas gauche
-            {
-                for(int j = 0; j < oldH2; j++)
+                break;
+            case 1:
+                /* image will be centered */
+                int i1 = (newW - oldW)/2;
+                int i2 = (newH - oldH)/2;
+                for(int j = 0; j < oldH; j++)
+                {
+                    for(int i = 0; i < oldW; i++)
+                    {
+                        New[i2 + j + (i + i1)*newW] = img[i*oldW + j];
+                    }
+                }
+                break;
+            case -1:
+                /* preserve FFT indexing */
+                int oldW2 = oldW/2;
+                int oldH2 = oldH/2;
+                if (oldW2 != 0 || oldH2 != 0) // haut gauche->bas droit
+                {
+                    for(int j = 0; j < oldH2; j++)
+                    {
+                        for(int i = 0; i < oldW2; i++)
+                        {
+                            New[newH - oldH2 + j + (newW - oldW2 + i)*newW] = img[i*oldW + j];
+                        }
+                    }
+                }
+                if(oldW2 != 0) // Haut droit->bas gauche
+                {
+                    for(int j = 0; j < oldH2; j++)
+                    {
+                        for(int i = 0; i < oldW-oldW2; i++)
+                        {
+                            New[(newH - oldH2 + j)*newW + i] = img[j*oldW + i + oldW2];
+                        }
+                    }
+                }
+                if(oldH2 != 0) // bas gauche->haut droit
+                {
+                    for(int j = 0; j < oldH - oldH2; j++)
+                    {
+                        for(int i = 0; i < oldW2; i++)
+                        {
+                            New[j*newW + newW - oldW2 + i] = img[(j + oldH2)*oldW + i];
+                        }
+                    }
+                }
+                for(int j = 0; j < oldH-oldH2; j++) // Bas droit->Haut gaucHe
                 {
                     for(int i = 0; i < oldW-oldW2; i++)
                     {
-                        New[(newH - oldH2 + j)*newW + i] = img[j*oldW + i + oldW2];
+                        New[i + j*newW] = img[(j + oldH2)*oldW +i + oldW2];
                     }
                 }
-            }
-            if(oldH2 != 0) // bas gauche->haut droit
-            {
-                for(int j = 0; j < oldH - oldH2; j++)
-                {
-                    for(int i = 0; i < oldW2; i++)
-                    {
-                        New[j*newW + newW - oldW2 + i] = img[(j + oldH2)*oldW + i];
-                    }
-                }
-            }
-            for(int j = 0; j < oldH-oldH2; j++) // Bas droit->Haut gaucHe
-            {
-                for(int i = 0; i < oldW-oldW2; i++)
-                {
-                    New[i + j*newW] = img[(j + oldH2)*oldW +i + oldW2];
-                }
-            }
-            break;
-        default:
-            System.out.println("bad value for keyword JUST");
+                break;
+            default:
+                System.out.println("bad value for keyword JUST");
         }
 
         return New;
@@ -1813,79 +1814,79 @@ public class MathUtils {
         int oldWH = oldW*oldH;
         switch (just)
         {
-        case 0:
-            /* image will not be centered */
-            for(int k = 0; k < oldD; k++)
-            {
-                for(int j = 0; j < oldH; j++)
+            case 0:
+                /* image will not be centered */
+                for(int k = 0; k < oldD; k++)
                 {
-                    for(int i = 0; i < oldW; i++)
+                    for(int j = 0; j < oldH; j++)
                     {
-                        New[i + j*newW] = img[i + j*oldW];
+                        for(int i = 0; i < oldW; i++)
+                        {
+                            New[i + j*newW] = img[i + j*oldW];
+                        }
                     }
                 }
-            }
-            break;
-        case 1:
-            /* image will be centered */
-            int i2 = (newW - oldW)/2;
-            int j2 = (newH - oldH)/2;
-            int k2 = (newD - oldD)/2;
-            for(int k = 0; k < oldD; k++)
-            {
-                for(int j = 0; j < oldH; j++)
+                break;
+            case 1:
+                /* image will be centered */
+                int i2 = (newW - oldW)/2;
+                int j2 = (newH - oldH)/2;
+                int k2 = (newD - oldD)/2;
+                for(int k = 0; k < oldD; k++)
                 {
-                    for(int i = 0; i < oldW; i++)
+                    for(int j = 0; j < oldH; j++)
                     {
-                        New[i2 + i + (j + j2)*newW + (k + k2)*newWH] = img[i + j*oldW + k*oldWH ];
+                        for(int i = 0; i < oldW; i++)
+                        {
+                            New[i2 + i + (j + j2)*newW + (k + k2)*newWH] = img[i + j*oldW + k*oldWH ];
+                        }
                     }
                 }
-            }
-            break;
-        case -1:
-            /* preserve FFT indexing */
-            int oldW2 = oldW/2;
-            int oldH2 = oldH/2;
-            if (oldW2 != 0 || oldH2 != 0) // haut gauche->bas droit
-            {
-                for(int j = 0; j < oldH2; j++)
+                break;
+            case -1:
+                /* preserve FFT indexing */
+                int oldW2 = oldW/2;
+                int oldH2 = oldH/2;
+                if (oldW2 != 0 || oldH2 != 0) // haut gauche->bas droit
                 {
-                    for(int i = 0; i < oldW2; i++)
+                    for(int j = 0; j < oldH2; j++)
                     {
-                        New[newH - oldH2 + j + (newW - oldW2 + i)*newW] = img[i*oldW + j];
+                        for(int i = 0; i < oldW2; i++)
+                        {
+                            New[newH - oldH2 + j + (newW - oldW2 + i)*newW] = img[i*oldW + j];
+                        }
                     }
                 }
-            }
-            if(oldW2 != 0) // Haut droit->bas gauche
-            {
-                for(int j = 0; j < oldH2; j++)
+                if(oldW2 != 0) // Haut droit->bas gauche
+                {
+                    for(int j = 0; j < oldH2; j++)
+                    {
+                        for(int i = 0; i < oldW-oldW2; i++)
+                        {
+                            New[(newH - oldH2 + j)*newW + i] = img[j*oldW + i + oldW2];
+                        }
+                    }
+                }
+                if(oldH2 != 0) // bas gauche->haut droit
+                {
+                    for(int j = 0; j < oldH - oldH2; j++)
+                    {
+                        for(int i = 0; i < oldW2; i++)
+                        {
+                            New[j*newW + newW - oldW2 + i] = img[(j + oldH2)*oldW + i];
+                        }
+                    }
+                }
+                for(int j = 0; j < oldH-oldH2; j++) // Bas droit->Haut gaucHe
                 {
                     for(int i = 0; i < oldW-oldW2; i++)
                     {
-                        New[(newH - oldH2 + j)*newW + i] = img[j*oldW + i + oldW2];
+                        New[i + j*newW] = img[(j + oldH2)*oldW +i + oldW2];
                     }
                 }
-            }
-            if(oldH2 != 0) // bas gauche->haut droit
-            {
-                for(int j = 0; j < oldH - oldH2; j++)
-                {
-                    for(int i = 0; i < oldW2; i++)
-                    {
-                        New[j*newW + newW - oldW2 + i] = img[(j + oldH2)*oldW + i];
-                    }
-                }
-            }
-            for(int j = 0; j < oldH-oldH2; j++) // Bas droit->Haut gaucHe
-            {
-                for(int i = 0; i < oldW-oldW2; i++)
-                {
-                    New[i + j*newW] = img[(j + oldH2)*oldW +i + oldW2];
-                }
-            }
-            break;
-        default:
-            System.out.println("bad value for keyword JUST");
+                break;
+            default:
+                System.out.println("bad value for keyword JUST");
         }
 
         return New;
@@ -2121,24 +2122,24 @@ public class MathUtils {
         double[][] imnoise = new double[H][W];
         switch (type)
         {
-        case GAUSSIAN:
-            Random rand = new Random();
-            double std = Math.sqrt(arg1);
-            double mean = arg2;
-            /* converts the image in range [0, 1] */
-            im2double(img);
-            /* Add noise */
-            for (int j = 0; j < W; j++)
-            {
-                for (int i = 0; i < H; i++)
+            case GAUSSIAN:
+                Random rand = new Random();
+                double std = Math.sqrt(arg1);
+                double mean = arg2;
+                /* converts the image in range [0, 1] */
+                im2double(img);
+                /* Add noise */
+                for (int j = 0; j < W; j++)
                 {
-                    imnoise[i][j] = img[i][j] + std*rand.nextGaussian() + mean;
+                    for (int i = 0; i < H; i++)
+                    {
+                        imnoise[i][j] = img[i][j] + std*rand.nextGaussian() + mean;
+                    }
                 }
-            }
-            uint8(imnoise);
-            break;
-        default:
-            throw new IllegalArgumentException("The type does not exist");
+                uint8(imnoise);
+                break;
+            default:
+                throw new IllegalArgumentException("The type does not exist");
         }
         return imnoise;
     }
@@ -2176,37 +2177,37 @@ public class MathUtils {
     {
         switch (type)
         {
-        case DISK:
-            double cd;
-            int radius = arg1;
-            int diameter = 2*radius;
-            double[][] r = cartesDist2D(diameter, diameter);
-            double[][] mask = new double[diameter][diameter];
-            double[][] hd = new double[diameter][diameter];
-            for (int j = 0; j < r.length; j++)
-            {
-                for (int i = 0; i < r.length; i++)
+            case DISK:
+                double cd;
+                int radius = arg1;
+                int diameter = 2*radius;
+                double[][] r = cartesDist2D(diameter, diameter);
+                double[][] mask = new double[diameter][diameter];
+                double[][] hd = new double[diameter][diameter];
+                for (int j = 0; j < r.length; j++)
                 {
-                    if (r[i][j] <= radius)
+                    for (int i = 0; i < r.length; i++)
                     {
-                        mask[i][j] =  1;
+                        if (r[i][j] <= radius)
+                        {
+                            mask[i][j] =  1;
+                        }
                     }
                 }
-            }
-            cd = sum(mask);
-            for (int j = 0; j < r.length; j++)
-            {
-                for (int i = 0; i < r.length; i++)
+                cd = sum(mask);
+                for (int j = 0; j < r.length; j++)
                 {
-                    if (mask[i][j] == 1)
+                    for (int i = 0; i < r.length; i++)
                     {
-                        hd[i][j] =  1/cd;
+                        if (mask[i][j] == 1)
+                        {
+                            hd[i][j] =  1/cd;
+                        }
                     }
                 }
-            }
-            return hd;
-        default:
-            throw new IllegalArgumentException("The type does not exist");
+                return hd;
+            default:
+                throw new IllegalArgumentException("The type does not exist");
         }
     }
 
@@ -2222,37 +2223,37 @@ public class MathUtils {
     {
         switch (type)
         {
-        case AVERAGE:
-            double[][] ha = new double[arg1[0]][arg1[1]];
-            double coef = 1./(arg1[0]*arg1[1]);
-            int H = arg1[0];
-            int W = arg1[1];
-            for (int k2 = 0; k2 < H; k2++)
-            {
-                for (int k1 = 0; k1 < W; k1++)
+            case AVERAGE:
+                double[][] ha = new double[arg1[0]][arg1[1]];
+                double coef = 1./(arg1[0]*arg1[1]);
+                int H = arg1[0];
+                int W = arg1[1];
+                for (int k2 = 0; k2 < H; k2++)
                 {
-                    ha[k2][k1] = coef;
+                    for (int k1 = 0; k1 < W; k1++)
+                    {
+                        ha[k2][k1] = coef;
+                    }
                 }
-            }
-            return ha;
-        case GAUSSIAN:
-            double[][] hg = new double[arg1[0]][arg1[1]];
-            double A = 2*arg2*arg2;
-            double B = 1/Math.sqrt(Math.PI*A);
-            int bk1 = (-arg1[1]+1)/2;
-            int ek1 = arg1[1]/2;
-            int bk2 = (-arg1[0]+1)/2;
-            int ek2 = arg1[0]/2;
-            for (int k2 = bk2; k2 <= ek2; k2++)
-            {
-                for (int k1 = bk1; k1 <= ek1; k1++)
+                return ha;
+            case GAUSSIAN:
+                double[][] hg = new double[arg1[0]][arg1[1]];
+                double A = 2*arg2*arg2;
+                double B = 1/Math.sqrt(Math.PI*A);
+                int bk1 = (-arg1[1]+1)/2;
+                int ek1 = arg1[1]/2;
+                int bk2 = (-arg1[0]+1)/2;
+                int ek2 = arg1[0]/2;
+                for (int k2 = bk2; k2 <= ek2; k2++)
                 {
-                    hg[k2 - bk2][k1 - bk1] = B*Math.exp(-(k1*k1+k2*k2)/A);
+                    for (int k1 = bk1; k1 <= ek1; k1++)
+                    {
+                        hg[k2 - bk2][k1 - bk1] = B*Math.exp(-(k1*k1+k2*k2)/A);
+                    }
                 }
-            }
-            return hg;
-        default:
-            throw new IllegalArgumentException("The type does not exist");
+                return hg;
+            default:
+                throw new IllegalArgumentException("The type does not exist");
         }
     }
 
@@ -2269,33 +2270,33 @@ public class MathUtils {
         int L = arg1[0]*arg1[1];
         switch (type)
         {
-        case AVERAGE:
+            case AVERAGE:
 
-            double[] ha = new double[L];
-            double coef = 1./(L);
-            for (int i = 0; i < L; i++)
-            {
-                ha[i] = coef;
-            }
-            return ha;
-        case GAUSSIAN:
-            double[] hg = new double[L];
-            //double A = 2*arg2*arg2;
-            //double B = 1/Math.sqrt(Math.PI*A);
-            int bk1 = (-arg1[1]+1)/2;
-            int ek1 = arg1[1]/2;
-            int bk2 = (-arg1[0]+1)/2;
-            int ek2 = arg1[0]/2;
-            for (int k2 = bk2; k2 <= ek2; k2++)
-            {
-                for (int k1 = bk1; k1 <= ek1; k1++)
+                double[] ha = new double[L];
+                double coef = 1./(L);
+                for (int i = 0; i < L; i++)
                 {
-                    // hg[k2 - bk2][k1 - bk1] = B*Math.exp(-(k1*k1+k2*k2)/A);
+                    ha[i] = coef;
                 }
-            }
-            return hg;
-        default:
-            throw new IllegalArgumentException("The type does not exist");
+                return ha;
+            case GAUSSIAN:
+                double[] hg = new double[L];
+                //double A = 2*arg2*arg2;
+                //double B = 1/Math.sqrt(Math.PI*A);
+                int bk1 = (-arg1[1]+1)/2;
+                int ek1 = arg1[1]/2;
+                int bk2 = (-arg1[0]+1)/2;
+                int ek2 = arg1[0]/2;
+                for (int k2 = bk2; k2 <= ek2; k2++)
+                {
+                    for (int k1 = bk1; k1 <= ek1; k1++)
+                    {
+                        // hg[k2 - bk2][k1 - bk1] = B*Math.exp(-(k1*k1+k2*k2)/A);
+                    }
+                }
+                return hg;
+            default:
+                throw new IllegalArgumentException("The type does not exist");
         }
     }
 
@@ -2311,44 +2312,44 @@ public class MathUtils {
     {
         switch (type)
         {
-        case AVERAGE:
-            double ca = 1./9;
-            double[] ha = {ca,ca,ca,ca,ca,ca,ca,ca,ca};
-            return ha;
-        case DISK:
-            double cd;
-            int radius = 5;
-            int diameter = 2*radius;
-            double[] r = cartesDist1D(diameter, diameter);
-            double[] mask = new double[diameter*diameter];
-            double[] hd = new double[diameter*diameter];
-            for (int i = 0; i < r.length; i++)
-            {
-                if (r[i] <= radius)
+            case AVERAGE:
+                double ca = 1./9;
+                double[] ha = {ca,ca,ca,ca,ca,ca,ca,ca,ca};
+                return ha;
+            case DISK:
+                double cd;
+                int radius = 5;
+                int diameter = 2*radius;
+                double[] r = cartesDist1D(diameter, diameter);
+                double[] mask = new double[diameter*diameter];
+                double[] hd = new double[diameter*diameter];
+                for (int i = 0; i < r.length; i++)
                 {
-                    mask[i] =  1;
+                    if (r[i] <= radius)
+                    {
+                        mask[i] =  1;
+                    }
                 }
-            }
-            cd = sum(mask);
-            for (int i = 0; i < r.length; i++)
-            {
-                if (mask[i] == 1)
+                cd = sum(mask);
+                for (int i = 0; i < r.length; i++)
                 {
-                    hd[i] =  1/cd;
+                    if (mask[i] == 1)
+                    {
+                        hd[i] =  1/cd;
+                    }
                 }
-            }
-            return hd;
-        case SOBEL:
-            double[] hs = {1,2,1,0,0,0,-1,-2,-1};
-            return hs;
-        case PREWITT:
-            double[] hp = {1,1,1,0,0,0,-1,-1,-1};
-            return hp;
-        case KIRSH:
-            double[] hk = {3,3,3,3,0,3,-5,-5,-5};
-            return hk;
-        default:
-            throw new IllegalArgumentException("The type does not exist");
+                return hd;
+            case SOBEL:
+                double[] hs = {1,2,1,0,0,0,-1,-2,-1};
+                return hs;
+            case PREWITT:
+                double[] hp = {1,1,1,0,0,0,-1,-1,-1};
+                return hp;
+            case KIRSH:
+                double[] hk = {3,3,3,3,0,3,-5,-5,-5};
+                return hk;
+            default:
+                throw new IllegalArgumentException("The type does not exist");
         }
     }
 
@@ -2363,50 +2364,50 @@ public class MathUtils {
     {
         switch (type)
         {
-        case AVERAGE:
-            double ca = 1./9;
-            double[][] ha = {{ca,ca,ca},{ca,ca,ca},{ca,ca,ca}};
-            return ha;
-        case DISK:
-            double cd;
-            int radius = 5;
-            int diameter = 2*radius;
-            double[][] r = cartesDist2D(diameter, diameter);
-            double[][] mask = new double[diameter][diameter];
-            double[][] hd = new double[diameter][diameter];
-            for (int j = 0; j < r.length; j++)
-            {
-                for (int i = 0; i < r.length; i++)
+            case AVERAGE:
+                double ca = 1./9;
+                double[][] ha = {{ca,ca,ca},{ca,ca,ca},{ca,ca,ca}};
+                return ha;
+            case DISK:
+                double cd;
+                int radius = 5;
+                int diameter = 2*radius;
+                double[][] r = cartesDist2D(diameter, diameter);
+                double[][] mask = new double[diameter][diameter];
+                double[][] hd = new double[diameter][diameter];
+                for (int j = 0; j < r.length; j++)
                 {
-                    if (r[i][j] <= radius)
+                    for (int i = 0; i < r.length; i++)
                     {
-                        mask[i][j] =  1;
+                        if (r[i][j] <= radius)
+                        {
+                            mask[i][j] =  1;
+                        }
                     }
                 }
-            }
-            cd = sum(mask);
-            for (int j = 0; j < r.length; j++)
-            {
-                for (int i = 0; i < r.length; i++)
+                cd = sum(mask);
+                for (int j = 0; j < r.length; j++)
                 {
-                    if (mask[i][j] == 1)
+                    for (int i = 0; i < r.length; i++)
                     {
-                        hd[i][j] =  1/cd;
+                        if (mask[i][j] == 1)
+                        {
+                            hd[i][j] =  1/cd;
+                        }
                     }
                 }
-            }
-            return hd;
-        case SOBEL:
-            double[][] hs = {{1,2,1},{0,0,0},{-1,-2,-1}};
-            return hs;
-        case PREWITT:
-            double[][] hp = {{1,1,1},{0,0,0},{-1,-1,-1}};
-            return hp;
-        case KIRSH:
-            double[][] hk = {{3,3,3},{3,0,3},{-5,-5,-5}};
-            return hk;
-        default:
-            throw new IllegalArgumentException("The type does not exist");
+                return hd;
+            case SOBEL:
+                double[][] hs = {{1,2,1},{0,0,0},{-1,-2,-1}};
+                return hs;
+            case PREWITT:
+                double[][] hp = {{1,1,1},{0,0,0},{-1,-1,-1}};
+                return hp;
+            case KIRSH:
+                double[][] hk = {{3,3,3},{3,0,3},{-5,-5,-5}};
+                return hk;
+            default:
+                throw new IllegalArgumentException("The type does not exist");
 
         }
     }

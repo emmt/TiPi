@@ -42,6 +42,7 @@ import mitiv.linalg.shaped.ShapedVector;
  * @author Leger Jonathan
  *
  */
+@Deprecated
 public class Deconvolution{
     /**
      * Compute all the operations with 1D arrays
@@ -198,14 +199,14 @@ public class Deconvolution{
     public ShapedArray firstDeconvolution(double alpha, int job, boolean isPsfSplitted){
         this.isPsfSplitted = isPsfSplitted;
         switch (job) {
-        case PROCESSING_1D:
-            return firstDeconvolutionSimple1D(alpha);
-        case PROCESSING_VECTOR:
-            return firstDeconvolutionVector(alpha);
-        case PROCESSING_3D:
-            return firstDeconvolutionSimple3D(alpha);
-        default:
-            throw new IllegalArgumentException("The job given does not exist");
+            case PROCESSING_1D:
+                return firstDeconvolutionSimple1D(alpha);
+            case PROCESSING_VECTOR:
+                return firstDeconvolutionVector(alpha);
+            case PROCESSING_3D:
+                return firstDeconvolutionSimple3D(alpha);
+            default:
+                throw new IllegalArgumentException("The job given does not exist");
         }
     }
 
@@ -236,14 +237,14 @@ public class Deconvolution{
      */
     public ShapedArray nextDeconvolution(double alpha, int job){
         switch (job) {
-        case PROCESSING_1D:
-            return nextDeconvolutionSimple1D(alpha);
-        case PROCESSING_VECTOR:
-            return nextDeconvolutionVector(alpha);
-        case PROCESSING_3D:
-            return nextDeconvolutionSimple3D(alpha);
-        default:
-            throw new IllegalArgumentException("The job given does not exist");
+            case PROCESSING_1D:
+                return nextDeconvolutionSimple1D(alpha);
+            case PROCESSING_VECTOR:
+                return nextDeconvolutionVector(alpha);
+            case PROCESSING_3D:
+                return nextDeconvolutionSimple3D(alpha);
+            default:
+                throw new IllegalArgumentException("The job given does not exist");
         }
     }
 
@@ -370,7 +371,7 @@ public class Deconvolution{
         DoubleShapedVector outReal = space.create();
         fft.apply(out, outReal,RealComplexFFT.ADJOINT);
         return utils.arrayToIcyImage3D(outReal.getData(), correction,false);
-        */
+         */
     }
 
     /**
@@ -450,14 +451,14 @@ public class Deconvolution{
     public ShapedArray firstDeconvolutionQuad(double alpha, int job, boolean isPsfSplitted){
         this.isPsfSplitted = isPsfSplitted;
         switch (job) {
-        case PROCESSING_1D:
-            return firstDeconvolutionQuad1D(alpha);
-        case PROCESSING_3D:
-            return firstDeconvolutionQuad3D(alpha);
-        case PROCESSING_VECTOR:
-            return firstDeconvolutionQuadVector(alpha);
-        default:
-            throw new IllegalArgumentException("The job given does not exist");
+            case PROCESSING_1D:
+                return firstDeconvolutionQuad1D(alpha);
+            case PROCESSING_3D:
+                return firstDeconvolutionQuad3D(alpha);
+            case PROCESSING_VECTOR:
+                return firstDeconvolutionQuadVector(alpha);
+            default:
+                throw new IllegalArgumentException("The job given does not exist");
         }
     }
 
@@ -486,14 +487,14 @@ public class Deconvolution{
      */
     public ShapedArray nextDeconvolutionQuad(double alpha, int job){
         switch (job) {
-        case PROCESSING_1D:
-            return nextDeconvolutionQuad1D(alpha);
-        case PROCESSING_3D:
-            return nextDeconvolutionQuad3D(alpha);
-        case PROCESSING_VECTOR:
-            return nextDeconvolutionQuadVector(alpha);
-        default:
-            throw new IllegalArgumentException("The job given does not exist");
+            case PROCESSING_1D:
+                return nextDeconvolutionQuad1D(alpha);
+            case PROCESSING_3D:
+                return nextDeconvolutionQuad3D(alpha);
+            case PROCESSING_VECTOR:
+                return nextDeconvolutionQuadVector(alpha);
+            default:
+                throw new IllegalArgumentException("The job given does not exist");
         }
     }
 
@@ -644,12 +645,12 @@ public class Deconvolution{
     public ShapedArray firstDeconvolutionCG(double alpha, int job, boolean isPsfSplitted){
         this.isPsfSplitted = isPsfSplitted;
         switch (job) {
-        case PROCESSING_VECTOR:
-            return firstDeconvolutionCGNormal(alpha);
-        case PROCESSING_3D:
-            return firstDeconvolutionCG3D(alpha);
-        default:
-            throw new IllegalArgumentException("The job given does not exist");
+            case PROCESSING_VECTOR:
+                return firstDeconvolutionCGNormal(alpha);
+            case PROCESSING_3D:
+                return firstDeconvolutionCG3D(alpha);
+            default:
+                throw new IllegalArgumentException("The job given does not exist");
         }
     }
 
@@ -674,12 +675,12 @@ public class Deconvolution{
      */
     public ShapedArray nextDeconvolutionCG(double alpha, int job){
         switch (job) {
-        case PROCESSING_VECTOR:
-            return nextDeconvolutionCGNormal(alpha);
-        case PROCESSING_3D:
-            return nextDeconvolutionCG3D(alpha);
-        default:
-            throw new IllegalArgumentException("The job given does not exist");
+            case PROCESSING_VECTOR:
+                return nextDeconvolutionCGNormal(alpha);
+            case PROCESSING_3D:
+                return nextDeconvolutionCG3D(alpha);
+            default:
+                throw new IllegalArgumentException("The job given does not exist");
         }
     }
 

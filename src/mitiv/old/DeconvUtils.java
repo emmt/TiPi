@@ -30,6 +30,10 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import org.jtransforms.fft.DoubleFFT_1D;
+import org.jtransforms.fft.DoubleFFT_3D;
+import org.jtransforms.fft.FloatFFT_1D;
+
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.linalg.shaped.DoubleShapedVector;
@@ -39,14 +43,11 @@ import mitiv.linalg.shaped.FloatShapedVectorSpace;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 
-import org.jtransforms.fft.DoubleFFT_1D;
-import org.jtransforms.fft.DoubleFFT_3D;
-import org.jtransforms.fft.FloatFFT_1D;
-
 /**
  * @author Leger Jonathan
  *
  */
+@Deprecated
 public class DeconvUtils {
 
     //Buffered and double

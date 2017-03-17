@@ -35,6 +35,7 @@ import mitiv.utils.Timer;
  *
  * @author Éric and Jonathan
  */
+@Deprecated
 public class SimpleViewer implements ReconstructionViewer {
 
     private PrintStream stream;

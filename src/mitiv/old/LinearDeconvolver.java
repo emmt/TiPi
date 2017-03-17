@@ -43,6 +43,7 @@ import mitiv.old.invpb.LeftHandSideMatrix;
  *
  * @author Jonathan Léger
  */
+@Deprecated
 public class LinearDeconvolver {
     private int rank;
     private final Vector h;

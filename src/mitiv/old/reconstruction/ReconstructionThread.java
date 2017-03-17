@@ -25,6 +25,7 @@
 
 package mitiv.old.reconstruction;
 
+@Deprecated
 public class ReconstructionThread extends Thread {
 
     private ReconstructionThreadToken token;
@@ -42,6 +43,7 @@ public class ReconstructionThread extends Thread {
         this.job = job;
     }
 
+    @Override
     public void run(){
         while (!token.isExiting()) {        //While we should not quit
             while (!token.isRunning()) {    //We wait for a job and for the order to run

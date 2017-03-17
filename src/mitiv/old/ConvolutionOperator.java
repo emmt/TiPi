@@ -49,6 +49,7 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
  *
  * @author Jonathan Léger
  */
+@Deprecated
 public class ConvolutionOperator extends ShapedLinearOperator {
 
     protected RealComplexFFT FFT = null;

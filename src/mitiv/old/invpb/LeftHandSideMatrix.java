@@ -36,6 +36,7 @@ import mitiv.linalg.VectorSpace;
  *
  * @author Éric
  */
+@Deprecated
 public class LeftHandSideMatrix extends LinearOperator {
     private LinearOperator H;
     private LinearOperator W;

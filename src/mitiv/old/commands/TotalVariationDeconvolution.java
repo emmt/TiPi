@@ -73,6 +73,7 @@ import mitiv.optim.SimpleUpperBound;
 import mitiv.utils.FFTUtils;
 import mitiv.utils.Timer;
 
+@Deprecated
 public class TotalVariationDeconvolution implements ReconstructionJob {
 
     @Option(name = "--output", aliases = {"-o"}, usage = "Name of output image.", metaVar = "OUTPUT")

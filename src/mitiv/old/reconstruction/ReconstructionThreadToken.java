@@ -29,6 +29,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Deprecated
 public class ReconstructionThreadToken {
     private double[] values = null;
     private int number = 0;

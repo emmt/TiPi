@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -20,6 +19,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -118,6 +118,7 @@ import javax.swing.SwingUtilities;
  * can be controlled by adjusting the value of
  * <code>HIGH_QUALITY_RENDERING_SCALE_THRESHOLD</code>.</p>
  */
+@Deprecated
 public class NavigableImagePanel extends JPanel {
 
     /** The Constant serialVersionUID. */
@@ -240,6 +241,7 @@ public class NavigableImagePanel extends JPanel {
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
          */
+        @Override
         public String toString() {
             return zoomDevice;
         }
@@ -289,6 +291,7 @@ public class NavigableImagePanel extends JPanel {
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
          */
+        @Override
         public String toString() {
             return "[Coords: x=" + x + ",y=" + y + "]";
         }
@@ -302,6 +305,7 @@ public class NavigableImagePanel extends JPanel {
         /* (non-Javadoc)
          * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
          */
+        @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
             Point p = e.getPoint();
             boolean zoomIn = (e.getWheelRotation() < 0);
@@ -331,6 +335,7 @@ public class NavigableImagePanel extends JPanel {
         /* (non-Javadoc)
          * @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
          */
+        @Override
         public void mouseClicked(MouseEvent e) {
             Point p = e.getPoint();
             if (SwingUtilities.isRightMouseButton(e)) {
@@ -360,6 +365,7 @@ public class NavigableImagePanel extends JPanel {
     public NavigableImagePanel() {
         setOpaque(false);
         addComponentListener(new ComponentAdapter() {
+            @Override
             public void componentResized(ComponentEvent e) {
                 if (scale > 0.0) {
                     if (isFullImageInPanel()) {
@@ -377,6 +383,7 @@ public class NavigableImagePanel extends JPanel {
         });
 
         addMouseListener(new MouseAdapter() {
+            @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     if (isInNavigationImage(e.getPoint())) {
@@ -388,6 +395,7 @@ public class NavigableImagePanel extends JPanel {
         });
 
         addMouseMotionListener(new MouseMotionListener() {
+            @Override
             public void mouseDragged(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)
                         && !isInNavigationImage(e.getPoint())) {
@@ -395,6 +403,7 @@ public class NavigableImagePanel extends JPanel {
                     moveImage(p);
                 }
             }
+            @Override
             public void mouseMoved(MouseEvent e) {
                 //we need the mouse position so that after zooming
                 //that position of the image is maintained
@@ -512,8 +521,8 @@ public class NavigableImagePanel extends JPanel {
      * Center image.
      */
     private void centerImage() {
-        originX = (int)(getWidth() - getScreenImageWidth()) / 2;
-        originY = (int)(getHeight() - getScreenImageHeight()) / 2;
+        originX = (getWidth() - getScreenImageWidth()) / 2;
+        originY = (getHeight() - getScreenImageHeight()) / 2;
     }
 
     //Creates and renders the navigation image in the upper let corner of the panel.
@@ -545,7 +554,7 @@ public class NavigableImagePanel extends JPanel {
         //Reset scale so that initializeParameters() is called in paintComponent()
         //for the new image.
         scale = 0.0;
-        firePropertyChange(IMAGE_CHANGED_PROPERTY, (Image)oldImage, (Image)image);
+        firePropertyChange(IMAGE_CHANGED_PROPERTY, oldImage, image);
         repaint();
     }
 
@@ -928,6 +937,7 @@ public class NavigableImagePanel extends JPanel {
      *
      * @param g the <code>Graphics</code> context for painting
      */
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g); // Paints the background
 
@@ -1054,6 +1064,7 @@ public class NavigableImagePanel extends JPanel {
         final String filename = args[0];
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 final JFrame frame = new JFrame("Navigable Image Panel");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1089,6 +1100,7 @@ public class NavigableImagePanel extends JPanel {
         final String filename = args;
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 final JFrame frame = new JFrame("Navigable Image Panel");
                 //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1124,6 +1136,7 @@ public class NavigableImagePanel extends JPanel {
         //final String filename = args;
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 final JFrame frame = new JFrame("Navigable Image Panel");
                 //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

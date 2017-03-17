@@ -50,6 +50,8 @@ import mitiv.array.ShapedArray;
  *          -p post treatment: none(default), corrected, colormap, correted_colormap
  *          -a alpha value
  */
+
+@Deprecated
 public class mitivCLI {
 
     static String regularization = "wiener";
@@ -145,23 +147,23 @@ public class mitivCLI {
             if (tmp.charAt(0) == '-' ) {
                 String next = args[i+1];
                 switch (tmp.charAt(1)) {
-                case 'h':
-                    printHelp();
-                    System.exit(0);
-                case 'o':
-                    outputImage = next;
-                    break;
-                case 'r':
-                    regularization = next;
-                    break;
-                case 'p':
-                    postTreatment = next;
-                    break;
-                case 'a':
-                    alpha = next;
-                    break;
-                default:
-                    break;
+                    case 'h':
+                        printHelp();
+                        System.exit(0);
+                    case 'o':
+                        outputImage = next;
+                        break;
+                    case 'r':
+                        regularization = next;
+                        break;
+                    case 'p':
+                        postTreatment = next;
+                        break;
+                    case 'a':
+                        alpha = next;
+                        break;
+                    default:
+                        break;
                 }
                 ++i;
             }else{
