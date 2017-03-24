@@ -43,7 +43,7 @@ import mitiv.array.Float3D;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
-
+@Deprecated
 public class BufferedImageUtils {
 
     public static ShapedArray imageToArray(BufferedImage image) {

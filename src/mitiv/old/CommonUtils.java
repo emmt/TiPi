@@ -51,6 +51,7 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
  * @author Leger Jonathan
  *
  */
+@Deprecated
 public class CommonUtils {
 
     /**

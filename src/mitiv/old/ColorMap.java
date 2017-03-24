@@ -25,6 +25,8 @@
 
 package mitiv.old;
 
+import java.awt.Color;
+
 /*
  * Copyright 1999-2004 Carnegie Mellon University.
  * Portions Copyright 2002-2004 Sun Microsystems, Inc.
@@ -38,7 +40,6 @@ package mitiv.old;
  */
 
 import java.util.Arrays;
-import java.awt.Color;
 
 /**
  * Color map representation - each entry in the map has an RGB value
@@ -47,6 +48,7 @@ import java.awt.Color;
  * @author Ron Weiss (ronw@ee.columbia.edu)
  *
  */
+@Deprecated
 public class ColorMap
 {
     int size;
@@ -121,12 +123,13 @@ public class ColorMap
     public int getColor(int idx)
     {
         int pixel = ((r[idx] << 16) & 0xff0000)
-            | ((g[idx] << 8) & 0xff00)
-            | (b[idx] & 0xff);
+                | ((g[idx] << 8) & 0xff00)
+                | (b[idx] & 0xff);
 
         return pixel;
     }
 
+    @Override
     public String toString()
     {
         StringBuffer s = new StringBuffer(500);
