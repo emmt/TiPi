@@ -1,9 +1,10 @@
 language: java
 jdk:
-- openjdk6
+- openjdk7
 script:
 - ant build
 - ant jar
+- ant tipi-sdk
 - ant doc > /dev/null
 - ant deconv
 after_success:
