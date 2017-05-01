@@ -322,6 +322,10 @@ public class IterativeDifferentiableSolver {
         return iterations;
     }
 
+    public void resetIteration(){
+        iterations =0;
+        evaluations=0 ;
+    }
     /**
      * Get the number of function (and gradient) evaluations since last start.
      *

@@ -268,6 +268,7 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         if (object != arr) {
             object = arr;
             forceRestart();
+            resetIteration();
         }
     }
 
@@ -425,11 +426,15 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
 
         /* Build vector spaces. */
         if (type == Traits.FLOAT) {
-            dataSpace = new FloatShapedVectorSpace(dataShape);
-            objectSpace = new FloatShapedVectorSpace(objectShape);
+            if (dataSpace==null)
+                dataSpace = new FloatShapedVectorSpace(dataShape);
+            if (objectSpace==null)
+                objectSpace = new FloatShapedVectorSpace(objectShape);
         } else {
-            dataSpace = new DoubleShapedVectorSpace(dataShape);
-            objectSpace = new DoubleShapedVectorSpace(objectShape);
+            if (dataSpace==null)
+                dataSpace = new DoubleShapedVectorSpace(dataShape);
+            if (objectSpace==null)
+                objectSpace = new DoubleShapedVectorSpace(objectShape);
         }
 
         /* Build likelihood term. */
@@ -601,29 +606,29 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         if (arr != null) {
             switch(arr.getType()) {
 
-            case Traits.BYTE:
-                sum = ((ByteArray)arr).sum();
-                break;
+                case Traits.BYTE:
+                    sum = ((ByteArray)arr).sum();
+                    break;
 
-            case Traits.SHORT:
-                sum = ((ShortArray)arr).sum();
-                break;
+                case Traits.SHORT:
+                    sum = ((ShortArray)arr).sum();
+                    break;
 
-            case Traits.INT:
-                sum = ((IntArray)arr).sum();
-                break;
+                case Traits.INT:
+                    sum = ((IntArray)arr).sum();
+                    break;
 
-            case Traits.LONG:
-                sum = ((LongArray)arr).sum();
-                break;
+                case Traits.LONG:
+                    sum = ((LongArray)arr).sum();
+                    break;
 
-            case Traits.FLOAT:
-                sum = ((FloatArray)arr).sum();
-                break;
+                case Traits.FLOAT:
+                    sum = ((FloatArray)arr).sum();
+                    break;
 
-            case Traits.DOUBLE:
-                sum = ((DoubleArray)arr).sum();
-                break;
+                case Traits.DOUBLE:
+                    sum = ((DoubleArray)arr).sum();
+                    break;
             }
         }
         return sum;
