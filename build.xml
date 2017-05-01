@@ -64,7 +64,9 @@
     </target>
     <!-- Generate TiPi JAR library for TiPiSDK -->
     <target name="tipi-sdk" depends="build" description="generate TiPi jar library for TiPiSDK">
-        <delete dir="bin/mitiv/old"/>
+        <delete dir="bin/mitiv/old/commands"/>
+        <delete dir="bin/mitiv/old/invpb"/>
+            <delete dir="bin/mitiv/old/reconstruction"/>
         <delete dir="bin/mitiv/invpb"/>
         <delete dir="bin/mitiv/jobs"/>
         <delete dir="bin/mitiv/optim/omp"/>
