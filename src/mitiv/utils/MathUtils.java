@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.old;
+package mitiv.utils;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -45,6 +45,9 @@ import org.jtransforms.fft.DoubleFFT_2D;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.RealComplexFFT;
+import mitiv.old.ColorMap;
+import mitiv.old.ConvolutionOperator;
+import mitiv.old.NavigableImagePanel;
 
 // TODO: Auto-generated Javadoc
 /**
