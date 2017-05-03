@@ -3,7 +3,7 @@
     <property environment="env"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
-    <property name="source" value="1.7"/>
+    <property name="source" value="1.8"/>
     <property name="version" value="v004"/>
     <property name="src.dir" location="src"/>
     <property name="doc.dir" location="javadoc"/>
@@ -63,18 +63,15 @@
         </jar>
     </target>
     <!-- Generate TiPi JAR library for TiPiSDK -->
-    <target name="tipi-sdk" depends="build" description="generate TiPi jar library for TiPiSDK">
-        <delete dir="bin/mitiv/old"/>
-        <delete dir="bin/mitiv/invpb"/>
-        <delete dir="bin/mitiv/jobs"/>
-        <delete dir="bin/mitiv/optim/omp"/>
-        <delete dir="bin/mitiv/io"/>
-        <delete dir="bin/mitiv/tests"/>
-        <delete dir="bin/commands"/>
-        <jar destfile = "${jar.dir}/TiPi.jar"
-             basedir = "${bin.dir}">
-        </jar>
-        <zip destfile="${jar.dir}/TiPi.zip" basedir="${src.dir}" />
+    <target name="tipi-sdk" depends="build" description="generate TiPi zip library for TiPiSDK">
+        <copy  todir="src-tmp"><fileset dir="src" /> </copy>      
+        <delete dir="src-tmp/mitiv/old"/>
+        <delete dir="src-tmp/mitiv/invpb"/>
+        <delete dir="src-tmp/mitiv/optim/omp"/>
+        <delete dir="src-tmp/mitiv/io"/>
+        <delete dir="src-tmp/commands"/>
+        <zip destfile="${jar.dir}/TiPi.zip" basedir="src-tmp" />
+        <delete dir="src-tmp"/>        
     </target>
     <!-- Generate launchable JAR for TiPi tool -->
     <target name="deconv" depends="build" description="generate launchable jar for TiPi deconvolution tool">
