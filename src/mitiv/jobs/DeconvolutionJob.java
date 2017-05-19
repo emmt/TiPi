@@ -109,4 +109,11 @@ public class DeconvolutionJob {
     public void updatePsf(ShapedArray psfArray) {
         solver.setPSF(psfArray);
     }
+    /**
+     * @return running state
+     */
+    public boolean isRunning() {
+        // TODO Auto-generated method stub
+        return run;
+    }
 }
