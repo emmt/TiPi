@@ -113,7 +113,6 @@ public class DeconvolutionJob {
      * @return running state
      */
     public boolean isRunning() {
-        // TODO Auto-generated method stub
         return run;
     }
 }
