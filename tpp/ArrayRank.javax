@@ -204,6 +204,14 @@ public abstract class ${className} implements ShapedArray {
         return newArray;
 
     }
+    //# else
+    public final ${className} movedims( int initpos, int finalpos){
+     
+        if ((finalpos > ${rank})||(initpos > ${rank})){
+            throw new IllegalArgumentException("The permutation should not change the rank");
+        }
+            return this.copy();
+        }
     //# end
     
     @Override

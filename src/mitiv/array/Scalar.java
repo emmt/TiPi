@@ -88,6 +88,13 @@ public abstract class Scalar implements ShapedArray {
         }
     }
 
+    public final Scalar movedims( int initpos, int finalpos){
+     
+        if ((finalpos > 0)||(initpos > 0)){
+            throw new IllegalArgumentException("The permutation should not change the rank");
+        }
+            return this.copy();
+        }
     
     @Override
     public abstract Scalar copy();

@@ -114,8 +114,8 @@ public abstract class Array2D implements ShapedArray {
 
    /**
  * Create a copy of the array with the dimension initpos at the position finalpos
- * @param initpos
- * @param finalpos
+ * @param initpos initial position of the dimension
+ * @param finalpos final position
  * @return the new array
  */
    public final Array2D movedims( int initpos, int finalpos){

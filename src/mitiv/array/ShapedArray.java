@@ -168,6 +168,15 @@ public interface ShapedArray extends Shaped, Typed {
     public abstract ShapedArray create();
 
     /**
+     * Create a copy of the array with the dimension initpos at the position finalpos
+     * @param initpos
+     * @param finalpos
+     * @return the new array
+     */
+    public abstract ShapedArray movedims( int initpos, int finalpos);
+
+
+    /**
      * Copy the contents of the object as a new array.
      *
      * <p> This method yields a new shaped array which has the same shape, type
@@ -177,6 +186,7 @@ public interface ShapedArray extends Shaped, Typed {
      *
      * @return A flat shaped array.
      */
+
     public abstract ShapedArray copy();
 
     /**
