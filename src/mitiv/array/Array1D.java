@@ -88,30 +88,64 @@ public abstract class Array1D implements ShapedArray {
     public final int getDimension(int k) {
         return shape.dimension(k);
     }
-
-    /**
+    
+   /**
      * Change the shape of the array. The total number of elements should be preserved.
      *
      * @param shape new shape.
      */
     public final void  reshape(Shape shape) {
-        if (this.number == (int)shape.number()){
-            this.shape = shape;
-
-            if (shape.number() > Integer.MAX_VALUE) {
-                throw new IllegalArgumentException("Total number of elements is too large");
-            }
-            this.shape = shape;
-            this.dim1 = shape.dimension(0);
+    if (this.number == (int)shape.number()){
+        this.shape = shape; 
+        
+        if (shape.number() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Total number of elements is too large");
+        }
+        this.shape = shape;
+        this.dim1 = shape.dimension(0);
         }else{
-            throw new IllegalArgumentException("The new shape is not commensurate with the old shape");
+        throw new IllegalArgumentException("The new shape is not commensurate with the old shape");
         }
     }
 
-    final void permute( int[] order){
+   /**
+ * Create a copy of the array with the dimension initpos at the position finalpos
+ * @param initpos
+ * @param finalpos
+ * @return the new array
+ */
+   public final Array1D movedims( int initpos, int finalpos){
+     
+
+        if ((finalpos > 1)||(initpos > 1)){
+            throw new IllegalArgumentException("The permutation should not change the rank");
+        }
+        if (initpos==finalpos){
+            return this.copy();
+        }
+        int[] newdims =  new int[1];
+        if (initpos<finalpos){
+            for (int k = 0; k <initpos; ++k) {
+                newdims[k] = shape.dimension(k);
+            }
+            for (int k = initpos; k <finalpos-1; ++k) {
+                newdims[k] = shape.dimension(k+1);
+            }
+            newdims[finalpos] = shape.dimension(initpos);
+            for (int k = finalpos+1; k <1; ++k) {
+                newdims[k] = shape.dimension(k);
+            }
+        }
+        Array1D newArray = ((Array1D) this.create());
+        newArray.reshape(new Shape(newdims));
+        for(int n=0; n<   shape.dimension(initpos);++n){
+            newArray.slice(n,finalpos).assign(this.slice(n, initpos));
+        }
+
+        return newArray;
 
     }
-
+    
     @Override
     public abstract Array1D copy();
 
@@ -173,7 +207,6 @@ public abstract class Array1D implements ShapedArray {
      *
      * @return A 1D view of the array.
      */
-    @Override
     public abstract Array1D as1D();
 
     /**
@@ -190,8 +223,8 @@ public abstract class Array1D implements ShapedArray {
      * @throws IndexOutOfBoundsException
      */
     public static int checkViewStrides(int number, int offset,
-            int stride1,
-            int dim1) {
+                                       int stride1,
+                                       int dim1) {
         int imin, imax, itmp;
         itmp = (dim1 - 1)*stride1;
         if (itmp >= 0) {

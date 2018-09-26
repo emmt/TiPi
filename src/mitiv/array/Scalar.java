@@ -88,6 +88,7 @@ public abstract class Scalar implements ShapedArray {
         }
     }
 
+    
     @Override
     public abstract Scalar copy();
 

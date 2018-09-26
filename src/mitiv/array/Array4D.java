@@ -120,6 +120,44 @@ public abstract class Array4D implements ShapedArray {
         }
     }
 
+   /**
+ * Create a copy of the array with the dimension initpos at the position finalpos
+ * @param initpos
+ * @param finalpos
+ * @return the new array
+ */
+   public final Array4D movedims( int initpos, int finalpos){
+     
+
+        if ((finalpos > 4)||(initpos > 4)){
+            throw new IllegalArgumentException("The permutation should not change the rank");
+        }
+        if (initpos==finalpos){
+            return this.copy();
+        }
+        int[] newdims =  new int[4];
+        if (initpos<finalpos){
+            for (int k = 0; k <initpos; ++k) {
+                newdims[k] = shape.dimension(k);
+            }
+            for (int k = initpos; k <finalpos-1; ++k) {
+                newdims[k] = shape.dimension(k+1);
+            }
+            newdims[finalpos] = shape.dimension(initpos);
+            for (int k = finalpos+1; k <4; ++k) {
+                newdims[k] = shape.dimension(k);
+            }
+        }
+        Array4D newArray = ((Array4D) this.create());
+        newArray.reshape(new Shape(newdims));
+        for(int n=0; n<   shape.dimension(initpos);++n){
+            newArray.slice(n,finalpos).assign(this.slice(n, initpos));
+        }
+
+        return newArray;
+
+    }
+    
     @Override
     public abstract Array4D copy();
 

@@ -132,6 +132,44 @@ public abstract class Array7D implements ShapedArray {
         }
     }
 
+   /**
+ * Create a copy of the array with the dimension initpos at the position finalpos
+ * @param initpos
+ * @param finalpos
+ * @return the new array
+ */
+   public final Array7D movedims( int initpos, int finalpos){
+     
+
+        if ((finalpos > 7)||(initpos > 7)){
+            throw new IllegalArgumentException("The permutation should not change the rank");
+        }
+        if (initpos==finalpos){
+            return this.copy();
+        }
+        int[] newdims =  new int[7];
+        if (initpos<finalpos){
+            for (int k = 0; k <initpos; ++k) {
+                newdims[k] = shape.dimension(k);
+            }
+            for (int k = initpos; k <finalpos-1; ++k) {
+                newdims[k] = shape.dimension(k+1);
+            }
+            newdims[finalpos] = shape.dimension(initpos);
+            for (int k = finalpos+1; k <7; ++k) {
+                newdims[k] = shape.dimension(k);
+            }
+        }
+        Array7D newArray = ((Array7D) this.create());
+        newArray.reshape(new Shape(newdims));
+        for(int n=0; n<   shape.dimension(initpos);++n){
+            newArray.slice(n,finalpos).assign(this.slice(n, initpos));
+        }
+
+        return newArray;
+
+    }
+    
     @Override
     public abstract Array7D copy();
 
