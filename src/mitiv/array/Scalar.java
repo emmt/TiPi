@@ -34,7 +34,7 @@ import mitiv.base.Shape;
  * @author Éric Thiébaut.
  */
 public abstract class Scalar implements ShapedArray {
-    static protected final Shape shape = Shape.scalarShape;
+    static protected Shape shape = Shape.scalarShape;
     static protected final int number = 1;
 
     /*
@@ -72,6 +72,20 @@ public abstract class Scalar implements ShapedArray {
     @Override
     public final int getDimension(int k) {
         return shape.dimension(k);
+    }
+    
+   /**
+     * Change the shape of the array. The total number of elements should be preserved.
+     *
+     * @param shape new shape.
+     */
+    public final void  reshape(Shape shape) {
+    if (this.number == (int)shape.number()){
+        this.shape = shape; 
+        
+        }else{
+        throw new IllegalArgumentException("The new shape is not commensurate with the old shape");
+        }
     }
 
     @Override

@@ -36,13 +36,13 @@ import mitiv.base.indexing.Range;
  * @author Éric Thiébaut.
  */
 public abstract class Array5D implements ShapedArray {
-    protected final Shape shape;
+    protected Shape shape;
     protected final int number;
-    protected final int dim1;
-    protected final int dim2;
-    protected final int dim3;
-    protected final int dim4;
-    protected final int dim5;
+    protected int dim1;
+    protected int dim2;
+    protected int dim3;
+    protected int dim4;
+    protected int dim5;
 
     /*
      * The following constructors make this class non instantiable, but still
@@ -99,6 +99,29 @@ public abstract class Array5D implements ShapedArray {
     @Override
     public final int getDimension(int k) {
         return shape.dimension(k);
+    }
+    
+   /**
+     * Change the shape of the array. The total number of elements should be preserved.
+     *
+     * @param shape new shape.
+     */
+    public final void  reshape(Shape shape) {
+    if (this.number == (int)shape.number()){
+        this.shape = shape; 
+        
+        if (shape.number() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Total number of elements is too large");
+        }
+        this.shape = shape;
+        this.dim1 = shape.dimension(0);
+        this.dim2 = shape.dimension(1);
+        this.dim3 = shape.dimension(2);
+        this.dim4 = shape.dimension(3);
+        this.dim5 = shape.dimension(4);
+        }else{
+        throw new IllegalArgumentException("The new shape is not commensurate with the old shape");
+        }
     }
 
     @Override

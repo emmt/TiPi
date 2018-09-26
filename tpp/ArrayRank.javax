@@ -53,13 +53,13 @@ import mitiv.base.indexing.Range;
  * @author Éric Thiébaut.
  */
 public abstract class ${className} implements ShapedArray {
-    //# def scope = protected final
+    //# def scope = protected 
     //# if ${rank} == 0
     static ${scope} Shape shape = Shape.scalarShape;
-    static ${scope} int number = 1;
+    static ${scope} final int number = 1;
     //# else
     ${scope} Shape shape;
-    ${scope} int number;
+    ${scope} final int number;
     //#     for k in 1 : ${rank}
     ${scope} int dim${k};
     //#         if ${k} == 1
@@ -140,6 +140,30 @@ public abstract class ${className} implements ShapedArray {
     @Override
     public final int getDimension(int k) {
         return shape.dimension(k);
+    }
+    
+   /**
+     * Change the shape of the array. The total number of elements should be preserved.
+     *
+     * @param shape new shape.
+     */
+    public final void  reshape(Shape shape) {
+    if (this.number == (int)shape.number()){
+        this.shape = shape; 
+        
+        //# if ${rank} >= 1
+        if (shape.number() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Total number of elements is too large");
+        }
+        this.shape = shape;
+        //#     for k in 1 : ${rank}
+        //#         eval j = ${k} - 1
+        this.dim${k} = shape.dimension(${j});
+        //#     end
+        //# end
+        }else{
+        throw new IllegalArgumentException("The new shape is not commensurate with the old shape");
+        }
     }
 
     @Override

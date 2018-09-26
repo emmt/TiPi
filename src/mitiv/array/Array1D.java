@@ -36,9 +36,9 @@ import mitiv.base.indexing.Range;
  * @author Éric Thiébaut.
  */
 public abstract class Array1D implements ShapedArray {
-    protected final Shape shape;
+    protected Shape shape;
     protected final int number;
-    protected final int dim1;
+    protected int dim1;
 
     /*
      * The following constructors make this class non instantiable, but still
@@ -87,6 +87,29 @@ public abstract class Array1D implements ShapedArray {
     @Override
     public final int getDimension(int k) {
         return shape.dimension(k);
+    }
+
+    /**
+     * Change the shape of the array. The total number of elements should be preserved.
+     *
+     * @param shape new shape.
+     */
+    public final void  reshape(Shape shape) {
+        if (this.number == (int)shape.number()){
+            this.shape = shape;
+
+            if (shape.number() > Integer.MAX_VALUE) {
+                throw new IllegalArgumentException("Total number of elements is too large");
+            }
+            this.shape = shape;
+            this.dim1 = shape.dimension(0);
+        }else{
+            throw new IllegalArgumentException("The new shape is not commensurate with the old shape");
+        }
+    }
+
+    final void permute( int[] order){
+
     }
 
     @Override
@@ -150,6 +173,7 @@ public abstract class Array1D implements ShapedArray {
      *
      * @return A 1D view of the array.
      */
+    @Override
     public abstract Array1D as1D();
 
     /**
@@ -166,8 +190,8 @@ public abstract class Array1D implements ShapedArray {
      * @throws IndexOutOfBoundsException
      */
     public static int checkViewStrides(int number, int offset,
-                                       int stride1,
-                                       int dim1) {
+            int stride1,
+            int dim1) {
         int imin, imax, itmp;
         itmp = (dim1 - 1)*stride1;
         if (itmp >= 0) {
