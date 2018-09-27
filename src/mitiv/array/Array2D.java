@@ -36,10 +36,10 @@ import mitiv.base.indexing.Range;
  * @author Éric Thiébaut.
  */
 public abstract class Array2D implements ShapedArray {
-    protected Shape shape;
-    protected final int number;
-    protected int dim1;
-    protected int dim2;
+    final protected Shape shape;
+    final protected  int number;
+    final protected int dim1;
+    final protected int dim2;
 
     /*
      * The following constructors make this class non instantiable, but still
@@ -93,35 +93,29 @@ public abstract class Array2D implements ShapedArray {
     }
     
    /**
-     * Change the shape of the array. The total number of elements should be preserved.
+     * Return a new array with the same  number of elements but a different shape.
      *
-     * @param shape new shape.
+     * @param shape         The new shape.
+     * @return              The reshaped array
      */
-    public final void  reshape(Shape shape) {
+    public final  Array2D  reshape(Shape shape) {
     if (this.number == (int)shape.number()){
-        this.shape = shape; 
-        
-        if (shape.number() > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Total number of elements is too large");
-        }
-        this.shape = shape;
-        this.dim1 = shape.dimension(0);
-        this.dim2 = shape.dimension(1);
-        }else{
+        return ( Array2D) ArrayFactory.wrap(this.getData(), shape);
+    }else{
         throw new IllegalArgumentException("The new shape is not commensurate with the old shape");
         }
     }
 
    /**
  * Create a copy of the array with the dimension initpos at the position finalpos
- * @param initpos initial position of the dimension
- * @param finalpos final position
- * @return the new array
+ * @param initpos       initial position of the dimension
+ * @param finalpos      final position
+ * @return              the new array
  */
    public final Array2D movedims( int initpos, int finalpos){
      
 
-        if ((finalpos > 2)||(initpos > 2)){
+        if ((finalpos > 2-1)||(initpos > 2-1)){
             throw new IllegalArgumentException("The permutation should not change the rank");
         }
         if (initpos==finalpos){
@@ -132,16 +126,26 @@ public abstract class Array2D implements ShapedArray {
             for (int k = 0; k <initpos; ++k) {
                 newdims[k] = shape.dimension(k);
             }
-            for (int k = initpos; k <finalpos-1; ++k) {
+            for (int k = initpos; k <finalpos; ++k) {
                 newdims[k] = shape.dimension(k+1);
             }
             newdims[finalpos] = shape.dimension(initpos);
             for (int k = finalpos+1; k <2; ++k) {
                 newdims[k] = shape.dimension(k);
             }
+        }else{
+            for (int k = 0; k <finalpos; ++k) {
+                newdims[k] = shape.dimension(k);
+            }
+            newdims[finalpos] = shape.dimension(initpos);
+            for (int k = finalpos+1; k <initpos+1; ++k) {
+                newdims[k] = shape.dimension(k-1);
+            }
+            for (int k = initpos+1; k <2; ++k) {
+                newdims[k] = shape.dimension(k);
+            }
         }
-        Array2D newArray = ((Array2D) this.create());
-        newArray.reshape(new Shape(newdims));
+        Array2D newArray = (Array2D) ArrayFactory.create(this.getType(), newdims);
         for(int n=0; n<   shape.dimension(initpos);++n){
             newArray.slice(n,finalpos).assign(this.slice(n, initpos));
         }

@@ -34,8 +34,8 @@ import mitiv.base.Shape;
  * @author Éric Thiébaut.
  */
 public abstract class Scalar implements ShapedArray {
-    static protected Shape shape = Shape.scalarShape;
-    static protected final int number = 1;
+    static final protected Shape shape = Shape.scalarShape;
+    static final protected  int number = 1;
 
     /*
      * The following constructors make this class non instantiable, but still
@@ -75,22 +75,22 @@ public abstract class Scalar implements ShapedArray {
     }
     
    /**
-     * Change the shape of the array. The total number of elements should be preserved.
+     * Return a new array with the same  number of elements but a different shape.
      *
-     * @param shape new shape.
+     * @param shape         The new shape.
+     * @return              The reshaped array
      */
-    public final void  reshape(Shape shape) {
+    public final  Scalar  reshape(Shape shape) {
     if (this.number == (int)shape.number()){
-        this.shape = shape; 
-        
-        }else{
+        return ( Scalar) ArrayFactory.wrap(this.getData(), shape);
+    }else{
         throw new IllegalArgumentException("The new shape is not commensurate with the old shape");
         }
     }
 
     public final Scalar movedims( int initpos, int finalpos){
      
-        if ((finalpos > 0)||(initpos > 0)){
+        if ((finalpos > 0-1)||(initpos > 0-1)){
             throw new IllegalArgumentException("The permutation should not change the rank");
         }
             return this.copy();

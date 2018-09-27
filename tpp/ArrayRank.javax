@@ -53,13 +53,13 @@ import mitiv.base.indexing.Range;
  * @author Éric Thiébaut.
  */
 public abstract class ${className} implements ShapedArray {
-    //# def scope = protected 
+    //# def scope = final protected 
     //# if ${rank} == 0
     static ${scope} Shape shape = Shape.scalarShape;
-    static ${scope} final int number = 1;
+    static ${scope}  int number = 1;
     //# else
     ${scope} Shape shape;
-    ${scope} final int number;
+    ${scope}  int number;
     //#     for k in 1 : ${rank}
     ${scope} int dim${k};
     //#         if ${k} == 1
@@ -143,25 +143,15 @@ public abstract class ${className} implements ShapedArray {
     }
     
    /**
-     * Change the shape of the array. The total number of elements should be preserved.
+     * Return a new array with the same  number of elements but a different shape.
      *
-     * @param shape new shape.
+     * @param shape         The new shape.
+     * @return              The reshaped array
      */
-    public final void  reshape(Shape shape) {
+    public final  ${className}  reshape(Shape shape) {
     if (this.number == (int)shape.number()){
-        this.shape = shape; 
-        
-        //# if ${rank} >= 1
-        if (shape.number() > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Total number of elements is too large");
-        }
-        this.shape = shape;
-        //#     for k in 1 : ${rank}
-        //#         eval j = ${k} - 1
-        this.dim${k} = shape.dimension(${j});
-        //#     end
-        //# end
-        }else{
+        return ( ${className}) ArrayFactory.wrap(this.getData(), shape);
+    }else{
         throw new IllegalArgumentException("The new shape is not commensurate with the old shape");
         }
     }
@@ -169,14 +159,14 @@ public abstract class ${className} implements ShapedArray {
  //# if ${rank} >= 1
    /**
  * Create a copy of the array with the dimension initpos at the position finalpos
- * @param initpos initial position of the dimension
- * @param finalpos final position
- * @return the new array
+ * @param initpos       initial position of the dimension
+ * @param finalpos      final position
+ * @return              the new array
  */
    public final ${className} movedims( int initpos, int finalpos){
      
 
-        if ((finalpos > ${rank})||(initpos > ${rank})){
+        if ((finalpos > ${rank}-1)||(initpos > ${rank}-1)){
             throw new IllegalArgumentException("The permutation should not change the rank");
         }
         if (initpos==finalpos){
@@ -187,16 +177,26 @@ public abstract class ${className} implements ShapedArray {
             for (int k = 0; k <initpos; ++k) {
                 newdims[k] = shape.dimension(k);
             }
-            for (int k = initpos; k <finalpos-1; ++k) {
+            for (int k = initpos; k <finalpos; ++k) {
                 newdims[k] = shape.dimension(k+1);
             }
             newdims[finalpos] = shape.dimension(initpos);
             for (int k = finalpos+1; k <${rank}; ++k) {
                 newdims[k] = shape.dimension(k);
             }
+        }else{
+            for (int k = 0; k <finalpos; ++k) {
+                newdims[k] = shape.dimension(k);
+            }
+            newdims[finalpos] = shape.dimension(initpos);
+            for (int k = finalpos+1; k <initpos+1; ++k) {
+                newdims[k] = shape.dimension(k-1);
+            }
+            for (int k = initpos+1; k <${rank}; ++k) {
+                newdims[k] = shape.dimension(k);
+            }
         }
-        ${className} newArray = ((${className}) this.create());
-        newArray.reshape(new Shape(newdims));
+        ${className} newArray = (${className}) ArrayFactory.create(this.getType(), newdims);
         for(int n=0; n<   shape.dimension(initpos);++n){
             newArray.slice(n,finalpos).assign(this.slice(n, initpos));
         }
@@ -207,7 +207,7 @@ public abstract class ${className} implements ShapedArray {
     //# else
     public final ${className} movedims( int initpos, int finalpos){
      
-        if ((finalpos > ${rank})||(initpos > ${rank})){
+        if ((finalpos > ${rank}-1)||(initpos > ${rank}-1)){
             throw new IllegalArgumentException("The permutation should not change the rank");
         }
             return this.copy();
