@@ -61,6 +61,18 @@
 //# def TYPE_5 = DOUBLE
 //# def TypeClass_5 = ${Type_5}
 //#
+//# def COMPLEXFLOAT  = 6
+//# def type_6 = float
+//# def Type_6 = ComplexFloat
+//# def TYPE_6 = COMPLEXFLOAT
+//# def TypeClass_6 = ${Type_6}
+//#
+//# def COMPLEXDOUBLE = 7
+//# def type_7 = double
+//# def Type_7 = ComplexDouble
+//# def TYPE_7 = COMPLEXDOUBLE 
+//# def TypeClass_7 = ${Type_7}
+//#
 //# // Convert type name into a numerical code.
 //# def identof_byte   = ${BYTE}
 //# def identof_short  = ${SHORT}
@@ -68,6 +80,8 @@
 //# def identof_long   = ${LONG}
 //# def identof_float  = ${FLOAT}
 //# def identof_double = ${DOUBLE}
+//# def identof_complexfloat  = ${COMPLEXFLOAT}
+//# def identof_complexdouble = ${COMPLEXDOUBLE}
 //#
 //# // Definitions for a specific type.
 //# if defined(type)
@@ -75,7 +89,7 @@
 //#     // identifier of the current type.
 //#     def type_id = ${}{identof_${type}}
 //#     def type_id = ${type_id}
-//#     if ${type_id} < ${BYTE} || ${type_id} > ${DOUBLE}
+//#     if ${type_id} < ${BYTE} || ${type_id} > ${COMPLEXDOUBLE}
 //#         error Unknown type ${type}
 //#     end
 //#     def Type = ${}{Type_${type_id}}

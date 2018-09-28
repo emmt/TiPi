@@ -34,6 +34,16 @@
 //# def Type_5 = Double
 //# def TYPE_5 = DOUBLE
 //#
+//# def COMPLEXFLOAT  = 6
+//# def type_6 = float
+//# def Type_6 = ComplexFloat
+//# def TYPE_6 = COMPLEXFLOAT
+//#
+//# def COMPLEXDOUBLE = 7
+//# def type_7 = double
+//# def Type_7 = ComplexDouble
+//# def TYPE_7 = COMPLEXDOUBLE 
+//#
 //# // Convert type name into a numerical code.
 //# def identof_byte   = ${BYTE}
 //# def identof_short  = ${SHORT}
@@ -41,6 +51,8 @@
 //# def identof_long   = ${LONG}
 //# def identof_float  = ${FLOAT}
 //# def identof_double = ${DOUBLE}
+//# def identof_complexfloat  = ${COMPLEXFLOAT}
+//# def identof_complexdouble = ${COMPLEXDOUBLE}
 //#
 # Makefile --
 #
@@ -62,7 +74,9 @@ BASE = $(ROOT)base/
 MAPPING = $(BASE)mapping/
 
 RANKS = 1 2 3 4 5 6 7 8 9
-TYPES = Byte Short Int Long Float Double
+TYPES = Byte Short Int Long Float Double ComplexFloat ComplexDouble
+
+COMMON_INPUTS = common.javax Makefile
 
 ARRAY_OUTPUTS = $(ARRAY)Scalar.java \
                 $(foreach RANK,$(RANKS),$(ARRAY)Array$(RANK)D.java)
@@ -92,15 +106,19 @@ FLOAT_OUTPUTS = $(subst @TYPE@,Float,$(TYPED_OUTPUTS))
 
 DOUBLE_OUTPUTS = $(subst @TYPE@,Double,$(TYPED_OUTPUTS))
 
-ARRAY_INPUTS = ArrayRank.javax common.javax
+COMPLEXFLOAT_OUTPUTS = $(subst @TYPE@,ComplexFloat,$(TYPED_OUTPUTS))
 
-TYPED_ARRAY_INPUTS = TypeArray.javax common.javax
+COMPLEXDOUBLE_OUTPUTS = $(subst @TYPE@,ComplexDouble,$(TYPED_OUTPUTS))
 
-TYPE_RANK_INPUTS = TypeRank.javax common.javax
+ARRAY_INPUTS = ArrayRank.javax $(COMMON_INPUTS)
 
-TYPE_SCALAR_INPUTS = TypeScalar.javax common.javax
+TYPED_ARRAY_INPUTS = TypeArray.javax $(COMMON_INPUTS)
 
-ARRAY_IMPL_INPUTS = commonImpl.javax commonLoops.javax common.javax
+TYPE_RANK_INPUTS = TypeRank.javax $(COMMON_INPUTS)
+
+TYPE_SCALAR_INPUTS = TypeScalar.javax $(COMMON_INPUTS)
+
+ARRAY_IMPL_INPUTS = commonImpl.javax commonLoops.javax $(COMMON_INPUTS)
 
 FLAT_ARRAY_INPUTS = FlatArray.javax $(ARRAY_IMPL_INPUTS)
 
@@ -124,15 +142,15 @@ CONVOLUTION_OUTPUTS = $(foreach TYPE, $(CONVOLUTION_TYPES), \
 
 MAPPING_OUTPUTS = $(foreach TYPE, $(TYPES), $(MAPPING)$(TYPE)Scanner.java) \
                   $(foreach TYPE, $(TYPES), $(MAPPING)$(TYPE)Function.java)
-SCANNER_INPUTS = TypeScanner.javax common.javax
-FUNCTION_INPUTS = TypeFunction.javax common.javax
+SCANNER_INPUTS = TypeScanner.javax $(COMMON_INPUTS)
+FUNCTION_INPUTS = TypeFunction.javax $(COMMON_INPUTS)
 
 
 default:
 	@echo "No default target, try:"
 	@echo "     make all"
 
-all: all-array all-byte all-short all-int all-long all-float all-double \
+all: all-array all-Byte all-Short all-Int all-Long all-Float all-Double all-ComplexFloat all-ComplexDouble \
      all-misc all-convolution all-mapping
 
 clean:
@@ -150,22 +168,22 @@ Makefile: Makefile.x ./tpp
 	./tpp $< $@
 	chmod 444 $@
 
-$(ARRAY)ArrayFactory.java: ArrayFactory.javax
+$(ARRAY)ArrayFactory.java: ArrayFactory.javax Makefile
 	$(CODGER) -Dpackage=mitiv.array $< $@
 
 $(BASE)Shape.java: Shape.javax
 	$(CODGER) --autopkg $< $@
 
-$(ARRAY)ArrayUtils.java: ArrayUtils.javax common.javax
+$(ARRAY)ArrayUtils.java: ArrayUtils.javax $(COMMON_INPUTS)
 	$(CODGER) -Dpackage=mitiv.array $< $@
 
 $(ROOT)cost/HyperbolicTotalVariation.java: HyperbolicTotalVariation.javax
 	$(CODGER) -Dpackage=mitiv.cost $< $@
 
-$(ROOT)io/ColorModel.java: ColorModel.javax common.javax
+$(ROOT)io/ColorModel.java: ColorModel.javax $(COMMON_INPUTS)
 	$(CODGER) -Dpackage=mitiv.io $< $@
 
-$(ROOT)io/DataFormat.java: DataFormat.javax common.javax
+$(ROOT)io/DataFormat.java: DataFormat.javax $(COMMON_INPUTS)
 	$(CODGER) -Dpackage=mitiv.io $< $@
 
 #-----------------------------------------------------------------------------
@@ -180,11 +198,11 @@ all-convolution: $(CONVOLUTION_OUTPUTS)
 //#     def Type = ${Type}
 //#     def TYPE = ${}{TYPE_${typeId}}
 //#     def TYPE = ${TYPE}
-$(CONVOLUTION_DIR)Convolution${Type}.java: ConvolutionType.javax common.javax
+$(CONVOLUTION_DIR)Convolution${Type}.java: ConvolutionType.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=Convolution${Type} -Dtype=${type} $< $@
 
 //#     for rank in 1:3
-$(CONVOLUTION_DIR)Convolution${Type}${rank}D.java: ConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)Convolution${Type}${rank}D.java: ConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=Convolution${Type}${rank}D -Drank=${rank} -Dtype=${type} $< $@
 //#     end
 //# end
@@ -196,11 +214,11 @@ $(CONVOLUTION_DIR)Convolution${Type}${rank}D.java: ConvolutionTypeRank.javax com
 //#     def Type = ${Type}
 //#     def TYPE = ${}{TYPE_${typeId}}
 //#     def TYPE = ${TYPE}
-$(CONVOLUTION_DIR)WeightedConvolution${Type}.java: WeightedConvolutionType.javax common.javax
+$(CONVOLUTION_DIR)WeightedConvolution${Type}.java: WeightedConvolutionType.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=WeightedConvolution${Type} -Dtype=${type} $< $@
 
 //#     for rank in 1:3
-$(CONVOLUTION_DIR)WeightedConvolution${Type}${rank}D.java: WeightedConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)WeightedConvolution${Type}${rank}D.java: WeightedConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=WeightedConvolution${Type}${rank}D -Drank=${rank} -Dtype=${type} $< $@
 //#     end
 //# end
@@ -222,7 +240,7 @@ $(ARRAY)Array${rank}D.java: $(ARRAY_INPUTS)
 //# end
 //#
 //#
-//# for typeId in ${BYTE}:${DOUBLE}
+//# for typeId in ${BYTE}:${COMPLEXDOUBLE}
 //#     def type = ${}{type_${typeId}}
 //#     def type = ${type}
 //#     def Type = ${}{Type_${typeId}}
@@ -232,7 +250,7 @@ $(ARRAY)Array${rank}D.java: $(ARRAY_INPUTS)
 #-----------------------------------------------------------------------------
 # ${Type}
 
-all-${type}: $(${TYPE}_OUTPUTS)
+all-${Type}: $(${TYPE}_OUTPUTS)
 
 $(ARRAY)${Type}Array.java: $(TYPED_ARRAY_INPUTS)
 	$(CODGER) -Dpackage=mitiv.array -Dtype=${type} $< $@
@@ -279,7 +297,7 @@ all-mapping: $(MAPPING_OUTPUTS)
 //#         def Class = Function
 //#         def CLASS = FUNCTION
 //#     end
-//#     for typeId in ${BYTE}:${DOUBLE}
+//#     for typeId in ${BYTE}:${COMPLEXDOUBLE}
 //#         def type = ${}{type_${typeId}}
 //#         def type = ${type}
 //#         def Type = ${}{Type_${typeId}}

@@ -18,7 +18,9 @@ BASE = $(ROOT)base/
 MAPPING = $(BASE)mapping/
 
 RANKS = 1 2 3 4 5 6 7 8 9
-TYPES = Byte Short Int Long Float Double
+TYPES = Byte Short Int Long Float Double ComplexFloat ComplexDouble
+
+COMMON_INPUTS = common.javax Makefile
 
 ARRAY_OUTPUTS = $(ARRAY)Scalar.java \
                 $(foreach RANK,$(RANKS),$(ARRAY)Array$(RANK)D.java)
@@ -48,15 +50,19 @@ FLOAT_OUTPUTS = $(subst @TYPE@,Float,$(TYPED_OUTPUTS))
 
 DOUBLE_OUTPUTS = $(subst @TYPE@,Double,$(TYPED_OUTPUTS))
 
-ARRAY_INPUTS = ArrayRank.javax common.javax
+COMPLEXFLOAT_OUTPUTS = $(subst @TYPE@,ComplexFloat,$(TYPED_OUTPUTS))
 
-TYPED_ARRAY_INPUTS = TypeArray.javax common.javax
+COMPLEXDOUBLE_OUTPUTS = $(subst @TYPE@,ComplexDouble,$(TYPED_OUTPUTS))
 
-TYPE_RANK_INPUTS = TypeRank.javax common.javax
+ARRAY_INPUTS = ArrayRank.javax $(COMMON_INPUTS)
 
-TYPE_SCALAR_INPUTS = TypeScalar.javax common.javax
+TYPED_ARRAY_INPUTS = TypeArray.javax $(COMMON_INPUTS)
 
-ARRAY_IMPL_INPUTS = commonImpl.javax commonLoops.javax common.javax
+TYPE_RANK_INPUTS = TypeRank.javax $(COMMON_INPUTS)
+
+TYPE_SCALAR_INPUTS = TypeScalar.javax $(COMMON_INPUTS)
+
+ARRAY_IMPL_INPUTS = commonImpl.javax commonLoops.javax $(COMMON_INPUTS)
 
 FLAT_ARRAY_INPUTS = FlatArray.javax $(ARRAY_IMPL_INPUTS)
 
@@ -80,15 +86,15 @@ CONVOLUTION_OUTPUTS = $(foreach TYPE, $(CONVOLUTION_TYPES), \
 
 MAPPING_OUTPUTS = $(foreach TYPE, $(TYPES), $(MAPPING)$(TYPE)Scanner.java) \
                   $(foreach TYPE, $(TYPES), $(MAPPING)$(TYPE)Function.java)
-SCANNER_INPUTS = TypeScanner.javax common.javax
-FUNCTION_INPUTS = TypeFunction.javax common.javax
+SCANNER_INPUTS = TypeScanner.javax $(COMMON_INPUTS)
+FUNCTION_INPUTS = TypeFunction.javax $(COMMON_INPUTS)
 
 
 default:
 	@echo "No default target, try:"
 	@echo "     make all"
 
-all: all-array all-byte all-short all-int all-long all-float all-double \
+all: all-array all-Byte all-Short all-Int all-Long all-Float all-Double all-ComplexFloat all-ComplexDouble \
      all-misc all-convolution all-mapping
 
 clean:
@@ -106,22 +112,22 @@ Makefile: Makefile.x ./tpp
 	./tpp $< $@
 	chmod 444 $@
 
-$(ARRAY)ArrayFactory.java: ArrayFactory.javax
+$(ARRAY)ArrayFactory.java: ArrayFactory.javax Makefile
 	$(CODGER) -Dpackage=mitiv.array $< $@
 
 $(BASE)Shape.java: Shape.javax
 	$(CODGER) --autopkg $< $@
 
-$(ARRAY)ArrayUtils.java: ArrayUtils.javax common.javax
+$(ARRAY)ArrayUtils.java: ArrayUtils.javax $(COMMON_INPUTS)
 	$(CODGER) -Dpackage=mitiv.array $< $@
 
 $(ROOT)cost/HyperbolicTotalVariation.java: HyperbolicTotalVariation.javax
 	$(CODGER) -Dpackage=mitiv.cost $< $@
 
-$(ROOT)io/ColorModel.java: ColorModel.javax common.javax
+$(ROOT)io/ColorModel.java: ColorModel.javax $(COMMON_INPUTS)
 	$(CODGER) -Dpackage=mitiv.io $< $@
 
-$(ROOT)io/DataFormat.java: DataFormat.javax common.javax
+$(ROOT)io/DataFormat.java: DataFormat.javax $(COMMON_INPUTS)
 	$(CODGER) -Dpackage=mitiv.io $< $@
 
 #-----------------------------------------------------------------------------
@@ -129,42 +135,42 @@ $(ROOT)io/DataFormat.java: DataFormat.javax common.javax
 
 all-convolution: $(CONVOLUTION_OUTPUTS)
 
-$(CONVOLUTION_DIR)ConvolutionFloat.java: ConvolutionType.javax common.javax
+$(CONVOLUTION_DIR)ConvolutionFloat.java: ConvolutionType.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=ConvolutionFloat -Dtype=float $< $@
 
-$(CONVOLUTION_DIR)ConvolutionFloat1D.java: ConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)ConvolutionFloat1D.java: ConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=ConvolutionFloat1D -Drank=1 -Dtype=float $< $@
-$(CONVOLUTION_DIR)ConvolutionFloat2D.java: ConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)ConvolutionFloat2D.java: ConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=ConvolutionFloat2D -Drank=2 -Dtype=float $< $@
-$(CONVOLUTION_DIR)ConvolutionFloat3D.java: ConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)ConvolutionFloat3D.java: ConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=ConvolutionFloat3D -Drank=3 -Dtype=float $< $@
-$(CONVOLUTION_DIR)ConvolutionDouble.java: ConvolutionType.javax common.javax
+$(CONVOLUTION_DIR)ConvolutionDouble.java: ConvolutionType.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=ConvolutionDouble -Dtype=double $< $@
 
-$(CONVOLUTION_DIR)ConvolutionDouble1D.java: ConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)ConvolutionDouble1D.java: ConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=ConvolutionDouble1D -Drank=1 -Dtype=double $< $@
-$(CONVOLUTION_DIR)ConvolutionDouble2D.java: ConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)ConvolutionDouble2D.java: ConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=ConvolutionDouble2D -Drank=2 -Dtype=double $< $@
-$(CONVOLUTION_DIR)ConvolutionDouble3D.java: ConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)ConvolutionDouble3D.java: ConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=ConvolutionDouble3D -Drank=3 -Dtype=double $< $@
 
-$(CONVOLUTION_DIR)WeightedConvolutionFloat.java: WeightedConvolutionType.javax common.javax
+$(CONVOLUTION_DIR)WeightedConvolutionFloat.java: WeightedConvolutionType.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=WeightedConvolutionFloat -Dtype=float $< $@
 
-$(CONVOLUTION_DIR)WeightedConvolutionFloat1D.java: WeightedConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)WeightedConvolutionFloat1D.java: WeightedConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=WeightedConvolutionFloat1D -Drank=1 -Dtype=float $< $@
-$(CONVOLUTION_DIR)WeightedConvolutionFloat2D.java: WeightedConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)WeightedConvolutionFloat2D.java: WeightedConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=WeightedConvolutionFloat2D -Drank=2 -Dtype=float $< $@
-$(CONVOLUTION_DIR)WeightedConvolutionFloat3D.java: WeightedConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)WeightedConvolutionFloat3D.java: WeightedConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=WeightedConvolutionFloat3D -Drank=3 -Dtype=float $< $@
-$(CONVOLUTION_DIR)WeightedConvolutionDouble.java: WeightedConvolutionType.javax common.javax
+$(CONVOLUTION_DIR)WeightedConvolutionDouble.java: WeightedConvolutionType.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=WeightedConvolutionDouble -Dtype=double $< $@
 
-$(CONVOLUTION_DIR)WeightedConvolutionDouble1D.java: WeightedConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)WeightedConvolutionDouble1D.java: WeightedConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=WeightedConvolutionDouble1D -Drank=1 -Dtype=double $< $@
-$(CONVOLUTION_DIR)WeightedConvolutionDouble2D.java: WeightedConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)WeightedConvolutionDouble2D.java: WeightedConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=WeightedConvolutionDouble2D -Drank=2 -Dtype=double $< $@
-$(CONVOLUTION_DIR)WeightedConvolutionDouble3D.java: WeightedConvolutionTypeRank.javax common.javax
+$(CONVOLUTION_DIR)WeightedConvolutionDouble3D.java: WeightedConvolutionTypeRank.javax $(COMMON_INPUTS)
 	$(CODGER) --autopkg -DclassName=WeightedConvolutionDouble3D -Drank=3 -Dtype=double $< $@
 
 #-----------------------------------------------------------------------------
@@ -205,7 +211,7 @@ $(ARRAY)Array9D.java: $(ARRAY_INPUTS)
 #-----------------------------------------------------------------------------
 # Byte
 
-all-byte: $(BYTE_OUTPUTS)
+all-Byte: $(BYTE_OUTPUTS)
 
 $(ARRAY)ByteArray.java: $(TYPED_ARRAY_INPUTS)
 	$(CODGER) -Dpackage=mitiv.array -Dtype=byte $< $@
@@ -324,7 +330,7 @@ $(ARRAY_IMPL)StriddenByte9D.java: $(STRIDDEN_ARRAY_INPUTS)
 #-----------------------------------------------------------------------------
 # Short
 
-all-short: $(SHORT_OUTPUTS)
+all-Short: $(SHORT_OUTPUTS)
 
 $(ARRAY)ShortArray.java: $(TYPED_ARRAY_INPUTS)
 	$(CODGER) -Dpackage=mitiv.array -Dtype=short $< $@
@@ -443,7 +449,7 @@ $(ARRAY_IMPL)StriddenShort9D.java: $(STRIDDEN_ARRAY_INPUTS)
 #-----------------------------------------------------------------------------
 # Int
 
-all-int: $(INT_OUTPUTS)
+all-Int: $(INT_OUTPUTS)
 
 $(ARRAY)IntArray.java: $(TYPED_ARRAY_INPUTS)
 	$(CODGER) -Dpackage=mitiv.array -Dtype=int $< $@
@@ -562,7 +568,7 @@ $(ARRAY_IMPL)StriddenInt9D.java: $(STRIDDEN_ARRAY_INPUTS)
 #-----------------------------------------------------------------------------
 # Long
 
-all-long: $(LONG_OUTPUTS)
+all-Long: $(LONG_OUTPUTS)
 
 $(ARRAY)LongArray.java: $(TYPED_ARRAY_INPUTS)
 	$(CODGER) -Dpackage=mitiv.array -Dtype=long $< $@
@@ -681,7 +687,7 @@ $(ARRAY_IMPL)StriddenLong9D.java: $(STRIDDEN_ARRAY_INPUTS)
 #-----------------------------------------------------------------------------
 # Float
 
-all-float: $(FLOAT_OUTPUTS)
+all-Float: $(FLOAT_OUTPUTS)
 
 $(ARRAY)FloatArray.java: $(TYPED_ARRAY_INPUTS)
 	$(CODGER) -Dpackage=mitiv.array -Dtype=float $< $@
@@ -800,7 +806,7 @@ $(ARRAY_IMPL)StriddenFloat9D.java: $(STRIDDEN_ARRAY_INPUTS)
 #-----------------------------------------------------------------------------
 # Double
 
-all-double: $(DOUBLE_OUTPUTS)
+all-Double: $(DOUBLE_OUTPUTS)
 
 $(ARRAY)DoubleArray.java: $(TYPED_ARRAY_INPUTS)
 	$(CODGER) -Dpackage=mitiv.array -Dtype=double $< $@
@@ -916,6 +922,244 @@ $(ARRAY_IMPL)StriddenDouble8D.java: $(STRIDDEN_ARRAY_INPUTS)
 $(ARRAY_IMPL)StriddenDouble9D.java: $(STRIDDEN_ARRAY_INPUTS)
 	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=9 $< $@
 
+#-----------------------------------------------------------------------------
+# ComplexFloat
+
+all-ComplexFloat: $(COMPLEXFLOAT_OUTPUTS)
+
+$(ARRAY)ComplexFloatArray.java: $(TYPED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float $< $@
+
+$(ARRAY)ComplexFloatScalar.java: $(TYPE_SCALAR_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float $< $@
+
+$(ARRAY)ComplexFloat1D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=1 $< $@
+
+$(ARRAY)ComplexFloat2D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=2 $< $@
+
+$(ARRAY)ComplexFloat3D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=3 $< $@
+
+$(ARRAY)ComplexFloat4D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=4 $< $@
+
+$(ARRAY)ComplexFloat5D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=5 $< $@
+
+$(ARRAY)ComplexFloat6D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=6 $< $@
+
+$(ARRAY)ComplexFloat7D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=7 $< $@
+
+$(ARRAY)ComplexFloat8D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=8 $< $@
+
+$(ARRAY)ComplexFloat9D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=9 $< $@
+
+$(ARRAY_IMPL)FlatComplexFloat1D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=1 $< $@
+
+$(ARRAY_IMPL)FlatComplexFloat2D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=2 $< $@
+
+$(ARRAY_IMPL)FlatComplexFloat3D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=3 $< $@
+
+$(ARRAY_IMPL)FlatComplexFloat4D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=4 $< $@
+
+$(ARRAY_IMPL)FlatComplexFloat5D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=5 $< $@
+
+$(ARRAY_IMPL)FlatComplexFloat6D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=6 $< $@
+
+$(ARRAY_IMPL)FlatComplexFloat7D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=7 $< $@
+
+$(ARRAY_IMPL)FlatComplexFloat8D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=8 $< $@
+
+$(ARRAY_IMPL)FlatComplexFloat9D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=9 $< $@
+
+$(ARRAY_IMPL)SelectedComplexFloat1D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=1 $< $@
+
+$(ARRAY_IMPL)SelectedComplexFloat2D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=2 $< $@
+
+$(ARRAY_IMPL)SelectedComplexFloat3D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=3 $< $@
+
+$(ARRAY_IMPL)SelectedComplexFloat4D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=4 $< $@
+
+$(ARRAY_IMPL)SelectedComplexFloat5D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=5 $< $@
+
+$(ARRAY_IMPL)SelectedComplexFloat6D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=6 $< $@
+
+$(ARRAY_IMPL)SelectedComplexFloat7D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=7 $< $@
+
+$(ARRAY_IMPL)SelectedComplexFloat8D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=8 $< $@
+
+$(ARRAY_IMPL)SelectedComplexFloat9D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=9 $< $@
+
+$(ARRAY_IMPL)StriddenComplexFloat1D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=1 $< $@
+
+$(ARRAY_IMPL)StriddenComplexFloat2D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=2 $< $@
+
+$(ARRAY_IMPL)StriddenComplexFloat3D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=3 $< $@
+
+$(ARRAY_IMPL)StriddenComplexFloat4D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=4 $< $@
+
+$(ARRAY_IMPL)StriddenComplexFloat5D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=5 $< $@
+
+$(ARRAY_IMPL)StriddenComplexFloat6D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=6 $< $@
+
+$(ARRAY_IMPL)StriddenComplexFloat7D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=7 $< $@
+
+$(ARRAY_IMPL)StriddenComplexFloat8D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=8 $< $@
+
+$(ARRAY_IMPL)StriddenComplexFloat9D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=float -Drank=9 $< $@
+
+#-----------------------------------------------------------------------------
+# ComplexDouble
+
+all-ComplexDouble: $(COMPLEXDOUBLE_OUTPUTS)
+
+$(ARRAY)ComplexDoubleArray.java: $(TYPED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double $< $@
+
+$(ARRAY)ComplexDoubleScalar.java: $(TYPE_SCALAR_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double $< $@
+
+$(ARRAY)ComplexDouble1D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=1 $< $@
+
+$(ARRAY)ComplexDouble2D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=2 $< $@
+
+$(ARRAY)ComplexDouble3D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=3 $< $@
+
+$(ARRAY)ComplexDouble4D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=4 $< $@
+
+$(ARRAY)ComplexDouble5D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=5 $< $@
+
+$(ARRAY)ComplexDouble6D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=6 $< $@
+
+$(ARRAY)ComplexDouble7D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=7 $< $@
+
+$(ARRAY)ComplexDouble8D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=8 $< $@
+
+$(ARRAY)ComplexDouble9D.java: $(TYPE_RANK_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=9 $< $@
+
+$(ARRAY_IMPL)FlatComplexDouble1D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=1 $< $@
+
+$(ARRAY_IMPL)FlatComplexDouble2D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=2 $< $@
+
+$(ARRAY_IMPL)FlatComplexDouble3D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=3 $< $@
+
+$(ARRAY_IMPL)FlatComplexDouble4D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=4 $< $@
+
+$(ARRAY_IMPL)FlatComplexDouble5D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=5 $< $@
+
+$(ARRAY_IMPL)FlatComplexDouble6D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=6 $< $@
+
+$(ARRAY_IMPL)FlatComplexDouble7D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=7 $< $@
+
+$(ARRAY_IMPL)FlatComplexDouble8D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=8 $< $@
+
+$(ARRAY_IMPL)FlatComplexDouble9D.java: $(FLAT_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=9 $< $@
+
+$(ARRAY_IMPL)SelectedComplexDouble1D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=1 $< $@
+
+$(ARRAY_IMPL)SelectedComplexDouble2D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=2 $< $@
+
+$(ARRAY_IMPL)SelectedComplexDouble3D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=3 $< $@
+
+$(ARRAY_IMPL)SelectedComplexDouble4D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=4 $< $@
+
+$(ARRAY_IMPL)SelectedComplexDouble5D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=5 $< $@
+
+$(ARRAY_IMPL)SelectedComplexDouble6D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=6 $< $@
+
+$(ARRAY_IMPL)SelectedComplexDouble7D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=7 $< $@
+
+$(ARRAY_IMPL)SelectedComplexDouble8D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=8 $< $@
+
+$(ARRAY_IMPL)SelectedComplexDouble9D.java: $(SELECTED_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=9 $< $@
+
+$(ARRAY_IMPL)StriddenComplexDouble1D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=1 $< $@
+
+$(ARRAY_IMPL)StriddenComplexDouble2D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=2 $< $@
+
+$(ARRAY_IMPL)StriddenComplexDouble3D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=3 $< $@
+
+$(ARRAY_IMPL)StriddenComplexDouble4D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=4 $< $@
+
+$(ARRAY_IMPL)StriddenComplexDouble5D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=5 $< $@
+
+$(ARRAY_IMPL)StriddenComplexDouble6D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=6 $< $@
+
+$(ARRAY_IMPL)StriddenComplexDouble7D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=7 $< $@
+
+$(ARRAY_IMPL)StriddenComplexDouble8D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=8 $< $@
+
+$(ARRAY_IMPL)StriddenComplexDouble9D.java: $(STRIDDEN_ARRAY_INPUTS)
+	$(CODGER) -Dpackage=mitiv.array -Dtype=double -Drank=9 $< $@
+
 
 #-----------------------------------------------------------------------------
 # Scanners, functions, etc.
@@ -940,6 +1184,12 @@ $(MAPPING)FloatScanner.java: $(SCANNER_INPUTS)
 $(MAPPING)DoubleScanner.java: $(SCANNER_INPUTS)
 	$(CODGER) --autopkg -Dtype=double $< $@
 
+$(MAPPING)ComplexFloatScanner.java: $(SCANNER_INPUTS)
+	$(CODGER) --autopkg -Dtype=float $< $@
+
+$(MAPPING)ComplexDoubleScanner.java: $(SCANNER_INPUTS)
+	$(CODGER) --autopkg -Dtype=double $< $@
+
 $(MAPPING)ByteFunction.java: $(FUNCTION_INPUTS)
 	$(CODGER) --autopkg -Dtype=byte $< $@
 
@@ -956,6 +1206,12 @@ $(MAPPING)FloatFunction.java: $(FUNCTION_INPUTS)
 	$(CODGER) --autopkg -Dtype=float $< $@
 
 $(MAPPING)DoubleFunction.java: $(FUNCTION_INPUTS)
+	$(CODGER) --autopkg -Dtype=double $< $@
+
+$(MAPPING)ComplexFloatFunction.java: $(FUNCTION_INPUTS)
+	$(CODGER) --autopkg -Dtype=float $< $@
+
+$(MAPPING)ComplexDoubleFunction.java: $(FUNCTION_INPUTS)
 	$(CODGER) --autopkg -Dtype=double $< $@
 
 #-----------------------------------------------------------------------------
