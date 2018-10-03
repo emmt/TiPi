@@ -33,7 +33,7 @@ other types of objects.  From the point of view of the user, any flavor of a,
 say, Fload3D object is used in a similar way: obj.get(i1,i2,i3) to query a
 value, set(i1,i2,i3,val) to set a value, etc.  Below the hood, the Fload3D object
 can be wrapped around a flat
-float[] array or around a float[][][] array, or be a 3D view of another object.
+`float[] array` or around a `float[][][] array`, or be a 3D view of another object.
 
 In fact these classes are the only objects that the end_user has to manipulate.
 All is needed to know is the type and the dimensionality.
@@ -57,13 +57,13 @@ elements is column-major storage order.
 If you want to ensure that the object is in the most compact form (i.e.
 flatten) and with the preferred ordering of TiPi (column-major) call
 the pack() method:
-
+```java
    Float3D arr = ...
    arr = arr.pack();
    
    float[][][] cube = new float[5][6][7];
    Float3D arr = Float3D.wrap(cube).pack();
-   
+   ```
 This may break the sharing of values.
 
 A view is a mean to access sub-parts of a shaped array.  Note that a view
