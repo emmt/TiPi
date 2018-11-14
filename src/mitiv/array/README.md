@@ -59,9 +59,8 @@ flatten) and with the preferred ordering of TiPi (column-major) call
 the pack() method:
 ```java
    Float3D arr = ...
-   arr = arr.pack();
-   
-   float[][][] cube = new float[5][6][7];
+   arr = arr.pack(); 
+   `float[][][] cube = new float[5][6][7]`;
    Float3D arr = Float3D.wrap(cube).pack();
    ```
 This may break the sharing of values.
