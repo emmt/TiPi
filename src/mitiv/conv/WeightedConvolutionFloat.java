@@ -24,10 +24,10 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv;
+package mitiv.conv;
 
 import mitiv.base.Traits;
-import mitiv.deconv.WeightedConvolutionCost;
+import mitiv.conv.WeightedConvolutionCost;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
 

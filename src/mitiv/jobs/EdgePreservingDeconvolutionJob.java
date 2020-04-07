@@ -4,8 +4,8 @@
 package mitiv.jobs;
 
 import mitiv.array.ShapedArray;
-import mitiv.cost.DifferentiableCostFunction;
-import mitiv.invpb.Deconvolution;
+import mitiv.base.Shape;
+import mitiv.invpb.EdgePreservingDeconvolution;
 import mitiv.optim.OptimTask;
 import mitiv.utils.TiPiHook;
 
@@ -13,21 +13,43 @@ import mitiv.utils.TiPiHook;
  * @author ferreol
  *
  */
-public class DeconvolutionJob {
-    protected Deconvolution solver;
+public class EdgePreservingDeconvolutionJob {
+    public EdgePreservingDeconvolution solver;//FIXME set protected
     protected TiPiHook iterHook,finalHook;
     protected boolean run=true;
 
-    public DeconvolutionJob(DifferentiableCostFunction fdata, double mu,
-            DifferentiableCostFunction fprior, boolean positivity,
-            int nbIterDeconv, TiPiHook iterHook, TiPiHook finalHook){
+    /**
+     * @param dataArray
+     * @param psfArray
+     * @param wgtArray
+     * @param outputShape
+     * @param mu
+     * @param epsilon
+     * @param scale
+     * @param positivity
+     * @param single
+     * @param nbIterDeconv
+     * @param iterHook
+     * @param finalHook
+     */
+    public EdgePreservingDeconvolutionJob(ShapedArray dataArray, ShapedArray psfArray, ShapedArray wgtArray,
+            Shape outputShape, double mu, double epsilon, double[] scale, boolean positivity,
+            boolean single, int nbIterDeconv, TiPiHook iterHook, TiPiHook finalHook){
 
-        solver = new  Deconvolution();
+        solver = new EdgePreservingDeconvolution();
 
-        solver.setLikelihood(fdata);
-        solver.setRegularization(fprior);
+        solver.setForceSinglePrecision(single);
+
+        solver.setRelativeTolerance(0.0);
+        solver.setUseNewCode(false);
+        solver.setObjectShape(outputShape);
+        solver.setPSF(psfArray);
+        solver.setData(dataArray);
+        solver.setWeights(wgtArray);
+        solver.setEdgeThreshold(epsilon);
         solver.setRegularizationLevel(mu);
 
+        solver.setScale(scale);
         solver.setSaveBest(true);
         solver.setLowerBound(positivity ? 0.0 : Double.NEGATIVE_INFINITY);
         solver.setUpperBound(Double.POSITIVE_INFINITY);
@@ -36,8 +58,8 @@ public class DeconvolutionJob {
 
         this.iterHook = iterHook;
         this.finalHook = finalHook;
-    }
 
+    }
     /**
      * Perform deconvolution using objArray as initial guess
      * @param objArray
@@ -72,15 +94,20 @@ public class DeconvolutionJob {
         objArray = solver.getBestSolution().asShapedArray();
         finalHook.run(solver,iter);
         return objArray;
-    }
 
+    }
     /**
      * Emergency stop
      */
     public void abort(){
         run = false;
     }
-
+    /**
+     * @param psfArray
+     */
+    public void updatePsf(ShapedArray psfArray) {
+        solver.setPSF(psfArray);
+    }
     /**
      * @return running state
      */

@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.cost;
+package mitiv.invpb;
 
 import mitiv.array.ArrayFactory;
 import mitiv.array.ArrayUtils;
@@ -36,23 +36,20 @@ import mitiv.array.ShapedArray;
 import mitiv.array.ShortArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
-import mitiv.deconv.Convolution;
-import mitiv.deconv.WeightedConvolutionCost;
-import mitiv.linalg.Vector;
+import mitiv.conv.Convolution;
+import mitiv.conv.WeightedConvolutionCost;
+import mitiv.cost.DifferentiableGaussianLikelihood;
+import mitiv.cost.HyperbolicTotalVariation;
+import mitiv.cost.WeightedData;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
-import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
-import mitiv.optim.OptimTask;
 import mitiv.utils.FFTUtils;
 
 
-public class EdgePreservingDeconvolution extends SmoothInverseProblem {
-
-    /** Indicate whether internal parameters should be recomputed. */
-    private boolean updatePending = true;
+public class EdgePreservingDeconvolution extends Deconvolution {
 
     /** Force single precision. */
     private boolean single;
@@ -62,9 +59,6 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
 
     /** The object space. */
     private ShapedVectorSpace objectSpace = null;
-
-    /** The current solution. */
-    private Vector x = null;
 
     /** Input data. */
     private ShapedArray data = null;
@@ -110,7 +104,8 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
     /** Use new code? */
     private boolean useNewCode = false;
 
-    private void forceRestart() {
+    @Override
+    protected void forceRestart() {
         weightedData = null;
         updatePending = true;
     }
@@ -234,7 +229,7 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
     /**
      * Set regularization scale along the dimensions.
      *
-     * @param delta
+     * @param scale
      *        The regularization scale along the dimensions of the solution. If
      *        a single value is given, the same scale for all dimensions will
      *        be used. Otherwise there should be as many values as the number
@@ -255,22 +250,12 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         return scale;
     }
 
+    @Override
     public ShapedArray getSolution() {
         return object;
     }
 
-    @Override
-    public ShapedVector getBestSolution() {
-        return (ShapedVector)super.getBestSolution();
-    }
 
-    public void setInitialSolution(ShapedArray arr) {
-        if (object != arr) {
-            object = arr;
-            forceRestart();
-            resetIteration();
-        }
-    }
 
     public Shape getObjectShape() {
         return objectShape;
@@ -343,7 +328,8 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
     public EdgePreservingDeconvolution() {
     }
 
-    private void update() {
+    @Override
+    protected void update() {
 
         /* Check input parameters for the likelihood term. */
         if (data == null) {
@@ -508,29 +494,6 @@ public class EdgePreservingDeconvolution extends SmoothInverseProblem {
         updatePending = false;
     }
 
-    public OptimTask start() {
-        return start(false);
-    }
-
-    public OptimTask start(boolean reset) {
-        /* Make sure everything is correctly initialized. */
-        if (updatePending) {
-            update();
-        }
-        return super.start(x, reset);
-    }
-
-    public OptimTask iterate() {
-        if (updatePending) {
-            return start();
-        } else {
-            return super.iterate(x);
-        }
-    }
-
-    private static void error(String reason) {
-        throw new IllegalArgumentException(reason);
-    }
 
     private boolean nonfinite(double value) {
         return Double.isInfinite(value) || Double.isNaN(value);

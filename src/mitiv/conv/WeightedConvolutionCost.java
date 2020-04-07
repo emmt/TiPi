@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv;
+package mitiv.conv;
 
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;

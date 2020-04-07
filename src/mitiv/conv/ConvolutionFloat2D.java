@@ -24,10 +24,10 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv;
+package mitiv.conv;
 
 import mitiv.base.Shape;
-import mitiv.deconv.Convolution;
+import mitiv.conv.Convolution;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 
 import org.jtransforms.fft.FloatFFT_2D;

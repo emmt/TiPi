@@ -24,14 +24,14 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv;
+package mitiv.conv;
 
 import mitiv.array.ArrayUtils;
 import mitiv.array.FloatArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
-import mitiv.deconv.Convolution;
+import mitiv.conv.Convolution;
 import mitiv.exception.IncorrectSpaceException;
 import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;

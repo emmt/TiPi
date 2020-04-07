@@ -38,7 +38,7 @@ import org.kohsuke.args4j.Option;
 import mitiv.array.ArrayUtils;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
-import mitiv.cost.EdgePreservingDeconvolution;
+import mitiv.invpb.EdgePreservingDeconvolution;
 import mitiv.io.ColorModel;
 import mitiv.io.DataFormat;
 import mitiv.optim.OptimTask;

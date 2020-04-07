@@ -36,7 +36,7 @@
 package ${package};
 
 import mitiv.base.Traits;
-import mitiv.deconv.WeightedConvolutionCost;
+import mitiv.conv.WeightedConvolutionCost;
 import mitiv.linalg.shaped.${Type}ShapedVector;
 import mitiv.linalg.shaped.${Type}ShapedVectorSpace;
 

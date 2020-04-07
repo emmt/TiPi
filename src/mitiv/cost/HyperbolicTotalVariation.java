@@ -45,7 +45,7 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
  */
 public class HyperbolicTotalVariation implements DifferentiableCostFunction {
     /** The vector space for the variables. */
-    final protected ShapedVectorSpace inputSpace;
+    protected ShapedVectorSpace inputSpace;
 
     /** The number of dimensions. */
     protected int rank;
@@ -60,69 +60,167 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
     protected double epsilon;
 
     /** The scaling of the finite differences along each dimension. */
-    protected double[] delta;
+    protected double[] scale;
 
+    /** Array temporary recording the scale when the input space is not declared  */
+    protected double[] delta = null;
+
+    /**
+     * @param inputSpace
+     * @param epsilon
+     */
     public HyperbolicTotalVariation(ShapedVectorSpace inputSpace,
-                                    double epsilon) {
+            double epsilon) {
         this.inputSpace = inputSpace;
         shape = inputSpace.getShape();
         rank = (shape == null ? 0 : shape.rank());
         type = inputSpace.getType();
         setThreshold(epsilon);
-        delta = new double[rank];
+        scale = new double[rank];
         defaultScale();
     }
 
+    /**
+     * @param inputSpace
+     * @param epsilon
+     * @param delta
+     */
     public HyperbolicTotalVariation(ShapedVectorSpace inputSpace,
-                                    double epsilon, double[] delta) {
+            double epsilon, double[] delta) {
         this(inputSpace, epsilon);
         setScale(delta);
     }
 
+    /**
+     * @param epsilon
+     * @param delta
+     */
+    public HyperbolicTotalVariation(double epsilon, double[] delta) {
+        setThreshold(epsilon);
+        setDelta(delta);
+    }
+
+    /**
+     * @param delta
+     */
+    public HyperbolicTotalVariation(double[] delta) {
+        setDelta(delta);
+    }
+
+    /**
+     * @param epsilon
+     */
+    public HyperbolicTotalVariation(double epsilon) {
+        setThreshold(epsilon);
+    }
+
+    /**
+     * @param epsilon
+     */
     public void setThreshold(double epsilon) {
         if (notFinite(epsilon) || epsilon <= 0.0) {
             throw new IllegalArgumentException("Bad threshold value");
         }
         this.epsilon = epsilon;
     }
+
+    /**
+     * @return the threshold
+     */
     public double getThreshold() {
         return epsilon;
     }
 
+    /**
+     *
+     */
     public void defaultScale() {
-        setScale(1.0);
-    }
-
-    public void setScale(double value) {
-        if (notFinite(value) || value <= 0.0) {
-            throw new IllegalArgumentException("Bad scale value");
-        }
-        for (int k = 0; k < rank; ++k) {
-            this.delta[k] = value;
+        if (delta==null) {
+            setScale(1.0);
+        }else {
+            setScale(delta );
         }
     }
 
-    public void setScale(double[] delta) {
-        if (delta == null || delta.length != rank) {
-            throw new IllegalArgumentException("Bad scale size");
+
+    /**
+     * @param delta
+     */
+    private void setDelta(double value[]) {
+        if (value == null) {
+            throw new IllegalArgumentException("Bad delta value");
         }
-        for (int k = 0; k < rank; ++k) {
-            if (notFinite(delta[k]) || delta[k] <= 0.0) {
-                throw new IllegalArgumentException("Bad scale value");
+        for (int k = 0; k < delta.length; ++k) {
+            if (notFinite(value[k]) || value[k] <= 0.0) {
+                throw new IllegalArgumentException("Bad delta value");
             }
         }
-        for (int k = 0; k < rank; ++k) {
-            this.delta[k] = delta[k];
-        }
+        this.delta = value.clone();
     }
+
+    /**
+     * @param value
+     */
+    public void setScale(double value) {
+        if (notFinite(value) || value <= 0.0) {
+            throw new IllegalArgumentException("Bad delta value");
+        }
+        for (int k = 0; k < rank; ++k) {
+            this.scale[k] = value;
+        }
+        delta = null;
+    }
+
+    /**
+     * @param scale
+     */
+    public void setScale(double[] scale) {
+
+        if (scale == null) {
+            throw new IllegalArgumentException("Bad scale size");
+        }
+        if (scale.length == 1) {
+            setScale(scale[1]);
+        }else if( scale.length != rank) {
+            throw new IllegalArgumentException("Bad scale size");
+        }else {
+            for (int k = 0; k < rank; ++k) {
+                if (notFinite(scale[k]) || scale[k] <= 0.0) {
+                    throw new IllegalArgumentException("Bad scale value");
+                }
+            }
+            for (int k = 0; k < rank; ++k) {
+                this.scale[k] = scale[k];
+            }
+        }
+        delta = null;
+    }
+    /**
+     * @param k
+     * @return the scale
+     */
     public double getScale(int k) {
-        return (k >= 0 && k < rank ? delta[k] : 1.0);
+        return (k >= 0 && k < rank ? scale[k] : 1.0);
     }
 
     @Override
     public VectorSpace getInputSpace() {
         return inputSpace;
     }
+
+
+    /**
+     * @param inputSpace
+     */
+    final public void setInputSpace(ShapedVectorSpace inputSpace) {
+        this.inputSpace = inputSpace;
+        shape = inputSpace.getShape();
+        rank = (shape == null ? 0 : shape.rank());
+        type = inputSpace.getType();
+        scale = new double[rank];
+        defaultScale();
+    }
+
 
     @Override
     public double
@@ -209,7 +307,7 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
      */
 
     private final double computeFloat1D(double alpha, float[] x,
-                                          float[] gx)
+            float[] gx)
     {
         /* Note that ALPHA is not taken into account when summing FCOST (this
          * is done at the end) while ALPHA is taken into account when
@@ -217,9 +315,9 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
          * precision whatever the type. */
         final boolean computeGradient = (gx != null);
         final int dim1 = shape.dimension(0);
-        final float s = (float)square(epsilon*delta[0]);
+        final float s = (float)square(epsilon*scale[0]);
         double fcost = 0.0;
-        float beta = (float)(alpha/delta[0]);
+        float beta = (float)(alpha/scale[0]);
         for (int i1 = 1; i1 < dim1; ++i1) {
             float d = x[i1] - x[i1 - 1];
             float r = sqrt(d*d + s);
@@ -233,11 +331,11 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
 
         /* Remove the "bias" and make sure the result is non-negative (it
            can only be negative due to rounding errors). */
-        fcost = (fcost/delta[0]) - (dim1 - 1)*epsilon;
+        fcost = (fcost/scale[0]) - (dim1 - 1)*epsilon;
         return (fcost > 0.0 ? alpha*fcost : 0.0);
     }
     private final double computeDouble1D(double alpha, double[] x,
-                                          double[] gx)
+            double[] gx)
     {
         /* Note that ALPHA is not taken into account when summing FCOST (this
          * is done at the end) while ALPHA is taken into account when
@@ -245,9 +343,9 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
          * precision whatever the type. */
         final boolean computeGradient = (gx != null);
         final int dim1 = shape.dimension(0);
-        final double s = (double)square(epsilon*delta[0]);
+        final double s = square(epsilon*scale[0]);
         double fcost = 0.0;
-        double beta = (double)(alpha/delta[0]);
+        double beta = alpha/scale[0];
         for (int i1 = 1; i1 < dim1; ++i1) {
             double d = x[i1] - x[i1 - 1];
             double r = sqrt(d*d + s);
@@ -261,7 +359,7 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
 
         /* Remove the "bias" and make sure the result is non-negative (it
            can only be negative due to rounding errors). */
-        fcost = (fcost/delta[0]) - (dim1 - 1)*epsilon;
+        fcost = (fcost/scale[0]) - (dim1 - 1)*epsilon;
         return (fcost > 0.0 ? alpha*fcost : 0.0);
     }
 
@@ -274,8 +372,8 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
         final boolean computeGradient = (gx != null);
         final int dim1 = shape.dimension(0);
         final int dim2 = shape.dimension(1);
-        final float w1 = (float)(1.0/(2.0*square(delta[0])));
-        final float w2 = (float)(1.0/(2.0*square(delta[1])));
+        final float w1 = (float)(1.0/(2.0*square(scale[0])));
+        final float w2 = (float)(1.0/(2.0*square(scale[1])));
         final float s = (float)square(epsilon);
         double fcost = 0.0;
         float _alpha = (float)alpha;
@@ -300,7 +398,7 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
                     float y31 = x3 - x1;
                     float y42 = x4 - x2;
                     float r = sqrt((square(y21) + square(y43)
-                            + square(y31) + square(y42))*w + s);
+                    + square(y31) + square(y42))*w + s);
                     fcost += r;
                     if (computeGradient) {
                         float p = _alpha*w/r;
@@ -376,9 +474,9 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
         final boolean computeGradient = (gx != null);
         final int dim1 = shape.dimension(0);
         final int dim2 = shape.dimension(1);
-        final double w1 = (double)(1.0/(2.0*square(delta[0])));
-        final double w2 = (double)(1.0/(2.0*square(delta[1])));
-        final double s = (double)square(epsilon);
+        final double w1 = 1.0/(2.0*square(scale[0]));
+        final double w2 = 1.0/(2.0*square(scale[1]));
+        final double s = square(epsilon);
         double fcost = 0.0;
         double x1, x2, x3, x4;
         int j1, j2, j3, j4;
@@ -401,7 +499,7 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
                     double y31 = x3 - x1;
                     double y42 = x4 - x2;
                     double r = sqrt((square(y21) + square(y43)
-                            + square(y31) + square(y42))*w + s);
+                    + square(y31) + square(y42))*w + s);
                     fcost += r;
                     if (computeGradient) {
                         double p = alpha*w/r;
@@ -496,9 +594,9 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
         final int dim1 = shape.dimension(0);
         final int dim2 = shape.dimension(1);
         final int dim3 = shape.dimension(2);
-        final float w1 = (float)(1.0/(4.0*square(delta[0])));
-        final float w2 = (float)(1.0/(4.0*square(delta[1])));
-        final float w3 = (float)(1.0/(4.0*square(delta[2])));
+        final float w1 = (float)(1.0/(4.0*square(scale[0])));
+        final float w2 = (float)(1.0/(4.0*square(scale[1])));
+        final float w3 = (float)(1.0/(4.0*square(scale[2])));
         final float s = (float)square(epsilon);
 
         // The sum is done in double precision whatever the type.
@@ -602,10 +700,10 @@ public class HyperbolicTotalVariation implements DifferentiableCostFunction {
         final int dim1 = shape.dimension(0);
         final int dim2 = shape.dimension(1);
         final int dim3 = shape.dimension(2);
-        final double w1 = (double)(1.0/(4.0*square(delta[0])));
-        final double w2 = (double)(1.0/(4.0*square(delta[1])));
-        final double w3 = (double)(1.0/(4.0*square(delta[2])));
-        final double s = (double)square(epsilon);
+        final double w1 = 1.0/(4.0*square(scale[0]));
+        final double w2 = 1.0/(4.0*square(scale[1]));
+        final double w3 = 1.0/(4.0*square(scale[2]));
+        final double s = square(epsilon);
 
         // The sum is done in double precision whatever the type.
         double fcost = 0.0;

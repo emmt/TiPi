@@ -24,23 +24,23 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv;
+package mitiv.conv;
 
 import mitiv.base.Shape;
-import mitiv.deconv.Convolution;
+import mitiv.conv.Convolution;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 
-import org.jtransforms.fft.DoubleFFT_1D;
+import org.jtransforms.fft.FloatFFT_3D;
 
 /**
- * Implements FFT-based convolution for 1D arrays of double's.
+ * Implements FFT-based convolution for 3D arrays of float's.
  *
  * @author Éric Thiébaut
  */
-class ConvolutionDouble1D extends ConvolutionDouble {
+class ConvolutionFloat3D extends ConvolutionFloat {
 
     /** FFT operator. */
-    private DoubleFFT_1D fft = null;
+    private FloatFFT_3D fft = null;
 
     /** The operator R. */
     private final PushPullOperator R;
@@ -51,8 +51,14 @@ class ConvolutionDouble1D extends ConvolutionDouble {
     /** Number of element along 1st dimension of the work space. */
     private final int dim1;
 
+    /** Number of element along 2nd dimension of the work space. */
+    private final int dim2;
+
+    /** Number of element along 3rd dimension of the work space. */
+    private final int dim3;
+
     /**
-     * Create a new convolution operator for 1D arrays of double's.
+     * Create a new convolution operator for 3D arrays of float's.
      *
      * <p> This protected constructor should not be directly used.  Call {@link
      * Convolution#build(Shape, ShapedVectorSpace, int[], ShapedVectorSpace,
@@ -88,16 +94,18 @@ class ConvolutionDouble1D extends ConvolutionDouble {
      * @see Convolution#build(Shape, ShapedVectorSpace, int[],
      *      ShapedVectorSpace, int[])
      */
-    public ConvolutionDouble1D(Shape wrk,
+    public ConvolutionFloat3D(Shape wrk,
                                 ShapedVectorSpace inp, int[] inpOff,
                                 ShapedVectorSpace out, int[] outOff) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
         super(wrk, inp, inpOff, out, outOff);
-        if (getRank() != 1) {
-            throw new IllegalArgumentException("Input and output spaces must be 1D");
+        if (getRank() != 3) {
+            throw new IllegalArgumentException("Input and output spaces must be 3D");
         }
-        this.dim1 = workShape.dimension(0);
+        this.dim1 = workShape.dimension(2);
+        this.dim2 = workShape.dimension(1);
+        this.dim3 = workShape.dimension(0);
         this.R = new PushPullOperator(workShape, out.getShape(),
                                       outputOffsets, fastOutput);
         this.S = new PushPullOperator(workShape, inp.getShape(),
@@ -107,13 +115,13 @@ class ConvolutionDouble1D extends ConvolutionDouble {
     /** Create low-level FFT operator. */
     private final void createFFT() {
         if (fft == null) {
-            fft = new DoubleFFT_1D(dim1);
+            fft = new FloatFFT_3D(dim1, dim2, dim3);
         }
     }
 
     /** Apply in-place forward complex FFT. */
     @Override
-    public final void forwardFFT(double z[]) {
+    public final void forwardFFT(float z[]) {
         if (z.length != 2*getNumberOfFrequencies()) {
             throw new IllegalArgumentException("Bad argument size");
         }
@@ -127,7 +135,7 @@ class ConvolutionDouble1D extends ConvolutionDouble {
 
     /** Apply in-place backward complex FFT. */
     @Override
-    public final void backwardFFT(double z[]) {
+    public final void backwardFFT(float z[]) {
         if (z.length != 2*getNumberOfFrequencies()) {
             throw new IllegalArgumentException("Bad argument size");
         }
@@ -140,7 +148,7 @@ class ConvolutionDouble1D extends ConvolutionDouble {
     }
 
     @Override
-    public void push(double z[], double x[], boolean adjoint) {
+    public void push(float z[], float x[], boolean adjoint) {
         if (adjoint) {
             R.push(z, x);
         } else {
@@ -149,7 +157,7 @@ class ConvolutionDouble1D extends ConvolutionDouble {
     }
 
     @Override
-    public void pull(double x[], double z[], boolean adjoint) {
+    public void pull(float x[], float z[], boolean adjoint) {
         if (adjoint) {
             S.pull(x, z);
         } else {
@@ -165,8 +173,20 @@ class ConvolutionDouble1D extends ConvolutionDouble {
         /** Offset of region along 1st input dimension. */
         private final int off1;
 
+        /** Offset of region along 2nd input dimension. */
+        private final int off2;
+
+        /** Offset of region along 3rd input dimension. */
+        private final int off3;
+
         /** End of region along 1st input dimension. */
         private final int end1;
+
+        /** End of region along 2nd input dimension. */
+        private final int end2;
+
+        /** End of region along 3rd input dimension. */
+        private final int end3;
 
         /**
          * Create a real-complex push/pull operator.
@@ -196,11 +216,15 @@ class ConvolutionDouble1D extends ConvolutionDouble {
             this.fast = fast;
             this.off1 = off[0];
             this.end1 = off1 + usr.dimension(0);
+            this.off2 = off[1];
+            this.end2 = off2 + usr.dimension(1);
+            this.off3 = off[2];
+            this.end3 = off3 + usr.dimension(2);
         }
 
         /** Set contents of work array. */
-        private void push(final double[] z, final double[] x) {
-            final double zero = 0;
+        private void push(final float[] z, final float[] x) {
+            final float zero = 0;
             if (fast) {
                 /* User and work spaces have the same size. */
                 for (int j = 0, k = 0; j < x.length; ++j, k += 2) {
@@ -211,23 +235,55 @@ class ConvolutionDouble1D extends ConvolutionDouble {
                 /* User space is smaller than work space. */
                 int j = 0; // index in x array
                 int k = 0; // index of real part in z array
-                for (int i1 = 0; i1 < off1; ++i1, k += 2) {
-                    z[k] = zero;
-                    z[k+1] = zero;
+                for (int i3 = 0; i3 < off3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1, k += 2) {
+                            z[k] = zero;
+                            z[k+1] = zero;
+                        }
+                    }
                 }
-                for (int i1 = off1; i1 < end1; ++i1, ++j, k += 2) {
-                    z[k] = x[j];
-                    z[k+1] = zero;
+                for (int i3 = off3; i3 < end3; ++i3) {
+                    for (int i2 = 0; i2 < off2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1, k += 2) {
+                            z[k] = zero;
+                            z[k+1] = zero;
+                        }
+                    }
+                    for (int i2 = off2; i2 < end2; ++i2) {
+                        for (int i1 = 0; i1 < off1; ++i1, k += 2) {
+                            z[k] = zero;
+                            z[k+1] = zero;
+                        }
+                        for (int i1 = off1; i1 < end1; ++i1, ++j, k += 2) {
+                            z[k] = x[j];
+                            z[k+1] = zero;
+                        }
+                        for (int i1 = end1; i1 < dim1; ++i1, k += 2) {
+                            z[k] = zero;
+                            z[k+1] = zero;
+                        }
+                    }
+                    for (int i2 = end2; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1, k += 2) {
+                            z[k] = zero;
+                            z[k+1] = zero;
+                        }
+                    }
                 }
-                for (int i1 = end1; i1 < dim1; ++i1, k += 2) {
-                    z[k] = zero;
-                    z[k+1] = zero;
+                for (int i3 = end3; i3 < dim3; ++i3) {
+                    for (int i2 = 0; i2 < dim2; ++i2) {
+                        for (int i1 = 0; i1 < dim1; ++i1, k += 2) {
+                            z[k] = zero;
+                            z[k+1] = zero;
+                        }
+                    }
                 }
             }
         }
 
         /** Extract contents of work array. */
-        private void pull(final double[] x, final double[] z) {
+        private void pull(final float[] x, final float[] z) {
             if (fast) {
                 /* User and work spaces have the same size. */
                 for (int j = 0, k = 0; j < x.length; ++j, k += 2) {
@@ -236,9 +292,14 @@ class ConvolutionDouble1D extends ConvolutionDouble {
             } else {
                 /* User space is smaller than work space. */
                 int j = 0; // index in x array
-                int k = off1*2; // index of real part in z array
-                for (int i1 = off1; i1 < end1; ++i1, ++j, k += 2) {
-                    x[j] = z[k];
+                int k; // index of real part in z array
+                for (int i3 = off3; i3 < end3; ++i3) {
+                    for (int i2 = off2; i2 < end2; ++i2) {
+                        k = (off1 + dim1*(i2 + dim3*i3))*2;
+                        for (int i1 = off1; i1 < end1; ++i1, ++j, k += 2) {
+                            x[j] = z[k];
+                        }
+                    }
                 }
             }
         }

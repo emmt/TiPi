@@ -23,8 +23,10 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.cost;
+package mitiv.invpb;
 
+import mitiv.cost.CompositeDifferentiableCostFunction;
+import mitiv.cost.DifferentiableCostFunction;
 import mitiv.linalg.Vector;
 import mitiv.linalg.VectorSpace;
 import mitiv.linalg.shaped.ShapedVectorSpace;

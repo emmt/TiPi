@@ -129,11 +129,11 @@ public class TruncatedConjugateGradient {
      * Adjust vector length along a given direction.
      *
      * <p> Replace {@code x} by {@code x + alpha*p} so that
-     * {@code ||x - alpha*p|| = delta}. </p>
+     * {@code ||x - alpha*p|| = scale}. </p>
      *
      * @param x      The vector to adjust.
      * @param p      The search direction.
-     * @param delta  The Euclidean norm of the result.
+     * @param scale  The Euclidean norm of the result.
      * @param xnrm   The Euclidean norm of {@code x}
      *
      * @throws IncorrectSpaceException Not all vectors belong to the same
@@ -148,7 +148,7 @@ public class TruncatedConjugateGradient {
             return SUCCESS;
         }
         /*
-         * ||x + alpha*p|| = delta <==> a*t^2 + b*t + c = 0
+         * ||x + alpha*p|| = scale <==> a*t^2 + b*t + c = 0
          *
          * with:
          *
@@ -156,7 +156,7 @@ public class TruncatedConjugateGradient {
          *
          * b = 2*<x|p>
          *
-         * c = ||x||^2 - delta^2 = (||x|| - delta)*(||x|| - delta)
+         * c = ||x||^2 - scale^2 = (||x|| - scale)*(||x|| - scale)
          */
         double a = p.dot(p);
         double b = 2.0*p.dot(x);
@@ -198,7 +198,7 @@ public class TruncatedConjugateGradient {
      *            A vector to store the solution.
      * @param P
      *            A preconditioner.
-     * @param delta
+     * @param scale
      *            The maximum allowed length of x.
      * @param maxiter
      *            The maximum number of iterations.

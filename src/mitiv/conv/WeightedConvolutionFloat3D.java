@@ -24,7 +24,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv;
+package mitiv.conv;
 
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
@@ -34,19 +34,19 @@ import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
 
 /**
- * Implements a FFT-based weighted convolution for 2D arrays of float's.
+ * Implements a FFT-based weighted convolution for 3D arrays of float's.
  *
  * <p> It is recommended not to directly instantiate this class but rather use
  * one of the factory methods of the parent class
- * {@link mitiv.deconv.WeightedConvolutionCost#build}.  Have a look at the
- * documentation of {@link mitiv.deconv.WeightedConvolutionCost} for a
+ * {@link mitiv.conv.WeightedConvolutionCost#build}.  Have a look at the
+ * documentation of {@link mitiv.conv.WeightedConvolutionCost} for a
  * description of what exactly does this kind of operator.  </p>
  *
  * @author Éric Thiébaut
  *
- * @see mitiv.deconv.WeightedConvolutionCost
+ * @see mitiv.conv.WeightedConvolutionCost
  */
-class WeightedConvolutionFloat2D
+class WeightedConvolutionFloat3D
      extends WeightedConvolutionFloat
 {
     /** Number of element along 1st dimension of the work space. */
@@ -67,8 +67,17 @@ class WeightedConvolutionFloat2D
     /** End of data along 2nd dimension. */
     private final int end2;
 
+    /** Number of element along 3rd dimension of the work space. */
+    private final int dim3;
+
+    /** Offset of data along 3rd dimension. */
+    private final int off3;
+
+    /** End of data along 3rd dimension. */
+    private final int end3;
+
     /** Convolution operator. */
-    private final ConvolutionFloat2D cnvl;
+    private final ConvolutionFloat3D cnvl;
 
     /**
      * Create a new FFT-based weighted convolution cost function given
@@ -77,7 +86,7 @@ class WeightedConvolutionFloat2D
      * @param cnvl
      *        The convolution operator (the PSF may have not been set).
      */
-    public WeightedConvolutionFloat2D(ConvolutionFloat2D cnvl) {
+    public WeightedConvolutionFloat3D(ConvolutionFloat3D cnvl) {
         /* Initialize super class and stor operator. */
         super(cnvl.getInputSpace(), cnvl.getOutputSpace());
         this.cnvl = cnvl;
@@ -92,6 +101,9 @@ class WeightedConvolutionFloat2D
         dim2 = workShape.dimension(1);
         off2 = dataOffsets[1];
         end2 = off2 + dataShape.dimension(1);
+        dim3 = workShape.dimension(2);
+        off3 = dataOffsets[2];
+        end3 = off3 + dataShape.dimension(2);
     }
 
 
@@ -110,24 +122,28 @@ class WeightedConvolutionFloat2D
         int j = 0; // index in data and weight arrays
         int k; // index in work array z
         if (wgt == null) {
-            for (int i2 = off2; i2 < end2; ++i2) {
-                k = 2*(off1 + dim1*i2);
-                for (int i1 = off1; i1 < end1; ++i1) {
-                    float r = z[k] - dat[j];
-                    sum += r*r;
-                    j += 1;
-                    k += 2;
+            for (int i3 = off3; i3 < end3; ++i3) {
+                for (int i2 = off2; i2 < end2; ++i2) {
+                    k = 2*(off1 + dim1*(i2 + dim2*i3));
+                    for (int i1 = off1; i1 < end1; ++i1) {
+                        float r = z[k] - dat[j];
+                        sum += r*r;
+                        j += 1;
+                        k += 2;
+                    }
                 }
             }
         } else {
-            for (int i2 = off2; i2 < end2; ++i2) {
-                k = 2*(off1 + dim1*i2);
-                for (int i1 = off1; i1 < end1; ++i1) {
-                    float w = wgt[j];
-                    float r = z[k] - dat[j];
-                    sum += w*r*r;
-                    j += 1;
-                    k += 2;
+            for (int i3 = off3; i3 < end3; ++i3) {
+                for (int i2 = off2; i2 < end2; ++i2) {
+                    k = 2*(off1 + dim1*(i2 + dim2*i3));
+                    for (int i1 = off1; i1 < end1; ++i1) {
+                        float w = wgt[j];
+                        float r = z[k] - dat[j];
+                        sum += w*r*r;
+                        j += 1;
+                        k += 2;
+                    }
                 }
             }
         }
@@ -151,51 +167,71 @@ class WeightedConvolutionFloat2D
         float z[] = cnvl.getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 0; // index in work array z
-        for (int i2 = 0; i2 < off2; ++i2) {
-            for (int i1 = 0; i1 < dim1; ++i1) {
-                z[k] = zero;
-                z[k+1] = zero;
-                k += 2;
-            }
-        }
-        for (int i2 = off2; i2 < end2; ++i2) {
-            for (int i1 = 0; i1 < off1; ++i1) {
-                z[k] = zero;
-                z[k+1] = zero;
-                k += 2;
-            }
-            if (weighted) {
-                for (int i1 = off1; i1 < end1; ++i1) {
-                    float w = wgt[j];
-                    float r = z[k] - dat[j];
-                    float wr = w*r;
-                    sum += r*wr;
-                    z[k] = q*wr;
+        for (int i3 = 0; i3 < off3; ++i3) {
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    z[k] = zero;
                     z[k+1] = zero;
-                    j += 1;
-                    k += 2;
-                }
-            } else {
-                for (int i1 = off1; i1 < end1; ++i1) {
-                    float r = z[k] - dat[j];
-                    sum += r*r;
-                    z[k] = q*r;
-                    z[k+1] = zero;
-                    j += 1;
                     k += 2;
                 }
             }
-            for (int i1 = end1; i1 < dim1; ++i1) {
-                z[k] = zero;
-                z[k+1] = zero;
-                k += 2;
+        }
+        for (int i3 = off3; i3 < end3; ++i3) {
+            for (int i2 = 0; i2 < off2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    z[k] = zero;
+                    z[k+1] = zero;
+                    k += 2;
+                }
+            }
+            for (int i2 = off2; i2 < end2; ++i2) {
+                for (int i1 = 0; i1 < off1; ++i1) {
+                    z[k] = zero;
+                    z[k+1] = zero;
+                    k += 2;
+                }
+                if (weighted) {
+                    for (int i1 = off1; i1 < end1; ++i1) {
+                        float w = wgt[j];
+                        float r = z[k] - dat[j];
+                        float wr = w*r;
+                        sum += r*wr;
+                        z[k] = q*wr;
+                        z[k+1] = zero;
+                        j += 1;
+                        k += 2;
+                    }
+                } else {
+                    for (int i1 = off1; i1 < end1; ++i1) {
+                        float r = z[k] - dat[j];
+                        sum += r*r;
+                        z[k] = q*r;
+                        z[k+1] = zero;
+                        j += 1;
+                        k += 2;
+                    }
+                }
+                for (int i1 = end1; i1 < dim1; ++i1) {
+                    z[k] = zero;
+                    z[k+1] = zero;
+                    k += 2;
+                }
+            }
+            for (int i2 = end2; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    z[k] = zero;
+                    z[k+1] = zero;
+                    k += 2;
+                }
             }
         }
-        for (int i2 = end2; i2 < dim2; ++i2) {
-            for (int i1 = 0; i1 < dim1; ++i1) {
-                z[k] = zero;
-                z[k+1] = zero;
-                k += 2;
+        for (int i3 = end3; i3 < dim3; ++i3) {
+            for (int i2 = 0; i2 < dim2; ++i2) {
+                for (int i1 = 0; i1 < dim1; ++i1) {
+                    z[k] = zero;
+                    z[k+1] = zero;
+                    k += 2;
+                }
             }
         }
 

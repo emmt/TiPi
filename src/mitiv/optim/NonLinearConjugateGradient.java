@@ -219,7 +219,7 @@ extends ReverseCommunicationOptimizerWithLineSearch {
      *
      * Some methods (e.g., Perry & Shanno) implement the following rule:
      *
-     *     d' = (-g + beta*d + gamma*y)*delta
+     *     d' = (-g + beta*d + gamma*y)*scale
      *
      * with y = g - g0.
      *

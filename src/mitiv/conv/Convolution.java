@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv;
+package mitiv.conv;
 
 import static java.lang.Math.max;
 import static mitiv.utils.FFTUtils.bestDimension;

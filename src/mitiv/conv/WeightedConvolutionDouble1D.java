@@ -24,30 +24,29 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.deconv;
+package mitiv.conv;
 
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.linalg.Vector;
-import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVector;
-import mitiv.linalg.shaped.DoubleShapedVectorSpace;
+import mitiv.linalg.shaped.ShapedVector;
 
 /**
  * Implements a FFT-based weighted convolution for 1D arrays of double's.
  *
  * <p> It is recommended not to directly instantiate this class but rather use
  * one of the factory methods of the parent class
- * {@link mitiv.deconv.WeightedConvolutionCost#build}.  Have a look at the
- * documentation of {@link mitiv.deconv.WeightedConvolutionCost} for a
+ * {@link mitiv.conv.WeightedConvolutionCost#build}.  Have a look at the
+ * documentation of {@link mitiv.conv.WeightedConvolutionCost} for a
  * description of what exactly does this kind of operator.  </p>
  *
  * @author Éric Thiébaut
  *
- * @see mitiv.deconv.WeightedConvolutionCost
+ * @see mitiv.conv.WeightedConvolutionCost
  */
 class WeightedConvolutionDouble1D
-     extends WeightedConvolutionDouble
+extends WeightedConvolutionDouble
 {
     /** Number of element along 1st dimension of the work space. */
     private final int dim1;
@@ -183,7 +182,7 @@ class WeightedConvolutionDouble1D
     }
 
     @Override
-        public void setPSF(ShapedArray psf, int[] off, boolean normalize) {
+    public void setPSF(ShapedArray psf, int[] off, boolean normalize) {
         cnvl.setPSF(psf, off, normalize);
     }
 
