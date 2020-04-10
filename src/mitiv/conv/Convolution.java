@@ -396,28 +396,28 @@ public abstract class Convolution extends ShapedLinearOperator {
         final int type = inp.getType();
         final int rank = inp.getRank();
         switch (type) {
-        case Traits.FLOAT:
-            switch (rank) {
-            case 1:
-                return new ConvolutionFloat1D(wrk, inp, inpOff, out, outOff);
-            case 2:
-                return new ConvolutionFloat2D(wrk, inp, inpOff, out, outOff);
-            case 3:
-                return new ConvolutionFloat3D(wrk, inp, inpOff, out, outOff);
-            }
-            break;
-        case Traits.DOUBLE:
-            switch (rank) {
-            case 1:
-                return new ConvolutionDouble1D(wrk, inp, inpOff, out, outOff);
-            case 2:
-                return new ConvolutionDouble2D(wrk, inp, inpOff, out, outOff);
-            case 3:
-                return new ConvolutionDouble3D(wrk, inp, inpOff, out, outOff);
-            }
-            break;
-        default:
-            throw new IllegalTypeException("Only float and double types are implemented");
+            case Traits.FLOAT:
+                switch (rank) {
+                    case 1:
+                        return new ConvolutionFloat1D(wrk, inp, inpOff, out, outOff);
+                    case 2:
+                        return new ConvolutionFloat2D(wrk, inp, inpOff, out, outOff);
+                    case 3:
+                        return new ConvolutionFloat3D(wrk, inp, inpOff, out, outOff);
+                }
+                break;
+            case Traits.DOUBLE:
+                switch (rank) {
+                    case 1:
+                        return new ConvolutionDouble1D(wrk, inp, inpOff, out, outOff);
+                    case 2:
+                        return new ConvolutionDouble2D(wrk, inp, inpOff, out, outOff);
+                    case 3:
+                        return new ConvolutionDouble3D(wrk, inp, inpOff, out, outOff);
+                }
+                break;
+            default:
+                throw new IllegalTypeException("Only float and double types are implemented");
         }
         throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented");
     }

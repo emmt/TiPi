@@ -43,8 +43,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
     final boolean single;
 
     private static void testDoubleOperator(DoubleGenerator generator,
-                                           int[] shape,
-                                           BoundaryConditions condition) {
+            int[] shape,
+            BoundaryConditions condition) {
         DoubleShapedVectorSpace inp = new DoubleShapedVectorSpace(shape);
         LinearOperator D = new FiniteDifferenceOperator(inp, condition);
         DoubleShapedVectorSpace out = (DoubleShapedVectorSpace) D.getOutputSpace();
@@ -59,8 +59,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
     }
 
     private static void testFloatOperator(FloatGenerator generator,
-                                          int[] shape,
-                                          BoundaryConditions condition) {
+            int[] shape,
+            BoundaryConditions condition) {
         FloatShapedVectorSpace inp = new FloatShapedVectorSpace(shape);
         LinearOperator D = new FiniteDifferenceOperator(inp, condition);
         FloatShapedVectorSpace out = (FloatShapedVectorSpace) D.getOutputSpace();

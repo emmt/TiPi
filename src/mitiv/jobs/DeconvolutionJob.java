@@ -4,6 +4,7 @@
 package mitiv.jobs;
 
 import mitiv.array.ShapedArray;
+import mitiv.conv.WeightedConvolutionCost;
 import mitiv.cost.DifferentiableCostFunction;
 import mitiv.invpb.Deconvolution;
 import mitiv.optim.OptimTask;
@@ -86,5 +87,14 @@ public class DeconvolutionJob {
      */
     public boolean isRunning() {
         return run;
+    }
+
+    /**
+     * @param psfArray
+     */
+    public void updatePsf(ShapedArray psfArray) {
+        WeightedConvolutionCost fdata = (WeightedConvolutionCost) solver.getLikelihood();
+        fdata.setPSF(psfArray);
+        solver.setLikelihood(fdata);
     }
 }
