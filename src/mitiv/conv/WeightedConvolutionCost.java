@@ -147,6 +147,9 @@ import mitiv.utils.Timer;
 public abstract class WeightedConvolutionCost extends WeightedData implements
 DifferentiableCostFunction {
 
+    /** Convolution operator. */
+    protected  Convolution cnvl;
+
     protected final ShapedVectorSpace objectSpace;
 
     /**
@@ -194,22 +197,22 @@ DifferentiableCostFunction {
      */
     public static WeightedConvolutionCost build(Convolution cnvl) {
         switch (cnvl.getType()) {
-        case Traits.FLOAT:
-            switch (cnvl.getRank()) {
-            case 1: return new WeightedConvolutionFloat1D((ConvolutionFloat1D)cnvl);
-            case 2: return new WeightedConvolutionFloat2D((ConvolutionFloat2D)cnvl);
-            case 3: return new WeightedConvolutionFloat3D((ConvolutionFloat3D)cnvl);
-            }
-            break;
-        case Traits.DOUBLE:
-            switch (cnvl.getRank()) {
-            case 1: return new WeightedConvolutionDouble1D((ConvolutionDouble1D)cnvl);
-            case 2: return new WeightedConvolutionDouble2D((ConvolutionDouble2D)cnvl);
-            case 3: return new WeightedConvolutionDouble3D((ConvolutionDouble3D)cnvl);
-            }
-            break;
-        default:
-            throw new IllegalTypeException("Only float and double types are implemented");
+            case Traits.FLOAT:
+                switch (cnvl.getRank()) {
+                    case 1: return new WeightedConvolutionFloat1D((ConvolutionFloat1D)cnvl);
+                    case 2: return new WeightedConvolutionFloat2D((ConvolutionFloat2D)cnvl);
+                    case 3: return new WeightedConvolutionFloat3D((ConvolutionFloat3D)cnvl);
+                }
+                break;
+            case Traits.DOUBLE:
+                switch (cnvl.getRank()) {
+                    case 1: return new WeightedConvolutionDouble1D((ConvolutionDouble1D)cnvl);
+                    case 2: return new WeightedConvolutionDouble2D((ConvolutionDouble2D)cnvl);
+                    case 3: return new WeightedConvolutionDouble3D((ConvolutionDouble3D)cnvl);
+                }
+                break;
+            default:
+                throw new IllegalTypeException("Only float and double types are implemented");
         }
         throw new IllegalArgumentException("Only 1D, 2D and 3D convolution are implemented");
     }
@@ -544,6 +547,19 @@ DifferentiableCostFunction {
     public abstract void setPSF(ShapedArray psf, int[] off, boolean normalize);
 
     /**
+     * @param objArray
+     */
+    public abstract ShapedVector getModel(ShapedVector objArray);
+    /**
+     * @param objArray
+     */
+    public  ShapedVector getModel() {
+        return getModel((ShapedVector) null);
+    }
+    public  ShapedVector getModel(ShapedArray objArray) {
+        return getModel(objectSpace.create(objArray));
+    }
+    /**
      * Check rank and input/output dimensions.
      *
      * @param rank
@@ -614,4 +630,5 @@ DifferentiableCostFunction {
     public double getElapsedTimeInFFT() {
         return timerForFFT.getElapsedTime();
     }
+
 }

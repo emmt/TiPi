@@ -48,7 +48,7 @@ import mitiv.linalg.shaped.ShapedVector;
 /**
  * Compute histogram of an array
  *
- * @author Éric.
+ * @author Ferréol.
  */
 public class Histogram {
     /** Minimum finite value or NaN. */

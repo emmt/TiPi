@@ -70,9 +70,7 @@ class ${className}
     private final int end${k};
 
     //# end
-    /** Convolution operator. */
-    private final Convolution${Type}${rank}D cnvl;
-
+ 
     /**
      * Create a new FFT-based weighted convolution cost function given
      * a convolution operator.
@@ -137,7 +135,7 @@ class ${className}
 
         /* Integrate cost. */
         double sum = 0.0;
-        ${type} z[] = cnvl.getWorkArray();
+        ${type} z[] = ((Convolution${Type}) cnvl).getWorkArray();
         int j = 0; // index in data and weight arrays
         //# if ${rank} == 1
         int k = 2*off1; // index in work array z
@@ -229,7 +227,7 @@ class ${className}
         final ${type} zero = ${zero};
         final ${type} q = ${cast}alpha;
         double sum = 0.0;
-        ${type} z[] = cnvl.getWorkArray();
+        ${type} z[] =  ((Convolution${Type}) cnvl).getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 0; // index in work array z
         //# if ${rank} == 1
@@ -409,5 +407,18 @@ class ${className}
     @Override
     public void setPSF(ShapedVector psf) {
         cnvl.setPSF(psf);
+    }
+    
+    @Override
+    public ShapedVector getModel(ShapedVector x) {
+        /* Compute the convolution. */
+        checkSetup();
+        ShapedVector dst = cnvl.getOutputSpace().create();
+        if (x!=null) {
+            cnvl.push(x, false);
+            cnvl.convolve(false);
+        }
+        cnvl.pull(dst, false);
+        return dst;
     }
 }

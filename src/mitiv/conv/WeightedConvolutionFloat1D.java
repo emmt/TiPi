@@ -58,9 +58,7 @@ class WeightedConvolutionFloat1D
     /** End of data along 1st dimension. */
     private final int end1;
 
-    /** Convolution operator. */
-    private final ConvolutionFloat1D cnvl;
-
+ 
     /**
      * Create a new FFT-based weighted convolution cost function given
      * a convolution operator.
@@ -94,7 +92,7 @@ class WeightedConvolutionFloat1D
 
         /* Integrate cost. */
         double sum = 0.0;
-        float z[] = cnvl.getWorkArray();
+        float z[] = ((ConvolutionFloat) cnvl).getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 2*off1; // index in work array z
         if (wgt == null) {
@@ -130,7 +128,7 @@ class WeightedConvolutionFloat1D
         final float zero = 0.0F;
         final float q = (float)alpha;
         double sum = 0.0;
-        float z[] = cnvl.getWorkArray();
+        float z[] =  ((ConvolutionFloat) cnvl).getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 0; // index in work array z
         for (int i1 = 0; i1 < off1; ++i1) {
@@ -190,5 +188,18 @@ class WeightedConvolutionFloat1D
     @Override
     public void setPSF(ShapedVector psf) {
         cnvl.setPSF(psf);
+    }
+    
+    @Override
+    public ShapedVector getModel(ShapedVector x) {
+        /* Compute the convolution. */
+        checkSetup();
+        ShapedVector dst = cnvl.getOutputSpace().create();
+        if (x!=null) {
+            cnvl.push(x, false);
+            cnvl.convolve(false);
+        }
+        cnvl.pull(dst, false);
+        return dst;
     }
 }

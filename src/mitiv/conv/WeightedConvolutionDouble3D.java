@@ -76,9 +76,7 @@ class WeightedConvolutionDouble3D
     /** End of data along 3rd dimension. */
     private final int end3;
 
-    /** Convolution operator. */
-    private final ConvolutionDouble3D cnvl;
-
+ 
     /**
      * Create a new FFT-based weighted convolution cost function given
      * a convolution operator.
@@ -118,7 +116,7 @@ class WeightedConvolutionDouble3D
 
         /* Integrate cost. */
         double sum = 0.0;
-        double z[] = cnvl.getWorkArray();
+        double z[] = ((ConvolutionDouble) cnvl).getWorkArray();
         int j = 0; // index in data and weight arrays
         int k; // index in work array z
         if (wgt == null) {
@@ -164,7 +162,7 @@ class WeightedConvolutionDouble3D
         final double zero = 0.0;
         final double q = alpha;
         double sum = 0.0;
-        double z[] = cnvl.getWorkArray();
+        double z[] =  ((ConvolutionDouble) cnvl).getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 0; // index in work array z
         for (int i3 = 0; i3 < off3; ++i3) {
@@ -260,5 +258,18 @@ class WeightedConvolutionDouble3D
     @Override
     public void setPSF(ShapedVector psf) {
         cnvl.setPSF(psf);
+    }
+    
+    @Override
+    public ShapedVector getModel(ShapedVector x) {
+        /* Compute the convolution. */
+        checkSetup();
+        ShapedVector dst = cnvl.getOutputSpace().create();
+        if (x!=null) {
+            cnvl.push(x, false);
+            cnvl.convolve(false);
+        }
+        cnvl.pull(dst, false);
+        return dst;
     }
 }

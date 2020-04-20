@@ -29,8 +29,9 @@ package mitiv.conv;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.linalg.Vector;
-import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.ShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.DoubleShapedVectorSpace;
 
 /**
  * Implements a FFT-based weighted convolution for 1D arrays of double's.
@@ -46,7 +47,7 @@ import mitiv.linalg.shaped.ShapedVector;
  * @see mitiv.conv.WeightedConvolutionCost
  */
 class WeightedConvolutionDouble1D
-extends WeightedConvolutionDouble
+     extends WeightedConvolutionDouble
 {
     /** Number of element along 1st dimension of the work space. */
     private final int dim1;
@@ -57,9 +58,7 @@ extends WeightedConvolutionDouble
     /** End of data along 1st dimension. */
     private final int end1;
 
-    /** Convolution operator. */
-    private final ConvolutionDouble1D cnvl;
-
+ 
     /**
      * Create a new FFT-based weighted convolution cost function given
      * a convolution operator.
@@ -93,7 +92,7 @@ extends WeightedConvolutionDouble
 
         /* Integrate cost. */
         double sum = 0.0;
-        double z[] = cnvl.getWorkArray();
+        double z[] = ((ConvolutionDouble) cnvl).getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 2*off1; // index in work array z
         if (wgt == null) {
@@ -129,7 +128,7 @@ extends WeightedConvolutionDouble
         final double zero = 0.0;
         final double q = alpha;
         double sum = 0.0;
-        double z[] = cnvl.getWorkArray();
+        double z[] =  ((ConvolutionDouble) cnvl).getWorkArray();
         int j = 0; // index in data and weight arrays
         int k = 0; // index in work array z
         for (int i1 = 0; i1 < off1; ++i1) {
@@ -182,12 +181,25 @@ extends WeightedConvolutionDouble
     }
 
     @Override
-    public void setPSF(ShapedArray psf, int[] off, boolean normalize) {
+        public void setPSF(ShapedArray psf, int[] off, boolean normalize) {
         cnvl.setPSF(psf, off, normalize);
     }
 
     @Override
     public void setPSF(ShapedVector psf) {
         cnvl.setPSF(psf);
+    }
+    
+    @Override
+    public ShapedVector getModel(ShapedVector x) {
+        /* Compute the convolution. */
+        checkSetup();
+        ShapedVector dst = cnvl.getOutputSpace().create();
+        if (x!=null) {
+            cnvl.push(x, false);
+            cnvl.convolve(false);
+        }
+        cnvl.pull(dst, false);
+        return dst;
     }
 }

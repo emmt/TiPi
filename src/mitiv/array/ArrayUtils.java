@@ -50,29 +50,29 @@ public class ArrayUtils {
         if (arr != null) {
             switch(arr.getType()) {
 
-            case Traits.BYTE:
-                sum = ((ByteArray)arr).sum();
-                break;
+                case Traits.BYTE:
+                    sum = ((ByteArray)arr).sum();
+                    break;
 
-            case Traits.SHORT:
-                sum = ((ShortArray)arr).sum();
-                break;
+                case Traits.SHORT:
+                    sum = ((ShortArray)arr).sum();
+                    break;
 
-            case Traits.INT:
-                sum = ((IntArray)arr).sum();
-                break;
+                case Traits.INT:
+                    sum = ((IntArray)arr).sum();
+                    break;
 
-            case Traits.LONG:
-                sum = ((LongArray)arr).sum();
-                break;
+                case Traits.LONG:
+                    sum = ((LongArray)arr).sum();
+                    break;
 
-            case Traits.FLOAT:
-                sum = ((FloatArray)arr).sum();
-                break;
+                case Traits.FLOAT:
+                    sum = ((FloatArray)arr).sum();
+                    break;
 
-            case Traits.DOUBLE:
-                sum = ((DoubleArray)arr).sum();
-                break;
+                case Traits.DOUBLE:
+                    sum = ((DoubleArray)arr).sum();
+                    break;
             }
         }
         return sum;
@@ -339,7 +339,7 @@ public class ArrayUtils {
         int number = src.length;
         int[] dst = new int[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (int)(src[j] & 0xFF);
+            dst[j] = src[j] & 0xFF;
         }
         return dst;
     }
@@ -360,7 +360,7 @@ public class ArrayUtils {
         int number = src.length;
         int[] dst = new int[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (int)src[j];
+            dst[j] = src[j];
         }
         return dst;
     }
@@ -460,7 +460,7 @@ public class ArrayUtils {
         int number = src.length;
         long[] dst = new long[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (long)(src[j] & 0xFF);
+            dst[j] = src[j] & 0xFF;
         }
         return dst;
     }
@@ -481,7 +481,7 @@ public class ArrayUtils {
         int number = src.length;
         long[] dst = new long[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (long)src[j];
+            dst[j] = src[j];
         }
         return dst;
     }
@@ -502,7 +502,7 @@ public class ArrayUtils {
         int number = src.length;
         long[] dst = new long[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (long)src[j];
+            dst[j] = src[j];
         }
         return dst;
     }
@@ -581,7 +581,7 @@ public class ArrayUtils {
         int number = src.length;
         float[] dst = new float[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (float)(src[j] & 0xFF);
+            dst[j] = src[j] & 0xFF;
         }
         return dst;
     }
@@ -602,7 +602,7 @@ public class ArrayUtils {
         int number = src.length;
         float[] dst = new float[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (float)src[j];
+            dst[j] = src[j];
         }
         return dst;
     }
@@ -623,7 +623,7 @@ public class ArrayUtils {
         int number = src.length;
         float[] dst = new float[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (float)src[j];
+            dst[j] = src[j];
         }
         return dst;
     }
@@ -644,7 +644,7 @@ public class ArrayUtils {
         int number = src.length;
         float[] dst = new float[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (float)src[j];
+            dst[j] = src[j];
         }
         return dst;
     }
@@ -702,7 +702,7 @@ public class ArrayUtils {
         int number = src.length;
         double[] dst = new double[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (double)(src[j] & 0xFF);
+            dst[j] = src[j] & 0xFF;
         }
         return dst;
     }
@@ -723,7 +723,7 @@ public class ArrayUtils {
         int number = src.length;
         double[] dst = new double[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (double)src[j];
+            dst[j] = src[j];
         }
         return dst;
     }
@@ -744,7 +744,7 @@ public class ArrayUtils {
         int number = src.length;
         double[] dst = new double[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (double)src[j];
+            dst[j] = src[j];
         }
         return dst;
     }
@@ -765,7 +765,7 @@ public class ArrayUtils {
         int number = src.length;
         double[] dst = new double[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (double)src[j];
+            dst[j] = src[j];
         }
         return dst;
     }
@@ -786,7 +786,7 @@ public class ArrayUtils {
         int number = src.length;
         double[] dst = new double[number];
         for (int j = 0; j < number; ++j) {
-            dst[j] = (double)src[j];
+            dst[j] = src[j];
         }
         return dst;
     }
@@ -950,59 +950,59 @@ public class ArrayUtils {
         int type = array.getType();
         ShapedArray result = ArrayFactory.create(type, shape);
         switch (type) {
-        case Traits.BYTE:
-            ((ByteArray)result).fill((byte)value);
-            break;
-        case Traits.SHORT:
-            ((ShortArray)result).fill((short)value);
-            break;
-        case Traits.INT:
-            ((IntArray)result).fill((int)value);
-            break;
-        case Traits.LONG:
-            ((LongArray)result).fill((long)value);
-            break;
-        case Traits.FLOAT:
-            ((FloatArray)result).fill((float)value);
-            break;
-        case Traits.DOUBLE:
-            ((DoubleArray)result).fill((double)value);
-            break;
-        default:
-            throw new IllegalTypeException();
+            case Traits.BYTE:
+                ((ByteArray)result).fill((byte)value);
+                break;
+            case Traits.SHORT:
+                ((ShortArray)result).fill((short)value);
+                break;
+            case Traits.INT:
+                ((IntArray)result).fill((int)value);
+                break;
+            case Traits.LONG:
+                ((LongArray)result).fill((long)value);
+                break;
+            case Traits.FLOAT:
+                ((FloatArray)result).fill((float)value);
+                break;
+            case Traits.DOUBLE:
+                ((DoubleArray)result).fill(value);
+                break;
+            default:
+                throw new IllegalTypeException();
         }
 
         /* Copy input into output. */
         switch (rank) {
-        case 1:
-            ((Array1D)result).view(range[0]).assign(array);
-            break;
-        case 2:
-            ((Array2D)result).view(range[0], range[1]).assign(array);
-            break;
-        case 3:
-            ((Array3D)result).view(range[0], range[1], range[2]).assign(array);
-            break;
-        case 4:
-            ((Array4D)result).view(range[0], range[1], range[2], range[3]).assign(array);
-            break;
-        case 5:
-            ((Array5D)result).view(range[0], range[1], range[2], range[3], range[4]).assign(array);
-            break;
-        case 6:
-            ((Array6D)result).view(range[0], range[1], range[2], range[3], range[4], range[5]).assign(array);
-            break;
-        case 7:
-            ((Array7D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]).assign(array);
-            break;
-        case 8:
-            ((Array8D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]).assign(array);
-            break;
-        case 9:
-            ((Array9D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]).assign(array);
-            break;
-        default:
-            throw new IllegalArgumentException("Unsupported rank");
+            case 1:
+                ((Array1D)result).view(range[0]).assign(array);
+                break;
+            case 2:
+                ((Array2D)result).view(range[0], range[1]).assign(array);
+                break;
+            case 3:
+                ((Array3D)result).view(range[0], range[1], range[2]).assign(array);
+                break;
+            case 4:
+                ((Array4D)result).view(range[0], range[1], range[2], range[3]).assign(array);
+                break;
+            case 5:
+                ((Array5D)result).view(range[0], range[1], range[2], range[3], range[4]).assign(array);
+                break;
+            case 6:
+                ((Array6D)result).view(range[0], range[1], range[2], range[3], range[4], range[5]).assign(array);
+                break;
+            case 7:
+                ((Array7D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]).assign(array);
+                break;
+            case 8:
+                ((Array8D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]).assign(array);
+                break;
+            case 9:
+                ((Array9D)result).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]).assign(array);
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported rank");
         }
         return result;
     }
@@ -1072,26 +1072,26 @@ public class ArrayUtils {
 
         /* Return a view to the ROI. */
         switch (range.length) {
-        case 1:
-            return ((Array1D)array).view(range[0]);
-        case 2:
-            return ((Array2D)array).view(range[0], range[1]);
-        case 3:
-            return ((Array3D)array).view(range[0], range[1], range[2]);
-        case 4:
-            return ((Array4D)array).view(range[0], range[1], range[2], range[3]);
-        case 5:
-            return ((Array5D)array).view(range[0], range[1], range[2], range[3], range[4]);
-        case 6:
-            return ((Array6D)array).view(range[0], range[1], range[2], range[3], range[4], range[5]);
-        case 7:
-            return ((Array7D)array).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]);
-        case 8:
-            return ((Array8D)array).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]);
-        case 9:
-            return ((Array9D)array).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]);
-        default:
-            throw new IllegalArgumentException("Unsupported rank");
+            case 1:
+                return ((Array1D)array).view(range[0]);
+            case 2:
+                return ((Array2D)array).view(range[0], range[1]);
+            case 3:
+                return ((Array3D)array).view(range[0], range[1], range[2]);
+            case 4:
+                return ((Array4D)array).view(range[0], range[1], range[2], range[3]);
+            case 5:
+                return ((Array5D)array).view(range[0], range[1], range[2], range[3], range[4]);
+            case 6:
+                return ((Array6D)array).view(range[0], range[1], range[2], range[3], range[4], range[5]);
+            case 7:
+                return ((Array7D)array).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6]);
+            case 8:
+                return ((Array8D)array).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7]);
+            case 9:
+                return ((Array9D)array).view(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8]);
+            default:
+                throw new IllegalArgumentException("Unsupported rank");
         }
     }
 
@@ -1201,7 +1201,7 @@ public class ArrayUtils {
      * @see #crop and {@link #pad}.
      */
     public static ShapedArray extract(ShapedArray array, Shape shape,
-                                      int[] offset, double value) {
+            int[] offset, double value) {
         /* Compute regions end-points. */
         final int rank = shape.rank();
         if (array.getRank() != rank) {
@@ -1244,26 +1244,26 @@ public class ArrayUtils {
         if ((ops&1) != 0) {
             /* Some padding is needed, fill result with the given value. */
             switch (type) {
-            case Traits.BYTE:
-            ((ByteArray)result).fill((byte)value);
-            break;
-            case Traits.SHORT:
-            ((ShortArray)result).fill((short)value);
-            break;
-            case Traits.INT:
-            ((IntArray)result).fill((int)value);
-            break;
-            case Traits.LONG:
-            ((LongArray)result).fill((long)value);
-            break;
-            case Traits.FLOAT:
-            ((FloatArray)result).fill((float)value);
-            break;
-            case Traits.DOUBLE:
-            ((DoubleArray)result).fill((double)value);
-            break;
-            default:
-                throw new IllegalTypeException();
+                case Traits.BYTE:
+                    ((ByteArray)result).fill((byte)value);
+                    break;
+                case Traits.SHORT:
+                    ((ShortArray)result).fill((short)value);
+                    break;
+                case Traits.INT:
+                    ((IntArray)result).fill((int)value);
+                    break;
+                case Traits.LONG:
+                    ((LongArray)result).fill((long)value);
+                    break;
+                case Traits.FLOAT:
+                    ((FloatArray)result).fill((float)value);
+                    break;
+                case Traits.DOUBLE:
+                    ((DoubleArray)result).fill(value);
+                    break;
+                default:
+                    throw new IllegalTypeException();
             }
         }
         if ((ops&4) == 0) {
@@ -1271,47 +1271,47 @@ public class ArrayUtils {
              * corresponding to the overlapping region in the soruce and in the
              * destination. */
             switch (rank) {
-            case 1:
-                ((Array1D)result).view(dstRange[0]).assign(((Array1D)array).view(srcRange[0]));
-                break;
-            case 2:
-                ((Array2D)result).view(dstRange[0], dstRange[1]).assign(((Array2D)array).view(srcRange[0], srcRange[1]));
-                break;
-            case 3:
-                ((Array3D)result).view(dstRange[0], dstRange[1], dstRange[2]).assign(((Array3D)array).view(srcRange[0], srcRange[1], srcRange[2]));
-                break;
-            case 4:
-                ((Array4D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3]).assign(((Array4D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3]));
-                break;
-            case 5:
-                ((Array5D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4]).assign(((Array5D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4]));
-                break;
-            case 6:
-                ((Array6D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4], dstRange[5]).assign(((Array6D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4], srcRange[5]));
-                break;
-            case 7:
-                ((Array7D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4], dstRange[5], dstRange[6]).assign(((Array7D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4], srcRange[5], srcRange[6]));
-                break;
-            case 8:
-                ((Array8D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4], dstRange[5], dstRange[6], dstRange[7]).assign(((Array8D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4], srcRange[5], srcRange[6], srcRange[7]));
-                break;
-            case 9:
-                ((Array9D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4], dstRange[5], dstRange[6], dstRange[7], dstRange[8]).assign(((Array9D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4], srcRange[5], srcRange[6], srcRange[7], srcRange[8]));
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported rank");
+                case 1:
+                    ((Array1D)result).view(dstRange[0]).assign(((Array1D)array).view(srcRange[0]));
+                    break;
+                case 2:
+                    ((Array2D)result).view(dstRange[0], dstRange[1]).assign(((Array2D)array).view(srcRange[0], srcRange[1]));
+                    break;
+                case 3:
+                    ((Array3D)result).view(dstRange[0], dstRange[1], dstRange[2]).assign(((Array3D)array).view(srcRange[0], srcRange[1], srcRange[2]));
+                    break;
+                case 4:
+                    ((Array4D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3]).assign(((Array4D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3]));
+                    break;
+                case 5:
+                    ((Array5D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4]).assign(((Array5D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4]));
+                    break;
+                case 6:
+                    ((Array6D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4], dstRange[5]).assign(((Array6D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4], srcRange[5]));
+                    break;
+                case 7:
+                    ((Array7D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4], dstRange[5], dstRange[6]).assign(((Array7D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4], srcRange[5], srcRange[6]));
+                    break;
+                case 8:
+                    ((Array8D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4], dstRange[5], dstRange[6], dstRange[7]).assign(((Array8D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4], srcRange[5], srcRange[6], srcRange[7]));
+                    break;
+                case 9:
+                    ((Array9D)result).view(dstRange[0], dstRange[1], dstRange[2], dstRange[3], dstRange[4], dstRange[5], dstRange[6], dstRange[7], dstRange[8]).assign(((Array9D)array).view(srcRange[0], srcRange[1], srcRange[2], srcRange[3], srcRange[4], srcRange[5], srcRange[6], srcRange[7], srcRange[8]));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported rank");
             }
         }
         return result;
     }
 
     public static ShapedArray extract(ShapedArray array, Shape shape,
-                                      int[] offset) {
+            int[] offset) {
         return extract(array, shape, offset, 0.0);
     }
 
     public static ShapedArray extract(ShapedArray array, Shape shape,
-                                      double value) {
+            double value) {
         return extract(array, shape, null, value);
     }
 
@@ -1411,26 +1411,26 @@ public class ArrayUtils {
             return arr;
         }
         switch (rank) {
-        case 1:
-            return ((Array1D)arr).view(sel[0]);
-        case 2:
-            return ((Array2D)arr).view(sel[0], sel[1]);
-        case 3:
-            return ((Array3D)arr).view(sel[0], sel[1], sel[2]);
-        case 4:
-            return ((Array4D)arr).view(sel[0], sel[1], sel[2], sel[3]);
-        case 5:
-            return ((Array5D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4]);
-        case 6:
-            return ((Array6D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5]);
-        case 7:
-            return ((Array7D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6]);
-        case 8:
-            return ((Array8D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6], sel[7]);
-        case 9:
-            return ((Array9D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6], sel[7], sel[8]);
-        default:
-            throw new IllegalArgumentException("Unsupported rank");
+            case 1:
+                return ((Array1D)arr).view(sel[0]);
+            case 2:
+                return ((Array2D)arr).view(sel[0], sel[1]);
+            case 3:
+                return ((Array3D)arr).view(sel[0], sel[1], sel[2]);
+            case 4:
+                return ((Array4D)arr).view(sel[0], sel[1], sel[2], sel[3]);
+            case 5:
+                return ((Array5D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4]);
+            case 6:
+                return ((Array6D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5]);
+            case 7:
+                return ((Array7D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6]);
+            case 8:
+                return ((Array8D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6], sel[7]);
+            case 9:
+                return ((Array9D)arr).view(sel[0], sel[1], sel[2], sel[3], sel[4], sel[5], sel[6], sel[7], sel[8]);
+            default:
+                throw new IllegalArgumentException("Unsupported rank");
         }
     }
 
