@@ -100,8 +100,10 @@ class ConvolutionFloat2D extends ConvolutionFloat {
         if (getRank() != 2) {
             throw new IllegalArgumentException("Input and output spaces must be 2D");
         }
-        this.dim1 = workShape.dimension(1);
-        this.dim2 = workShape.dimension(0);
+      /*  //#     eval km1 = 2 - 1*/
+        this.dim1 = workShape.dimension(0);
+      /*  //#     eval km1 = 2 - 2*/
+        this.dim2 = workShape.dimension(1);
         this.R = new PushPullOperator(workShape, out.getShape(),
                                       outputOffsets, fastOutput);
         this.S = new PushPullOperator(workShape, inp.getShape(),
@@ -111,7 +113,7 @@ class ConvolutionFloat2D extends ConvolutionFloat {
     /** Create low-level FFT operator. */
     private final void createFFT() {
         if (fft == null) {
-            fft = new FloatFFT_2D(dim1, dim2);
+            fft = new FloatFFT_2D(dim2,dim1);
         }
     }
 

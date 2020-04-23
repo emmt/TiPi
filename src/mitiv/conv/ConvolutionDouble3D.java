@@ -103,9 +103,12 @@ class ConvolutionDouble3D extends ConvolutionDouble {
         if (getRank() != 3) {
             throw new IllegalArgumentException("Input and output spaces must be 3D");
         }
-        this.dim1 = workShape.dimension(2);
+      /*  //#     eval km1 = 3 - 1*/
+        this.dim1 = workShape.dimension(0);
+      /*  //#     eval km1 = 3 - 2*/
         this.dim2 = workShape.dimension(1);
-        this.dim3 = workShape.dimension(0);
+      /*  //#     eval km1 = 3 - 3*/
+        this.dim3 = workShape.dimension(2);
         this.R = new PushPullOperator(workShape, out.getShape(),
                                       outputOffsets, fastOutput);
         this.S = new PushPullOperator(workShape, inp.getShape(),
@@ -115,7 +118,7 @@ class ConvolutionDouble3D extends ConvolutionDouble {
     /** Create low-level FFT operator. */
     private final void createFFT() {
         if (fft == null) {
-            fft = new DoubleFFT_3D(dim1, dim2, dim3);
+            fft = new DoubleFFT_3D(dim3,dim2,dim1);
         }
     }
 
@@ -295,7 +298,7 @@ class ConvolutionDouble3D extends ConvolutionDouble {
                 int k; // index of real part in z array
                 for (int i3 = off3; i3 < end3; ++i3) {
                     for (int i2 = off2; i2 < end2; ++i2) {
-                        k = (off1 + dim1*(i2 + dim3*i3))*2;
+                        k = (off1 + dim1*(i2 + dim2*i3))*2;
                         for (int i1 = off1; i1 < end1; ++i1, ++j, k += 2) {
                             x[j] = z[k];
                         }

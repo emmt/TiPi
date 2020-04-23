@@ -110,7 +110,8 @@ class ${className} extends Convolution${Type} {
             throw new IllegalArgumentException("Input and output spaces must be ${rank}D");
         }
         //# for k in 1:${rank}
-        //#     eval km1 = ${rank} - ${k}
+      /*  //#     eval km1 = ${rank} - ${k}*/
+        //#     eval km1 = ${k}-1
         this.dim${k} = workShape.dimension(${km1});
         //# end
         this.R = new PushPullOperator(workShape, out.getShape(),
@@ -124,7 +125,7 @@ class ${className} extends Convolution${Type} {
         if (fft == null) {
             //# def dimList = dim1
             //# for k in 2:${rank}
-            //#     def dimList = ${dimList}, dim${k}
+            //#     def dimList =  dim${k},${dimList}
             //# end
             fft = new ${Type}FFT_${rank}D(${dimList});
         }
@@ -387,7 +388,7 @@ class ${className} extends Convolution${Type} {
                 int k; // index of real part in z array
                 for (${i3_in_mid}) {
                     for (${i2_in_mid}) {
-                        k = (off1 + dim1*(i2 + dim3*i3))*2;
+                        k = (off1 + dim1*(i2 + dim2*i3))*2;
                         for (${i1_in_mid}, ++j, k += 2) {
                             x[j] = z[k];
                         }

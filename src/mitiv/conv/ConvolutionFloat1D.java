@@ -97,6 +97,7 @@ class ConvolutionFloat1D extends ConvolutionFloat {
         if (getRank() != 1) {
             throw new IllegalArgumentException("Input and output spaces must be 1D");
         }
+      /*  //#     eval km1 = 1 - 1*/
         this.dim1 = workShape.dimension(0);
         this.R = new PushPullOperator(workShape, out.getShape(),
                                       outputOffsets, fastOutput);

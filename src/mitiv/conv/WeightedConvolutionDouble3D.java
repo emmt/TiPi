@@ -29,9 +29,8 @@ package mitiv.conv;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
 import mitiv.linalg.Vector;
-import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.DoubleShapedVector;
-import mitiv.linalg.shaped.DoubleShapedVectorSpace;
+import mitiv.linalg.shaped.ShapedVector;
 
 /**
  * Implements a FFT-based weighted convolution for 3D arrays of double's.
@@ -47,7 +46,7 @@ import mitiv.linalg.shaped.DoubleShapedVectorSpace;
  * @see mitiv.conv.WeightedConvolutionCost
  */
 class WeightedConvolutionDouble3D
-     extends WeightedConvolutionDouble
+extends WeightedConvolutionDouble
 {
     /** Number of element along 1st dimension of the work space. */
     private final int dim1;
@@ -76,7 +75,7 @@ class WeightedConvolutionDouble3D
     /** End of data along 3rd dimension. */
     private final int end3;
 
- 
+
     /**
      * Create a new FFT-based weighted convolution cost function given
      * a convolution operator.
@@ -251,7 +250,7 @@ class WeightedConvolutionDouble3D
     }
 
     @Override
-        public void setPSF(ShapedArray psf, int[] off, boolean normalize) {
+    public void setPSF(ShapedArray psf, int[] off, boolean normalize) {
         cnvl.setPSF(psf, off, normalize);
     }
 
@@ -259,7 +258,7 @@ class WeightedConvolutionDouble3D
     public void setPSF(ShapedVector psf) {
         cnvl.setPSF(psf);
     }
-    
+
     @Override
     public ShapedVector getModel(ShapedVector x) {
         /* Compute the convolution. */
