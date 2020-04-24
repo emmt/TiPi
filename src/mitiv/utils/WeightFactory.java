@@ -78,18 +78,18 @@ public class WeightFactory {
 
     static public ShapedArray defaultWeights(ShapedArray dat) {
         switch (dat.getType()) {
-        case Traits.FLOAT: {
-            float[] wgt = new float[dat.getNumber()];
-            defaultWeights(wgt, ((FloatArray)dat).flatten(false));
-            return ArrayFactory.wrap(wgt, dat.getShape());
-        }
-        case Traits.DOUBLE: {
-            double[] wgt = new double[dat.getNumber()];
-            defaultWeights(wgt, ((DoubleArray)dat).flatten(false));
-            return ArrayFactory.wrap(wgt, dat.getShape());
-        }
-        default:
-            throw new IllegalArgumentException("Unsupported data type");
+            case Traits.FLOAT: {
+                float[] wgt = new float[dat.getNumber()];
+                defaultWeights(wgt, ((FloatArray)dat).flatten(false));
+                return ArrayFactory.wrap(wgt, dat.getShape());
+            }
+            case Traits.DOUBLE: {
+                double[] wgt = new double[dat.getNumber()];
+                defaultWeights(wgt, ((DoubleArray)dat).flatten(false));
+                return ArrayFactory.wrap(wgt, dat.getShape());
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported data type");
         }
     }
 
@@ -111,18 +111,18 @@ public class WeightFactory {
      */
     static public ShapedArray computeWeightsFromVariance(ShapedArray var) {
         switch (var.getType()) {
-        case Traits.FLOAT: {
-            float[] wgt = new float[var.getNumber()];
-            computeWeightsFromVariance(wgt, ((FloatArray)var).flatten(false));
-            return ArrayFactory.wrap(wgt, var.getShape());
-        }
-        case Traits.DOUBLE: {
-            double[] wgt = new double[var.getNumber()];
-            computeWeightsFromVariance(wgt, ((DoubleArray)var).flatten(false));
-            return ArrayFactory.wrap(wgt, var.getShape());
-        }
-        default:
-            throw new IllegalArgumentException("Unsupported data type");
+            case Traits.FLOAT: {
+                float[] wgt = new float[var.getNumber()];
+                computeWeightsFromVariance(wgt, ((FloatArray)var).flatten(false));
+                return ArrayFactory.wrap(wgt, var.getShape());
+            }
+            case Traits.DOUBLE: {
+                double[] wgt = new double[var.getNumber()];
+                computeWeightsFromVariance(wgt, ((DoubleArray)var).flatten(false));
+                return ArrayFactory.wrap(wgt, var.getShape());
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported data type");
         }
     }
 
@@ -251,20 +251,20 @@ public class WeightFactory {
     static public ShapedArray computeWeightsFromData(ShapedArray dat,
             double alpha, double beta, double bad) {
         switch (dat.getType()) {
-        case Traits.FLOAT: {
-            float[] wgt = new float[dat.getNumber()];
-            computeWeightsFromData(wgt, ((FloatArray)dat).flatten(false),
-                    (float)alpha, (float)beta, (float)bad);
-            return ArrayFactory.wrap(wgt, dat.getShape());
-        }
-        case Traits.DOUBLE: {
-            double[] wgt = new double[dat.getNumber()];
-            //	System.out.println("# of data: " + dat.getNumber() + ", # of weights: "+wgt.length);
-            computeWeightsFromData(wgt, ((DoubleArray)dat).flatten(false), alpha, beta, bad);
-            return ArrayFactory.wrap(wgt, dat.getShape());
-        }
-        default:
-            throw new IllegalArgumentException("Unsupported data type");
+            case Traits.FLOAT: {
+                float[] wgt = new float[dat.getNumber()];
+                computeWeightsFromData(wgt, ((FloatArray)dat).flatten(false),
+                        (float)alpha, (float)beta, (float)bad);
+                return ArrayFactory.wrap(wgt, dat.getShape());
+            }
+            case Traits.DOUBLE: {
+                double[] wgt = new double[dat.getNumber()];
+                //	System.out.println("# of data: " + dat.getNumber() + ", # of weights: "+wgt.length);
+                computeWeightsFromData(wgt, ((DoubleArray)dat).flatten(false), alpha, beta, bad);
+                return ArrayFactory.wrap(wgt, dat.getShape());
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported data type");
         }
     }
 
@@ -471,37 +471,37 @@ public class WeightFactory {
         }
         boolean b[];
         switch (bad.getType()) {
-        case Traits.BYTE:
-            b = toBoolean(((ByteArray)bad).flatten(false));
-            break;
-        case Traits.SHORT:
-            b = toBoolean(((ShortArray)bad).flatten(false));
-            break;
-        case Traits.INT:
-            b = toBoolean(((IntArray)bad).flatten(false));
-            break;
-        case Traits.LONG:
-            b = toBoolean(((LongArray)bad).flatten(false));
-            break;
-        case Traits.FLOAT:
-            b = toBoolean(((FloatArray)bad).flatten(false));
-            break;
-        case Traits.DOUBLE:
-            b = toBoolean(((DoubleArray)bad).flatten(false));
-            break;
-        default:
-            throw new IllegalArgumentException("Unsupported data type");
+            case Traits.BYTE:
+                b = toBoolean(((ByteArray)bad).flatten(false));
+                break;
+            case Traits.SHORT:
+                b = toBoolean(((ShortArray)bad).flatten(false));
+                break;
+            case Traits.INT:
+                b = toBoolean(((IntArray)bad).flatten(false));
+                break;
+            case Traits.LONG:
+                b = toBoolean(((LongArray)bad).flatten(false));
+                break;
+            case Traits.FLOAT:
+                b = toBoolean(((FloatArray)bad).flatten(false));
+                break;
+            case Traits.DOUBLE:
+                b = toBoolean(((DoubleArray)bad).flatten(false));
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported data type");
         }
 
         switch (wgt.getType()) {
-        case Traits.FLOAT:
-            removeBads(((FloatArray)wgt).flatten(false), b);
-            break;
-        case Traits.DOUBLE:
-            removeBads(((DoubleArray)wgt).flatten(false), b);
-            break;
-        default:
-            throw new IllegalArgumentException("Unsupported data type");
+            case Traits.FLOAT:
+                removeBads(((FloatArray)wgt).flatten(false), b);
+                break;
+            case Traits.DOUBLE:
+                removeBads(((DoubleArray)wgt).flatten(false), b);
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported data type");
         }
     }
 
@@ -542,14 +542,14 @@ public class WeightFactory {
      */
     static public void checkWeights(ShapedArray wgt) {
         switch (wgt.getType()) {
-        case Traits.FLOAT:
-            checkWeights(((FloatArray)wgt).flatten(false));
-            break;
-        case Traits.DOUBLE:
-            checkWeights(((DoubleArray)wgt).flatten(false));
-            break;
-        default:
-            throw new IllegalArgumentException("Unsupported data type");
+            case Traits.FLOAT:
+                checkWeights(((FloatArray)wgt).flatten(false));
+                break;
+            case Traits.DOUBLE:
+                checkWeights(((DoubleArray)wgt).flatten(false));
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported data type");
         }
     }
 
@@ -625,14 +625,14 @@ public class WeightFactory {
             throw new IllegalArgumentException("Data and weights have the same element type");
         }
         switch (dat.getType()) {
-        case Traits.FLOAT:
-            fixWeightsAndData(((FloatArray)wgt).flatten(false), ((FloatArray)dat).flatten(false));
-            break;
-        case Traits.DOUBLE:
-            fixWeightsAndData(((DoubleArray)wgt).flatten(false), ((DoubleArray)dat).flatten(false));
-            break;
-        default:
-            throw new IllegalArgumentException("Unsupported data type");
+            case Traits.FLOAT:
+                fixWeightsAndData(((FloatArray)wgt).flatten(false), ((FloatArray)dat).flatten(false));
+                break;
+            case Traits.DOUBLE:
+                fixWeightsAndData(((DoubleArray)wgt).flatten(false), ((DoubleArray)dat).flatten(false));
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported data type");
         }
     }
 
@@ -760,6 +760,36 @@ public class WeightFactory {
             res[i] = (arr[i] != zero);
         }
         return res;
+    }
+
+    /**
+     * @param wgtArray
+     */
+    public static void normalize(ShapedArray wgtArray) {
+
+        switch (wgtArray.getType()) {
+            case Traits.FLOAT:
+                ((FloatArray) wgtArray).scale(wgtArray.getNumber()/ wgtArray.toFloat().sum());
+                break;
+            case Traits.DOUBLE:
+                ((DoubleArray) wgtArray).scale(wgtArray.getNumber()/ wgtArray.toDouble().sum());
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported data type");
+        }
+
+    }
+
+    /**
+     * @param dataArray
+     * @param modelArray
+     * @param badpixArray
+     * @return
+     */
+    public static ShapedArray computeWeightsFromModel(ShapedArray dataArray, ShapedArray modelArray,
+            ShapedArray badpixArray) {
+        HistoMap hm = new HistoMap(modelArray, dataArray, badpixArray);
+        return hm.computeWeightMap(modelArray);
     }
 
 }
