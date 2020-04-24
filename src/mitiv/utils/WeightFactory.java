@@ -61,11 +61,8 @@ import mitiv.base.Traits;
  *
  * @author Éric
  */
-public class WeightFactory {
+public abstract class WeightFactory {
 
-    /* This class cannot be instantiated. */
-    private WeightFactory() {
-    }
 
     /**
      * Make default weights from a data array.

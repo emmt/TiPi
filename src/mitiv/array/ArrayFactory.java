@@ -28,10 +28,10 @@ package mitiv.array;
 import mitiv.base.Shape;
 import mitiv.base.Shaped;
 import mitiv.base.Traits;
-import mitiv.linalg.shaped.ShapedVector;
-import mitiv.linalg.shaped.FloatShapedVector;
-import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.exception.IllegalTypeException;
+import mitiv.linalg.shaped.DoubleShapedVector;
+import mitiv.linalg.shaped.FloatShapedVector;
+import mitiv.linalg.shaped.ShapedVector;
 
 
 /**
@@ -39,7 +39,7 @@ import mitiv.exception.IllegalTypeException;
  *
  * @author Éric Thiébaut & Jonathan Léger.
  */
-public class ArrayFactory {
+public abstract class ArrayFactory {
     /**
      * This class is not instantiable.
      */
@@ -48,7 +48,7 @@ public class ArrayFactory {
     /**
      * Instance of ArrayFactory which can be used to build shaped array objects.
      */
-    public static final ArrayFactory factory = new ArrayFactory();
+    // public static final ArrayFactory factory = new ArrayFactory();
 
 
     /* ROUTINES FOR ARRAY CREATION ========================================= */
@@ -811,7 +811,7 @@ public class ArrayFactory {
         final int number = arr.getNumber();
         byte[] out = new byte[number];
         switch (arr.getType()) {
-        case Traits.SHORT:
+            case Traits.SHORT:
             {
                 short[] inp = ((ShortArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -819,7 +819,7 @@ public class ArrayFactory {
                 }
             }
             break;
-        case Traits.INT:
+            case Traits.INT:
             {
                 int[] inp = ((IntArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -827,7 +827,7 @@ public class ArrayFactory {
                 }
             }
             break;
-        case Traits.LONG:
+            case Traits.LONG:
             {
                 long[] inp = ((LongArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -835,7 +835,7 @@ public class ArrayFactory {
                 }
             }
             break;
-        case Traits.FLOAT:
+            case Traits.FLOAT:
             {
                 float[] inp = ((FloatArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -843,7 +843,7 @@ public class ArrayFactory {
                 }
             }
             break;
-        case Traits.DOUBLE:
+            case Traits.DOUBLE:
             {
                 double[] inp = ((DoubleArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -851,8 +851,8 @@ public class ArrayFactory {
                 }
             }
             break;
-        default:
-            throw new IllegalArgumentException("unexpected type (BUG)");
+            default:
+                throw new IllegalArgumentException("unexpected type (BUG)");
         }
         return wrap(out, arr.getShape());
     }
@@ -879,7 +879,7 @@ public class ArrayFactory {
         final int number = arr.getNumber();
         short[] out = new short[number];
         switch (arr.getType()) {
-        case Traits.BYTE:
+            case Traits.BYTE:
             {
                 byte[] inp = ((ByteArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -887,7 +887,7 @@ public class ArrayFactory {
                 }
             }
             break;
-        case Traits.INT:
+            case Traits.INT:
             {
                 int[] inp = ((IntArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -895,7 +895,7 @@ public class ArrayFactory {
                 }
             }
             break;
-        case Traits.LONG:
+            case Traits.LONG:
             {
                 long[] inp = ((LongArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -903,7 +903,7 @@ public class ArrayFactory {
                 }
             }
             break;
-        case Traits.FLOAT:
+            case Traits.FLOAT:
             {
                 float[] inp = ((FloatArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -911,7 +911,7 @@ public class ArrayFactory {
                 }
             }
             break;
-        case Traits.DOUBLE:
+            case Traits.DOUBLE:
             {
                 double[] inp = ((DoubleArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -919,8 +919,8 @@ public class ArrayFactory {
                 }
             }
             break;
-        default:
-            throw new IllegalArgumentException("unexpected type (BUG)");
+            default:
+                throw new IllegalArgumentException("unexpected type (BUG)");
         }
         return wrap(out, arr.getShape());
     }
@@ -947,23 +947,23 @@ public class ArrayFactory {
         final int number = arr.getNumber();
         int[] out = new int[number];
         switch (arr.getType()) {
-        case Traits.BYTE:
+            case Traits.BYTE:
             {
                 byte[] inp = ((ByteArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (int)(inp[j] & 0xFF);
+                    out[j] = inp[j] & 0xFF;
                 }
             }
             break;
-        case Traits.SHORT:
+            case Traits.SHORT:
             {
                 short[] inp = ((ShortArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (int)inp[j];
+                    out[j] = inp[j];
                 }
             }
             break;
-        case Traits.LONG:
+            case Traits.LONG:
             {
                 long[] inp = ((LongArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -971,7 +971,7 @@ public class ArrayFactory {
                 }
             }
             break;
-        case Traits.FLOAT:
+            case Traits.FLOAT:
             {
                 float[] inp = ((FloatArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -979,7 +979,7 @@ public class ArrayFactory {
                 }
             }
             break;
-        case Traits.DOUBLE:
+            case Traits.DOUBLE:
             {
                 double[] inp = ((DoubleArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -987,8 +987,8 @@ public class ArrayFactory {
                 }
             }
             break;
-        default:
-            throw new IllegalArgumentException("unexpected type (BUG)");
+            default:
+                throw new IllegalArgumentException("unexpected type (BUG)");
         }
         return wrap(out, arr.getShape());
     }
@@ -1015,31 +1015,31 @@ public class ArrayFactory {
         final int number = arr.getNumber();
         long[] out = new long[number];
         switch (arr.getType()) {
-        case Traits.BYTE:
+            case Traits.BYTE:
             {
                 byte[] inp = ((ByteArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (long)(inp[j] & 0xFF);
+                    out[j] = inp[j] & 0xFF;
                 }
             }
             break;
-        case Traits.SHORT:
+            case Traits.SHORT:
             {
                 short[] inp = ((ShortArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (long)inp[j];
+                    out[j] = inp[j];
                 }
             }
             break;
-        case Traits.INT:
+            case Traits.INT:
             {
                 int[] inp = ((IntArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (long)inp[j];
+                    out[j] = inp[j];
                 }
             }
             break;
-        case Traits.FLOAT:
+            case Traits.FLOAT:
             {
                 float[] inp = ((FloatArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -1047,7 +1047,7 @@ public class ArrayFactory {
                 }
             }
             break;
-        case Traits.DOUBLE:
+            case Traits.DOUBLE:
             {
                 double[] inp = ((DoubleArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -1055,8 +1055,8 @@ public class ArrayFactory {
                 }
             }
             break;
-        default:
-            throw new IllegalArgumentException("unexpected type (BUG)");
+            default:
+                throw new IllegalArgumentException("unexpected type (BUG)");
         }
         return wrap(out, arr.getShape());
     }
@@ -1083,39 +1083,39 @@ public class ArrayFactory {
         final int number = arr.getNumber();
         float[] out = new float[number];
         switch (arr.getType()) {
-        case Traits.BYTE:
+            case Traits.BYTE:
             {
                 byte[] inp = ((ByteArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (float)(inp[j] & 0xFF);
+                    out[j] = inp[j] & 0xFF;
                 }
             }
             break;
-        case Traits.SHORT:
+            case Traits.SHORT:
             {
                 short[] inp = ((ShortArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (float)inp[j];
+                    out[j] = inp[j];
                 }
             }
             break;
-        case Traits.INT:
+            case Traits.INT:
             {
                 int[] inp = ((IntArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (float)inp[j];
+                    out[j] = inp[j];
                 }
             }
             break;
-        case Traits.LONG:
+            case Traits.LONG:
             {
                 long[] inp = ((LongArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (float)inp[j];
+                    out[j] = inp[j];
                 }
             }
             break;
-        case Traits.DOUBLE:
+            case Traits.DOUBLE:
             {
                 double[] inp = ((DoubleArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
@@ -1123,8 +1123,8 @@ public class ArrayFactory {
                 }
             }
             break;
-        default:
-            throw new IllegalArgumentException("unexpected type (BUG)");
+            default:
+                throw new IllegalArgumentException("unexpected type (BUG)");
         }
         return wrap(out, arr.getShape());
     }
@@ -1151,48 +1151,48 @@ public class ArrayFactory {
         final int number = arr.getNumber();
         double[] out = new double[number];
         switch (arr.getType()) {
-        case Traits.BYTE:
+            case Traits.BYTE:
             {
                 byte[] inp = ((ByteArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (double)(inp[j] & 0xFF);
+                    out[j] = inp[j] & 0xFF;
                 }
             }
             break;
-        case Traits.SHORT:
+            case Traits.SHORT:
             {
                 short[] inp = ((ShortArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (double)inp[j];
+                    out[j] = inp[j];
                 }
             }
             break;
-        case Traits.INT:
+            case Traits.INT:
             {
                 int[] inp = ((IntArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (double)inp[j];
+                    out[j] = inp[j];
                 }
             }
             break;
-        case Traits.LONG:
+            case Traits.LONG:
             {
                 long[] inp = ((LongArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (double)inp[j];
+                    out[j] = inp[j];
                 }
             }
             break;
-        case Traits.FLOAT:
+            case Traits.FLOAT:
             {
                 float[] inp = ((FloatArray)arr).flatten(false);
                 for (int j = 0; j < number; ++j) {
-                    out[j] = (double)inp[j];
+                    out[j] = inp[j];
                 }
             }
             break;
-        default:
-            throw new IllegalArgumentException("unexpected type (BUG)");
+            default:
+                throw new IllegalArgumentException("unexpected type (BUG)");
         }
         return wrap(out, arr.getShape());
     }
@@ -1553,28 +1553,28 @@ public class ArrayFactory {
      */
     public static ByteArray wrap(byte[] data, Shape shape) {
         switch (shape.rank()) {
-        case 0:
-            return ByteScalar.wrap(data, 0);
-        case 1:
-            return Byte1D.wrap(data, shape);
-        case 2:
-            return Byte2D.wrap(data, shape);
-        case 3:
-            return Byte3D.wrap(data, shape);
-        case 4:
-            return Byte4D.wrap(data, shape);
-        case 5:
-            return Byte5D.wrap(data, shape);
-        case 6:
-            return Byte6D.wrap(data, shape);
-        case 7:
-            return Byte7D.wrap(data, shape);
-        case 8:
-            return Byte8D.wrap(data, shape);
-        case 9:
-            return Byte9D.wrap(data, shape);
-        default:
-            throw new IllegalArgumentException("Invalid shape");
+            case 0:
+                return ByteScalar.wrap(data, 0);
+            case 1:
+                return Byte1D.wrap(data, shape);
+            case 2:
+                return Byte2D.wrap(data, shape);
+            case 3:
+                return Byte3D.wrap(data, shape);
+            case 4:
+                return Byte4D.wrap(data, shape);
+            case 5:
+                return Byte5D.wrap(data, shape);
+            case 6:
+                return Byte6D.wrap(data, shape);
+            case 7:
+                return Byte7D.wrap(data, shape);
+            case 8:
+                return Byte8D.wrap(data, shape);
+            case 9:
+                return Byte9D.wrap(data, shape);
+            default:
+                throw new IllegalArgumentException("Invalid shape");
         }
     }
 
@@ -1931,28 +1931,28 @@ public class ArrayFactory {
      */
     public static ShortArray wrap(short[] data, Shape shape) {
         switch (shape.rank()) {
-        case 0:
-            return ShortScalar.wrap(data, 0);
-        case 1:
-            return Short1D.wrap(data, shape);
-        case 2:
-            return Short2D.wrap(data, shape);
-        case 3:
-            return Short3D.wrap(data, shape);
-        case 4:
-            return Short4D.wrap(data, shape);
-        case 5:
-            return Short5D.wrap(data, shape);
-        case 6:
-            return Short6D.wrap(data, shape);
-        case 7:
-            return Short7D.wrap(data, shape);
-        case 8:
-            return Short8D.wrap(data, shape);
-        case 9:
-            return Short9D.wrap(data, shape);
-        default:
-            throw new IllegalArgumentException("Invalid shape");
+            case 0:
+                return ShortScalar.wrap(data, 0);
+            case 1:
+                return Short1D.wrap(data, shape);
+            case 2:
+                return Short2D.wrap(data, shape);
+            case 3:
+                return Short3D.wrap(data, shape);
+            case 4:
+                return Short4D.wrap(data, shape);
+            case 5:
+                return Short5D.wrap(data, shape);
+            case 6:
+                return Short6D.wrap(data, shape);
+            case 7:
+                return Short7D.wrap(data, shape);
+            case 8:
+                return Short8D.wrap(data, shape);
+            case 9:
+                return Short9D.wrap(data, shape);
+            default:
+                throw new IllegalArgumentException("Invalid shape");
         }
     }
 
@@ -2309,28 +2309,28 @@ public class ArrayFactory {
      */
     public static IntArray wrap(int[] data, Shape shape) {
         switch (shape.rank()) {
-        case 0:
-            return IntScalar.wrap(data, 0);
-        case 1:
-            return Int1D.wrap(data, shape);
-        case 2:
-            return Int2D.wrap(data, shape);
-        case 3:
-            return Int3D.wrap(data, shape);
-        case 4:
-            return Int4D.wrap(data, shape);
-        case 5:
-            return Int5D.wrap(data, shape);
-        case 6:
-            return Int6D.wrap(data, shape);
-        case 7:
-            return Int7D.wrap(data, shape);
-        case 8:
-            return Int8D.wrap(data, shape);
-        case 9:
-            return Int9D.wrap(data, shape);
-        default:
-            throw new IllegalArgumentException("Invalid shape");
+            case 0:
+                return IntScalar.wrap(data, 0);
+            case 1:
+                return Int1D.wrap(data, shape);
+            case 2:
+                return Int2D.wrap(data, shape);
+            case 3:
+                return Int3D.wrap(data, shape);
+            case 4:
+                return Int4D.wrap(data, shape);
+            case 5:
+                return Int5D.wrap(data, shape);
+            case 6:
+                return Int6D.wrap(data, shape);
+            case 7:
+                return Int7D.wrap(data, shape);
+            case 8:
+                return Int8D.wrap(data, shape);
+            case 9:
+                return Int9D.wrap(data, shape);
+            default:
+                throw new IllegalArgumentException("Invalid shape");
         }
     }
 
@@ -2687,28 +2687,28 @@ public class ArrayFactory {
      */
     public static LongArray wrap(long[] data, Shape shape) {
         switch (shape.rank()) {
-        case 0:
-            return LongScalar.wrap(data, 0);
-        case 1:
-            return Long1D.wrap(data, shape);
-        case 2:
-            return Long2D.wrap(data, shape);
-        case 3:
-            return Long3D.wrap(data, shape);
-        case 4:
-            return Long4D.wrap(data, shape);
-        case 5:
-            return Long5D.wrap(data, shape);
-        case 6:
-            return Long6D.wrap(data, shape);
-        case 7:
-            return Long7D.wrap(data, shape);
-        case 8:
-            return Long8D.wrap(data, shape);
-        case 9:
-            return Long9D.wrap(data, shape);
-        default:
-            throw new IllegalArgumentException("Invalid shape");
+            case 0:
+                return LongScalar.wrap(data, 0);
+            case 1:
+                return Long1D.wrap(data, shape);
+            case 2:
+                return Long2D.wrap(data, shape);
+            case 3:
+                return Long3D.wrap(data, shape);
+            case 4:
+                return Long4D.wrap(data, shape);
+            case 5:
+                return Long5D.wrap(data, shape);
+            case 6:
+                return Long6D.wrap(data, shape);
+            case 7:
+                return Long7D.wrap(data, shape);
+            case 8:
+                return Long8D.wrap(data, shape);
+            case 9:
+                return Long9D.wrap(data, shape);
+            default:
+                throw new IllegalArgumentException("Invalid shape");
         }
     }
 
@@ -3065,28 +3065,28 @@ public class ArrayFactory {
      */
     public static FloatArray wrap(float[] data, Shape shape) {
         switch (shape.rank()) {
-        case 0:
-            return FloatScalar.wrap(data, 0);
-        case 1:
-            return Float1D.wrap(data, shape);
-        case 2:
-            return Float2D.wrap(data, shape);
-        case 3:
-            return Float3D.wrap(data, shape);
-        case 4:
-            return Float4D.wrap(data, shape);
-        case 5:
-            return Float5D.wrap(data, shape);
-        case 6:
-            return Float6D.wrap(data, shape);
-        case 7:
-            return Float7D.wrap(data, shape);
-        case 8:
-            return Float8D.wrap(data, shape);
-        case 9:
-            return Float9D.wrap(data, shape);
-        default:
-            throw new IllegalArgumentException("Invalid shape");
+            case 0:
+                return FloatScalar.wrap(data, 0);
+            case 1:
+                return Float1D.wrap(data, shape);
+            case 2:
+                return Float2D.wrap(data, shape);
+            case 3:
+                return Float3D.wrap(data, shape);
+            case 4:
+                return Float4D.wrap(data, shape);
+            case 5:
+                return Float5D.wrap(data, shape);
+            case 6:
+                return Float6D.wrap(data, shape);
+            case 7:
+                return Float7D.wrap(data, shape);
+            case 8:
+                return Float8D.wrap(data, shape);
+            case 9:
+                return Float9D.wrap(data, shape);
+            default:
+                throw new IllegalArgumentException("Invalid shape");
         }
     }
 
@@ -3443,28 +3443,28 @@ public class ArrayFactory {
      */
     public static DoubleArray wrap(double[] data, Shape shape) {
         switch (shape.rank()) {
-        case 0:
-            return DoubleScalar.wrap(data, 0);
-        case 1:
-            return Double1D.wrap(data, shape);
-        case 2:
-            return Double2D.wrap(data, shape);
-        case 3:
-            return Double3D.wrap(data, shape);
-        case 4:
-            return Double4D.wrap(data, shape);
-        case 5:
-            return Double5D.wrap(data, shape);
-        case 6:
-            return Double6D.wrap(data, shape);
-        case 7:
-            return Double7D.wrap(data, shape);
-        case 8:
-            return Double8D.wrap(data, shape);
-        case 9:
-            return Double9D.wrap(data, shape);
-        default:
-            throw new IllegalArgumentException("Invalid shape");
+            case 0:
+                return DoubleScalar.wrap(data, 0);
+            case 1:
+                return Double1D.wrap(data, shape);
+            case 2:
+                return Double2D.wrap(data, shape);
+            case 3:
+                return Double3D.wrap(data, shape);
+            case 4:
+                return Double4D.wrap(data, shape);
+            case 5:
+                return Double5D.wrap(data, shape);
+            case 6:
+                return Double6D.wrap(data, shape);
+            case 7:
+                return Double7D.wrap(data, shape);
+            case 8:
+                return Double8D.wrap(data, shape);
+            case 9:
+                return Double9D.wrap(data, shape);
+            default:
+                throw new IllegalArgumentException("Invalid shape");
         }
     }
 
@@ -3852,12 +3852,12 @@ public class ArrayFactory {
      */
     public static ShapedArray wrap(ShapedVector vec) {
         switch (vec.getType()) {
-        case Traits.FLOAT:
-            return wrap(((FloatShapedVector)vec).getData(), vec.getShape());
-        case Traits.DOUBLE:
-            return wrap(((DoubleShapedVector)vec).getData(), vec.getShape());
-        default:
-            throw new IllegalArgumentException("Unsupported shaped vector type");
+            case Traits.FLOAT:
+                return wrap(((FloatShapedVector)vec).getData(), vec.getShape());
+            case Traits.DOUBLE:
+                return wrap(((DoubleShapedVector)vec).getData(), vec.getShape());
+            default:
+                throw new IllegalArgumentException("Unsupported shaped vector type");
         }
     }
 
