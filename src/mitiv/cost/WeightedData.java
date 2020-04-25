@@ -131,14 +131,14 @@ public class WeightedData implements DifferentiableCostFunction {
      */
     public WeightedData(ShapedVectorSpace space) {
         switch (space.getType()) {
-        case Traits.FLOAT:
-            single = true;
-            break;
-        case Traits.DOUBLE:
-            single = false;
-            break;
-        default:
-            throw mustBeFloatingPoint();
+            case Traits.FLOAT:
+                single = true;
+                break;
+            case Traits.DOUBLE:
+                single = false;
+                break;
+            default:
+                throw mustBeFloatingPoint();
         }
         this.dataSpace = space;
     }
@@ -158,16 +158,16 @@ public class WeightedData implements DifferentiableCostFunction {
      */
     public WeightedData(int type, Shape shape) {
         switch (type) {
-        case Traits.FLOAT:
-            single = true;
-            this.dataSpace = new FloatShapedVectorSpace(shape);
-            break;
-        case Traits.DOUBLE:
-            single = false;
-            this.dataSpace = new DoubleShapedVectorSpace(shape);
-            break;
-        default:
-            throw mustBeFloatingPoint();
+            case Traits.FLOAT:
+                single = true;
+                this.dataSpace = new FloatShapedVectorSpace(shape);
+                break;
+            case Traits.DOUBLE:
+                single = false;
+                this.dataSpace = new DoubleShapedVectorSpace(shape);
+                break;
+            default:
+                throw mustBeFloatingPoint();
         }
     }
 
@@ -553,7 +553,7 @@ public class WeightedData implements DifferentiableCostFunction {
      */
     public void setWeights(ShapedVector weights, boolean writable) {
         weights.assertBelongsTo(dataSpace);
-        if (this.weights != null) {
+        if (this.weights != null&&(!this.writableWeights)) {
             throw weightsCanOnlyBeSpecifiedOnce();
         }
         this.weights = weights;
@@ -830,31 +830,31 @@ public class WeightedData implements DifferentiableCostFunction {
 
     private boolean[] toBoolean(ShapedArray arr) {
         switch (arr.getType()) {
-        case Traits.BYTE:
-            return toBoolean(((ByteArray)arr).flatten());
-        case Traits.SHORT:
-            return toBoolean(((ShortArray)arr).flatten());
-        case Traits.INT:
-            return toBoolean(((IntArray)arr).flatten());
-        case Traits.LONG:
-            return toBoolean(((LongArray)arr).flatten());
-        case Traits.FLOAT:
-            return toBoolean(((FloatArray)arr).flatten());
-        case Traits.DOUBLE:
-            return toBoolean(((DoubleArray)arr).flatten());
-        default:
-            throw unsupportedDataType();
+            case Traits.BYTE:
+                return toBoolean(((ByteArray)arr).flatten());
+            case Traits.SHORT:
+                return toBoolean(((ShortArray)arr).flatten());
+            case Traits.INT:
+                return toBoolean(((IntArray)arr).flatten());
+            case Traits.LONG:
+                return toBoolean(((LongArray)arr).flatten());
+            case Traits.FLOAT:
+                return toBoolean(((FloatArray)arr).flatten());
+            case Traits.DOUBLE:
+                return toBoolean(((DoubleArray)arr).flatten());
+            default:
+                throw unsupportedDataType();
         }
     }
 
     private boolean[] toBoolean(ShapedVector vec) {
         switch (vec.getType()) {
-        case Traits.FLOAT:
-            return toBoolean(((FloatShapedVector)vec).getData());
-        case Traits.DOUBLE:
-            return toBoolean(((DoubleShapedVector)vec).getData());
-        default:
-            throw unsupportedDataType();
+            case Traits.FLOAT:
+                return toBoolean(((FloatShapedVector)vec).getData());
+            case Traits.DOUBLE:
+                return toBoolean(((DoubleShapedVector)vec).getData());
+            default:
+                throw unsupportedDataType();
         }
     }
 

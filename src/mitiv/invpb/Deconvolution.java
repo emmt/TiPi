@@ -27,6 +27,7 @@ package mitiv.invpb;
 import mitiv.array.ArrayFactory;
 import mitiv.array.ShapedArray;
 import mitiv.base.Traits;
+import mitiv.conv.WeightedConvolutionCost;
 import mitiv.linalg.Vector;
 import mitiv.linalg.shaped.DoubleShapedVector;
 import mitiv.linalg.shaped.FloatShapedVector;
@@ -115,6 +116,9 @@ public class Deconvolution extends SmoothInverseProblem {
         return object;
     }
 
+    public ShapedArray getModel() {
+        return ((WeightedConvolutionCost) getLikelihood()).getModel( getBestSolution().asShapedArray()).asShapedArray();
+    }
 
 
 }

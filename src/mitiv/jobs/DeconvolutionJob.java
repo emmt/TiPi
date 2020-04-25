@@ -95,6 +95,19 @@ public class DeconvolutionJob {
     public void updatePsf(ShapedArray psfArray) {
         WeightedConvolutionCost fdata = (WeightedConvolutionCost) solver.getLikelihood();
         fdata.setPSF(psfArray);
-        solver.setLikelihood(fdata);
     }
+
+    /**
+     * @param psfArray
+     */
+    public void updateWeight(ShapedArray wgtArray) {
+        WeightedConvolutionCost fdata = (WeightedConvolutionCost) solver.getLikelihood();
+        fdata.setWeights(wgtArray,true);
+    }
+
+    public ShapedArray getModel() {
+        return solver.getModel();
+    }
+
 }
+
