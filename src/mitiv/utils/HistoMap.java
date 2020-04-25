@@ -6,6 +6,8 @@ package mitiv.utils;
 import java.util.stream.IntStream;
 
 import mitiv.array.ArrayFactory;
+import mitiv.array.Byte1D;
+import mitiv.array.ByteArray;
 import mitiv.array.Double1D;
 import mitiv.array.DoubleArray;
 import mitiv.array.FloatArray;
@@ -44,9 +46,12 @@ public class HistoMap {
     protected int nbin = 1;
     /** Number of negative infinite values. */
     protected int neginfs = 0;
-
     /** Number of positive infinite values. */
     protected int posinfs = 0;
+    /** Number of saturated values. */
+    protected int sat = 0;
+
+
 
     protected Double1D var = null;
 
@@ -62,7 +67,7 @@ public class HistoMap {
      * Create an histogram from the values of a shaped array.
      */
     public HistoMap(DoubleArray truth, DoubleArray data) {
-        update(truth, data,null);
+        update(truth, data,  null, Double.NaN);
     }
 
     /**
@@ -72,15 +77,22 @@ public class HistoMap {
      *        A shaped vector.
      */
     public HistoMap(DoubleShapedVector truth, DoubleShapedVector data) {
-        update(truth, data,null);
+        update(truth, data, null, Double.NaN);
     }
 
 
     /**
      * Create an histogram from the values of a shaped array.
      */
-    public HistoMap(ShapedArray truth, ShapedArray data, ShapedArray badpix) {
-        update(truth.toDouble(), data.toDouble(),badpix);
+    public HistoMap(ShapedArray truth, ShapedArray data, ByteArray badpix) {
+        update(truth.toDouble(), data.toDouble(),badpix, Double.NaN);
+    }
+
+    /**
+     * Create an histogram from the values of a shaped array.
+     */
+    public HistoMap(ShapedArray truth, ShapedArray data, ByteArray badpix,double satval) {
+        update(truth.toDouble(), data.toDouble(),badpix,satval);
     }
 
     /**
@@ -89,8 +101,8 @@ public class HistoMap {
      * @param vec
      *        A shaped vector.
      */
-    public HistoMap(ShapedVector truth, ShapedVector data, ShapedArray badpix) {
-        update(truth, data,badpix);
+    public HistoMap(ShapedVector truth, ShapedVector data, ByteArray badpix,double satval) {
+        update(truth, data,badpix, satval);
     }
 
 
@@ -139,6 +151,14 @@ public class HistoMap {
      */
     public int getNumberOfPositiveInfinites() {
         return posinfs;
+    }
+    /**
+     * Get number of saturated values.
+     *
+     * @return The number of saturated values.
+     */
+    public int getNumberOfSaturated() {
+        return sat;
     }
 
 
@@ -291,7 +311,7 @@ public class HistoMap {
      *
      * @return The object itself after the updating.
      */
-    public HistoMap update(DoubleArray truth, DoubleArray data, ShapedArray badpix) {
+    public HistoMap update(DoubleArray truth, DoubleArray data, ByteArray badpix,double satval) {
         if ( (truth != null)||(data != null)) {
             if (!truth.getShape().equals(data.getShape()))
                 throw new IllegalArgumentException("truth does not have the same shape as data");
@@ -310,16 +330,21 @@ public class HistoMap {
                 for (int i = 0; i < truth.getNumber(); i++) {
                     double val = Math.floor(((Double1D) truth.as1D().toDouble()).get(i));
                     double mapval =  ((Double1D) data.as1D().toDouble()).get(i);
-                    if (((Int1D) badpix.toInt().as1D()).get(i)!=0){
+                    if (((Byte1D) badpix.as1D()).get(i)==0){
                         if (Double.isNaN(mapval)) {
                             ++nans;
+                            ((Byte1D) badpix.as1D()).set(i, (byte) 1);
                         } else if (Double.isInfinite(mapval)) {
+                            ((Byte1D) badpix.as1D()).set(i, (byte) 1);
                             if (mapval > 0) {
                                 ++posinfs;
                             } else {
                                 ++neginfs;
                             }
-                        } else {
+                        } else if(mapval == satval) {
+                            ((Byte1D) badpix.as1D()).set(i, (byte) 1);
+                            sat++;
+                        }else {
                             int idx = (int)Math.floor(val) - histo.get(0);
                             mapval -= histo.get(idx) ;
                             count.set(idx,  count.get(idx)+1);
@@ -340,6 +365,8 @@ public class HistoMap {
                         } else {
                             ++neginfs;
                         }
+                    } else if(mapval == satval) {
+                        sat++;
                     } else {
                         int idx = (int)Math.floor(val) - histo.get(0);
                         mapval -= histo.get(idx) ;
@@ -368,8 +395,8 @@ public class HistoMap {
      *
      * @return The object itself after the updating.
      */
-    public HistoMap update(ShapedVector vec, ShapedVector vec2, ShapedArray badpix) {
-        return update(ArrayFactory.wrap(vec).toDouble(),ArrayFactory.wrap(vec2).toDouble(), badpix);
+    public HistoMap update(ShapedVector vec, ShapedVector vec2, ByteArray badpix,double satval) {
+        return update(ArrayFactory.wrap(vec).toDouble(),ArrayFactory.wrap(vec2).toDouble(), badpix,satval);
     }
 
     private void compute() {

@@ -43,7 +43,7 @@ public abstract class ArrayFactory {
     /**
      * This class is not instantiable.
      */
-    protected ArrayFactory() {}
+    // protected ArrayFactory() {}
 
     /**
      * Instance of ArrayFactory which can be used to build shaped array objects.

@@ -26,6 +26,7 @@
 package mitiv.utils;
 
 import mitiv.array.ArrayFactory;
+import mitiv.array.Byte1D;
 import mitiv.array.ByteArray;
 import mitiv.array.DoubleArray;
 import mitiv.array.FloatArray;
@@ -444,6 +445,61 @@ public abstract class WeightFactory {
         return computeWeightsFromData(wgt, dat, alpha, beta, Double.NaN);
     }
 
+    static public boolean flagBads(ShapedArray dat,ByteArray badArray, double sat) {
+        switch (dat.getType()) {
+            case Traits.FLOAT:
+                return  flagBads(((FloatArray)dat).flatten(false), badArray,sat);
+            case Traits.DOUBLE:
+                return  flagBads(((DoubleArray)dat).flatten(false), badArray,sat);
+            default:
+                throw new IllegalArgumentException("Unsupported data type");
+        }
+
+    }
+    /**
+     * @param dat
+     * @param badArray
+     * @param sat
+     * @return
+     */
+    private static boolean flagBads(float[] dat, ByteArray badArray, double sat) {
+        if (dat.length != badArray.getNumber()) {
+            throw new IllegalArgumentException("Array of weights and bad data must have the same length");
+        }
+        boolean isbad = false;
+        final byte one = 1;
+        final int len = dat.length;
+        for (int i = 0; i < len; ++i) {
+            if (((Byte1D) badArray.as1D()).get(i)==0) {
+                float val = dat[i];
+                if (isnan(val) || isinf(val) || val >= sat) {
+                    ((Byte1D) badArray.as1D()).set(i,one);
+                    isbad = true;
+                }
+            }
+        }
+        return isbad;
+    }
+
+    private static boolean flagBads(double[] dat, ByteArray badArray, double sat) {
+        if (dat.length != badArray.getNumber()) {
+            throw new IllegalArgumentException("Array of weights and bad data must have the same length");
+        }
+        boolean isbad = false;
+        final byte one = 1;
+        final int len = dat.length;
+        for (int i = 0; i < len; ++i) {
+            if (((Byte1D) badArray.as1D()).get(i)==0) {
+                double val = dat[i];
+                if (isnan(val) || isinf(val) || val >= sat) {
+                    ((Byte1D) badArray.as1D()).set(i,one);
+                    isbad = true;
+                }
+            }
+        }
+        return isbad;
+    }
+
     /**
      * Remove bad data by setting their weights to zero.
      *
@@ -784,7 +840,7 @@ public abstract class WeightFactory {
      * @return
      */
     public static ShapedArray computeWeightsFromModel(ShapedArray dataArray, ShapedArray modelArray,
-            ShapedArray badpixArray) {
+            ByteArray badpixArray) {
         HistoMap hm = new HistoMap(modelArray, dataArray, badpixArray);
         return hm.computeWeightMap(modelArray);
     }
