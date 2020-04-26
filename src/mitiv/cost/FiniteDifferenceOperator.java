@@ -41,6 +41,7 @@ import mitiv.random.UniformDistribution;
 public class FiniteDifferenceOperator extends LinearOperator {
     private int[][] index;
     final boolean single;
+    double[] scale = {1,1,1,1,1};
 
     private static void testDoubleOperator(DoubleGenerator generator,
             int[] shape,
@@ -124,6 +125,36 @@ public class FiniteDifferenceOperator extends LinearOperator {
      *        The inputs space of the operator (the output space is
      *        automatically built).
      *
+     * @param scale An array indicating the relative scale between  each
+     *        dimension.  If {@code null} unit scale is assumed along all dimensions.
+     *
+     * @param bounds An array indicating the boundary conditions for each
+     *        dimension.  If {@code null}, normal conditions are assumed for
+     *        all dimensions; otherwise, if shorter than {@code n}, the rank
+     *        of {@code inputSpace}, missing values are assumed to be {@link
+     *        BoundaryConditions#NORMAL}.
+     */
+    public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, double[] scale, BoundaryConditions[] bounds) {
+        super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.getShape())));
+        checkscale(inputSpace.getShape(),scale);
+        buildIndex(inputSpace.getShape(), bounds);
+        single = false;
+    }
+
+    /**
+     * Create an instance of a finite difference operator.
+     *
+     * <p> The finite difference operator, computes the difference between
+     * each element of its argument and its preceding element for each
+     * dimensions.  Thus a 1D array yields a 1D result while a {@code
+     * n}-dimensional array yields a {@code n + 1} dimensional result with an
+     * additional leading dimension of length {@code n} to store the finite
+     * differences along each of the {@code n} dimensions. </p>
+     *
+     * @param inputSpace
+     *        The inputs space of the operator (the output space is
+     *        automatically built).
+     *
      * @param bounds An array indicating the boundary conditions for each
      *        dimension.  If {@code null}, normal conditions are assumed for
      *        all dimensions; otherwise, if shorter than {@code n}, the rank
@@ -132,6 +163,31 @@ public class FiniteDifferenceOperator extends LinearOperator {
      */
     public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, BoundaryConditions[] bounds) {
         super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.getShape())));
+        buildIndex(inputSpace.getShape(), bounds);
+        single = false;
+    }
+
+    /**
+     * Create an instance of a finite difference operator.
+     *
+     * <p> See {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace,
+     * BoundaryConditions[])} for more explanations. </p>
+     *
+     * @param inputSpace
+     *        The inputs space of the operator
+     *
+     * @param scale An array indicating the relative scale between  each
+     *        dimension.  If {@code null} unit scale is assumed along all dimensions.
+     *
+     * @param bounds
+     *        Indicates the boundary conditions for all dimensions, one of
+     *        {@link BoundaryConditions#PERIODIC}, or {@link
+     *        BoundaryConditions#MIRROR}, otherwise {@link
+     *        BoundaryConditions#NORMAL} is assumed.
+     */
+    public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, double[] scale, BoundaryConditions bounds) {
+        super(inputSpace, new DoubleShapedVectorSpace(buildShape(inputSpace.getShape())));
+        checkscale(inputSpace.getShape(),scale);
         buildIndex(inputSpace.getShape(), bounds);
         single = false;
     }
@@ -166,9 +222,54 @@ public class FiniteDifferenceOperator extends LinearOperator {
      *
      * @param inputSpace
      *        The inputs space of the operator
+     *
+     * @param scale An array indicating the relative scale between  each
+     *        dimension.  If {@code null} unit scale is assumed along all dimensions.
+     */
+    public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace, double[] scale) {
+        this(inputSpace, scale, BoundaryConditions.NORMAL);
+    }
+
+    /**
+     * Create an instance of a finite difference operator.
+     *
+     * <p> Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace,
+     * BoundaryConditions[])} but with non-periodic conditions along all
+     * dimensions. </p>
+     *
+     * @param inputSpace
+     *        The inputs space of the operator
      */
     public FiniteDifferenceOperator(DoubleShapedVectorSpace inputSpace) {
         this(inputSpace, BoundaryConditions.NORMAL);
+    }
+
+    /**
+     * Create an instance of a finite difference operator.
+     *
+     * <p> Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace,
+     * BoundaryConditions[])} but for single precision floating point shaped
+     * vectors. </p>
+     *
+     * @param inputSpace
+     *        The inputs space of the operator
+     *
+     * @param scale An array indicating the relative scale between  each
+     *        dimension.  If {@code null} unit scale is assumed along all dimensions.
+     *
+     * @param bounds
+     *        An array of integers indicating the boundary conditions for each
+     *        dimension.  If {@code null}, normal conditions are assumed for
+     *        all dimensions; otherwise, if shorter than {@code n}, the rank
+     *        of {@code inputSpace}, missing values are assumed to be {@link
+     *        BoundaryConditions#NORMAL}.
+     */
+    public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace, double[] scale,
+            BoundaryConditions[] bounds) {
+        super(inputSpace, new FloatShapedVectorSpace(buildShape(inputSpace.getShape())));
+        buildIndex(inputSpace.getShape(), bounds);
+        checkscale(inputSpace.getShape(),scale);
+        single = true;
     }
 
     /**
@@ -216,6 +317,51 @@ public class FiniteDifferenceOperator extends LinearOperator {
         super(inputSpace, new FloatShapedVectorSpace(buildShape(inputSpace.getShape())));
         buildIndex(inputSpace.getShape(), bounds);
         single = true;
+    }
+
+
+    /**
+     * Create an instance of a finite difference operator.
+     *
+     * <p> Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace,
+     * BoundaryConditions)} but for single precision floating point shaped
+     * vectors. </p>
+     *
+     * @param inputSpace
+     *        The inputs space of the operator.
+     *
+     * @param scale An array indicating the relative scale between  each
+     *        dimension.  If {@code null} unit scale is assumed along all dimensions.
+     *
+     * @param bounds
+     *        Indicates the boundary conditions for all dimensions, one of
+     *        {@link BoundaryConditions#PERIODIC}, or {@link
+     *        BoundaryConditions#MIRROR}, otherwise {@link
+     *        BoundaryConditions#NORMAL} is assumed.
+     */
+    public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace, double[] scale,
+            BoundaryConditions bounds) {
+        super(inputSpace, new FloatShapedVectorSpace(buildShape(inputSpace.getShape())));
+        buildIndex(inputSpace.getShape(), bounds);
+        checkscale(inputSpace.getShape(),scale);
+        single = true;
+    }
+
+
+    /**
+     * Create an instance of a finite difference operator.
+     *
+     * <p> Same as {@link #FiniteDifferenceOperator(DoubleShapedVectorSpace)}
+     * but for single precision floating point shaped vectors. </p>
+     *
+     * @param inputSpace
+     *        The inputs space of the operator.
+     *
+     * @param scale An array indicating the relative scale between  each
+     *        dimension.  If {@code null} unit scale is assumed along all dimensions.
+     */
+    public FiniteDifferenceOperator(FloatShapedVectorSpace inputSpace, double[] scale) {
+        this(inputSpace, scale,BoundaryConditions.NORMAL);
     }
 
     /**
@@ -266,6 +412,16 @@ public class FiniteDifferenceOperator extends LinearOperator {
                     -1, bounds);
         }
     }
+
+    /**
+     * @param shape
+     * @param scale
+     */
+    private void checkscale(Shape inputShape, double[] scale) {
+        if(inputShape.rank()!=scale.length)
+            throw new IllegalArgumentException("illegal job");
+    }
+
 
     private double[] getDoubleData(Vector v) {
         return ((DoubleShapedVector)v).getData();
@@ -329,15 +485,16 @@ public class FiniteDifferenceOperator extends LinearOperator {
     private final void apply1D(double[] x, double[] y, boolean transpose) {
         int[] prev1 = index[0]; // index to previous position along 1st dimension
         int n1 = prev1.length;  // length of 1st dimension
+        double scale1= scale[0];// scale along the 1st dimension
         if (transpose) {
             for (int i1 = 0; i1 < n1; ++i1) {
                 double x1 = x[i1];
-                y[i1] += x1;
-                y[prev1[i1]] -= x1;
+                y[i1] += scale1*x1;
+                y[prev1[i1]] -= scale1*x1;
             }
         } else {
             for (int i1 = 0; i1 < n1; ++i1) {
-                y[i1] = x[i1] - x[prev1[i1]];
+                y[i1] = scale1*(x[i1] - x[prev1[i1]]);
             }
         }
     }
@@ -347,6 +504,9 @@ public class FiniteDifferenceOperator extends LinearOperator {
         int n1 = prev1.length;  // length of 1st dimension
         int[] prev2 = index[1]; // index to previous position along 2nd dimension
         int n2 = prev2.length;  // length of 2nd dimension
+        double scale1= scale[0];// scale along the 1st dimension
+        double scale2= scale[1];// scale along the 2nd dimension
+
         if (transpose) {
             for (int i2 = 0; i2 < n2; ++i2) {
                 int j2 = n1*i2;
@@ -356,9 +516,9 @@ public class FiniteDifferenceOperator extends LinearOperator {
                     int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                     int l1 = 2*j1;
                     double x1 = x[l1], x2 = x[l1 + 1];
-                    y[j1] += x1 + x2;
-                    y[j1 + k1] -= x1;
-                    y[j1 + k2] -= x2;
+                    y[j1] += scale1*x1 + scale2*x2;
+                    y[j1 + k1] -= scale1*x1;
+                    y[j1 + k2] -= scale2*x2;
                 }
             }
         } else {
@@ -370,8 +530,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
                     int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                     int l1 = 2*j1;
                     double x_j1 = x[j1];
-                    y[l1]     = x_j1 - x[j1 + k1];
-                    y[l1 + 1] = x_j1 - x[j1 + k2];
+                    y[l1]     = scale1*(x_j1 - x[j1 + k1]);
+                    y[l1 + 1] = scale2*(x_j1 - x[j1 + k2]);
                 }
             }
         }
@@ -385,6 +545,9 @@ public class FiniteDifferenceOperator extends LinearOperator {
         int[] prev3 = index[2]; // index to previous position along 3rd dimension
         int n3 = prev3.length;  // length of 3rd dimension
         int n1n2 = n1*n2;       // stride along 3rd dimension
+        double scale1= scale[0];// scale along the 1st dimension
+        double scale2= scale[1];// scale along the 2nd dimension
+        double scale3= scale[2];// scale along the 3rd dimension
         if (transpose) {
             for (int i3 = 0; i3 < n3; ++i3) {
                 int j3 = n1n2*i3;
@@ -397,10 +560,10 @@ public class FiniteDifferenceOperator extends LinearOperator {
                         int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                         int l1 = 3*j1;
                         double x1 = x[l1], x2 = x[l1 + 1], x3 = x[l1 + 2];
-                        y[j1] += x1 + x2 + x3;
-                        y[j1 + k1] -= x1;
-                        y[j1 + k2] -= x2;
-                        y[j1 + k3] -= x3;
+                        y[j1] += scale1*x1 + scale2*x2 + scale3*x3;
+                        y[j1 + k1] -= scale1*x1;
+                        y[j1 + k2] -= scale2*x2;
+                        y[j1 + k3] -= scale3*x3;
                     }
                 }
             }
@@ -416,9 +579,9 @@ public class FiniteDifferenceOperator extends LinearOperator {
                         int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                         int l1 = 3*j1;
                         double x_j1 = x[j1];
-                        y[l1]     = x_j1 - x[j1 + k1];
-                        y[l1 + 1] = x_j1 - x[j1 + k2];
-                        y[l1 + 2] = x_j1 - x[j1 + k3];
+                        y[l1]     = scale1*(x_j1 - x[j1 + k1]);
+                        y[l1 + 1] = scale2*(x_j1 - x[j1 + k2]);
+                        y[l1 + 2] = scale3*(x_j1 - x[j1 + k3]);
                     }
                 }
             }
@@ -436,6 +599,10 @@ public class FiniteDifferenceOperator extends LinearOperator {
         int[] prev4 = index[3]; // index to previous position along 4th dimension
         int n4 = prev4.length;  // length of 4th dimension
         int n1n2n3 = n1n2*n3;   // stride along 4th dimension
+        double scale1= scale[0];// scale along the 1st dimension
+        double scale2= scale[1];// scale along the 2nd dimension
+        double scale3= scale[2];// scale along the 3rd dimension
+        double scale4= scale[3];// scale along the 4th dimension
         if (transpose) {
             for (int i4 = 0; i4 < n4; ++i4) {
                 int j4 = n1n2n3*i4;
@@ -451,11 +618,11 @@ public class FiniteDifferenceOperator extends LinearOperator {
                             int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                             int l1 = 4*j1;
                             double x1 = x[l1], x2 = x[l1 + 1], x3 = x[l1 + 2], x4 = x[l1 + 3];
-                            y[j1] += x1 + x2 + x3 + x4;
-                            y[j1 + k1] -= x1;
-                            y[j1 + k2] -= x2;
-                            y[j1 + k3] -= x3;
-                            y[j1 + k4] -= x4;
+                            y[j1] += scale1*x1 + scale2*x2 + scale3*x3 + scale4*x4;
+                            y[j1 + k1] -= scale1*x1;
+                            y[j1 + k2] -= scale2*x2;
+                            y[j1 + k3] -= scale3*x3;
+                            y[j1 + k4] -= scale4*x4;
                         }
                     }
                 }
@@ -475,10 +642,10 @@ public class FiniteDifferenceOperator extends LinearOperator {
                             int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                             int l1 = 4*j1;
                             double x_j1 = x[j1];
-                            y[l1]     = x_j1 - x[j1 + k1];
-                            y[l1 + 1] = x_j1 - x[j1 + k2];
-                            y[l1 + 2] = x_j1 - x[j1 + k3];
-                            y[l1 + 3] = x_j1 - x[j1 + k4];
+                            y[l1]     = scale1*(x_j1 - x[j1 + k1]);
+                            y[l1 + 1] = scale2*(x_j1 - x[j1 + k2]);
+                            y[l1 + 2] = scale3*(x_j1 - x[j1 + k3]);
+                            y[l1 + 3] = scale4*(x_j1 - x[j1 + k4]);
                         }
                     }
                 }
@@ -500,6 +667,11 @@ public class FiniteDifferenceOperator extends LinearOperator {
         int[] prev5 = index[4];   // index to previous position along 5th dimension
         int n5 = prev5.length;    // length of 5th dimension
         int n1n2n3n4 = n1n2n3*n4; // stride along 5th dimension
+        double scale1= scale[0];// scale along the 1st dimension
+        double scale2= scale[1];// scale along the 2nd dimension
+        double scale3= scale[2];// scale along the 3rd dimension
+        double scale4= scale[3];// scale along the 4th dimension
+        double scale5= scale[4];// scale along the 5th dimension
         if (transpose) {
             for (int i5 = 0; i5 < n5; ++i5) {
                 int j5 = n1n2n3n4*i5;
@@ -518,12 +690,12 @@ public class FiniteDifferenceOperator extends LinearOperator {
                                 int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                                 int l1 = 5*j1;
                                 double x1 = x[l1], x2 = x[l1 + 1], x3 = x[l1 + 2], x4 = x[l1 + 3], x5 = x[l1 + 4];
-                                y[j1] += x1 + x2 + x3 + x4 + x5;
-                                y[j1 + k1] -= x1;
-                                y[j1 + k2] -= x2;
-                                y[j1 + k3] -= x3;
-                                y[j1 + k4] -= x4;
-                                y[j1 + k5] -= x5;
+                                y[j1] += scale1*x1 + scale2*x2 + scale3*x3 + scale4*x4 + scale5*x5;
+                                y[j1 + k1] -= scale1*x1;
+                                y[j1 + k2] -= scale2*x2;
+                                y[j1 + k3] -= scale3*x3;
+                                y[j1 + k4] -= scale4*x4;
+                                y[j1 + k5] -= scale5*x5;
                             }
                         }
                     }
@@ -547,11 +719,11 @@ public class FiniteDifferenceOperator extends LinearOperator {
                                 int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                                 int l1 = 5*j1;
                                 double x_j1 = x[j1];
-                                y[l1]     = x_j1 - x[j1 + k1];
-                                y[l1 + 1] = x_j1 - x[j1 + k2];
-                                y[l1 + 2] = x_j1 - x[j1 + k3];
-                                y[l1 + 3] = x_j1 - x[j1 + k4];
-                                y[l1 + 4] = x_j1 - x[j1 + k5];
+                                y[l1]     = scale1*(x_j1 - x[j1 + k1]);
+                                y[l1 + 1] = scale2*(x_j1 - x[j1 + k2]);
+                                y[l1 + 2] = scale3*(x_j1 - x[j1 + k3]);
+                                y[l1 + 3] = scale4*(x_j1 - x[j1 + k4]);
+                                y[l1 + 4] = scale5*(x_j1 - x[j1 + k5]);
                             }
                         }
                     }
@@ -567,15 +739,16 @@ public class FiniteDifferenceOperator extends LinearOperator {
     private final void apply1D(float[] x, float[] y, boolean transpose) {
         int[] prev1 = index[0]; // index to previous position along 1st dimension
         int n1 = prev1.length;  // length of 1st dimension
+        float scale1= (float) scale[0];// scale along the 1st dimension
         if (transpose) {
             for (int i1 = 0; i1 < n1; ++i1) {
                 float x1 = x[i1];
                 y[i1] += x1;
-                y[prev1[i1]] -= x1;
+                y[prev1[i1]] -= scale1*x1;
             }
         } else {
             for (int i1 = 0; i1 < n1; ++i1) {
-                y[i1] = x[i1] - x[prev1[i1]];
+                y[i1] = scale1*(x[i1] - x[prev1[i1]]);
             }
         }
     }
@@ -585,6 +758,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
         int n1 = prev1.length;  // length of 1st dimension
         int[] prev2 = index[1]; // index to previous position along 2nd dimension
         int n2 = prev2.length;  // length of 2nd dimension
+        float scale1= (float) scale[0];// scale along the 1st dimension
+        float scale2= (float) scale[1];// scale along the 2nd dimension
         if (transpose) {
             for (int i2 = 0; i2 < n2; ++i2) {
                 int j2 = n1*i2;
@@ -594,9 +769,9 @@ public class FiniteDifferenceOperator extends LinearOperator {
                     int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                     int l1 = 2*j1;
                     float x1 = x[l1], x2 = x[l1 + 1];
-                    y[j1] += x1 + x2;
-                    y[j1 + k1] -= x1;
-                    y[j1 + k2] -= x2;
+                    y[j1] += scale1*x1 + scale2*x2;
+                    y[j1 + k1] -= scale1*x1;
+                    y[j1 + k2] -= scale2*x2;
                 }
             }
         } else {
@@ -608,8 +783,8 @@ public class FiniteDifferenceOperator extends LinearOperator {
                     int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                     int l1 = 2*j1;
                     float x_j1 = x[j1];
-                    y[l1]     = x_j1 - x[j1 + k1];
-                    y[l1 + 1] = x_j1 - x[j1 + k2];
+                    y[l1]     = scale1*(x_j1 - x[j1 + k1]);
+                    y[l1 + 1] = scale2*(x_j1 - x[j1 + k2]);
                 }
             }
         }
@@ -623,6 +798,9 @@ public class FiniteDifferenceOperator extends LinearOperator {
         int[] prev3 = index[2]; // index to previous position along 3rd dimension
         int n3 = prev3.length;  // length of 3rd dimension
         int n1n2 = n1*n2;       // stride along 3rd dimension
+        float scale1= (float) scale[0];// scale along the 1st dimension
+        float scale2= (float) scale[1];// scale along the 2nd dimension
+        float scale3= (float) scale[2];// scale along the 3rd dimension
         if (transpose) {
             for (int i3 = 0; i3 < n3; ++i3) {
                 int j3 = n1n2*i3;
@@ -635,10 +813,10 @@ public class FiniteDifferenceOperator extends LinearOperator {
                         int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                         int l1 = 3*j1;
                         float x1 = x[l1], x2 = x[l1 + 1], x3 = x[l1 + 2];
-                        y[j1] += x1 + x2 + x3;
-                        y[j1 + k1] -= x1;
-                        y[j1 + k2] -= x2;
-                        y[j1 + k3] -= x3;
+                        y[j1] += scale1*x1 + scale2*x2 + scale3*x3;
+                        y[j1 + k1] -= scale1*x1;
+                        y[j1 + k2] -= scale2*x2;
+                        y[j1 + k3] -= scale3*x3;
                     }
                 }
             }
@@ -654,9 +832,9 @@ public class FiniteDifferenceOperator extends LinearOperator {
                         int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                         int l1 = 3*j1;
                         float x_j1 = x[j1];
-                        y[l1]     = x_j1 - x[j1 + k1];
-                        y[l1 + 1] = x_j1 - x[j1 + k2];
-                        y[l1 + 2] = x_j1 - x[j1 + k3];
+                        y[l1]     = scale1*(x_j1 - x[j1 + k1]);
+                        y[l1 + 1] = scale2*(x_j1 - x[j1 + k2]);
+                        y[l1 + 2] = scale3*(x_j1 - x[j1 + k3]);
                     }
                 }
             }
@@ -674,6 +852,10 @@ public class FiniteDifferenceOperator extends LinearOperator {
         int[] prev4 = index[3]; // index to previous position along 4th dimension
         int n4 = prev4.length;  // length of 4th dimension
         int n1n2n3 = n1n2*n3;   // stride along 4th dimension
+        float scale1= (float) scale[0];// scale along the 1st dimension
+        float scale2= (float) scale[1];// scale along the 2nd dimension
+        float scale3= (float) scale[2];// scale along the 3rd dimension
+        float scale4= (float) scale[3];// scale along the 4th dimension
         if (transpose) {
             for (int i4 = 0; i4 < n4; ++i4) {
                 int j4 = n1n2n3*i4;
@@ -689,11 +871,11 @@ public class FiniteDifferenceOperator extends LinearOperator {
                             int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                             int l1 = 4*j1;
                             float x1 = x[l1], x2 = x[l1 + 1], x3 = x[l1 + 2], x4 = x[l1 + 3];
-                            y[j1] += x1 + x2 + x3 + x4;
-                            y[j1 + k1] -= x1;
-                            y[j1 + k2] -= x2;
-                            y[j1 + k3] -= x3;
-                            y[j1 + k4] -= x4;
+                            y[j1] += scale1*x1 + scale2*x2 + scale3*x3 + scale4*x4;
+                            y[j1 + k1] -= scale1*x1;
+                            y[j1 + k2] -= scale2*x2;
+                            y[j1 + k3] -= scale3*x3;
+                            y[j1 + k4] -= scale4*x4;
                         }
                     }
                 }
@@ -713,10 +895,10 @@ public class FiniteDifferenceOperator extends LinearOperator {
                             int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                             int l1 = 4*j1;
                             float x_j1 = x[j1];
-                            y[l1]     = x_j1 - x[j1 + k1];
-                            y[l1 + 1] = x_j1 - x[j1 + k2];
-                            y[l1 + 2] = x_j1 - x[j1 + k3];
-                            y[l1 + 3] = x_j1 - x[j1 + k4];
+                            y[l1]     = scale1*(x_j1 - x[j1 + k1]);
+                            y[l1 + 1] = scale2*(x_j1 - x[j1 + k2]);
+                            y[l1 + 2] = scale3*(x_j1 - x[j1 + k3]);
+                            y[l1 + 3] = scale4*(x_j1 - x[j1 + k4]);
                         }
                     }
                 }
@@ -738,6 +920,11 @@ public class FiniteDifferenceOperator extends LinearOperator {
         int[] prev5 = index[4];   // index to previous position along 5th dimension
         int n5 = prev5.length;    // length of 5th dimension
         int n1n2n3n4 = n1n2n3*n4; // stride along 5th dimension
+        float scale1= (float) scale[0];// scale along the 1st dimension
+        float scale2= (float) scale[1];// scale along the 2nd dimension
+        float scale3= (float) scale[2];// scale along the 3rd dimension
+        float scale4= (float) scale[3];// scale along the 4th dimension
+        float scale5= (float) scale[4];// scale along the 5th dimension
         if (transpose) {
             for (int i5 = 0; i5 < n5; ++i5) {
                 int j5 = n1n2n3n4*i5;
@@ -756,12 +943,12 @@ public class FiniteDifferenceOperator extends LinearOperator {
                                 int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                                 int l1 = 5*j1;
                                 float x1 = x[l1], x2 = x[l1 + 1], x3 = x[l1 + 2], x4 = x[l1 + 3], x5 = x[l1 + 4];
-                                y[j1] += x1 + x2 + x3 + x4 + x5;
-                                y[j1 + k1] -= x1;
-                                y[j1 + k2] -= x2;
-                                y[j1 + k3] -= x3;
-                                y[j1 + k4] -= x4;
-                                y[j1 + k5] -= x5;
+                                y[j1] += scale1*x1 + scale2*x2 + scale3*x3 + scale4*x4 + scale5*x5;
+                                y[j1 + k1] -= scale1*x1;
+                                y[j1 + k2] -= scale2*x2;
+                                y[j1 + k3] -= scale3*x3;
+                                y[j1 + k4] -= scale4*x4;
+                                y[j1 + k5] -= scale5*x5;
                             }
                         }
                     }
@@ -785,11 +972,11 @@ public class FiniteDifferenceOperator extends LinearOperator {
                                 int k1 = prev1[i1] - i1; // offset to previous element along 1st dimension
                                 int l1 = 5*j1;
                                 float x_j1 = x[j1];
-                                y[l1]     = x_j1 - x[j1 + k1];
-                                y[l1 + 1] = x_j1 - x[j1 + k2];
-                                y[l1 + 2] = x_j1 - x[j1 + k3];
-                                y[l1 + 3] = x_j1 - x[j1 + k4];
-                                y[l1 + 4] = x_j1 - x[j1 + k5];
+                                y[l1]     = scale1*(x_j1 - x[j1 + k1]);
+                                y[l1 + 1] = scale2*(x_j1 - x[j1 + k2]);
+                                y[l1 + 2] = scale3*(x_j1 - x[j1 + k3]);
+                                y[l1 + 3] = scale4*(x_j1 - x[j1 + k4]);
+                                y[l1 + 4] = scale5*(x_j1 - x[j1 + k5]);
                             }
                         }
                     }

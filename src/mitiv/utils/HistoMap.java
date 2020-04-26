@@ -463,7 +463,6 @@ public class HistoMap {
     private class DoublePrecisionlaw implements DoubleFunction {
         @Override
         public double apply(double arg) {
-            // TODO Auto-generated method stub
             return 1./( alpha*arg+beta);
         }
     }
@@ -471,7 +470,6 @@ public class HistoMap {
     private class FloatPrecisionlaw implements FloatFunction {
         @Override
         public float apply(float arg) {
-            // TODO Auto-generated method stub
             return (float) (1./( alpha*arg+beta));
         }
     }
