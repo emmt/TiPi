@@ -31,6 +31,8 @@ import mitiv.base.Traits;
 import mitiv.base.indexing.Range;
 import mitiv.exception.IllegalTypeException;
 import mitiv.exception.NonConformableArrayException;
+import mitiv.linalg.ArrayOps;
+
 
 public class ArrayUtils {
 
@@ -688,4 +690,101 @@ public class ArrayUtils {
         }
     }
 
+
+    public static ShapedArray dot(ShapedArray arr1, Array1D arr2) {
+        Shape shape1 = arr1.getShape();
+        Shape dotshape;
+        ShapedArray dotres = null;
+        int rank1 = shape1.rank();
+        if (shape1.dimension(rank1-1) != arr2.getNumber()) {
+            throw new IllegalArgumentException("Last dimension of array 1 must match the first dimension of array 2.");
+        }
+          // Promote type
+        int maxtype = Math.max(arr1.getType(),arr2.getType());
+        
+        int dotrank =  rank1-1;
+        if (dotrank>0){
+            int[] dotdims = new int[dotrank];
+            System.arraycopy(shape1.copyDimensions(), 0, dotdims, 0, rank1-1);          
+            dotshape = new Shape(dotdims);
+            dotres = ArrayFactory.create(maxtype, dotshape);
+
+            switch (rank1) {
+            //# for rank in 2 : 9
+            //# eval j = ${rank} - 1
+                case ${rank}:
+                    for (int k = 0; k < arr1.getDimension(0); ++k){
+                        ((Array${j}D)dotres).slice(k,0).assign(dot(((Array${rank}D)arr1).slice(k,0),arr2));
+                    }
+                break;    
+            //# end
+                default:
+                    throw new IllegalArgumentException("Unsupported rank");
+            }
+        }else{
+            switch (maxtype) {
+            //# for id in ${BYTE} : ${DOUBLE}
+            //#     def type = ${}{type_${id}}
+            //#     def Type = ${}{Type_${id}}
+            //#     def TYPE = ${}{TYPE_${id}}
+                case Traits.${TYPE}:{
+                    ${type}[] res ={ArrayOps.dot(arr1.to${Type}().flatten(), arr2.to${Type}().flatten())};
+                    dotres = ArrayFactory.wrap(res);
+                }                
+                break;   
+            //# end           
+            }
+        }
+        return dotres;
+    }   
+
+
+    public static ShapedArray outer(ShapedArray arr1, Array1D arr2) {
+        Shape shape1 = arr1.getShape();
+        Shape dotshape;
+        ShapedArray outres = null;
+        int rank1 = shape1.rank();
+
+          // Promote type
+        int maxtype = Math.max(arr1.getType(),arr2.getType());
+        
+        int outrank =  rank1+1;
+        int[] dotdims = new int[outrank];
+        System.arraycopy(shape1.copyDimensions(), 0, dotdims, 0, rank1);   
+        dotdims[rank1] = arr2.getDimension(0);       
+        dotshape = new Shape(dotdims);
+        outres = ArrayFactory.create(maxtype, dotshape);
+
+        switch (rank1) {
+            
+        case 1:        
+            switch (maxtype) {
+            //# for id in ${BYTE} : ${DOUBLE}
+            //#     def type = ${}{type_${id}}
+            //#     def Type = ${}{Type_${id}}
+            //#     def TYPE = ${}{TYPE_${id}}
+                case Traits.${TYPE}:
+                    for (int k = 0; k < arr1.getDimension(0); ++k){
+                        for (int l = 0; l < arr2.getDimension(0); ++l){
+                           ((${Type}2D) outres).set(k,l, (${type})  (((${Type}1D) arr1.to${Type}()).get(k)* ((${Type}1D) arr2.to${Type}()).get(l)));
+                        } 
+                    }                    
+                break;   
+            //# end           
+            }
+            break;  
+        //# for rank in 2 : 8
+        //# eval j = ${rank} + 1
+        case ${rank}:
+            for (int k = 0; k < arr1.getDimension(0); ++k){
+                ((Array${j}D)outres).slice(k,0).assign(outer(((Array${rank}D)arr1).slice(k,0),arr2));
+            }
+        break;   
+        //# end
+        default:
+            throw new IllegalArgumentException("Unsupported rank");
+        }
+        
+        return outres;
+    }   
 }

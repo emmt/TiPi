@@ -131,6 +131,38 @@ public class ArrayOps {
         return n;
     }
 
+    public static final int getLength(final long[] x, final long[] y) {
+        int n = getLength(x);
+        if (getLength(y) != n) {
+            throw new NonConformableArrayException(1);
+        }
+        return n;
+    }
+
+    public static final int getLength(final int[] x, final int[] y) {
+        int n = getLength(x);
+        if (getLength(y) != n) {
+            throw new NonConformableArrayException(1);
+        }
+        return n;
+    }
+
+    public static final int getLength(final short[] x, final short[] y) {
+        int n = getLength(x);
+        if (getLength(y) != n) {
+            throw new NonConformableArrayException(1);
+        }
+        return n;
+    }
+
+    public static final int getLength(final byte[] x, final byte[] y) {
+        int n = getLength(x);
+        if (getLength(y) != n) {
+            throw new NonConformableArrayException(1);
+        }
+        return n;
+    }
+
     public static final int getLength(final float[] w, final float[] x,
             final float[] y) {
         int n = getLength(w);
@@ -207,7 +239,7 @@ public class ArrayOps {
     }
 
     public static final int getLength(final float[][] x,
-                                      final float[][] y) {
+            final float[][] y) {
         int n = getLength(x);
         if (getLength(y) != n) {
             throw new NonConformableArrayException(2);
@@ -216,8 +248,8 @@ public class ArrayOps {
     }
 
     public static final int getLength(final float[][] w,
-                                      final float[][] x,
-                                      final float[][] y) {
+            final float[][] x,
+            final float[][] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
             throw new NonConformableArrayException(2);
@@ -284,7 +316,7 @@ public class ArrayOps {
      *         Not all arguments have the same length.
      */
     public static final int getLength(final double[][][] x,
-                                      final double[][][] y) {
+            final double[][][] y) {
         int n = getLength(x);
         if (getLength(y) != n) {
             throw new NonConformableArrayException(3);
@@ -307,7 +339,7 @@ public class ArrayOps {
      *         Not all arguments have the same length.
      */
     public static final int getLength(final float[][][] x,
-                                      final float[][][] y) {
+            final float[][][] y) {
         int n = getLength(x);
         if (getLength(y) != n) {
             throw new NonConformableArrayException(3);
@@ -333,8 +365,8 @@ public class ArrayOps {
      *         Not all arguments have the same length.
      */
     public static final int getLength(final double[][][] w,
-                                      final double[][][] x,
-                                      final double[][][] y) {
+            final double[][][] x,
+            final double[][][] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
             throw new NonConformableArrayException(3);
@@ -360,8 +392,8 @@ public class ArrayOps {
      *         Not all arguments have the same length.
      */
     public static final int getLength(final float[][][] w,
-                                      final float[][][] x,
-                                      final float[][][] y) {
+            final float[][][] x,
+            final float[][][] y) {
         int n = getLength(w);
         if (getLength(x) != n || getLength(y) != n) {
             throw new NonConformableArrayException(3);
@@ -545,8 +577,40 @@ public class ArrayOps {
         return result;
     }
 
-    public static final double dot(int n, final float[] x, final float[] y) {
+    public static final float dot(int n, final float[] x, final float[] y) {
         float result = 0.0F;
+        for (int i = 0; i < n; ++i) {
+            result += x[i] * y[i];
+        }
+        return result;
+    }
+
+    public static final long dot(int n, final long[] x, final long[] y) {
+        long result = 0;
+        for (int i = 0; i < n; ++i) {
+            result += x[i] * y[i];
+        }
+        return result;
+    }
+
+
+    public static final int dot(int n, final int[] x, final int[] y) {
+        int result = 0;
+        for (int i = 0; i < n; ++i) {
+            result += x[i] * y[i];
+        }
+        return result;
+    }
+
+    public static final short dot(int n, final short[] x, final short[] y) {
+        short result = 0;
+        for (int i = 0; i < n; ++i) {
+            result += x[i] * y[i];
+        }
+        return result;
+    }
+    public static final byte dot(int n, final byte[] x, final byte[] y) {
+        byte result = 0;
         for (int i = 0; i < n; ++i) {
             result += x[i] * y[i];
         }
@@ -562,7 +626,7 @@ public class ArrayOps {
         return result;
     }
 
-    public static final double dot(int n, final float[] w, final float[] x,
+    public static final float dot(int n, final float[] w, final float[] x,
             final float[] y) {
         float result = 0.0F;
         for (int i = 0; i < n; ++i) {
@@ -582,7 +646,23 @@ public class ArrayOps {
         return dot(getLength(x, y), x, y);
     }
 
-    public static final double dot(final float[] x, final float[] y) {
+    public static final float dot(final float[] x, final float[] y) {
+        return dot(getLength(x, y), x, y);
+    }
+
+    public static final long dot(final long[] x, final long[] y) {
+        return dot(getLength(x, y), x, y);
+    }
+
+    public static final int dot(final int[] x, final int[] y) {
+        return dot(getLength(x, y), x, y);
+    }
+
+    public static final short dot(final short[] x, final short[] y) {
+        return dot(getLength(x, y), x, y);
+    }
+
+    public static final byte dot(final byte[] x, final byte[] y) {
         return dot(getLength(x, y), x, y);
     }
 
