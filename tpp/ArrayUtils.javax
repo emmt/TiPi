@@ -691,16 +691,39 @@ public class ArrayUtils {
     }
 
 
-    public static ShapedArray dot(ShapedArray arr1, Array1D arr2) {
-        Shape shape1 = arr1.getShape();
+    /**
+     * Perform the dot product along the last dimension of the first input
+     * 
+     * <p> This static method performs the matrix-vector product between the
+     * matrix  {@code matrix} and a vector {@code vector}. When both inputs
+     * {@code matrix} and {@code vector} are 1D array of the same size, it 
+     * amounts to the inner product.</p>
+     *
+     * <p> the result is an array of rank(result) = {@code matrix} - 1. If 
+     * {@code matrix} is 1D then the result is a scalar (the inner product).
+     * If the type of both inputs are different, the type of the result is 
+     * promoted. 
+     * </p>
+     *
+     * @param matrix
+     *        The left-hand side matrix of the product 
+     *
+     * @param vector
+     *        The right-hand side 1D vector of the product. It must have the same size
+     *        than the last dimension of {@code matrix}
+     *
+     * @return A shaped array with the result of the product.
+     */
+    public static ShapedArray dot(ShapedArray matrix, Array1D vector) {
+        Shape shape1 = matrix.getShape();
         Shape dotshape;
         ShapedArray dotres = null;
         int rank1 = shape1.rank();
-        if (shape1.dimension(rank1-1) != arr2.getNumber()) {
+        if (shape1.dimension(rank1-1) != vector.getNumber()) {
             throw new IllegalArgumentException("Last dimension of array 1 must match the first dimension of array 2.");
         }
           // Promote type
-        int maxtype = Math.max(arr1.getType(),arr2.getType());
+        int maxtype = Math.max(matrix.getType(),vector.getType());
         
         int dotrank =  rank1-1;
         if (dotrank>0){
@@ -713,8 +736,8 @@ public class ArrayUtils {
             //# for rank in 2 : 9
             //# eval j = ${rank} - 1
                 case ${rank}:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        ((Array${j}D)dotres).slice(k,0).assign(dot(((Array${rank}D)arr1).slice(k,0),arr2));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        ((Array${j}D)dotres).slice(k,0).assign(dot(((Array${rank}D)matrix).slice(k,0),vector));
                     }
                 break;    
             //# end
@@ -728,7 +751,7 @@ public class ArrayUtils {
             //#     def Type = ${}{Type_${id}}
             //#     def TYPE = ${}{TYPE_${id}}
                 case Traits.${TYPE}:{
-                    ${type}[] res ={ArrayOps.dot(arr1.to${Type}().flatten(), arr2.to${Type}().flatten())};
+                    ${type}[] res ={ArrayOps.dot(matrix.to${Type}().flatten(), vector.to${Type}().flatten())};
                     dotres = ArrayFactory.wrap(res);
                 }                
                 break;   
@@ -738,20 +761,39 @@ public class ArrayUtils {
         return dotres;
     }   
 
-
-    public static ShapedArray outer(ShapedArray arr1, Array1D arr2) {
-        Shape shape1 = arr1.getShape();
+    /**
+     * Perform the outer product along the last dimension of the first input
+     * 
+     * <p> This static method performs the outer product between the
+     * matrix  {@code matrix} and a vector {@code vector}. </p>
+     *
+     * <p> the result is an array of rank(result) = {@code matrix} + 1. If 
+     * {@code matrix} is 1D then the result is a 2D matrix.
+     * If the type of both inputs are different, the type of the result is 
+     * promoted. 
+     * </p>
+     *
+     * @param matrix
+     *        The left-hand side matrix of the product 
+     *
+     * @param vector
+     *        The right-hand side 1D vector of the outer-product.
+     *
+     * @return A shaped array with the result of the outer-product.
+     */
+    public static ShapedArray outer(ShapedArray matrix, Array1D vector) {
+        Shape shape1 = matrix.getShape();
         Shape dotshape;
         ShapedArray outres = null;
         int rank1 = shape1.rank();
 
           // Promote type
-        int maxtype = Math.max(arr1.getType(),arr2.getType());
+        int maxtype = Math.max(matrix.getType(),vector.getType());
         
         int outrank =  rank1+1;
         int[] dotdims = new int[outrank];
         System.arraycopy(shape1.copyDimensions(), 0, dotdims, 0, rank1);   
-        dotdims[rank1] = arr2.getDimension(0);       
+        dotdims[rank1] = vector.getDimension(0);       
         dotshape = new Shape(dotdims);
         outres = ArrayFactory.create(maxtype, dotshape);
 
@@ -764,9 +806,9 @@ public class ArrayUtils {
             //#     def Type = ${}{Type_${id}}
             //#     def TYPE = ${}{TYPE_${id}}
                 case Traits.${TYPE}:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        for (int l = 0; l < arr2.getDimension(0); ++l){
-                           ((${Type}2D) outres).set(k,l, (${type})  (((${Type}1D) arr1.to${Type}()).get(k)* ((${Type}1D) arr2.to${Type}()).get(l)));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        for (int l = 0; l < vector.getDimension(0); ++l){
+                           ((${Type}2D) outres).set(k,l, (${type})  (((${Type}1D) matrix.to${Type}()).get(k)* ((${Type}1D) vector.to${Type}()).get(l)));
                         } 
                     }                    
                 break;   
@@ -776,8 +818,8 @@ public class ArrayUtils {
         //# for rank in 2 : 8
         //# eval j = ${rank} + 1
         case ${rank}:
-            for (int k = 0; k < arr1.getDimension(0); ++k){
-                ((Array${j}D)outres).slice(k,0).assign(outer(((Array${rank}D)arr1).slice(k,0),arr2));
+            for (int k = 0; k < matrix.getDimension(0); ++k){
+                ((Array${j}D)outres).slice(k,0).assign(outer(((Array${rank}D)matrix).slice(k,0),vector));
             }
         break;   
         //# end

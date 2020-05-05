@@ -1438,16 +1438,39 @@ public class ArrayUtils {
     }
 
 
-    public static ShapedArray dot(ShapedArray arr1, Array1D arr2) {
-        Shape shape1 = arr1.getShape();
+    /**
+     * Perform the dot product along the last dimension of the first input
+     * 
+     * <p> This static method performs the matrix-vector product between the
+     * matrix  {@code matrix} and a vector {@code vector}. When both inputs
+     * {@code matrix} and {@code vector} are 1D array of the same size, it 
+     * amounts to the inner product.</p>
+     *
+     * <p> the result is an array of rank(result) = {@code matrix} - 1. If 
+     * {@code matrix} is 1D then the result is a scalar (the inner product).
+     * If the type of both inputs are different, the type of the result is 
+     * promoted. 
+     * </p>
+     *
+     * @param matrix
+     *        The left-hand side matrix of the product 
+     *
+     * @param vector
+     *        The right-hand side 1D vector of the product. It must have the same size
+     *        than the last dimension of {@code matrix}
+     *
+     * @return A shaped array with the result of the product.
+     */
+    public static ShapedArray dot(ShapedArray matrix, Array1D vector) {
+        Shape shape1 = matrix.getShape();
         Shape dotshape;
         ShapedArray dotres = null;
         int rank1 = shape1.rank();
-        if (shape1.dimension(rank1-1) != arr2.getNumber()) {
+        if (shape1.dimension(rank1-1) != vector.getNumber()) {
             throw new IllegalArgumentException("Last dimension of array 1 must match the first dimension of array 2.");
         }
           // Promote type
-        int maxtype = Math.max(arr1.getType(),arr2.getType());
+        int maxtype = Math.max(matrix.getType(),vector.getType());
         
         int dotrank =  rank1-1;
         if (dotrank>0){
@@ -1458,43 +1481,43 @@ public class ArrayUtils {
 
             switch (rank1) {
                 case 2:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        ((Array1D)dotres).slice(k,0).assign(dot(((Array2D)arr1).slice(k,0),arr2));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        ((Array1D)dotres).slice(k,0).assign(dot(((Array2D)matrix).slice(k,0),vector));
                     }
                 break;    
                 case 3:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        ((Array2D)dotres).slice(k,0).assign(dot(((Array3D)arr1).slice(k,0),arr2));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        ((Array2D)dotres).slice(k,0).assign(dot(((Array3D)matrix).slice(k,0),vector));
                     }
                 break;    
                 case 4:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        ((Array3D)dotres).slice(k,0).assign(dot(((Array4D)arr1).slice(k,0),arr2));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        ((Array3D)dotres).slice(k,0).assign(dot(((Array4D)matrix).slice(k,0),vector));
                     }
                 break;    
                 case 5:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        ((Array4D)dotres).slice(k,0).assign(dot(((Array5D)arr1).slice(k,0),arr2));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        ((Array4D)dotres).slice(k,0).assign(dot(((Array5D)matrix).slice(k,0),vector));
                     }
                 break;    
                 case 6:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        ((Array5D)dotres).slice(k,0).assign(dot(((Array6D)arr1).slice(k,0),arr2));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        ((Array5D)dotres).slice(k,0).assign(dot(((Array6D)matrix).slice(k,0),vector));
                     }
                 break;    
                 case 7:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        ((Array6D)dotres).slice(k,0).assign(dot(((Array7D)arr1).slice(k,0),arr2));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        ((Array6D)dotres).slice(k,0).assign(dot(((Array7D)matrix).slice(k,0),vector));
                     }
                 break;    
                 case 8:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        ((Array7D)dotres).slice(k,0).assign(dot(((Array8D)arr1).slice(k,0),arr2));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        ((Array7D)dotres).slice(k,0).assign(dot(((Array8D)matrix).slice(k,0),vector));
                     }
                 break;    
                 case 9:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        ((Array8D)dotres).slice(k,0).assign(dot(((Array9D)arr1).slice(k,0),arr2));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        ((Array8D)dotres).slice(k,0).assign(dot(((Array9D)matrix).slice(k,0),vector));
                     }
                 break;    
                 default:
@@ -1503,32 +1526,32 @@ public class ArrayUtils {
         }else{
             switch (maxtype) {
                 case Traits.BYTE:{
-                    byte[] res ={ArrayOps.dot(arr1.toByte().flatten(), arr2.toByte().flatten())};
+                    byte[] res ={ArrayOps.dot(matrix.toByte().flatten(), vector.toByte().flatten())};
                     dotres = ArrayFactory.wrap(res);
                 }                
                 break;   
                 case Traits.SHORT:{
-                    short[] res ={ArrayOps.dot(arr1.toShort().flatten(), arr2.toShort().flatten())};
+                    short[] res ={ArrayOps.dot(matrix.toShort().flatten(), vector.toShort().flatten())};
                     dotres = ArrayFactory.wrap(res);
                 }                
                 break;   
                 case Traits.INT:{
-                    int[] res ={ArrayOps.dot(arr1.toInt().flatten(), arr2.toInt().flatten())};
+                    int[] res ={ArrayOps.dot(matrix.toInt().flatten(), vector.toInt().flatten())};
                     dotres = ArrayFactory.wrap(res);
                 }                
                 break;   
                 case Traits.LONG:{
-                    long[] res ={ArrayOps.dot(arr1.toLong().flatten(), arr2.toLong().flatten())};
+                    long[] res ={ArrayOps.dot(matrix.toLong().flatten(), vector.toLong().flatten())};
                     dotres = ArrayFactory.wrap(res);
                 }                
                 break;   
                 case Traits.FLOAT:{
-                    float[] res ={ArrayOps.dot(arr1.toFloat().flatten(), arr2.toFloat().flatten())};
+                    float[] res ={ArrayOps.dot(matrix.toFloat().flatten(), vector.toFloat().flatten())};
                     dotres = ArrayFactory.wrap(res);
                 }                
                 break;   
                 case Traits.DOUBLE:{
-                    double[] res ={ArrayOps.dot(arr1.toDouble().flatten(), arr2.toDouble().flatten())};
+                    double[] res ={ArrayOps.dot(matrix.toDouble().flatten(), vector.toDouble().flatten())};
                     dotres = ArrayFactory.wrap(res);
                 }                
                 break;   
@@ -1537,20 +1560,39 @@ public class ArrayUtils {
         return dotres;
     }   
 
-
-    public static ShapedArray outer(ShapedArray arr1, Array1D arr2) {
-        Shape shape1 = arr1.getShape();
+    /**
+     * Perform the outer product along the last dimension of the first input
+     * 
+     * <p> This static method performs the outer product between the
+     * matrix  {@code matrix} and a vector {@code vector}. </p>
+     *
+     * <p> the result is an array of rank(result) = {@code matrix} + 1. If 
+     * {@code matrix} is 1D then the result is a 2D matrix.
+     * If the type of both inputs are different, the type of the result is 
+     * promoted. 
+     * </p>
+     *
+     * @param matrix
+     *        The left-hand side matrix of the product 
+     *
+     * @param vector
+     *        The right-hand side 1D vector of the outer-product.
+     *
+     * @return A shaped array with the result of the outer-product.
+     */
+    public static ShapedArray outer(ShapedArray matrix, Array1D vector) {
+        Shape shape1 = matrix.getShape();
         Shape dotshape;
         ShapedArray outres = null;
         int rank1 = shape1.rank();
 
           // Promote type
-        int maxtype = Math.max(arr1.getType(),arr2.getType());
+        int maxtype = Math.max(matrix.getType(),vector.getType());
         
         int outrank =  rank1+1;
         int[] dotdims = new int[outrank];
         System.arraycopy(shape1.copyDimensions(), 0, dotdims, 0, rank1);   
-        dotdims[rank1] = arr2.getDimension(0);       
+        dotdims[rank1] = vector.getDimension(0);       
         dotshape = new Shape(dotdims);
         outres = ArrayFactory.create(maxtype, dotshape);
 
@@ -1559,82 +1601,82 @@ public class ArrayUtils {
         case 1:        
             switch (maxtype) {
                 case Traits.BYTE:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        for (int l = 0; l < arr2.getDimension(0); ++l){
-                           ((Byte2D) outres).set(k,l, (byte)  (((Byte1D) arr1.toByte()).get(k)* ((Byte1D) arr2.toByte()).get(l)));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        for (int l = 0; l < vector.getDimension(0); ++l){
+                           ((Byte2D) outres).set(k,l, (byte)  (((Byte1D) matrix.toByte()).get(k)* ((Byte1D) vector.toByte()).get(l)));
                         } 
                     }                    
                 break;   
                 case Traits.SHORT:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        for (int l = 0; l < arr2.getDimension(0); ++l){
-                           ((Short2D) outres).set(k,l, (short)  (((Short1D) arr1.toShort()).get(k)* ((Short1D) arr2.toShort()).get(l)));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        for (int l = 0; l < vector.getDimension(0); ++l){
+                           ((Short2D) outres).set(k,l, (short)  (((Short1D) matrix.toShort()).get(k)* ((Short1D) vector.toShort()).get(l)));
                         } 
                     }                    
                 break;   
                 case Traits.INT:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        for (int l = 0; l < arr2.getDimension(0); ++l){
-                           ((Int2D) outres).set(k,l, (int)  (((Int1D) arr1.toInt()).get(k)* ((Int1D) arr2.toInt()).get(l)));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        for (int l = 0; l < vector.getDimension(0); ++l){
+                           ((Int2D) outres).set(k,l, (int)  (((Int1D) matrix.toInt()).get(k)* ((Int1D) vector.toInt()).get(l)));
                         } 
                     }                    
                 break;   
                 case Traits.LONG:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        for (int l = 0; l < arr2.getDimension(0); ++l){
-                           ((Long2D) outres).set(k,l, (long)  (((Long1D) arr1.toLong()).get(k)* ((Long1D) arr2.toLong()).get(l)));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        for (int l = 0; l < vector.getDimension(0); ++l){
+                           ((Long2D) outres).set(k,l, (long)  (((Long1D) matrix.toLong()).get(k)* ((Long1D) vector.toLong()).get(l)));
                         } 
                     }                    
                 break;   
                 case Traits.FLOAT:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        for (int l = 0; l < arr2.getDimension(0); ++l){
-                           ((Float2D) outres).set(k,l, (float)  (((Float1D) arr1.toFloat()).get(k)* ((Float1D) arr2.toFloat()).get(l)));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        for (int l = 0; l < vector.getDimension(0); ++l){
+                           ((Float2D) outres).set(k,l, (float)  (((Float1D) matrix.toFloat()).get(k)* ((Float1D) vector.toFloat()).get(l)));
                         } 
                     }                    
                 break;   
                 case Traits.DOUBLE:
-                    for (int k = 0; k < arr1.getDimension(0); ++k){
-                        for (int l = 0; l < arr2.getDimension(0); ++l){
-                           ((Double2D) outres).set(k,l, (double)  (((Double1D) arr1.toDouble()).get(k)* ((Double1D) arr2.toDouble()).get(l)));
+                    for (int k = 0; k < matrix.getDimension(0); ++k){
+                        for (int l = 0; l < vector.getDimension(0); ++l){
+                           ((Double2D) outres).set(k,l, (double)  (((Double1D) matrix.toDouble()).get(k)* ((Double1D) vector.toDouble()).get(l)));
                         } 
                     }                    
                 break;   
             }
             break;  
         case 2:
-            for (int k = 0; k < arr1.getDimension(0); ++k){
-                ((Array3D)outres).slice(k,0).assign(outer(((Array2D)arr1).slice(k,0),arr2));
+            for (int k = 0; k < matrix.getDimension(0); ++k){
+                ((Array3D)outres).slice(k,0).assign(outer(((Array2D)matrix).slice(k,0),vector));
             }
         break;   
         case 3:
-            for (int k = 0; k < arr1.getDimension(0); ++k){
-                ((Array4D)outres).slice(k,0).assign(outer(((Array3D)arr1).slice(k,0),arr2));
+            for (int k = 0; k < matrix.getDimension(0); ++k){
+                ((Array4D)outres).slice(k,0).assign(outer(((Array3D)matrix).slice(k,0),vector));
             }
         break;   
         case 4:
-            for (int k = 0; k < arr1.getDimension(0); ++k){
-                ((Array5D)outres).slice(k,0).assign(outer(((Array4D)arr1).slice(k,0),arr2));
+            for (int k = 0; k < matrix.getDimension(0); ++k){
+                ((Array5D)outres).slice(k,0).assign(outer(((Array4D)matrix).slice(k,0),vector));
             }
         break;   
         case 5:
-            for (int k = 0; k < arr1.getDimension(0); ++k){
-                ((Array6D)outres).slice(k,0).assign(outer(((Array5D)arr1).slice(k,0),arr2));
+            for (int k = 0; k < matrix.getDimension(0); ++k){
+                ((Array6D)outres).slice(k,0).assign(outer(((Array5D)matrix).slice(k,0),vector));
             }
         break;   
         case 6:
-            for (int k = 0; k < arr1.getDimension(0); ++k){
-                ((Array7D)outres).slice(k,0).assign(outer(((Array6D)arr1).slice(k,0),arr2));
+            for (int k = 0; k < matrix.getDimension(0); ++k){
+                ((Array7D)outres).slice(k,0).assign(outer(((Array6D)matrix).slice(k,0),vector));
             }
         break;   
         case 7:
-            for (int k = 0; k < arr1.getDimension(0); ++k){
-                ((Array8D)outres).slice(k,0).assign(outer(((Array7D)arr1).slice(k,0),arr2));
+            for (int k = 0; k < matrix.getDimension(0); ++k){
+                ((Array8D)outres).slice(k,0).assign(outer(((Array7D)matrix).slice(k,0),vector));
             }
         break;   
         case 8:
-            for (int k = 0; k < arr1.getDimension(0); ++k){
-                ((Array9D)outres).slice(k,0).assign(outer(((Array8D)arr1).slice(k,0),arr2));
+            for (int k = 0; k < matrix.getDimension(0); ++k){
+                ((Array9D)outres).slice(k,0).assign(outer(((Array8D)matrix).slice(k,0),vector));
             }
         break;   
         default:
