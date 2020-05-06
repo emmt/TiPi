@@ -39,6 +39,14 @@ import mitiv.array.Double8D;
 import mitiv.array.Double9D;
 import mitiv.array.DoubleArray;
 import mitiv.array.Int1D;
+import mitiv.array.Int3D;
+import mitiv.array.Int4D;
+import mitiv.array.Int5D;
+import mitiv.array.Int6D;
+import mitiv.array.Int7D;
+import mitiv.array.Int8D;
+import mitiv.array.Int9D;
+import mitiv.array.IntArray;
 import mitiv.base.Shape;
 import mitiv.base.Traits;
 import mitiv.base.mapping.DoubleFunction;
@@ -344,5 +352,157 @@ public class FFTUtils {
         });
         return res;
     }
+
+
+    /**
+     * Compute squared length of FFT frequencies/coordinates.
+     *
+     * @param shp shape of the array
+     * @param scale the scale of each dimension
+     * @return the squared distance of FFT frequencies/coordinates.
+     */
+    public static IntArray Mesh(Shape shp)
+    {
+        int rank = shp.rank();
+        if (rank == 1)
+            return generateFrequels(shp.dimension(0));
+
+        int[] meshdims = new int[rank+1];
+        System.arraycopy(shp.copyDimensions(), 0, meshdims, 0, rank);
+        meshdims[rank] = rank;
+        Shape meshShape = new Shape(meshdims);
+        IntArray res = (IntArray) ArrayFactory.create(Traits.INT, meshShape);
+
+        Int1D[]  x = new Int1D[rank];
+        for( int j = 0; j < rank; j++){
+            x[j] = generateFrequels(shp.dimension(j));
+        }
+
+        switch (rank) {
+            case 2:
+                for(int n1=0; n1< shp.dimension(1);++n1) {
+                    for(int n0=0; n0< shp.dimension(0);++n0) {
+                        ((Int3D) res).set(n0,n1,0, x[0].get(n0));
+                        ((Int3D) res).set(n0,n1,1, x[1].get(n1));
+                    }
+                }
+                break;
+            case 3:
+                for(int n2=0; n2< shp.dimension(2);++n2) {
+                    for(int n1=0; n1< shp.dimension(1);++n1) {
+                        for(int n0=0; n0< shp.dimension(0);++n0) {
+                            ((Int4D) res).set(n0,n1,n2,0, x[0].get(n0));
+                            ((Int4D) res).set(n0,n1,n2,1, x[1].get(n1));
+                            ((Int4D) res).set(n0,n1,n2,2, x[2].get(n2));
+                        }
+                    }
+                }
+                break;
+            case 4:
+                for(int n3=0; n3< shp.dimension(3);++n3) {
+                    for(int n2=0; n2< shp.dimension(2);++n2) {
+                        for(int n1=0; n1< shp.dimension(1);++n1) {
+                            for(int n0=0; n0< shp.dimension(0);++n0) {
+                                ((Int5D) res).set(n0,n1,n2,n3,0, x[0].get(n0));
+                                ((Int5D) res).set(n0,n1,n2,n3,1, x[1].get(n1));
+                                ((Int5D) res).set(n0,n1,n2,n3,3, x[2].get(n2));
+                                ((Int5D) res).set(n0,n1,n2,n3,4, x[3].get(n3));
+                            }
+                        }
+                    }
+                }
+                break;
+            case 5:
+                for(int n4=0; n4< shp.dimension(4);++n4) {
+                    for(int n3=0; n3< shp.dimension(3);++n3) {
+                        for(int n2=0; n2< shp.dimension(2);++n2) {
+                            for(int n1=0; n1< shp.dimension(1);++n1) {
+                                for(int n0=0; n0< shp.dimension(0);++n0) {
+                                    ((Int6D) res).set(n0,n1,n2,n3,n4,0, x[0].get(n0));
+                                    ((Int6D) res).set(n0,n1,n2,n3,n4,1, x[1].get(n1));
+                                    ((Int6D) res).set(n0,n1,n2,n3,n4,3, x[2].get(n2));
+                                    ((Int6D) res).set(n0,n1,n2,n3,n4,4, x[3].get(n3));
+                                    ((Int6D) res).set(n0,n1,n2,n3,n4,5, x[4].get(n4));
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            case 6:
+                for(int n5=0; n5< shp.dimension(5);++n5) {
+                    for(int n4=0; n4< shp.dimension(4);++n4) {
+                        for(int n3=0; n3< shp.dimension(3);++n3) {
+                            for(int n2=0; n2< shp.dimension(2);++n2) {
+                                for(int n1=0; n1< shp.dimension(1);++n1) {
+                                    for(int n0=0; n0< shp.dimension(0);++n0) {
+                                        ((Int7D) res).set(n0,n1,n2,n3,n4,n5,0, x[0].get(n0));
+                                        ((Int7D) res).set(n0,n1,n2,n3,n4,n5,1, x[1].get(n1));
+                                        ((Int7D) res).set(n0,n1,n2,n3,n4,n5,3, x[2].get(n2));
+                                        ((Int7D) res).set(n0,n1,n2,n3,n4,n5,4, x[3].get(n3));
+                                        ((Int7D) res).set(n0,n1,n2,n3,n4,n5,5, x[4].get(n4));
+                                        ((Int7D) res).set(n0,n1,n2,n3,n4,n5,6, x[5].get(n5));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            case 7:
+                for(int n6=0; n6< shp.dimension(6);++n6) {
+                    for(int n5=0; n5< shp.dimension(5);++n5) {
+                        for(int n4=0; n4< shp.dimension(4);++n4) {
+                            for(int n3=0; n3< shp.dimension(3);++n3) {
+                                for(int n2=0; n2< shp.dimension(2);++n2) {
+                                    for(int n1=0; n1< shp.dimension(1);++n1) {
+                                        for(int n0=0; n0< shp.dimension(0);++n0) {
+                                            ((Int8D) res).set(n0,n1,n2,n3,n4,n5,n6,0, x[0].get(n0));
+                                            ((Int8D) res).set(n0,n1,n2,n3,n4,n5,n6,1, x[1].get(n1));
+                                            ((Int8D) res).set(n0,n1,n2,n3,n4,n5,n6,3, x[2].get(n2));
+                                            ((Int8D) res).set(n0,n1,n2,n3,n4,n5,n6,4, x[3].get(n3));
+                                            ((Int8D) res).set(n0,n1,n2,n3,n4,n5,n6,5, x[4].get(n4));
+                                            ((Int8D) res).set(n0,n1,n2,n3,n4,n5,n6,6, x[5].get(n5));
+                                            ((Int8D) res).set(n0,n1,n2,n3,n4,n5,n6,7, x[6].get(n6));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            case 8:
+                for(int n7=0; n7< shp.dimension(7);++n7) {
+                    for(int n6=0; n6< shp.dimension(6);++n6) {
+                        for(int n5=0; n5< shp.dimension(5);++n5) {
+                            for(int n4=0; n4< shp.dimension(4);++n4) {
+                                for(int n3=0; n3< shp.dimension(3);++n3) {
+                                    for(int n2=0; n2< shp.dimension(2);++n2) {
+                                        for(int n1=0; n1< shp.dimension(1);++n1) {
+                                            for(int n0=0; n0< shp.dimension(0);++n0) {
+                                                ((Int9D) res).set(n0,n1,n2,n3,n4,n5,n6,n7,0, x[0].get(n0));
+                                                ((Int9D) res).set(n0,n1,n2,n3,n4,n5,n6,n7,1, x[1].get(n1));
+                                                ((Int9D) res).set(n0,n1,n2,n3,n4,n5,n6,n7,3, x[2].get(n2));
+                                                ((Int9D) res).set(n0,n1,n2,n3,n4,n5,n6,n7,4, x[3].get(n3));
+                                                ((Int9D) res).set(n0,n1,n2,n3,n4,n5,n6,n7,5, x[4].get(n4));
+                                                ((Int9D) res).set(n0,n1,n2,n3,n4,n5,n6,n7,6, x[5].get(n5));
+                                                ((Int9D) res).set(n0,n1,n2,n3,n4,n5,n6,n7,7, x[6].get(n6));
+                                                ((Int9D) res).set(n0,n1,n2,n3,n4,n5,n6,n7,7, x[7].get(n7));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported rank");
+        }
+        return res;
+    }
+
 }
 
