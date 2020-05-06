@@ -25,6 +25,24 @@
 
 package mitiv.utils;
 
+import java.util.Arrays;
+
+import mitiv.array.ArrayFactory;
+import mitiv.array.Double1D;
+import mitiv.array.Double2D;
+import mitiv.array.Double3D;
+import mitiv.array.Double4D;
+import mitiv.array.Double5D;
+import mitiv.array.Double6D;
+import mitiv.array.Double7D;
+import mitiv.array.Double8D;
+import mitiv.array.Double9D;
+import mitiv.array.DoubleArray;
+import mitiv.array.Int1D;
+import mitiv.base.Shape;
+import mitiv.base.Traits;
+import mitiv.base.mapping.DoubleFunction;
+
 public class FFTUtils {
     /**
      * This class is not instantiable, it only provides static methods.
@@ -80,18 +98,8 @@ public class FFTUtils {
      * @param dim - The number of discrete frequencies.
      * @return An array of {@code dim} integers: {0,1,2,...,-2,-1}
      */
-    public static int[] generateFrequels(int dim) {
+    public static Int1D generateFrequels(int dim) {
         int[] freq = new int[dim];
-        generateFrequels(freq);
-        return freq;
-    }
-
-    /**
-     * Generate discrete Fourier transform frequencies.
-     * @param freq - The array of discrete frequencies to fill.
-     */
-    public static void generateFrequels(int[] freq) {
-        int dim = freq.length;
         int cut = dim/2;
         for (int i = 0; i <= cut; ++i) {
             freq[i] = i;
@@ -99,6 +107,242 @@ public class FFTUtils {
         for (int i = cut + 1; i < dim; ++i) {
             freq[i] = i - dim;
         }
+        return ArrayFactory.wrap(freq,dim);
     }
 
+    /**
+     * Generate discrete Fourier transform squared frequencies.
+     * @param dim - The number of discrete frequencies.
+     * @return An array of {@code dim} integers: {0,1^2,2^2,...,-2^2,-1^2}
+     */
+    public static Int1D generateFrequels2(int dim) {
+        int[] freq = new int[dim];
+        int cut = dim/2;
+        for (int i = 0; i <= cut; ++i) {
+            freq[i] = i*i;
+        }
+        for (int i = cut + 1; i < dim; ++i) {
+            freq[i] = (i - dim)*( i - dim);
+        }
+        return ArrayFactory.wrap(freq,dim);
+    }
+
+    /**
+     * Compute squared length of FFT frequencies/coordinates.
+     *
+     * @param shp shape of the array
+     * @return the squared distance of FFT frequencies/coordinates.
+     */
+    public static DoubleArray fftDist2(Shape shp ) {
+        return fftDist2( shp, null);
+    }
+
+    /**
+     * Compute squared length of FFT frequencies/coordinates.
+     *
+     * @param shp shape of the array
+     * @param scale the scale of each dimension
+     * @return the squared distance of FFT frequencies/coordinates.
+     */
+    public static DoubleArray fftDist2(Shape shp, double[] scale)
+    {
+        DoubleArray res = (DoubleArray) ArrayFactory.create(Traits.DOUBLE, shp);
+        int rank = shp.rank();
+        if (scale==null) {
+            scale = new double[rank];
+            Arrays.fill(scale, 1.0);
+        }else if(rank != scale.length) {
+            throw new IllegalArgumentException("Scale must have the same rank");
+        }
+        if (rank == 1)
+            return generateFrequels(shp.dimension(0)).toDouble();
+
+        Double1D[]  x = new Double1D[rank];
+        for( int j = 0; j < rank; j++){
+            x[j] = generateFrequels2(shp.dimension(j)).toDouble();
+            x[j].scale(scale[j]*scale[j]);
+        }
+
+        switch (rank) {
+            case 2:
+                for(int n1=0; n1< shp.dimension(1);++n1) {
+                    for(int n0=0; n0< shp.dimension(0);++n0) {
+                        ((Double2D) res).set(n0,n1,
+                                x[0].get(n0)+x[1].get(n1));
+                    }
+                }
+                break;
+            case 3:
+                for(int n2=0; n2< shp.dimension(2);++n2) {
+                    for(int n1=0; n1< shp.dimension(1);++n1) {
+                        for(int n0=0; n0< shp.dimension(0);++n0) {
+                            ((Double3D) res).set(n0,n1,n2,
+                                    x[0].get(n0)+x[1].get(n1)
+                                    +x[2].get(n2));
+                        }
+                    }
+                }
+                break;
+            case 4:
+                for(int n3=0; n3< shp.dimension(3);++n3) {
+                    for(int n2=0; n2< shp.dimension(2);++n2) {
+                        for(int n1=0; n1< shp.dimension(1);++n1) {
+                            for(int n0=0; n0< shp.dimension(0);++n0) {
+                                ((Double4D) res).set(n0,n1,n2,n3,
+                                        x[0].get(n0)+x[1].get(n1)
+                                        +x[2].get(n2)+x[3].get(n3));
+                            }
+                        }
+                    }
+                }
+                break;
+            case 5:
+                for(int n4=0; n4< shp.dimension(4);++n4) {
+                    for(int n3=0; n3< shp.dimension(3);++n3) {
+                        for(int n2=0; n2< shp.dimension(2);++n2) {
+                            for(int n1=0; n1< shp.dimension(1);++n1) {
+                                for(int n0=0; n0< shp.dimension(0);++n0) {
+                                    ((Double5D) res).set(n0,n1,n2,n3,n4,
+                                            x[0].get(n0)+x[1].get(n1)
+                                            +x[2].get(n2)+x[3].get(n3)
+                                            +x[4].get(n4));
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            case 6:
+                for(int n5=0; n5< shp.dimension(5);++n5) {
+                    for(int n4=0; n4< shp.dimension(4);++n4) {
+                        for(int n3=0; n3< shp.dimension(3);++n3) {
+                            for(int n2=0; n2< shp.dimension(2);++n2) {
+                                for(int n1=0; n1< shp.dimension(1);++n1) {
+                                    for(int n0=0; n0< shp.dimension(0);++n0) {
+                                        ((Double6D) res).set(n0,n1,n2,n3,n4,n5,
+                                                x[0].get(n0)+x[1].get(n1)
+                                                +x[2].get(n2)+x[3].get(n3)
+                                                +x[4].get(n4)+x[5].get(n5));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            case 7:
+                for(int n6=0; n6< shp.dimension(6);++n6) {
+                    for(int n5=0; n5< shp.dimension(5);++n5) {
+                        for(int n4=0; n4< shp.dimension(4);++n4) {
+                            for(int n3=0; n3< shp.dimension(3);++n3) {
+                                for(int n2=0; n2< shp.dimension(2);++n2) {
+                                    for(int n1=0; n1< shp.dimension(1);++n1) {
+                                        for(int n0=0; n0< shp.dimension(0);++n0) {
+                                            ((Double7D) res).set(n0,n1,n2,n3,n4,n5,n6,
+                                                    x[0].get(n0)+x[1].get(n1)
+                                                    +x[2].get(n2)+x[3].get(n3)
+                                                    +x[4].get(n4)+x[5].get(n5)
+                                                    +x[6].get(n6));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            case 8:
+                for(int n7=0; n7< shp.dimension(7);++n7) {
+                    for(int n6=0; n6< shp.dimension(6);++n6) {
+                        for(int n5=0; n5< shp.dimension(5);++n5) {
+                            for(int n4=0; n4< shp.dimension(4);++n4) {
+                                for(int n3=0; n3< shp.dimension(3);++n3) {
+                                    for(int n2=0; n2< shp.dimension(2);++n2) {
+                                        for(int n1=0; n1< shp.dimension(1);++n1) {
+                                            for(int n0=0; n0< shp.dimension(0);++n0) {
+                                                ((Double8D) res).set(n0,n1,n2,n3,n4,n5,n6,n7,
+                                                        x[0].get(n0)+x[1].get(n1)
+                                                        +x[2].get(n2)+x[3].get(n3)
+                                                        +x[4].get(n4)+x[5].get(n5)
+                                                        +x[6].get(n6)+x[7].get(n7));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            case 9:
+                for(int n8=0; n8< shp.dimension(8);++n8) {
+                    for(int n7=0; n7< shp.dimension(7);++n7) {
+                        for(int n6=0; n6< shp.dimension(6);++n6) {
+                            for(int n5=0; n5< shp.dimension(5);++n5) {
+                                for(int n4=0; n4< shp.dimension(4);++n4) {
+                                    for(int n3=0; n3< shp.dimension(3);++n3) {
+                                        for(int n2=0; n2< shp.dimension(2);++n2) {
+                                            for(int n1=0; n1< shp.dimension(1);++n1) {
+                                                for(int n0=0; n0< shp.dimension(0);++n0) {
+                                                    ((Double9D) res).set(n0,n1,n2,n3,n4,n5,n6,n7,n8,
+                                                            x[0].get(n0)+x[1].get(n1)
+                                                            +x[2].get(n2)+x[3].get(n3)
+                                                            +x[4].get(n4)+x[5].get(n5)
+                                                            +x[6].get(n6)+x[7].get(n7)
+                                                            +x[8].get(n8));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported rank");
+        }
+        return res;
+    }
+
+    /**
+     * Compute  length of FFT frequencies/coordinates.
+     *
+     * @param shp shape of the array
+     * @param scale the scale of each dimension
+     * @return the  distance of FFT frequencies/coordinates.
+     */
+    public static DoubleArray fftDist(Shape shp,double[] scale)
+    {
+        DoubleArray res = fftDist2(shp,scale);
+        res.map(new DoubleFunction() {
+
+            @Override
+            public double apply(double arg) {
+                return Math.sqrt(arg);
+            }
+        });
+        return res;
+    }
+    /**
+     * Compute  length of FFT frequencies/coordinates.
+     *
+     * @param shp shape of the array
+     *
+     * @return the  distance of FFT frequencies/coordinates.
+     */
+    public static DoubleArray fftDist(Shape shp)
+    {
+        DoubleArray res = fftDist2(shp,null);
+        res.map(new DoubleFunction() {
+
+            @Override
+            public double apply(double arg) {
+                return Math.sqrt(arg);
+            }
+        });
+        return res;
+    }
 }
+
