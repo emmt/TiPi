@@ -15,7 +15,7 @@ public abstract class PsfModel {
 
     protected boolean single = false;
     protected Shape psfShape;
-    protected ShapedArray psf; //3D point spread function
+    protected ShapedArray psf=null; //3D point spread function
 
     public PsfModel(Shape psfShape,boolean single) {
         this.psfShape = psfShape;

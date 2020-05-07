@@ -10,10 +10,16 @@ import org.jtransforms.fft.DoubleFFT_2D;
 import org.jtransforms.fft.FloatFFT_1D;
 import org.jtransforms.fft.FloatFFT_2D;
 
+import mitiv.array.ArrayFactory;
+import mitiv.array.Double2D;
+import mitiv.array.Double3D;
 import mitiv.array.DoubleArray;
+import mitiv.array.Float2D;
+import mitiv.array.Float3D;
 import mitiv.array.FloatArray;
 import mitiv.array.ShapedArray;
 import mitiv.base.Shape;
+import mitiv.base.Traits;
 import mitiv.base.mapping.DoubleFunction;
 import mitiv.base.mapping.FloatFunction;
 import mitiv.linalg.shaped.DoubleShapedVector;
@@ -33,8 +39,10 @@ public class MoffatPsf extends PsfModel {
      * @param psfShape
      * @param single
      */
-    public MoffatPsf(Shape psfShape, double[] scale, boolean single) {
+    public MoffatPsf(Shape psfShape, double alpha, double beta,double[] scale, boolean single) {
         super(psfShape, single);
+        this.alpha = alpha;
+        this.beta=beta;
         rank = psfShape.rank();
         if (scale==null) {
             scale = new double[rank];
@@ -79,7 +87,7 @@ public class MoffatPsf extends PsfModel {
             ((FloatArray) psf).map(new FloatMoffat(alpha,beta));
             ((FloatArray) psf).scale(1.0F/ ((FloatArray) psf).sum());
         }else {
-            psf.toDouble();
+            psf=psf.toDouble();
             ((DoubleArray) psf).map(new DoubleMoffat(alpha,beta));
             ((DoubleArray) psf).scale(1.0/ ((DoubleArray) psf).sum());
         }
@@ -99,7 +107,43 @@ public class MoffatPsf extends PsfModel {
         if (psf==null) {
             computePsf();
         }
-        return null;
+        ShapedArray mtf;
+        int[] mtfdims = new int[rank+1];
+        System.arraycopy(psfShape.copyDimensions(), 0, mtfdims, 1, rank);
+        mtfdims[0] = 2;
+        Shape mtfShape = new Shape(mtfdims);
+        mtf = ArrayFactory.create(Traits.FLOAT, mtfShape);
+        if(single) {
+            mtf = ArrayFactory.create(Traits.FLOAT, mtfShape);
+            switch(rank) {
+                case 1:
+                    ((Float2D) mtf).slice(0, 0).assign(psf);
+                    ((FloatFFT_1D) fft).realForwardFull(((Float2D) mtf).getData());
+                    break;
+                case 2:
+                    ((Float3D) mtf).slice(0, 0).assign(psf);
+                    ((FloatFFT_2D) fft).realForwardFull(((Float3D) mtf).getData());
+                    break;
+                default:
+                    throw new IllegalArgumentException("Rank >2 unsupported");
+            }
+
+        }else {
+            mtf = ArrayFactory.create(Traits.DOUBLE, mtfShape);
+            switch(rank) {
+                case 1:
+                    ((Double2D) mtf).slice(0, 0).assign(psf);
+                    ((DoubleFFT_1D) fft).realForwardFull(((Double2D) mtf).getData());
+                    break;
+                case 2:
+                    ((Double3D) mtf).slice(0, 0).assign(psf);
+                    ((DoubleFFT_2D) fft).realForwardFull(((Double3D) mtf).getData());
+                    break;
+                default:
+                    throw new IllegalArgumentException("Rank >2 unsupported");
+            }
+        }
+        return mtf;
     }
 
     @Override
