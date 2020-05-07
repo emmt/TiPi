@@ -5,13 +5,6 @@ package mitiv.psf;
 
 import java.util.Arrays;
 
-import org.jtransforms.fft.DoubleFFT_1D;
-import org.jtransforms.fft.DoubleFFT_2D;
-import org.jtransforms.fft.DoubleFFT_3D;
-import org.jtransforms.fft.FloatFFT_1D;
-import org.jtransforms.fft.FloatFFT_2D;
-import org.jtransforms.fft.FloatFFT_3D;
-
 import mitiv.array.Array1D;
 import mitiv.array.ArrayFactory;
 import mitiv.array.ArrayUtils;
@@ -36,7 +29,6 @@ import mitiv.utils.FFTUtils;
 public class GaussianPsf extends PsfModel {
     double[] scale=null;
     int rank;
-    Object fft;
     /**
      *
      */
@@ -51,36 +43,6 @@ public class GaussianPsf extends PsfModel {
             throw new IllegalArgumentException("Scale and shape must have the same rank");
         }
         this.scale = scale;
-        if(single) {
-            switch(rank) {
-                case 1:
-                    fft = new FloatFFT_1D(psfShape.dimension(0));
-                    break;
-                case 2:
-                    fft = new FloatFFT_2D(psfShape.dimension(1), psfShape.dimension(0));
-                    break;
-                case 3:
-                    fft = new FloatFFT_3D(psfShape.dimension(2), psfShape.dimension(1), psfShape.dimension(0));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Rank >3 unsupported");
-            }
-
-        }else {
-            switch(rank) {
-                case 1:
-                    fft = new DoubleFFT_1D(psfShape.dimension(0));
-                    break;
-                case 2:
-                    fft = new DoubleFFT_2D(psfShape.dimension(1), psfShape.dimension(0));
-                    break;
-                case 3:
-                    fft = new DoubleFFT_3D(psfShape.dimension(2), psfShape.dimension(1), psfShape.dimension(0));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Rank >3 unsupported");
-            }
-        }
     }
 
     @Override
@@ -149,8 +111,6 @@ public class GaussianPsf extends PsfModel {
             }
             mtf = ArrayUtils.outer(mtf, nextdim);
         }
-
-        ((DoubleFFT_3D) fft).complexInverse((double[]) mtf.getData(),true);
         return mtf;
     }
 
@@ -162,8 +122,7 @@ public class GaussianPsf extends PsfModel {
 
     @Override
     public void freeMem() {
-        // TODO Auto-generated method stub
-
+        psf=null;
     }
 
     private class  DoubleGaussian implements DoubleFunction
