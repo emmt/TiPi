@@ -118,6 +118,28 @@ public class FFTUtils {
         return ArrayFactory.wrap(freq,dim);
     }
 
+
+    /**
+     * Generate discrete Fourier transform frequencies.
+     * @param dim - The number of discrete frequencies.
+     * @return An array of {@code dim} integers: {0,1,2,...,-2,-1}
+     */
+    public static Double1D generateFrequels(int dim,boolean sc) {
+        double[] freq = new double[dim];
+        int cut = dim/2;
+        double factor=1;
+        if(sc) {
+            factor = 1./dim;
+        }
+        for (int i = 0; i <= cut; ++i) {
+            freq[i] = factor*i;
+        }
+        for (int i = cut + 1; i < dim; ++i) {
+            freq[i] = factor*(i - dim);
+        }
+        return ArrayFactory.wrap(freq,dim);
+    }
+
     /**
      * Generate discrete Fourier transform squared frequencies.
      * @param dim - The number of discrete frequencies.
@@ -131,6 +153,27 @@ public class FFTUtils {
         }
         for (int i = cut + 1; i < dim; ++i) {
             freq[i] = (i - dim)*( i - dim);
+        }
+        return ArrayFactory.wrap(freq,dim);
+    }
+    /**
+     * Generate discrete Fourier transform squared frequencies.
+     * @param dim - The number of discrete frequencies.
+     * @return An array of {@code dim} integers: {0,1^2,2^2,...,-2^2,-1^2}
+     */
+    public static Double1D generateFrequels2(int dim, boolean sc) {
+        double[] freq = new double[dim];
+        int cut = dim/2;
+        double factor=1;
+        if(sc) {
+            factor = 1./dim/dim;
+        }
+
+        for (int i = 0; i <= cut; ++i) {
+            freq[i] = factor*i*i;
+        }
+        for (int i = cut + 1; i < dim; ++i) {
+            freq[i] = factor*(i - dim)*( i - dim);
         }
         return ArrayFactory.wrap(freq,dim);
     }
@@ -162,8 +205,11 @@ public class FFTUtils {
         }else if(rank != scale.length) {
             throw new IllegalArgumentException("Scale must have the same rank");
         }
-        if (rank == 1)
-            return generateFrequels(shp.dimension(0)).toDouble();
+        if (rank == 1) {
+            res = generateFrequels2(shp.dimension(0)).toDouble();
+            res.scale(scale[0]*scale[0]);
+            return res;
+        }
 
         Double1D[]  x = new Double1D[rank];
         for( int j = 0; j < rank; j++){

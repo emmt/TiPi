@@ -17,12 +17,11 @@ public abstract class PsfModel {
     protected Shape psfShape;
     protected ShapedArray psf; //3D point spread function
 
+    public PsfModel(Shape psfShape,boolean single) {
+        this.psfShape = psfShape;
+        this.single = single;
+    }
 
-
-    /**
-     * Launch internal routines to compute PSF
-     */
-    abstract public void computePsf();
 
     /**
      * @return the PSF
