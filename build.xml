@@ -15,6 +15,7 @@
         <pathelement location="${lib.dir}/JTransforms-3.1-with-dependencies.jar"/>
         <pathelement location="${lib.dir}/args4j-2.33.jar"/>
         <pathelement location="${lib.dir}/nom-tam-fits-1.15.0.jar"/>
+        <pathelement location="${lib.dir}/commons-math3-3.6.1.jar"/>
     </path>
     <target name="init">
         <mkdir dir="${bin.dir}"/>
@@ -83,6 +84,7 @@
             <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/JTransforms-3.1-with-dependencies.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/args4j-2.33.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/nom-tam-fits-1.15.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/commons-math3-3.6.1.jar"/>
         </jar>
     </target>
     <!-- Main target -->
