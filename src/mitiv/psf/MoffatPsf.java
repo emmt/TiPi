@@ -50,7 +50,7 @@ public class MoffatPsf extends PsfModel {
         }else if(rank != scale.length) {
             throw new IllegalArgumentException("Scale and shape must have the same rank");
         }
-        this.scale = scale;
+        this.scale =  Arrays.copyOf(scale, rank);
         if(single) {
             switch(rank) {
                 case 1:
@@ -62,7 +62,6 @@ public class MoffatPsf extends PsfModel {
                 default:
                     throw new IllegalArgumentException("Rank >2 unsupported");
             }
-
         }else {
             switch(rank) {
                 case 1:
@@ -82,7 +81,7 @@ public class MoffatPsf extends PsfModel {
      */
     private void computePsf() {
         psf = FFTUtils.fftDist(psfShape,scale);
-        if (single) {
+        if (isSingle()) {
             psf = psf.toFloat();
             ((FloatArray) psf).map(new FloatMoffat(alpha,beta));
             ((FloatArray) psf).scale(1.0F/ ((FloatArray) psf).sum());
@@ -112,8 +111,7 @@ public class MoffatPsf extends PsfModel {
         System.arraycopy(psfShape.copyDimensions(), 0, mtfdims, 1, rank);
         mtfdims[0] = 2;
         Shape mtfShape = new Shape(mtfdims);
-        mtf = ArrayFactory.create(Traits.FLOAT, mtfShape);
-        if(single) {
+        if(isSingle()) {
             mtf = ArrayFactory.create(Traits.FLOAT, mtfShape);
             switch(rank) {
                 case 1:
@@ -148,22 +146,22 @@ public class MoffatPsf extends PsfModel {
 
     @Override
     public void setParam(DoubleShapedVector param) {
-        double[] x = param.getData();
+        setParam(  param.getData());
+    }
+
+    @Override
+    public void setParam(double[] x) {
+
         switch (x.length) {
             case 4:
                 scale[1]=x[3] ;
             case 3:
                 scale[0]=x[2] ;
             case 2:
-                beta = x[1];
+                beta = Math.abs(x[1]);
             case 1:
-                alpha = x[0];
+                alpha = Math.abs(x[0]);
         }
-        psf=null;
-    }
-
-    @Override
-    public void freeMem() {
         psf=null;
     }
 

@@ -42,13 +42,13 @@ public class GaussianPsf extends PsfModel {
         }else if(rank != scale.length) {
             throw new IllegalArgumentException("Scale and shape must have the same rank");
         }
-        this.scale = scale;
+        this.scale =  Arrays.copyOf(scale, rank);
     }
 
     @Override
     public ShapedArray getPsf() {
         if (psf==null) {
-            if (single) {
+            if (isSingle()) {
                 psf = FFTUtils.generateFrequels2(psfShape.dimension(0)).toFloat();
                 ((Float1D) psf).map(new FloatGaussian((float) Math.sqrt(0.5)*scale[0]));
             }else {
@@ -58,7 +58,7 @@ public class GaussianPsf extends PsfModel {
 
             for( int j = 1; j < rank; j++){
                 Array1D nextdim;
-                if (single) {
+                if (isSingle()) {
                     nextdim = FFTUtils.generateFrequels2(psfShape.dimension(j)).toFloat();
                     ((Float1D) nextdim).map(new FloatGaussian((float) Math.sqrt(0.5)*scale[j]));
                 }else {
@@ -68,7 +68,7 @@ public class GaussianPsf extends PsfModel {
                 psf = ArrayUtils.outer(psf, nextdim);
             }
 
-            if (single) {
+            if (isSingle()) {
                 ((FloatArray) psf).scale(1.0F/ ((FloatArray) psf).sum());
             }else {
                 ((DoubleArray) psf).scale(1.0/ ((DoubleArray) psf).sum());
@@ -80,15 +80,11 @@ public class GaussianPsf extends PsfModel {
     @Override
     public ShapedArray getMtf() {
         ShapedArray mtf;
-        int[] mtfdims = new int[rank+1];
         int[] firstdims=  new int[2];
         firstdims[0]=2;
         firstdims[1]=psfShape.dimension(0);
-        System.arraycopy(psfShape.copyDimensions(), 0, mtfdims, 1, rank);
-        mtfdims[0] = 2;
-        Shape mtfShape = new Shape(mtfdims);
 
-        if (single) {
+        if (isSingle()) {
             mtf = ArrayFactory.create(Traits.FLOAT,firstdims );
             Array1D nextdim= FFTUtils.generateFrequels2(psfShape.dimension(0),true).toFloat();
             ((Float1D) nextdim).map(new FloatGaussian((float)  Math.PI/scale[0]));
@@ -102,7 +98,7 @@ public class GaussianPsf extends PsfModel {
 
         for( int j = 1; j < rank; j++){
             Array1D nextdim;
-            if (single) {
+            if (isSingle()) {
                 nextdim = FFTUtils.generateFrequels2(psfShape.dimension(j)).toFloat();
                 ((Float1D) nextdim).map(new FloatGaussian((float) Math.sqrt(2)*Math.PI/scale[j]));
             }else {
@@ -113,15 +109,32 @@ public class GaussianPsf extends PsfModel {
         }
         return mtf;
     }
-
     @Override
     public void setParam(DoubleShapedVector param) {
-        scale = param.getData();
-        psf=null;
+        setParam(  param.getData());
     }
 
+
     @Override
-    public void freeMem() {
+    public void setParam(double[] param) {
+
+        if(param.length==1)
+        {
+            Arrays.fill(scale, param[0]);
+        } else if(param.length==rank) {
+            System.arraycopy(param, 0, scale, 0, rank);
+        }else if(param.length==2) {
+            switch (rank) {
+                case 3:
+                    scale[0]= param[0];
+                    scale[1]= param[0];
+                    scale[2]= param[1];
+                    break;
+                default:
+                    throw new IllegalArgumentException(" psf dimension>3 not implemented");
+
+            }
+        }
         psf=null;
     }
 
@@ -157,5 +170,7 @@ public class GaussianPsf extends PsfModel {
         }
 
     }
+
+
 
 }

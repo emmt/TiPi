@@ -13,13 +13,13 @@ import mitiv.linalg.shaped.DoubleShapedVector;
  */
 public abstract class PsfModel {
 
-    protected boolean single = false;
+    private boolean single = false;
     protected Shape psfShape;
     protected ShapedArray psf=null; //3D point spread function
 
     public PsfModel(Shape psfShape,boolean single) {
         this.psfShape = psfShape;
-        this.single = single;
+        this.setSingle(single);
     }
 
 
@@ -41,9 +41,18 @@ public abstract class PsfModel {
 
 
     /**
+     * Setter for PSF parameters. The parameter type is given by the parameter space of @param
+     * @param param PSF parameters
+     */
+    abstract public void setParam(double[] param);
+
+
+    /**
      * Free some memory
      */
-    abstract public void freeMem();
+    public void freeMem() {
+        psf=null;
+    }
 
     /**
      * Setter for the single precision flag
@@ -51,6 +60,22 @@ public abstract class PsfModel {
      */
     public void setSingle(boolean single){
         this.single = single;
+    }
+
+
+    /**
+     * @return the single precision flag
+     */
+    public boolean isSingle() {
+        return single;
+    }
+
+
+    /**
+     * @return shape
+     */
+    public Shape getShape() {
+        return psfShape;
     }
 
 }
