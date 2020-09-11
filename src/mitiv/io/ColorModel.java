@@ -45,7 +45,6 @@ import mitiv.array.Long3D;
 import mitiv.array.ShapedArray;
 import mitiv.array.Short2D;
 import mitiv.array.Short3D;
-import mitiv.base.Shape;
 import mitiv.base.Traits;
 import mitiv.base.indexing.Range;
 import mitiv.exception.IllegalTypeException;
@@ -377,9 +376,9 @@ public enum ColorModel {
                     Byte3D src = (Byte3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float red   = (float)((int)src.get(0,x,y) & 0xFF);
-                            float green = (float)((int)src.get(1,x,y) & 0xFF);
-                            float blue  = (float)((int)src.get(2,x,y) & 0xFF);
+                            float red   = src.get(0,x,y) & 0xFF;
+                            float green = src.get(1,x,y) & 0xFF;
+                            float blue  = src.get(2,x,y) & 0xFF;
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
@@ -387,9 +386,9 @@ public enum ColorModel {
                     Short3D src = (Short3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float red   = (float)src.get(0,x,y);
-                            float green = (float)src.get(1,x,y);
-                            float blue  = (float)src.get(2,x,y);
+                            float red   = src.get(0,x,y);
+                            float green = src.get(1,x,y);
+                            float blue  = src.get(2,x,y);
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
@@ -397,9 +396,9 @@ public enum ColorModel {
                     Int3D src = (Int3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float red   = (float)src.get(0,x,y);
-                            float green = (float)src.get(1,x,y);
-                            float blue  = (float)src.get(2,x,y);
+                            float red   = src.get(0,x,y);
+                            float green = src.get(1,x,y);
+                            float blue  = src.get(2,x,y);
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
@@ -407,9 +406,9 @@ public enum ColorModel {
                     Long3D src = (Long3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float red   = (float)src.get(0,x,y);
-                            float green = (float)src.get(1,x,y);
-                            float blue  = (float)src.get(2,x,y);
+                            float red   = src.get(0,x,y);
+                            float green = src.get(1,x,y);
+                            float blue  = src.get(2,x,y);
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
@@ -439,7 +438,7 @@ public enum ColorModel {
                 return dst;
             }
 
-       } else if (colorModel == ColorModel.RGB) {
+        } else if (colorModel == ColorModel.RGB) {
 
             if (depth == 3) {
                 view = arr;
@@ -453,7 +452,7 @@ public enum ColorModel {
                     Byte2D src = (Byte2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float value = (float)((int)src.get(x,y) & 0xFF);
+                            float value = src.get(x,y) & 0xFF;
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -463,7 +462,7 @@ public enum ColorModel {
                     Short2D src = (Short2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float value = (float)src.get(x,y);
+                            float value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -473,7 +472,7 @@ public enum ColorModel {
                     Int2D src = (Int2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float value = (float)src.get(x,y);
+                            float value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -483,7 +482,7 @@ public enum ColorModel {
                     Long2D src = (Long2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float value = (float)src.get(x,y);
+                            float value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -528,7 +527,7 @@ public enum ColorModel {
                     Byte2D src = (Byte2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float value = (float)((int)src.get(x,y) & 0xFF);
+                            float value = src.get(x,y) & 0xFF;
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -539,7 +538,7 @@ public enum ColorModel {
                     Short2D src = (Short2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float value = (float)src.get(x,y);
+                            float value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -550,7 +549,7 @@ public enum ColorModel {
                     Int2D src = (Int2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float value = (float)src.get(x,y);
+                            float value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -561,7 +560,7 @@ public enum ColorModel {
                     Long2D src = (Long2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float value = (float)src.get(x,y);
+                            float value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -602,9 +601,9 @@ public enum ColorModel {
                     Byte3D src = (Byte3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float red   = (float)((int)src.get(0,x,y) & 0xFF);
-                            float green = (float)((int)src.get(1,x,y) & 0xFF);
-                            float blue  = (float)((int)src.get(2,x,y) & 0xFF);
+                            float red   = src.get(0,x,y) & 0xFF;
+                            float green = src.get(1,x,y) & 0xFF;
+                            float blue  = src.get(2,x,y) & 0xFF;
                             dst.set(0,x,y, red);
                             dst.set(1,x,y, green);
                             dst.set(2,x,y, blue);
@@ -615,9 +614,9 @@ public enum ColorModel {
                     Short3D src = (Short3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float red   = (float)src.get(0,x,y);
-                            float green = (float)src.get(1,x,y);
-                            float blue  = (float)src.get(2,x,y);
+                            float red   = src.get(0,x,y);
+                            float green = src.get(1,x,y);
+                            float blue  = src.get(2,x,y);
                             dst.set(0,x,y, red);
                             dst.set(1,x,y, green);
                             dst.set(2,x,y, blue);
@@ -628,9 +627,9 @@ public enum ColorModel {
                     Int3D src = (Int3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float red   = (float)src.get(0,x,y);
-                            float green = (float)src.get(1,x,y);
-                            float blue  = (float)src.get(2,x,y);
+                            float red   = src.get(0,x,y);
+                            float green = src.get(1,x,y);
+                            float blue  = src.get(2,x,y);
                             dst.set(0,x,y, red);
                             dst.set(1,x,y, green);
                             dst.set(2,x,y, blue);
@@ -641,9 +640,9 @@ public enum ColorModel {
                     Long3D src = (Long3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            float red   = (float)src.get(0,x,y);
-                            float green = (float)src.get(1,x,y);
-                            float blue  = (float)src.get(2,x,y);
+                            float red   = src.get(0,x,y);
+                            float green = src.get(1,x,y);
+                            float blue  = src.get(2,x,y);
                             dst.set(0,x,y, red);
                             dst.set(1,x,y, green);
                             dst.set(2,x,y, blue);
@@ -687,10 +686,10 @@ public enum ColorModel {
                 final float scale = 1.0F/255.0F;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        float red   = (float)((int)src.get(0,x,y) & 0xFF);
-                        float green = (float)((int)src.get(1,x,y) & 0xFF);
-                        float blue  = (float)((int)src.get(2,x,y) & 0xFF);
-                        float alpha = (float)((int)src.get(3,x,y) & 0xFF)*scale;
+                        float red   = src.get(0,x,y) & 0xFF;
+                        float green = src.get(1,x,y) & 0xFF;
+                        float blue  = src.get(2,x,y) & 0xFF;
+                        float alpha = (src.get(3,x,y) & 0xFF)*scale;
                         dst.set(0,x,y, red);
                         dst.set(1,x,y, green);
                         dst.set(2,x,y, blue);
@@ -722,7 +721,7 @@ public enum ColorModel {
                 final float scale = 1.0F/255.0F;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        float alpha = (float)((int)src.get(3,x,y) & 0xFF)*scale;
+                        float alpha = (src.get(3,x,y) & 0xFF)*scale;
                         dst.set(x,y, alpha);
                     }
                 }
@@ -749,7 +748,7 @@ public enum ColorModel {
                 Byte2D src = (Byte2D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        float value = (float)((int)src.get(x,y) & 0xFF);
+                        float value = src.get(x,y) & 0xFF;
                         dst.set(x,y, value);
                     }
                 }
@@ -759,9 +758,9 @@ public enum ColorModel {
                 Byte3D src = (Byte3D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        float red   = (float)((int)src.get(0,x,y) & 0xFF);
-                        float green = (float)((int)src.get(1,x,y) & 0xFF);
-                        float blue  = (float)((int)src.get(2,x,y) & 0xFF);
+                        float red   = src.get(0,x,y) & 0xFF;
+                        float green = src.get(1,x,y) & 0xFF;
+                        float blue  = src.get(2,x,y) & 0xFF;
                         dst.set(0,x,y, red);
                         dst.set(1,x,y, green);
                         dst.set(2,x,y, blue);
@@ -775,7 +774,7 @@ public enum ColorModel {
                 Short2D src = (Short2D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        float value = (float)src.get(x,y);
+                        float value = src.get(x,y);
                         dst.set(x,y, value);
                     }
                 }
@@ -785,9 +784,9 @@ public enum ColorModel {
                 Short3D src = (Short3D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        float red   = (float)src.get(0,x,y);
-                        float green = (float)src.get(1,x,y);
-                        float blue  = (float)src.get(2,x,y);
+                        float red   = src.get(0,x,y);
+                        float green = src.get(1,x,y);
+                        float blue  = src.get(2,x,y);
                         dst.set(0,x,y, red);
                         dst.set(1,x,y, green);
                         dst.set(2,x,y, blue);
@@ -801,7 +800,7 @@ public enum ColorModel {
                 Int2D src = (Int2D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        float value = (float)src.get(x,y);
+                        float value = src.get(x,y);
                         dst.set(x,y, value);
                     }
                 }
@@ -811,9 +810,9 @@ public enum ColorModel {
                 Int3D src = (Int3D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        float red   = (float)src.get(0,x,y);
-                        float green = (float)src.get(1,x,y);
-                        float blue  = (float)src.get(2,x,y);
+                        float red   = src.get(0,x,y);
+                        float green = src.get(1,x,y);
+                        float blue  = src.get(2,x,y);
                         dst.set(0,x,y, red);
                         dst.set(1,x,y, green);
                         dst.set(2,x,y, blue);
@@ -827,7 +826,7 @@ public enum ColorModel {
                 Long2D src = (Long2D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        float value = (float)src.get(x,y);
+                        float value = src.get(x,y);
                         dst.set(x,y, value);
                     }
                 }
@@ -837,9 +836,9 @@ public enum ColorModel {
                 Long3D src = (Long3D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        float red   = (float)src.get(0,x,y);
-                        float green = (float)src.get(1,x,y);
-                        float blue  = (float)src.get(2,x,y);
+                        float red   = src.get(0,x,y);
+                        float green = src.get(1,x,y);
+                        float blue  = src.get(2,x,y);
                         dst.set(0,x,y, red);
                         dst.set(1,x,y, green);
                         dst.set(2,x,y, blue);
@@ -956,9 +955,9 @@ public enum ColorModel {
                     Byte3D src = (Byte3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double red   = (double)((int)src.get(0,x,y) & 0xFF);
-                            double green = (double)((int)src.get(1,x,y) & 0xFF);
-                            double blue  = (double)((int)src.get(2,x,y) & 0xFF);
+                            double red   = src.get(0,x,y) & 0xFF;
+                            double green = src.get(1,x,y) & 0xFF;
+                            double blue  = src.get(2,x,y) & 0xFF;
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
@@ -966,9 +965,9 @@ public enum ColorModel {
                     Short3D src = (Short3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double red   = (double)src.get(0,x,y);
-                            double green = (double)src.get(1,x,y);
-                            double blue  = (double)src.get(2,x,y);
+                            double red   = src.get(0,x,y);
+                            double green = src.get(1,x,y);
+                            double blue  = src.get(2,x,y);
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
@@ -976,9 +975,9 @@ public enum ColorModel {
                     Int3D src = (Int3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double red   = (double)src.get(0,x,y);
-                            double green = (double)src.get(1,x,y);
-                            double blue  = (double)src.get(2,x,y);
+                            double red   = src.get(0,x,y);
+                            double green = src.get(1,x,y);
+                            double blue  = src.get(2,x,y);
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
@@ -986,9 +985,9 @@ public enum ColorModel {
                     Long3D src = (Long3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double red   = (double)src.get(0,x,y);
-                            double green = (double)src.get(1,x,y);
-                            double blue  = (double)src.get(2,x,y);
+                            double red   = src.get(0,x,y);
+                            double green = src.get(1,x,y);
+                            double blue  = src.get(2,x,y);
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
@@ -996,9 +995,9 @@ public enum ColorModel {
                     Float3D src = (Float3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double red   = (double)src.get(0,x,y);
-                            double green = (double)src.get(1,x,y);
-                            double blue  = (double)src.get(2,x,y);
+                            double red   = src.get(0,x,y);
+                            double green = src.get(1,x,y);
+                            double blue  = src.get(2,x,y);
                             dst.set(x,y, colorToGrey(red, green, blue));
                         }
                     }
@@ -1018,7 +1017,7 @@ public enum ColorModel {
                 return dst;
             }
 
-       } else if (colorModel == ColorModel.RGB) {
+        } else if (colorModel == ColorModel.RGB) {
 
             if (depth == 3) {
                 view = arr;
@@ -1032,7 +1031,7 @@ public enum ColorModel {
                     Byte2D src = (Byte2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double value = (double)((int)src.get(x,y) & 0xFF);
+                            double value = src.get(x,y) & 0xFF;
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -1042,7 +1041,7 @@ public enum ColorModel {
                     Short2D src = (Short2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double value = (double)src.get(x,y);
+                            double value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -1052,7 +1051,7 @@ public enum ColorModel {
                     Int2D src = (Int2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double value = (double)src.get(x,y);
+                            double value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -1062,7 +1061,7 @@ public enum ColorModel {
                     Long2D src = (Long2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double value = (double)src.get(x,y);
+                            double value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -1072,7 +1071,7 @@ public enum ColorModel {
                     Float2D src = (Float2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double value = (double)src.get(x,y);
+                            double value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -1107,7 +1106,7 @@ public enum ColorModel {
                     Byte2D src = (Byte2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double value = (double)((int)src.get(x,y) & 0xFF);
+                            double value = src.get(x,y) & 0xFF;
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -1118,7 +1117,7 @@ public enum ColorModel {
                     Short2D src = (Short2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double value = (double)src.get(x,y);
+                            double value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -1129,7 +1128,7 @@ public enum ColorModel {
                     Int2D src = (Int2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double value = (double)src.get(x,y);
+                            double value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -1140,7 +1139,7 @@ public enum ColorModel {
                     Long2D src = (Long2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double value = (double)src.get(x,y);
+                            double value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -1151,7 +1150,7 @@ public enum ColorModel {
                     Float2D src = (Float2D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double value = (double)src.get(x,y);
+                            double value = src.get(x,y);
                             dst.set(0,x,y, value);
                             dst.set(1,x,y, value);
                             dst.set(2,x,y, value);
@@ -1181,9 +1180,9 @@ public enum ColorModel {
                     Byte3D src = (Byte3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double red   = (double)((int)src.get(0,x,y) & 0xFF);
-                            double green = (double)((int)src.get(1,x,y) & 0xFF);
-                            double blue  = (double)((int)src.get(2,x,y) & 0xFF);
+                            double red   = src.get(0,x,y) & 0xFF;
+                            double green = src.get(1,x,y) & 0xFF;
+                            double blue  = src.get(2,x,y) & 0xFF;
                             dst.set(0,x,y, red);
                             dst.set(1,x,y, green);
                             dst.set(2,x,y, blue);
@@ -1194,9 +1193,9 @@ public enum ColorModel {
                     Short3D src = (Short3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double red   = (double)src.get(0,x,y);
-                            double green = (double)src.get(1,x,y);
-                            double blue  = (double)src.get(2,x,y);
+                            double red   = src.get(0,x,y);
+                            double green = src.get(1,x,y);
+                            double blue  = src.get(2,x,y);
                             dst.set(0,x,y, red);
                             dst.set(1,x,y, green);
                             dst.set(2,x,y, blue);
@@ -1207,9 +1206,9 @@ public enum ColorModel {
                     Int3D src = (Int3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double red   = (double)src.get(0,x,y);
-                            double green = (double)src.get(1,x,y);
-                            double blue  = (double)src.get(2,x,y);
+                            double red   = src.get(0,x,y);
+                            double green = src.get(1,x,y);
+                            double blue  = src.get(2,x,y);
                             dst.set(0,x,y, red);
                             dst.set(1,x,y, green);
                             dst.set(2,x,y, blue);
@@ -1220,9 +1219,9 @@ public enum ColorModel {
                     Long3D src = (Long3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double red   = (double)src.get(0,x,y);
-                            double green = (double)src.get(1,x,y);
-                            double blue  = (double)src.get(2,x,y);
+                            double red   = src.get(0,x,y);
+                            double green = src.get(1,x,y);
+                            double blue  = src.get(2,x,y);
                             dst.set(0,x,y, red);
                             dst.set(1,x,y, green);
                             dst.set(2,x,y, blue);
@@ -1233,9 +1232,9 @@ public enum ColorModel {
                     Float3D src = (Float3D)arr;
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            double red   = (double)src.get(0,x,y);
-                            double green = (double)src.get(1,x,y);
-                            double blue  = (double)src.get(2,x,y);
+                            double red   = src.get(0,x,y);
+                            double green = src.get(1,x,y);
+                            double blue  = src.get(2,x,y);
                             dst.set(0,x,y, red);
                             dst.set(1,x,y, green);
                             dst.set(2,x,y, blue);
@@ -1266,10 +1265,10 @@ public enum ColorModel {
                 final double scale = 1.0/255.0;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        double red   = (double)((int)src.get(0,x,y) & 0xFF);
-                        double green = (double)((int)src.get(1,x,y) & 0xFF);
-                        double blue  = (double)((int)src.get(2,x,y) & 0xFF);
-                        double alpha = (double)((int)src.get(3,x,y) & 0xFF)*scale;
+                        double red   = src.get(0,x,y) & 0xFF;
+                        double green = src.get(1,x,y) & 0xFF;
+                        double blue  = src.get(2,x,y) & 0xFF;
+                        double alpha = (src.get(3,x,y) & 0xFF)*scale;
                         dst.set(0,x,y, red);
                         dst.set(1,x,y, green);
                         dst.set(2,x,y, blue);
@@ -1301,7 +1300,7 @@ public enum ColorModel {
                 final double scale = 1.0/255.0;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        double alpha = (double)((int)src.get(3,x,y) & 0xFF)*scale;
+                        double alpha = (src.get(3,x,y) & 0xFF)*scale;
                         dst.set(x,y, alpha);
                     }
                 }
@@ -1328,7 +1327,7 @@ public enum ColorModel {
                 Byte2D src = (Byte2D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        double value = (double)((int)src.get(x,y) & 0xFF);
+                        double value = src.get(x,y) & 0xFF;
                         dst.set(x,y, value);
                     }
                 }
@@ -1338,9 +1337,9 @@ public enum ColorModel {
                 Byte3D src = (Byte3D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        double red   = (double)((int)src.get(0,x,y) & 0xFF);
-                        double green = (double)((int)src.get(1,x,y) & 0xFF);
-                        double blue  = (double)((int)src.get(2,x,y) & 0xFF);
+                        double red   = src.get(0,x,y) & 0xFF;
+                        double green = src.get(1,x,y) & 0xFF;
+                        double blue  = src.get(2,x,y) & 0xFF;
                         dst.set(0,x,y, red);
                         dst.set(1,x,y, green);
                         dst.set(2,x,y, blue);
@@ -1354,7 +1353,7 @@ public enum ColorModel {
                 Short2D src = (Short2D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        double value = (double)src.get(x,y);
+                        double value = src.get(x,y);
                         dst.set(x,y, value);
                     }
                 }
@@ -1364,9 +1363,9 @@ public enum ColorModel {
                 Short3D src = (Short3D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        double red   = (double)src.get(0,x,y);
-                        double green = (double)src.get(1,x,y);
-                        double blue  = (double)src.get(2,x,y);
+                        double red   = src.get(0,x,y);
+                        double green = src.get(1,x,y);
+                        double blue  = src.get(2,x,y);
                         dst.set(0,x,y, red);
                         dst.set(1,x,y, green);
                         dst.set(2,x,y, blue);
@@ -1380,7 +1379,7 @@ public enum ColorModel {
                 Int2D src = (Int2D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        double value = (double)src.get(x,y);
+                        double value = src.get(x,y);
                         dst.set(x,y, value);
                     }
                 }
@@ -1390,9 +1389,9 @@ public enum ColorModel {
                 Int3D src = (Int3D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        double red   = (double)src.get(0,x,y);
-                        double green = (double)src.get(1,x,y);
-                        double blue  = (double)src.get(2,x,y);
+                        double red   = src.get(0,x,y);
+                        double green = src.get(1,x,y);
+                        double blue  = src.get(2,x,y);
                         dst.set(0,x,y, red);
                         dst.set(1,x,y, green);
                         dst.set(2,x,y, blue);
@@ -1406,7 +1405,7 @@ public enum ColorModel {
                 Long2D src = (Long2D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        double value = (double)src.get(x,y);
+                        double value = src.get(x,y);
                         dst.set(x,y, value);
                     }
                 }
@@ -1416,9 +1415,9 @@ public enum ColorModel {
                 Long3D src = (Long3D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        double red   = (double)src.get(0,x,y);
-                        double green = (double)src.get(1,x,y);
-                        double blue  = (double)src.get(2,x,y);
+                        double red   = src.get(0,x,y);
+                        double green = src.get(1,x,y);
+                        double blue  = src.get(2,x,y);
                         dst.set(0,x,y, red);
                         dst.set(1,x,y, green);
                         dst.set(2,x,y, blue);
@@ -1432,7 +1431,7 @@ public enum ColorModel {
                 Float2D src = (Float2D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        double value = (double)src.get(x,y);
+                        double value = src.get(x,y);
                         dst.set(x,y, value);
                     }
                 }
@@ -1442,9 +1441,9 @@ public enum ColorModel {
                 Float3D src = (Float3D)view;
                 for (int y = 0; y < height; ++y) {
                     for (int x = 0; x < width; ++x) {
-                        double red   = (double)src.get(0,x,y);
-                        double green = (double)src.get(1,x,y);
-                        double blue  = (double)src.get(2,x,y);
+                        double red   = src.get(0,x,y);
+                        double green = src.get(1,x,y);
+                        double blue  = src.get(2,x,y);
                         dst.set(0,x,y, red);
                         dst.set(1,x,y, green);
                         dst.set(2,x,y, blue);

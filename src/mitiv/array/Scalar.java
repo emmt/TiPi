@@ -73,29 +73,30 @@ public abstract class Scalar implements ShapedArray {
     public final int getDimension(int k) {
         return shape.dimension(k);
     }
-    
-   /**
+
+    /**
      * Return a new array with the same  number of elements but a different shape.
      *
      * @param shape         The new shape.
      * @return              The reshaped array
      */
     public final  Scalar  reshape(Shape shape) {
-    if (this.number == (int)shape.number()){
-        return ( Scalar) ArrayFactory.wrap(this.getData(), shape);
-    }else{
-        throw new IllegalArgumentException("The new shape is not commensurate with the old shape");
+        if (Scalar.number == (int)shape.number()){
+            return ( Scalar) ArrayFactory.wrap(this.getData(), shape);
+        }else{
+            throw new IllegalArgumentException("The new shape is not commensurate with the old shape");
         }
     }
 
+    @Override
     public final Scalar movedims( int initpos, int finalpos){
-     
+
         if ((finalpos > 0-1)||(initpos > 0-1)){
             throw new IllegalArgumentException("The permutation should not change the rank");
         }
-            return this.copy();
-        }
-    
+        return this.copy();
+    }
+
     @Override
     public abstract Scalar copy();
 
@@ -104,6 +105,7 @@ public abstract class Scalar implements ShapedArray {
      *
      * @return A 1D view of the scalar.
      */
+    @Override
     public abstract Array1D as1D();
 
 }

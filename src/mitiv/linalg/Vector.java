@@ -143,7 +143,7 @@ public abstract class Vector {
      *
      * @throws IndexOutOfBoundsException The index {@code i} is out of bounds.
      *
-     * @see #set(int, double).
+     * @see #set(int, double)
      */
     public abstract double get(int i) throws IndexOutOfBoundsException;
 

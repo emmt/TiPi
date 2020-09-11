@@ -270,7 +270,7 @@ public class HistoMap {
 
     /**
      * Reset a summary of values.
-     * @return
+     * @return The object itself after the reseting.
      *
      */
     public HistoMap reset() {

@@ -27,7 +27,7 @@
 package mitiv.conv;
 
 import mitiv.base.Shape;
-import mitiv.conv.Convolution;
+import mitiv.utils.FFTUtils;
 import mitiv.linalg.shaped.ShapedVectorSpace;
 
 import org.jtransforms.fft.FloatFFT_1D;
@@ -56,7 +56,7 @@ class ConvolutionFloat1D extends ConvolutionFloat {
      *
      * <p> This protected constructor should not be directly used.  Call {@link
      * Convolution#build(Shape, ShapedVectorSpace, int[], ShapedVectorSpace,
-     * int[]) instead. </p>
+     * int[])} instead. </p>
      *
      * @param wrk
      *        The dimensions of the work space. If {@code null}, the dimensions

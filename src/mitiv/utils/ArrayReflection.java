@@ -320,8 +320,8 @@ public class ArrayReflection {
      * @param forceCopy
      *        Ignored, a new array is always returned for
      *        this type of argument.
-      *
-    * @return A single element array of type {@code char[]}.
+     *
+     * @return A single element array of type {@code char[]}.
      */
     public static Object flatten(char value, boolean forceCopy) {
         return new char[]{value};
@@ -384,8 +384,8 @@ public class ArrayReflection {
      * @param forceCopy
      *        Ignored, a new array is always returned for
      *        this type of argument.
-      *
-    * @return A single element array of type {@code long[]}.
+     *
+     * @return A single element array of type {@code long[]}.
      */
     public static Object flatten(long value, boolean forceCopy) {
         return new long[]{value};
@@ -522,10 +522,18 @@ public class ArrayReflection {
     //}
 
 
+    /**
+     * @param arr
+     * @return arr
+     */
     public ShapedArray makeShapedArray(ShapedArray arr) {
         return arr;
     }
 
+    /**
+     * @param vec
+     * @return vec converted to ShapedArray
+     */
     public ShapedArray makeShapedArray(ShapedVector vec) {
         return vec.asShapedArray();
     }
@@ -559,20 +567,20 @@ public class ArrayReflection {
         ArrayDescriptor descr = makeArrayDescriptor(obj);
         Object data = flatten(obj);
         switch (descr.getType()) {
-        case Traits.BYTE:
-            return ArrayFactory.wrap((byte[])data, descr.getShape());
-        case Traits.SHORT:
-            return ArrayFactory.wrap((short[])data, descr.getShape());
-        case Traits.INT:
-            return ArrayFactory.wrap((int[])data, descr.getShape());
-        case Traits.LONG:
-            return ArrayFactory.wrap((long[])data, descr.getShape());
-        case Traits.FLOAT:
-            return ArrayFactory.wrap((float[])data, descr.getShape());
-        case Traits.DOUBLE:
-            return ArrayFactory.wrap((double[])data, descr.getShape());
-        default:
-            throw new IllegalTypeException("Only numerical primitive types are supported");
+            case Traits.BYTE:
+                return ArrayFactory.wrap((byte[])data, descr.getShape());
+            case Traits.SHORT:
+                return ArrayFactory.wrap((short[])data, descr.getShape());
+            case Traits.INT:
+                return ArrayFactory.wrap((int[])data, descr.getShape());
+            case Traits.LONG:
+                return ArrayFactory.wrap((long[])data, descr.getShape());
+            case Traits.FLOAT:
+                return ArrayFactory.wrap((float[])data, descr.getShape());
+            case Traits.DOUBLE:
+                return ArrayFactory.wrap((double[])data, descr.getShape());
+            default:
+                throw new IllegalTypeException("Only numerical primitive types are supported");
         }
     }
 

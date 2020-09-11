@@ -404,7 +404,6 @@ public class FFTUtils {
      * Compute squared length of FFT frequencies/coordinates.
      *
      * @param shp shape of the array
-     * @param scale the scale of each dimension
      * @return the squared distance of FFT frequencies/coordinates.
      */
     public static IntArray Mesh(Shape shp)

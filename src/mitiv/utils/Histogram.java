@@ -151,6 +151,7 @@ public class Histogram {
     /**
      * Reset a summary of values.
      *
+     * @return The object itself after the reseting.
      */
     public Histogram reset() {
         vmin = Double.NaN;

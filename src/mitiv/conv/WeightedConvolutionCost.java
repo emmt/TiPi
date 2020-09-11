@@ -261,7 +261,7 @@ DifferentiableCostFunction {
      * If the shape of the data space is smaller than that of the object space,
      * then the central part of the result of the cyclic convolution is
      * considered as the region corresponding to the data. The factory
-     * {@link #build(ShapedVectorSpace, ShapedVectorSpace, int[])} can be used
+     * {@link #build(ShapedVectorSpace, ShapedVectorSpace)} can be used
      * to select a different region. </p>
      *
      * <p> The returned object is not a valid cost function until you set the
@@ -282,12 +282,8 @@ DifferentiableCostFunction {
      *         not usable until the data and point spread function (PSF) are set
      *         with one of the {@link #setData} and {@link #setPSF} methods.
      *
-     * @return A new weighted convolution cost function. The returned object is
-     *         not a valid operator until the point spread function (PSF) is set
-     *         with one of the {@link #setPSF} methods.
-     *
      * @see WeightedConvolutionCost#build(Convolution)
-     * @see Convolution#build(ShapedVector, SpaceShapedVectorSpace)
+     * @see Convolution#build(ShapedVectorSpace, ShapedVectorSpace)
      */
     public static WeightedConvolutionCost build(ShapedVectorSpace objectSpace,
             ShapedVectorSpace dataSpace) {

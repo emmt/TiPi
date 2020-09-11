@@ -26,11 +26,11 @@
 
 package mitiv.conv;
 
-import mitiv.base.Shape;
-import mitiv.conv.Convolution;
-import mitiv.linalg.shaped.ShapedVectorSpace;
-
 import org.jtransforms.fft.DoubleFFT_1D;
+
+import mitiv.base.Shape;
+import mitiv.linalg.shaped.ShapedVectorSpace;
+import mitiv.utils.FFTUtils;
 
 /**
  * Implements FFT-based convolution for 1D arrays of double's.
@@ -56,7 +56,7 @@ class ConvolutionDouble1D extends ConvolutionDouble {
      *
      * <p> This protected constructor should not be directly used.  Call {@link
      * Convolution#build(Shape, ShapedVectorSpace, int[], ShapedVectorSpace,
-     * int[]) instead. </p>
+     * int[])} instead. </p>
      *
      * @param wrk
      *        The dimensions of the work space. If {@code null}, the dimensions
@@ -89,20 +89,20 @@ class ConvolutionDouble1D extends ConvolutionDouble {
      *      ShapedVectorSpace, int[])
      */
     public ConvolutionDouble1D(Shape wrk,
-                                ShapedVectorSpace inp, int[] inpOff,
-                                ShapedVectorSpace out, int[] outOff) {
+            ShapedVectorSpace inp, int[] inpOff,
+            ShapedVectorSpace out, int[] outOff) {
         /* Initialize super class and check rank and dimensions (element type
            is checked by the super class constructor). */
         super(wrk, inp, inpOff, out, outOff);
         if (getRank() != 1) {
             throw new IllegalArgumentException("Input and output spaces must be 1D");
         }
-      /*  //#     eval km1 = 1 - 1*/
+        /*  //#     eval km1 = 1 - 1*/
         this.dim1 = workShape.dimension(0);
         this.R = new PushPullOperator(workShape, out.getShape(),
-                                      outputOffsets, fastOutput);
+                outputOffsets, fastOutput);
         this.S = new PushPullOperator(workShape, inp.getShape(),
-                                      inputOffsets, fastInput);
+                inputOffsets, fastInput);
     }
 
     /** Create low-level FFT operator. */
