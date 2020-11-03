@@ -1,6 +1,6 @@
 # TiPi
 
-Master: ![Travis build status](https://travis-ci.org/emmt/TiPi.svg?branch=eric-devel)
+Master: ![Travis build status](https://travis-ci.com/emmt/TiPi.svg?branch=eric-devel)
 
 TiPi is a Java *Toolkit for Inverse Problems and Imaging* developed as part of
 the MiTiV project <http://mitiv.univ-lyon1.fr/> and supported by the
