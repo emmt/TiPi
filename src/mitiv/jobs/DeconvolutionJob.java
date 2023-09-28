@@ -98,7 +98,7 @@ public class DeconvolutionJob {
     }
 
     /**
-     * @param psfArray
+     * @param wgtArray
      */
     public void updateWeight(ShapedArray wgtArray) {
         WeightedConvolutionCost fdata = (WeightedConvolutionCost) solver.getLikelihood();
@@ -110,4 +110,3 @@ public class DeconvolutionJob {
     }
 
 }
-
