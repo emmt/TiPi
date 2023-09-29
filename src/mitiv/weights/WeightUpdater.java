@@ -1,7 +1,7 @@
 /**
  *
  */
-package mitiv.utils;
+package mitiv.weights;
 
 import mitiv.array.ShapedArray;
 

@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mitiv.utils;
+package mitiv.weights;
 
 import mitiv.array.ArrayFactory;
 import mitiv.array.Byte1D;
@@ -35,6 +35,7 @@ import mitiv.array.LongArray;
 import mitiv.array.ShapedArray;
 import mitiv.array.ShortArray;
 import mitiv.base.Traits;
+import mitiv.utils.HistoMap;
 
 /**
  * Static methods for computing weights.

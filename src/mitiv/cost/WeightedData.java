@@ -44,7 +44,7 @@ import mitiv.linalg.shaped.FloatShapedVector;
 import mitiv.linalg.shaped.FloatShapedVectorSpace;
 import mitiv.linalg.shaped.ShapedVector;
 import mitiv.linalg.shaped.ShapedVectorSpace;
-import mitiv.utils.WeightFactory;
+import mitiv.weights.WeightFactory;
 
 /**
  * Implement weighted data.
