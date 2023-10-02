@@ -71,4 +71,3 @@ public interface CostFunction {
     abstract public double evaluate(double alpha, Vector x);
 
 }
-

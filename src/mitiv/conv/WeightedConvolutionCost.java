@@ -144,8 +144,7 @@ import mitiv.utils.Timer;
  *
  * @author Éric Thiébaut
  */
-public abstract class WeightedConvolutionCost extends WeightedData implements
-DifferentiableCostFunction {
+public abstract class WeightedConvolutionCost extends WeightedData {
 
     /** Convolution operator. */
     protected  Convolution cnvl;
