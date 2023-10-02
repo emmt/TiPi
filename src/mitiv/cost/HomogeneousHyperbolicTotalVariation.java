@@ -41,7 +41,7 @@ import mitiv.linalg.shaped.ShapedVectorSpace;
  *
  * @author Ferréol Soulez
  */
-public class HomogeneousHyperbolicTotalVariation implements DifferentiableCostFunction {
+public class HomogeneousHyperbolicTotalVariation implements DifferentiableCostFunction, HomogeneousFunction {
 
     static boolean debug =false;
     /** The vector space for the variables. */
@@ -889,5 +889,10 @@ public class HomogeneousHyperbolicTotalVariation implements DifferentiableCostFu
     @Override
     public double evaluate(double alpha, Vector x) {
         return computeCostAndGradient(alpha, x, null, false);
+    }
+
+    @Override
+    public double getHomogeneousDegree() {
+        return 1.0;
     }
 }

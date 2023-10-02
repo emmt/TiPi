@@ -44,7 +44,7 @@ import mitiv.linalg.VectorSpace;
  *
  * @author Éric Thiébaut <eric.thiebaut@univ-lyon1.fr>
  */
-public class QuadraticCost implements DifferentiableCostFunction {
+public class QuadraticCost implements DifferentiableCostFunction, HomogeneousFunction {
     /** The vector space for the variables {@code x}. */
     protected VectorSpace inputSpace = null;
 
@@ -357,5 +357,13 @@ public class QuadraticCost implements DifferentiableCostFunction {
             }
             W.apply(Wr, r);
         }
+    }
+
+    @Override
+    public double getHomogeneousDegree() {
+        if (y==null){
+            return 2.0;
+        }
+        throw new UnsupportedOperationException("QuadraticCost is not Homogeneous if y!=null");
     }
 }

@@ -36,7 +36,7 @@ import mitiv.linalg.VectorSpace;
  * @author eric
  *
  */
-public abstract class PseudoL1Norm implements ProximalOperator {
+public abstract class PseudoL1Norm implements ProximalOperator, HomogeneousFunction {
     protected VectorSpace inputSpace;
 
     protected PseudoL1Norm(VectorSpace inputSpace) {
@@ -57,6 +57,12 @@ public abstract class PseudoL1Norm implements ProximalOperator {
     @Override
     public double evaluate(double alpha, Vector x) {
         return alpha*x.norm1();
+    }
+
+
+    @Override
+    public double getHomogeneousDegree() {
+        return 1;
     }
 
 }
