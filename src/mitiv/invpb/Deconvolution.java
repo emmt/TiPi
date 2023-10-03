@@ -86,6 +86,7 @@ public class Deconvolution extends SmoothInverseProblem {
             object = arr;
             forceRestart();
             resetIteration();
+            update();
         }
     }
 
@@ -108,6 +109,11 @@ public class Deconvolution extends SmoothInverseProblem {
                 object = ArrayFactory.wrap(((DoubleShapedVector)x).getData(), objectSpace.getShape());
             }
         }
+        if (saveBest) {
+            if (xBest == null) {
+                xBest = objectSpace.create();
+            }
+            xBest.copy(x);
         updatePending = false;
 
     }

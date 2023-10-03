@@ -41,13 +41,13 @@ public class IterativeDifferentiableSolver {
     private DifferentiableCostFunction cost = null;
     private ReverseCommunicationOptimizer optimizer = null;
     private Vector gx = null; // current gradient
-    private Vector xBest = null; // best solution so far
+    protected Vector xBest = null; // best solution so far
     private Vector gxBest = null; // gradient at best solution
     private double fx = -1; // current cost
     private double fxBest; // best cost function so far
     private boolean firstTime = true;
     private boolean stepping = false;
-    private boolean saveBest = false;
+    protected boolean saveBest = false;
     private final Timer timer = new Timer();
     private boolean updatePending = false;
     private int iterations = 0;
@@ -528,4 +528,3 @@ public class IterativeDifferentiableSolver {
     }
 
 }
-
