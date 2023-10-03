@@ -115,7 +115,7 @@ public class Deconvolution extends SmoothInverseProblem {
             }
             xBest.copy(x);
         updatePending = false;
-
+        }
     }
 
     public ShapedArray getSolution() {

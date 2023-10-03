@@ -40,6 +40,8 @@ public class AmorsJob {
 	
     public boolean blindDeconv(ShapedArray objArray,ShapedArray psfArray){
         run =true;
+		Objdeconvolver.setInitialSolution(objArray);
+		PSFdeconvolver.setInitialSolution(psfArray);
 		for(int iter = 0; iter < totalNbOfBlindDecLoop; iter++) {
 			do {
 

@@ -109,4 +109,8 @@ public class DeconvolutionJob {
         return solver.getModel();
     }
 
+    public void setInitialSolution(ShapedArray objArray){
+        solver.setInitialSolution(objArray);
+    }
+
 }
