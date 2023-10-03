@@ -76,8 +76,12 @@ public class AmorsJob {
 				}
 
 			}while (iter < 1 && Math.abs(alpha - 1.0) > atol);
-			
-			Objdeconvolver.updateWeight(wghtUpdt.update(PSFdeconvolver));
+			if(debug){
+				System.out.println("Alpha : " +alpha);
+			}
+			if(wghtUpdt !=null){
+				Objdeconvolver.updateWeight(wghtUpdt.update(PSFdeconvolver));
+			}
 
             //Emergency stop
             if (!run) {
