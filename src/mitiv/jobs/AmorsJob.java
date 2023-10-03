@@ -42,6 +42,13 @@ public class AmorsJob {
         run =true;
 		Objdeconvolver.setInitialSolution(objArray);
 		PSFdeconvolver.setInitialSolution(psfArray);
+		
+		
+		Objdeconvolver.updatePsf(psfArray);	
+		Objdeconvolver.solver.iterate();	// one iteration to set best solution
+		
+		PSFdeconvolver.updatePsf(objArray);	
+		PSFdeconvolver.solver.iterate();	// one iteration to set best solution
 		for(int iter = 0; iter < totalNbOfBlindDecLoop; iter++) {
 			do {
 
