@@ -23,7 +23,7 @@ public class AmorsJob {
     protected boolean run=true;    
 	private boolean debug=false;
 	private double alpha=1.0;
-	private double atol=1.0;
+	private double atol=0.1;
 	private boolean single = false;
 	private boolean succes = true;
 
@@ -49,10 +49,14 @@ public class AmorsJob {
 		
 		PSFdeconvolver.updatePsf(objArray);	
 		PSFdeconvolver.solver.iterate();	// one iteration to set best solution
+
+		if(debug){
+			System.out.println("start amors");
+		}
 		for(int iter = 0; iter < totalNbOfBlindDecLoop; iter++) {
 			do {
 
-				alpha = best_factor(Objdeconvolver,PSFdeconvolver);
+				alpha = best_factor();
 				if (alpha != 1.0){
 					scale(objArray, alpha);
 					scale(psfArray, 1./alpha);
@@ -64,7 +68,7 @@ public class AmorsJob {
 				Objdeconvolver.updatePsf(psfArray);	
 				objArray = Objdeconvolver.deconv(objArray);	
 
-				alpha = best_factor(Objdeconvolver,PSFdeconvolver);
+				alpha = best_factor();
 
 				if (alpha != 1.0){
 					scale(objArray, alpha);
@@ -132,15 +136,30 @@ public class AmorsJob {
         return Objdeconvolver.getModel();
     }
 
-    private double best_factor(DeconvolutionJob objdeconvolver, DeconvolutionJob PSFdeconvolver) {
-		ShapedVector solution = objdeconvolver.solver.getBestSolution();
-		double lambda = objdeconvolver.solver.getRegularizationLevel();
-		DifferentiableCostFunction objregul = objdeconvolver.solver.getRegularization();
+    private double best_factor() {
+		ShapedVector solution = Objdeconvolver.solver.getBestSolution();
+		double lambda = Objdeconvolver.solver.getRegularizationLevel();
+		DifferentiableCostFunction objregul = Objdeconvolver.solver.getRegularization();
+		if(debug){
+			System.out.println("lambda:" +lambda );
+			if (solution==null){
+				System.out.println("solution==null" );
+			}
+
+		}
 		double lambdaJx  = objregul.evaluate(lambda,solution);
 		double q = ((HomogeneousFunction) objregul).getHomogeneousDegree();
 
 		double mu = PSFdeconvolver.solver.getRegularizationLevel();
 		DifferentiableCostFunction PSFregul = PSFdeconvolver.solver.getRegularization();
+
+		if(debug){
+			System.out.println("mu:" +mu );
+			if (solution==null){
+				System.out.println("solution==null" );
+			}
+
+		}
 		double muKy  = PSFregul.evaluate(mu,solution);
 		double r = ((HomogeneousFunction) PSFregul).getHomogeneousDegree();
 
