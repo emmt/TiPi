@@ -87,8 +87,9 @@ public class AmorsJob {
 
 			PSFdeconvolver.updatePsf(objArray);	
 			psfArray = PSFdeconvolver.deconv(psfArray);	
-			Objdeconvolver.updateWeight(wghtUpdt.update(PSFdeconvolver));
-
+			if(wghtUpdt !=null){
+				Objdeconvolver.updateWeight(wghtUpdt.update(PSFdeconvolver));
+			}
             //Emergency stop
             if (!run) {
                 return succes;
