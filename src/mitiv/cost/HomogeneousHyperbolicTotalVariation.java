@@ -319,8 +319,10 @@ public class HomogeneousHyperbolicTotalVariation implements DifferentiableCostFu
             }
         }
         sq = (sq - 1.0f/xnorm)* beta*square(tau);
-        for (int i1 = 0; i1 < dim1; ++i1) {
-            gx[i1] += sq * x[i1] ;
+        if (computeGradient) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                gx[i1] += sq * x[i1] ;
+            }
         }
 
 
@@ -361,8 +363,10 @@ public class HomogeneousHyperbolicTotalVariation implements DifferentiableCostFu
         }
 
         sq = (sq - 1.0f/xnorm)* beta*square(tau);
-        for (int i1 = 0; i1 < dim1; ++i1) {
-            gx[i1] += sq * x[i1] ;
+        if (computeGradient) {
+            for (int i1 = 0; i1 < dim1; ++i1) {
+                gx[i1] += sq * x[i1] ;
+            }
         }
 
 
@@ -481,9 +485,10 @@ public class HomogeneousHyperbolicTotalVariation implements DifferentiableCostFu
 
 
         sq = (sq - 1.0f/xnorm)* _alpha*square(tau);
-
-        for (int i1 = 0; i1 < gx.length; i1++) {
-            gx[i1] += sq * x[i1] ;
+        if (computeGradient) {
+            for (int i1 = 0; i1 < gx.length; i1++) {
+                gx[i1] += sq * x[i1] ;
+            }
         }
         /* Make sure the result is non-negative (it
            can only be negative due to rounding errors). */
@@ -598,11 +603,11 @@ public class HomogeneousHyperbolicTotalVariation implements DifferentiableCostFu
 
 
         sq = (sq - 1.0f/xnorm)* alpha*square(tau);
-
-        for (int i1 = 0; i1 < gx.length; i1++) {
-            gx[i1] += sq * x[i1] ;
+        if (computeGradient) {
+            for (int i1 = 0; i1 < gx.length; i1++) {
+                gx[i1] += sq * x[i1] ;
+            }   
         }
-
 
         /* Make sure the result is non-negative (it
            can only be negative due to rounding errors). */
@@ -735,9 +740,10 @@ public class HomogeneousHyperbolicTotalVariation implements DifferentiableCostFu
         }
 
         sq = (sq - 1.0f/xnorm)* _alpha*square(tau);
-
-        for (int i1 = 0; i1 < gx.length; i1++) {
-            gx[i1] += sq * x[i1] ;
+        if (computeGradient) {
+            for (int i1 = 0; i1 < gx.length; i1++) {
+                gx[i1] += sq * x[i1] ;
+            }
         }
         /* Make sure the result is non-negative (it
            can only be negative due to rounding errors). */
@@ -855,9 +861,10 @@ public class HomogeneousHyperbolicTotalVariation implements DifferentiableCostFu
 
 
         sq = (sq - 1.0f/xnorm)* alpha*square(tau);
-
-        for (int i1 = 0; i1 < gx.length; i1++) {
-            gx[i1] += sq * x[i1] ;
+        if (computeGradient) {
+            for (int i1 = 0; i1 < gx.length; i1++) {
+                gx[i1] += sq * x[i1] ;
+            }
         }
 
 
