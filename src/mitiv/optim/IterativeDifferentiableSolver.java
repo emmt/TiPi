@@ -47,7 +47,7 @@ public class IterativeDifferentiableSolver {
     private double fxBest; // best cost function so far
     private boolean firstTime = true;
     private boolean stepping = false;
-    protected boolean saveBest = false;
+    protected boolean saveBest = true;
     private final Timer timer = new Timer();
     private boolean updatePending = false;
     private int iterations = 0;
