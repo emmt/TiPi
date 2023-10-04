@@ -53,6 +53,10 @@ public class AmorsJob {
 		if(debug){
 			System.out.println("start amors");
 		}
+		if(totalNbOfBlindDecLoop==0){
+			objArray = Objdeconvolver.deconv(objArray);	
+		}
+
 		for(int iter = 0; iter < totalNbOfBlindDecLoop; iter++) {
 			do {
 
