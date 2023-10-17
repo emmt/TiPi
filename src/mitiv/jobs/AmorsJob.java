@@ -60,11 +60,14 @@ public class AmorsJob {
 		for(int iter = 0; iter < totalNbOfBlindDecLoop; iter++) {
 			do {
 
-				alpha = best_factor();
+/* 				alpha = best_factor();
+				if(debug){
+					System.out.println("Alpha : " +alpha);
+				}
 				if (alpha != 1.0){
 					scale(objArray, alpha);
 					scale(psfArray, 1./alpha);
-				}
+				} */
             	//Emergency stop
             	if (!run) {
                 	return succes;
@@ -73,16 +76,16 @@ public class AmorsJob {
 				objArray = Objdeconvolver.deconv(objArray);	
 
 				alpha = best_factor();
+				if(debug){
+					System.out.println("Alpha : " +alpha);
+				}
 
 				if (alpha != 1.0){
-					scale(objArray, alpha);
-					scale(psfArray, 1./alpha);
+					scale(objArray, 1./alpha);
+					scale(psfArray, alpha);
 				}
 
 			}while (iter < 1 && Math.abs(alpha - 1.0) > atol);
-			if(debug){
-				System.out.println("Alpha : " +alpha);
-			}
 			if(wghtUpdt !=null){
 				Objdeconvolver.updateWeight(wghtUpdt.update(PSFdeconvolver));
 			}
