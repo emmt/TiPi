@@ -86,7 +86,7 @@ public class AmorsJob {
 				if(debug){
 					System.out.println("Alpha : " +alpha);
 					System.out.println("sum obj: "+ ArrayUtils.sum(objArray));	
-					System.out.println("sum psf: "+ ArrayUtils.sum(psfArray)));	
+					System.out.println("sum psf: "+ ArrayUtils.sum(psfArray));	
 				}
 
 			}while (iter < 1 && Math.abs(alpha - 1.0) > atol);
