@@ -102,6 +102,13 @@ public class AmorsJob {
 
 			PSFdeconvolver.updatePsf(objArray);	
 			psfArray = PSFdeconvolver.deconv(psfArray);	
+			alpha = best_factor();
+
+			if (alpha != 1.0){
+				scale(objArray, alpha);
+				scale(psfArray, 1./alpha);
+			}
+
 			if(wghtUpdt !=null){
 				Objdeconvolver.updateWeight(wghtUpdt.update(PSFdeconvolver));
 			}
