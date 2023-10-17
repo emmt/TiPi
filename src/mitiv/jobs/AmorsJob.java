@@ -3,6 +3,7 @@ package mitiv.jobs;
 import mitiv.array.ShapedArray;
 import mitiv.cost.DifferentiableCostFunction;
 import mitiv.cost.HomogeneousFunction;
+import mitiv.array.ArrayUtils;
 import mitiv.array.DoubleArray;
 import mitiv.array.FloatArray;
 import mitiv.linalg.shaped.ShapedVector;
@@ -76,13 +77,16 @@ public class AmorsJob {
 				objArray = Objdeconvolver.deconv(objArray);	
 
 				alpha = best_factor();
-				if(debug){
-					System.out.println("Alpha : " +alpha);
-				}
 
 				if (alpha != 1.0){
-					scale(objArray, 1./alpha);
-					scale(psfArray, alpha);
+					scale(objArray, alpha);
+					scale(psfArray, 1./alpha);
+				}
+
+				if(debug){
+					System.out.println("Alpha : " +alpha);
+					System.out.println("sum obj: "+ ArrayUtils.sum(objArray));	
+					System.out.println("sum psf: "+ ArrayUtils.sum(psfArray)));	
 				}
 
 			}while (iter < 1 && Math.abs(alpha - 1.0) > atol);
@@ -164,6 +168,7 @@ public class AmorsJob {
 
 		double mu = PSFdeconvolver.solver.getRegularizationLevel();
 		DifferentiableCostFunction PSFregul = PSFdeconvolver.solver.getRegularization();
+		solution = PSFdeconvolver.solver.getBestSolution();
 
 		if(debug){
 			System.out.println("mu:" +mu );
@@ -171,7 +176,8 @@ public class AmorsJob {
 				System.out.println("solution==null" );
 			}
 
-		}
+		}		
+
 		double muKy  = PSFregul.evaluate(mu,solution);
 		double r = ((HomogeneousFunction) PSFregul).getHomogeneousDegree();
 
